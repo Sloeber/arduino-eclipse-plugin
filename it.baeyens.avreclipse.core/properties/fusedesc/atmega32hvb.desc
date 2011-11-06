@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Fuse/Lockbit description file for the AVR Eclipse plugin-->
+<!--Author: automatically created by AVR Eclipse plugin-->
+<!--Date: 17.06.10 12:52-->
+<!--Based on: Atmel Part Description File "ATmega32HVB.xml"-->
+<!--SVN: $Id: atmega32hvb.desc 785 2010-06-25 12:06:29Z innot $-->
+<description mcutype="atmega32hvb">
+<version build="1" status="RELEASED"/>
+<fusebyte default="0xDE" index="0" name="LOW">
+<bitfield default="0x01" desc="Watch-dog Timer always on" mask="0x80" name="WDTON"/>
+<bitfield default="0x01" desc="Preserve EEPROM through the Chip Erase cycle" mask="0x40" name="EESAVE"/>
+<bitfield default="0x00" desc="Serial program downloading (SPI) enabled" mask="0x20" name="SPIEN"/>
+<bitfield default="0x07" desc="Select start-up time" mask="0x1C" name="SUT">
+<value desc="Start-up time 14 CK + 4 ms" val="0x00"/>
+<value desc="Start-up time 14 CK + 8 ms" val="0x01"/>
+<value desc="Start-up time 14 CK + 16 ms" val="0x02"/>
+<value desc="Start-up time 14 CK + 32 ms" val="0x03"/>
+<value desc="Start-up time 14 CK + 64 ms" val="0x04"/>
+<value desc="Start-up time 14 CK + 128 ms" val="0x05"/>
+<value desc="Start-up time 14 CK + 256 ms" val="0x06"/>
+<value desc="Start-up time 14 CK + 512 ms" val="0x07"/>
+</bitfield>
+</fusebyte>
+<fusebyte default="0xE9" index="1" name="HIGH">
+<bitfield default="0x00" desc="DUVR mode on" mask="0x10" name="DUVRDINIT"/>
+<bitfield default="0x01" desc="Debug Wire enable" mask="0x08" name="DWEN"/>
+<bitfield default="0x00" desc="Select Boot Size" mask="0x06" name="BOOTSZ">
+<value desc="Boot Flash size=256 words Boot address=$3F00" val="0x03"/>
+<value desc="Boot Flash size=512 words Boot address=$3E00" val="0x02"/>
+<value desc="Boot Flash size=1024 words Boot address=$3C00" val="0x01"/>
+<value desc="Boot Flash size=2048 words Boot address=$3800" val="0x00"/>
+</bitfield>
+<bitfield default="0x01" desc="Boot Reset vector Enabled" mask="0x01" name="BOOTRST"/>
+</fusebyte>
+<lockbitsbyte index="0" name="LOCKBIT">
+<bitfield desc="Memory Lock" mask="0x03" name="LB">
+<value desc="Further programming and verification disabled" val="0x00"/>
+<value desc="Further programming disabled" val="0x02"/>
+<value desc="No memory lock features enabled" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x0C" name="BLB0">
+<value desc="LPM and SPM prohibited in Application Section" val="0x00"/>
+<value desc="LPM prohibited in Application Section" val="0x01"/>
+<value desc="SPM prohibited in Application Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Application Section" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x30" name="BLB1">
+<value desc="LPM and SPM prohibited in Boot Section" val="0x00"/>
+<value desc="LPM prohibited in Boot Section" val="0x01"/>
+<value desc="SPM prohibited in Boot Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Boot Section" val="0x03"/>
+</bitfield>
+</lockbitsbyte>
+</description>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Fuse/Lockbit description file for the AVR Eclipse plugin-->
+<!--Author: automatically created by AVR Eclipse plugin-->
+<!--Date: 17.06.10 12:52-->
+<!--Based on: Atmel Part Description File "ATmega406.xml"-->
+<!--SVN: $Id: atmega406.desc 785 2010-06-25 12:06:29Z innot $-->
+<description mcutype="atmega406">
+<version build="200" status="RELEASED"/>
+<fusebyte default="0xFE" index="1" name="HIGH">
+<bitfield default="0x01" desc="On-Chip Debug Enabled" mask="0x02" name="OCDEN"/>
+<bitfield default="0x00" desc="JTAG Interface Enabled" mask="0x01" name="JTAGEN"/>
+</fusebyte>
+<fusebyte default="0xCD" index="0" name="LOW">
+<bitfield default="0x01" desc="Watchdog timer always on" mask="0x80" name="WDTON"/>
+<bitfield default="0x01" desc="Preserve EEPROM through the Chip Erase cycle" mask="0x40" name="EESAVE"/>
+<bitfield default="0x00" desc="Select boot size" mask="0x30" name="BOOTSZ">
+<value desc="Boot Flash size=256 words Boot address=$4F00" val="0x03"/>
+<value desc="Boot Flash size=512 words Boot address=$4E00" val="0x02"/>
+<value desc="Boot Flash size=1024 words Boot address=$4C00" val="0x01"/>
+<value desc="Boot Flash size=2048 words Boot address=$4800" val="0x00"/>
+</bitfield>
+<bitfield default="0x01" desc="Boot Reset vector Enabled" mask="0x08" name="BOOTRST"/>
+<bitfield default="0x05" desc="Clock Selection" mask="0x07" name="SUT_CKSEL">
+<value desc="Start-up time: 14 CK + 0 ms" val="0x00"/>
+<value desc="Start-up time: 14 CK + 3.9 ms" val="0x02"/>
+<value desc="Start-up time: 14 CK + 62.5 ms" val="0x04"/>
+<value desc="Start-up time: 14 CK + 0 ms" val="0x01"/>
+<value desc="Start-up time: 14 CK + 3.9 ms" val="0x03"/>
+<value desc="Start-up time: 14 CK + 62.5 ms" val="0x05"/>
+</bitfield>
+</fusebyte>
+<lockbitsbyte index="0" name="LOCKBIT">
+<bitfield desc="Memory Lock" mask="0x03" name="LB">
+<value desc="Further programming and verification disabled" val="0x00"/>
+<value desc="Further programming disabled" val="0x02"/>
+<value desc="No memory lock features enabled" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x0C" name="BLB0">
+<value desc="LPM and SPM prohibited in Application Section" val="0x00"/>
+<value desc="LPM prohibited in Application Section" val="0x01"/>
+<value desc="SPM prohibited in Application Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Application Section" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x30" name="BLB1">
+<value desc="LPM and SPM prohibited in Boot Section" val="0x00"/>
+<value desc="LPM prohibited in Boot Section" val="0x01"/>
+<value desc="SPM prohibited in Boot Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Boot Section" val="0x03"/>
+</bitfield>
+</lockbitsbyte>
+</description>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Fuse/Lockbit description file for the AVR Eclipse plugin-->
+<!--Author: automatically created by AVR Eclipse plugin-->
+<!--Date: 17.06.10 12:52-->
+<!--Based on: Atmel Part Description File "ATmega161.xml"-->
+<!--SVN: $Id: atmega161.desc 785 2010-06-25 12:06:29Z innot $-->
+<description mcutype="atmega161">
+<version build="231" status="RELEASED"/>
+<fusebyte default="0xEA" index="0" name="LOW">
+<bitfield default="0x01" desc="Boot Reset Vector Enabled" mask="0x20" name="BOOTRST"/>
+<bitfield default="0x00" desc="Serial program downloading (SPI) enabled" mask="0x10" name="SPIEN"/>
+<bitfield default="0x01" desc="Start-up time" mask="0x08" name="SUT"/>
+<bitfield default="0x02" desc="Select Clock Source" mask="0x07" name="CKSEL">
+<value desc="Ext Clock; fast rising power" val="0x00"/>
+<value desc="Ext Clock; BOD Enabled or power-on reset" val="0x01"/>
+<value desc="Crystal Osc; slowly rising power ; default value" val="0x02"/>
+<value desc="Crystal Osc; fast rising power" val="0x03"/>
+<value desc="Crystal Osc; BOD Enabled or power-on reset" val="0x04"/>
+<value desc="Ceramic Resonator / External Clock; Slowly rising power" val="0x05"/>
+<value desc="Ceramic Resonator; fast rising power" val="0x06"/>
+<value desc="Ceramic Resonator; BOD Enabled or power-on reset" val="0x07"/>
+</bitfield>
+</fusebyte>
+<lockbitsbyte index="0" name="LOCKBIT">
+<bitfield desc="Memory Lock" mask="0x03" name="LB">
+<value desc="Further programming and verification disabled" val="0x00"/>
+<value desc="Further programming disabled" val="0x02"/>
+<value desc="No memory lock features enabled" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x0C" name="BLB0">
+<value desc="LPM and SPM prohibited in Application Section" val="0x00"/>
+<value desc="LPM prohibited in Application Section" val="0x01"/>
+<value desc="SPM prohibited in Application Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Application Section" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x30" name="BLB1">
+<value desc="LPM and SPM prohibited in Boot Section" val="0x00"/>
+<value desc="LPM prohibited in Boot Section" val="0x01"/>
+<value desc="SPM prohibited in Boot Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Boot Section" val="0x03"/>
+</bitfield>
+</lockbitsbyte>
+</description>

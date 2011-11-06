@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Fuse/Lockbit description file for the AVR Eclipse plugin-->
+<!--Author: automatically created by AVR Eclipse plugin-->
+<!--Date: 17.06.10 12:52-->
+<!--Based on: Atmel Part Description File "AT90SCR100H.xml"-->
+<!--SVN: $Id: at90scr100h.desc 851 2010-08-07 19:37:00Z innot $-->
+<description mcutype="at90scr100h">
+<version build="1" status="RELEASED"/>
+<fusebyte default="0xFF" index="2" name="EXTENDED">
+<bitfield default="0x01" desc="Brown-out Detector Enable Control" mask="0x01" name="BODENABLE">
+<value desc="Brown-out detection enabled" val="0x01"/>
+<value desc="Brown-out detection disabled" val="0x00"/>
+</bitfield>
+</fusebyte>
+<fusebyte default="0x99" index="1" name="HIGH">
+<bitfield default="0x01" desc="On-Chip Debug Enabled" mask="0x80" name="OCDEN"/>
+<bitfield default="0x00" desc="JTAG Interface Enabled" mask="0x40" name="JTAGEN"/>
+<bitfield default="0x00" desc="Serial program downloading (SPI) enabled" mask="0x20" name="SPIEN"/>
+<bitfield default="0x01" desc="Watchdog timer always on" mask="0x10" name="WDTON"/>
+<bitfield default="0x01" desc="Preserve EEPROM through the Chip Erase cycle" mask="0x08" name="EESAVE"/>
+<bitfield default="0x00" desc="Select Boot Size" mask="0x06" name="BOOTSZ">
+<value desc="Boot Flash size=512 words Boot start address=$7E00" val="0x03"/>
+<value desc="Boot Flash size=1024 words Boot address=$7C00" val="0x02"/>
+<value desc="Boot Flash size=2048 words Boot address=$7800" val="0x01"/>
+<value desc="Boot Flash size=4096 words Boot address=$7000" val="0x00"/>
+</bitfield>
+<bitfield default="0x01" desc="Boot Reset vector Enabled" mask="0x01" name="BOOTRST"/>
+</fusebyte>
+<fusebyte default="0xEF" index="0" name="LOW">
+<bitfield default="0x01" desc="Clock output on PORTB1" mask="0x40" name="CKOUT"/>
+<bitfield default="0x29" desc="Select Startup Time and Clock Source" mask="0x39" name="SUTCKSEL">
+<value desc="[CKSEL=10 SUT=00] Ceramic res., fast rising power, 14 CK + 4.1 ms" val="0x02"/>
+<value desc="[CKSEL=10 SUT=01] Ceramic res., slowly rising power, 14 CK + 65 ms" val="0x06"/>
+<value desc="[CKSEL=10 SUT=10] Ceramic res., BOD enabled, 14 CK" val="0x0A"/>
+<value desc="[CKSEL=10 SUT=11] Ceramic res., fast rising power, 14 CK + 4.1 ms" val="0x0E"/>
+<value desc="[CKSEL=11 SUT=00] Ceramic res., slowly rising power, 14 CK + 65 ms" val="0x03"/>
+<value desc="[CKSEL=11 SUT=01] Crystal Osc., BOD enabled, 14 CK" val="0x07"/>
+<value desc="[CKSEL=11 SUT=10] Crystal Osc., fast rising power, 14 CK + 4.1 ms" val="0x0B"/>
+<value desc="[CKSEL=11 SUT=11] Crystal Osc., slowly rising power, 14 CK + 65 ms" val="0x0F"/>
+<value desc="[CKSEL=00 SUT=00] Ext. Clock, BOD enabled, 14 CK" val="0x00"/>
+<value desc="[CKSEL=00 SUT=01] Ext. Clock, fast rising power, 14 CK + 4.1 ms" val="0x04"/>
+<value desc="[CKSEL=00 SUT=10] Ext. Clock, slowly rising power, 14 CK + 65 ms" val="0x08"/>
+<value desc="[CKSEL=01 SUT=00] Ext. Clock, BOD enabled, 14 CK" val="0x01"/>
+<value desc="[CKSEL=01 SUT=01] Ext. Clock, fast rising power, 14 CK + 4.1 ms" val="0x05"/>
+<value desc="[CKSEL=01 SUT=10] Ext. Clock, slowly rising power, 14 CK + 65 ms" val="0x09"/>
+</bitfield>
+</fusebyte>
+<lockbitsbyte index="0" name="LOCKBIT">
+<bitfield desc="Memory Lock" mask="0x03" name="LB">
+<value desc="Further programming and verification disabled" val="0x00"/>
+<value desc="Further programming disabled" val="0x02"/>
+<value desc="No memory lock features enabled" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x0C" name="BLB0">
+<value desc="LPM and SPM prohibited in Application Section" val="0x00"/>
+<value desc="LPM prohibited in Application Section" val="0x01"/>
+<value desc="SPM prohibited in Application Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Application Section" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x30" name="BLB1">
+<value desc="LPM and SPM prohibited in Boot Section" val="0x00"/>
+<value desc="LPM prohibited in Boot Section" val="0x01"/>
+<value desc="SPM prohibited in Boot Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Boot Section" val="0x03"/>
+</bitfield>
+</lockbitsbyte>
+</description>

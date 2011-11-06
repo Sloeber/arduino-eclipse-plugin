@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Fuse/Lockbit description file for the AVR Eclipse plugin-->
+<!--Author: automatically created by AVR Eclipse plugin-->
+<!--Date: 17.06.10 12:52-->
+<!--Based on: Atmel Part Description File "ATmega163.xml"-->
+<!--SVN: $Id: atmega163.desc 785 2010-06-25 12:06:29Z innot $-->
+<description mcutype="atmega163">
+<version build="205" status="RELEASED"/>
+<fusebyte default="0xF9" index="1" name="HIGH">
+<bitfield default="0x00" desc="Select Boot Size" mask="0x06" name="BOOTSZ">
+<value desc="Boot Flash size=128 words start address=$1F80" val="0x03"/>
+<value desc="Boot Flash size=256 words start address=$1F00" val="0x02"/>
+<value desc="Boot Flash size=512 words start address=$1E00" val="0x01"/>
+<value desc="Boot Flash size=1024 words start address=$1C00" val="0x00"/>
+</bitfield>
+<bitfield default="0x01" desc="Boot Reset vector Enabled" mask="0x01" name="BOOTRST"/>
+</fusebyte>
+<fusebyte default="0xF2" index="0" name="LOW">
+<bitfield default="0x01" desc="Brown out detector trigger level" mask="0x80" name="BODLEVEL">
+<value desc="Brown-out detection at VCC=4.0 V" val="0x00"/>
+<value desc="Brown-out detection at VCC=2.7 V" val="0x01"/>
+</bitfield>
+<bitfield default="0x01" desc="Brown-out detection enabled" mask="0x40" name="BODEN"/>
+<bitfield default="0x01" desc="Serial program downloading (SPI) enabled" mask="0x20" name="SPIEN"/>
+<bitfield default="0x02" desc="Select Clock Source" mask="0x0F" name="CKSEL">
+<value desc="External Clock fast rising power" val="0x00"/>
+<value desc="External Clock BOD enabled" val="0x01"/>
+<value desc="Internal RC Ocsillator slowly rising power ; default value" val="0x02"/>
+<value desc="Internal RC Ocsillator fast rising power" val="0x03"/>
+<value desc="Internal RC Oscillator BOD enabled" val="0x04"/>
+<value desc="External RC Oscillator slowly rising power" val="0x05"/>
+<value desc="External RC Oscillator fast rising power" val="0x06"/>
+<value desc="External RC Oscillator BOD enabled" val="0x07"/>
+<value desc="External Low-Frequency Crystal" val="0x08"/>
+<value desc="External Low-Frequency Crystal" val="0x09"/>
+<value desc="Crystal Oscillator slowly rising power" val="0x0A"/>
+<value desc="Crystal Oscillator fast rising power" val="0x0B"/>
+<value desc="Crystal Oscillator BOD enabled" val="0x0C"/>
+<value desc="Ceramic Resonator/External Clock slowly rising power" val="0x0D"/>
+<value desc="Ceramic Resonator fast rising power" val="0x0E"/>
+<value desc="Ceramic Resonator BOD enabled" val="0x0F"/>
+</bitfield>
+</fusebyte>
+<lockbitsbyte index="0" name="LOCKBIT">
+<bitfield desc="Memory Lock" mask="0x03" name="LB">
+<value desc="Further programming and verification disabled" val="0x00"/>
+<value desc="Further programming disabled" val="0x02"/>
+<value desc="No memory lock features enabled" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x0C" name="BLB0">
+<value desc="LPM and SPM prohibited in Application Section" val="0x00"/>
+<value desc="LPM prohibited in Application Section" val="0x01"/>
+<value desc="SPM prohibited in Application Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Application Section" val="0x03"/>
+</bitfield>
+<bitfield desc="Boot Loader Protection Mode" mask="0x30" name="BLB1">
+<value desc="LPM and SPM prohibited in Boot Section" val="0x00"/>
+<value desc="LPM prohibited in Boot Section" val="0x01"/>
+<value desc="SPM prohibited in Boot Section" val="0x02"/>
+<value desc="No lock on SPM and LPM in Boot Section" val="0x03"/>
+</bitfield>
+</lockbitsbyte>
+</description>

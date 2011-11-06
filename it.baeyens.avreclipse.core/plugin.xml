@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.3"?>
+<plugin>
+   <extension-point id="targetToolFactories" name="targetToolFactories" schema="schema/targetToolFactories.exsd"/>
+
+
+<!-- 
+####################################################################################### 
+#    Arduino Nature                                                                       # 
+####################################################################################### 
+-->
+ <extension
+       point="it.baeyens.avreclipse.core.targetToolFactories">
+    <toolfactory
+          class="it.baeyens.avreclipse.core.targets.tools.AvariceToolFactory">
+    </toolfactory>
+    <toolfactory
+          class="it.baeyens.avreclipse.core.targets.tools.AvrdudeToolFactory">
+    </toolfactory>
+    <toolfactory
+          class="it.baeyens.avreclipse.core.targets.tools.NoneToolFactory">
+    </toolfactory>
+ </extension>
+ 	<extension id="it.baeyens.arduinonature" name="Arduino Nature" point="org.eclipse.core.resources.natures">
+       <runtime>
+           <run class="it.baeyens.avreclipse.core.natures.AVRProjectNature" />
+       </runtime>
+       <requires-nature id="org.eclipse.cdt.core.cnature"/>
+   </extension>
+
+<!-- 
+####################################################################################### 
+#    Content Types                                                                    # 
+####################################################################################### 
+-->
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes">
+		<content-type id="it.baeyens.avreclipse.contenttype.hexdump.flash"
+			base-type="org.eclipse.core.runtime.text"
+			file-extensions="hex"
+			name="HEX Dump for Flash ROM">
+		</content-type>
+	</extension>
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes">
+		<content-type id="it.baeyens.avreclipse.contenttype.hexdump.eeprom"
+			base-type="org.eclipse.core.runtime.text"
+			file-extensions="eep"
+			name="HEX Dump for EEPROM">
+		</content-type>
+	</extension>
+	<!--  this does not work because Eclipse is non-case-sensitive, e.g. .s == .S -->
+	<extension point="org.eclipse.core.contenttype.contentTypes"> 
+		<file-association 
+	    	content-type="org.eclipse.cdt.core.asmSource"
+	       	file-extensions="s,S,asm"/>
+	</extension> 
+
+<!--
+####################################################################################### 
+#    Preference Initializer                                                           # 
+####################################################################################### 
+-->
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer
+			class="it.baeyens.avreclipse.core.preferences.PreferenceInitializer">
+		</initializer>
+	</extension>
+	
+ 	
+ 	
+	<extension point="org.eclipse.core.expressions.propertyTesters">
+		<propertyTester
+			class="it.baeyens.avreclipse.core.ProjectTypeTester"
+			id="it.baeyens.avreclipse.core.projectTypeTester"
+			namespace="it.baeyens.avreclipse.core"
+			properties="isStaticLib"
+			type="org.eclipse.core.resources.IResource">
+		</propertyTester>
+	</extension>
+
+</plugin>
+

@@ -1,0 +1,4 @@
+it.baeyens.avreclipse.core/debug = true
+it.baeyens.avreclipse.core/debug/ui = true
+it.baeyens.avreclipse.core/debug/managedbuild = true
+it.baeyens.avreclipse.core/debug/core = true
