@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.3"?>
+<plugin>
+<!-- 
+####################################################################################### 
+####################################################################################### 
+##                                                                                   ##
+##   Extension Points                                                                ## 
+##                                                                                   ##
+####################################################################################### 
+####################################################################################### 
+-->
+
+<!--
+####################################################################################### 
+#    Property Pages                                                                   # 
+####################################################################################### 
+-->
+	<extension point="org.eclipse.ui.propertyPages">
+        
+		<!-- ############################### -->
+		<!-- Arduino Properties Page -->
+		<!-- ############################### -->
+		<page
+            class="it.baeyens.arduino.eclipse.ArduinoPropertyPage"
+            id="it.baeyens.arduino.eclipse.propertypage.ArduinoProperty"
+            name="Arduino"
+            category="it.baeyens.avreclipse.propertypage.Pagemain" >
+			<filter
+				name="projectNature"
+				value="it.baeyens.arduinonature">
+			</filter>            
+			<enabledWhen>
+				<or>
+					<instanceof value="org.eclipse.core.resources.IProject"/>
+					<instanceof value="org.eclipse.cdt.core.model.ICProject"/>
+				</or>          
+			</enabledWhen>
+        </page>    
+		
+	</extension>
+	
+
+<!--
+####################################################################################### 
+#    Wizard Pages                                                                     # 
+####################################################################################### 
+-->
+
+	<extension point="org.eclipse.ui.newWizards">
+		<category 
+			id="it.baeyens.arduino.eclipse.newWizards"
+			name="Arduino">
+		</category>
+		<wizard
+			id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard"
+			category="it.baeyens.arduino.eclipse.newWizards"
+	        class="it.baeyens.arduino.eclipse.NewArduinoSketchWizard"
+	        name="New Arduino sketch"
+	        icon="icons/arduino.png"
+	        project="true">
+         <description>
+            Create a new Arduino sketch and import arduino core code if needed.
+         </description>	        
+		</wizard>
+		
+	</extension>
+
+
+</plugin>
