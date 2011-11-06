@@ -16,6 +16,7 @@
 
 package it.baeyens.avreclipse.core.paths.win32;
 
+
 import it.baeyens.arduino.globals.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.paths.AVRPath;

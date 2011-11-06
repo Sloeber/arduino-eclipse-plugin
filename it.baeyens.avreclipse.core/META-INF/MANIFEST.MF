@@ -6,7 +6,6 @@ Bundle-Version: 0.0.0
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Require-Bundle: 
- it.baeyens.arduino.globals,
  org.eclipse.cdt.core,
  org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.runtime,
@@ -68,6 +67,7 @@ Export-Package: it.baeyens.avreclipse;uses:="org.osgi.framework,org.eclipse.core
  it.baeyens.avreclipse.util;uses:="org.eclipse.core.runtime"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: it.baeyens.avreclipse.AVRPlugin
-Import-Package: org.eclipse.ui.dialogs,
+Import-Package: it.baeyens.arduino.globals,
+ org.eclipse.ui.dialogs,
  org.eclipse.ui.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

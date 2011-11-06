@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino"
       label="Arduino eclipse extensions"
-      version="1.0.1.qualifier"
+      version="1.0.2.qualifier"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -28,9 +28,9 @@ Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
    </license>
 
    <url>
-      <update label="jan&apos;s site" url="http://www.baeyens.it/eclipse/update site/"/>
+      <update label="jan&apos;s site" url="http://www.baeyens.it/eclipse/update%20site/"/>
       <discovery label="AVR-Eclipse" url="http://avr-eclipse.sourceforge.net/wiki/index.php/Plugin_Download"/>
-      <discovery label="jan&apos;s site" url="http://www.baeyens.it/eclipse/update site/"/>
+      <discovery label="jan&apos;s site" url="http://www.baeyens.it/eclipse/update%20site/"/>
    </url>
 
    <requires>
@@ -66,13 +66,6 @@ Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
          unpack="false"/>
 
    <plugin
-         id="it.baeyens.avreclipse"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="it.baeyens.avreclipse.core"
          download-size="0"
          install-size="0"
@@ -95,13 +88,6 @@ Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
 
    <plugin
          id="org.eclipse.jface"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="it.baeyens.arduino.globals"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -1,6 +1,6 @@
 package it.baeyens.arduino.eclipse;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import java.io.BufferedReader;

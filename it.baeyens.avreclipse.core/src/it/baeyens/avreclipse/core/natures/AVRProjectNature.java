@@ -16,6 +16,7 @@
  */
 package it.baeyens.avreclipse.core.natures;
 
+
 import it.baeyens.arduino.globals.ArduinoConst;
 
 import org.eclipse.core.resources.IProject;

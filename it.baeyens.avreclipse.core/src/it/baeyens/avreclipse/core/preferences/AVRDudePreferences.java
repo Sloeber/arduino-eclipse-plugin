@@ -16,6 +16,7 @@
 package it.baeyens.avreclipse.core.preferences;
 
 import it.baeyens.arduino.globals.ArduinoConst;
+
 import java.io.IOException;
 
 import org.eclipse.core.runtime.Assert;

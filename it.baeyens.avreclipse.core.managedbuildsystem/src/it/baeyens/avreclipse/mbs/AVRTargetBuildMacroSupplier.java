@@ -15,8 +15,6 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.mbs;
 
-import it.baeyens.avreclipse.mbs.BuildMacro;
-
 import java.util.List;
 
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
