@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><component id="it.baeyens.avreclipse.ui" version="2">
+    <resource path="src/de/innot/avreclipse/ui/wizards/MCUselectPage.java" type="it.baeyens.avreclipse.ui.wizards.MCUselectPage">
+        <filter comment="dd" id="1108344834">
+            <message_arguments>
+                <message_argument value="1.0"/>
+                <message_argument value="4.0"/>
+                <message_argument value="it.baeyens.avreclipse.ui.wizards.MCUselectPage"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
