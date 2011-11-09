@@ -16,7 +16,7 @@
 
 package it.baeyens.avreclipse.ui.editors.targets;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.ArduinoConst;
 import it.baeyens.avreclipse.core.targets.ITargetConfigChangeListener;
 import it.baeyens.avreclipse.core.targets.ITargetConfigConstants;
 import it.baeyens.avreclipse.core.targets.ITargetConfiguration;

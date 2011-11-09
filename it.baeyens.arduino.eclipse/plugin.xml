@@ -63,8 +63,25 @@
             Create a new Arduino sketch and import arduino core code if needed.
          </description>	        
 		</wizard>
-		
 	</extension>
 
+ <extension point="org.eclipse.ui.importWizards">
+ 		<category 
+			id="it.baeyens.arduino.eclipse.importWizards"
+			name="Arduino">
+		</category>
+      <wizard 
+         id="it.baeyens.arduino.Import_Arduino_Library" 
+         name="Import a arduino library in the current project" 
+         class="it.baeyens.arduino.Import_Arduino_Library" 
+         icon="icons/arduino.png"
+         category="it.baeyens.arduino.eclipse.importWizards">        
+         <description> 
+            Use this import to import arduino library code or any other code in a subfolder
+         </description> 
+         <selection class="org.eclipse.core.resources.IResource"/> 
+      </wizard> 
+   </extension>
+   
 
 </plugin>

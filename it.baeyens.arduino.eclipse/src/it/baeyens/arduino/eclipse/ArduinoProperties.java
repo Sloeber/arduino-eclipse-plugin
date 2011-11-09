@@ -204,9 +204,9 @@ public class ArduinoProperties {
 	}
 
 	private  void  ReadGlobalStuff() {
-		mArduinoPath = ArduinoHelpers.GetGlobal (ArduinoConst.ARDUINOPATH_PROPERTY);
-		mArduinoBoardName = ArduinoHelpers.GetGlobal (ArduinoConst.ARDUINOBOARD_PROPERTY);
-		mUploadPort= ArduinoHelpers.GetGlobal (ArduinoConst.ARDUINOPORT_PROPERTY);
+		mArduinoPath = ArduinoHelpers.GetGlobalValue (ArduinoConst.ARDUINOPATH_PROPERTY);
+		mArduinoBoardName = ArduinoHelpers.GetGlobalValue (ArduinoConst.ARDUINOBOARD_PROPERTY);
+		mUploadPort= ArduinoHelpers.GetGlobalValue (ArduinoConst.ARDUINOPORT_PROPERTY);
 
 	}
 

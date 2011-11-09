@@ -16,9 +16,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.cdt;bundle-version="8.0.0"
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
-Export-Package: it.baeyens.arduino.eclipse
+Export-Package: it.baeyens.arduino,
+ it.baeyens.arduino.eclipse
 Import-Package: it.baeyens.arduino.eclipse,
- it.baeyens.arduino.globals,
  it.baeyens.avreclipse,
  it.baeyens.avreclipse.core,
  it.baeyens.avreclipse.core.avrdude,

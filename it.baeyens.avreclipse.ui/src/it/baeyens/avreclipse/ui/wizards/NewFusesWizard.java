@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.wizards;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.ArduinoConst;
 import it.baeyens.avreclipse.core.toolinfo.fuses.ByteValues;
 import it.baeyens.avreclipse.core.toolinfo.fuses.FuseType;
 import it.baeyens.avreclipse.ui.editors.FuseFileDocumentProvider;

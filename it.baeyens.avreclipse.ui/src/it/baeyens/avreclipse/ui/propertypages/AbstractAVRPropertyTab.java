@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.propertypages;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.ArduinoConst;
 import it.baeyens.avreclipse.core.properties.AVRProjectProperties;
 import it.baeyens.avreclipse.core.properties.ProjectPropertyManager;
 

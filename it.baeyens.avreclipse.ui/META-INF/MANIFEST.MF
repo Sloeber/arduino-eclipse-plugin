@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- it.baeyens.avreclipse.core
+ it.baeyens.avreclipse.core,
+ it.baeyens.arduino.eclipse
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.avreclipse.ui.actions;
   uses:="org.eclipse.jface.action,
@@ -92,7 +93,7 @@ Export-Package: it.baeyens.avreclipse.ui.actions;
    org.eclipse.swt.widgets,
    it.baeyens.avreclipse.core.toolinfo.fuses"
 Bundle-Vendor: %providerName
-Import-Package: it.baeyens.arduino.globals,
+Import-Package: it.baeyens.arduino.eclipse,
  it.baeyens.avreclipse,
  it.baeyens.avreclipse.core,
  it.baeyens.avreclipse.core.avrdude,

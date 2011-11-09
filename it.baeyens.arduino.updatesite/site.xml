@@ -5,5 +5,5 @@
    </description>
    <feature url="features/it.baeyens.arduino_1.0.1.201111051239.jar" id="it.baeyens.arduino" version="1.0.1.201111051239"/>
    <feature url="features/it.baeyens.arduino_1.0.1.201111052115.jar" id="it.baeyens.arduino" version="1.0.1.201111052115" patch="true"/>
-   <feature url="features/it.baeyens.arduino_1.0.2.201111062022.jar" id="it.baeyens.arduino" version="1.0.2.201111062022" patch="true"/>
+   <feature url="features/it.baeyens.arduino_1.0.2.201111062055.jar" id="it.baeyens.arduino" version="1.0.2.201111062055"/>
 </site>

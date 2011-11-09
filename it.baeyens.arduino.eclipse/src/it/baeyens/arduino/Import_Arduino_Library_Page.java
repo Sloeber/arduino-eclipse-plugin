@@ -1,0 +1,145 @@
+package it.baeyens.arduino;
+
+import it.baeyens.arduino.eclipse.ArduinoHelpers;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.WizardResourceImportPage;
+
+public class Import_Arduino_Library_Page extends WizardResourceImportPage {
+	private Text controlLibraryPath;
+	private Button controlBrowseButton;
+
+	protected Import_Arduino_Library_Page(String name, IStructuredSelection selection) {
+		super(name, selection);
+		// TODO Auto-generated constructor stub
+		
+	}
+	
+	
+
+	@Override
+	protected void createSourceGroup(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NONE);
+		GridLayout theGridLayout = new GridLayout();
+		GridData theGriddata;
+		theGridLayout.numColumns = 3;
+		composite.setLayout(theGridLayout);
+		composite.setLayoutData(new GridData( GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+		composite.setFont(parent.getFont());
+		
+
+		Label line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD );
+		line.setText("Arduino library to import");
+		theGriddata = new GridData(SWT.FILL,SWT.CENTER,true,false);
+		theGriddata.horizontalSpan = 3;
+		line.setLayoutData(theGriddata);
+		
+		
+		Label TheLabel = new Label(composite, SWT.NONE);
+		TheLabel.setText("Library Location"); //$NON-NLS-1$
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.LEFT;
+		theGriddata.horizontalSpan = 1;
+		theGriddata.grabExcessHorizontalSpace = false;
+		TheLabel.setLayoutData(theGriddata);
+		
+		controlLibraryPath = new Text(composite, SWT.SINGLE | SWT.BORDER);
+        theGriddata = new GridData(GridData.HORIZONTAL_ALIGN_FILL      | GridData.GRAB_HORIZONTAL);
+        theGriddata.widthHint = SIZING_TEXT_FIELD_WIDTH;
+        //theGriddata.horizontalSpan = 1;
+        controlLibraryPath.setLayoutData(theGriddata);		
+		
+//		
+//		theGriddata = new GridData();
+//		theGriddata.horizontalAlignment = SWT.CENTER;
+//		theGriddata.horizontalSpan = 1;
+//		theGriddata.grabExcessHorizontalSpace = true;
+//		controlLibraryPath.setLayoutData(theGriddata);
+		
+
+		controlBrowseButton = new Button(composite, SWT.NONE);
+		controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
+		theGriddata = new GridData();;
+		theGriddata.horizontalSpan = 1;
+		theGriddata.horizontalAlignment = SWT.LEAD;
+		theGriddata.grabExcessHorizontalSpace = false;
+		controlBrowseButton.setLayoutData(theGriddata);
+		controlBrowseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				final Shell shell = new Shell();
+				DirectoryDialog theDialog = new DirectoryDialog(shell);
+				if ((controlLibraryPath.getText()==null) | (controlLibraryPath.getText()==""))
+				{
+					theDialog.setFilterPath(ArduinoHelpers.GetDefaultArduinoPath() + ArduinoConst.LibraryLocation);
+				}
+				else
+				{
+					theDialog.setFilterPath(controlLibraryPath.getText());
+				}
+				
+				String Path = theDialog.open();
+				if (Path!=null)	controlLibraryPath.setText(Path);
+			}
+		});
+
+		line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD );
+		line.setText("Arduino library to import");
+		theGriddata = new GridData(SWT.FILL,SWT.CENTER,true,false);
+		theGriddata.horizontalSpan = 3;
+		line.setLayoutData(theGriddata);
+	
+	}
+	
+
+
+	
+	@Override
+	protected ITreeContentProvider getFileProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ITreeContentProvider getFolderProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	public boolean canFinish() {
+		return !( (controlLibraryPath.getText().equals("")) | (getContainerFullPath()==null) );
+	}
+
+
+
+	public IProject GetProject() {
+		// TODO Auto-generated method stub
+		if (validateDestinationGroup())
+		{
+			return getSpecifiedContainer().getProject();
+		}
+		return null;
+	}
+	
+	public String GetLibraryFolder()
+	{
+		return controlLibraryPath.getText()==null ? "" : controlLibraryPath.getText().trim();
+	}
+
+
+}

@@ -139,8 +139,10 @@ public class ArduinoPageLayout {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				final Shell shell = new Shell();
-				String Path = new DirectoryDialog(shell).open();
-				controlArduinoPath.setText(Path);
+				DirectoryDialog theDialog = new DirectoryDialog(shell);
+				theDialog.setFilterPath(controlArduinoPath.getText());
+				String Path = theDialog.open();
+				if (Path!=null)	controlArduinoPath.setText(Path);
 			}
 		});
 

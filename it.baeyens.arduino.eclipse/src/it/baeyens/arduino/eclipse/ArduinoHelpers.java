@@ -1,7 +1,6 @@
 package it.baeyens.arduino.eclipse;
 
 import it.baeyens.arduino.ArduinoConst;
-import it.baeyens.arduino.globals.*;
 import it.baeyens.avreclipse.AVRPlugin;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,8 +58,14 @@ public class ArduinoHelpers {
 			e.printStackTrace();
 		}
 	}
+	
+	public static String GetDefaultArduinoPath()
+	{
+		
+		return ArduinoHelpers.GetGlobalValue(ArduinoConst.ARDUINOPATH_PROPERTY);
+	}
 
-	public static String GetGlobal(String key) {
+	public static String GetGlobalValue(String key) {
 		IEclipsePreferences myScope =ConfigurationScope.INSTANCE.getNode("it.baeyens.arduino");
 		return myScope.get(key,null);
 	}
@@ -97,21 +102,7 @@ public class ArduinoHelpers {
 		ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
 		ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
 
-		// find all languages
-		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
-		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-
-		// Add include path to all languages
-		for (int idx = 0; idx < languageSettings.length; idx++) {
-			ICLanguageSetting lang = languageSettings[idx];
-
-			ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-			ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
-			System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-			IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(project.getFullPath(), CIncludePathEntry.VALUE_WORKSPACE_PATH); // (location.toString());
-			lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-
-		}
+		AddIncludeFolder(configurationDescription,project.getFullPath());
 
 		ChangeProjectReference(project, "", libraryProject);
 		// IProjectDescription projectdescription =project.getDescription();
@@ -128,6 +119,26 @@ public class ArduinoHelpers {
 		mngr.setProjectDescription(project, projectDescription, true, null);
 	}
 
+	
+	private static void AddIncludeFolder(ICConfigurationDescription configurationDescription,IPath IncludePath)
+	{
+		// find all languages
+		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
+		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+
+		// Add include path to all languages
+		for (int idx = 0; idx < languageSettings.length; idx++) {
+			ICLanguageSetting lang = languageSettings[idx];
+
+			ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+			ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
+			System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
+			IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath, CIncludePathEntry.VALUE_WORKSPACE_PATH); // (location.toString());
+			lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
+		}
+		
+	}
+	
 	public static void addCodeFolder(IProject project, IPath Path) throws CoreException {
 
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
@@ -156,21 +167,8 @@ public class ArduinoHelpers {
 		sourceEntries[OrgSourceEntries.length] = new CSourceEntry(link.getFullPath(), null, ICSettingEntry.RESOLVED);
 		configurationDescription.setSourceEntries(sourceEntries);
 		// source has been added
-
-		// find all languages
-		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
-		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-
-		// Add include path to all languages
-		for (int idx = 0; idx < languageSettings.length; idx++) {
-			ICLanguageSetting lang = languageSettings[idx];
-
-			ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-			ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
-			System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-			IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(link.getFullPath(), CIncludePathEntry.VALUE_WORKSPACE_PATH); // (location.toString());
-			lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-		}
+		
+		AddIncludeFolder(configurationDescription,link.getFullPath());
 
 		projectDescription.setActiveConfiguration(configurationDescription);
 		projectDescription.setCdtProjectCreated();

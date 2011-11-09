@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.dialogs;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.ArduinoConst;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeException;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.preferences.AVRDudePreferences;

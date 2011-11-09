@@ -30,5 +30,6 @@ public class ArduinoConst {
 	public static final String	CORE_PLUGIN_ID		= PluginStart +"core";
 	public static final String	UI_PLUGIN_ID	= PluginStart + "avreclipse.ui";
 	public static final String MCU_SELECT_PAGE_ID = PluginStart +"mcuselectpage";
+	public static final String LibraryLocation = "\\libraries\\";
 	
 }
