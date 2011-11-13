@@ -4,4 +4,5 @@
       A location for eclipse plugins created by Jan Baeyens
    </description>
    <feature url="features/it.baeyens.arduino.feature_1.0.5.jar" id="it.baeyens.arduino.feature" version="1.0.5"/>
+   <feature url="features/it.baeyens.arduino.feature_1.0.6.jar" id="it.baeyens.arduino.feature" version="1.0.6" patch="true"/>
 </site>

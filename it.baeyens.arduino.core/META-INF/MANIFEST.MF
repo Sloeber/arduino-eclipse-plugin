@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Arduino eclipse
+Bundle-SymbolicName: it.baeyens.arduino.core;singleton:=true
+Bundle-Version: 1.0.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.core.resources,
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.core.filesystem,
+ org.eclipse.ui.ide
+Bundle-Vendor: Jan Baeyens
+Bundle-ActivationPolicy: lazy
+Export-Package: it.baeyens.arduino.ui
+Import-Package: it.baeyens.arduino.common,
+ it.baeyens.arduino.ui,
+ it.baeyens.avreclipse,
+ it.baeyens.avreclipse.core.avrdude,
+ it.baeyens.avreclipse.core.preferences,
+ it.baeyens.avreclipse.core.properties,
+ it.baeyens.avreclipse.core.util,
+ org.eclipse.cdt.core.model,
+ org.eclipse.cdt.core.settings.model,
+ org.eclipse.ui.dialogs
+Bundle-Activator: it.baeyens.arduino.ui.activator
