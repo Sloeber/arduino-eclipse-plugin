@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.core;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: 1.0.2
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Require-Bundle: 
@@ -13,8 +13,8 @@ Require-Bundle:
  org.eclipse.core.filesystem,
  org.eclipse.jface,
  org.eclipse.ui.console,
- org.eclipse.ui.ide,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.ui.workbench
 Export-Package: it.baeyens.avreclipse;uses:="org.osgi.framework,org.eclipse.core.runtime,org.eclipse.ui.console",
  it.baeyens.avreclipse.core;uses:="org.eclipse.core.expressions",
  it.baeyens.avreclipse.core.avrdude;
@@ -67,7 +67,6 @@ Export-Package: it.baeyens.avreclipse;uses:="org.osgi.framework,org.eclipse.core
  it.baeyens.avreclipse.util;uses:="org.eclipse.core.runtime"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: it.baeyens.avreclipse.AVRPlugin
-Import-Package: it.baeyens.arduino.globals,
- org.eclipse.ui.dialogs,
+Import-Package: it.baeyens.arduino.common,
  org.eclipse.ui.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

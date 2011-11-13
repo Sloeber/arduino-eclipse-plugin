@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;

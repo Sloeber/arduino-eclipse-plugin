@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.BackingStoreException;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.natures.AVRProjectNature;
 import it.baeyens.avreclipse.core.properties.AVRProjectProperties;
@@ -108,7 +108,6 @@ public class Convert21 {
 	/**
 	 * @param tools
 	 */
-	@SuppressWarnings("unchecked")
 	private static void checkOptions(IHoldsOptions optionholder, IConfiguration buildcfg) {
 
 		// Get the Project Properties for the given Configuration

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.core.managedbuildsystem;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: 1.0.2
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: it.baeyens.avreclipse.mbs;uses:="org.eclipse.cdt.managedbuilder.core,org.eclipse.cdt.managedbuilder.macros,org.eclipse.cdt.managedbuilder.envvar",
@@ -18,9 +18,6 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.cdt.core,
  org.eclipse.core.runtime,
  it.baeyens.avreclipse.core
-Import-Package: it.baeyens.arduino.globals,
+Import-Package: it.baeyens.arduino.common,
  it.baeyens.avreclipse,
- it.baeyens.avreclipse.core.natures,
- it.baeyens.avreclipse.core.properties,
- it.baeyens.avreclipse.core.toolinfo,
- it.baeyens.avreclipse.mbs
+ it.baeyens.avreclipse.core.toolinfo

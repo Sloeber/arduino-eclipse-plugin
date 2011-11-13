@@ -3,6 +3,8 @@
 	<name>it.baeyens.avreclipse.core.managedbuildsystem</name>
 	<comment></comment>
 	<projects>
+		<project>it.baeyens.arduino.common</project>
+		<project>it.baeyens.avreclipse.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

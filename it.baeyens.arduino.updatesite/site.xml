@@ -3,7 +3,5 @@
    <description name="Jan&apos;s eclipse place" url="http://www.baeyens.it/eclipse/update%20site/">
       A location for eclipse plugins created by Jan Baeyens
    </description>
-   <feature url="features/it.baeyens.arduino_1.0.1.201111051239.jar" id="it.baeyens.arduino" version="1.0.1.201111051239"/>
-   <feature url="features/it.baeyens.arduino_1.0.1.201111052115.jar" id="it.baeyens.arduino" version="1.0.1.201111052115" patch="true"/>
-   <feature url="features/it.baeyens.arduino_1.0.2.201111062055.jar" id="it.baeyens.arduino" version="1.0.2.201111062055"/>
+   <feature url="features/it.baeyens.arduino.feature_1.0.5.jar" id="it.baeyens.arduino.feature" version="1.0.5"/>
 </site>

@@ -16,7 +16,7 @@
 
 package it.baeyens.avreclipse.ui.editors.targets;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.core.targets.ITargetConfigurationWorkingCopy;
 
 import java.io.IOException;

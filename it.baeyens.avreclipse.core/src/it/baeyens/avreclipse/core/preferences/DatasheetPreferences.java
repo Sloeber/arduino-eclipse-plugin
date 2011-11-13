@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core.preferences;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import java.io.IOException;

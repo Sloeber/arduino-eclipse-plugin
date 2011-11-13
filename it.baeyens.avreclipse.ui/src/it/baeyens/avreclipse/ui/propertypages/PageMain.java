@@ -15,7 +15,8 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.propertypages;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;

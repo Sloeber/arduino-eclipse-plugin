@@ -13,7 +13,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.views.targets;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.core.targets.ITargetConfigChangeListener;
 import it.baeyens.avreclipse.core.targets.ITargetConfiguration;
 import it.baeyens.avreclipse.core.targets.TargetConfigurationManager;

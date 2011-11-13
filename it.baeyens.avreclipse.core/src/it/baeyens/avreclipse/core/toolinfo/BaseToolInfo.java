@@ -16,7 +16,7 @@
  */
 package it.baeyens.avreclipse.core.toolinfo;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import org.eclipse.cdt.managedbuilder.core.ITool;

@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core.preferences;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 
 import java.io.IOException;
 
@@ -53,8 +53,10 @@ public class AVRDudePreferences {
 	/** Path to a custom avrdude.conf configuration file */
 	public static final String		KEY_CONFIGFILE			= "avrdudeconf";
 
+
 	public static final String		KEY_USECONSOLE			= "avrdudeUseConsole";
 	public static final boolean		DEFAULT_USECONSOLE		= false;
+
 
 	/**
 	 * Gets the instance AVRDude preferences.

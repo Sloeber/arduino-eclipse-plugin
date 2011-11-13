@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core.avrdude;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 
 import java.util.ArrayList;
 import java.util.List;

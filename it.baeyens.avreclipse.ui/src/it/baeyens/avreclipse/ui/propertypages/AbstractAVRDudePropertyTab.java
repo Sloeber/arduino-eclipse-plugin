@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.propertypages;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfigManager;

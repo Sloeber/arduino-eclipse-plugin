@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core.toolinfo.fuses;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import java.util.ArrayList;

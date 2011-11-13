@@ -16,7 +16,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui.wizards;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.natures.AVRProjectNature;
 import it.baeyens.avreclipse.core.properties.AVRProjectProperties;

@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -51,6 +52,18 @@ public class PathsPreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private IPreferenceStore	fPreferenceStore	= null;
+	private boolean mIsDirty = false;
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		mIsDirty=true;
+	}
+	
+	@Override
+	public boolean performOk() {
+		if (mIsDirty) return super.performOk();
+		return true;
+	}
 
 	public PathsPreferencePage() {
 		super(GRID);

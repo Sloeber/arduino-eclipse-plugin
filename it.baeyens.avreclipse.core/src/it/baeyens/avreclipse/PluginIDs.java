@@ -13,7 +13,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 
 /**
  * Definitions of id values used in the plugin.xml

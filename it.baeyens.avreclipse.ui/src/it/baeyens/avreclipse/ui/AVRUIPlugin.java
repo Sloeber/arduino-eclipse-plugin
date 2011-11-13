@@ -13,7 +13,8 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.ui;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -76,3 +77,4 @@ public class AVRUIPlugin extends AbstractUIPlugin {
 	}
 
 }
+

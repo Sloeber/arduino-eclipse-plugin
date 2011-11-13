@@ -16,7 +16,8 @@
 package it.baeyens.avreclipse.core.avrdude;
 
 
-import it.baeyens.arduino.globals.ArduinoConst;
+
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.PluginIDs;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeAction.Action;

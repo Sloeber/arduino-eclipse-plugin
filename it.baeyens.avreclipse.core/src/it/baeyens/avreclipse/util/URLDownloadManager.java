@@ -15,7 +15,7 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.util;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import java.io.File;
@@ -63,7 +63,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
  * 
  * @author Thomas Holland
  * @since 2.2
- * 
+ *  
  */
 public class URLDownloadManager {
 

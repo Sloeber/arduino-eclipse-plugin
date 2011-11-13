@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.ui;singleton:=true
-Bundle-Version: 4.0
+Bundle-Version: 4.0.1
 Bundle-Activator: it.baeyens.avreclipse.ui.AVRUIPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -16,9 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.managedbuilder.ui,
  org.eclipse.cdt.ui,
  org.eclipse.jface.text,
- org.eclipse.ui.editors,
- it.baeyens.avreclipse.core,
- it.baeyens.arduino.eclipse
+ org.eclipse.ui.editors
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.avreclipse.ui.actions;
   uses:="org.eclipse.jface.action,
@@ -93,7 +91,7 @@ Export-Package: it.baeyens.avreclipse.ui.actions;
    org.eclipse.swt.widgets,
    it.baeyens.avreclipse.core.toolinfo.fuses"
 Bundle-Vendor: %providerName
-Import-Package: it.baeyens.arduino.eclipse,
+Import-Package: it.baeyens.arduino.common,
  it.baeyens.avreclipse,
  it.baeyens.avreclipse.core,
  it.baeyens.avreclipse.core.avrdude,
@@ -109,6 +107,5 @@ Import-Package: it.baeyens.arduino.eclipse,
  it.baeyens.avreclipse.devicedescription,
  it.baeyens.avreclipse.devicedescription.avrio,
  it.baeyens.avreclipse.mbs,
- it.baeyens.avreclipse.util,
- org.eclipse.jdt.core
+ it.baeyens.avreclipse.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

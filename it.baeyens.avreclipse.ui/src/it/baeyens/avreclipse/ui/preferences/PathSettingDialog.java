@@ -16,7 +16,7 @@
 
 package it.baeyens.avreclipse.ui.preferences;
 
-import it.baeyens.arduino.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.core.paths.AVRPathManager;
 import it.baeyens.avreclipse.core.paths.AVRPathManager.SourceType;
 

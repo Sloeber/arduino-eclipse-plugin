@@ -16,7 +16,7 @@
 package it.baeyens.avreclipse.ui.actions;
 
 
-import it.baeyens.arduino.*;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeAction;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeException;

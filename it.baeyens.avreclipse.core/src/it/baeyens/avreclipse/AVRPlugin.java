@@ -23,7 +23,7 @@
 
 package it.baeyens.avreclipse;
 
-import it.baeyens.arduino.globals.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.avreclipse.core.preferences.AVRPathsPreferences;
 import it.baeyens.avreclipse.core.targets.ToolManager;
 

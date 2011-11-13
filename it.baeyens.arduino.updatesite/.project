@@ -3,6 +3,12 @@
 	<name>it.baeyens.arduino.updatesite</name>
 	<comment></comment>
 	<projects>
+		<project>it.baeyens.arduino</project>
+		<project>it.baeyens.arduino.common</project>
+		<project>it.baeyens.arduino.feature</project>
+		<project>it.baeyens.avreclipse.core</project>
+		<project>it.baeyens.avreclipse.core.managedbuildsystem</project>
+		<project>it.baeyens.avreclipse.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
