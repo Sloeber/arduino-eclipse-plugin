@@ -180,6 +180,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	@Override
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
 		// snipped...
+		mConfig = config;
+
 	}
 
 }

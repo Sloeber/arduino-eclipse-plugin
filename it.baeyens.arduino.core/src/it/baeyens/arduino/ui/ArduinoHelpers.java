@@ -4,6 +4,7 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.tools.ArduinoPreferences;
 import it.baeyens.avreclipse.AVRPlugin;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -148,10 +149,10 @@ public class ArduinoHelpers {
 		mngr.setProjectDescription(project, projectDescription, true, null);
 	}
 
-	/**addIncludeFolder
+	/**This method adds the provided includepath to all configurations and languages.
 	 * 
-	 * @param configurationDescription
-	 * @param IncludePath
+	 * @param configurationDescription The configuration description of the project to add it to
+	 * @param IncludePath The path to add to the include folders
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	private static void addIncludeFolder(ICConfigurationDescription configurationDescription,IPath IncludePath)
@@ -172,7 +173,16 @@ public class ArduinoHelpers {
 		}
 		
 	}
-	/**addCodeFolder
+	/**This method creates a link folder in the project and add the folder
+	 * as a source path to the project
+	 * it also adds the path to the include folder
+	 * if the includepath parameter points to a path that contains a subfolder named "utility"
+	 * this subfolder will be added to the include path as well <br/> <br/>
+	 * 
+	 * note Arduino has these subfolders in the libraries that need to be include.<br/> <br/>
+	 * 
+	 * note that in the current eclipse version, there is no need to add the subfolder
+	 * as a code folder. This may change in the future as it looks like a bug to me.<br/>
 	 * 
 	 * @param project
 	 * @param Path
@@ -197,7 +207,7 @@ public class ArduinoHelpers {
 		pathMan.setURIValue(PathName, ShortPath);
 
 		IFolder link = project.getFolder(NiceName);
-		IPath location = new Path(PathName + "/" + NiceName);
+		IPath location = new Path(PathName).append(NiceName);
 		link.createLink(location, IResource.NONE, null);
 		// Link is now created
 
@@ -210,6 +220,11 @@ public class ArduinoHelpers {
 		// source has been added
 		
 		addIncludeFolder(configurationDescription,link.getFullPath());
+		File file = new File(Path.append("utility").toString());
+		if (file.exists())
+		{
+			addIncludeFolder(configurationDescription,link.getFullPath().append("utility"));
+		}
 
 		projectDescription.setActiveConfiguration(configurationDescription);
 		projectDescription.setCdtProjectCreated();

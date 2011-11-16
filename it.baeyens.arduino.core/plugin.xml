@@ -58,6 +58,7 @@
 	        class="it.baeyens.arduino.ui.NewArduinoSketchWizard"
 	        name="New Arduino sketch"
 	        icon="icons/arduino.png"
+	        finalPerspective ="org.eclipse.cdt.ui.CPerspective"
 	        project="true">
          <description>
             Create a new Arduino sketch and import arduino core code if needed.

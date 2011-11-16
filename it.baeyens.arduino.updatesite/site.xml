@@ -3,6 +3,21 @@
    <description name="Jan&apos;s eclipse place" url="http://www.baeyens.it/eclipse/update%20site/">
       A location for eclipse plugins created by Jan Baeyens
    </description>
-   <feature url="features/it.baeyens.arduino.feature_1.0.5.jar" id="it.baeyens.arduino.feature" version="1.0.5"/>
-   <feature url="features/it.baeyens.arduino.feature_1.0.6.jar" id="it.baeyens.arduino.feature" version="1.0.6" patch="true"/>
+   <feature url="features/it.baeyens.arduino.feature_1.0.5.jar" id="it.baeyens.arduino.feature" version="1.0.5">
+      <category name="Arduino_ID"/>
+   </feature>
+   <feature url="features/it.baeyens.arduino.feature_1.0.6.jar" id="it.baeyens.arduino.feature" version="1.0.6" patch="true">
+      <category name="Arduino_ID"/>
+   </feature>
+   <feature url="features/it.baeyens.arduino.feature_1.0.7.jar" id="it.baeyens.arduino.feature" version="1.0.7" patch="true">
+      <category name="Arduino_ID"/>
+   </feature>
+   <feature url="features/it.baeyens.arduino.feature_1.0.8.jar" id="it.baeyens.arduino.feature" version="1.0.8" patch="true">
+      <category name="Arduino_ID"/>
+   </feature>
+   <category-def name="Arduino_ID" label="Arduino">
+      <description>
+         Arduino related eclipsefeatures
+      </description>
+   </category-def>
 </site>

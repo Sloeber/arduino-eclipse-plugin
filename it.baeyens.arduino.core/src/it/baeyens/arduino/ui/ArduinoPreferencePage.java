@@ -41,7 +41,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	private Text fPathText;
 	private Button fFolderButton;
 	private BooleanFieldEditor mUseArduinoIdeTools;
-	private boolean mIsDirty = false;
+	//private boolean mIsDirty = false;
 	
 
 	/**
@@ -54,7 +54,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		mIsDirty=true;
 		testStatus();
 	}
 	
@@ -88,7 +87,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	@Override
 	public boolean performOk() {
 		if (!testStatus()) 	return false;
-		if (mIsDirty)
+		if (testStatus())
 			{
 			super.performOk();
 			}
@@ -180,7 +179,17 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	private boolean testStatus() {
 		Path BoardFile = new Path(fPathText.getText());
 		File file = BoardFile.append(ArduinoConst.BOARDS_FILE_SUFFIX).toFile();
-		return file.canRead();
+		boolean IsValid = file.canRead();
+		if (IsValid)
+		{
+			setErrorMessage(null);
+		}
+		else 
+		{
+		setErrorMessage("Folder is not correct");
+		}
+		setValid(IsValid);
+		return IsValid;
 	}
 
 }

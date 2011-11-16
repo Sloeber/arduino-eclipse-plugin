@@ -2,29 +2,43 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.0.6"
+      version="1.0.8"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
-      This is a plugin build upun the avr-eclise plugin.
-I included the avr-eclipse source code in this feature because I had to make some changes and didn&apos;t want to wait for the next version of the avr-eclipse plugin.
-To avoid conflict I had to rename de .innot to it.baeyens. I kept the same ID to keep the plugins data compatible.
+      This feature allows easy creation of arduino projects in a eclipse
+environment.
+The main features are
+a new arduino sketch wizard
+a import library wizard
+a button to build the project
+a button to upload to the arduino board
+a project property page allowing to change the arduino board
+type and the port the arduino is using.
+version 1_0_8 fixed the ok button not enabled in preference page
+version 1_0_7 changed licence agreement and fixes issues 
+import of arduino library subforder &quot;utilities&quot;
+the c perspective is now proposed when a new project is created.
+version 1_0_6 add import library functionality
+previous versions are no longer available
+This is a plugin build upon the avr-eclise plugin.
+I included the avr-eclipse source code in this feature because
+I had to make some changes and didn&apos;t want to wait for the next
+version of the avr-eclipse plugin.
+To avoid conflict I had to rename de .innot to it.baeyens. I
+kept the same ID to keep the plugins data compatible.
 Jan
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright>
       All rights reserved by the owning parties.
-AVR-eclipse-&gt;  Copyright (c) 2008, 2010 Thomas Holland (thomas@innot.de) and other
+AVR-eclipse-&gt;  Copyright (c) 2008, 2010 Thomas Holland (thomas@innot.de)
+and other
 Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
    </copyright>
 
-   <license url="http://www.gnu.org/licenses/gpl.txt">
-      GNU GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
-
- Copyright (C) 2007 Free Software Foundation, Inc.
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.
+   <license url="http://www.eclipse.org/org/documents/epl-v10.html">
+      This software is licenced under EPL Version 1.0
    </license>
 
    <url>
