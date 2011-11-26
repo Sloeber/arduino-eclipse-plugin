@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.0.8"
+      version="1.0.9"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -15,6 +15,7 @@ a button to build the project
 a button to upload to the arduino board
 a project property page allowing to change the arduino board
 type and the port the arduino is using.
+version 1_0_9 fixed unix incompatibilities
 version 1_0_8 fixed the ok button not enabled in preference page
 version 1_0_7 changed licence agreement and fixes issues 
 import of arduino library subforder &quot;utilities&quot;

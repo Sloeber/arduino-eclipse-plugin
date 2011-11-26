@@ -1,5 +1,7 @@
 package it.baeyens.arduino.common;
 
+import java.io.File;
+
 
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.
@@ -64,13 +66,13 @@ public class ArduinoConst {
 	
 	
 	//Folder Information
-	public static final String LIBRARY_PATH_SUFFIX 			= "\\libraries\\";
-	public static final String HEADER_PATH_SUFFIX 			= "\\hardware\\tools\\avr\\avr\\include";
-	public static final String AVRDUDE_PATH_SUFFIX 			= "\\hardware\\tools\\avr\\bin";
-	public static final String GCC_PATH_SUFFIX 				= "\\hardware\\tools\\avr\\bin";
-	public static final String GNU_PATH_SUFFIX 				= "\\hardware\\tools\\avr\\utils\\bin";
-	public static final String BOARDS_FILE_SUFFIX 			= "\\hardware\\arduino\\boards.txt";
-	public static final String DUDE_CONFIG_SUFFIX 			= "\\hardware\\tools\\avr\\etc\\avrdude.conf";
+	public static final String LIBRARY_PATH_SUFFIX 			= File.pathSeparator + "libraries" + File.pathSeparator ;
+	public static final String HEADER_PATH_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "avr" + File.pathSeparator + "include";
+	public static final String AVRDUDE_PATH_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "bin";
+	public static final String GCC_PATH_SUFFIX 				= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "bin";
+	public static final String GNU_PATH_SUFFIX 				= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "utils" + File.pathSeparator + "bin";
+	public static final String DUDE_CONFIG_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "etc" + File.pathSeparator + "avrdude.conf";
+	public static final String BOARDS_FILE_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "arduino" + File.pathSeparator + "boards.txt";
 	
 
 	
