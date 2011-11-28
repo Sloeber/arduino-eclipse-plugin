@@ -107,7 +107,7 @@ public class PathsPreferencePage extends FieldEditorPreferencePage implements
 
 		// Path editor field control.
 
-		AVRPathsFieldEditor pathEditor = new AVRPathsFieldEditor(parent);
+		AVRPathsFieldEditor pathEditor = new AVRPathsFieldEditor(parent,this);
 		addField(pathEditor);
 
 	}

@@ -20,6 +20,8 @@ import it.baeyens.avreclipse.core.paths.AVRPath;
 import it.baeyens.avreclipse.core.paths.AVRPathManager;
 
 import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -54,6 +56,7 @@ public class AVRPathsFieldEditor extends FieldEditor {
 	private Composite			fButtons;
 	private Button				fEditButton;
 	private Button				fRescanButton;
+	private PreferencePage 		m_PrefPage; 
 
 	private boolean				fValid		= true;
 
@@ -149,8 +152,10 @@ public class AVRPathsFieldEditor extends FieldEditor {
 	 * 
 	 * Sets the preference name (unused) and the labeltext (also unused) to fixed values.
 	 */
-	public AVRPathsFieldEditor(Composite parent) {
+	public AVRPathsFieldEditor(Composite parent, PreferencePage PrefPage) {
+		
 		super("avrpaths", "AVR Paths:", parent);
+		m_PrefPage=PrefPage;
 	}
 
 	/*
@@ -366,6 +371,7 @@ public class AVRPathsFieldEditor extends FieldEditor {
 		// Send some notifications.
 		if (newValid != oldValid) {
 			fireStateChanged(IS_VALID, oldValid, newValid);
+			m_PrefPage.setValid(newValid);
 		}
 
 	}

@@ -191,7 +191,7 @@ public class ProgrammerConfig {
 		args.add("-c" + fProgrammer);
 
 		if (fPort.length() > 0) {
-			args.add( ArduinoConst.UploadPortPrefix + fPort);
+			args.add( ArduinoConst.UploadPortPrefix() + fPort);
 		}
 
 		if (fBaudrate.length() > 0) {

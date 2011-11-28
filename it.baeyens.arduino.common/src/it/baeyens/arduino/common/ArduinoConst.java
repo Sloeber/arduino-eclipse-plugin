@@ -1,6 +1,13 @@
 package it.baeyens.arduino.common;
 
+import org.eclipse.core.runtime.*;
 import java.io.File;
+
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -24,7 +31,8 @@ public class ArduinoConst {
 	// the prefix used when creating a core library
 	public static final String CoreProjectNamePrefix = "arduino_";
 	//prefix to be added to the arduino environment
-	public static final String UploadPortPrefix ="-P\\\\.\\";
+	private static final String UploadPortPrefix_WIN ="-P\\\\.\\";
+	private static final String UploadPortPrefix_LINUX ="-P";
 	
 	//natures
 	public static final String Cnatureid 		= "org.eclipse.cdt.core.cnature";
@@ -63,17 +71,55 @@ public class ArduinoConst {
 	public static final String KEY_ARDUINOPORT 				= "Arduino Port";
 	public static final String KEY_USE_ARDUINO_IDE_TOOLS 	= "Use Arduino IDE Tools";
 	public static final String KEY_NO_SCAN_AT_STARTUP 		= "NoScanAtStartup";
+	private static final String KEY_SYSTEM_PATH 			= "/systempath/";
+	public static final String KEY_SYSTEM 					= "System";
+	public static final String KEY_GCC_SYSTEM_PATH			= KEY_SYSTEM_PATH +KEY_GCC_PATH;
+	public static final String KEY_GNU_SYSTEM_PATH			= KEY_SYSTEM_PATH +KEY_GNU_PATH;
+	public static final String KEY_HEADER_SYSTEM_PATH		= KEY_SYSTEM_PATH +KEY_HEADER_PATH;
 	
 	
 	//Folder Information
-	public static final String LIBRARY_PATH_SUFFIX 			= File.pathSeparator + "libraries" + File.pathSeparator ;
-	public static final String HEADER_PATH_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "avr" + File.pathSeparator + "include";
-	public static final String AVRDUDE_PATH_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "bin";
-	public static final String GCC_PATH_SUFFIX 				= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "bin";
-	public static final String GNU_PATH_SUFFIX 				= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "utils" + File.pathSeparator + "bin";
-	public static final String DUDE_CONFIG_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "tools" + File.pathSeparator + "avr" + File.pathSeparator + "etc" + File.pathSeparator + "avrdude.conf";
-	public static final String BOARDS_FILE_SUFFIX 			= File.pathSeparator + "hardware" + File.pathSeparator + "arduino" + File.pathSeparator + "boards.txt";
+	public static final String LIBRARY_PATH_SUFFIX 			=  "libraries" ;
+	public static final String HEADER_PATH_SUFFIX 			= "hardware/tools/avr/avr/include";
+	private static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
+	private static final String AVRDUDE_PATH_SUFFIX_LINUX	= "hardware/tools";
+	public static final String GCC_PATH_SUFFIX 				= "hardware/tools/avr/bin";
+	public static final String GNU_PATH_SUFFIX 				= "hardware/tools/avr/utils/bin";
+	private static final String DUDE_CONFIG_SUFFIX_WIN 		= "hardware/tools/avr/etc/avrdude.conf";
+	private static final String DUDE_CONFIG_SUFFIX_LINUX 		= "hardware/tools/avrdude.conf";
+	public static final String BOARDS_FILE_SUFFIX 			= "hardware/arduino/boards.txt";
 	
+	public static String DUDE_CONFIG_SUFFIX()
+	{
+		if (Platform.getOS().equals(Platform.OS_WIN32)) return DUDE_CONFIG_SUFFIX_WIN;
+		if (Platform.getOS().equals(Platform.OS_LINUX)) return DUDE_CONFIG_SUFFIX_LINUX;
+		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
+		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
+		ILog log = Platform.getLog(bundle);
+		log.log(status);
+		return DUDE_CONFIG_SUFFIX_LINUX;
+	}
+	
+	public static String AVRDUDE_PATH_SUFFIX()
+	{
+		if (Platform.getOS().equals(Platform.OS_WIN32)) return AVRDUDE_PATH_SUFFIX_WIN;
+		if (Platform.getOS().equals(Platform.OS_LINUX)) return AVRDUDE_PATH_SUFFIX_LINUX;
+		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
+		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
+		ILog log = Platform.getLog(bundle);
+		log.log(status);
+		return AVRDUDE_PATH_SUFFIX_LINUX;
+	}
 
+	public static String UploadPortPrefix()
+	{
+		if (Platform.getOS().equals(Platform.OS_WIN32)) return UploadPortPrefix_WIN;
+		if (Platform.getOS().equals(Platform.OS_LINUX)) return UploadPortPrefix_LINUX;
+		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
+		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
+		ILog log = Platform.getLog(bundle);
+		log.log(status);
+		return UploadPortPrefix_LINUX;
+	}
 	
 }

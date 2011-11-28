@@ -82,7 +82,7 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 				DirectoryDialog theDialog = new DirectoryDialog(shell);
 				if ((controlLibraryPath.getText()==null) | (controlLibraryPath.getText()==""))
 				{
-					theDialog.setFilterPath(ArduinoPreferences.getArduinoPath() + ArduinoConst.LIBRARY_PATH_SUFFIX);
+					theDialog.setFilterPath(ArduinoPreferences.getArduinoPath().append( ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
 				}
 				else
 				{
