@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.core;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Require-Bundle: 

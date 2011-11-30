@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.0.9"
+      version="1.0.10"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">

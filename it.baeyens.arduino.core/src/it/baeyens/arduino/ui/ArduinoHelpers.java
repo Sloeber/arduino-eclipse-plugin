@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.IPathEntry;
+import org.eclipse.cdt.core.model.ISourceEntry;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -212,14 +214,16 @@ public class ArduinoHelpers {
 		// Add include path to all languages
 		for (int idx = 0; idx < languageSettings.length; idx++) {
 			ICLanguageSetting lang = languageSettings[idx];
-			String TheName=lang.getName();
-			if (lang.getName().startsWith("GNU")) {
+			String LangID =lang.getLanguageId();
+			if  (LangID != null){
+				if (LangID.startsWith("org.eclipse.cdt.")) {
 				ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 				ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
 				System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0,OrgIncludeEntries.length);
 				IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath, ICSettingEntry.VALUE_WORKSPACE_PATH); // (location.toString());
 				lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH,	IncludeEntries);
 			}
+		}
 		}
 
 	}
@@ -273,13 +277,13 @@ public class ArduinoHelpers {
 		// Link is now created
 
 		// Use link to add the source
-		ICSourceEntry[] OrgSourceEntries = configurationDescription
-				.getSourceEntries();
+		Path ExcludeList[] = new Path[1];
+		ExcludeList[0]=new Path("?xamples/*");
+		ICSourceEntry TheCEntry = new CSourceEntry(link.getFullPath(), ExcludeList, 0);	
+		ICSourceEntry[] OrgSourceEntries = configurationDescription.getSourceEntries();
 		ICSourceEntry[] sourceEntries = new CSourceEntry[OrgSourceEntries.length + 1];
-		System.arraycopy(OrgSourceEntries, 0, sourceEntries, 0,
-				OrgSourceEntries.length);
-		sourceEntries[OrgSourceEntries.length] = new CSourceEntry(
-				link.getFullPath(), null, ICSettingEntry.RESOLVED);
+		System.arraycopy(OrgSourceEntries, 0, sourceEntries, 0, OrgSourceEntries.length);
+		sourceEntries[OrgSourceEntries.length] =TheCEntry;
 		configurationDescription.setSourceEntries(sourceEntries);
 		// source has been added
 

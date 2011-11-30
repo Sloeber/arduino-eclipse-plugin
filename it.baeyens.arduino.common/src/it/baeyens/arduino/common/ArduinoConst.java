@@ -1,8 +1,5 @@
 package it.baeyens.arduino.common;
 
-import org.eclipse.core.runtime.*;
-import java.io.File;
-
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
