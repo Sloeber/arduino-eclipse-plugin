@@ -41,6 +41,8 @@ public class ArduinoBoards {
 	private String FrequencyKeyTAG = "build.f_cpu";
 	private String ProcessorTypeKeyTAG = "build.mcu";
 	private String UploadSpeedKeyTAG = "upload.speed";
+	private String BoardVariantTAG = "build.variant";
+	private String UploadProtocol = "upload.protocol";
 	private String disableFlushingKeyTAG = "upload.disable_flushing"; // not yet
 																		// used
 																		// but
@@ -105,6 +107,47 @@ public class ArduinoBoards {
 		}
 		return "";
 	}
+
+	
+	/** returns the variant of the arduino board<br/>
+	 * This function assumes (and does not test so will fail) that the board file has been loaded
+	 * 
+	 * @param boardName the board name for which the board variant will be returned
+	 * @return the Arduino board variant
+	 * @author Jan Baeyens
+	 */
+	public String getBoardVariant(String boardName) {
+		String mapName = getBoardNames(boardName);
+
+		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+		if (settings != null) {
+			String TagContent = settings.get(BoardVariantTAG);
+			if (TagContent != null)
+				return TagContent;
+		}
+		return "";
+	}	
+	
+	/** returns the upload protocol to use with AVR DUDE<br/>
+	 * This function assumes (and does not test so will fail) that the board file has been loaded
+	 * If nothing is found in the file ArduinoConst.ProgrammerName is returned
+	 * 
+	 * @param boardName the board name for which the upload protocol will be returned
+	 * @return the Arduino upload protocol if found else "" is returned
+	 * @author Jan Baeyens
+	 */
+	public String getUploadProtocol(String boardName) {
+		String mapName = getBoardNames(boardName);
+
+		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+		if (settings != null) {
+			String TagContent = settings.get(UploadProtocol);
+			if (TagContent != null)
+				return TagContent;
+		}
+		return "";
+	}		
+	
 
 	/**getDisableFlushing returns the disable flushing flag for a given board. <br/>
 	 * This function assumes (and does not test so will fail) that the board file has been loaded.

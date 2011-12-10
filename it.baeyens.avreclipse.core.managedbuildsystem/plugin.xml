@@ -1698,6 +1698,7 @@
 					<tool 
 						id="it.baeyens.avreclipse.tool.cpplinker.app.debug"
 						superClass="it.baeyens.avreclipse.tool.cpplinker.base" />
+					<!--
 					<tool 
 						id="it.baeyens.avreclipse.tool.objdump.winavr.app.debug"
 						superClass="it.baeyens.avreclipse.tool.objdump.winavr" >
@@ -1708,6 +1709,7 @@
 								value="true" />
 						</enablement>
 					</tool>
+					-->
 					<tool
 						id="it.baeyens.avreclipse.tool.objcopy.flash.winavr.app.debug"
 						superClass="it.baeyens.avreclipse.tool.objcopy.flash.winavr" >

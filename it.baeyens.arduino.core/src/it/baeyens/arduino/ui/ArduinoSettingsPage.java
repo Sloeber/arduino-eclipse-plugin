@@ -1,5 +1,7 @@
 package it.baeyens.arduino.ui;
 
+import it.baeyens.arduino.tools.ArduinoProperties;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;

@@ -20,7 +20,6 @@ import it.baeyens.avreclipse.core.paths.AVRPath;
 import it.baeyens.avreclipse.core.paths.AVRPathManager;
 
 import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;

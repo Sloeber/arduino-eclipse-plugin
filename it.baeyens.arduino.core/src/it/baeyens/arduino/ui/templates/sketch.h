@@ -6,7 +6,7 @@
 
 #ifndef {title}_H_
 #define {title}_H_
-#include "WProgram.h"
+#include "{Include}"
 //add your includes for the project {title} here
 
 

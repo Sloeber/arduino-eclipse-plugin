@@ -1,5 +1,7 @@
 package it.baeyens.arduino.ui;
 
+import it.baeyens.arduino.tools.ArduinoHelpers;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.Dialog;
@@ -18,7 +20,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
  */
 public class ArduinoPropertyPage extends PropertyPage {
 	ArduinoPageLayout myPageLayout = new ArduinoPageLayout();
-	String mOriginalMCUProject = "";
+	String mOriginalBoardName = "";
 
 	private Listener completeListener = new Listener() {
 		@Override
@@ -43,7 +45,7 @@ public class ArduinoPropertyPage extends PropertyPage {
 		IProject project = resource.getProject();
 
 		if (!ArduinoHelpers.IsStaticLib(project)) {
-			ArduinoHelpers.ChangeProjectReference(project, mOriginalMCUProject, ArduinoHelpers.getMCUProjectName(myPageLayout.getMCUName()),
+			ArduinoHelpers.ChangeProjectReference(project,  ArduinoHelpers.getMCUProjectName(mOriginalBoardName), ArduinoHelpers.getMCUProjectName(myPageLayout.getArduinoBoardName()),
 					myPageLayout.getArduinoBoardName());
 		}
 
@@ -57,7 +59,7 @@ public class ArduinoPropertyPage extends PropertyPage {
 		IResource resource = (IResource) getElement().getAdapter(org.eclipse.core.resources.IResource.class);
 		IProject project = resource.getProject();
 		myPageLayout.draw(composite, project);
-		mOriginalMCUProject = ArduinoHelpers.getMCUProjectName(myPageLayout.getMCUName());
+		mOriginalBoardName = ArduinoHelpers.getMCUProjectName(myPageLayout.getArduinoBoardName());
 		setControl(parent);
 		Dialog.applyDialogFont(parent);
 		myPageLayout.feedbackControl.addListener(SWT.Selection, completeListener);

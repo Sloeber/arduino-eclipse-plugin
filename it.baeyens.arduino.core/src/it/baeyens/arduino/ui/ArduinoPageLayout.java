@@ -1,22 +1,22 @@
 package it.baeyens.arduino.ui;
 
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoProperties;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 //import it.baeyens.arduino.eclipse.*;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * The ArduinoPageLayout class is used in the new wizard and the project
  * properties. This class controls the gui and the data underneath the gui. This
- * class allows to select the arduino path the arduino board and the port name
+ * class allows to select the arduino board and the port name
  * 
  * @author Jan Baeyens
  * @see ArduinoProperties ArduinoSettingsPage
@@ -36,12 +36,14 @@ public class ArduinoPageLayout {
 
 	// GUI elements
 	private Text controlArduinoPath;
-	private Button controlBrowseButton;
+//	private Button controlBrowseButton;
 	private Combo controlArduinoBoardName;
 	private Text controlMCUName;
 	private Text controlMCUFrequency;
 	private Text controlUploadBaudRate;
 	private Text controlUploadPort;
+	private Text controlBoardVariant;
+	private Text controlUploadProtocol;
 	private Button controlDisableFlushing;
 
 	// the properties to modify
@@ -138,7 +140,7 @@ public class ArduinoPageLayout {
 
 	public void draw(Composite composite) {
 		int ncol = 4;
-		mArduinoPathIsValid = mArduinoBoards.Load(mArduinoProperties.getArduinoPath());
+		mArduinoPathIsValid = mArduinoBoards.Load(ArduinoInstancePreferences.getArduinoPath());
 
 		// create the desired layout for this wizard page
 		GridLayout theGridLayout = new GridLayout();
@@ -154,23 +156,24 @@ public class ArduinoPageLayout {
 		theGriddata.horizontalSpan = (ncol - 2);
 		theGriddata.grabExcessHorizontalSpace = true;
 		controlArduinoPath.setLayoutData(theGriddata);
+	
 
-		controlBrowseButton = new Button(composite, SWT.NONE);
-		controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
-		theGriddata = new GridData();
-		theGriddata.horizontalAlignment = SWT.LEAD;
-		controlBrowseButton.setLayoutData(theGriddata);
-		controlBrowseButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				final Shell shell = new Shell();
-				DirectoryDialog theDialog = new DirectoryDialog(shell);
-				theDialog.setFilterPath(controlArduinoPath.getText());
-				String Path = theDialog.open();
-				if (Path != null)
-					controlArduinoPath.setText(Path);
-			}
-		});
+//		controlBrowseButton = new Button(composite, SWT.NONE);
+//		controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
+//		theGriddata = new GridData();
+//		theGriddata.horizontalAlignment = SWT.LEAD;
+//		controlBrowseButton.setLayoutData(theGriddata);
+//		controlBrowseButton.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent event) {
+//				final Shell shell = new Shell();
+//				DirectoryDialog theDialog = new DirectoryDialog(shell);
+//				theDialog.setFilterPath(controlArduinoPath.getText());
+//				String Path = theDialog.open();
+//				if (Path != null)
+//					controlArduinoPath.setText(Path);
+//			}
+//		});
 
 		createLine(composite, ncol);
 		createLabel(composite, ncol, "Your Arduino board specifications"); //$NON-NLS-1$
@@ -217,6 +220,20 @@ public class ArduinoPageLayout {
 		controlUploadBaudRate.setLayoutData(theGriddata);
 		controlUploadBaudRate.setEnabled(false);
 
+		new Label(composite, SWT.NONE).setText("Board Variant:"); //$NON-NLS-1$
+		controlBoardVariant = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlBoardVariant.setLayoutData(theGriddata);
+		controlBoardVariant.setEnabled(false);		
+		
+		new Label(composite, SWT.NONE).setText("UpLoadProtocol:"); //$NON-NLS-1$
+		controlUploadProtocol = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlUploadProtocol.setLayoutData(theGriddata);
+		controlUploadProtocol.setEnabled(false);
+		
 		new Label(composite, SWT.NONE).setText("Disable Flushing:"); //$NON-NLS-1$
 		controlDisableFlushing = new Button(composite, SWT.CHECK);
 		controlDisableFlushing.setEnabled(false);
@@ -231,7 +248,7 @@ public class ArduinoPageLayout {
 
 		// set the values before the listener to avoid the listeners changing
 		// values
-		controlArduinoPath.setText(mArduinoProperties.getArduinoPath().toOSString());
+		controlArduinoPath.setText(ArduinoInstancePreferences.getArduinoPath().toOSString());
 		controlArduinoBoardName.setText(mArduinoProperties.getArduinoBoardName());
 		controlUploadPort.setText(mArduinoProperties.getUploadPort());
 		showBoardSetting();
@@ -256,6 +273,7 @@ public class ArduinoPageLayout {
 	private void EnableControls() {
 		controlArduinoBoardName.setEnabled(mArduinoPathIsValid);
 		controlUploadPort.setEnabled(mArduinoPathIsValid);
+		controlArduinoPath.setEnabled(false);
 	}
 
 	private void showBoardSetting() {
@@ -264,6 +282,8 @@ public class ArduinoPageLayout {
 		controlMCUFrequency.setText(mArduinoBoards.getMCUFrequency(BoardName));
 		controlUploadBaudRate.setText(mArduinoBoards.getUploadBaudRate(BoardName));
 		controlDisableFlushing.setSelection(mArduinoBoards.getDisableFlushing(BoardName));
+		controlBoardVariant.setText(mArduinoBoards.getBoardVariant(BoardName));
+		controlUploadProtocol.setText(mArduinoBoards.getUploadProtocol(BoardName));
 	}
 
 	public void setToDefaults() {
@@ -271,12 +291,13 @@ public class ArduinoPageLayout {
 
 	private void validatePage() {
 		mArduinoProperties.setArduinoBoardName(controlArduinoBoardName.getText().trim());
-		mArduinoProperties.setArduinoPath(new Path(controlArduinoPath.getText().trim()));
-		mArduinoProperties.setMCUFrequency(ArduinoHelpers.ToInt(controlMCUFrequency.getText().trim()));
+		mArduinoProperties.setMCUFrequency(Common.ToInt(controlMCUFrequency.getText().trim()));
 		mArduinoProperties.setMCUName(controlMCUName.getText().trim());
 		mArduinoProperties.setUploadBaudrate(controlUploadBaudRate.getText().trim());
 		mArduinoProperties.setUploadPort(controlUploadPort.getText().trim());
 		mArduinoProperties.setDisabledFlushing(controlDisableFlushing.getSelection());
+		mArduinoProperties.setBoardVariant(controlBoardVariant.getText().trim());
+		mArduinoProperties.setUploadProtocol(controlUploadProtocol.getText().trim());
 
 		mValidAndComplete = mArduinoPathIsValid && !controlArduinoBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("");
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");

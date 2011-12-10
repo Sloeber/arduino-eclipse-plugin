@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.core.managedbuildsystem;singleton:=true
-Bundle-Version: 1.0.3
+Bundle-Version: 1.0.4
 Bundle-Vendor: %providerName
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: it.baeyens.avreclipse.mbs;uses:="org.eclipse.cdt.managedbuilder.core,org.eclipse.cdt.managedbuilder.macros,org.eclipse.cdt.managedbuilder.envvar",

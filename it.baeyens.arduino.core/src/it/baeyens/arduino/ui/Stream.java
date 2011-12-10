@@ -22,7 +22,7 @@ public class Stream {
 	/**
 	 * Initialize the file contents to contents of the given resource.
 	 */
-	public static InputStream openContentStream(String title, String Resource) throws CoreException {
+	public static InputStream openContentStream(String title, String Include, String Resource) throws CoreException {
 
 		/* We want to be truly OS-agnostic */
 		final String newline = System.getProperty("line.separator");
@@ -37,7 +37,7 @@ public class Stream {
 			try {
 
 				while ((line = reader.readLine()) != null) {
-					line = line.replaceAll("\\{title\\}", title);
+					line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include);
 					stringBuffer.append(line);
 					stringBuffer.append(newline);
 				}

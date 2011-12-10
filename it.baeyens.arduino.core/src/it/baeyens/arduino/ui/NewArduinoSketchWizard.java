@@ -1,15 +1,17 @@
 package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.avreclipse.AVRPlugin;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ArduinoProperties;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -32,12 +34,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 
-
 /**
  * This class is the class related to the new arduino sketch
  * 
  * @author Jan Baeyens
- *
+ * 
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
 
@@ -70,32 +71,33 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 			return true;
 		}
 
-		final IProject projectHandle = mWizardPage.getProjectHandle();
-
-		URI projectURI = (!mWizardPage.useDefaults()) ? mWizardPage.getLocationURI() : null;
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-		final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
-
-		desc.setLocationURI(projectURI);
-
-		/*
-		 * Just like the ExampleWizard, but this time with an operation object
-		 * that modifies workspaces.
-		 */
-		WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-			@Override
-			protected void execute(IProgressMonitor monitor) throws CoreException {
-				createProject(desc, projectHandle, monitor);
-			}
-		};
-
-		/*
-		 * This isn't as robust as the code in the BasicNewProjectResourceWizard
-		 * class. Consider beefing this up to improve error handling.
-		 */
+		final IProject projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(mWizardPage.getProjectName().replace(" ", "_"));
 		try {
+
+			URI projectURI = (!mWizardPage.useDefaults()) ? mWizardPage.getLocationURI() : null;
+
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+			final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName().replace(" ", "_"));
+
+			desc.setLocationURI(projectURI);
+
+			/*
+			 * Just like the ExampleWizard, but this time with an operation
+			 * object that modifies workspaces.
+			 */
+			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+				@Override
+				protected void execute(IProgressMonitor monitor) throws CoreException {
+					createProject(desc, projectHandle, monitor);
+				}
+			};
+
+			/*
+			 * This isn't as robust as the code in the
+			 * BasicNewProjectResourceWizard class. Consider beefing this up to
+			 * improve error handling.
+			 */
 			getContainer().run(true, true, op);
 		} catch (InterruptedException e) {
 			return false;
@@ -143,30 +145,39 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 			ArduinoHelpers.addTheNatures(proj);
 
 			/* Add the c configuration file */
-			ArduinoHelpers.addFileToProject(container, new Path(".cproject"), Stream.openContentStream(proj.getName(), "templates/cproject.sketch"), monitor);
+			ArduinoHelpers.addFileToProject(container, new Path(".cproject"), Stream.openContentStream(proj.getName(),"", "templates/cproject.sketch"), monitor);
 
 			/* Add the sketch source code file */
-			ArduinoHelpers.addFileToProject(container, new Path(proj.getName() + ".cpp"), Stream.openContentStream(proj.getName(), "templates/sketch.cpp"),
-					monitor);
+			ArduinoHelpers.addFileToProject(container, new Path(proj.getName() + ".cpp"), Stream.openContentStream(proj.getName(),"", "templates/sketch.cpp"), monitor);
 
+			ArduinoProperties ProjectProps= mArduinoPage.GetProperties();
 			/* Add the sketch header file */
-			ArduinoHelpers
-					.addFileToProject(container, new Path(proj.getName() + ".h"), Stream.openContentStream(proj.getName(), "templates/sketch.h"), monitor);
+			String Include ="WProgram.h";
+			if (ArduinoHelpers.isArduinoIdeOne() ) //this is Arduino version 1.0
+			{ 
+				Include ="Arduino.h";
+			}
+			ArduinoHelpers.addFileToProject(container, new Path(proj.getName() + ".h"), Stream.openContentStream(proj.getName(),Include, "templates/sketch.h"), monitor);
 
+			
+			
 			/* Create the Arduino project */
-			IProject Arduino_Core_project = ArduinoHelpers.createArduino_coreProject(description, monitor,  mArduinoPage.GetProperties());
+			IProject Arduino_Core_project = ArduinoHelpers.createArduino_coreProject(description, monitor,ProjectProps );
 
 			/* Make a reference to the arduino project */
 			ArduinoHelpers.addLibraryDependency(proj, Arduino_Core_project);
-
+			
+			if (ArduinoHelpers.isArduinoIdeOne() ) //this is Arduino version 1.0
+			{
+				ArduinoHelpers.addIncludeFolder(proj,new Path("/${ARDUINOBOARDNAME}/${ARDUINOBOARDVARIANT}"));
+			}
 			/* Save the properties */
 			mArduinoPage.save(proj);
 
 			monitor.done();
 
 		} catch (CoreException e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to create project " + proj.getName() , e);
-			AVRPlugin.getDefault().log(status);
+			Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create project " + proj.getName(), e));
 			throw new OperationCanceledException();
 		}
 

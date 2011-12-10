@@ -1,7 +1,6 @@
 package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.ui.ArduinoHelpers;
 import it.baeyens.avreclipse.AVRPlugin;
 
 import org.eclipse.core.runtime.CoreException;

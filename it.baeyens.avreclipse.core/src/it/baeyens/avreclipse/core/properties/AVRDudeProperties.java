@@ -22,7 +22,6 @@ import it.baeyens.avreclipse.core.avrdude.FuseBytesProperties;
 import it.baeyens.avreclipse.core.avrdude.LockbitBytesProperties;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfigManager;
-import it.baeyens.avreclipse.core.toolinfo.AVRDude;
 import it.baeyens.avreclipse.core.toolinfo.fuses.FuseType;
 
 import java.util.ArrayList;
@@ -482,10 +481,7 @@ public class AVRDudeProperties {
 	public List<String> getArguments() {
 		List<String> arguments = new ArrayList<String>();
 
-		// Convert the mcu id to the avrdude format and add it
-		String mcuid = fParent.getMCUId();
-		String avrdudemcuid = AVRDude.getDefault().getMCUInfo(mcuid);
-		arguments.add("-p" + avrdudemcuid);
+		arguments.add("-p" + fParent.getMCUId());
 
 		// Add the options from the programmer configuration
 		ProgrammerConfig progcfg = getProgrammer();

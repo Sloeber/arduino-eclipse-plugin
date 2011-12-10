@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Arduino plugin frequently asked questions</title>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css"></head>
+
+<body >
+
+        <div id="header">
+            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+        </div>
+	<div id="midcolumn">
+
+		<h1>Arduino eclipse plugin FAQ</h1>
+		This page contains frequently asked questions about the arduino
+		eclipse plugin.
+		<h3>General</h3>
+		<a href="#Contact">How can I contact the author of this great plugin</a><br>
+		<a href="#Versions">On Which versions is this plugin tested?</a><br> 
+		<a href="#platforms">On which platforms is this plugin tested?</a><br>
+
+		<h3>Arduino IDE Versus The arduino Plugin</h3>
+		<a href="#why">Why would I want to use this plugin.</a><br> 
+		<a href="#benefitIDE">What is the benefit of the Arduino IDE to the eclipse plugin.</a><br> 
+		<a href="#benefitArduino">What is the benefit of the eclipse plugin to the Arduino IDE.</a><br> 
+		<a href="#develop">What do I need to know to develop code for Arduino with this plugin.</a><br>
+		
+		<h3>Trouble shooting</h3>
+		<a href="#doesntwork">The plugin doesn't work on my system.</a><br> 
+		<a href="#spaces">Can I use spaces?</a><br>
+		<a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a><br>
+		<a href="#elf">Where is the elf file?</a><br> 
+		<a href="#errors">There are errors and warnings in the	Arduino library.</a><br> 
+		<a href="#modified">I have modified my Arduino setup and ...</a><br>
+
+		<h1>General</h1>
+		<a name="Contact"/>
+		<h2>How can I contact the author of this great plugin</h2>
+		You can reach the author at <a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.
+		If you have a question please follow the <a	href="http://www.catb.org/~esr/faqs/smart-questions.html">eclipse guidance when formulating your question</a>	<br>
+note the eclipse link is not a link to a help desk. it is a link to a document explaining how to ask questions the smart way.
+<a name="Versions"/>
+<h2>On Which versions is this plugin tested?</h2>
+The plugin is tested on Arduino 0023 and Arduino 1.0.<br>
+Note: not all versions are tested on all platforms.
+<a name="platforms"/>
+<h2>On which platforms is this plugin tested?</h2>
+The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
+Note: not all versions are tested on all platforms.
+
+<h1>Arduino IDE Versus The arduino Plugin</h1>
+<a name="why"/>
+<h2>Why would I want to use this plugin</h2>
+This plugin is not meant to replace the Arduino IDE. I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
+However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. In that case the eclipse plugin may be an alternative.
+<a name="benefitIDE"/>
+<h2>What is the benefit of the Arduino IDE to the eclipse plugin</h2>
+The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
+doing their first electronics experience. So if you are new to Arduino stop
+reading and learn to use the Arduino IDE.
+
+The Arduino IDE does this by “hiding” C++ code complexity and Hardware complexity.
+
+The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by the eclipse plugin.
+So there is no “real” difference there.
+
+The plugin currently (?) does not hide the C++ code complexity.
+For someone used to develop C/C++ this will not be a problem. People not used
+to writing C++ will need to learn about 
+
+<ul  type=disc>
+ <li >Function declarations</li>
+ <li >Using Include files</li>
+ <li >The usage of extern</li>
+</ul>
+
+This because the way the Arduino IDE is set up it hides or avoids the need of these
+functionalities. There are plenty of good C/C++ documents on the web that
+explain these things, so I won't. 
+
+<a name="benefitArduino"/>
+<h2>What is the benefit of the eclipse plugin to the Arduino IDE?</h2>
+With the eclipse plugin you have a environment that is fully focused on the development of source code. It
+provides plenty of features. The ones I like the most are: 
+
+<ul  type=disc>
+ <li > context sensitive coloring (read the
+     color of the text changes because it is code or non active code or comment
+     or ..) </li>
+ <li > Immediate documentation (When
+     you hover over a function you get the documentation of the function or
+     even the implementation)</li>
+ <li > Link through (ctrl clicking on
+     a method sends you to the implementation of definition of the method)</li>
+ <li >Auto complete (pressing CTRL
+     space when typing a name you get a list of “known names” that start with
+     these letters)</li>
+</ul>
+
+So there are plenty of good things a software developer misses in the Arduino IDE that
+the rest of the world doesn't know about.
+
+<a name="develop"/>
+<h2>What do I need to know to develop code for Arduino with this plugin?</h2>
+After you
+have read the pro and con's question you may wonder “how much is there to learn
+before I get this plugin to work?"<br>
+
+There is good news and there is bad news. 
+
+The good
+news is: Other people got it to work relatively quickly so why would you not be
+able to do it. The eclipse plugin (just like the Arduino
+IDE) hides AVR-C++ and avrDude<br>
+
+The bad
+news is that to get the full benefit you will have to understand more of C/C++
+development; eclipse and CDT. Eclipse is a professional development environment
+and that brings some complexity. But you don't have to understand it all before
+you get your first programs running.<br>
+
+<h1>Trouble shooting</h1>
+
+<a name="doesntwork"/>
+<h2>The plugin doesn't work on my system.</h2>
+First of all the plugin only works on a limited amount of platforms. See the faq for which versions. If you do not use any of these
+operating systems you are out of luck for this plugin.
+Secondly <br>
+If it doesn't work with the IDE it won't work with the plugin.
+
+Thirdly<br>
+there are plenty of settings that can be wrong. If it doesn''t work for you
+install the Arduino IDE in a new folder; install eclipse in a new folder; use a
+new workspace and install the plugin. When doing so
+make sure you do not uses spaces in any names. <br>
+
+This way it should work.
+
+<a name="spaces"/>
+<h2>Can I use spaces?</h2>
+The usage of spaces is known to give problems when used in<br>
+
+<ul  type=disc>
+ <li >The Arduino Path.</li>
+ <li >Project Names.</li>
+</ul>
+
+<a name="bugs"/>
+<h2>Eclipse tells me there are bugs in my code but it compiles ok.</h2>
+Eclipse compiles you code in 2 ways. Once when you request a build (when
+you press on the hammer) and ones when you change code (save a file). The
+compiler is responsible for the build and the indexer is responsible for the continuous
+build.<br>
+
+The bugs
+(the red animals in the code) you see in the code can be found by any of the 2.
+The indexer behaves weird and sometimes doesn't find declarations that it
+knows. In that case you have the bug without a bug (in other words the code compiles ok).<br>
+
+Setting the
+option windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers
+seems to have fixed the issue on my system.<br>
+
+<a name="elf"/>
+<h2>Where is the elf file?</h2>
+When you have compiled the sketch you can not see the elf file in eclipse. There is no
+need to see the elf file but if you want to see it in eclipse do as follows:<br>
+
+Right click the release folder in the project you would want to see the elf file.<br>
+Select properties-&gt;resource-&gt;resource filters press add; select “include only” files that match *.*.<br>
+
+Now you will see the full disk content. But again I'm not sure what this is good for.<br>
+To undo the change simply delete the release folder. It will be recreated with the next build.
+
+<a name="errors"/>
+<h2>There are errors and warnings in the Arduino library.</h2>
+But it compiles OK.<br>
+in Arduino 1.0 there is only one warning left.<br>
+The file WString.cpp gives an error with the eclipse indexer. This
+is actually an error in the file
+
+See this <a href="http://arduino.cc/forum/index.php/topic,69820.msg517336.html#msg517336">post</a>
+for more info<br>
+HardwareSerial.h: I am not sure what is the problem here<br>
+pins_arduino.c: contains clearly warnings that can be fixed by adding a cast <br>
+Print.cpp: contains a warning that can be fixed by adding a cast<br>
+Tone.cpp: contains warnings because the eclipse C/C++ indexer goes weird<br>
+Basically there is nothing to worry about, but it would be better if it were cleaned up.<br>
+
+<a name="modified"/>
+<h2>I have modified my Arduino setup and... </h2>
+You are entitled to modify the Arduino IDE setup. But I'm not supporting this. If you know what you have been doing and you play a bit
+with eclipse you will find many ways to help you to solve your problem.
+
+<br>To be frank: If you can change the Arduino IDE setup you are a big boy so you can deal with
+it, write a document about it and share it with the world.<br>
+This way we all become smarter.<br>
+
+</body>
+
+</html>

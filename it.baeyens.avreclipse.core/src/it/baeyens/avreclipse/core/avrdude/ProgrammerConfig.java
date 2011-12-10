@@ -15,7 +15,8 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.core.avrdude;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -188,10 +189,11 @@ public class ProgrammerConfig {
 
 		List<String> args = new ArrayList<String>();
 
-		args.add("-c" + fProgrammer);
+		args.add("-c" + fProgrammer); 
 
-		if (fPort.length() > 0) {
-			args.add( ArduinoConst.UploadPortPrefix() + fPort);
+		String Port = ArduinoInstancePreferences.getLastUsedUploadPort();
+		if (Port.length() > 0) {
+			args.add( Common.UploadPortPrefix() + Port);
 		}
 
 		if (fBaudrate.length() > 0) {

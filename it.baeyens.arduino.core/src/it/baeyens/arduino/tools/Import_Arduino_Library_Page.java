@@ -2,6 +2,7 @@ package it.baeyens.arduino.tools;
 
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -82,7 +83,7 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 				DirectoryDialog theDialog = new DirectoryDialog(shell);
 				if ((controlLibraryPath.getText()==null) | (controlLibraryPath.getText()==""))
 				{
-					theDialog.setFilterPath(ArduinoPreferences.getArduinoPath().append( ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
+					theDialog.setFilterPath(ArduinoInstancePreferences.getArduinoPath().append( ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
 				}
 				else
 				{

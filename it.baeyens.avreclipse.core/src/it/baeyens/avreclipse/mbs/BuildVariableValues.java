@@ -15,6 +15,8 @@
  *******************************************************************************/
 package it.baeyens.avreclipse.mbs;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 import it.baeyens.avreclipse.core.paths.AVRPath;
 import it.baeyens.avreclipse.core.paths.AVRPathProvider;
 import it.baeyens.avreclipse.core.paths.IPathProvider;
@@ -49,6 +51,7 @@ import org.eclipse.core.resources.IProject;
  * and the make executable. This, together with the selection of the paths on the preference page,
  * allows for multiple avr-gcc toolchains on one computer</li>
  * <li><code>$(AVRDUDEPATH)</code>: The current path to the avrdude executable.</li>
+ * <li><code>$(ARDUINOBOARDNAME)</code>: The current used Arduino board type. (Arduino plugin Only)</li>
  * </ul>
  * </p>
  * 
@@ -184,6 +187,27 @@ public enum BuildVariableValues {
 			}
 			return "";
 		}
+		
+		
+	//Jan Baeyens added the definitions below to create environment variables containing the Arduino board name
+	},
+
+	ARDUINOBOARDNAME() {
+		@Override
+		public String getValue(IConfiguration buildcfg) {
+
+			String sRet= Common.getPersistentProperty( (IProject) buildcfg.getOwner(),ArduinoConst.KEY_ARDUINOBOARD) ;
+			return Common.MakeNameCompileSafe(sRet);
+		}
+		
+	},
+
+	ARDUINOBOARDVARIANT() {
+		@Override
+		public String getValue(IConfiguration buildcfg) {
+			return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINOBOARDVARIANT) ;
+		}
+
 	};
 
 	/** System default Path Separator. On Windows ";", on Posix ":" */

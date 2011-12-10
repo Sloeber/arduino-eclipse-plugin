@@ -1,11 +1,5 @@
 package it.baeyens.arduino.common;
 
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.osgi.framework.Bundle;
-
 
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.
@@ -21,15 +15,16 @@ public class ArduinoConst {
 
 	
 	//programmer information
-	public static final String ProgrammerConfigName = "AVR Eclipse controlled Arduino settings";
+	protected static final String ProgrammerConfigName = "AVR Eclipse controlled Arduino settings";
 	public static final String ProgrammerConfigDescription = "AVReclipse controlled arduino settings. You should not changes this manually";
-	public static final String ProgrammerName = "stk500v1"; // "arduino" "atmelSTK500 Version1.x Firmware";
+//	protected static final String ProgrammerName = "stk500v1"; // "arduino" "atmelSTK500 Version1.x Firmware";
+//	protected static final String ProgrammerNameOne = "arduino"; // "atmelSTK500 Version1.x Firmware";
 
 	// the prefix used when creating a core library
-	public static final String CoreProjectNamePrefix = "arduino_";
+	public static final String CoreProjectNamePrefix = ""; //used to be arduino_ but when chaging from MCU to board replaced by nothing
 	//prefix to be added to the arduino environment
-	private static final String UploadPortPrefix_WIN ="-P\\\\.\\";
-	private static final String UploadPortPrefix_LINUX ="-P";
+	protected static final String UploadPortPrefix_WIN ="-P"; //"-P\\\\.\\";
+	protected static final String UploadPortPrefix_LINUX ="-P";
 	
 	//natures
 	public static final String Cnatureid 		= "org.eclipse.cdt.core.cnature";
@@ -58,16 +53,25 @@ public class ArduinoConst {
 	//preference nodes
 	public static final String NODE_PATHS					= CORE_PLUGIN_ID	+ "/avrpaths";
 	public static final String NODE_ARDUINO					= PluginStart + "arduino";
+	
 	//preference keys
-	public static final String KEY_HEADER_PATH 				= "AVRINCLUDE";
-	public static final String KEY_GNU_PATH 				= "MAKE";
-	public static final String KEY_GCC_PATH 				= "AVRGCC";
-	public static final String KEY_AVRDUDE_PATH				= "AVRDUDE";
+	public static final String KEY_USE_ARDUINO_IDE_TOOLS 	= "Use Arduino IDE Tools";
+	public static final String KEY_ARDUINO_IDE_VERSION 	= "Arduino IDE Version";
+	
+	//Win AVR keys
+	protected static final String KEY_HEADER_PATH 				= "AVRINCLUDE";
+	protected static final String KEY_GNU_PATH 				= "MAKE";
+	protected static final String KEY_GCC_PATH 				= "AVRGCC";
+	protected static final String KEY_AVRDUDE_PATH				= "AVRDUDE";
+	protected static final String KEY_NO_SCAN_AT_STARTUP 		= "NoScanAtStartup";
+	
+	//properties keys
 	public static final String KEY_ARDUINOPATH 				= "Arduino Path";
 	public static final String KEY_ARDUINOBOARD 			= "Arduino Board";
 	public static final String KEY_ARDUINOPORT 				= "Arduino Port";
-	public static final String KEY_USE_ARDUINO_IDE_TOOLS 	= "Use Arduino IDE Tools";
-	public static final String KEY_NO_SCAN_AT_STARTUP 		= "NoScanAtStartup";
+	public static final String KEY_ARDUINOBOARDVARIANT		= "Arduino Board Variant";
+
+	
 	private static final String KEY_SYSTEM_PATH 			= "/systempath/";
 	public static final String KEY_SYSTEM 					= "System";
 	public static final String KEY_GCC_SYSTEM_PATH			= KEY_SYSTEM_PATH +KEY_GCC_PATH;
@@ -78,45 +82,16 @@ public class ArduinoConst {
 	//Folder Information
 	public static final String LIBRARY_PATH_SUFFIX 			=  "libraries" ;
 	public static final String HEADER_PATH_SUFFIX 			= "hardware/tools/avr/avr/include";
-	private static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
-	private static final String AVRDUDE_PATH_SUFFIX_LINUX	= "hardware/tools";
+	protected static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
+	protected static final String AVRDUDE_PATH_SUFFIX_LINUX	= "hardware/tools";
 	public static final String GCC_PATH_SUFFIX 				= "hardware/tools/avr/bin";
 	public static final String GNU_PATH_SUFFIX 				= "hardware/tools/avr/utils/bin";
-	private static final String DUDE_CONFIG_SUFFIX_WIN 		= "hardware/tools/avr/etc/avrdude.conf";
-	private static final String DUDE_CONFIG_SUFFIX_LINUX 		= "hardware/tools/avrdude.conf";
+	protected static final String DUDE_CONFIG_SUFFIX_WIN 		= "hardware/tools/avr/etc/avrdude.conf";
+	protected static final String DUDE_CONFIG_SUFFIX_LINUX 		= "hardware/tools/avrdude.conf";
 	public static final String BOARDS_FILE_SUFFIX 			= "hardware/arduino/boards.txt";
+	public static final String LIB_FILE_SUFFIX				="lib/version.txt";
+	public static final String VARIANTS_FILE_SUFFIX 			= "hardware/arduino/variants";
 	
-	public static String DUDE_CONFIG_SUFFIX()
-	{
-		if (Platform.getOS().equals(Platform.OS_WIN32)) return DUDE_CONFIG_SUFFIX_WIN;
-		if (Platform.getOS().equals(Platform.OS_LINUX)) return DUDE_CONFIG_SUFFIX_LINUX;
-		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
-		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
-		ILog log = Platform.getLog(bundle);
-		log.log(status);
-		return DUDE_CONFIG_SUFFIX_LINUX;
-	}
-	
-	public static String AVRDUDE_PATH_SUFFIX()
-	{
-		if (Platform.getOS().equals(Platform.OS_WIN32)) return AVRDUDE_PATH_SUFFIX_WIN;
-		if (Platform.getOS().equals(Platform.OS_LINUX)) return AVRDUDE_PATH_SUFFIX_LINUX;
-		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
-		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
-		ILog log = Platform.getLog(bundle);
-		log.log(status);
-		return AVRDUDE_PATH_SUFFIX_LINUX;
-	}
 
-	public static String UploadPortPrefix()
-	{
-		if (Platform.getOS().equals(Platform.OS_WIN32)) return UploadPortPrefix_WIN;
-		if (Platform.getOS().equals(Platform.OS_LINUX)) return UploadPortPrefix_LINUX;
-		IStatus status = new Status(IStatus.ERROR,	ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null);
-		Bundle bundle = Platform.getBundle(Platform.PI_RUNTIME);
-		ILog log = Platform.getLog(bundle);
-		log.log(status);
-		return UploadPortPrefix_LINUX;
-	}
-	
+
 }

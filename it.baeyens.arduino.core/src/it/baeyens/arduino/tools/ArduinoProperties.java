@@ -1,7 +1,9 @@
-package it.baeyens.arduino.ui;
+package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.tools.ArduinoPreferences;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.ui.ArduinoBoards;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfigManager;
@@ -12,7 +14,6 @@ import it.baeyens.avreclipse.core.util.AVRMCUidConverter;
 import java.io.File;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -20,36 +21,41 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 
-/**ArduinoProperties controls the arduino properties. It is a class on top of ArduinoPreferences.
- * ArduinoPreferences is pure static this is a real class.
- * This class controls in 1 place settings that are owned by several parties. It creates the arduino view on the data
+/**
+ * ArduinoProperties controls the arduino properties. It is a class on top of
+ * ArduinoPreferences. ArduinoPreferences is pure static this is a real class.
+ * This class controls in 1 place settings that are owned by several parties. It
+ * creates the arduino view on the data
+ * 
  * @author Jan Baeyens
- *
+ * 
  */
 public class ArduinoProperties {
 
 	// private IProject mProject;
 
-	private Path mArduinoPath;
+//	private static Path mArduinoPath = ArduinoPreferences.getArduinoPath();;
 	private String mArduinoBoardName;
 	private String mMCUName;
 	private int mMCUFrequency;
 	private String mUploadPort;
 	private String mUploadBaudrate;
 	private boolean mDisabledFlushing;
+	private String mBoardVariant;
+	private String mProgrammerName;
 
-	ArduinoProperties() {
-		//ArduinoPreferences.ReadGlobalStuff(mArduinoPath,mArduinoBoardName,mUploadPort);
-		mArduinoPath = ArduinoPreferences.getArduinoPath(); 
-		mArduinoBoardName = ArduinoPreferences.getArduinoBoardName();
-		mUploadPort= ArduinoPreferences.getUploadPort(); 
+	public ArduinoProperties() {
+		mArduinoBoardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
+		mUploadPort = ArduinoInstancePreferences.getLastUsedUploadPort();
 	}
-/**read reads the Arduino preferences for a project
- * 
- * @param Project the project for which you want the arduino properties
- */
+
+	/**
+	 * read reads the Arduino preferences for a project
+	 * 
+	 * @param Project
+	 *            the project for which you want the arduino properties
+	 */
 	public void read(IProject Project) {
 		ProgrammerConfigManager AVRConfigManager;
 		ProgrammerConfig Programmerconfig;
@@ -57,61 +63,56 @@ public class ArduinoProperties {
 		ProjectPropertyManager projpropsmanager = ProjectPropertyManager.getPropertyManager(Project);
 		AVRproperties = projpropsmanager.getProjectProperties();
 		AVRConfigManager = ProgrammerConfigManager.getDefault();
-		Programmerconfig = AVRConfigManager.getConfigByName(ArduinoConst.ProgrammerConfigName);
-		if (Programmerconfig == null) // No programmer config exists with the
-										// required name so reate it
+		Programmerconfig = AVRConfigManager.getConfigByName(ArduinoHelpers.ProgrammerConfigName(Project));
+		if (Programmerconfig == null) // No programmer configuration exists with the required name so create it
 		{
 			mUploadPort = "";
 			mUploadBaudrate = "";
+			mProgrammerName="";
 			Programmerconfig = AVRConfigManager.createNewConfig();
-			Programmerconfig.setProgrammer(ArduinoConst.ProgrammerName);
-			Programmerconfig.setName(ArduinoConst.ProgrammerConfigName);
+			Programmerconfig.setProgrammer(mProgrammerName);
+			Programmerconfig.setName(ArduinoHelpers.ProgrammerConfigName(Project));
 			Programmerconfig.setPort(mUploadPort);
 			Programmerconfig.setBaudrate(mUploadBaudrate);
 			Programmerconfig.setDescription(ArduinoConst.ProgrammerConfigDescription);
 			try {
 				AVRConfigManager.saveConfig(Programmerconfig);
 			} catch (BackingStoreException e) {
-				IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to save the programmer config " + Programmerconfig.getName() , e);
+				IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to save the programmer config " + Programmerconfig.getName(), e);
 				AVRPlugin.getDefault().log(status);
-					e.printStackTrace();
+				e.printStackTrace();
 			}
 		} else {
 			mUploadPort = Programmerconfig.getPort();
 			mUploadBaudrate = Programmerconfig.getBaudrate();
+			mProgrammerName = Programmerconfig.getProgrammer();
 		}
 
 		mMCUName = AVRproperties.getMCUId();
 		mMCUFrequency = Integer.parseInt(AVRproperties.getFCPU());
 
-		try {
-			mArduinoPath = new Path (Project.getPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOPATH)));
-			mArduinoBoardName = Project.getPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD));
-
-			if (mArduinoBoardName == null) {
-				mArduinoBoardName = "";
-			}
-			if (mArduinoPath == null) {
-				mArduinoPath =  new Path ( ((IResource) Project.getWorkspace()).getPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOPATH)));
-			}
-		} catch (CoreException e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read arduino properties", e);
-			AVRPlugin.getDefault().log(status);
-		}
+		mArduinoBoardName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARD);
+		mBoardVariant = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARDVARIANT);
+		//mProgrammerName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOUPLOADPROTOCOL);
 
 	}
 
-	/** Save stores the arduino important properties at the correct locations
+	/**
+	 * Save stores the arduino important properties at the correct locations
 	 * 
 	 * @param Project
 	 */
 	public void save(IProject Project) {
 		try {
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOPATH), mArduinoPath.toOSString());
+			// Project.setPersistentProperty(new QualifiedName("",
+			// ArduinoConst.KEY_ARDUINOPATH), mArduinoPath.toOSString());
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD), mArduinoBoardName);
-			ArduinoPreferences.StoreGlobalStuff(mArduinoPath,mArduinoBoardName,mUploadPort);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARDVARIANT), mBoardVariant);
+			//Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOUPLOADPROTOCOL), mProgrammerName);
+			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
+			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
 		} catch (CoreException e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to write arduino properties", e);
+			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
 			AVRPlugin.getDefault().log(status);
 
 		}
@@ -124,16 +125,15 @@ public class ArduinoProperties {
 		AVRproperties = projpropsmanager.getProjectProperties();
 		AVRDudeProperties = AVRproperties.getAVRDudeProperties();
 		AVRConfigManager = ProgrammerConfigManager.getDefault();
-		Programmerconfig = AVRConfigManager.getConfigByName(ArduinoConst.ProgrammerConfigName);
-		if (Programmerconfig == null) // No programmer configuration exists with the
-										// required name so create it
+		Programmerconfig = AVRConfigManager.getConfigByName(ArduinoHelpers.ProgrammerConfigName(Project));
+		if (Programmerconfig == null) // No programmer configuration exists with the required name so create it
 		{
 			Programmerconfig = AVRConfigManager.createNewConfig();
-			Programmerconfig.setProgrammer(ArduinoConst.ProgrammerName);
-			Programmerconfig.setName(ArduinoConst.ProgrammerConfigName);
-			Programmerconfig.setDescription(ArduinoConst.ProgrammerConfigDescription);
 		}
-		Programmerconfig.setPort( mUploadPort);
+		Programmerconfig.setProgrammer(mProgrammerName);
+		Programmerconfig.setName(ArduinoHelpers.ProgrammerConfigName(Project));
+		Programmerconfig.setDescription(ArduinoConst.ProgrammerConfigDescription);
+		Programmerconfig.setPort(mUploadPort);
 		Programmerconfig.setBaudrate(mUploadBaudrate);
 		AVRproperties.setMCUId(AVRMCUidConverter.name2id(mMCUName));
 		AVRproperties.setFCPU(Integer.toString(mMCUFrequency));
@@ -161,15 +161,19 @@ public class ArduinoProperties {
 	}
 
 	/**
-	 * setUploadPort sets the upload port in the properties. This does not save the value
+	 * setUploadPort sets the upload port in the properties. This does not save
+	 * the value
 	 * 
-	 * @param Port to be stored.
+	 * @param Port
+	 *            to be stored.
 	 */
 	public void setUploadPort(String Port) {
 		this.mUploadPort = Port;
 	}
 
-	/** getUploadBaudrate get the upload baut rate currently set in the properties.
+	/**
+	 * getUploadBaudrate get the upload baut rate currently set in the
+	 * properties.
 	 * 
 	 * @return The uploadbaut rate
 	 */
@@ -178,30 +182,18 @@ public class ArduinoProperties {
 	}
 
 	/**
-	 * setUploadBaudrate sets the upload baud rate in the properties. This does not save the value
+	 * setUploadBaudrate sets the upload baud rate in the properties. This does
+	 * not save the value
 	 * 
-	 * @param Baudrate to be stored.
+	 * @param Baudrate
+	 *            to be stored.
 	 */
 	public void setUploadBaudrate(String Baudrate) {
 		this.mUploadBaudrate = Baudrate;
 	}
 
-	/** getArduinoPath returns the Arduino Path
-	 * 
-	 * @return the arduino path in the properties
-	 */
-	public IPath getArduinoPath() {
-		return mArduinoPath ;
-	}
 
-	/**
-	 * setArduinoPath sets the arduino path in the properties. This does not save the value
-	 * 
-	 * @param ArduinoPath to be stored.
-	 */
-	public void setArduinoPath(IPath ArduinoPath) {
-		this.mArduinoPath = (Path) ArduinoPath;
-	}
+
 
 	public String getArduinoBoardName() {
 		return (mArduinoBoardName == null) ? "" : mArduinoBoardName;
@@ -227,6 +219,22 @@ public class ArduinoProperties {
 		this.mMCUFrequency = MCUFrequency;
 	}
 
+	public String getBoardVariant() {
+		return mBoardVariant;
+	}
+
+	public void setBoardVariant(String variant) {
+		this.mBoardVariant = variant;
+	}
+
+	public String getUploadProtocol() {
+		return mProgrammerName;
+	}
+
+	public void setUploadProtocol(String uploadProtocol) {
+		mProgrammerName = uploadProtocol;
+	}
+
 	public boolean getDisabledFlushing() {
 		return mDisabledFlushing;
 	}
@@ -235,20 +243,31 @@ public class ArduinoProperties {
 		mDisabledFlushing = Disabled;
 	}
 
-
-
 	public IPath getArduinoSourceCodeLocation() {
-		String fullPath = getArduinoPath()+ File.separator+ "hardware" + File.separator + "arduino"+ File.separator+ "cores" + File.separator + "arduino";
+		String fullPath = ArduinoInstancePreferences.getArduinoPath() + File.separator + "hardware" + File.separator + "arduino" + File.separator + "cores" + File.separator + "arduino";
 		return (IPath) new org.eclipse.core.runtime.Path(fullPath);
 	}
 
 	public void setArduinoBoard(String boardName) {
 		ArduinoBoards TheBoards = new ArduinoBoards();
-		TheBoards.Load(mArduinoPath);
-		mMCUName=TheBoards.getMCUName(boardName);
-		mMCUFrequency=Integer.parseInt(TheBoards.getMCUFrequency(boardName));
-		mUploadBaudrate=TheBoards.getUploadBaudRate(boardName);
-		mArduinoBoardName=boardName;
-		
+		TheBoards.Load( ArduinoInstancePreferences.getArduinoPath());
+		mArduinoBoardName = boardName;
+		mMCUName = TheBoards.getMCUName(mArduinoBoardName);
+		mMCUFrequency = Common.ToInt(TheBoards.getMCUFrequency(boardName));
+		// mUploadPort does not need to be set
+		mUploadBaudrate = TheBoards.getUploadBaudRate(boardName);
+		mDisabledFlushing= TheBoards.getDisableFlushing(boardName);
+		mBoardVariant= TheBoards.getBoardVariant(boardName);
+		mProgrammerName = TheBoards.getUploadProtocol(boardName);
+	}
+
+	/**
+	 * Returns the board name in such a way that files and projects can be
+	 * created out of it Basically it replaces all dangerous characters to safe
+	 * characters
+	 * 
+	 */
+	public String getSafeArduinoBoardName() {
+		return Common.MakeNameCompileSafe(mArduinoBoardName);
 	}
 }
