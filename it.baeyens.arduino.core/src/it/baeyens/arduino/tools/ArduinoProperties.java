@@ -17,8 +17,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.eclipse.core.resources.IProject;
 
@@ -93,7 +91,6 @@ public class ArduinoProperties {
 
 		mArduinoBoardName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARD);
 		mBoardVariant = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARDVARIANT);
-		//mProgrammerName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOUPLOADPROTOCOL);
 
 	}
 
@@ -104,11 +101,8 @@ public class ArduinoProperties {
 	 */
 	public void save(IProject Project) {
 		try {
-			// Project.setPersistentProperty(new QualifiedName("",
-			// ArduinoConst.KEY_ARDUINOPATH), mArduinoPath.toOSString());
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD), mArduinoBoardName);
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARDVARIANT), mBoardVariant);
-			//Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOUPLOADPROTOCOL), mProgrammerName);
 			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
 		} catch (CoreException e) {
@@ -120,7 +114,7 @@ public class ArduinoProperties {
 		ProgrammerConfig Programmerconfig;
 		AVRProjectProperties AVRproperties;
 		AVRDudeProperties AVRDudeProperties;
-		// mProject=Project;
+		
 		ProjectPropertyManager projpropsmanager = ProjectPropertyManager.getPropertyManager(Project);
 		AVRproperties = projpropsmanager.getProjectProperties();
 		AVRDudeProperties = AVRproperties.getAVRDudeProperties();
@@ -138,17 +132,15 @@ public class ArduinoProperties {
 		AVRproperties.setMCUId(AVRMCUidConverter.name2id(mMCUName));
 		AVRproperties.setFCPU(Integer.toString(mMCUFrequency));
 		AVRDudeProperties.setProgrammer(Programmerconfig);
-		// save the settings
+		
 		try {
-			AVRConfigManager.saveConfig(Programmerconfig);
+			AVRConfigManager.saveConfig(Programmerconfig); // save the settings
 			AVRDudeProperties.save();
 			AVRproperties.save();
 		} catch (BackingStoreException e) {
 			IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not write project properties to the preferences.", e);
 			AVRPlugin.getDefault().log(status);
-			ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "AVR Project Wizard Error", null, status);
 		}
-
 	}
 
 	/**

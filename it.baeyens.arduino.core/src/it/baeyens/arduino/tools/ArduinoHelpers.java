@@ -60,10 +60,10 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 
 	/**
 	 * ChangeProjectReference changes the reference from one project to another.
-	 * This method is used when you change the MCU of a project. <br/>
-	 * Then the reference has to change FI from arduino_core_atmega168 to
-	 * arduino_atmega328p<br/>
-	 * if project references OldLibraryProject and does not reference
+	 * This method is used when you change the board of a project. <br/>
+	 * Then the reference has to change FI from arduino_uno to
+	 * arduino_mega<br/>
+	 * if the project references OldLibraryProject and does not reference
 	 * NewLibraryProject a reference to NewLibraryProject will be added<br/>
 	 * if project references OldLibraryProject and references NewLibraryProject
 	 * a status message will be logged together with a stack trace<br/>
@@ -72,7 +72,7 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 	 * if project does not reference OldLibraryProject and references
 	 * NewLibraryProject a a status message will be logged together with a stack
 	 * trace<br/>
-	 * Note that this action is enough when you change the MCU because all other
+	 * Note that this action is enough when you change the board because all other
 	 * references are based on environment parameters
 	 * 
 	 * @param project
@@ -91,20 +91,43 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 			IProject[] OrgReferencedProjects = projectdescription.getReferencedProjects();
 
 			for (int curProject = 0; curProject < OrgReferencedProjects.length; curProject++) {
-				if ((OrgReferencedProjects[curProject] == null) || (OldLibraryProject.equalsIgnoreCase(OrgReferencedProjects[curProject].getName()))) {
+				if ((OrgReferencedProjects[curProject] == null) || 
+						(OldLibraryProject.equalsIgnoreCase(OrgReferencedProjects[curProject].getName())) ||
+						(OrgReferencedProjects[curProject] == NewLibraryProject) ) {
 					OrgReferencedProjects[curProject] = NewLibraryProject;
 					projectdescription.setReferencedProjects(OrgReferencedProjects);
+					try{
 					project.setDescription(projectdescription, 0, null);
-					return;
+					}
+					catch (NullPointerException e) //something went wrong. to get out of the situation I remove all references and only have the new reference
+					{
+						IProject[] NewReferencedProjects = new IProject[ 1];
+						NewReferencedProjects[0] = NewLibraryProject;
+						projectdescription.setReferencedProjects(NewReferencedProjects);
+						Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project; removed all and added new reference", e));
+						//e.printStackTrace();
+					}
+					return; //the OldLibraryProject was found in the description and has been replaced by NewLibraryProject
 				}
 			}
 			IProject[] NewReferencedProjects = new IProject[OrgReferencedProjects.length + 1];
+			System.arraycopy(OrgReferencedProjects, 0, NewReferencedProjects, 0, OrgReferencedProjects.length);
 			NewReferencedProjects[OrgReferencedProjects.length] = NewLibraryProject;
 			projectdescription.setReferencedProjects(NewReferencedProjects);
+			try{
 			project.setDescription(projectdescription, 0, null);
+			}
+			catch (NullPointerException e) //something went wrong. to get out of the situation I remove all references and only have the new reference
+			{
+				NewReferencedProjects = new IProject[ 1];
+				NewReferencedProjects[0] = NewLibraryProject;
+				projectdescription.setReferencedProjects(NewReferencedProjects);
+				Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project; removed all and added new reference", e));
+				//e.printStackTrace();
+			}
 		} catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to change project nature", e));
-			e.printStackTrace();
+			Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project", e));
+			//e.printStackTrace();
 		}
 
 	}
@@ -134,6 +157,7 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 		if (NewLibraryProject == null) {
 			IProject OldLibraryProject = Common.findProjectByName(OldLibraryProjectName);
 			if (OldLibraryProject == null) {
+				Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "The New Arduino Board and the old arduino board do not exist (at least one should exist)", null));
 				return; // This should not happen
 			}
 			ArduinoProperties Properties = new ArduinoProperties();

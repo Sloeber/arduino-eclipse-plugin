@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.1.0"
+      version="1.1.3"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -15,6 +15,21 @@ a button to build the project
 a button to upload to the arduino board
 a project property page allowing to change the arduino board
 type and the port the arduino is using.
+Version 1_1_3
+Fixes a bug that the latest used com port is used to uload a file to arduino. Now the correct set port is used.
+version 1_1_2
+The ARDUINO define is now built based on the version.txt file.
+The in eclipse define has been removed.
+version 1_1_1 
+includes better error reporting (now errors are also shown in
+a dialog box and not only logged in the error log.
+Bixes a bug when that made the referenced project corrupt when
+changing the arduino board.
+version 1_1_0 is a major change.
+It fixed the incompatibilities with arduino 1.0
+Therfore the arduino core library is replaced by arduino board
+library (ths was needed due to the pins_arduino
+I ow use the programmer as described in boards.txt
 version 1_0_9 fixed unix incompatibilities
 version 1_0_8 fixed the ok button not enabled in preference page
 version 1_0_7 changed licence agreement and fixes issues 

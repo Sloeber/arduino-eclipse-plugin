@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: avreclipse core
 Bundle-SymbolicName: it.baeyens.avreclipse.core;singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.6
 Bundle-Localization: plugin
-Bundle-Vendor: %providerName
+Bundle-Vendor: Thomas Holland
 Require-Bundle: 
  org.eclipse.cdt.core,
  org.eclipse.cdt.managedbuilder.core,

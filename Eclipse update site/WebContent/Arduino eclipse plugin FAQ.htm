@@ -10,7 +10,7 @@
         <div id="header">
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
         </div>
-	<div id="midcolumn">
+	
 
 		<h1>Arduino eclipse plugin FAQ</h1>
 		This page contains frequently asked questions about the arduino
@@ -33,28 +33,29 @@
 		<a href="#elf">Where is the elf file?</a><br> 
 		<a href="#errors">There are errors and warnings in the	Arduino library.</a><br> 
 		<a href="#modified">I have modified my Arduino setup and ...</a><br>
+		<a href="#canceled">I can not cancel the upload to the Arduino Board</a>
 
 		<h1>General</h1>
-		<a name="Contact"/>
+		<a name="Contact"></a>
 		<h2>How can I contact the author of this great plugin</h2>
 		You can reach the author at <a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.
 		If you have a question please follow the <a	href="http://www.catb.org/~esr/faqs/smart-questions.html">eclipse guidance when formulating your question</a>	<br>
 note the eclipse link is not a link to a help desk. it is a link to a document explaining how to ask questions the smart way.
-<a name="Versions"/>
+<a name="Versions"></a>
 <h2>On Which versions is this plugin tested?</h2>
 The plugin is tested on Arduino 0023 and Arduino 1.0.<br>
 Note: not all versions are tested on all platforms.
-<a name="platforms"/>
+<a name="platforms"></a>
 <h2>On which platforms is this plugin tested?</h2>
 The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
 Note: not all versions are tested on all platforms.
 
 <h1>Arduino IDE Versus The arduino Plugin</h1>
-<a name="why"/>
+<a name="why"></a>
 <h2>Why would I want to use this plugin</h2>
 This plugin is not meant to replace the Arduino IDE. I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
 However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. In that case the eclipse plugin may be an alternative.
-<a name="benefitIDE"/>
+<a name="benefitIDE"></a>
 <h2>What is the benefit of the Arduino IDE to the eclipse plugin</h2>
 The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
 doing their first electronics experience. So if you are new to Arduino stop
@@ -79,7 +80,7 @@ This because the way the Arduino IDE is set up it hides or avoids the need of th
 functionalities. There are plenty of good C/C++ documents on the web that
 explain these things, so I won't. 
 
-<a name="benefitArduino"/>
+<a name="benefitArduino"></a>
 <h2>What is the benefit of the eclipse plugin to the Arduino IDE?</h2>
 With the eclipse plugin you have a environment that is fully focused on the development of source code. It
 provides plenty of features. The ones I like the most are: 
@@ -101,7 +102,7 @@ provides plenty of features. The ones I like the most are:
 So there are plenty of good things a software developer misses in the Arduino IDE that
 the rest of the world doesn't know about.
 
-<a name="develop"/>
+<a name="develop"></a>
 <h2>What do I need to know to develop code for Arduino with this plugin?</h2>
 After you
 have read the pro and con's question you may wonder “how much is there to learn
@@ -122,7 +123,7 @@ you get your first programs running.<br>
 
 <h1>Trouble shooting</h1>
 
-<a name="doesntwork"/>
+<a name="doesntwork"></a>
 <h2>The plugin doesn't work on my system.</h2>
 First of all the plugin only works on a limited amount of platforms. See the faq for which versions. If you do not use any of these
 operating systems you are out of luck for this plugin.
@@ -137,7 +138,7 @@ make sure you do not uses spaces in any names. <br>
 
 This way it should work.
 
-<a name="spaces"/>
+<a name="spaces"></a>
 <h2>Can I use spaces?</h2>
 The usage of spaces is known to give problems when used in<br>
 
@@ -146,7 +147,7 @@ The usage of spaces is known to give problems when used in<br>
  <li >Project Names.</li>
 </ul>
 
-<a name="bugs"/>
+<a name="bugs"></a>
 <h2>Eclipse tells me there are bugs in my code but it compiles ok.</h2>
 Eclipse compiles you code in 2 ways. Once when you request a build (when
 you press on the hammer) and ones when you change code (save a file). The
@@ -162,18 +163,14 @@ Setting the
 option windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers
 seems to have fixed the issue on my system.<br>
 
-<a name="elf"/>
+<a name="elf"></a>
 <h2>Where is the elf file?</h2>
-When you have compiled the sketch you can not see the elf file in eclipse. There is no
-need to see the elf file but if you want to see it in eclipse do as follows:<br>
+When you have compiled the sketch sometimes you can not see the elf file in eclipse. <br>
 
-Right click the release folder in the project you would want to see the elf file.<br>
-Select properties-&gt;resource-&gt;resource filters press add; select “include only” files that match *.*.<br>
+This is a bug related to eclipse. If your project compiled fine refresh the project (pres F5 when you have the project selected).<br>
+Now there should e a binaries folder in the root of your project containing the elf file.
 
-Now you will see the full disk content. But again I'm not sure what this is good for.<br>
-To undo the change simply delete the release folder. It will be recreated with the next build.
-
-<a name="errors"/>
+<a name="errors"></a>
 <h2>There are errors and warnings in the Arduino library.</h2>
 But it compiles OK.<br>
 in Arduino 1.0 there is only one warning left.<br>
@@ -188,7 +185,7 @@ Print.cpp: contains a warning that can be fixed by adding a cast<br>
 Tone.cpp: contains warnings because the eclipse C/C++ indexer goes weird<br>
 Basically there is nothing to worry about, but it would be better if it were cleaned up.<br>
 
-<a name="modified"/>
+<a name="modified"></a>
 <h2>I have modified my Arduino setup and... </h2>
 You are entitled to modify the Arduino IDE setup. But I'm not supporting this. If you know what you have been doing and you play a bit
 with eclipse you will find many ways to help you to solve your problem.
@@ -196,6 +193,10 @@ with eclipse you will find many ways to help you to solve your problem.
 <br>To be frank: If you can change the Arduino IDE setup you are a big boy so you can deal with
 it, write a document about it and share it with the world.<br>
 This way we all become smarter.<br>
+
+<a name="canceled"></a>
+<h2>I can not cancel the upload to the Arduino Board</h2>
+Someone reported that pressing the cancel button during upload to arduino locks the com port.  Even if the upload is not working.  To solve the lock unplug the arduino from your pc and replug.<br>
 
 </body>
 

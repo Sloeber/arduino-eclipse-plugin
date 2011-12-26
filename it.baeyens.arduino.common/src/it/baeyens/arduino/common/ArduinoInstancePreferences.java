@@ -149,4 +149,24 @@ public class ArduinoInstancePreferences extends Common {
 		return !getIDEVersion().startsWith("00");
 	}
 
+	/*
+	 * This method returns the define value for the define ARDUINO
+	 */
+	public static String GetARDUINODefineValue()
+	{
+		String Ret;
+		Ret = getIDEVersion();
+		if (Ret.contains("."))
+		{
+			String Suffix = Ret.substring(Ret.indexOf(".")+1);
+			String Prefix=Ret.substring(0,Ret.indexOf("."));
+			while (Suffix.length()<2)
+					{
+						Suffix=Suffix+"0";
+					}
+			Ret = Prefix + Suffix;
+		}
+
+		return Ret;
+	}
 }

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 
 public class Common extends ArduinoConst{
@@ -76,7 +77,15 @@ public class Common extends ArduinoConst{
 	 */
 	public static void log(IStatus status)
 	{
+		int style =StatusManager.LOG;
 		 Activator.getDefault().getLog().log(status);
+		 if (status.getSeverity() == IStatus.ERROR)
+		 {
+			 style =StatusManager.LOG|StatusManager.SHOW|StatusManager.BLOCK;
+		 }
+		 StatusManager stMan = StatusManager.getManager();
+		 stMan.handle(status,style);
+		 //TODO verify if this is ok ErrorDialog.openError(null, status.getMessage(),"An error has occured", status);
 	}
 	
 	

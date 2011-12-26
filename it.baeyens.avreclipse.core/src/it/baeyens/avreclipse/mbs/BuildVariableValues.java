@@ -16,6 +16,7 @@
 package it.baeyens.avreclipse.mbs;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.avreclipse.core.paths.AVRPath;
 import it.baeyens.avreclipse.core.paths.AVRPathProvider;
@@ -206,6 +207,13 @@ public enum BuildVariableValues {
 		@Override
 		public String getValue(IConfiguration buildcfg) {
 			return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINOBOARDVARIANT) ;
+		}
+
+	},
+	ARDUINO_IDE_VERSION() {
+		@Override
+		public String getValue(IConfiguration buildcfg) {
+			return ArduinoInstancePreferences.GetARDUINODefineValue() ;
 		}
 
 	};

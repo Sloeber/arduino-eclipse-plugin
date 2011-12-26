@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: avr eclipse  ui
 Bundle-SymbolicName: it.baeyens.avreclipse.ui;singleton:=true
-Bundle-Version: 4.0.3
+Bundle-Version: 4.0.5
 Bundle-Activator: it.baeyens.avreclipse.ui.AVRUIPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -90,7 +90,7 @@ Export-Package: it.baeyens.avreclipse.ui.actions;
    org.eclipse.jface.viewers,
    org.eclipse.swt.widgets,
    it.baeyens.avreclipse.core.toolinfo.fuses"
-Bundle-Vendor: %providerName
+Bundle-Vendor: Thomas Holland
 Import-Package: it.baeyens.arduino.common,
  it.baeyens.avreclipse,
  it.baeyens.avreclipse.core,
