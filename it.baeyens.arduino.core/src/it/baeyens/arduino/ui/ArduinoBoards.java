@@ -1,8 +1,7 @@
 package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.avreclipse.AVRPlugin;
-
+import it.baeyens.arduino.common.Common;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,8 +219,8 @@ public class ArduinoBoards {
 			}
 
 		} catch (Exception e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read arduino boards at "  + boardsFile.getPath(), e);
-			AVRPlugin.getDefault().log(status);
+			IStatus status = new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read arduino boards at "  + boardsFile.getPath(), e);
+			Common.log(status);
 		}
 		return mArduinoPathIsValid;
 	};
@@ -304,8 +303,8 @@ public class ArduinoBoards {
 			return output;
 
 		} catch (IOException e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read stream "  , e);
-			AVRPlugin.getDefault().log(status);
+			IStatus status = new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read stream "  , e);
+			Common.log(status);
 		}
 		return null;
 	}

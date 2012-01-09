@@ -1,7 +1,6 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.avreclipse.AVRPlugin;
-
+import it.baeyens.arduino.common.Common;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class Stream {
 
 		} catch (IOException ioe) {
 			IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null);
-			AVRPlugin.getDefault().log(status);
+			Common.log(status);
 			throw new CoreException(status);
 		}
 

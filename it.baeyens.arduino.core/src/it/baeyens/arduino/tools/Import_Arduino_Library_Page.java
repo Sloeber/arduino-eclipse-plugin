@@ -3,7 +3,6 @@ package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -63,7 +62,7 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 		TheLabel.setLayoutData(theGriddata);
 		
 		controlLibraryPath = new Text(composite, SWT.SINGLE | SWT.BORDER);
-        theGriddata = new GridData(GridData.HORIZONTAL_ALIGN_FILL      | GridData.GRAB_HORIZONTAL);
+        theGriddata = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         theGriddata.widthHint = SIZING_TEXT_FIELD_WIDTH;
         //theGriddata.horizontalSpan = 1;
         controlLibraryPath.setLayoutData(theGriddata);		
@@ -91,12 +90,16 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 				}
 				
 				String Path = theDialog.open();
-				if (Path!=null)	controlLibraryPath.setText(Path);
+				if (Path!=null)	
+					{
+					controlLibraryPath.setText(Path);
+					updateWidgetEnablements();
+					}
 			}
 		});
 
 		line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD );
-		line.setText("Arduino library to import");
+		line.setText("Arduino sketch to import to");
 		theGriddata = new GridData(SWT.FILL,SWT.CENTER,true,false);
 		theGriddata.horizontalSpan = 3;
 		line.setLayoutData(theGriddata);
@@ -135,6 +138,12 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 	public String GetLibraryFolder()
 	{
 		return controlLibraryPath.getText()==null ? "" : controlLibraryPath.getText().trim();
+	}
+
+
+
+	public void setImportProject(IProject project) {
+		 setContainerFieldValue(project.getName());
 	}
 
 

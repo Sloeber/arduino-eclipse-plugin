@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.1.3"
+      version="1.1.6"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -15,8 +15,18 @@ a button to build the project
 a button to upload to the arduino board
 a project property page allowing to change the arduino board
 type and the port the arduino is using.
+version 1_1_6
+Some board names contain ( and ) which gives problems when creating
+the arduino project names.
+This has been fixed now.
+When importing a library the selected project is used as the default project.
+Error handling during import pops up now
+Version 1_1_5
+Mac os is supported now. This means the errors have been removed
+and the default values should be ok.
 Version 1_1_3
-Fixes a bug that the latest used com port is used to uload a file to arduino. Now the correct set port is used.
+Fixes a bug that the latest used com port is used to uload a
+file to arduino. Now the correct set port is used.
 version 1_1_2
 The ARDUINO define is now built based on the version.txt file.
 The in eclipse define has been removed.

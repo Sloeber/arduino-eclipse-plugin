@@ -522,8 +522,8 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 	}
 
 	/**
-	 * This method returns the avrdude upload port prefix which is dependent on
-	 * the platform
+	 * This method returns the avrdude configuration name which is dependent on
+	 * the Arduino IDE (1.0 has 1 per project) before that it is always the same
 	 * 
 	 * @return The name of the programmer to use in avrdude
 	 */

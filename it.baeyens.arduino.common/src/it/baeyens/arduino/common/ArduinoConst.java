@@ -23,8 +23,9 @@ public class ArduinoConst {
 	// the prefix used when creating a core library
 	public static final String CoreProjectNamePrefix = ""; //used to be arduino_ but when chaging from MCU to board replaced by nothing
 	//prefix to be added to the arduino environment
-	protected static final String UploadPortPrefix_WIN ="-P"; //"-P\\\\.\\";
+	protected static final String UploadPortPrefix_WIN ="-P\\\\.\\";
 	protected static final String UploadPortPrefix_LINUX ="-P";
+	protected static final String UploadPortPrefix_MAC ="-P";
 	
 	//natures
 	public static final String Cnatureid 		= "org.eclipse.cdt.core.cnature";
@@ -83,11 +84,14 @@ public class ArduinoConst {
 	public static final String LIBRARY_PATH_SUFFIX 			=  "libraries" ;
 	public static final String HEADER_PATH_SUFFIX 			= "hardware/tools/avr/avr/include";
 	protected static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
-	protected static final String AVRDUDE_PATH_SUFFIX_LINUX	= "hardware/tools";
+	protected static final String AVRDUDE_PATH_SUFFIX_LINUX		= "hardware/tools";
+	protected static final String AVRDUDE_PATH_SUFFIX_MAC 		="/hardware/tools/avr/bin";
+	
 	public static final String GCC_PATH_SUFFIX 				= "hardware/tools/avr/bin";
 	public static final String GNU_PATH_SUFFIX 				= "hardware/tools/avr/utils/bin";
 	protected static final String DUDE_CONFIG_SUFFIX_WIN 		= "hardware/tools/avr/etc/avrdude.conf";
 	protected static final String DUDE_CONFIG_SUFFIX_LINUX 		= "hardware/tools/avrdude.conf";
+	protected static final String DUDE_CONFIG_SUFFIX_MACOSX 	= "hardware/tools/avrdude.conf";
 	public static final String BOARDS_FILE_SUFFIX 			= "hardware/arduino/boards.txt";
 	public static final String LIB_FILE_SUFFIX				="lib/version.txt";
 	public static final String VARIANTS_FILE_SUFFIX 			= "hardware/arduino/variants";

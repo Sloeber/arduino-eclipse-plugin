@@ -1,8 +1,7 @@
 package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.avreclipse.AVRPlugin;
-
+import it.baeyens.arduino.common.Common;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -39,6 +38,7 @@ public class Import_Arduino_Library implements IImportWizard {
 		mFolderSelectionPage.setWizard(this);
 		mPages= new IWizardPage[1];
 		mPages[0]=mFolderSelectionPage;
+		mFolderSelectionPage.setImportProject(Common.getProject(selection));
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class Import_Arduino_Library implements IImportWizard {
 		} catch (CoreException e) {
 			e.printStackTrace();
 			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to import library " , e);
-			AVRPlugin.getDefault().log(status);
+			Common.log(status);
 			return false;
 		}
 		return true;

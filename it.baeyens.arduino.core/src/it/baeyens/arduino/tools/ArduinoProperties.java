@@ -4,7 +4,6 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.ui.ArduinoBoards;
-import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfigManager;
 import it.baeyens.avreclipse.core.properties.AVRDudeProperties;
@@ -77,7 +76,7 @@ public class ArduinoProperties {
 				AVRConfigManager.saveConfig(Programmerconfig);
 			} catch (BackingStoreException e) {
 				IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to save the programmer config " + Programmerconfig.getName(), e);
-				AVRPlugin.getDefault().log(status);
+				Common.log(status);
 				e.printStackTrace();
 			}
 		} else {
@@ -107,7 +106,7 @@ public class ArduinoProperties {
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
 		} catch (CoreException e) {
 			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
-			AVRPlugin.getDefault().log(status);
+			Common.log(status);
 
 		}
 		ProgrammerConfigManager AVRConfigManager;
@@ -139,7 +138,7 @@ public class ArduinoProperties {
 			AVRproperties.save();
 		} catch (BackingStoreException e) {
 			IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not write project properties to the preferences.", e);
-			AVRPlugin.getDefault().log(status);
+			Common.log(status);
 		}
 	}
 
