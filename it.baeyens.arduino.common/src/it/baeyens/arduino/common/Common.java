@@ -67,7 +67,7 @@ public class Common extends ArduinoConst {
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String Name) {
-		return Name.trim().replace(" ", "_").replace("/", "_").replace("\\", "_").replace("(", "_").replace("*", "_").replace("?", "_").replace("%", "_").replace(".", "_").replace(":", "_").replace("|", "_").replace("<", "_").replace(">", "_")
+		return Name.trim().replace(" ", "_").replace("/", "_").replace("\\", "_").replace("(", "_").replace(")", "_").replace("*", "_").replace("?", "_").replace("%", "_").replace(".", "_").replace(":", "_").replace("|", "_").replace("<", "_").replace(">", "_")
 				.replace("\"", "_");
 	}
 

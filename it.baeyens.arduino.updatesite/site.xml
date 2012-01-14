@@ -39,6 +39,9 @@
    <feature url="features/it.baeyens.arduino.feature_1.1.6.jar" id="it.baeyens.arduino.feature" version="1.1.6" patch="true">
       <category name="Arduino_ID"/>
    </feature>
+   <feature url="features/it.baeyens.arduino.feature_1.1.7.jar" id="it.baeyens.arduino.feature" version="1.1.7">
+      <category name="Arduino_ID"/>
+   </feature>
    <category-def name="Arduino_ID" label="Arduino">
       <description>
          Arduino related eclipsefeatures
