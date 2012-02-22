@@ -81,19 +81,21 @@ public class ArduinoConst {
 	
 	
 	//Folder Information
-	public static final String LIBRARY_PATH_SUFFIX 			=  "libraries" ;
-	public static final String HEADER_PATH_SUFFIX 			= "hardware/tools/avr/avr/include";
+	public static final String LIBRARY_PATH_SUFFIX 				=  "libraries" ;
+	public static final String HEADER_PATH_SUFFIX 				= "hardware/tools/avr/avr/include";
 	protected static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
 	protected static final String AVRDUDE_PATH_SUFFIX_LINUX		= "hardware/tools";
-	protected static final String AVRDUDE_PATH_SUFFIX_MAC 		="/hardware/tools/avr/bin";
+	protected static final String AVRDUDE_PATH_SUFFIX_MAC 		= AVRDUDE_PATH_SUFFIX_WIN;
 	
-	public static final String GCC_PATH_SUFFIX 				= "hardware/tools/avr/bin";
-	public static final String GNU_PATH_SUFFIX 				= "hardware/tools/avr/utils/bin";
+	public static final String GCC_PATH_SUFFIX 					= AVRDUDE_PATH_SUFFIX_WIN;
+	public static final String GNU_PATH_SUFFIX_WIN 				= "hardware/tools/avr/utils/bin";
+	public static final String GNU_PATH_SUFFIX_LINUX			= GNU_PATH_SUFFIX_WIN;
+	public static final String GNU_PATH_SUFFIX_MACOSX 			= AVRDUDE_PATH_SUFFIX_MAC;
 	protected static final String DUDE_CONFIG_SUFFIX_WIN 		= "hardware/tools/avr/etc/avrdude.conf";
 	protected static final String DUDE_CONFIG_SUFFIX_LINUX 		= "hardware/tools/avrdude.conf";
-	protected static final String DUDE_CONFIG_SUFFIX_MACOSX 	= "hardware/tools/avrdude.conf";
-	public static final String BOARDS_FILE_SUFFIX 			= "hardware/arduino/boards.txt";
-	public static final String LIB_FILE_SUFFIX				="lib/version.txt";
+	protected static final String DUDE_CONFIG_SUFFIX_MACOSX 	= "hardware/tools/avr/etc/avrdude.conf";
+	public static final String BOARDS_FILE_SUFFIX 				= "hardware/arduino/boards.txt";
+	public static final String LIB_FILE_SUFFIX					= "lib/version.txt";
 	public static final String VARIANTS_FILE_SUFFIX 			= "hardware/arduino/variants";
 	
 

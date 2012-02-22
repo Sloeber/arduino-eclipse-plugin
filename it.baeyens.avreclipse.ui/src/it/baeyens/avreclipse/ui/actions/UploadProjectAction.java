@@ -17,6 +17,7 @@ package it.baeyens.avreclipse.ui.actions;
 
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 import it.baeyens.avreclipse.AVRPlugin;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeAction;
 import it.baeyens.avreclipse.core.avrdude.AVRDudeException;
@@ -176,9 +177,8 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 			}
 		} catch (CoreException e) {
 			// Log the Exception
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-					"Can't access project nature", e);
-			AVRPlugin.getDefault().log(status);
+			AVRPlugin.getDefault().log( new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+					"Can't access project nature", e));
 		}
 
 		// Get the active build configuration
@@ -335,11 +335,19 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 		// relative paths are resolved correctly.
 		IPath cwdunresolved = buildcfg.getBuildData().getBuilderCWD();
 		IPath cwd = new Path(BuildMacro.resolveMacros(buildcfg, cwdunresolved.toString()));
-		Job uploadjob = new UploadJob(optionargs, actionargs, cwd, programmer);
+		
+		// Modified by Jan Baeyens to handle to com port better
+
+		//Job uploadjob = new UploadJob(optionargs, actionargs, cwd, programmer); Original code
+		Job uploadjob = new UploadJob(optionargs, actionargs, cwd, programmer,avrdudeprops.getProgrammer().getPort());
+        //end of modified by Jan Baeyens
+
 
 		uploadjob.setRule(new AVRDudeSchedulingRule(programmer));
 		uploadjob.setPriority(Job.LONG);
 		uploadjob.setUser(true);
+		
+
 
 		uploadjob.schedule();
 
@@ -355,14 +363,16 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 		private final List<String>		fActions;
 		private final IPath				fCwd;
 		private final ProgrammerConfig	fProgrammerConfig;
+		private final String			MComPort;
 
 		public UploadJob(List<String> options, List<String> actions, IPath cwd,
-				ProgrammerConfig programmer) {
+				ProgrammerConfig programmer,String Port) {
 			super("AVRDude Upload");
 			fOptions = options;
 			fActions = actions;
 			fCwd = cwd;
 			fProgrammerConfig = programmer;
+			MComPort=Port;
 		}
 
 		@Override
@@ -389,11 +399,42 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 				// in the console anyway.
 				fOptions.addAll(fActions);
 				monitor.subTask("Running AVRDude");
+				
+				// Inserted by Jan Baeyens to toggle the DTR port to rest arduino
+				// I also added code to stop and restart the com port but the functions itself are not yet implemented
+				Boolean WeStoppedTheComPort = false;
+				try
+				{
+				WeStoppedTheComPort= Common.StopSerialMonitor( MComPort);
+				Common.ResetArduino( MComPort, 9600 );
+				}
+				catch ( Exception e)
+				{
+					AVRPlugin.getDefault().log( new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+							"Failed to handle Com port properly", e));
+				}
+				//end of inserted by Jan Baeyens
 
 				// Now avrdude can be started.
 				avrdude.runCommand(fOptions, new SubProgressMonitor(monitor, 1), true, fCwd,
 						fProgrammerConfig);
-
+				
+				// Inserted by Jan Baeyens to toggle the DTR port to rest arduino
+				// I also added code to stop and restart the com port but the functions itself are not yet implmented
+				try
+				{
+				if (WeStoppedTheComPort) 
+				{
+					Common.StartSerialMonitor(MComPort);
+				}
+				}
+				catch ( Exception e)
+				{
+					AVRPlugin.getDefault().log( new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+							"Failed to restart serial monitor", e));					
+				}
+		        //end of inserted by Jan Baeyens
+				
 			} catch (AVRDudeException ade) {
 				// Show an Error message and exit
 				Display display = PlatformUI.getWorkbench().getDisplay();

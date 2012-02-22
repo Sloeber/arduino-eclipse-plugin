@@ -143,7 +143,7 @@ public class Import_Arduino_Library_Page extends WizardResourceImportPage {
 
 
 	public void setImportProject(IProject project) {
-		 setContainerFieldValue(project.getName());
+		if (project!=null) setContainerFieldValue(project.getName());
 	}
 
 

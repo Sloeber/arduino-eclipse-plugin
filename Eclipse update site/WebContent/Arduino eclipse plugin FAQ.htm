@@ -19,6 +19,10 @@
 		<a href="#Contact">How can I contact the author of this great plugin</a><br>
 		<a href="#Versions">On Which versions is this plugin tested?</a><br> 
 		<a href="#platforms">On which platforms is this plugin tested?</a><br>
+		<a href="#serial">Where is the serial monitor?</a><br>
+		<a href="#debug">How Do I debug?</a><br>
+		<a href="#report">Where Can I report bugs?</a><br>
+		<a href="#WINAVR">I use WinAVR...</a><br>
 
 		<h3>Arduino IDE Versus The arduino Plugin</h3>
 		<a href="#why">Why would I want to use this plugin.</a><br> 
@@ -35,8 +39,9 @@
 		<a href="#errors">There are errors and warnings in the	Arduino library.</a><br> 
 		<a href="#modified">I have modified my Arduino setup and ...</a><br>
 		<a href="#canceled">I can not cancel the upload to the Arduino Board</a><br>
-		<a href="#wire">The library Wire does not compile</a>
-
+		<a href="#wire">The library Wire does not compile</a><br>
+		<a href="#LibraryDelete">Deleting a library corrupts my project</a><br>
+		<a href="#Serial">The indexer states Serial does not exist</a>
 		<h1>General</h1>
 		<a name="Contact"></a>
 		<h2>How can I contact the author of this great plugin</h2>
@@ -50,9 +55,27 @@ Note: not all versions are tested on all platforms.
 <a name="platforms"></a>
 <h2>On which platforms is this plugin tested?</h2>
 The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
+<a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get it working on MAC OS. You can find the doc <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">here</a><br>
 Note: not all versions are tested on all platforms.
-
-<h1>Arduino IDE Versus The arduino Plugin</h1>
+<a name="serial"></a>
+<h2>Where is the serial monitor?</h2>
+There is no serial monitor in the tool right now. Use the serial monitor of your choice.<br>
+<a name="debug"></a>
+<h2>How Do I debug?</h2>
+There is no debug functionality with this eclipse plugin.<br>
+<a name="report"></a>
+<h2>Where Can I report bugs?</h2>
+Please report bug at <a href="https://github.com/jantje/arduino-eclipse-plugin/issues">github</a><br>
+<a name="WINAVR"></a>
+<h2>I use WinAVR...</h2>
+Great, excellent choice, a neat tool. This plugin uses WinAVR. The code from WinAVR has been forked and included in this plugin. 
+To avoid conflict between this plugin and WINAVR I had to change all the internal ID's. 
+As a user you should not notice this unless you are opening WINAVR projects with this plugin. <br>
+You may wonder whether it was a good idea to fork. Wouldn't it have been better to build on top like the plugin builds on top of CDT who builds on top of Eclipse.<br>
+I fully agree that this would have been better.  New releases of WinAVR could have been applied without hassle.<br>
+ It was the original idea but due to circumstances (there is no one to blame) it worked out differently.<br>My plugin adds the create arduino sketch, the add library, a preference page, a property page and a sample sketch to start from.<br>
+ <br>So basically when you installed this tool you have the WINAVR on your system. But what is the difference between WINAVR plugin and the WinAVR included in this plugin? <br>1) As mentioned above I had to change all the ID's.<br>2) The WINAVR tool works with external tools like GCC and AVRDude. So does the Arduino IDE.When you set the option &quot;use Arduino IDE tools in Eclipse&quot; you actually set all the WINAVR settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.<br>3)  I fixed some bugs. Each time a tool gets used in a different way some bugs will pop up. I fixed the ones that bothered me.<br>So unless I made a mistake and (as long as there is no newer WinAVR version) you can use only mu plugin to do project development on non-Arduino and Arduino in the same environment.<br>Note that as I only changed the ID's and not the names installing WinAVR next to my plugin works but has the drawback that menu items will appear twice and you can't tell them from each other.
+ <h1>Arduino IDE Versus The arduino Plugin</h1>
 <a name="why"></a>
 <h2>Why would I want to use this plugin</h2>
 This plugin is not meant to replace the Arduino IDE. I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
@@ -129,13 +152,13 @@ you get your first programs running.<br>
 <h2>The plugin doesn't work on my system.</h2>
 First of all the plugin only works on a limited amount of platforms. See the faq for which versions. If you do not use any of these
 operating systems you are out of luck for this plugin.
-Secondly <br>
-If it doesn't work with the IDE it won't work with the plugin.
+<br>Secondly <br>
+If it doesn't work with the  Arduino IDE it won't work with the plugin.
 
-Thirdly<br>
+<br>Thirdly<br>
 there are plenty of settings that can be wrong. If it doesn''t work for you
 install the Arduino IDE in a new folder; install eclipse in a new folder; use a
-new workspace and install the plugin. When doing so
+new workspace and reinstall the plugin. When doing so
 make sure you do not uses spaces in any names. <br>
 
 This way it should work.
@@ -170,18 +193,24 @@ The usage of spaces is known to give problems when used in<br>
 <a name="bugs"></a>
 <h2>Eclipse tells me there are bugs in my code but it compiles ok.</h2>
 Eclipse compiles you code in 2 ways. Once when you request a build (when
-you press on the hammer) and ones when you change code (save a file). The
+you press on the hammer-&gt; compiler) and ones when you change code (indexer). The
 compiler is responsible for the build and the indexer is responsible for the continuous
 build.<br>
 
 The bugs
 (the red animals in the code) you see in the code can be found by any of the 2.
 The indexer behaves weird and sometimes doesn't find declarations that it
-knows. In that case you have the bug without a bug (in other words the code compiles ok).<br>
+knows. In that case you have the bug without a bug (in other words the code compiles ok but the indexer thinks it will not).<br>
 
-Setting the
-option windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers
-seems to have fixed the issue on my system.<br>
+Following things are known to improve the situation<br>
+Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers.<br>
+Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index source and header files opened in the editor.<br>
+Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add arduino.h and or WProgram.h.<br>
+Do next four in this sequence<br>
+Right click the project-&gt;index-&gt;Search for unresolved includes.<br>
+Right click the project-&gt;index-&gt;Freshen all Files.<br>
+Right click the project-&gt;index-&gt;Update with modified files.<br>
+Right click the project-&gt;index-&gt;Rebuild.<br>
 
 <a name="elf"></a>
 <h2>Where is the elf file?</h2>
@@ -220,8 +249,33 @@ Someone reported that pressing the cancel button during upload to arduino locks 
 <a name="wire"></a>
 <h2>The library Wire does not compile</h2>
 The eclipse plugin compiles all files as C++ files the Arduino IDE dos not do so. As a consequence the twi.c is compiled ad C++ by the plugin and as C by the arduino IDE. 
-Modifying the twi.h file to force explicit C function prototyping fixes this problem. See the <a href = "http://arduino.cc/forum/index.php/topic,86344.0.html">Arduino forum thread</a> on how to do this<br>
+Modifying the twi.h file to force explicit C function prototyping fixes this problem. See the <a href = "http://arduino.cc/forum/index.php/topic,86344.0.html">Arduino forum thread</a> on how to do this.<br>
+From version 1.1.8 onwards this should be fixed.<br><br>
 
+<a name="LibraryDelete"></a>
+<h2>Deleting a library corrupts my project</h2>
+To reproduce do the following:
+<br>Create a Arduino sketch project using the wizard.
+<br>Look at the project properties. They should look like the image below<br>
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707813_resized.png"><br>
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707816_resized.png"/>
+add a arduino lirary to your arduino sketch project.
+Look at the project properties. They should look like the image below<br>
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707814_resized.png"><br>
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707817_resized.png"/>
+Delete the Arduino Library
+<br>The project properties should look like any of the 2 above but they look like
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707815_resized.png"/>
+<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707818_resized.png"/><br>
+
+Note that the images above show it for &quot;GNU C&quot;  but the same counts for &quot;GNU C++&quot;<br>
+First deleting all the incorrect values and then setting the correct values back solves the issue.<br>
+<br>
+I can use some help here. I have checked all the code (winAVR and mine) and see nothing that is beeing trigered after the delete. 
+I can see in the .cproject file that the information is corrupt after the delete.<br>
+I have not  been able to reproduce this problem in the CDT only eclipse environment. Any ideas are  welcomed.<br>
+<a name="Serial"></a>
+<h2>The indexer states Serial does not exist</h2>
+This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a>
 </body>
-
 </html>

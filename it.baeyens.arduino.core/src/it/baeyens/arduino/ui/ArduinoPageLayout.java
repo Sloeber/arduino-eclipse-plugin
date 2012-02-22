@@ -4,6 +4,7 @@ import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoProperties;
 
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -19,7 +20,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-//import it.baeyens.arduino.eclipse.*;
 
 /**
  * The ArduinoPageLayout class is used in the new wizard and the project
@@ -36,12 +36,12 @@ public class ArduinoPageLayout {
 
 	// GUI elements
 	private Text controlArduinoPath;
-//	private Button controlBrowseButton;
 	private Combo controlArduinoBoardName;
 	private Text controlMCUName;
 	private Text controlMCUFrequency;
 	private Text controlUploadBaudRate;
-	private Text controlUploadPort;
+	//private Text controlUploadPort;
+	private Combo controlUploadPort;
 	private Text controlBoardVariant;
 	private Text controlUploadProtocol;
 	private Button controlDisableFlushing;
@@ -102,21 +102,6 @@ public class ArduinoPageLayout {
 	};
 
 	
-//	private Listener DigitsOnlyListener = new Listener() {
-//		@Override
-//		public void handleEvent(Event e) {
-//			String instring = e.text;
-//			String outString = "";
-//			char[] chars = new char[instring.length()];
-//			instring.getChars(0, chars.length, chars, 0);
-//			for (int i = 0; i < chars.length; i++) {
-//				if (('0' <= chars[i] && chars[i] <= '9')) {
-//					outString = outString + chars[i];
-//				}
-//			}
-//			e.text = outString;
-//		}
-//	};
 
 	private void createLabel(Composite parent, int ncol, String t) {
 		Label line = new Label(parent, SWT.HORIZONTAL | SWT.BOLD);
@@ -157,24 +142,6 @@ public class ArduinoPageLayout {
 		theGriddata.grabExcessHorizontalSpace = true;
 		controlArduinoPath.setLayoutData(theGriddata);
 	
-
-//		controlBrowseButton = new Button(composite, SWT.NONE);
-//		controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
-//		theGriddata = new GridData();
-//		theGriddata.horizontalAlignment = SWT.LEAD;
-//		controlBrowseButton.setLayoutData(theGriddata);
-//		controlBrowseButton.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent event) {
-//				final Shell shell = new Shell();
-//				DirectoryDialog theDialog = new DirectoryDialog(shell);
-//				theDialog.setFilterPath(controlArduinoPath.getText());
-//				String Path = theDialog.open();
-//				if (Path != null)
-//					controlArduinoPath.setText(Path);
-//			}
-//		});
-
 		createLine(composite, ncol);
 		createLabel(composite, ncol, "Your Arduino board specifications"); //$NON-NLS-1$
 		new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
@@ -187,12 +154,14 @@ public class ArduinoPageLayout {
 		controlArduinoBoardName.setItems(mArduinoBoards.GetArduinoBoards());
 
 		new Label(composite, SWT.None).setText("Port: ");
-		controlUploadPort = new Text(composite, SWT.BORDER);
+		//controlUploadPort = new Text(composite, SWT.BORDER);
+		controlUploadPort = new Combo(composite, SWT.BORDER);// | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalSpan = (ncol - 1);
 		theGriddata.horizontalAlignment = SWT.FILL;
 		controlUploadPort.setLayoutData(theGriddata);
 		controlUploadPort.setEnabled(false);
+		controlUploadPort.setItems(Common.listComPorts());
 
 		createLine(composite, ncol);
 		createLabel(composite, ncol, "The used settings"); //$NON-NLS-1$

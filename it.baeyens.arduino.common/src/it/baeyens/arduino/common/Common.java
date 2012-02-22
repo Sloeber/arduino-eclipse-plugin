@@ -1,5 +1,7 @@
 package it.baeyens.arduino.common;
 
+import it.baeyens.arduino.arduino.Serial;
+
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.resources.IProject;
@@ -67,8 +69,21 @@ public class Common extends ArduinoConst {
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String Name) {
-		return Name.trim().replace(" ", "_").replace("/", "_").replace("\\", "_").replace("(", "_").replace(")", "_").replace("*", "_").replace("?", "_").replace("%", "_").replace(".", "_").replace(":", "_").replace("|", "_").replace("<", "_").replace(">", "_")
-				.replace("\"", "_");
+		return Name.trim().replace(" ", "_")
+						  .replace("/", "_")
+						  .replace("\\", "_")
+						  .replace("(", "_")
+						  .replace(")", "_")
+						  .replace("*", "_")
+						  .replace("?", "_")
+						  .replace("%", "_")
+						  .replace(".", "_")
+						  .replace(":", "_")
+						  .replace("|", "_")
+						  .replace("<", "_")
+						  .replace(">", "_")
+						  .replace(",", "_")
+						  .replace("\"", "_");
 	}
 
 	// public static String getPersistentProperty(String Tag)
@@ -147,7 +162,23 @@ public class Common extends ArduinoConst {
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
 		return DUDE_CONFIG_SUFFIX_WIN;
 	}
-
+	
+	/**
+	 * This method returns the GNU Path suffix which is dependent on the
+	 * platform
+	 * 
+	 * @return dude config suffix
+	 */
+	public static String GNU_PATH_SUFFIX() {
+		if (Platform.getOS().equals(Platform.OS_WIN32))
+			return GNU_PATH_SUFFIX_WIN;
+		if (Platform.getOS().equals(Platform.OS_LINUX))
+			return GNU_PATH_SUFFIX_LINUX;
+		if (Platform.getOS().equals(Platform.OS_MACOSX))
+			return GNU_PATH_SUFFIX_MACOSX;
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
+		return GNU_PATH_SUFFIX_WIN;
+	}
 	/**
 	 * This method returns the avrdude path suffix which is dependent on the
 	 * platform
@@ -274,6 +305,82 @@ public class Common extends ArduinoConst {
 			}
 		}
 		return null;
+	}
+	
+	public static void ResetArduino(String ComPort,int UploadSpeed)
+	{
+//		TODO debug the code from the arduino IDE below
+       
+        // Cleanup the serial buffer
+		Serial serialPort;
+        try {
+          serialPort = new Serial( ComPort,UploadSpeed);
+        } catch(Exception e) {
+            e.printStackTrace();
+            Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " +ComPort, e));
+            return;
+            //throw new RunnerException(e.getMessage());
+          }  
+          byte[] readBuffer;
+          while(serialPort.available() > 0) {
+            readBuffer = serialPort.readBytes();
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {}
+          }
+
+          serialPort.setDTR(false);
+          serialPort.setRTS(false);
+
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException e) {}
+
+          serialPort.setDTR(true);
+          serialPort.setRTS(true);
+          
+          serialPort.dispose();
+     
+	}
+
+	public static Boolean StopSerialMonitor(String mComPort) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static void StartSerialMonitor(String mComPort) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public static  String[] listComPorts()
+	{
+		return Serial.list();
+	}
+
+	public static String SerialDllName() {
+		// TODO Auto-generated method stub
+		if (Platform.getOS().equals(Platform.OS_WIN32))
+		{
+			if(Platform.getOSArch().equals(Platform.ARCH_X86_64))
+					{
+				return "rxtxSerial64";
+					}
+			return "rxtxSerial";
+		}
+		if (Platform.getOS().equals(Platform.OS_LINUX))
+		{
+			if(Platform.getOSArch().equals(Platform.ARCH_IA64))
+				return "rxtxSerial";
+			if(Platform.getOSArch().equals(Platform.ARCH_X86))
+				return "rxtxSerial";
+			if(Platform.getOSArch().equals(Platform.ARCH_X86_64))
+				return "rxtxSerialx86_64";
+		}	
+		if (Platform.getOS().equals(Platform.OS_MACOSX))
+			return "rxtxSerial";
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system for serial functionality", null));
+		return "rxtxSerial";
 	}
 
 }

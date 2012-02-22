@@ -508,7 +508,7 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setAVRWINSettings( mArduinoPath.append(AVRDUDE_PATH_SUFFIX()).toOSString(),
 						mArduinoPath.append(GCC_PATH_SUFFIX).toString(),
-						mArduinoPath.append(GNU_PATH_SUFFIX).toString() ,
+						mArduinoPath.append(GNU_PATH_SUFFIX()).toString() ,
 						mArduinoPath.append(HEADER_PATH_SUFFIX).toOSString(),
 						"true");
 		}

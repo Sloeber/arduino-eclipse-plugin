@@ -10,16 +10,16 @@
         </div>
 	<div id="midcolumn">
 <h1>Keeping the eclipse project compatible with the IDE</h1> 
-	Currently the arduino eclipse plugin is not compatible with the Arduino IDE. The incompatibility is caused by the fact that the arduino eclipse pligin works with C++ files only. The arduino IDE  can handle C++ files but needs at least one PDE file (for amongst others) to identify the classpath.<br>To be able to compile your code directly in the Arduino IDE you need to do something extra at three common actions  doring Arduino code development<br/>
-	1) After installation tell Eclipse to process ino files like C++ file<br/> 
-	2) After creation of a new sketch project tell the compiler to treat pde files like C++ files (-x c++ compiler option) and rename cpp file to ino (or pde if you are using a version below 1.0) 
-	<br>3) After inclusion of a library add an include of the library to the ino file. <br>4) In the Arduino IDE preferences set the flag &quot;use external editor&quot; on<br>5)in the arduino IDE open the ino file from step 2.<br/><br><h1>Note that if an imported library contains examples you will have to move them to another location  on your disk in the current
+	Currently the arduino eclipse plugin is not compatible with the Arduino IDE. The incompatibility is caused by the fact that the arduino eclipse pligin works with C++ files only. The arduino IDE  can handle C++ files but needs at least one  ino/PDE file (for amongst others) to identify the classpath.<br>To be able to compile your code directly in the Arduino IDE you need to do something extra at three common actions  during Arduino code development<br/>
+	1) After installation tell Eclipse to process ino(and/or  pde) files like C++ file<br/> 
+	2) After creation of a new sketch project rename cpp file to ino (or pde if you are using a version below 1.0) 
+	<br>3) After inclusion of a library add an include of the library to the ino file. <br>4)optional:  In the Arduino IDE preferences set the flag &quot;use external editor&quot; on<br>5)in the arduino IDE open the ino file from step 2.<br/><br><h1>Note that if an imported library contains examples in a folder which doesn't matc ?xamples you will have to move them to another location  on your disk in the current
 	version of the plugin.</h1>
 	<h2>And here are detailed instructions on how to do this</h2><h3>After installation tell Eclipse to process ino like C++ file</h3> In the menu select 
 	Windows -&gt;preferences <br/>
 	In the section C/C++ -&gt; file types press new <br/>
-	enter *.pde as filename and C++Source file as type.<br/><h3> 
-	After creation of a new sketch project tell the compiler to treat ino files like C++ files</h3> 
+	enter *.pde and or *.ino as filename and C++Source file as type.<br/><h3> 
+	After creation of a new sketch project tell the compiler to treat ino files like C++ files (this step is no longer needed)</h3> 
 	right click on the project and select properties <br/>
 	In the section C/C++ -&gt; settings select the tab tool settings (normally already selected)<br/>
 	In the section AVR C++ compiler change the command line pattern by adding -x c++ before ${INPUTS} <br/>
@@ -30,7 +30,7 @@
 	<h3>After creation of a new sketch rename cpp file to pde</h3>Right click the .cpp file created by the new arduino sketch wizard<br/>
 	select rename<br/>
 	change the .cpp to .ino 
-	<h3>After inclusion of a library add an include reference to the library to the ino file.</h3> 
+	or pde<h3>After inclusion of a library add an include reference to the library to the ino  or pde file.</h3> 
 	In the ino file at the top add a line that looks like<br/>
 		#include &lt; [the imported library].h &gt; <br/>
 		 
