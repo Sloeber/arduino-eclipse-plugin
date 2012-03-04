@@ -24,11 +24,16 @@ import java.io.*;
 
 class Configure extends Frame
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Checkbox cb[];
 	Panel p1;
 	static final int PORT_SERIAL	=	1;
 	static final int PORT_PARALLEL	=	2;
 	int PortType = PORT_SERIAL;
+//	private static Configure configure;
 
 	private void saveSpecifiedPorts()
 	{
@@ -171,10 +176,10 @@ class Configure extends Frame
 		);
 		f.setVisible(true);
 	}
-	public static void main (String[] args)
-	{
-		new Configure();
-	}
+//	public static void main (String[] args)
+//	{
+//		configure = new Configure();
+//	}
 	String EnumMessage = new String( "gnu.io.rxtx.properties has not been detected.\n\nThere is no consistant means of detecting ports on this operating System.  It is necessary to indicate which ports are valid on this system before proper port enumeration can happen.  Please check the ports that are valid on this system and select Save");
 }
 

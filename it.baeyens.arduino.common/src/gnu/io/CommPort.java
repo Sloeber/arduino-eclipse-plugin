@@ -64,7 +64,7 @@ public abstract class CommPort extends Object {
 			CommPortIdentifier cp = 
 				CommPortIdentifier.getPortIdentifier(this);
 			if ( cp != null )
-				cp.getPortIdentifier(this).internalClosePort();
+				CommPortIdentifier.getPortIdentifier(this).internalClosePort();
 		}
 		catch (NoSuchPortException e)
 		{

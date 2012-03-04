@@ -29,6 +29,10 @@ import java.util.*;
 
 public class RawPortEvent extends EventObject
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int DATA_AVAILABLE      =1;
 	public static final int OUTPUT_BUFFER_EMPTY =2;
 	public static final int CTS                 =3;

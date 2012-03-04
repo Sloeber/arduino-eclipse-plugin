@@ -27,6 +27,10 @@ import java.util.*;
 
 public class ParallelPortEvent extends EventObject
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static public final int  PAR_EV_ERROR   =1;
 	static public final int  PAR_EV_BUFFER  =2;
 

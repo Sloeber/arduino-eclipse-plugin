@@ -608,6 +608,7 @@ final public class RXTXPort extends SerialPort
 	*  @param state
 	*  @return boolean true if the port is closing
 	*/
+	@SuppressWarnings("unused")
 	public boolean sendEvent( int event, boolean state )
 	{
 		if (debug_events)

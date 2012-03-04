@@ -24,7 +24,6 @@
 
 package it.baeyens.arduino.arduino;
 
-//import processing.core.*;
 
 import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
@@ -69,30 +68,6 @@ public class Serial implements SerialPortEventListener {
 
 	MessageConsumer consumer;
 
-	// public Serial(boolean monitor) throws SerialException {
-	// this(Preferences.get("serial.port"),
-	// Preferences.getInteger("serial.debug_rate"),
-	// Preferences.get("serial.parity").charAt(0),
-	// Preferences.getInteger("serial.databits"),
-	// new Float(Preferences.get("serial.stopbits")).floatValue());
-	// this.monitor = monitor;
-	// }
-	//
-	// public Serial() throws SerialException {
-	// this(Preferences.get("serial.port"),
-	// Preferences.getInteger("serial.debug_rate"),
-	// Preferences.get("serial.parity").charAt(0),
-	// Preferences.getInteger("serial.databits"),
-	// new Float(Preferences.get("serial.stopbits")).floatValue());
-	// }
-	//
-	// public Serial(int irate) throws SerialException {
-	// this(Preferences.get("serial.port"), irate,
-	// Preferences.get("serial.parity").charAt(0),
-	// Preferences.getInteger("serial.databits"),
-	// new Float(Preferences.get("serial.stopbits")).floatValue());
-	// }
-	//
 	 public Serial(String iname, int irate) throws SerialException {
 	 this(iname, irate, 'N',8,1.0f);
 	 }
@@ -100,10 +75,6 @@ public class Serial implements SerialPortEventListener {
 	public Serial(String iname, int irate,
                  char iparity, int idatabits, float istopbits)
   throws SerialException {
-    //if (port != null) port.close();
-    //this.parent = parent;
-    //parent.attach(this);
-
     this.rate = irate;
 
     parity = SerialPort.PARITY_NONE;
@@ -118,76 +89,40 @@ public class Serial implements SerialPortEventListener {
 
     try {
       port = null;
-      Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+      CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
       while (portList.hasMoreElements()) {
         CommPortIdentifier portId =
           (CommPortIdentifier) portList.nextElement();
 
         if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-          //System.out.println("found " + portId.getName());
           if (portId.getName().equals(iname)) {
-            //System.out.println("looking for "+iname);
             port = (SerialPort)portId.open("serial madness", 2000);
             input = port.getInputStream();
             output = port.getOutputStream();
             port.setSerialPortParams(rate, databits, stopbits, parity);
             port.addEventListener(this);
             port.notifyOnDataAvailable(true);
-            //System.out.println("opening, ready to roll");
           }
         }
       }
     } catch (PortInUseException e) {
     		  Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " +iname+ " already in use. Try quiting any programs that may be using it", e));
     		  return;
-//    	      throw new SerialException(
-//        I18n.format(
-//          _("Serial port ''{0}'' already in use. Try quiting any programs that may be using it."),
-//          iname
-//        )
-//      );
     } catch (Exception e) {
 		  Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " +iname, e));
 		  return;
-//      throw new SerialException(
-//        I18n.format(
-//          _("Error opening serial port ''{0}''."),
-//          iname
-//        ),
-//        e
-//      );
-//      //errorMessage("<init>", e);
-//      //exception = e;
-//      //e.printStackTrace();
     }
     
     if (port == null) {
-		  Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " +iname+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+    	//jaba 28 feb 2012. I made the log below a warning for issue #7
+		  Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial port " +iname+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
 		  return;    	
-//      throw new SerialNotFoundException(
-//        I18n.format(
-//          _("Serial port ''{0}'' not found. Did you select the right one from the Tools > Serial Port menu?"),
-//          iname
-//        )
-//      );
     }
   }
 
 	public void setup() {
-		// parent.registerCall(this, DISPOSE);
 	}
 
-	// public void size(int w, int h) { }
-
-	// public void pre() { }
-
-	// public void draw() { }
-
-	// public void post() { }
-
-	// public void mouse(java.awt.event.MouseEvent event) { }
-
-	// public void key(java.awt.event.KeyEvent e) { }
 
 	public void dispose() {
 		try {
@@ -218,22 +153,11 @@ public class Serial implements SerialPortEventListener {
 	}
 
 	synchronized public void serialEvent(SerialPortEvent serialEvent) {
-		// System.out.println("serial port event"); // " + serialEvent);
-		// System.out.flush();
-		// System.out.println("into");
-		// System.out.flush();
-		// System.err.println("type " + serialEvent.getEventType());
-		// System.err.println("ahoooyey");
-		// System.err.println("ahoooyeysdfsdfsdf");
+
 		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-			// System.out.println("data available");
-			// System.err.flush();
+
 			try {
 				while (input.available() > 0) {
-					// if (input.available() > 0) {
-					// serial = input.read();
-					// serialEvent();
-					// buffer[bufferCount++] = (byte) serial;
 					synchronized (buffer) {
 						if (bufferLast == buffer.length) {
 							byte temp[] = new byte[bufferLast << 1];
@@ -245,24 +169,14 @@ public class Serial implements SerialPortEventListener {
 							System.out.print((char) input.read());
 						if (this.consumer != null)
 							this.consumer.message("" + (char) input.read());
-
-						/*
-						 * System.err.println(input.available() + " " + ((char)
-						 * buffer[bufferLast-1]));
-						 */// }
 					}
 				}
-				// System.out.println("no more");
 
 			} catch (IOException e) {
 				errorMessage("serialEvent", e);
-				// e.printStackTrace();
-				// System.out.println("angry");
 			} catch (Exception e) {
 			}
 		}
-		// System.out.println("out of");
-		// System.err.println("out of event " + serialEvent.getEventType());
 	}
 
 	/**
@@ -416,7 +330,6 @@ public class Serial implements SerialPortEventListener {
 			int length = found - bufferIndex + 1;
 			if (length > outgoing.length) {
 				  Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "readBytesUntil() byte buffer is too small for the " +length+ " bytes up to and including char " + interesting, null));
-//				System.err.println(I18n.format(_("readBytesUntil() byte buffer is too small for the {0}" + " bytes up to and including char {1}"), length, interesting));
 				return -1;
 			}
 			// byte outgoing[] = new byte[length];
@@ -479,7 +392,6 @@ public class Serial implements SerialPortEventListener {
 			output.flush(); // hmm, not sure if a good idea
 
 		} catch (Exception e) { // null pointer or serial port dead
-			// errorMessage("write", e);
 			e.printStackTrace();
 		}
 	}
@@ -513,14 +425,11 @@ public class Serial implements SerialPortEventListener {
 	 * knows.
 	 */
 	static public String[] list() {
-		Vector list = new Vector();
+		Vector<String> list = new Vector<String>();
 		try {
-			// System.err.println("trying");
-			Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-			// System.err.println("got port list");
+			CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
 			while (portList.hasMoreElements()) {
 				CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-				// System.out.println(portId);
 
 				if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 					String name = portId.getName();
@@ -529,14 +438,11 @@ public class Serial implements SerialPortEventListener {
 			}
 
 		} catch (UnsatisfiedLinkError e) {
-			// System.err.println("1");
 			errorMessage("ports", e);
 
 		} catch (Exception e) {
-			// System.err.println("2");
 			errorMessage("ports", e);
 		}
-		// System.err.println("move out");
 		String outgoing[] = new String[list.size()];
 		list.copyInto(outgoing);
 		return outgoing;
@@ -549,59 +455,8 @@ public class Serial implements SerialPortEventListener {
 	static public void errorMessage(String where, Throwable e) {
 		  Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " +where, e));
 		
-//		System.err.println(I18n.format(_("Error inside Serial.{0}()"), where));
-//		e.printStackTrace();
 	}
 }
 
-/*
- * class SerialMenuListener implements ItemListener { //public
- * SerialMenuListener() { }
- * 
- * public void itemStateChanged(ItemEvent e) { int count =
- * serialMenu.getItemCount(); for (int i = 0; i < count; i++) {
- * ((CheckboxMenuItem)serialMenu.getItem(i)).setState(false); } CheckboxMenuItem
- * item = (CheckboxMenuItem)e.getSource(); item.setState(true); String name =
- * item.getLabel(); //System.out.println(item.getLabel());
- * PdeBase.properties.put("serial.port", name); //System.out.println("set to " +
- * get("serial.port")); } }
- */
 
-/*
- * protected Vector buildPortList() { // get list of names for serial ports //
- * have the default port checked (if present) Vector list = new Vector();
- * 
- * //SerialMenuListener listener = new SerialMenuListener(); boolean problem =
- * false;
- * 
- * // if this is failing, it may be because // lib/javax.comm.properties is
- * missing. // java is weird about how it searches for java.comm.properties //
- * so it tends to be very fragile. i.e. quotes in the CLASSPATH // environment
- * variable will hose things. try { //System.out.println("building port list");
- * Enumeration portList = CommPortIdentifier.getPortIdentifiers(); while
- * (portList.hasMoreElements()) { CommPortIdentifier portId =
- * (CommPortIdentifier) portList.nextElement(); //System.out.println(portId);
- * 
- * if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) { //if
- * (portId.getName().equals(port)) { String name = portId.getName();
- * //CheckboxMenuItem mi = //new CheckboxMenuItem(name,
- * name.equals(defaultName));
- * 
- * //mi.addItemListener(listener); //serialMenu.add(mi); list.addElement(name);
- * } } } catch (UnsatisfiedLinkError e) { e.printStackTrace(); problem = true;
- * 
- * } catch (Exception e) { System.out.println("exception building serial menu");
- * e.printStackTrace(); }
- * 
- * //if (serialMenu.getItemCount() == 0) {
- * //System.out.println("dimming serial menu"); //serialMenu.setEnabled(false);
- * //}
- * 
- * // only warn them if this is the first time if (problem && PdeBase.firstTime)
- * { JOptionPane.showMessageDialog(this, //frame,
- * "Serial port support not installed.\n" +
- * "Check the readme for instructions\n" +
- * "if you need to use the serial port.    ", "Serial Port Warning",
- * JOptionPane.WARNING_MESSAGE); } return list; }
- */
 

@@ -321,7 +321,8 @@ public class Common extends ArduinoConst {
             return;
             //throw new RunnerException(e.getMessage());
           }  
-          byte[] readBuffer;
+          @SuppressWarnings("unused")
+		byte[] readBuffer;
           while(serialPort.available() > 0) {
             readBuffer = serialPort.readBytes();
             try {

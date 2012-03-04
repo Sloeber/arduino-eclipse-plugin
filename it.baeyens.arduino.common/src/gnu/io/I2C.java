@@ -407,6 +407,7 @@ final class I2C  extends  I2CPort {
 			}
 			Minimum=Math.min(Minimum,threshold);
 			if(Minimum == 0) Minimum=1;
+			@SuppressWarnings("unused")
 			int Available=available();
 			int Ret = readArray( b, off, Minimum);
 			return Ret;

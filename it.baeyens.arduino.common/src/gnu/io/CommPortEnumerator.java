@@ -27,7 +27,7 @@ import java.util.Enumeration;
 */
 
 
-class CommPortEnumerator implements Enumeration
+public class CommPortEnumerator implements Enumeration<Object>
 {
 	private CommPortIdentifier index;
 	private final static boolean debug = false;
