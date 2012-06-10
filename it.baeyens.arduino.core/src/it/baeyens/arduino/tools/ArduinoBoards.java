@@ -1,4 +1,4 @@
-package it.baeyens.arduino.ui;
+package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
@@ -41,6 +41,7 @@ public class ArduinoBoards {
 	private String ProcessorTypeKeyTAG = "build.mcu";
 	private String UploadSpeedKeyTAG = "upload.speed";
 	private String BoardVariantTAG = "build.variant";
+	private String BuildCoreFolderTAG ="build.core";
 	private String UploadProtocol = "upload.protocol";
 	private String disableFlushingKeyTAG = "upload.disable_flushing"; // not yet
 																		// used
@@ -167,6 +168,27 @@ public class ArduinoBoards {
 		}
 		return false;
 	}
+	
+	/**getBuildCoreFolder returns the folder that con,tains the arduino library code for a given board. <br/>
+	 * This function assumes (and does not test so will fail) that the board file has been loaded.
+	 * This function is currently unused
+	 * 
+	 * @param boardName the board name for which the disable flushing flag will be returned
+	 * @return the subfolder of arduino/cores to be used as the library souce
+	 * @author Jan Baeyens
+	 */	
+	public String getBuildCoreFolder(String BoardName) {
+		String mapName = getBoardNames(BoardName);
+
+		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+		if (settings != null) {
+			String TagContent = settings.get(BuildCoreFolderTAG);
+			if (TagContent != null)
+				return TagContent;
+		}
+		return "arduino";
+	}
+	
 
 	/**
 	 * GetArduinoBoards returns all the boards that are in the currently loaded board.txt file.

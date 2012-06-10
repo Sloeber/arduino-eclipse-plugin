@@ -58,6 +58,9 @@ public class ArduinoConst {
 	//preference keys
 	public static final String KEY_USE_ARDUINO_IDE_TOOLS 	= "Use Arduino IDE Tools";
 	public static final String KEY_ARDUINO_IDE_VERSION 	= "Arduino IDE Version";
+	public static final String KEY_RXTXDISABLED				= "Arduino DisAbleRXTX";
+	public static final String KEY_RXTX_LAST_USED_LINE_INDES ="Serial Monitor Last Used Line Ending index";
+	public static final String KEY_RXTX_LAST_USED_AUTOSCROLL ="Serial Monitor Last Used auto scroll setting";
 	
 	//Win AVR keys
 	protected static final String KEY_HEADER_PATH 				= "AVRINCLUDE";
@@ -71,6 +74,12 @@ public class ArduinoConst {
 	public static final String KEY_ARDUINOBOARD 			= "Arduino Board";
 	public static final String KEY_ARDUINOPORT 				= "Arduino Port";
 	public static final String KEY_ARDUINOBOARDVARIANT		= "Arduino Board Variant";
+	public static final String KEY_PRIVATE_LIBRARY_PATH 	= "Private Library Path";
+	
+	//Serial monitor keys
+	public static final String KEY_SERIAlRATE 				= "Serial monitor Last selected rate";
+	public static final String KEY_SERIAlPORT 				= "Serial monitor last selected Port";
+	
 
 	
 	private static final String KEY_SYSTEM_PATH 			= "/systempath/";
@@ -82,6 +91,7 @@ public class ArduinoConst {
 	
 	//Folder Information
 	public static final String LIBRARY_PATH_SUFFIX 				=  "libraries" ;
+	public static final String ARDUINO_PATH_CORE				= "hardware/arduino/cores";
 	public static final String HEADER_PATH_SUFFIX 				= "hardware/tools/avr/avr/include";
 	protected static final String AVRDUDE_PATH_SUFFIX_WIN		= "hardware/tools/avr/bin";
 	protected static final String AVRDUDE_PATH_SUFFIX_LINUX		= "hardware/tools";
@@ -97,6 +107,13 @@ public class ArduinoConst {
 	public static final String BOARDS_FILE_SUFFIX 				= "hardware/arduino/boards.txt";
 	public static final String LIB_FILE_SUFFIX					= "lib/version.txt";
 	public static final String VARIANTS_FILE_SUFFIX 			= "hardware/arduino/variants";
+	
+	public static final String PATH_VARIABLE_NAME_ARDUINO_LIB	= "ArduinoLibPath";
+	public static final String PATH_VARIABLE_NAME_PRIVATE_LIB	= "PivateLibPath";
+	public static final String PATH_VARIABLE_NAME_ARDUINO_CORE	= "CoreArduinoPath";
+	public static final String PATH_VARIABLE_NAME_ARDUINO_PINS	= "PinArduinoPath";
+	public static final String KEY_ARDUINOBUILDCOREFOLDER = "Build Core Folder Name";
+	
 	
 
 

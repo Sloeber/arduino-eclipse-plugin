@@ -3,7 +3,6 @@ package it.baeyens.arduino.ui;
 import it.baeyens.arduino.tools.ArduinoProperties;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -59,11 +58,11 @@ public void save(IProject project){
 	mPageLayout.save(project);
 }
 
-public IPath getArduinoSourceCodeLocation()
-{
-	
-	return mPageLayout.getArduinoSourceCodeLocation();
-}
+//public IPath getArduinoSourceCodeLocation()
+//{
+//	
+//	return mPageLayout.getArduinoSourceCodeLocation();
+//}
 
 public String GetMCUName()
 {

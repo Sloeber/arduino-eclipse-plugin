@@ -2,11 +2,11 @@ package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoBoards;
 import it.baeyens.arduino.tools.ArduinoProperties;
 
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -44,6 +44,7 @@ public class ArduinoPageLayout {
 	private Combo controlUploadPort;
 	private Text controlBoardVariant;
 	private Text controlUploadProtocol;
+	private Text controlBuildCoreFolder;
 	private Button controlDisableFlushing;
 
 	// the properties to modify
@@ -206,6 +207,14 @@ public class ArduinoPageLayout {
 		new Label(composite, SWT.NONE).setText("Disable Flushing:"); //$NON-NLS-1$
 		controlDisableFlushing = new Button(composite, SWT.CHECK);
 		controlDisableFlushing.setEnabled(false);
+		
+		new Label(composite, SWT.NONE).setText("Library folder:"); //$NON-NLS-1$
+		controlBuildCoreFolder = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlBuildCoreFolder.setLayoutData(theGriddata);
+		controlBuildCoreFolder.setEnabled(false);
+		
 
 		// Create the control to alert parents of changes
 		feedbackControl = new Text(composite, SWT.None);
@@ -220,6 +229,7 @@ public class ArduinoPageLayout {
 		controlArduinoPath.setText(ArduinoInstancePreferences.getArduinoPath().toOSString());
 		controlArduinoBoardName.setText(mArduinoProperties.getArduinoBoardName());
 		controlUploadPort.setText(mArduinoProperties.getUploadPort());
+		controlBuildCoreFolder.setText(mArduinoProperties.getBuildCoreFolder());
 		showBoardSetting();
 
 		// Set the listeners
@@ -229,6 +239,8 @@ public class ArduinoPageLayout {
 //		controlMCUFrequency.addListener(SWT.Modify, fieldModifyListener);
 //		controlMCUFrequency.addListener(SWT.Verify, DigitsOnlyListener); // only allow digits
 
+		
+		
 		// sets which fields can be edited
 		EnableControls();
 		validatePage();
@@ -253,6 +265,7 @@ public class ArduinoPageLayout {
 		controlDisableFlushing.setSelection(mArduinoBoards.getDisableFlushing(BoardName));
 		controlBoardVariant.setText(mArduinoBoards.getBoardVariant(BoardName));
 		controlUploadProtocol.setText(mArduinoBoards.getUploadProtocol(BoardName));
+		controlBuildCoreFolder.setText(mArduinoBoards.getBuildCoreFolder(BoardName));
 	}
 
 	public void setToDefaults() {
@@ -267,6 +280,7 @@ public class ArduinoPageLayout {
 		mArduinoProperties.setDisabledFlushing(controlDisableFlushing.getSelection());
 		mArduinoProperties.setBoardVariant(controlBoardVariant.getText().trim());
 		mArduinoProperties.setUploadProtocol(controlUploadProtocol.getText().trim());
+		mArduinoProperties.setBuildCoreFolder(controlBuildCoreFolder.getText().trim());
 
 		mValidAndComplete = mArduinoPathIsValid && !controlArduinoBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("");
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");
@@ -281,14 +295,14 @@ public class ArduinoPageLayout {
 		mArduinoProperties.save(project);
 	}
 
-	/**getArduinoSourceCodeLocation returns the source code location
-	 * 
-	 * @return the source code location of arduino. That is the full path
-	 */
-	public IPath getArduinoSourceCodeLocation() {
-
-		return mArduinoProperties.getArduinoSourceCodeLocation();
-	}
+//	/**getArduinoSourceCodeLocation returns the source code location
+//	 * 
+//	 * @return the source code location of arduino. That is the full path
+//	 */
+//	public IPath getArduinoSourceCodeLocation() {
+//
+//		return mArduinoProperties.getArduinoSourceCodeLocation();
+//	}
 	/**getMCUName returns the MCU name
 	 * 
 	 * @return the MCU name

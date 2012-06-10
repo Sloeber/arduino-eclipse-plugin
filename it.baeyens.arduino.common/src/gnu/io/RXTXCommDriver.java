@@ -176,7 +176,7 @@ public class RXTXCommDriver implements CommDriver
 	) {
 		int i =0;
 		int p =0 ;
-		/* FIXME quick fix to get COM1-8 on windows working.  The
+		/* FIX ME quick fix to get COM1-8 on windows working.  The
 		   Read test is not working properly and its crunch time...
 		if(osName.toLowerCase().indexOf("windows") != -1 )
 		{
@@ -593,7 +593,7 @@ public class RXTXCommDriver implements CommDriver
 						};
 						CandidatePortPrefixes=Temp;
 					}
-					else if(osName.equals("FreeBSD")) //FIXME this is probably wrong
+					else if(osName.equals("FreeBSD")) //FIX ME this is probably wrong
 					{
 						String[] Temp = {
 							"ttyd",    //general purpose serial ports
@@ -612,7 +612,7 @@ public class RXTXCommDriver implements CommDriver
 						};
 						CandidatePortPrefixes=Temp;
 					}
-					else if(osName.equals("NetBSD")) // FIXME this is probably wrong
+					else if(osName.equals("NetBSD")) // FIX ME this is probably wrong
 					{
 						String[] Temp = {
 							"tty0"  // netbsd serial ports
@@ -745,11 +745,11 @@ public class RXTXCommDriver implements CommDriver
 			*/
 				if(osName.equals("Linux")
 			/*
-				|| osName.equals("NetBSD") FIXME
-				|| osName.equals("HP-UX")  FIXME
-				|| osName.equals("Irix")   FIXME
-				|| osName.equals("BeOS")   FIXME
-				|| osName.equals("Compaq's Digital UNIX")   FIXME
+				|| osName.equals("NetBSD") FIX ME
+				|| osName.equals("HP-UX")  FIX ME
+				|| osName.equals("Irix")   FIX ME
+				|| osName.equals("BeOS")   FIX ME
+				|| osName.equals("Compaq's Digital UNIX")   FIX ME
 			*/
 				)
 				{

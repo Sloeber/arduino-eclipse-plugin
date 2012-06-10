@@ -4,7 +4,6 @@ package it.baeyens.arduino.tools;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.ui.Stream;
 import it.baeyens.avreclipse.core.preferences.AVRDudePreferences;
 import it.baeyens.avreclipse.core.preferences.AVRPathsPreferences;
 import org.eclipse.core.runtime.IStatus;
@@ -56,7 +55,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
  * @author Jan Baeyens
  * 
  */
-public class ArduinoHelpers extends ArduinoInstancePreferences {
+public class ArduinoHelpers extends Common {
 
 	/**
 	 * ChangeProjectReference changes the reference from one project to another.
@@ -262,6 +261,66 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 
 	}
 
+	
+	/**
+	 * This method creates a link folder in the project and add the folder as a
+	 * source path to the project it also adds the path to the include folder if
+	 * the includepath parameter points to a path that contains a subfolder
+	 * named "utility" this subfolder will be added to the include path as well <br/>
+	 * <br/>
+	 * 
+	 * note Arduino has these subfolders in the libraries that need to be
+	 * include.<br/>
+	 * <br/>
+	 * 
+	 * note that in the current eclipse version, there is no need to add the
+	 * subfolder as a code folder. This may change in the future as it looks
+	 * like a bug to me.<br/>
+	 * 
+	 * @param project
+	 * @param Path
+	 * @throws CoreException
+	 * 
+	 * @see addLibraryDependency
+	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 */
+	public static void addCodeFolder(IProject project, String PathVarName, String SubFolder) throws CoreException 
+	{
+		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+		ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
+		ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
+
+		IFolder link = project.getFolder(SubFolder);
+		IPath location = new Path(PathVarName).append(SubFolder);
+		link.createLink(location, IResource.NONE, null);
+		// Link is now created
+
+		// Use link to add the source
+		Path ExcludeList[] = new Path[1];
+		ExcludeList[0] = new Path("?xamples/*");
+		ICSourceEntry TheCEntry = new CSourceEntry(link.getFullPath(), ExcludeList, 0);
+		ICSourceEntry[] OrgSourceEntries = configurationDescription.getSourceEntries();
+		ICSourceEntry[] sourceEntries = new CSourceEntry[OrgSourceEntries.length + 1];
+		System.arraycopy(OrgSourceEntries, 0, sourceEntries, 0, OrgSourceEntries.length);
+		sourceEntries[OrgSourceEntries.length] = TheCEntry;
+		configurationDescription.setSourceEntries(sourceEntries);
+		// source has been added
+
+		addIncludeFolder(configurationDescription, link.getFullPath());
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPathVariableManager pathMan = workspace.getPathVariableManager();
+		File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append("utility").toString());
+		if (file.exists()) {
+			addIncludeFolder(configurationDescription, link.getFullPath().append("utility"));
+		}
+
+		projectDescription.setActiveConfiguration(configurationDescription);
+		projectDescription.setCdtProjectCreated();
+		mngr.setProjectDescription(project, projectDescription, true, null);
+		
+	}
+	
+	
 	/**
 	 * This method creates a link folder in the project and add the folder as a
 	 * source path to the project it also adds the path to the include folder if
@@ -286,9 +345,6 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 	 */
 	public static void addCodeFolder(IProject project, IPath Path) throws CoreException {
 
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-		ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
 
 		// create a link to the path
 		String NiceName = Path.lastSegment();
@@ -299,32 +355,9 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 		IPathVariableManager pathMan = workspace.getPathVariableManager();
 
 		pathMan.setURIValue(PathName, ShortPath);
+		
+		addCodeFolder(project,PathName,NiceName);
 
-		IFolder link = project.getFolder(NiceName);
-		IPath location = new Path(PathName).append(NiceName);
-		link.createLink(location, IResource.NONE, null);
-		// Link is now created
-
-		// Use link to add the source
-		Path ExcludeList[] = new Path[1];
-		ExcludeList[0] = new Path("?xamples/*");
-		ICSourceEntry TheCEntry = new CSourceEntry(link.getFullPath(), ExcludeList, 0);
-		ICSourceEntry[] OrgSourceEntries = configurationDescription.getSourceEntries();
-		ICSourceEntry[] sourceEntries = new CSourceEntry[OrgSourceEntries.length + 1];
-		System.arraycopy(OrgSourceEntries, 0, sourceEntries, 0, OrgSourceEntries.length);
-		sourceEntries[OrgSourceEntries.length] = TheCEntry;
-		configurationDescription.setSourceEntries(sourceEntries);
-		// source has been added
-
-		addIncludeFolder(configurationDescription, link.getFullPath());
-		File file = new File(Path.append("utility").toString());
-		if (file.exists()) {
-			addIncludeFolder(configurationDescription, link.getFullPath().append("utility"));
-		}
-
-		projectDescription.setActiveConfiguration(configurationDescription);
-		projectDescription.setCdtProjectCreated();
-		mngr.setProjectDescription(project, projectDescription, true, null);
 	}
 
 	/**
@@ -438,12 +471,12 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 												// that is not a problem
 
 		// Add the arduino code
-		addCodeFolder(Arduino_Core_project, Properties.getArduinoSourceCodeLocation());
+		addCodeFolder(Arduino_Core_project,PATH_VARIABLE_NAME_ARDUINO_CORE, Properties.getBuildCoreFolder());
 
 		if (isArduinoIdeOne()) // this is Arduino version 1.0
 		{
 			// Add the correct arduino_pins.h
-			ArduinoHelpers.addCodeFolder(Arduino_Core_project, ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.VARIANTS_FILE_SUFFIX).append(Properties.getBoardVariant()));
+			ArduinoHelpers.addCodeFolder(Arduino_Core_project, PATH_VARIABLE_NAME_ARDUINO_PINS,Properties.getBoardVariant());
 		}
 
 		return Arduino_Core_project;
@@ -580,5 +613,33 @@ public class ArduinoHelpers extends ArduinoInstancePreferences {
 			Common.log(new Status(Status.ERROR, CORE_PLUGIN_ID, "Failed to save AVRDude settings", e));
 			e.printStackTrace();
 		}
+	}
+
+    /**
+     * This method sets the eclipse path variables to contain the 4 important Arduino folders (code wise that is)
+     * 
+     * The arduino library location (used when importing arduino libraries)
+     * The Private library path (used when importing private libraries)
+     * The Arduino Core path (used when referencing Arduino Code)
+     * The Arduino Pin Path (used in 1rduino 1.0 to reference the arduino pin variants)
+     * @param project
+     */
+	public static void SetPathVariables() {
+		IPath PinPath = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.VARIANTS_FILE_SUFFIX);
+		IPath CorePath = ArduinoInstancePreferences.getArduinoPath().append(ARDUINO_PATH_CORE);
+		
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPathVariableManager pathMan = workspace.getPathVariableManager();
+
+		try {
+
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_LIB,URIUtil.toURI( getArduinoLibraryPath()));
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(getPrivateLibraryPath()));
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_CORE,URIUtil.toURI( CorePath));
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}		
 	}
 }

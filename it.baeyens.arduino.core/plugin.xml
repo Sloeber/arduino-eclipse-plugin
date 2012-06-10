@@ -72,13 +72,24 @@
 			name="Arduino">
 		</category>
       <wizard 
-         id="it.baeyens.arduino.Import_Arduino_Library" 
-         name="Import a arduino library in the current project" 
-         class="it.baeyens.arduino.tools.Import_Arduino_Library" 
+         id="it.baeyens.arduino.Import_Arduino_Libraries" 
+         name="Import Arduino libraries in the current project" 
+         class="it.baeyens.arduino.ui.Import_Arduino_Libraries" 
          icon="icons/arduino.png"
          category="it.baeyens.arduino.eclipse.importWizards">        
          <description> 
-            Use this import to import arduino library code or any other code in a subfolder
+            Use this import wizard to import arduino libraries to you sketch
+         </description> 
+         <selection class="org.eclipse.core.resources.IResource"/> 
+      </wizard>       
+      <wizard 
+         id="it.baeyens.arduino.Import_Source_Folder" 
+         name="Import a folder containing source code in the current project" 
+         class="it.baeyens.arduino.ui.Import_Source_Folder" 
+         icon="icons/arduino.png"
+         category="it.baeyens.arduino.eclipse.importWizards">        
+         <description> 
+            Use this import wizard to add code in a folder on you local drive to this project
          </description> 
          <selection class="org.eclipse.core.resources.IResource"/> 
       </wizard> 

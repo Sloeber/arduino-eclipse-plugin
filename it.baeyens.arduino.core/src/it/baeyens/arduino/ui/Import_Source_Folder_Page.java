@@ -1,4 +1,4 @@
-package it.baeyens.arduino.tools;
+package it.baeyens.arduino.ui;
 
 
 import it.baeyens.arduino.common.ArduinoConst;
@@ -24,11 +24,11 @@ import org.eclipse.ui.dialogs.WizardResourceImportPage;
  * @author Jan Baeyens
  *
  */
-public class Import_Arduino_Library_Page extends WizardResourceImportPage {
+public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	private Text controlLibraryPath;
 	private Button controlBrowseButton;
 
-	protected Import_Arduino_Library_Page(String name, IStructuredSelection selection) {
+	protected Import_Source_Folder_Page(String name, IStructuredSelection selection) {
 		super(name, selection);
 	
 	}

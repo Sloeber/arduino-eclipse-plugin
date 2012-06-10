@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse
 Bundle-SymbolicName: it.baeyens.arduino.core;singleton:=true
-Bundle-Version: 1.1.1
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 1.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,
@@ -15,7 +16,6 @@ Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.ui
 Import-Package: it.baeyens.arduino.common,
  it.baeyens.arduino.ui,
- it.baeyens.avreclipse,
  it.baeyens.avreclipse.core.avrdude,
  it.baeyens.avreclipse.core.preferences,
  it.baeyens.avreclipse.core.properties,

@@ -4,6 +4,7 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ArduinoProperties;
+import it.baeyens.arduino.tools.Stream;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;

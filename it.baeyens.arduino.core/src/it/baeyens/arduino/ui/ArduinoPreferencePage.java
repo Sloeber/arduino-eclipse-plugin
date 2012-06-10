@@ -14,15 +14,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -42,26 +36,13 @@ import org.eclipse.jface.util.PropertyChangeEvent;
  * 
  */
 public class ArduinoPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-	// private boolean mIsValid =false;
-	// private FileFieldEditor fFileEditor;
-	// private Text fPathText;
-	private Button fFolderButton;
+
 	private BooleanFieldEditor mUseArduinoIdeTools;
 	private StringFieldEditor mArduinoIdeVersion;
-	private StringFieldEditor mArduinoIdePath;
+	private DirectoryFieldEditor mArduinoIdePath;
 	private boolean mIsDirty = false;
 	private IPath mPrefBoardFile = null;
-	// private boolean mIsDirty = false;
 
-//	IPropertyChangeListener mListener = new IPropertyChangeListener() {
-//
-//		@Override
-//		public void propertyChange(PropertyChangeEvent event) {
-//			mIsDirty = true;
-//			testStatus();
-//
-//		}
-//	};
 
 	/**
 	 * PropertyChange set the flag mIsDirty to false. <br/>
@@ -116,10 +97,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		if (!mIsDirty)
 			return true;
 		super.performOk();
-		// ArduinoPreferences.setArduinoPath(new Path(fPathText.getText()));
 		if (mUseArduinoIdeTools.getBooleanValue()) {
 			ArduinoHelpers.ConfigureToUseArduinoIDETools();
 		}
+		ArduinoHelpers.SetPathVariables();
 		return true;
 	}
 
@@ -138,62 +119,16 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	@Override
 	protected void createFieldEditors() {
 		final Composite parent = getFieldEditorParent();
-		GridLayout theGridLayout = new GridLayout();
-		GridData theGriddata;
-		theGridLayout.numColumns = 2;
-		parent.setLayout(theGridLayout);
 
-		// fPathText = new Text(parent, SWT.SINGLE | SWT.BORDER);
-		// fPathText.setText(ArduinoPreferences.getArduinoPath().toOSString());
-		// fPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// fPathText.addListener(SWT.Modify, new Listener() {
-		// @Override
-		// public void handleEvent(Event event) {
-		// testStatus();
-		// }
-		// });
-		// theGriddata = new GridData();
-		// theGriddata.horizontalAlignment = SWT.FILL;
-		// theGriddata.horizontalSpan = 1;
-		// theGriddata.grabExcessHorizontalSpace = true;
-		// fPathText.setLayoutData(theGriddata);
-		// fPathText.setEnabled(true);
-		mArduinoIdePath = new StringFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent);
-		addField(mArduinoIdePath);
-//		mArduinoIdePath.setPropertyChangeListener(mListener);
-
-		fFolderButton = new Button(parent, SWT.NONE);
-		fFolderButton.setText("Browse...");
-		fFolderButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				DirectoryDialog fileDialog = new DirectoryDialog(getShell(), SWT.OPEN);
-				if (mArduinoIdePath.getStringValue() != null)
-					fileDialog.setFilterPath(mArduinoIdePath.getStringValue());
-				String dir = fileDialog.open();
-				if (dir != null)
-					mArduinoIdePath.setStringValue(dir.trim());
-				// if (fPathText.getText() != null)
-				// fileDialog.setFilterPath(fPathText.getText());
-				// String dir = fileDialog.open();
-				// if (dir != null) fPathText.setText(dir.trim());
-				testStatus();
-			}
-		});
-		theGriddata = new GridData();
-		theGriddata.horizontalAlignment = SWT.LEAD;
-		theGriddata.horizontalSpan = 1;
-		fFolderButton.setLayoutData(theGriddata);
-		fFolderButton.setEnabled(true);
-
-		fFolderButton.setVisible(true);
-		// fPathText.setVisible(true);
-
+		mArduinoIdePath=new DirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent);
+		addField(mArduinoIdePath );
+		addField( new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path", parent));
+		
 		Dialog.applyDialogFont(parent);
 
 		mUseArduinoIdeTools = new BooleanFieldEditor(ArduinoConst.KEY_USE_ARDUINO_IDE_TOOLS, "Use Arduino IDE tools in eclipse", parent);
 		addField(mUseArduinoIdeTools);
-//		mUseArduinoIdeTools.setPropertyChangeListener(mListener);
+		addField(new BooleanFieldEditor(ArduinoConst.KEY_RXTXDISABLED, "Disable RXTX (disables Arduino reset during upload and the serial monitor)", parent));
 		mArduinoIdeVersion = new StringFieldEditor(ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version", parent);
 		addField(mArduinoIdeVersion);
 		mArduinoIdeVersion.setEnabled(false, parent);

@@ -282,7 +282,7 @@ final public class RXTXPort extends SerialPort
 
 
 	/*
-	linux/drivers/char/n_hdlc.c? FIXME
+	linux/drivers/char/n_hdlc.c? FIX ME
 		taj@www.linux.org.uk
 	*/
 	/**
@@ -450,7 +450,7 @@ final public class RXTXPort extends SerialPort
 	}
 
 	/** Input/output buffers */
-	/** FIXME I think this refers to
+	/** FIX ME I think this refers to
 		FOPEN(3)/SETBUF(3)/FREAD(3)/FCLOSE(3)
 		taj@www.linux.org.uk
 

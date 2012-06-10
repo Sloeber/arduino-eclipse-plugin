@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ArduinoSerialMonitorFeature"
+      label="ArduinoSerialMonitorFeature"
+      version="1.2.0"
+      provider-name="jan Baeyens">
+
+   <description url="http://www.example.com/description">
+      This add a serial monitor to the Arduino eclipse plugin.
+This monitor does not reset the arduino by default.
+This monitor auto deconnects when you do a upload and reconnects (without resetting) when the upload is done.
+This monitor has a reset button so you can reset your board without leaving the monitor
+This monitor supports up to 3 serial ports at the same time (different color for each port)
+This monitor supports CR/LF/CR+LF and none like the arduino monitor
+This monitor supports deleting part of the text but no other editing is supported (backspace and delete only)
+You can not select the colors used by the monitor
+You can not send the same string to multiple boards at the same time automatically.
+You can not open more than one serial monitor in a eclipse instance
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      If there are any rights which are not owned by others the rights are reserved to Jan Baeyens.
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      You can use this version of the software freely.
+You can distribute this version of the software freely.
+The source code is not freely available.
+   </license>
+
+   <url>
+      <discovery label="Baeyens eclipse area" url="http://www.baeyens.it/eclipse"/>
+   </url>
+
+   <plugin
+         id="it.baeyens.arduino.monitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

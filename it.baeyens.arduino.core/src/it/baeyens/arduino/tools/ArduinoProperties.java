@@ -3,16 +3,13 @@ package it.baeyens.arduino.tools;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.ui.ArduinoBoards;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfig;
 import it.baeyens.avreclipse.core.avrdude.ProgrammerConfigManager;
 import it.baeyens.avreclipse.core.properties.AVRDudeProperties;
 import it.baeyens.avreclipse.core.properties.AVRProjectProperties;
 import it.baeyens.avreclipse.core.properties.ProjectPropertyManager;
 import it.baeyens.avreclipse.core.util.AVRMCUidConverter;
-import java.io.File;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -41,10 +38,12 @@ public class ArduinoProperties {
 	private boolean mDisabledFlushing;
 	private String mBoardVariant;
 	private String mProgrammerName;
+	private String myBuildCoreFolder;
 
 	public ArduinoProperties() {
 		mArduinoBoardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
 		mUploadPort = ArduinoInstancePreferences.getLastUsedUploadPort();
+		myBuildCoreFolder ="";
 	}
 
 	/**
@@ -90,6 +89,7 @@ public class ArduinoProperties {
 
 		mArduinoBoardName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARD);
 		mBoardVariant = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARDVARIANT);
+		myBuildCoreFolder = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBUILDCOREFOLDER);
 
 	}
 
@@ -102,6 +102,8 @@ public class ArduinoProperties {
 		try {
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD), mArduinoBoardName);
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARDVARIANT), mBoardVariant);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBUILDCOREFOLDER), myBuildCoreFolder);
+			
 			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
 		} catch (CoreException e) {
@@ -234,10 +236,10 @@ public class ArduinoProperties {
 		mDisabledFlushing = Disabled;
 	}
 
-	public IPath getArduinoSourceCodeLocation() {
-		String fullPath = ArduinoInstancePreferences.getArduinoPath() + File.separator + "hardware" + File.separator + "arduino" + File.separator + "cores" + File.separator + "arduino";
-		return (IPath) new org.eclipse.core.runtime.Path(fullPath);
-	}
+//	public IPath getArduinoSourceCodeLocation() {
+//		String fullPath = ArduinoInstancePreferences.getArduinoPath() + File.separator + "hardware" + File.separator + "arduino" + File.separator + "cores" + File.separator + "arduino";
+//		return (IPath) new org.eclipse.core.runtime.Path(fullPath);
+//	}
 
 	public void setArduinoBoard(String boardName) {
 		ArduinoBoards TheBoards = new ArduinoBoards();
@@ -250,6 +252,7 @@ public class ArduinoProperties {
 		mDisabledFlushing= TheBoards.getDisableFlushing(boardName);
 		mBoardVariant= TheBoards.getBoardVariant(boardName);
 		mProgrammerName = TheBoards.getUploadProtocol(boardName);
+		myBuildCoreFolder=TheBoards.getBuildCoreFolder(boardName);
 	}
 
 	/**
@@ -261,4 +264,14 @@ public class ArduinoProperties {
 	public String getSafeArduinoBoardName() {
 		return Common.MakeNameCompileSafe(mArduinoBoardName);
 	}
+
+	public void setBuildCoreFolder(String BuildCoreFolder)
+		{
+			myBuildCoreFolder=BuildCoreFolder;
+		}
+
+	public String getBuildCoreFolder()
+		{
+			return myBuildCoreFolder;
+		}
 }

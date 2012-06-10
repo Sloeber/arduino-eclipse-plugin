@@ -1,7 +1,9 @@
-package it.baeyens.arduino.tools;
+package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoHelpers;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -18,15 +20,14 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 /**Import_Arduino_Library class is llinked to the gui related to the arduino library import
  * It creates one page. All important action is in the performFinish
- * I probably should have extended another class but I didn't know which one.
  * 
  * @author Jan Baeyens
  * @see performFinish
  *
  */
-public class Import_Arduino_Library implements IImportWizard {
+public class Import_Source_Folder implements IImportWizard {
 
-	private Import_Arduino_Library_Page mFolderSelectionPage;
+	private Import_Source_Folder_Page mFolderSelectionPage;
 	private IWizardPage[] mPages;
 	private IWizardContainer mWizardContainer=null;
 	private static String mPageName ="Select";
@@ -34,7 +35,7 @@ public class Import_Arduino_Library implements IImportWizard {
 	
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		mFolderSelectionPage = new Import_Arduino_Library_Page(mPageName,StructuredSelection.EMPTY);
+		mFolderSelectionPage = new Import_Source_Folder_Page(mPageName,StructuredSelection.EMPTY);
 		mFolderSelectionPage.setWizard(this);
 		mPages= new IWizardPage[1];
 		mPages[0]=mFolderSelectionPage;

@@ -60,7 +60,8 @@ The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
 Note: not all versions are tested on all platforms.
 <a name="serial"></a>
 <h2>Where is the serial monitor?</h2>
-There is no serial monitor in the tool right now. Use the serial monitor of your choice.<br>
+There is no serial monitor in the tool before version 1.2.2 Use the serial monitor of your choice.<br>
+From 1.2.2 onwards you can use the included serial monitor. Select menu item windows-&gt;show view-&gt;other-&gt;arduino-&gt;serial monitor view.
 <a name="debug"></a>
 <h2>How Do I debug?</h2>
 There is no debug functionality with this eclipse plugin.<br>
@@ -223,7 +224,7 @@ knows. In that case you have the bug without a bug (in other words the code comp
 Following things are known to improve the situation<br>
 Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers.<br>
 Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index source and header files opened in the editor.<br>
-Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add arduino.h and or WProgram.h.<br>
+Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add cstdio.h, arduino.h and or WProgram.h.<br>
 Do next four in this sequence<br>
 Right click the project-&gt;index-&gt;Search for unresolved includes.<br>
 Right click the project-&gt;index-&gt;Freshen all Files.<br>
@@ -273,8 +274,13 @@ From version 1.1.8 onwards this should be fixed.<br><br>
 <a name="LibraryDelete"></a>
 <h2>Deleting a library corrupts my project</h2>
 To help to fix this bug please vote at <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">bugzille CDT project</a> (You need an account)<br>
-To reproduce do the following:
-<br>Create a Arduino sketch project using the wizard.
+<h3>To work around</h3>
+Before you delete the library: Goto: project properties-&gt;C/C++ general -&gt;Paths and symbols-&gt; source location.
+<br>Delete the source reference to the library you want to delete. <br>Save the setting and exit the properties.
+<br>Now the library you want to delete will be the last entry in your project and is grayed out.
+<br>You can safely delete it now.
+<h3>To reproduce do the following:</h3>
+Create a Arduino sketch project using the wizard.
 <br>Look at the project properties. They should look like the image below<br>
 <img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707813_resized.png"><br>
 <img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707816_resized.png"/>
@@ -290,9 +296,6 @@ Delete the Arduino Library
 Note that the images above show it for &quot;GNU C&quot;  but the same counts for &quot;GNU C++&quot;<br>
 First deleting all the incorrect values and then setting the correct values back solves the issue.<br>
 <br>
-I can use some help here. I have checked all the code (winAVR and mine) and see nothing that is beeing trigered after the delete. 
-I can see in the .cproject file that the information is corrupt after the delete.<br>
-I have not  been able to reproduce this problem in the CDT only eclipse environment. Any ideas are  welcomed.<br>
 <a name="Serial"></a>
 <h2>The indexer states Serial does not exist</h2>
 This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a>

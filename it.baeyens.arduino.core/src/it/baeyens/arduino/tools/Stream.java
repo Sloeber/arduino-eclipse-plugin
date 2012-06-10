@@ -1,6 +1,8 @@
-package it.baeyens.arduino.ui;
+package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.ui.NewArduinoSketchWizard;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

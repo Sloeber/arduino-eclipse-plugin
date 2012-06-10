@@ -14,7 +14,7 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author jan Baeyens
  * 
  */
-public class ArduinoInstancePreferences extends Common {
+public class ArduinoInstancePreferences extends ArduinoConst {
 
 	/**
 	 * This method reads the arduino path from the configuration memory
@@ -25,7 +25,21 @@ public class ArduinoInstancePreferences extends Common {
 	public static Path getArduinoPath() {
 		return new Path(getGlobalValue(KEY_ARDUINOPATH));
 	}
-
+	/**
+	 * This method reads the private library path from the configuration memory
+	 * 
+	 * @return the path parent to the folders containing the private libraries 
+	 * @author Jan Baeyens
+	 */
+	public static Path getPrivateLibraryPath() {
+		return new Path(getGlobalValue(KEY_PRIVATE_LIBRARY_PATH));
+	}
+	
+	
+	public static IPath getArduinoLibraryPath()
+		{
+			return getArduinoPath().append(LIBRARY_PATH_SUFFIX);
+		}
 	/**
 	 * This method reads the name of the last used arduino board from the
 	 * instance preferences
@@ -72,23 +86,59 @@ public class ArduinoInstancePreferences extends Common {
 		setGlobalValue(KEY_ARDUINOBOARD, ArduinoBoardName);
 	}
 
-	private static String getGlobalValue(String key) {
+	public static String getGlobalValue(String key) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		return myScope.get(key, "");
 	}
+	
+	protected static boolean getGlobalBoolean(String key) {
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+		return myScope.getBoolean(key, false);
+	}
 
-	private static void setGlobalValue(String key, String Value) {
+	protected static int getGlobalInt(String key) {
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+		return myScope.getInt(key, 0);
+	}
+	
+	public static void setGlobalValue(String key, String Value) {
 
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		myScope.put(key, Value);
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Common.log(new Status(Status.WARNING, CORE_PLUGIN_ID, "failed to set globl variable"));
+			Common.log(new Status(Status.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string "+key));
 			e.printStackTrace();
 		}
 	}
-
+	
+	protected static void setGlobalInt(String key, int Value) {
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.putInt(key, Value);
+		try {
+			myScope.flush();
+		} catch (BackingStoreException e) {
+			Common.log(new Status(Status.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type int "+key));
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	protected static void setGlobalBoolean(String key, boolean Value) {
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.putBoolean(key, Value);
+		try {
+			myScope.flush();
+		} catch (BackingStoreException e) {
+			Common.log(new Status(Status.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean "+key));
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 	/**
 	 * setArduinoPath stores the arduino path in the preferences
 	 * 
@@ -169,4 +219,36 @@ public class ArduinoInstancePreferences extends Common {
 
 		return Ret;
 	}
+	
+	/**
+	 * This method returns the index of the last used line ending options are CR LF CR+LF none
+	 * 
+	 * @return the index of the last used setting
+	 */
+	public static int GetLastUsedSerialLineEnd()
+		{
+			return getGlobalInt(KEY_RXTX_LAST_USED_LINE_INDES);
+		}
+	/**
+	 * This method returns the index of the last used line ending options are CR LF CR+LF none
+	 * 
+	 * @return the index of the last used setting
+	 */
+	public static void SetLastUsedSerialLineEnd(int LastUsedIndex)
+		{
+			setGlobalInt(KEY_RXTX_LAST_USED_LINE_INDES,LastUsedIndex);
+		}
+	
+	public static boolean GetLastUsedAutoScroll()
+		{
+			return getGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL);
+		}
+	public static void SetLastUsedAutoScroll(boolean autoScroll)
+		{
+			setGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL,autoScroll);
+			
+		}
+
 }
+
+
