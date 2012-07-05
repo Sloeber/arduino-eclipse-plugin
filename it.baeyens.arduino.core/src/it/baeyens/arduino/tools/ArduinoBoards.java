@@ -42,13 +42,43 @@ public class ArduinoBoards {
 	private String UploadSpeedKeyTAG = "upload.speed";
 	private String BoardVariantTAG = "build.variant";
 	private String BuildCoreFolderTAG ="build.core";
-	private String UploadProtocol = "upload.protocol";
+	private String BuildCppOptionsTAG ="build.cpp.options";
+	private String BuildCOptionsTAG ="build.c.options";
+	private String BuildLinkOptionsTAG ="build.link.options";
+	private String UploadProtocolTAG = "upload.protocol";
 	private String disableFlushingKeyTAG = "upload.disable_flushing"; // not yet
 																		// used
 																		// but
 																		// probably
 																		// needed
 
+
+	String LastBoardName="";
+	Map<String, String> settings=null;
+
+	/**
+	 * Generic method to read a value from the boads file
+	 * @param boardName
+	 * @param Key
+	 * @return
+	 */
+	private String getBoardSetting(String boardName,String Key,String defaultValue)
+		{
+			if (!LastBoardName.equals(boardName))
+				{
+					LastBoardName=boardName;
+					String mapName = getBoardNames(boardName);
+					settings = mArduinoSupportedBoards.get(mapName);
+				}
+			
+			if (settings != null) {
+				String TagContent = settings.get(Key);
+				if (TagContent != null)
+					return TagContent;
+			}
+			return defaultValue;
+		}
+	
 	/**getMCUName returns the mcu name for a given board. <br/>
 	 * This function assumes (and does not test so will fail) that the board file has been loaded
 	 * 
@@ -57,15 +87,16 @@ public class ArduinoBoards {
 	 * @author Jan Baeyens
 	 */
 	public String getMCUName(String boardName) {
-		String mapName = getBoardNames(boardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(ProcessorTypeKeyTAG);
-			if (TagContent != null)
-				return TagContent;
-		}
-		return "";
+		return getBoardSetting( boardName, ProcessorTypeKeyTAG,"");
+//		String mapName = getBoardNames(boardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(ProcessorTypeKeyTAG);
+//			if (TagContent != null)
+//				return TagContent;
+//		}
+//		return "";
 	}
 
 	/**getMCUFrequency returns the mcu frequency for a given board. <br/>
@@ -76,16 +107,17 @@ public class ArduinoBoards {
 	 * @author Jan Baeyens
 	 */
 	public String getMCUFrequency(String boardName) {
-		String mapName = getBoardNames(boardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(FrequencyKeyTAG);
-			if (TagContent != null) {
-				return TagContent.replaceFirst("L", " ").trim();
-			}
-		}
-		return "";
+		return getBoardSetting( boardName, FrequencyKeyTAG,"").replaceFirst("L", " ").trim();
+//		String mapName = getBoardNames(boardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(FrequencyKeyTAG);
+//			if (TagContent != null) {
+//				return TagContent.replaceFirst("L", " ").trim();
+//			}
+//		}
+//		return "";
 
 	}
 
@@ -97,15 +129,16 @@ public class ArduinoBoards {
 	 * @author Jan Baeyens
 	 */
 	public String getUploadBaudRate(String boardName) {
-		String mapName = getBoardNames(boardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(UploadSpeedKeyTAG);
-			if (TagContent != null)
-				return TagContent;
-		}
-		return "";
+		return getBoardSetting( boardName, UploadSpeedKeyTAG,"");
+//		String mapName = getBoardNames(boardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(UploadSpeedKeyTAG);
+//			if (TagContent != null)
+//				return TagContent;
+//		}
+//		return "";
 	}
 
 	
@@ -117,15 +150,16 @@ public class ArduinoBoards {
 	 * @author Jan Baeyens
 	 */
 	public String getBoardVariant(String boardName) {
-		String mapName = getBoardNames(boardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(BoardVariantTAG);
-			if (TagContent != null)
-				return TagContent;
-		}
-		return "";
+		return getBoardSetting( boardName, BoardVariantTAG,"");
+//		String mapName = getBoardNames(boardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(BoardVariantTAG);
+//			if (TagContent != null)
+//				return TagContent;
+//		}
+//		return "";
 	}	
 	
 	/** returns the upload protocol to use with AVR DUDE<br/>
@@ -137,15 +171,16 @@ public class ArduinoBoards {
 	 * @author Jan Baeyens
 	 */
 	public String getUploadProtocol(String boardName) {
-		String mapName = getBoardNames(boardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(UploadProtocol);
-			if (TagContent != null)
-				return TagContent;
-		}
-		return "";
+		return getBoardSetting( boardName, UploadProtocolTAG,"");
+//		String mapName = getBoardNames(boardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(UploadProtocol);
+//			if (TagContent != null)
+//				return TagContent;
+//		}
+//		return "";
 	}		
 	
 
@@ -157,16 +192,17 @@ public class ArduinoBoards {
 	 * @return disable flushing flag
 	 * @author Jan Baeyens
 	 */	
-	public boolean getDisableFlushing(String BoardName) {
-		String mapName = getBoardNames(BoardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(disableFlushingKeyTAG);
-			if (TagContent != null)
-				return TagContent.equalsIgnoreCase("TRUE");
-		}
-		return false;
+	public boolean getDisableFlushing(String boardName) {
+		return getBoardSetting( boardName, disableFlushingKeyTAG,"").equalsIgnoreCase("TRUE");
+//		String mapName = getBoardNames(BoardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(disableFlushingKeyTAG);
+//			if (TagContent != null)
+//				return TagContent.equalsIgnoreCase("TRUE");
+//		}
+//		return false;
 	}
 	
 	/**getBuildCoreFolder returns the folder that con,tains the arduino library code for a given board. <br/>
@@ -177,16 +213,17 @@ public class ArduinoBoards {
 	 * @return the subfolder of arduino/cores to be used as the library souce
 	 * @author Jan Baeyens
 	 */	
-	public String getBuildCoreFolder(String BoardName) {
-		String mapName = getBoardNames(BoardName);
-
-		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-		if (settings != null) {
-			String TagContent = settings.get(BuildCoreFolderTAG);
-			if (TagContent != null)
-				return TagContent;
-		}
-		return "arduino";
+	public String getBuildCoreFolder(String boardName) {
+		return getBoardSetting( boardName, BuildCoreFolderTAG, "arduino");
+//		String mapName = getBoardNames(BoardName);
+//
+//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
+//		if (settings != null) {
+//			String TagContent = settings.get(BuildCoreFolderTAG);
+//			if (TagContent != null)
+//				return TagContent;
+//		}
+//		return "arduino";
 	}
 	
 
@@ -330,5 +367,20 @@ public class ArduinoBoards {
 		}
 		return null;
 	}
+
+	public String getCppCompileOptions(String boardName)
+		{
+			return getBoardSetting( boardName, BuildCppOptionsTAG, "");
+		}
+
+	public String getCCompileOptions(String boardName)
+		{
+			return getBoardSetting( boardName, BuildCOptionsTAG, "");
+		}
+
+	public String getLinkOptions(String boardName)
+		{
+			return getBoardSetting( boardName, BuildLinkOptionsTAG, "");
+		}
 
 }

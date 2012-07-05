@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: avreclipse core
 Bundle-SymbolicName: it.baeyens.avreclipse.core;singleton:=true
-Bundle-Version: 1.0.6
+Bundle-Version: 1.0.7
 Bundle-Localization: plugin
 Bundle-Vendor: Thomas Holland
 Require-Bundle: 
@@ -69,4 +69,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: it.baeyens.avreclipse.AVRPlugin
 Import-Package: it.baeyens.arduino.common,
  org.eclipse.ui.preferences
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7

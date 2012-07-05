@@ -39,6 +39,9 @@ public class ArduinoProperties {
 	private String mBoardVariant;
 	private String mProgrammerName;
 	private String myBuildCoreFolder;
+	private String myCppCompileOptions;
+	private String myCCompileOptions;
+	private String myLinkOptions;
 
 	public ArduinoProperties() {
 		mArduinoBoardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
@@ -89,8 +92,10 @@ public class ArduinoProperties {
 
 		mArduinoBoardName = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARD);
 		mBoardVariant = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARDVARIANT);
-		myBuildCoreFolder = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBUILDCOREFOLDER);
-
+		myBuildCoreFolder = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_CORE_FOLDER);
+		myCppCompileOptions= Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS) ;
+		myCCompileOptions= Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS) ;
+		myLinkOptions = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_LINK_OPTIONS) ;
 	}
 
 	/**
@@ -102,7 +107,10 @@ public class ArduinoProperties {
 		try {
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD), mArduinoBoardName);
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARDVARIANT), mBoardVariant);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBUILDCOREFOLDER), myBuildCoreFolder);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_CORE_FOLDER), myBuildCoreFolder);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS), myCppCompileOptions);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS), myCCompileOptions);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_LINK_OPTIONS), myLinkOptions);
 			
 			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
@@ -185,9 +193,6 @@ public class ArduinoProperties {
 		this.mUploadBaudrate = Baudrate;
 	}
 
-
-
-
 	public String getArduinoBoardName() {
 		return (mArduinoBoardName == null) ? "" : mArduinoBoardName;
 	}
@@ -253,6 +258,9 @@ public class ArduinoProperties {
 		mBoardVariant= TheBoards.getBoardVariant(boardName);
 		mProgrammerName = TheBoards.getUploadProtocol(boardName);
 		myBuildCoreFolder=TheBoards.getBuildCoreFolder(boardName);
+		myCppCompileOptions=TheBoards.getCppCompileOptions(boardName);
+		myCCompileOptions=TheBoards.getCCompileOptions(boardName);
+		myLinkOptions=TheBoards.getLinkOptions(boardName);
 	}
 
 	/**
@@ -273,5 +281,22 @@ public class ArduinoProperties {
 	public String getBuildCoreFolder()
 		{
 			return myBuildCoreFolder;
+		}
+
+	public void setCppCompileOptions(String CppCompileOptions)
+		{
+			myCppCompileOptions=CppCompileOptions;
+			
+		}
+
+	public void setCCompileOptions(String CCompileOptions)
+		{
+			myCCompileOptions=CCompileOptions;
+			
+		}
+
+	public void setLinkOptions(String LinkOptions)
+		{
+			myLinkOptions=LinkOptions;
 		}
 }

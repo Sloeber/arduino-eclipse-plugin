@@ -43,7 +43,9 @@ public class RXTXCommDriver implements CommDriver
 	static
 	{
 		if(debug ) System.out.println("RXTXCommDriver {}");
-		System.loadLibrary( Common.SerialDllName() );
+	//System.loadLibrary( Common.SerialDllName() );
+			//System.load( Common.GetSerialFullDllName() );
+			Common.LoadRXTX();
 
 		/*
 		   Perform a crude check to make sure people don't mix

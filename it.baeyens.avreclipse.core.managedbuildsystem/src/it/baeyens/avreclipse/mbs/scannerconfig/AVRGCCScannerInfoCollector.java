@@ -40,6 +40,7 @@ import it.baeyens.avreclipse.core.properties.*;
  * </p>
  * 
  */
+
 @SuppressWarnings("restriction")
 public class AVRGCCScannerInfoCollector extends PerProjectSICollector implements
 		IScannerInfoCollector3, IManagedScannerInfoCollector {

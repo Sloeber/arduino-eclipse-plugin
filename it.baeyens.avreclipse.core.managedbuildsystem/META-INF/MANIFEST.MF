@@ -2,9 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: it.baeyens.avreclipse.core.managedbuildsystem;singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.5
 Bundle-Vendor: %providerName
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
 Export-Package: it.baeyens.avreclipse.mbs;uses:="org.eclipse.cdt.managedbuilder.core,org.eclipse.cdt.managedbuilder.macros,org.eclipse.cdt.managedbuilder.envvar",
  it.baeyens.avreclipse.mbs.converter;uses:="org.eclipse.cdt.managedbuilder.core",
  it.baeyens.avreclipse.mbs.scannerconfig;

@@ -45,6 +45,9 @@ public class ArduinoPageLayout {
 	private Text controlBoardVariant;
 	private Text controlUploadProtocol;
 	private Text controlBuildCoreFolder;
+	private Text controlCppCompileOptions;
+	private Text controlCCompileOptions;
+	private Text ControlLinkOptions;
 	private Button controlDisableFlushing;
 
 	// the properties to modify
@@ -101,6 +104,8 @@ public class ArduinoPageLayout {
 			validatePage();
 		}
 	};
+
+
 
 	
 
@@ -214,6 +219,28 @@ public class ArduinoPageLayout {
 		theGriddata.horizontalAlignment = SWT.FILL;
 		controlBuildCoreFolder.setLayoutData(theGriddata);
 		controlBuildCoreFolder.setEnabled(false);
+	
+
+		new Label(composite, SWT.NONE).setText("Cpp compile options:"); //$NON-NLS-1$
+		controlCppCompileOptions = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlCppCompileOptions.setLayoutData(theGriddata);
+		controlCppCompileOptions.setEnabled(false);
+		
+		new Label(composite, SWT.NONE).setText("C compile options:"); //$NON-NLS-1$
+		controlCCompileOptions = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlCCompileOptions.setLayoutData(theGriddata);
+		controlCCompileOptions.setEnabled(false);
+		
+		new Label(composite, SWT.NONE).setText("Link options:"); //$NON-NLS-1$
+		ControlLinkOptions = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		ControlLinkOptions.setLayoutData(theGriddata);
+		ControlLinkOptions.setEnabled(false);
 		
 
 		// Create the control to alert parents of changes
@@ -229,7 +256,7 @@ public class ArduinoPageLayout {
 		controlArduinoPath.setText(ArduinoInstancePreferences.getArduinoPath().toOSString());
 		controlArduinoBoardName.setText(mArduinoProperties.getArduinoBoardName());
 		controlUploadPort.setText(mArduinoProperties.getUploadPort());
-		controlBuildCoreFolder.setText(mArduinoProperties.getBuildCoreFolder());
+		//controlBuildCoreFolder.setText(mArduinoProperties.getBuildCoreFolder());
 		showBoardSetting();
 
 		// Set the listeners
@@ -266,6 +293,10 @@ public class ArduinoPageLayout {
 		controlBoardVariant.setText(mArduinoBoards.getBoardVariant(BoardName));
 		controlUploadProtocol.setText(mArduinoBoards.getUploadProtocol(BoardName));
 		controlBuildCoreFolder.setText(mArduinoBoards.getBuildCoreFolder(BoardName));
+		controlCppCompileOptions.setText(mArduinoBoards.getCppCompileOptions(BoardName));
+		controlCCompileOptions.setText(mArduinoBoards.getCCompileOptions(BoardName));
+		ControlLinkOptions.setText(mArduinoBoards.getLinkOptions(BoardName));
+	
 	}
 
 	public void setToDefaults() {
@@ -281,6 +312,9 @@ public class ArduinoPageLayout {
 		mArduinoProperties.setBoardVariant(controlBoardVariant.getText().trim());
 		mArduinoProperties.setUploadProtocol(controlUploadProtocol.getText().trim());
 		mArduinoProperties.setBuildCoreFolder(controlBuildCoreFolder.getText().trim());
+		mArduinoProperties.setCppCompileOptions( controlCppCompileOptions.getText());
+		mArduinoProperties.setCCompileOptions(controlCCompileOptions.getText());
+		mArduinoProperties.setLinkOptions(ControlLinkOptions.getText());
 
 		mValidAndComplete = mArduinoPathIsValid && !controlArduinoBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("");
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");

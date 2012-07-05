@@ -99,9 +99,11 @@ public final class SystemPathHelper {
 		// for the path.
 
 		IPath path = null;
-		if (isWindows()) {
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			path = SystemPathsWin32.getSystemPath(avrpath);
-		} else {
+		} else if (Platform.getOS().equals(Platform.OS_MACOSX)){
+				//No code for mac osx to look for paths so better to do nothing
+		}else{
 			// posix path provider
 			path = SystemPathsPosix.getSystemPath(avrpath);
 		}

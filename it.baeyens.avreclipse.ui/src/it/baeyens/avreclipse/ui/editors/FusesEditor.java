@@ -195,7 +195,6 @@ public class FusesEditor extends FormEditor implements IResourceChangeListener,
 		try {
 			ResourcesPlugin.getWorkspace().run(batchSave, null, IWorkspace.AVOID_UPDATE, monitor);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

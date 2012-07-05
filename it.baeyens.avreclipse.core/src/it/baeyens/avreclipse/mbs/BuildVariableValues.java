@@ -215,7 +215,30 @@ public enum BuildVariableValues {
 		public String getValue(IConfiguration buildcfg) {
 			return ArduinoInstancePreferences.GetARDUINODefineValue() ;
 		}
-
+	},		
+		ARDUINO_CORE_FOLDER() {
+			@Override
+			public String getValue(IConfiguration buildcfg) {
+				return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINO_CORE_FOLDER) ;
+			}
+		},				
+			ARDUINO_CPP_COMPILE_OPTIONS() {
+				@Override
+				public String getValue(IConfiguration buildcfg) {
+					return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS) ;
+				}
+			},		
+			ARDUINO_C_COMPILE_OPTIONS() {
+				@Override
+				public String getValue(IConfiguration buildcfg) {
+					return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS) ;
+				}
+			},		
+			ARDUINO_LINK_OPTIONS() {
+				@Override
+				public String getValue(IConfiguration buildcfg) {
+					return Common.getPersistentProperty((IProject) buildcfg.getOwner(), ArduinoConst.KEY_ARDUINO_LINK_OPTIONS) ;
+				}	
 	};
 
 	/** System default Path Separator. On Windows ";", on Posix ":" */

@@ -148,7 +148,6 @@ public final class ClockValuesGenerator {
 			case USBTINY:
 				return getUSBTinyValues();
 			default:
-				// TODO
 				return null;
 		}
 	}

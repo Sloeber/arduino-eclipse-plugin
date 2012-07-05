@@ -1394,7 +1394,6 @@ public class AVRDude implements IMCUProvider {
 					ConfigEntry entry = getProgrammerInfo(fAvrdudeId);
 					fDescription = entry.description;
 				} catch (AVRDudeException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					fDescription = "";
 				}
@@ -1413,10 +1412,8 @@ public class AVRDude implements IMCUProvider {
 				String addinfo = getConfigDetailInfo(entry);
 				return "avrdude.conf entry for this programmer:\n\n" + addinfo;
 			} catch (AVRDudeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return "";
@@ -1532,10 +1529,8 @@ public class AVRDude implements IMCUProvider {
 						fType = "";
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (AVRDudeException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

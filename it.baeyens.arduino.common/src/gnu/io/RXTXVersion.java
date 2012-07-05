@@ -38,7 +38,9 @@ public class RXTXVersion
 	private static String Version;
 
 	static {
-		System.loadLibrary( Common.SerialDllName() );
+	//System.loadLibrary( Common.SerialDllName() );
+			//System.load( Common.GetSerialFullDllName() );
+		Common.LoadRXTX();
 		Version = "RXTX-2.1-7";
 	}
 	/**

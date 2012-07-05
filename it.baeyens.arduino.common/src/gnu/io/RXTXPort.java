@@ -53,7 +53,9 @@ final public class RXTXPort extends SerialPort
 
 		if(debug ) 
 			z.reportln( "RXTXPort {}");
-		System.loadLibrary( Common.SerialDllName() );
+	//System.loadLibrary( Common.SerialDllName() );
+			//System.load( Common.GetSerialFullDllName() );
+		Common.LoadRXTX();
 		Initialize();
 	}
 

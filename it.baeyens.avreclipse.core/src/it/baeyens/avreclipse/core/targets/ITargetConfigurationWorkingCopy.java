@@ -114,7 +114,7 @@ public interface ITargetConfigurationWorkingCopy extends ITargetConfiguration {
 	 * <p>
 	 * This will not do anything if the configuration has not been modified.
 	 * </p>
-	 * @throws IOException TODO
+	 * @throws IOException 
 	 */
 	public void doSave() throws IOException;
 

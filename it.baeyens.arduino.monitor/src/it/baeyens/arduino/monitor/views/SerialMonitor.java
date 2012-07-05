@@ -19,10 +19,8 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -94,7 +92,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser
 			{
 				Common.UnRegisterSerialUser();
 				Common.SetLastUsedSerialLineEnd(LastUsedIndex);
-				Common.SetLastUsedAutoScroll(autoScroll);
+				Common.setLastUsedAutoScroll(autoScroll);
 				for (int curColor = 0; curColor < MaxSerialPorts; curColor++)
 					{
 						SerialColor[curColor].dispose();
@@ -234,8 +232,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser
 								// nothing needs to be done here
 							}
 					});
-				autoScrollButton.setSelection(Common.GetLastUsedAutoScroll());
-				autoScroll = Common.GetLastUsedAutoScroll();
+				autoScrollButton.setSelection(Common.getLastUsedAutoScroll());
+				autoScroll = Common.getLastUsedAutoScroll();
 
 				// register the combo as a Selection Provider
 				getSite().setSelectionProvider(SerialPorts);

@@ -58,7 +58,6 @@
 package  gnu.io;
 
 import it.baeyens.arduino.common.Common;
-
 import  java.io.FileDescriptor;
 import java.util.HashMap;
 import  java.util.Vector;
@@ -122,7 +121,9 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 			if (debug)
 				System.out.println("Have not implemented native_psmisc_report_owner(PortName)); in CommPortIdentifier");
 		}
-		System.loadLibrary( Common.SerialDllName() );
+		//System.loadLibrary( Common.SerialDllName() );
+		//System.load( Common.GetSerialFullDllName() );
+		Common.LoadRXTX();
 	}
 	CommPortIdentifier ( String pn, CommPort cp, int pt, CommDriver driver) 
 	{

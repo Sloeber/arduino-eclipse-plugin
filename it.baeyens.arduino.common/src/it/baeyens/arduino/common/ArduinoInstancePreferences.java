@@ -205,18 +205,15 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	public static String GetARDUINODefineValue()
 	{
 		String Ret;
-		Ret = getIDEVersion();
+		Ret = getIDEVersion().trim();
 		if (Ret.contains("."))
-		{
-			String Suffix = Ret.substring(Ret.indexOf(".")+1);
-			String Prefix=Ret.substring(0,Ret.indexOf("."));
-			while (Suffix.length()<2)
+			{
+				Ret = Ret.replace(".", "");
+				if (Ret.length() ==2  ) 	
 					{
-						Suffix=Suffix+"0";
+						Ret = Ret.concat("0");
 					}
-			Ret = Prefix + Suffix;
-		}
-
+			}
 		return Ret;
 	}
 	
@@ -239,15 +236,16 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 			setGlobalInt(KEY_RXTX_LAST_USED_LINE_INDES,LastUsedIndex);
 		}
 	
-	public static boolean GetLastUsedAutoScroll()
+	public static boolean getLastUsedAutoScroll()
 		{
 			return getGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL);
 		}
-	public static void SetLastUsedAutoScroll(boolean autoScroll)
+	public static void setLastUsedAutoScroll(boolean autoScroll)
 		{
 			setGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL,autoScroll);
 			
 		}
+
 
 }
 

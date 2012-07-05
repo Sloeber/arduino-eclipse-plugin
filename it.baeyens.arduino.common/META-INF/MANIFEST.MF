@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
 Bundle-SymbolicName: it.baeyens.arduino.common
-Bundle-Version: 1.2.0
+Bundle-Version: 1.2.1
 Bundle-Activator: it.baeyens.arduino.common.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime

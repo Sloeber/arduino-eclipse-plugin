@@ -85,7 +85,6 @@ public class Convert21 {
 			try {
 				fProjProps.save();
 			} catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
 				// I will fix this once the converter gets a little GUI
 				e.printStackTrace();
 			}
@@ -108,6 +107,7 @@ public class Convert21 {
 	/**
 	 * @param tools
 	 */
+	@SuppressWarnings("rawtypes")
 	private static void checkOptions(IHoldsOptions optionholder, IConfiguration buildcfg) {
 
 		// Get the Project Properties for the given Configuration
@@ -194,7 +194,6 @@ public class Convert21 {
 		try {
 			props.save();
 		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

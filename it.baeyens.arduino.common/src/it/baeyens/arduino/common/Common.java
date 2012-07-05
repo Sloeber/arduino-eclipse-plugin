@@ -14,14 +14,14 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.statushandlers.StatusManager;
-
-
-
 
 public class Common extends ArduinoInstancePreferences
 	{
-
+		private static boolean RXTXLibraryLoaded =false;
 		// /**
 		// * GetAvrDudeComPortPrefix is used to determine the prefix to be used with
 		// * the com port.<br/>
@@ -38,6 +38,22 @@ public class Common extends ArduinoInstancePreferences
 		// return "";
 		// return "";
 		// }
+
+		static ISerialUser OtherSerialUser = null; // If someone else uses the
+																								// serial port he can register
+																								// here so we can
+																								// request him to disconnect
+																								// when we need the serial port
+
+		public static void registerSerialUser(ISerialUser SerialUser)
+			{
+				OtherSerialUser = SerialUser;
+			}
+
+		public static void UnRegisterSerialUser()
+			{
+				OtherSerialUser = null;
+			}
 
 		/**
 		 * This method makes sure that a string can be used as a file or folder name<br/>
@@ -71,16 +87,6 @@ public class Common extends ArduinoInstancePreferences
 		 *          the string that needs to be checked
 		 * @return a name safe to create files or folders
 		 */
-		static ISerialUser OtherSerialUser=null; //If someone else uses the serial port he can register here so we can 
-																						// request him to disconnect when we need the serial port
-		public static void registerSerialUser(ISerialUser SerialUser)
-		{
-				OtherSerialUser= SerialUser;
-		}
-		public static void UnRegisterSerialUser()
-		{
-				OtherSerialUser= null;
-		}
 		public static String MakeNameCompileSafe(String Name)
 			{
 				return Name.trim().replace(" ", "_").replace("/", "_").replace("\\", "_").replace("(", "_").replace(")", "_").replace("*", "_").replace("?", "_").replace("%", "_").replace(".", "_")
@@ -392,18 +398,18 @@ public class Common extends ArduinoInstancePreferences
 			{
 				if (RXTXDisabled())
 					return false;
-				if(OtherSerialUser!=null)
+				if (OtherSerialUser != null)
 					{
 						return OtherSerialUser.PauzePort(mComPort);
 					}
-			return false;
+				return false;
 			}
 
 		public static void StartSerialMonitor(String mComPort)
 			{
 				if (RXTXDisabled())
 					return;
-				if(OtherSerialUser!=null)
+				if (OtherSerialUser != null)
 					{
 						OtherSerialUser.ResumePort(mComPort);
 					}
@@ -418,7 +424,96 @@ public class Common extends ArduinoInstancePreferences
 				return Serial.list();
 			}
 
-		public static String SerialDllName()
+		public static boolean LoadRXTX()
+			{
+				if (RXTXLibraryLoaded) return true;
+				return RXTXLibraryLoaded = LoadRXTX(null);
+			}
+
+		public static boolean LoadRXTX(Shell parent)
+			{
+				String OsInfo = "\nOs =" +Platform.getOS()+ " Os Architecture =" +Platform.getOSArch();
+				try
+					{
+						// try to load the arduino DLL
+						System.load(GetSerialFullDllName());
+					} catch (Error e1)
+					{
+						try
+							{
+								// Log the Stack trace
+								e1.printStackTrace();
+								// Try to load the dll delivered with the plugin
+								System.loadLibrary(GetSerialDllName());
+							} catch (Error e2)
+							{
+								String FailMessage = "Failed to load Arduino IDE delivered rxtx library (" + GetSerialFullDllName() + ") " + e1.getMessage(); 
+								FailMessage		+= "\nFailed to load Eclipse plugin delivered rxtx library (" + GetSerialDllName()	+ ") " +  e2.getMessage();
+								FailMessage		+= OsInfo;
+								FailMessage		+= "\nSee Error view for more info.";
+								int FailErrorCode = IStatus.WARNING;
+								if (parent != null)
+									{
+										MessageBox Failed = new MessageBox(parent, SWT.ICON_ERROR | SWT.OK);
+										Failed.setText("Failed to load rxtx dll!");
+										Failed.setMessage(FailMessage);
+										Failed.open();
+									} else
+									{
+										if (!RXTXDisabled())
+											{
+												FailErrorCode = IStatus.ERROR;
+											}
+									}
+								Common.log(new Status(FailErrorCode, Common.CORE_PLUGIN_ID, FailMessage, e2));
+								e2.printStackTrace();
+								return false;
+							}
+						if (parent != null)
+							{
+								MessageBox SuccessBox = new MessageBox(parent, SWT.ICON_WORKING | SWT.OK);
+								SuccessBox.setText("Succesfully loaded rxtx dll!");
+								SuccessBox.setMessage("Eclipse plugin delivered rxtx library (" + GetSerialDllName() + ") has been loaded successfully" +OsInfo);
+								SuccessBox.open();
+							}
+						return true; // Succeeded in loading the eclipse delivered dll
+					}
+				if (parent != null)
+					{
+						MessageBox SuccessBox = new MessageBox(parent, SWT.ICON_WORKING | SWT.OK);
+						SuccessBox.setText("Succesfully loaded rxtx dll!");
+						SuccessBox.setMessage("Arduino IDE delivered rxtx library (" + GetSerialFullDllName() + ") has been loaded successfully" + OsInfo);
+						SuccessBox.open();
+					}
+				return true; // Succeeded in loading the Arduino IDE delivered dll
+			}
+
+		/**
+		 * This method reads the full dll name of the rxtxSerial.dll delivered with
+		 * the Arduino IDE
+		 * 
+		 * @return the arduino path
+		 * @author Jan Baeyens
+		 */
+		private static String GetSerialFullDllName()
+			{
+				if (Platform.getOS().equals(Platform.OS_WIN32))
+					{
+						return getArduinoPath() + "/rxtxSerial.dll";
+					}
+				if (Platform.getOS().equals(Platform.OS_LINUX))
+					{
+						if (Platform.getOSArch().equals(Platform.ARCH_IA64) || Platform.getOSArch().equals(Platform.ARCH_X86_64))
+							return getArduinoPath() +  "/lib/librxtxSerial64.so";
+						return getArduinoPath() + "/lib/librxtxSerial.so";						
+					}
+				if (Platform.getOS().equals(Platform.OS_MACOSX))
+					return getArduinoPath() + "/contents/Resources/java/LibrtxSerial.jnilib";
+				Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system for serial functionality", null));
+				return getArduinoPath() + "/rxtxSerial.dll";
+			}
+
+		private static String GetSerialDllName()
 			{
 				// TODO Auto-generated method stub
 				if (Platform.getOS().equals(Platform.OS_WIN32))
@@ -457,17 +552,21 @@ public class Common extends ArduinoInstancePreferences
 					{ "none", "CR", "NL", "NL/CR" };
 				return outgoing;
 			}
+
 		public static String getLineEnding(int selectionIndex)
 			{
 				switch (selectionIndex)
-				{
-				case 0: return "";
-				case 1: return "\r";
-				case 2: return "\n";
-				case 3: return "\r\n";
-				}
+					{
+					case 0:
+						return "";
+					case 1:
+						return "\r";
+					case 2:
+						return "\n";
+					case 3:
+						return "\r\n";
+					}
 				return "";
 			}
-
 
 	}

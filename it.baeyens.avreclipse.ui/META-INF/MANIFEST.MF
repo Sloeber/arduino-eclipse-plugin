@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: avr eclipse  ui
 Bundle-SymbolicName: it.baeyens.avreclipse.ui;singleton:=true
-Bundle-Version: 4.0.6
+Bundle-Version: 4.0.7
 Bundle-Activator: it.baeyens.avreclipse.ui.AVRUIPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -108,4 +108,5 @@ Import-Package: it.baeyens.arduino.common,
  it.baeyens.avreclipse.devicedescription.avrio,
  it.baeyens.avreclipse.mbs,
  it.baeyens.avreclipse.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7

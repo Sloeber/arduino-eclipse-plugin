@@ -657,7 +657,6 @@ public class AVRDudeConfigEditor extends StatusDialog {
 		try {
 			entry = AVRDude.getDefault().getProgrammerInfo(type.getId());
 		} catch (AVRDudeException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			from.setText("Error reading avrdude.conf file");
 			return;

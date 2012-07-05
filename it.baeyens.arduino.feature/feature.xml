@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino eclipse extensions"
-      version="1.2.1"
+      version="1.2.3"
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -15,6 +15,29 @@ a button to build the project
 a button to upload to the arduino board
 a project property page allowing to change the arduino board
 type and the port the arduino is using.
+
+Version 1_2_3
+Added a serial test button to test the serial library in the
+preference page
+Fixed a bug to support non arduino cores (the correct include folder is
+now set)
+Fixed a bug on MAC when AVRPaths searches for the location of G++ AvrDude and others. (no MAC search as been added but the POSIX is no longer used in case of mac)
+Added suport for specific c compile, c++ compile and link instructions
+the keys to be added to the boards.txt are
+[board id].build.cpp.options
+[board id].build.c.options
+[board id].build.link.options
+fixed the bug that when the &quot;private library&quot; is not selected
+the eclipse environment is not setup properly. If not set a error
+will pop up. it should not be possible to exit the preferences
+without setting it.
+Version 1_2_2
+Added multiple library import
+Added support for other cores than the Arduino (boards.txs file
+attrribute XX.build.core)
+Added serial monitor
+version 1_2_1
+Changed the lib for MAC os to a 4 architecture lib.
 version 1_2_0
 Added Com functionality.
 Available Com ports are listed where you can select a com port
@@ -145,5 +168,12 @@ Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="it.baeyens.arduino.monitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
