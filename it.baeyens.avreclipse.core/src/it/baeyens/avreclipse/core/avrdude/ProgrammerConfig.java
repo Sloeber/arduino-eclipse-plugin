@@ -456,15 +456,15 @@ public class ProgrammerConfig {
 		fPostAVRDudeDelay = "";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		// for the debugger
-		return fName + " (" + fDescription + "): " + getArguments();
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see java.lang.Object#toString()
+//	 */
+//	@Override
+//	public String toString() {
+//		// for the debugger
+//		return fName + " (" + fDescription + "): " + getArguments();
+//	}
 
 }

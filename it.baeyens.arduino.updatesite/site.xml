@@ -8,4 +8,5 @@
    <feature url="features/it.baeyens.arduino.feature_1.2.1.jar" id="it.baeyens.arduino.feature" version="1.2.1"/>
    <feature url="features/it.baeyens.arduino.feature_1.2.2.jar" id="it.baeyens.arduino.feature" version="1.2.2" patch="true"/>
    <feature url="features/it.baeyens.arduino.feature_1.2.3.jar" id="it.baeyens.arduino.feature" version="1.2.3"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.4.jar" id="it.baeyens.arduino.feature" version="1.2.4" patch="true"/>
 </site>

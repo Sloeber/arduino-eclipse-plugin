@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>it.baeyens.arduino.common</project>
+		<project>it.baeyens.arduino.monitor</project>
 		<project>it.baeyens.avreclipse.core</project>
 		<project>it.baeyens.avreclipse.core.managedbuildsystem</project>
 	</projects>

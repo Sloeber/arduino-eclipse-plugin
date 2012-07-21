@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: avreclipse core
 Bundle-SymbolicName: it.baeyens.avreclipse.core;singleton:=true
-Bundle-Version: 1.0.7
+Bundle-Version: 1.0.8
 Bundle-Localization: plugin
 Bundle-Vendor: Thomas Holland
 Require-Bundle: 

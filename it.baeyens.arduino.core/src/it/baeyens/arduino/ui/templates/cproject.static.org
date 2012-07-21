@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?xml version="1.0" encoding="UTF-8"?><?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="it.baeyens.avreclipse.configuration.lib.release.1167552135">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="it.baeyens.avreclipse.configuration.lib.release.1167552135" moduleId="org.eclipse.cdt.core.settings" name="Release">
@@ -14,7 +11,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="it.baeyens.avreclipse.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=it.baeyens.avreclipse.buildArtefactType.staticLib" cleanCommand="rm -rf" description="" id="it.baeyens.avreclipse.configuration.lib.release.1167552135" name="Release" parent="it.baeyens.avreclipse.configuration.lib.release">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="it.baeyens.avreclipse.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=it.baeyens.avreclipse.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="it.baeyens.avreclipse.configuration.lib.release.1167552135" name="Release" parent="it.baeyens.avreclipse.configuration.lib.release">
 					<folderInfo id="it.baeyens.avreclipse.configuration.lib.release.1167552135." name="/" resourcePath="">
 						<toolChain id="it.baeyens.avreclipse.toolchain.winavr.lib.release.1754161203" name="AVR-GCC Toolchain" superClass="it.baeyens.avreclipse.toolchain.winavr.lib.release">
 							<option id="it.baeyens.avreclipse.toolchain.options.toolchain.objdump.lib.release.1203374328" name="Generate Extended Listing (Source + generated Assembler)" superClass="it.baeyens.avreclipse.toolchain.options.toolchain.objdump.lib.release"/>
@@ -25,18 +22,13 @@
 								<option id="it.baeyens.avreclipse.assembler.option.debug.level.7753723" name="Generate Debugging Info" superClass="it.baeyens.avreclipse.assembler.option.debug.level" value="it.baeyens.avreclipse.assembler.option.debug.level.none" valueType="enumerated"/>
 								<inputType id="it.baeyens.avreclipse.tool.assembler.input.1090202751" superClass="it.baeyens.avreclipse.tool.assembler.input"/>
 							</tool>
-							<tool commandLinePattern="${COMMAND} ${FLAGS} ${ARDUINO_C_COMPILE_OPTIONS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="it.baeyens.avreclipse.tool.compiler.winavr.lib.release.1481158029" name="AVR Compiler" superClass="it.baeyens.avreclipse.tool.compiler.winavr.lib.release">
+							<tool id="it.baeyens.avreclipse.tool.compiler.winavr.lib.release.1481158029" name="AVR Compiler" superClass="it.baeyens.avreclipse.tool.compiler.winavr.lib.release">
 								<option id="it.baeyens.avreclipse.compiler.option.debug.level.1690214620" name="Generate Debugging Info" superClass="it.baeyens.avreclipse.compiler.option.debug.level" value="it.baeyens.avreclipse.compiler.option.debug.level.none" valueType="enumerated"/>
 								<option id="it.baeyens.avreclipse.compiler.option.optimize.1524250231" name="Optimization Level" superClass="it.baeyens.avreclipse.compiler.option.optimize" value="it.baeyens.avreclipse.compiler.optimize.size" valueType="enumerated"/>
 								<option id="it.baeyens.avreclipse.compiler.option.otherflags.341887353" name="Other flags" superClass="it.baeyens.avreclipse.compiler.option.otherflags" value="-g  -ffunction-sections  -fdata-sections" valueType="string"/>
-								<option id="it.baeyens.avreclipse.compiler.option.def.1360376257" name="Define Syms (-D)" superClass="it.baeyens.avreclipse.compiler.option.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="USB_VID=${ARDUINO_VID_VALUE}"/>
-									<listOptionValue builtIn="false" value="USB_PID=${ARDUINO_PID_VALUE}"/>
-									<listOptionValue builtIn="false" value="ARDUINO=${ARDUINO_IDE_VERSION}"/>
-								</option>
 								<inputType id="it.baeyens.avreclipse.compiler.winavr.input.695727881" name="C Source Files" superClass="it.baeyens.avreclipse.compiler.winavr.input"/>
 							</tool>
-							<tool commandLinePattern="${COMMAND} ${FLAGS} ${ARDUINO_C_COMPILE_OPTIONS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="it.baeyens.avreclipse.tool.cppcompiler.lib.release.619351668" name="AVR C++ Compiler" superClass="it.baeyens.avreclipse.tool.cppcompiler.lib.release">
+							<tool id="it.baeyens.avreclipse.tool.cppcompiler.lib.release.619351668" name="AVR C++ Compiler" superClass="it.baeyens.avreclipse.tool.cppcompiler.lib.release">
 								<option id="it.baeyens.avreclipse.cppcompiler.option.debug.level.925389418" name="Generate Debugging Info" superClass="it.baeyens.avreclipse.cppcompiler.option.debug.level" value="it.baeyens.avreclipse.cppcompiler.option.debug.level.none" valueType="enumerated"/>
 								<option id="it.baeyens.avreclipse.cppcompiler.option.optimize.1428752225" name="Optimization Level" superClass="it.baeyens.avreclipse.cppcompiler.option.optimize" value="it.baeyens.avreclipse.cppcompiler.optimize.size" valueType="enumerated"/>
 								<option id="it.baeyens.avreclipse.cppcompiler.option.optimize.packstruct.180989752" name="Pack structs (-fpack-struct)" superClass="it.baeyens.avreclipse.cppcompiler.option.optimize.packstruct" value="false" valueType="boolean"/>
@@ -44,11 +36,6 @@
 								<option id="it.baeyens.avreclipse.cppcompiler.option.language.uchar.1003099475" name="char is unsigned (-funsigned-char)" superClass="it.baeyens.avreclipse.cppcompiler.option.language.uchar" value="false" valueType="boolean"/>
 								<option id="it.baeyens.avreclipse.cppcompiler.option.language.ubitfields.474866444" name="bitfields are unsigned (-funsigned-bitfields)" superClass="it.baeyens.avreclipse.cppcompiler.option.language.ubitfields" value="false" valueType="boolean"/>
 								<option id="it.baeyens.avreclipse.cppcompiler.option.otherflags.1791627973" name="Other flags" superClass="it.baeyens.avreclipse.cppcompiler.option.otherflags" value="-g  -ffunction-sections  -fdata-sections" valueType="string"/>
-								<option id="it.baeyens.avreclipse.cppcompiler.option.def.1194968967" name="Define Syms (-D)" superClass="it.baeyens.avreclipse.cppcompiler.option.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="USB_PID=${ARDUINO_PID_VALUE}"/>
-									<listOptionValue builtIn="false" value="USB_VID=${ARDUINO_VID_VALUE}"/>
-									<listOptionValue builtIn="false" value="ARDUINO=${ARDUINO_IDE_VERSION}"/>
-								</option>
 								<inputType id="it.baeyens.avreclipse.cppcompiler.input.2064355297" superClass="it.baeyens.avreclipse.cppcompiler.input"/>
 							</tool>
 							<tool id="it.baeyens.avreclipse.tool.linker.winavr.base.656287009" name="AVR C Linker" superClass="it.baeyens.avreclipse.tool.linker.winavr.base"/>

@@ -363,7 +363,8 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 		private final List<String>		fActions;
 		private final IPath				fCwd;
 		private final ProgrammerConfig	fProgrammerConfig;
-		private final String			MComPort;
+		//private final String			MComPort;
+		private String			MComPort;
 
 		public UploadJob(List<String> options, List<String> actions, IPath cwd,
 				ProgrammerConfig programmer,String Port) {
@@ -406,7 +407,10 @@ public class UploadProjectAction extends ActionDelegate implements IWorkbenchWin
 				try
 				{
 				WeStoppedTheComPort= Common.StopSerialMonitor( MComPort);
-				Common.ResetArduino( MComPort, 9600 );
+				String NewComPort = Common.ResetArduino( fProject, MComPort, 9600 );
+				
+				int index = fOptions.indexOf(Common.UploadPortPrefix() + MComPort);
+				fOptions.set(index, Common.UploadPortPrefix() + NewComPort);
 				}
 				catch ( Exception e)
 				{

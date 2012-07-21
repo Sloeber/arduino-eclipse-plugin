@@ -149,8 +149,8 @@ public class AVRPathsPreferences {
 	 * @return <code>true</code> if the system paths should not be searched.
 	 */
 	public static boolean noStartupPathScan() {
-		IPreferenceStore store = getPreferenceStore();
-		return store.getBoolean(KEY_NOSTARTUPSCAN);
+		//IPreferenceStore store = getPreferenceStore();
+		return true; //store.getBoolean(KEY_NOSTARTUPSCAN);
 	}
 
 	public static void scanAllPaths() {

@@ -47,7 +47,9 @@ public class ArduinoPageLayout {
 	private Text controlBuildCoreFolder;
 	private Text controlCppCompileOptions;
 	private Text controlCCompileOptions;
-	private Text ControlLinkOptions;
+	private Text controlLinkOptions;
+	private Text controlBuildPID;
+	private Text controlBuildVID;	
 	private Button controlDisableFlushing;
 
 	// the properties to modify
@@ -236,11 +238,26 @@ public class ArduinoPageLayout {
 		controlCCompileOptions.setEnabled(false);
 		
 		new Label(composite, SWT.NONE).setText("Link options:"); //$NON-NLS-1$
-		ControlLinkOptions = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		controlLinkOptions = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
-		ControlLinkOptions.setLayoutData(theGriddata);
-		ControlLinkOptions.setEnabled(false);
+		controlLinkOptions.setLayoutData(theGriddata);
+		controlLinkOptions.setEnabled(false);
+		
+	
+		new Label(composite, SWT.NONE).setText("Build pid:"); //$NON-NLS-1$
+		controlBuildPID = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlBuildPID.setLayoutData(theGriddata);
+		controlBuildPID.setEnabled(false);
+		
+		new Label(composite, SWT.NONE).setText("Build vid:"); //$NON-NLS-1$
+		controlBuildVID = new Text(composite, SWT.BORDER | SWT.READ_ONLY);
+		theGriddata = new GridData();
+		theGriddata.horizontalAlignment = SWT.FILL;
+		controlBuildVID.setLayoutData(theGriddata);
+		controlBuildVID.setEnabled(false);
 		
 
 		// Create the control to alert parents of changes
@@ -295,8 +312,9 @@ public class ArduinoPageLayout {
 		controlBuildCoreFolder.setText(mArduinoBoards.getBuildCoreFolder(BoardName));
 		controlCppCompileOptions.setText(mArduinoBoards.getCppCompileOptions(BoardName));
 		controlCCompileOptions.setText(mArduinoBoards.getCCompileOptions(BoardName));
-		ControlLinkOptions.setText(mArduinoBoards.getLinkOptions(BoardName));
-	
+		controlLinkOptions.setText(mArduinoBoards.getLinkOptions(BoardName));
+		controlBuildVID.setText(mArduinoBoards.getBuildVID(BoardName));
+		controlBuildPID.setText(mArduinoBoards.getBuildPID(BoardName));
 	}
 
 	public void setToDefaults() {
@@ -314,7 +332,9 @@ public class ArduinoPageLayout {
 		mArduinoProperties.setBuildCoreFolder(controlBuildCoreFolder.getText().trim());
 		mArduinoProperties.setCppCompileOptions( controlCppCompileOptions.getText());
 		mArduinoProperties.setCCompileOptions(controlCCompileOptions.getText());
-		mArduinoProperties.setLinkOptions(ControlLinkOptions.getText());
+		mArduinoProperties.setLinkOptions(controlLinkOptions.getText());
+		mArduinoProperties.setBuildVID(controlBuildVID.getText());
+		mArduinoProperties.setBuildPID(controlBuildPID.getText());
 
 		mValidAndComplete = mArduinoPathIsValid && !controlArduinoBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("");
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");

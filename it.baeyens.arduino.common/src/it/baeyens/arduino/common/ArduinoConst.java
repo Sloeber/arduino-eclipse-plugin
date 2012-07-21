@@ -80,6 +80,9 @@ public class ArduinoConst {
 	public static final String KEY_ARDUINO_CPP_COMPILE_OPTIONS 	= "Arduino C++ compile options";
 	public static final String KEY_ARDUINO_C_COMPILE_OPTIONS 		= "Arduino C compile options";
 	public static final String KEY_ARDUINO_LINK_OPTIONS 				= "Arduino Link options";
+	public static final String KEY_ARDUINO_BUILD_VID 						= "Arduino build vid";
+	public static final String KEY_ARDUINO_BUILD_PID 						= "Arduino build pid";
+	public static final String KEY_ARDUINO_DISABLE_FLUSHING			= "Arduino Disable flushing";
 	
 	//Serial monitor keys
 	public static final String KEY_SERIAlRATE 				= "Serial monitor Last selected rate";
@@ -117,6 +120,7 @@ public class ArduinoConst {
 	public static final String PATH_VARIABLE_NAME_PRIVATE_LIB	= "PivateLibPath";
 	public static final String PATH_VARIABLE_NAME_ARDUINO_CORE	= "CoreArduinoPath";
 	public static final String PATH_VARIABLE_NAME_ARDUINO_PINS	= "PinArduinoPath";
+
 	
 	
 	

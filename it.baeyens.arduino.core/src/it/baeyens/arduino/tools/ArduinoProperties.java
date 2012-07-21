@@ -42,6 +42,8 @@ public class ArduinoProperties {
 	private String myCppCompileOptions;
 	private String myCCompileOptions;
 	private String myLinkOptions;
+	private String myBuildVID;
+	private String myBuildPID;
 
 	public ArduinoProperties() {
 		mArduinoBoardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
@@ -96,6 +98,10 @@ public class ArduinoProperties {
 		myCppCompileOptions= Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS) ;
 		myCCompileOptions= Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS) ;
 		myLinkOptions = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_LINK_OPTIONS) ;
+		mDisabledFlushing = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING).equalsIgnoreCase( "TRUE");
+		
+		myBuildVID = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_BUILD_VID) ;
+		myBuildPID = Common.getPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_BUILD_PID) ;
 	}
 
 	/**
@@ -111,6 +117,10 @@ public class ArduinoProperties {
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS), myCppCompileOptions);
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS), myCCompileOptions);
 			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_LINK_OPTIONS), myLinkOptions);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING), mDisabledFlushing?"TRUE":"FALSE");
+			
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_BUILD_VID), myBuildVID);
+			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_BUILD_PID), myBuildPID);
 			
 			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
@@ -261,6 +271,8 @@ public class ArduinoProperties {
 		myCppCompileOptions=TheBoards.getCppCompileOptions(boardName);
 		myCCompileOptions=TheBoards.getCCompileOptions(boardName);
 		myLinkOptions=TheBoards.getLinkOptions(boardName);
+		myBuildVID=TheBoards.getBuildVID(boardName);
+		myBuildPID=TheBoards.getBuildPID(boardName);
 	}
 
 	/**
@@ -298,5 +310,17 @@ public class ArduinoProperties {
 	public void setLinkOptions(String LinkOptions)
 		{
 			myLinkOptions=LinkOptions;
+		}
+
+	public void setBuildVID(String BuildVID)
+		{
+			myBuildVID=BuildVID;
+			
+		}
+
+	public void setBuildPID(String BuildPID)
+		{
+			myBuildPID=BuildPID;
+			
 		}
 }

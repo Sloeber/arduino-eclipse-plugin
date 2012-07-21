@@ -513,7 +513,7 @@ public class Serial implements SerialPortEventListener
 		 * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
 		 * knows.
 		 */
-		static public String[] list()
+		static public Vector<String> list()
 			{
 				Vector<String> list = new Vector<String>();
 				try
@@ -538,9 +538,10 @@ public class Serial implements SerialPortEventListener
 					{
 						errorMessage("ports", e);
 					}
-				String outgoing[] = new String[list.size()];
-				list.copyInto(outgoing);
-				return outgoing;
+				return list;
+//				String outgoing[] = new String[list.size()];
+//				list.copyInto(outgoing);
+//				return outgoing;
 			}
 
 		/**

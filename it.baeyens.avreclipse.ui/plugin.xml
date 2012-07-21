@@ -431,7 +431,11 @@
 			class="it.baeyens.avreclipse.ui.views.targets.TargetConfigurationView" 
 			icon="icons/avr_app.gif"
 			name="AVR Target Configurations" />
+
 	</extension>
+
+
+	
 
 	<extension point="org.eclipse.ui.perspectiveExtensions">
 		<perspectiveExtension

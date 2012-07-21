@@ -1,5 +1,7 @@
 package it.baeyens.arduino.common;
 
+import java.util.Vector;
+
 import it.baeyens.arduino.arduino.Serial;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
@@ -21,7 +23,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 public class Common extends ArduinoInstancePreferences
 	{
-		private static boolean RXTXLibraryLoaded =false;
+		private static boolean RXTXLibraryLoaded = false;
 		// /**
 		// * GetAvrDudeComPortPrefix is used to determine the prefix to be used with
 		// * the com port.<br/>
@@ -342,10 +344,72 @@ public class Common extends ArduinoInstancePreferences
 				return null;
 			}
 
-		public static void ResetArduino(String ComPort, int UploadSpeed)
+		public static String ResetArduino(IProject project, String ComPort, int UploadSpeed)
 			{
 				if (RXTXDisabled())
-					return;
+					return ComPort;
+				if (getPersistentProperty(project, ArduinoConst.KEY_ARDUINOBOARD).equalsIgnoreCase("Arduino leonardo"))
+					{
+						Serial serialPort;
+						Vector<String> OriginalPorts = Serial.list();
+						try
+							{
+								serialPort = new Serial(ComPort, 1200);
+							} catch (Exception e)
+							{
+								e.printStackTrace();
+								Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+								return ComPort;
+								// throw new RunnerException(e.getMessage());
+							}
+
+						try
+							{
+								Thread.sleep(100);
+							} catch (InterruptedException e)
+							{
+							}
+						serialPort.dispose();
+						Vector<String> NewPorts ;
+						do
+							{
+								NewPorts = Serial.list();
+								for (int i = 0;i<OriginalPorts.size();i++)
+									{
+										NewPorts.remove(OriginalPorts.get(i));
+									}
+							}
+						while (NewPorts.size() != 1);
+//						try
+//							{
+//								while (NewPorts.size() == OriginalPorts.size())
+//									{
+//										Thread.sleep(50);
+//										NewPorts = Serial.list();
+//									}
+//								while (NewPorts.size() != OriginalPorts.size())
+//									{
+//										Thread.sleep(50);
+//										NewPorts = Serial.list();
+//									}
+//							} catch (InterruptedException e)
+//							{
+//							}
+//						// OriginalPorts.listIterator()
+//						//todo get the com port to upload
+//						for (int i = 0;i<OriginalPorts.size();i++)
+//							{
+//								NewPorts.remove(OriginalPorts.get(i));
+//							}
+//						if (NewPorts.size() != 1)
+//							{
+//								Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo did not react as expected " + NewPorts.size(), null));
+//								return ComPort;
+//							}
+						return NewPorts.get(0);
+					}
+				if (getPersistentProperty(project, ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING).equalsIgnoreCase("TRUE"))
+					return ComPort;
 
 				// Cleanup the serial buffer
 				Serial serialPort;
@@ -356,7 +420,7 @@ public class Common extends ArduinoInstancePreferences
 					{
 						e.printStackTrace();
 						Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
-						return;
+						return ComPort;
 						// throw new RunnerException(e.getMessage());
 					}
 				@SuppressWarnings("unused")
@@ -386,6 +450,7 @@ public class Common extends ArduinoInstancePreferences
 				serialPort.setRTS(true);
 
 				serialPort.dispose();
+				return ComPort;
 
 			}
 
@@ -413,7 +478,6 @@ public class Common extends ArduinoInstancePreferences
 					{
 						OtherSerialUser.ResumePort(mComPort);
 					}
-				// TODO Auto-generated method stub
 
 			}
 
@@ -421,18 +485,22 @@ public class Common extends ArduinoInstancePreferences
 			{
 				if (RXTXDisabled())
 					return new String[0];
-				return Serial.list();
+				Vector<String> SerialList = Serial.list();
+				String outgoing[] = new String[SerialList.size()];
+				SerialList.copyInto(outgoing);
+				return outgoing;
 			}
 
 		public static boolean LoadRXTX()
 			{
-				if (RXTXLibraryLoaded) return true;
+				if (RXTXLibraryLoaded)
+					return true;
 				return RXTXLibraryLoaded = LoadRXTX(null);
 			}
 
 		public static boolean LoadRXTX(Shell parent)
 			{
-				String OsInfo = "\nOs =" +Platform.getOS()+ " Os Architecture =" +Platform.getOSArch();
+				String OsInfo = "\nOs =" + Platform.getOS() + " Os Architecture =" + Platform.getOSArch();
 				try
 					{
 						// try to load the arduino DLL
@@ -447,10 +515,10 @@ public class Common extends ArduinoInstancePreferences
 								System.loadLibrary(GetSerialDllName());
 							} catch (Error e2)
 							{
-								String FailMessage = "Failed to load Arduino IDE delivered rxtx library (" + GetSerialFullDllName() + ") " + e1.getMessage(); 
-								FailMessage		+= "\nFailed to load Eclipse plugin delivered rxtx library (" + GetSerialDllName()	+ ") " +  e2.getMessage();
-								FailMessage		+= OsInfo;
-								FailMessage		+= "\nSee Error view for more info.";
+								String FailMessage = "Failed to load Arduino IDE delivered rxtx library (" + GetSerialFullDllName() + ") " + e1.getMessage();
+								FailMessage += "\nFailed to load Eclipse plugin delivered rxtx library (" + GetSerialDllName() + ") " + e2.getMessage();
+								FailMessage += OsInfo;
+								FailMessage += "\nSee Error view for more info.";
 								int FailErrorCode = IStatus.WARNING;
 								if (parent != null)
 									{
@@ -473,7 +541,7 @@ public class Common extends ArduinoInstancePreferences
 							{
 								MessageBox SuccessBox = new MessageBox(parent, SWT.ICON_WORKING | SWT.OK);
 								SuccessBox.setText("Succesfully loaded rxtx dll!");
-								SuccessBox.setMessage("Eclipse plugin delivered rxtx library (" + GetSerialDllName() + ") has been loaded successfully" +OsInfo);
+								SuccessBox.setMessage("Eclipse plugin delivered rxtx library (" + GetSerialDllName() + ") has been loaded successfully" + OsInfo);
 								SuccessBox.open();
 							}
 						return true; // Succeeded in loading the eclipse delivered dll
@@ -504,8 +572,8 @@ public class Common extends ArduinoInstancePreferences
 				if (Platform.getOS().equals(Platform.OS_LINUX))
 					{
 						if (Platform.getOSArch().equals(Platform.ARCH_IA64) || Platform.getOSArch().equals(Platform.ARCH_X86_64))
-							return getArduinoPath() +  "/lib/librxtxSerial64.so";
-						return getArduinoPath() + "/lib/librxtxSerial.so";						
+							return getArduinoPath() + "/lib/librxtxSerial64.so";
+						return getArduinoPath() + "/lib/librxtxSerial.so";
 					}
 				if (Platform.getOS().equals(Platform.OS_MACOSX))
 					return getArduinoPath() + "/contents/Resources/java/LibrtxSerial.jnilib";
@@ -515,7 +583,6 @@ public class Common extends ArduinoInstancePreferences
 
 		private static String GetSerialDllName()
 			{
-				// TODO Auto-generated method stub
 				if (Platform.getOS().equals(Platform.OS_WIN32))
 					{
 						if (Platform.getOSArch().equals(Platform.ARCH_X86_64))

@@ -42,7 +42,9 @@
 		<a href="#canceled">I can not cancel the upload to the Arduino Board</a><br>
 		<a href="#wire">The library Wire does not compile</a><br>
 		<a href="#LibraryDelete">Deleting a library corrupts my project</a><br>
-		<a href="#Serial">The indexer states Serial does not exist</a>
+		<a href="#Serial">The indexer states Serial does not exist</a><br>
+		<a href="#Private_Library">What is this private library in the settings page</a><br>
+		<a href="#site_down">I can't download the plugin. Is your site down?</a>
 		<h1>General</h1>
 		<a name="Contact"></a>
 		<h2>How can I contact the author of this great plugin</h2>
@@ -299,6 +301,20 @@ First deleting all the incorrect values and then setting the correct values back
 <br>
 <a name="Serial"></a>
 <h2>The indexer states Serial does not exist</h2>
-This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a>
-</body>
+This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a><br>
+<br>
+<a name="Private_Library"></a>
+<h2>What is this private library in the settings page</h2>
+ In the settings page a private library folder is requested. This setting should point to a location where you down loaded Arduino libraries.<br>
+   If you haven't down loaded Arduino libraries yet do as follows<br>
+   1) Consider using the Arduino IDE. (strongly advised)<br>
+   2) Point it to a location where you can download Arduino libraries. (Strongly disadviced)<br>
+<br>
+<a name="site_down"></a>
+<h2>I can't download the plugin. Is your site down?</h2>
+As you are reading this: "obviously my site is not down". The download via eclipse is standard HTTP just like this page is to the browser. If you can access this page you can download the plugin.<br>
+If it doesn't work for you check the following:<br>
+In eclipse: Goto windows-&gt;preferences-&gt;general-&gt;Network settings. Verify these are set OK.<br>Check in your firewall wether java(w) is allowed to get onto the internet.<br>
+If these are OK disable virus checkers and firewalls<br>
+If it still doesn't work ask a local network specialist to help you out.</body>
 </html>
