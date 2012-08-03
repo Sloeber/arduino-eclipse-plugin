@@ -1,5 +1,5 @@
 package it.baeyens.arduino.tools;
-
+import java.util.Arrays;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 import java.io.BufferedReader;
@@ -199,6 +199,7 @@ public class ArduinoBoards {
 		}
 		String[] sBoards = new String[mBoards.size()];
 		mBoards.toArray(sBoards);
+		Arrays.sort(sBoards);
 		return sBoards;
 	}
 

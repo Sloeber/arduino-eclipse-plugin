@@ -110,26 +110,21 @@ public class ArduinoProperties {
 	 * @param Project
 	 */
 	public void save(IProject Project) {
-		try {
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARD), mArduinoBoardName);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINOBOARDVARIANT), mBoardVariant);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_CORE_FOLDER), myBuildCoreFolder);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS), myCppCompileOptions);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS), myCCompileOptions);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_LINK_OPTIONS), myLinkOptions);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING), mDisabledFlushing?"TRUE":"FALSE");
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARD, mArduinoBoardName);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINOBOARDVARIANT, mBoardVariant);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_CORE_FOLDER, myBuildCoreFolder);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_CPP_COMPILE_OPTIONS, myCppCompileOptions);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_C_COMPILE_OPTIONS, myCCompileOptions);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_LINK_OPTIONS, myLinkOptions);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING, mDisabledFlushing?"TRUE":"FALSE");
 			
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_BUILD_VID), myBuildVID);
-			Project.setPersistentProperty(new QualifiedName("", ArduinoConst.KEY_ARDUINO_BUILD_PID), myBuildPID);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_BUILD_VID, myBuildVID);
+			Common.setPersistentProperty(Project, ArduinoConst.KEY_ARDUINO_BUILD_PID, myBuildPID);
 			
 			ArduinoInstancePreferences.SetLastUsedArduinoBoard(mArduinoBoardName);
 			ArduinoInstancePreferences.SetLastUsedUploadPort(mUploadPort);
-		} catch (CoreException e) {
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
-			Common.log(status);
 
-		}
-		ProgrammerConfigManager AVRConfigManager;
+			ProgrammerConfigManager AVRConfigManager;
 		ProgrammerConfig Programmerconfig;
 		AVRProjectProperties AVRproperties;
 		AVRDudeProperties AVRDudeProperties;

@@ -15,13 +15,23 @@ a button to build the project
 a button to upload to the arduino board
 a project property page allowing to change the arduino board
 type and the port the arduino is using.
-
+Version 1_2_5
+Cleaned up so that leonardo_test is not in the include path
+Sorted the list of Arduino Boards
+Version 1_2_4
+Added Leonardo support
+Undid the &quot;Fixed a bug on MAC when AVRPaths searches..)
+Disabled searching for paths (other fix for the above undo)
+Note 1_2_3 is not configurable on MAC.
 Version 1_2_3
 Added a serial test button to test the serial library in the
 preference page
-Fixed a bug to support non arduino cores (the correct include folder is
+Fixed a bug to support non arduino cores (the correct include
+folder is
 now set)
-Fixed a bug on MAC when AVRPaths searches for the location of G++ AvrDude and others. (no MAC search as been added but the POSIX is no longer used in case of mac)
+Fixed a bug on MAC when AVRPaths searches for the location of
+G++ AvrDude and others. (no MAC search as been added but the
+POSIX is no longer used in case of mac)
 Added suport for specific c compile, c++ compile and link instructions
 the keys to be added to the boards.txt are
 [board id].build.cpp.options

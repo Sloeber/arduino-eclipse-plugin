@@ -114,15 +114,44 @@ public class Common extends ArduinoInstancePreferences
 			{
 				try
 					{
-						String sret = project.getPersistentProperty(new QualifiedName("", Tag));
+						String sret = project.getPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, Tag));
 						if (sret == null)
-							sret = "";
+							{
+								sret = project.getPersistentProperty(new QualifiedName("", Tag)); //for downwards compatibility
+								if (sret == null)
+									sret = "";
+							}
 						return sret;
 					} catch (CoreException e)
 					{
 						log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
 						// e.printStackTrace();
 						return "";
+					}
+			}
+
+		/**
+		 * Sets a persistent project property
+		 * 
+		 * @param project
+		 *          The project for which the property needs to be set
+		 * 
+		 * @param Tag
+		 *          The tag identifying the property to read
+		 * @return returns the property when found. When not found returns an empty
+		 *         string
+		 */
+		public static void setPersistentProperty(IProject project, String Tag, String Value)
+			{
+				try
+					{
+						project.setPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, Tag), Value);
+						project.setPersistentProperty(new QualifiedName("", Tag), Value); //for downwards compatibility
+					} catch (CoreException e)
+					{
+						IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
+						Common.log(status);
+
 					}
 			}
 
@@ -370,42 +399,43 @@ public class Common extends ArduinoInstancePreferences
 							{
 							}
 						serialPort.dispose();
-						Vector<String> NewPorts ;
+						Vector<String> NewPorts;
 						do
 							{
 								NewPorts = Serial.list();
-								for (int i = 0;i<OriginalPorts.size();i++)
+								for (int i = 0; i < OriginalPorts.size(); i++)
 									{
 										NewPorts.remove(OriginalPorts.get(i));
 									}
-							}
-						while (NewPorts.size() != 1);
-//						try
-//							{
-//								while (NewPorts.size() == OriginalPorts.size())
-//									{
-//										Thread.sleep(50);
-//										NewPorts = Serial.list();
-//									}
-//								while (NewPorts.size() != OriginalPorts.size())
-//									{
-//										Thread.sleep(50);
-//										NewPorts = Serial.list();
-//									}
-//							} catch (InterruptedException e)
-//							{
-//							}
-//						// OriginalPorts.listIterator()
-//						//todo get the com port to upload
-//						for (int i = 0;i<OriginalPorts.size();i++)
-//							{
-//								NewPorts.remove(OriginalPorts.get(i));
-//							}
-//						if (NewPorts.size() != 1)
-//							{
-//								Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo did not react as expected " + NewPorts.size(), null));
-//								return ComPort;
-//							}
+							} while (NewPorts.size() != 1);
+						// try
+						// {
+						// while (NewPorts.size() == OriginalPorts.size())
+						// {
+						// Thread.sleep(50);
+						// NewPorts = Serial.list();
+						// }
+						// while (NewPorts.size() != OriginalPorts.size())
+						// {
+						// Thread.sleep(50);
+						// NewPorts = Serial.list();
+						// }
+						// } catch (InterruptedException e)
+						// {
+						// }
+						// // OriginalPorts.listIterator()
+						// //todo get the com port to upload
+						// for (int i = 0;i<OriginalPorts.size();i++)
+						// {
+						// NewPorts.remove(OriginalPorts.get(i));
+						// }
+						// if (NewPorts.size() != 1)
+						// {
+						// Common.log(new Status(IStatus.WARNING,
+						// ArduinoConst.CORE_PLUGIN_ID,
+						// "Leonardo did not react as expected " + NewPorts.size(), null));
+						// return ComPort;
+						// }
 						return NewPorts.get(0);
 					}
 				if (getPersistentProperty(project, ArduinoConst.KEY_ARDUINO_DISABLE_FLUSHING).equalsIgnoreCase("TRUE"))

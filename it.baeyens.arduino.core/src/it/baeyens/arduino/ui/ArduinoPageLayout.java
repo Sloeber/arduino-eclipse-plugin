@@ -153,13 +153,14 @@ public class ArduinoPageLayout {
 		createLine(composite, ncol);
 		createLabel(composite, ncol, "Your Arduino board specifications"); //$NON-NLS-1$
 		new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
-		controlArduinoBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
+		controlArduinoBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY );
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
 		theGriddata.horizontalSpan = (ncol - 1);
 		controlArduinoBoardName.setLayoutData(theGriddata);
 		controlArduinoBoardName.setEnabled(false);
 		controlArduinoBoardName.setItems(mArduinoBoards.GetArduinoBoards());
+		
 
 		new Label(composite, SWT.None).setText("Port: ");
 		//controlUploadPort = new Text(composite, SWT.BORDER);
