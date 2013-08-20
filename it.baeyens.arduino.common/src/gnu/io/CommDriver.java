@@ -17,18 +17,17 @@
 |   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 --------------------------------------------------------------------------*/
 package gnu.io;
+
 //import java.util.*;
 
 /**
-* @author Trent Jarvi
-* @version %I%, %G%
-* @since JDK1.0
-*/
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
 
+public interface CommDriver {
+	public abstract CommPort getCommPort(String portName, int portType);
 
-public interface CommDriver
-{
-	public abstract CommPort getCommPort(String portName,int portType);
 	public abstract void initialize();
 }
-

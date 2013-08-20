@@ -4,9 +4,12 @@
       A location for eclipse plugins created by Jan Baeyens
    </description>
    <feature url="features/it.baeyens.arduino.feature_1.1.7.jar" id="it.baeyens.arduino.feature" version="1.1.7"/>
-   <feature url="features/it.baeyens.arduino.feature_1.2.0.jar" id="it.baeyens.arduino.feature" version="1.2.0"/>
-   <feature url="features/it.baeyens.arduino.feature_1.2.1.jar" id="it.baeyens.arduino.feature" version="1.2.1"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.0.jar" id="it.baeyens.arduino.feature" version="1.2.0" patch="true"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.1.jar" id="it.baeyens.arduino.feature" version="1.2.1" patch="true"/>
    <feature url="features/it.baeyens.arduino.feature_1.2.2.jar" id="it.baeyens.arduino.feature" version="1.2.2" patch="true"/>
-   <feature url="features/it.baeyens.arduino.feature_1.2.3.jar" id="it.baeyens.arduino.feature" version="1.2.3"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.3.jar" id="it.baeyens.arduino.feature" version="1.2.3" patch="true"/>
    <feature url="features/it.baeyens.arduino.feature_1.2.4.jar" id="it.baeyens.arduino.feature" version="1.2.4" patch="true"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.5.5.jar" id="it.baeyens.arduino.feature" version="1.2.5.5" patch="true"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.5.6.jar" id="it.baeyens.arduino.feature" version="1.2.5.6"/>
+   <feature url="features/it.baeyens.arduino.feature_1.2.5.7.jar" id="it.baeyens.arduino.feature" version="1.2.5.7"/>
 </site>

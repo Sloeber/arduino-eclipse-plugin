@@ -21,36 +21,36 @@ package gnu.io;
 import it.baeyens.arduino.common.Common;
 
 /**
-A class to keep the current version in
-*/
+ * A class to keep the current version in
+ */
 
-public class RXTXVersion
-{
-/*------------------------------------------------------------------------------
-	RXTXVersion  
-	accept:       -
-	perform:      Set Version.
-	return:       -
-	exceptions:   Throwable
-	comments:     
-		      See INSTALL for details.
-------------------------------------------------------------------------------*/
+public class RXTXVersion {
+	/*------------------------------------------------------------------------------
+	 RXTXVersion  
+	 accept:       -
+	 perform:      Set Version.
+	 return:       -
+	 exceptions:   Throwable
+	 comments:     
+	 See INSTALL for details.
+	 ------------------------------------------------------------------------------*/
 	private static String Version;
 
 	static {
-	//System.loadLibrary( Common.SerialDllName() );
-			//System.load( Common.GetSerialFullDllName() );
+		// System.loadLibrary( Common.SerialDllName() );
+		// System.load( Common.GetSerialFullDllName() );
 		Common.LoadRXTX();
 		Version = "RXTX-2.1-7";
 	}
+
 	/**
-	*  static method to return the current version of RXTX
-	*  unique to RXTX.
-	*  @returns a string representing the version  "RXTX-1.4-9"
-	*/
-	public static String getVersion()
-	{
-		return(Version);
+	 * static method to return the current version of RXTX unique to RXTX.
+	 * 
+	 * @returns a string representing the version "RXTX-1.4-9"
+	 */
+	public static String getVersion() {
+		return (Version);
 	}
+
 	public static native String nativeGetVersion();
 }

@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: it.baeyens.arduino.core.nl1 Fragment
+Bundle-SymbolicName: it.baeyens.arduino.core.nl1
+Bundle-Version: 1.0.0
+Fragment-Host: it.baeyens.arduino.core;bundle-version="[2.1.0,2.2.0)"

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/it.baeyens.arduino.feature_1.2.5.9.jar" id="it.baeyens.arduino.feature" version="1.2.5.9"/>
+</site>

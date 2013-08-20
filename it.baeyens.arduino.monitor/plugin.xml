@@ -11,7 +11,7 @@
             category="it.baeyens.arduino.monitor"
             class="it.baeyens.arduino.monitor.views.SerialMonitor"
             icon="icons/sample.gif"
-            name="Serial monotor view">
+            name="Serial monitor view">
       </view>
 
 	</extension>

@@ -18,119 +18,118 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-class Configure extends Frame
-{
+class Configure extends Frame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	Checkbox cb[];
 	Panel p1;
-	static final int PORT_SERIAL	=	1;
-	static final int PORT_PARALLEL	=	2;
+	static final int PORT_SERIAL = 1;
+	static final int PORT_PARALLEL = 2;
 	int PortType = PORT_SERIAL;
-//	private static Configure configure;
 
-	private void saveSpecifiedPorts()
-	{
+	// private static Configure configure;
+
+	private void saveSpecifiedPorts() {
 		String filename;
-		String javaHome= new String(System.getProperty( "java.home" ) );
-		String pathSep = System.getProperty( "path.separator", ":" );
-		String fileSep = System.getProperty( "file.separator", "/" );
-		String lineSep = System.getProperty( "line.separator" );
+		String javaHome = new String(System.getProperty("java.home"));
+		String pathSep = System.getProperty("path.separator", ":");
+		String fileSep = System.getProperty("file.separator", "/");
+		String lineSep = System.getProperty("line.separator");
 		String output;
 
-		if( PortType == PORT_SERIAL )
-			filename = new String( javaHome +
-				fileSep + "lib" + fileSep +
-				"gnu.io.rxtx.SerialPorts" );
-		else if ( PortType == PORT_PARALLEL )
-			filename = new String( javaHome +
-				"gnu.io.rxtx.ParallelPorts" );
-		else
-		{
-			System.out.println( "Bad Port Type!" );
+		if (PortType == PORT_SERIAL)
+			filename = new String(javaHome + fileSep + "lib" + fileSep + "gnu.io.rxtx.SerialPorts");
+		else if (PortType == PORT_PARALLEL)
+			filename = new String(javaHome + "gnu.io.rxtx.ParallelPorts");
+		else {
+			System.out.println("Bad Port Type!");
 			return;
 		}
 		System.out.println(filename);
 
 		try {
-			FileOutputStream out = new FileOutputStream( filename );
+			FileOutputStream out = new FileOutputStream(filename);
 
-			for( int i = 0; i < 128; i++)
-			{
-				if( cb[i].getState() )
-				{
-					output = new String( cb[i].getLabel() +
-						pathSep );
-					out.write( output.getBytes() );
+			for (int i = 0; i < 128; i++) {
+				if (cb[i].getState()) {
+					output = new String(cb[i].getLabel() + pathSep);
+					out.write(output.getBytes());
 				}
 			}
 			out.write(lineSep.getBytes());
 			out.close();
-		}
-		catch ( IOException e )
-		{
+		} catch (IOException e) {
 			System.out.println("IOException!");
 		}
 	}
 
-	void addCheckBoxes( String PortName )
-	{
-		for ( int i = 0; i < 128 ; i++ )
-			if( cb[i] != null )
-				p1.remove( cb[i] );
-		for (int i=1;i<129;i++)
-		{
-			cb[i-1]=new Checkbox(PortName+i);
-			p1.add( "NORTH", cb[i-1] );
+	void addCheckBoxes(String PortName) {
+		for (int i = 0; i < 128; i++)
+			if (cb[i] != null)
+				p1.remove(cb[i]);
+		for (int i = 1; i < 129; i++) {
+			cb[i - 1] = new Checkbox(PortName + i);
+			p1.add("NORTH", cb[i - 1]);
 		}
 	}
 
-	public Configure()
-	{
-		int Width= 640;
-		int Height= 480;
+	public Configure() {
+		int Width = 640;
+		int Height = 480;
 		cb = new Checkbox[128];
-		final Frame f = new Frame(
-			"Configure gnu.io.rxtx.properties");
-		String fileSep = System.getProperty( "file.separator", "/" );
+		final Frame f = new Frame("Configure gnu.io.rxtx.properties");
+		String fileSep = System.getProperty("file.separator", "/");
 		String devPath;
-		if( fileSep.compareTo( "/" ) != 0 )
-			devPath="COM";
+		if (fileSep.compareTo("/") != 0)
+			devPath = "COM";
 		else
-			devPath="/dev/";
-			
-		f.setBounds(100,50,Width,Height);
+			devPath = "/dev/";
+
+		f.setBounds(100, 50, Width, Height);
 		f.setLayout(new BorderLayout());
 		p1 = new Panel();
-		p1.setLayout(new GridLayout(16,4));
+		p1.setLayout(new GridLayout(16, 4));
 		ActionListener l = new ActionListener() {
-			public void actionPerformed( ActionEvent e ) {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				{
 					String res = e.getActionCommand();
-					if ( res.equals( "Save" ) )
+					if (res.equals("Save"))
 						saveSpecifiedPorts();
 				}
 			}
 		};
 
-		addCheckBoxes( devPath );
-		TextArea t = new TextArea( EnumMessage, 5, 50, 
-						TextArea.SCROLLBARS_NONE );
-		t.setSize(50,Width);
+		addCheckBoxes(devPath);
+		TextArea t = new TextArea(EnumMessage, 5, 50, TextArea.SCROLLBARS_NONE);
+		t.setSize(50, Width);
 		t.setEditable(false);
 
 		final Panel p2 = new Panel();
 		p2.add(new Label("Port Name:"));
 		TextField tf = new TextField(devPath, 8);
-		tf.addActionListener( new ActionListener() {
-			public void actionPerformed( ActionEvent e )
-			{
+		tf.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				addCheckBoxes(e.getActionCommand());
 				f.setVisible(true);
 			}
@@ -139,18 +138,14 @@ class Configure extends Frame
 		Checkbox Keep = new Checkbox("Keep Ports");
 		p2.add(Keep);
 		Button b[] = new Button[6];
-		for(int j=0, i = 4;i<129;i*=2, j++)
-		{
+		for (int j = 0, i = 4; i < 129; i *= 2, j++) {
 			b[j] = new Button("1-" + i);
-			b[j].addActionListener( new ActionListener() {
-				public void actionPerformed( ActionEvent e )
-				{
-					int k = Integer.parseInt(
-					e.getActionCommand().substring(2));
-					for(int x = 0; x < k; x++)
-					{
-						cb[x].setState(
-							!cb[x].getState());
+			b[j].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int k = Integer.parseInt(e.getActionCommand().substring(2));
+					for (int x = 0; x < k; x++) {
+						cb[x].setState(!cb[x].getState());
 						f.setVisible(true);
 					}
 				}
@@ -166,20 +161,19 @@ class Configure extends Frame
 		f.add("South", p2);
 		f.add("Center", p1);
 		f.add("North", t);
-		f.addWindowListener(
-			new WindowAdapter() {
-				public void windowClosing( WindowEvent e )
-				{
-					System.exit( 0 );
-				}
+		f.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
 			}
-		);
+		});
 		f.setVisible(true);
 	}
-//	public static void main (String[] args)
-//	{
-//		configure = new Configure();
-//	}
-	String EnumMessage = new String( "gnu.io.rxtx.properties has not been detected.\n\nThere is no consistant means of detecting ports on this operating System.  It is necessary to indicate which ports are valid on this system before proper port enumeration can happen.  Please check the ports that are valid on this system and select Save");
-}
 
+	// public static void main (String[] args)
+	// {
+	// configure = new Configure();
+	// }
+	String EnumMessage = new String(
+			"gnu.io.rxtx.properties has not been detected.\n\nThere is no consistant means of detecting ports on this operating System.  It is necessary to indicate which ports are valid on this system before proper port enumeration can happen.  Please check the ports that are valid on this system and select Save");
+}
