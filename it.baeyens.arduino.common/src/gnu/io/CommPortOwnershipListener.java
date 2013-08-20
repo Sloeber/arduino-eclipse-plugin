@@ -17,19 +17,19 @@
 |   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 --------------------------------------------------------------------------*/
 package gnu.io;
+
 import java.util.*;
 
 /**
-* @author Trent Jarvi
-* @version %I%, %G%
-* @since JDK1.0
-*/
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
 
-public interface CommPortOwnershipListener extends EventListener
-{
-	public static final int PORT_OWNED               =1;
-	public static final int PORT_UNOWNED             =2;
-	public static final int PORT_OWNERSHIP_REQUESTED =3;
+public interface CommPortOwnershipListener extends EventListener {
+	public static final int PORT_OWNED = 1;
+	public static final int PORT_UNOWNED = 2;
+	public static final int PORT_OWNERSHIP_REQUESTED = 3;
 
-	public abstract void ownershipChange( int type );
+	public abstract void ownershipChange(int type);
 }

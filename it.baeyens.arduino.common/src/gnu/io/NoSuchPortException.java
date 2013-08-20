@@ -19,25 +19,24 @@
 package gnu.io;
 
 /**
-* The requested Port does not exist
-* @author Trent Jarvi
-* @version %I%, %G%
-* @since JDK1.0
-*/
+ * The requested Port does not exist
+ * 
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
 
-public class NoSuchPortException extends Exception
-{
+public class NoSuchPortException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	NoSuchPortException( String str )
-	{
-		super( str );
+
+	NoSuchPortException(String str) {
+		super(str);
 	}
-	public NoSuchPortException()
-	{
+
+	public NoSuchPortException() {
 		super();
 	}
 }
-

@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Monitor
 Bundle-SymbolicName: it.baeyens.arduino.monitor; singleton:=true
-Bundle-Version: 1.2.2
+Bundle-Version: 2.0.0.18
 Bundle-Activator: it.baeyens.arduino.monitor.Activator
 Bundle-Vendor: jan baeyens
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  it.baeyens.arduino.common
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
- JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7,
+ JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
  it.baeyens.arduino.monitor.views;

@@ -3,12 +3,28 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Arduino plugin frequently asked questions</title>
-<link href="MyStyle.css" rel="Stylesheet" type="text/css"></head>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35483398-1']);
+  _gaq.push(['_setDomainName', 'baeyens.it']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></head>
 
 <body >
 
         <div id="header">
-            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" 
+            width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <p id="scream">please help! <a href="donate.html">buy Jantje an Arduino.</a> He needs your support to keep going.</p>
         </div>
 	
 
@@ -23,43 +39,93 @@
 		<a href="#debug">How Do I debug?</a><br>
 		<a href="#report">Where Can I report bugs?</a><br>
 		<a href="#WINAVR">I use WinAVR...</a><br>
-		<a href="#2Locations">There are 2 locations where I can set configuration info. Where Should I set it?</a>
+		<a href="#FreePlugin">How come this plugin is free</a><br>
+		<a href="#OpenSource">You state the plugin is open source. Where can I find the source?</a>
+		
 
 		<h3>Arduino IDE Versus The arduino Plugin</h3>
 		<a href="#why">Why would I want to use this plugin.</a><br> 
 		<a href="#benefitIDE">What is the benefit of the Arduino IDE to the eclipse plugin.</a><br> 
 		<a href="#benefitArduino">What is the benefit of the eclipse plugin to the Arduino IDE.</a><br> 
-		<a href="#develop">What do I need to know to develop code for Arduino with this plugin.</a><br>
+		<a href="#develop">What do I need to know to develop code for Arduino with this plugin.</a>
+		
+		<h3>Configuration</h3><br>
+		<a href="#2Locations">There are 2 locations where I can set configuration info. Where Should I set it?</a><br>
+		<a href="#versionControl">Can I use the plugin with a version control tool.</a>
+		<a href="#Private_Library">What is this private library in the settings page</a><br>
+		
+		<h3>General usage Advice</h3>
+		<a href="#32or64Bit">Do you advice to use 32 or 64 bit eclipse?</a><br> 
+		<a href="#ProjectNameRestrictions">Are There any restrictions to the project name?</a><br>
+		<a href="#MultipleArduinoBoards">What is the best way to work with multiple arduino boards?</a><br>
+		<a href="#MultipleHardware">What is the best way to work with a mixture of boards (arduino-non arduino)?</a><br>
+		<a href="#MultipleArduinoVersions">What is the best way to work with multiple arduino versions (0022 0023 1.0 1.01)?</a><br>
+		<a href="#Workspaces">How do you advice to use the eclipse workspaces?</a><br>
 		
 		<h3>Trouble shooting</h3>
-		<a href="#doesntwork">The plugin doesn't work on my system.</a><br> 
+		<a href="#doesntwork">The plugin doesn't work on my system.</a><br>
+		<a href="#Serialdoesntwork">The serial (monitor) doesn't work on my system.</a><br>
+		<a href="#SerialDLLFails">Test Serial dll fails</a><br>
 		<a href="#errorLog">How can I find out more of the problem at hand?</a><br>
 		<a href="#spaces">Can I use spaces?</a><br>
 		<a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a><br>
 		<a href="#elf">Where is the elf file?</a><br> 
-		<a href="#errors">There are errors and warnings in the	Arduino library.</a><br> 
+		<a href="#errors">There are errors and warnings in the Arduino library.</a><br> 
 		<a href="#modified">I have modified my Arduino setup and ...</a><br>
 		<a href="#canceled">I can not cancel the upload to the Arduino Board</a><br>
 		<a href="#wire">The library Wire does not compile</a><br>
 		<a href="#LibraryDelete">Deleting a library corrupts my project</a><br>
 		<a href="#Serial">The indexer states Serial does not exist</a><br>
-		<a href="#Private_Library">What is this private library in the settings page</a><br>
-		<a href="#site_down">I can't download the plugin. Is your site down?</a>
+		<a href="#site_down">I can't download the plugin. Is your site down?</a><br>
+		<a href="#MAC_Lock">On Mac I get the error &quot;serial port is in use&quot; when uploading.</a><br>
+		<a href="#Latest_Version">How can I find the latest version when installing?</a><br>
+		
+		<h3>Background information</h3>
+		<a href="#RTC">Which version control system do you use?</a><br>
+		<a href="#TestingTool">Which tool do you use to do test so many versions?</a><br>
+		<br>
+		
+		
 		<h1>General</h1>
 		<a name="Contact"></a>
 		<h2>How can I contact the author of this great plugin</h2>
-		You can reach the author at <a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.
-		If you have a question please follow the <a	href="http://www.catb.org/~esr/faqs/smart-questions.html">eclipse guidance when formulating your question</a>	<br>
+		First of all ask yourself: "Do I have something of interest to share with Jantje? I mean interesting for Jantje not for you?"<br>
+		Consider this: "Jantje has spend many days working on this plugin. 
+		                Jantje is still spending way to much time on improving the plugin. 
+		                Jantje gives it to you all for free.
+		                The only thing Jantje asks in return is that when you have a problem/question: look for yourself and when you really need Jantjes advice 
+		                you at least have the decency to write a proper mail. 
+		                So don't be surprised when Jantje is not responding nicely when you ask a question you should not have asked him in the first place."<br>
+		
+		If you think I'm blunt; you should see the one-liner mails I get.<br> 
+		I'm not the only person in the world who feels like this. So before sending a mail; learn something and read the 
+		<a href="http://www.catb.org/~esr/faqs/smart-questions.html">eclipse guidance when formulating your question</a>	
 note the eclipse link is not a link to a help desk. it is a link to a document explaining how to ask questions the smart way.
-<br>You can also use the arduino forum to ask questions.<br>If you think you have found a bug you can log the bug at <a href="https://github.com/jantje/arduino-eclipse-plugin">github</a><a name="Versions"></a><br>
-You want to support Jantje;<a href="donate.html">Buy him an Arduino.</a><br>
+<br>
+<br>
+So unless you want to send a mail saying "thank you" or "well done" Consider following alternatives:<br>
+<ul><li>
+Use the arduino forum to ask questions. There are 2 threads which have been going for a while and contain lots of info. I actively monitor these threads. <br>
+<a href="http://arduino.cc/forum/index.php/topic,70547.0.html" >Please do not post in this one</a><br>
+<a href="http://arduino.cc/forum/index.php/topic,79595.0.html" >Please post in this one</a></li><li>
+If you think you have found a bug you can log the bug at <a href="https://github.com/jantje/arduino-eclipse-plugin">github</a>
+</li><li>
+If you want to support/bribe Jantje;<a href="donate.html">Buy him an Arduino.</a><br>
+</li></ul>
+If all of the above are not appropriate then you want to discuss something in private with Jantje, which -you think- is really interesting to Jantje: you may reach him at <br>
+<a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.<br>
+Note: If you want to increase your chanses of getting a nice answer :<a href="donate.html">Buy him an Arduino.</a><br>
+
+
+<a name="Versions"></a><br>
 <h2>On Which versions is this plugin tested?</h2>
-The plugin is tested on Arduino 0023 and Arduino 1.0.<br>
+The plugin is tested on Arduino 0022 0023 1.0 and Arduino 1.0.1.<br>
 Note: not all versions are tested on all platforms.
 <a name="platforms"></a>
 <h2>On which platforms is this plugin tested?</h2>
 The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
-<a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get it working on MAC OS. You can find the doc <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">here</a><br>
+<a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get it working on MAC OS.
+<a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/"> You can find the doc here</a><br>
 Note: not all versions are tested on all platforms.
 <a name="serial"></a>
 <h2>Where is the serial monitor?</h2>
@@ -68,6 +134,8 @@ From 1.2.2 onwards you can use the included serial monitor. Select menu item win
 <a name="debug"></a>
 <h2>How Do I debug?</h2>
 There is no debug functionality with this eclipse plugin.<br>
+<a href=http://husks.wordpress.com/2012/03/29/hardware-debugging-the-arduino-using-eclipse-and-the-avr-dragon>
+But here is a nice article that explains how to debug in linux and windows</a> 
 <a name="report"></a>
 <h2>Where Can I report bugs?</h2>
 Please report bug at <a href="https://github.com/jantje/arduino-eclipse-plugin/issues">github</a><br>
@@ -83,25 +151,52 @@ I fully agree that this would have been better.  New releases of WinAVR could ha
  <br>
  So basically when you installed this tool you have the WINAVR on your system. But what is the difference between WINAVR plugin and the WinAVR included in this plugin? <br>
  1) As mentioned above I had to change all the ID's.<br>
- 2) The WINAVR tool works with external tools like GCC and AVRDude. So does the Arduino IDE.When you set the option &quot;use Arduino IDE tools in Eclipse&quot; you actually set all the WINAVR settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.<br>
+ 2) The WINAVR tool works with external tools like GCC and AVRDude. So does the Arduino IDE.When you set the option &quot;use Arduino IDE tools in Eclipse&quot; 
+ you actually set all the WINAVR settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.<br>
  3)  I fixed some bugs. Each time a tool gets used in a different way some bugs will pop up. I fixed the ones that bothered me.<br>
  4)I added the Arduino reset (still needed for the mega)<br>
  So unless I made a mistake and (as long as there is no newer WinAVR version) you can use only my plugin to do project development on non-Arduino and Arduino in the same environment.<br>
- Note that as I only changed the ID's and not the names installing WinAVR next to my plugin works but has the drawback that menu items will appear twice and you can't tell them from each other.<br>
- <a name="2Locations"></a>
- <h1>There are 2 locations where I can set configuration info. Where Should I set it?</h1>
- As explained above; this plugin is build on top of the WINAVR and CDT plugins. The plugin sets the "default arduino settings" and groups all arduino settings in one place.
- So when you change a setting the plugin sets the CDT and WinAVR setting accordingly. The settings are only set when you set them (in other words they are not verified and corrected afterwards.)
- This means you can change them directly using the WINAVR and CDT functionality or indirectly using my plugin settings pages.
- One nice example to demonstrate this is in the preference page (windows-&gt;preference-&gt;arduino-&gt;arduino).  This page contains the flag "use arduino ide tools in eclipse". 
- If you set this flag the WINAVR plugin settings will be filled with the locations of the Arduino IDE (compiler/avr dude...).
- But you can still go to these settings  in the WINAVR pages and change them.
- I hope this is clear.
- <h1>Arduino IDE Versus The arduino Plugin</h1>
+ Note that as I only changed the ID's and not the names installing WinAVR next to my plugin works but has the drawback 
+ that menu items will appear twice and you can't tell them from each other.<br>
+ 
+ <a name="FreePlugin"></a>
+ <h2>How come this plugin is free</h2>
+ I have written this tool for myself for several reasons. 
+ <ul><li>I lost plenty of time configuring the WinAVR plugin. As the configuration is per workspace I wanted something better.  </li><li>
+ I trully believe the Arduino needs a software development growth path. 
+ Currently there is little available that would be a valid free<sup>*</sup> software development growth path for the arduino.</li><li>
+ I had some time and wanted to learn more in depth about the eclipse environment.</li></ul>
+ As I build it and I did not feel like investing time to make money out of it I published the code in open source.<br>
+ When I build the serial monitor I considered to make a commercial package from it. I decided not to do so because the price/support effort seemed out of balance at that time.<br>
+ In july 2012 I added a <a href=";donate.html">Buy Jantje an Arduino.</a> page to allow people to sponsor this project. Results have been below expectations. <br>
+ During this period my web stats reports a minimum per month of 3289 visits; 5206 page views.<br>
+ During the whole of the 3  first months I received 5 donnations. <br>
+ I'm not complaining but I'm looking for a way to convince myself to keep new versions of the plugin  available and free. And it is getting harder and harder to convince myself. <br>
+ The main reason is that there are plenty of people around who think: &quot;Because Jantje gives away the code for free; he ismy personal slave.&quot;  
+ In other words: I have to solve their problems and I am really rude if I refuse to do so. 
+ The result is that I spend time solving other peoples their problems or spend time getting rid of those people. 
+ In both cases my projects -for which I designed the plugin- are on hold. <br>
+ On the non money front: the CDT bug for which I asked to vote has <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">3 votes after 9 months.</a>  
+ Today my Karma at the Arduino forum is 7. <br>
+ Bottom line: Due to lack of return I feel I only loose time and money with this pugin.<br>
+ I don't want to think about this, because if I do I quit on the spot.<br>
+ ......(Jantje stopped thinking)<br>
+ <sup>*</sup>I mean free and not free for 3 years.
+ 
+<a name="OpenSource"></a>
+<h2>You state the plugin is open source. Where can I find the source?</h2>
+The first thing to note is that I only update the open source code when I release a new version. The latest and greatest code is as such not available.<br>
+You can find the code at <a href="https://github.com/jantje/arduino-eclipse-plugin">https://github.com/jantje/arduino-eclipse-plugin</a> 
+
+<h1>Arduino IDE Versus The arduino Plugin</h1>
 <a name="why"></a>
 <h2>Why would I want to use this plugin</h2>
 This plugin is not meant to replace the Arduino IDE. I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
-However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. In that case the eclipse plugin may be an alternative.
+However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. 
+In that case the eclipse plugin may be an alternative.<br>
+Advantages the eclipse environment has to the Arduino IDE are described in 
+
+
 <a name="benefitIDE"></a>
 <h2>What is the benefit of the Arduino IDE to the eclipse plugin</h2>
 The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
@@ -113,7 +208,7 @@ The Arduino IDE does this by &quot;hiding&quot; C++ code complexity and Hardware
 The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by the eclipse plugin.
 So there is no &quot;real&quot; difference there.
 
-The plugin currently (?) does not hide the C++ code complexity.
+The plugin does not hide the C++ code complexity.
 For someone used to develop C/C++ this will not be a problem. People not used
 to writing C++ will need to learn about 
 
@@ -133,27 +228,27 @@ With the eclipse plugin you have a environment that is fully focused on the deve
 provides plenty of features. The ones I like the most are: 
 
 <ul  type=disc>
- <li > context sensitive coloring (read the
-     color of the text changes because it is code or non active code or comment
-     or ..) </li>
- <li > Immediate documentation (When
-     you hover over a function you get the documentation of the function or
-     even the implementation)</li>
- <li > Link through (ctrl clicking on
-     a method sends you to the implementation of definition of the method)</li>
- <li >Auto complete (pressing CTRL
-     space when typing a name you get a list of “known names” that start with
-     these letters)</li>
-</ul>
+ <li > context sensitive coloring (read the color of the text changes because it is code or non active code or comment or ..) </li><li > 
+ Immediate documentation (When you hover over a function you get the documentation of the function or even the implementation)</li><li > 
+ Link through (ctrl clicking on a method sends you to the implementation of definition of the method)</li> <li >
+ Auto complete (pressing CTRL space when typing a name you get a list of “known names” that start with these letters)</li><li>
+ Integration with version control tools.</li><li>
+Search functionality like "Call hierarchy", include browser.</li><li>
+Access to code in Arduino libraries and private libraries as if they are part of the same project.</li><li>
+Not all files of the project need to be open all the time.</li><li>
+Easy location of errors and warnings in the open file. (read and orange boxes right of the editor)</li><li>
+Easy location of variables and methods in files. (gray boxes right of the editor)</li><li>
+A system to keep hold of your Tasks. (simply adding a comment that starts with TODO will add the todo to the task view )</li><li>
+......
+</li></ul>
 
-So there are plenty of good things a software developer misses in the Arduino IDE that
-the rest of the world doesn't know about.
+So there are plenty of good things a software developer misses in the Arduino IDE.
 
 <a name="develop"></a>
 <h2>What do I need to know to develop code for Arduino with this plugin?</h2>
 After you
-have read the pro and con's question you may wonder “how much is there to learn
-before I get this plugin to work?"<br>
+have read the pro and con's question you may wonder &quot;��how much is there to learn
+before I get this plugin to work?&quot;<br>
 
 There is good news and there is bad news. 
 
@@ -168,6 +263,70 @@ development; eclipse and CDT. Eclipse is a professional development environment
 and that brings some complexity. But you don't have to understand it all before
 you get your first programs running.<br>
 
+<h1>Configuration</h1>
+
+ <a name="2Locations"></a>
+ <h2>There are 2 locations where I can set configuration info. Where Should I set it?</h2>
+ As explained above; this plugin is build on top of the WINAVR and CDT plugins. The plugin sets the "default arduino settings" and groups all arduino settings in one place.
+ So when you change a arduino setting; the plugin sets the CDT and WinAVR setting accordingly. 
+ The settings are only set when you set them (in other words they are not verified and corrected afterwards.)
+ This means you can change them directly using the WINAVR and CDT functionality or indirectly using my plugin settings pages.
+ One nice example to demonstrate this is in the preference page (windows-&gt;preference-&gt;arduino-&gt;arduino).  
+ This page contains the flag &quot;use arduino ide tools in eclipse&quot;. 
+ If you set this flag the WINAVR plugin settings will be filled with the locations of the Arduino IDE (compiler/avr dude...).
+ But you can still go to these settings  in the WINAVR pages and change them.Your changes will be in efffect even though the flag &quot;use arduino ide tools in eclipse&quot; is set.
+ By removing the flag and resetting the flag you can undo the changes you did.<br>
+ I hope this is clear.
+ 
+<a name="versionControl"></a><h2>Can I use the plugin with a version control tool.</h2>
+Yes you can and should. <a href="https://jazz.net/products/rational-team-concert/">I use Rational team concert.</a> The best version control system available at this time. 
+You can download 10 free licences (What I'm doing). If you are running an open source project you can get all the free licences you need.<br>
+If you are not be willing to set up your own server to run RTC/CVS/subversion/git you may consider using <a href="https://github.com/">github</a>.<br>
+
+<a name="Private_Library"></a>
+<h2>What is this private library in the settings page</h2>
+ In the settings page a private library folder is requested. This setting should point to a location where you down loaded Arduino libraries.<br>
+   If you haven't down loaded Arduino libraries yet do as follows<br>
+   1) Consider using the Arduino IDE. (strongly advised)<br>
+   2) Point it to a location where you can download Arduino libraries. (Strongly disadviced)<br>
+
+
+<h1>General usage Advice</h1>
+
+<a name="#32or64Bit"></a><h2>Do you advice to use 32 or 64 bit eclipse?</h2><br> 
+Use 32 bit. No doubth. Why? The benefit of 64 is when you need more than 3Gig of memory to run the eclipse environment. 
+Unless you integrate your projects with a suite of professional tools you will never hit this limit.<br>
+Arduino comes with a  set of 32 bit tools. 64 bit Eclipse can not closely integrate with these tools. As a consequence "64 bit alternatives" are delivered with the plugin. 
+However these alternatives sometimes have "side efects". <br> See for instance RTTX library on mac and ubuntu.<br>
+Also the tools are not tested by arduino in 64 bit. This explains  for instance why the serial monitor does not work with Leonardo in 64 bit but it doesn in 32 bit.<br>
+So unless you really need 64bit eclipse I strongly advice 32 bit eclipse.<br>
+	
+
+		
+		<a name="ProjectNameRestrictions"></a>
+<h2>Are There any restrictions to the project name?</h2>
+Because of the toolchain used folowing characters are changed to '_' when given as project name in the new project wizard : ' '; '(' ; ')'. 
+The tool allows you to use these but they will be replaced.<br>
+		
+		<a name="#MultipleArduinoBoards"></a><h2>What is the best way to work with multiple arduino boards?</h2>
+		You can have all your projects in the same eclipse workspace. There is no benefit of splitting them over workspaces.<br>
+		
+		<a name="#MultipleHardware"></a><h2>What is the best way to work with a mixture of boards (arduino-non arduino)?</h2><br>
+		From version 1.3 the eclipse plugin supports multiple board.txt files. If you use this setup there is no reason to seperate the boards into different workspaces<br>
+		You can have all your projects in the same eclipse workspace. There is no benefit of splitting them over workspaces..
+		
+		<a name="#MultipleArduinoVersions"></a><h2>What is the best way to work with multiple arduino versions (0022 0023 1.0 1.01)?</h2>
+		Each arduino version should have its own eclipse workspace. Changing Arduino version in the plugin may corrupt the plugin settings.<br>
+		
+		<a name="#Workspaces"></a><h2>How do you advice to use the eclipse workspaces?</h2>
+		I keep all my arduino projects in one eclipse workspace. I make sure they al compile so there are no errors in the problem view.<br>
+		I work this way, and I'm not sure I would advice this way of working. <br>
+		I would advice starting with only one workspace. You may decide not to upgrade all you projects to the latest arduino version. 
+		At that point in time you will need an extra workspace. 
+		If you end up with plenty of projects in the same workspace you may find it is easier to split the workspace.  <br>
+		Note that splitting a workspace does not involve plenty of work.
+
+
 <h1>Trouble shooting</h1>
 
 <a name="doesntwork"></a>
@@ -175,35 +334,57 @@ you get your first programs running.<br>
 First of all the plugin only works on a limited amount of platforms. See the faq for which versions. If you do not use any of these
 operating systems you are out of luck for this plugin.
 <br>Secondly <br>
-If it doesn't work with the  Arduino IDE it won't work with the plugin.
+If it doesn't work with the  Arduino IDE it won't work with the plugin. Can you compile in the Arduino IDE?
 
 <br>Thirdly<br>
 there are plenty of settings that can be wrong. If it doesn''t work for you
 install the Arduino IDE in a new folder; install eclipse in a new folder; use a
 new workspace and reinstall the plugin. When doing so
-make sure you do not uses spaces in any names. <br>
+make sure you do not use spaces in any names. <br>
 
 This way it should work.
+<a name="Serialdoesntwork"></a>
+<h2>The Serial (monitor) doesn't work on my system.</h2>
+Verify serial communication is active.<br>
+Goto windows-&gt;preferences-&gt;Arduino-&gt;arduino and check wether "Disable RX TX" is unchecked.<br>
+At the same location press the "test serial dll" button to verify there is a vallid dll for your OS.<br>
+If the RXTX dll is enabled and there is a valid rxtx dll found for your OS/eclipse combination it works on 
+most OS's (<a href="https://github.com/jantje/arduino-eclipse-plugin/issues/7">there is a known issue in Linux flavours </a>)<br>
+
+
+<a name="SerialDLLFails"></a>
+<h2>Test Serial dll fails</h2>
+When I press the "test serial dll" I get a dialog box telling me it did not find a proper dll.<br>
+What is happening?<br>
+When you press the button the plugin tries to load the dll delivered with the Arduino IDE. If this dll does not load it tries to load a dll delivered with the plugin. 
+(note older versions worked the other way around)<br>
+Assuming Arduino IDE is working:<br>
+The Arduino dll is 32 bit so the eclipse environment you run the plugin in is not. In other words: you are probably running 64 bit eclipse and 
+there is no 64 bit RXTX dll delivered for your os with the plugin.<br>
+I would advice to try the 32 bit version of eclipse.
+If you are adventures you may go and look for a 64 bit RXTX dll for you OS. (If you find one please inform me and I may be able to add it to the plugin.)<br>
+ 
+
 <a name="errorLog"></a>
 <h2>How can I find out more of the problem at hand?</h2>
 It is always a good idea to find out more about the problem at hand. 
-There are actually 3 windows that can give you more feedback on the problem at hand.
+There are actually 3  eclipse views that can give you more feedback on the problem at hand.
 <ul><li>The console view</li>
 <li>The problems view</li>
 <li>The errors view</li></ul>
 The console view gives you more information on the commands that are being run externally. 
-That is the compiler and avr dude. The commands should be nearly 100% the same as in the arduino IDE (the order is not relevant). 
+That is the compiler and avr dude. The commands should be nearly 100% the same as in the arduino IDE (the order is not always relevant). 
 Differences I am aware of are 
 <ul><li>-D__IN_ECLIPSE__=1: that specifies you are in eclipse (I'm considering to remove this)</li>
 <li>-Wall: stating that all warnings must be shown (the arduino IDE does not show warnings)</li>
-<li>-x c++: An option I added to force *.pde and *.ino to be treated as C++ files</ul> 
-The problems view gives an overview of the code problems and is probably not what you are looking for when you are reading this.<br>
+<li>-x c++: An option I added to force *.pde and *.ino to be treated as C++ files (the latest versions of arduino do this also)</ul> 
+The problems view gives an overview of the code problems and is probably not what you are looking for when you are reading this.<br><br>
 The error view gives you an overview of errors and warnings that happened in eclipse and or its plugins.
 To show the errors window: select Window-&gt;show view -&gt; other-&gt;select general tab-&gt;error log.
 Look at the plugin column to see which plugin logged the warning. 
 I can only tell you more about the errors and warnings generated by it.baeyens.* plugins.
 
-<br>A final and most time consuming is to download the code from github. You can then compile and debug the code.<a name="spaces"></a>
+<br><br>A final and most time consuming way to find the problem is to download the code from github. You can then compile and debug the code.<a name="spaces"></a>
 <h2>Can I use spaces?</h2>
 The usage of spaces is known to give problems when used in<br>
 
@@ -214,7 +395,7 @@ The usage of spaces is known to give problems when used in<br>
 
 <a name="bugs"></a>
 <h2>Eclipse tells me there are bugs in my code but it compiles ok.</h2>
-Eclipse compiles you code in 2 ways. Once when you request a build (when
+Eclipse compiles your code in 2 ways. Once when you request a build (when
 you press on the hammer-&gt; compiler) and ones when you change code (indexer). The
 compiler is responsible for the build and the indexer is responsible for the continuous
 build.<br>
@@ -222,9 +403,10 @@ build.<br>
 The bugs
 (the red animals in the code) you see in the code can be found by any of the 2.
 The indexer behaves weird and sometimes doesn't find declarations that it
-knows. In that case you have the bug without a bug (in other words the code compiles ok but the indexer thinks it will not).<br>
+knows. In that case you have the bug icon without actually having a bug (in other words the code compiles ok but the indexer thinks it will not).<br>My current thinking is that following actions solve the serial problem. (note I have been thinking other solutions solved the problem)
+<br>Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add arduino.h and or WProgram.h including the full path. With me it currently states &quot;D:/arduino-1.0.1/hardware/arduino/cores/arduino/Arduino.h,cstdarg, stdarg.h, stddef.h, sys/resource.h, ctime, sys/types.h, signal.h, cstdio&quot;.<br><br>
 
-Following things are known to improve the situation<br>
+Following things are known to improve the Serial problem but are suspected to cause other indexer problems.<br>
 Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index unused headers.<br>
 Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;index source and header files opened in the editor.<br>
 Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add cstdio.h, arduino.h and or WProgram.h.<br>
@@ -238,8 +420,8 @@ Right click the project-&gt;index-&gt;Rebuild.<br>
 <h2>Where is the elf file?</h2>
 When you have compiled the sketch sometimes you can not see the elf file in eclipse. <br>
 
-This is a bug related to eclipse. If your project compiled fine refresh the project (pres F5 when you have the project selected).<br>
-Now there should e a binaries folder in the root of your project containing the elf file.
+This is a bug related to eclipse. If your project compiled fine refresh the project (press F5 when you have the project selected).<br>
+Now there should e a binaries folder in the root of your project containing the elf file.<br>Note that just like in the Arduino IDE there is no reason to &quot;see&quot; the elf file.
 
 <a name="errors"></a>
 <h2>There are errors and warnings in the Arduino library.</h2>
@@ -259,7 +441,7 @@ Basically there is nothing to worry about, but it would be better if it were cle
 <a name="modified"></a>
 <h2>I have modified my Arduino setup and... </h2>
 You are entitled to modify the Arduino IDE setup. But I'm not supporting this. If you know what you have been doing and you play a bit
-with eclipse you will find many ways to help you to solve your problem.
+with eclipse you will find many ways to help you to solve your problem and probably more to make it worse.
 
 <br>To be frank: If you can change the Arduino IDE setup you are a big boy so you can deal with
 it, write a document about it and share it with the world.<br>
@@ -267,20 +449,19 @@ This way we all become smarter.<br>
 
 <a name="canceled"></a>
 <h2>I can not cancel the upload to the Arduino Board</h2>
-Someone reported that pressing the cancel button during upload to arduino locks the com port.  Even if the upload is not working.  To solve the lock unplug the arduino from your pc and replug.<br>
+Someone reported that pressing the cancel button during upload to arduino locks the com port.  Even if the upload is not working.  To solve the lock problem in windows unplug the arduino  -after all connections to the com port have been closed -from your pc and replug.<br>
 <a name="wire"></a>
 <h2>The library Wire does not compile</h2>
 The eclipse plugin compiles all files as C++ files the Arduino IDE dos not do so. As a consequence the twi.c is compiled ad C++ by the plugin and as C by the arduino IDE. 
 Modifying the twi.h file to force explicit C function prototyping fixes this problem. See the <a href = "http://arduino.cc/forum/index.php/topic,86344.0.html">Arduino forum thread</a> on how to do this.<br>
-From version 1.1.8 onwards this should be fixed.<br><br>
+From version 1.1.8 onwards this should be fixed.<br>The wire library also contains a include library. Due to &quot;not top quality code of the wire library&quot;  a project using the wire lbrary also needs to include the utility folder. The same problem exists for ethernet and SD libraries.<br>From version 1.3 onwards libraries containing an utility subfolder also have the utility subfolder added to the include path.<br><br>
 
 <a name="LibraryDelete"></a>
 <h2>Deleting a library corrupts my project</h2>
-To help to fix this bug please vote at <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">bugzille CDT project</a> (You need an account)<br>
+To help to fix this bug please vote at <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">bugzille CDT project</a> (You need an account -no charge)<br>
 <h3>To work around</h3>
-Before you delete the library: Goto: project properties-&gt;C/C++ general -&gt;Paths and symbols-&gt; source location.
-<br>Delete the source reference to the library you want to delete. <br>Save the setting and exit the properties.
-<br>Now the library you want to delete will be the last entry in your project and is grayed out.
+Before you delete the library:  Right click the library. Select &quot;Resource configurations&quot;-&gt;exclude from build. Select all chackboxes (normally you only have release).
+Select OK.<br>Now the library you want to delete will be the last entry in your project and is grayed out.
 <br>You can safely delete it now.
 <h3>To reproduce do the following:</h3>
 Create a Arduino sketch project using the wizard.
@@ -296,25 +477,69 @@ Delete the Arduino Library
 <img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707815_resized.png"/>
 <img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707818_resized.png"/><br>
 
-Note that the images above show it for &quot;GNU C&quot;  but the same counts for &quot;GNU C++&quot;<br>
+Note that the images above show it for &quot;GNU C&quot;  but the same counts for &quot;GNU C++&quot;. Also note this is a pre 1.3 setup. From 1.3 onwards some names are different.<br>
 First deleting all the incorrect values and then setting the correct values back solves the issue.<br>
 <br>
 <a name="Serial"></a>
 <h2>The indexer states Serial does not exist</h2>
 This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a><br>
 <br>
-<a name="Private_Library"></a>
-<h2>What is this private library in the settings page</h2>
- In the settings page a private library folder is requested. This setting should point to a location where you down loaded Arduino libraries.<br>
-   If you haven't down loaded Arduino libraries yet do as follows<br>
-   1) Consider using the Arduino IDE. (strongly advised)<br>
-   2) Point it to a location where you can download Arduino libraries. (Strongly disadviced)<br>
-<br>
+
 <a name="site_down"></a>
 <h2>I can't download the plugin. Is your site down?</h2>
 As you are reading this: "obviously my site is not down". The download via eclipse is standard HTTP just like this page is to the browser. If you can access this page you can download the plugin.<br>
-If it doesn't work for you check the following:<br>
-In eclipse: Goto windows-&gt;preferences-&gt;general-&gt;Network settings. Verify these are set OK.<br>Check in your firewall wether java(w) is allowed to get onto the internet.<br>
-If these are OK disable virus checkers and firewalls<br>
-If it still doesn't work ask a local network specialist to help you out.</body>
+If it doesn't work for you: "Convince yourself that you have a problem at your site you (and you alone) will need to fix.".<br>
+You can check the following:<br>
+<ul><li>
+Don't try to download the plugin with a browser. See the installation instructions on how to install the plugin.
+</li><li>
+Make sure you have followed the installation instruction <b>uncheck "group items by category"</b>.
+</li><li>
+Check wether you are downloading the latestversion. Believe me many people failed because they wanted to download an old version.
+</li><li>
+In eclipse: Goto windows-&gt;preferences-&gt;general-&gt;Network settings. Verify these are set OK.<br>
+</li><li>
+Check in your firewall wether java(w) is allowed to get onto the internet.<br>
+</li><li>
+Disable virus checkers and firewalls<br>
+</li><li>
+Ask a local network specialist to help you out.
+</li><li>
+Please do not contact me on this because I can't help you with local issues. 
+I will not send zip files over to people who do not sponsor this project.</li></ul>
+<br>
+<a name="MAC_Lock"></a>
+<h2>On Mac I get the error &quot;serial port is in use&quot; when uploading. </h2>
+The upload will be successfull with Arduino IDE 1.0 and higher unless you are uploading to a mega.
+Run following terminal commands to fix the problem:<br>
+<br> $ sudo mkdir /var/lock
+<br>$ sudo chmod 777 /var/lock<br>
+for more info see <a href="http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1211165807/6">http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1211165807/6</a>
+
+
+<a name="Latest_Version"></a>
+<h2>How can I find the latest version when installing?</h2>
+To find the latest version when installing a eclipse plugin. In the "install new software" dialog make sure 
+<ul><li>
+only the latest version is checked
+</li><li>
+Group items by category is not checked
+</li><li>
+hide items that are already installed is not checked
+</li></ul>
+Below is an example of the settings. 1.2.5.5 is probably not the latest version.<br>
+<img alt="The settings to find the latestversion" src="http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png?width=575&height=540">
+
+<h1>Background information</h1>
+<a name="RTC"></a><h2>Which version control system do you use?</h2>
+I used to use github. Hiwever I changed to Rational team concert as it fits far better with my needs. 
+Rational Team Xoncert is a great tool that allow to control the code at a high and low level at the same time. To me it outruns Github by far.<br>
+
+<a name="TestingTool"></a><h2>Which tool do you use to do test so many versions?</h2>
+Thanks for noticing there is quite some test work. As there are 4 eclipse versions I support and there are 4 Arduino IDE versions I support that is 16 setups. 
+For each of these setups I compile a dummy project for al boards. In total that is more than 200 arduino sketches. There is no way I'm doing this manually.<br>
+I test all setups with Rational functional tester. Due to my employer I hold a licence to this product. I can not compare Rational functional tester to other tools in the market. 
+I know it does the work with me spending less time than doing it manually.
+</body>
+
 </html>

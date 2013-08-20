@@ -2,11 +2,26 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>How to use the plugin</title>
-<link href="MyStyle.css" rel="Stylesheet" type="text/css"></head>
+<title>How to use the Arduino eclipse plugin</title>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35483398-1']);
+  _gaq.push(['_setDomainName', 'baeyens.it']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></head>
 <body>
         <div id="header">
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <p id="scream">please help! <a href="donate.html">buy Jantje an Arduino.</a> He needs your support to keep going.</p>
         </div>
 	<div id="midcolumn">
 	<h1>Welcome to the Arduino Eclipse usage page</h1>
@@ -27,10 +42,13 @@
 		src="http://iloapp.baeyens.it/data/_gallery//public/1/1320529645_resized.png"><br/>
 
 	Provide the Arduino information and select finish (note that all this information will be stored so you will not need to reenter when you
-	create a new sketch)<br/>
-	<img alt=""
+	create a new sketch for the same board)<br/>
+	<img alt="before 1.3 board settings"
 		src="http://iloapp.baeyens.it/data/_gallery//public/1/1320529644_resized.png"><br/>
-
+	from Version 1.3 when you have multiple hardwares the screen will look a bit different. See below for an example.<br>
+	<img alt="with 1.3 or later with multiple hardwares board settings"
+		src="http://iloapp.baeyens.it/data/_gallery//public/1/134998998101133100_resized.png"><br/>
+	
 	Now the plugin will create 2 projects. one for the Arduino library and one for the sketch. The image below holds more projects but the new
 	ones are highlighted.<br/>
 	<img alt=""
@@ -50,14 +68,18 @@
 		src="http://iloapp.baeyens.it/data/_gallery//public/1/1320530326_resized.png?width=720&height=540"><br/>
 
 	<a name="import"></a><h2>Importing a library</h2> <br/>
-	select file-&gt;import <br/> 
-	Select the Arduino-&gt;Import a arduino library in the current project<br/>
-	<img alt=""
-		src="http://iloapp.baeyens.it/data/_gallery//public/1/1321748065_resized.png"><br/>
-	Select the folder you want to import and the project you want to import to and select finish<br/>
-	<img alt=""
-		src="http://iloapp.baeyens.it/data/_gallery//public/1/1321748068_resized.png"><br/>
-
+	select file-&gt;import or right click the project and select import.<br/> 
+	Select the Arduino-&gt;'Import a arduino library in the current project' if you want to import from the Arduino libraries or your private libraries<br/>
+	Select the Arduino-&gt;'Import a folder containing source code in the current project' if you want to import a library from a different location<br/>
+	<img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/134999438104329800_resized.png"><br/>
+	if you have selected 'Import a folder containing source code in the current project' select the folder you want to import and the project you want to import to and select finish<br/>
+	<img alt=""	src="http://iloapp.baeyens.it/data/_gallery//public/1/1321748068_resized.png"><br/>
+	if you have selected 'Import a folder containing source code in the current project' select the libraries you want to import.<br/>
+     <img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/134999438258062300_resized.png?width=325&height=540"><br/>
+     Then confirm the project you want to import to.<br/>
+     Note that the library selection window does not show the already imported libraries. If you select the same library again it will result in an error. See below for an example.
+     <img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/134999483057480300_resized.png"><br/>
+   
 	</div>
 
 </body>

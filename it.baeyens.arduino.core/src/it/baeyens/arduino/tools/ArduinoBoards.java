@@ -1,201 +1,229 @@
 package it.baeyens.arduino.tools;
-import java.util.Arrays;
+
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-/**ArduinoBoards is that class that hides the Arduino Boards.txt file <br/>
- * The is based on the code of Trump at https://github.com/Trump211/ArduinoEclipsePlugin and later adapted as needed.
+/**
+ * ArduinoBoards is that class that hides the Arduino Boards.txt file <br/>
+ * The is based on the code of Trump at
+ * https://github.com/Trump211/ArduinoEclipsePlugin and later adapted as needed.
  * 
  * @author Jan Baeyens and trump
- *
+ * 
  */
 public class ArduinoBoards {
-	private boolean mArduinoPathIsValid = false;
-	// Input from arduino file
-	private IPath mLastLoadedData = new Path("");
+	private File mLastLoadedBoardsFile = null;
+	Map<String, String> settings = null;
+	// private String mLastLoadedBoard = "";
 	private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<String, Map<String, String>>(); // all
 																															// the
 																															// data
-	private Set<String> mBoards = new HashSet<String>(); // only the board names
 
-	// tags to interpret the arduino input files
-	private String BoardNameKeyTAG = "name";
-	private String FrequencyKeyTAG = "build.f_cpu";
-	private String ProcessorTypeKeyTAG = "build.mcu";
-	private String UploadSpeedKeyTAG = "upload.speed";
-	private String BoardVariantTAG = "build.variant";
-	private String BuildCoreFolderTAG ="build.core";
-	private String BuildCppOptionsTAG ="build.cpp.options";
-	private String BuildCOptionsTAG ="build.c.options";
-	private String BuildVIDTAG ="build.vid";
-	private String BuildPIDTAG ="build.pid";
-	private String BuildLinkOptionsTAG ="build.link.options";
-	private String UploadProtocolTAG = "upload.protocol";
-	private String disableFlushingKeyTAG = "upload.disable_flushing"; // not yet
-																		// used
-																		// but
-																		// probably
-																		// needed
+	public ArduinoBoards(String boardsFileName) {
+		LoadBoardsFile(boardsFileName);
+	}
 
-
-	String LastBoardName="";
-	Map<String, String> settings=null;
+	public ArduinoBoards() {
+	}
 
 	/**
-	 * Generic method to read a value from the boads file
+	 * This method returns the full section so custom processing can be done.
+	 * 
+	 * @param SectionKey
+	 *            the first name on the line before the .
+	 * @return all entries that match the filter
+	 */
+	public Map<String, String> getSection(String SectionKey) {
+		return mArduinoSupportedBoards.get(SectionKey);
+	}
+
+	// /**
+	// * Generic method to read a value from the boards file
+	// *
+	// * @param boardName
+	// * @param Key
+	// * @return
+	// */
+	// private String getBoardSetting(String boardName, String Key, String
+	// defaultValue) {
+	// if (!mLastLoadedBoard.equals(boardName)) {
+	// mLastLoadedBoard = boardName;
+	// String mapName = getBoardIDFromName(boardName);
+	// settings = mArduinoSupportedBoards.get(mapName);
+	// }
+	//
+	// if (settings != null) {
+	// String TagContent = settings.get(Key);
+	// if (TagContent != null)
+	// return TagContent;
+	// } else {
+	// IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	// "Settings in ArduinoBoards is null. This should never happen.", null);
+	// Common.log(status);
+	// }
+	// return defaultValue;
+	// }
+
+	/**
+	 * Get all the options in the boards.txt file
+	 * 
+	 * @return a list of all the menu option name
+	 */
+	public String[] getOptionNames() {
+		HashSet<String> ret = new HashSet<String>();
+		for (Entry<String, Map<String, String>> entry : mArduinoSupportedBoards.entrySet()) {
+			if (entry.getKey().equals("menu")) {
+				for (Entry<String, String> e2 : entry.getValue().entrySet()) {
+					if (!e2.getKey().contains("."))
+						ret.add(e2.getValue());
+				}
+			}
+		}
+		return ret.toArray(new String[ret.size()]);
+	}
+
+	/**
+	 * Get all the acceptable values for a option for a board The outcome of
+	 * this method can be used to fill a combobox
+	 * 
+	 * @param menu
+	 *            the name of a menu not the ide
 	 * @param boardName
-	 * @param Key
+	 *            the name of a board not the ide
 	 * @return
 	 */
-	private String getBoardSetting(String boardName,String Key,String defaultValue)
-		{
-			if (!LastBoardName.equals(boardName))
-				{
-					LastBoardName=boardName;
-					String mapName = getBoardNames(boardName);
-					settings = mArduinoSupportedBoards.get(mapName);
-				}
-			
-			if (settings != null) {
-				String TagContent = settings.get(Key);
-				if (TagContent != null)
-					return TagContent;
-			}
-			return defaultValue;
+	public String[] getOptionValues(String menuLabel, String boardName) {
+		String menuID = null;
+		String boardID = getBoardIDFromName(boardName);
+		HashSet<String> ret = new HashSet<String>();
+		Map<String, String> menuInfo = mArduinoSupportedBoards.get("menu");
+		for (Entry<String, String> e2 : menuInfo.entrySet()) {
+			if (e2.getValue().equals(menuLabel))
+				menuID = e2.getKey();
 		}
-	
-	/**getMCUName returns the mcu name for a given board. <br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded
-	 * 
-	 * @param boardName the board name for which the mcu name will be returned
-	 * @return the MCU name
-	 * @author Jan Baeyens
-	 */
-	public String getMCUName(String boardName) {
-		return getBoardSetting( boardName, ProcessorTypeKeyTAG,"");
-//		String mapName = getBoardNames(boardName);
-//
-//		Map<String, String> settings = mArduinoSupportedBoards.get(mapName);
-//		if (settings != null) {
-//			String TagContent = settings.get(ProcessorTypeKeyTAG);
-//			if (TagContent != null)
-//				return TagContent;
-//		}
-//		return "";
+		String SearchKey = menuID + "." + boardID + ".";
+		for (Entry<String, String> e2 : menuInfo.entrySet()) {
+			int numsubkeys = e2.getKey().split("\\.").length;
+			boolean startOk = e2.getKey().startsWith(SearchKey);
+			if ((numsubkeys == 3) && (startOk))
+				ret.add(e2.getValue());
+		}
+		return ret.toArray(new String[ret.size()]);
 	}
 
-	/**getMCUFrequency returns the mcu frequency for a given board. <br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded
-	 * 
-	 * @param boardName the board name for which the mcu frequency will be returned
-	 * @return the MCU frequency
-	 * @author Jan Baeyens
-	 */
-	public String getMCUFrequency(String boardName) {
-		return getBoardSetting( boardName, FrequencyKeyTAG,"").replaceFirst("L", " ").trim();
-	}
-
-	/**getUploadBaudRate returns the upload baud rate for a given board. <br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded
-	 * 
-	 * @param boardName the board name for which the upload baud rate will be returned
-	 * @return the upload baud rate
-	 * @author Jan Baeyens
-	 */
-	public String getUploadBaudRate(String boardName) {
-		return getBoardSetting( boardName, UploadSpeedKeyTAG,"");
-	}
-
-	
-	/** returns the variant of the arduino board<br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded
-	 * 
-	 * @param boardName the board name for which the board variant will be returned
-	 * @return the Arduino board variant
-	 * @author Jan Baeyens
-	 */
-	public String getBoardVariant(String boardName) {
-		return getBoardSetting( boardName, BoardVariantTAG,"");
-	}	
-	
-	/** returns the upload protocol to use with AVR DUDE<br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded
-	 * If nothing is found in the file ArduinoConst.ProgrammerName is returned
-	 * 
-	 * @param boardName the board name for which the upload protocol will be returned
-	 * @return the Arduino upload protocol if found else "" is returned
-	 * @author Jan Baeyens
-	 */
-	public String getUploadProtocol(String boardName) {
-		return getBoardSetting( boardName, UploadProtocolTAG,"");
-	}		
-
-	public String getBuildVID(String boardName) {
-		return getBoardSetting( boardName, BuildVIDTAG,"");
-	}		
-
-	public String getBuildPID(String boardName) {
-		return getBoardSetting( boardName, BuildPIDTAG,"");
-	}		
-	
-
-	/**getDisableFlushing returns the disable flushing flag for a given board. <br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded.
-	 * This function is currently unused
-	 * 
-	 * @param boardName the board name for which the disable flushing flag will be returned
-	 * @return disable flushing flag
-	 * @author Jan Baeyens
-	 */	
-	public boolean getDisableFlushing(String boardName) {
-		return getBoardSetting( boardName, disableFlushingKeyTAG,"").equalsIgnoreCase("TRUE");
-	}
-	
-	/**getBuildCoreFolder returns the folder that con,tains the arduino library code for a given board. <br/>
-	 * This function assumes (and does not test so will fail) that the board file has been loaded.
-	 * This function is currently unused
-	 * 
-	 * @param boardName the board name for which the disable flushing flag will be returned
-	 * @return the subfolder of arduino/cores to be used as the library souce
-	 * @author Jan Baeyens
-	 */	
-	public String getBuildCoreFolder(String boardName) {
-		return getBoardSetting( boardName, BuildCoreFolderTAG, "arduino");
-	}
-	
-
+	//
+	// /**
+	// * getMCUName returns the mcu name for a given board. <br/>
+	// * This function assumes (and does not test so will fail) that the board
+	// file has been loaded
+	// *
+	// * @param boardName
+	// * the board name for which the mcu name will be returned
+	// * @return the MCU name
+	// * @author Jan Baeyens
+	// */
+	// public String getMCUName(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.ProcessorTypeKeyTAG, "");
+	// }
+	//
+	// /**
+	// * getMCUFrequency returns the mcu frequency for a given board. <br/>
+	// * This function assumes (and does not test so will fail) that the board
+	// file has been loaded
+	// *
+	// * @param boardName
+	// * the board name for which the mcu frequency will be returned
+	// * @return the MCU frequency
+	// * @author Jan Baeyens
+	// */
+	// public String getMCUFrequency(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.FrequencyKeyTAG,
+	// "").replaceFirst("L", " ").trim();
+	// }
+	//
+	// /**
+	// * returns the variant of the arduino board<br/>
+	// * This function assumes (and does not test so will fail) that the board
+	// file has been loaded
+	// *
+	// * @param boardName
+	// * the board name for which the board variant will be returned
+	// * @return the Arduino board variant
+	// * @author Jan Baeyens
+	// */
+	// public String getBoardVariant(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.BoardVariantTAG, "");
+	// }
+	//
+	// /**
+	// * getDisableFlushing returns the disable flushing flag for a given board.
+	// <br/>
+	// * This function assumes (and does not test so will fail) that the board
+	// file has been loaded. This function is currently unused
+	// *
+	// * @param boardName
+	// * the board name for which the disable flushing flag will be returned
+	// * @return disable flushing flag
+	// * @author Jan Baeyens
+	// */
+	// public boolean getDisableFlushing(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.disableFlushingKeyTAG,
+	// "").equalsIgnoreCase("TRUE");
+	// }
+	//
+	// public String getUploadTool(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.UploadToolTAG,
+	// ArduinoConst.UploadToolDefault);
+	// }
+	//
+	// public String getBuildCoreFolder(String boardName) {
+	// return getBoardSetting(boardName, ArduinoConst.BoardBuildCoreFolder,
+	// ArduinoConst.BoardBuildCoreFolderdefault);
+	//
+	// }
 	/**
-	 * GetArduinoBoards returns all the boards that are in the currently loaded board.txt file.
+	 * GetArduinoBoards returns all the boards that are in the currently loaded
+	 * board.txt file.
 	 * 
-	 * @return an empty list if no board file is loaded. In all other cases it returns the list of oards found in the file
+	 * @return an empty list if no board file is loaded. In all other cases it
+	 *         returns the list of oards found in the file
 	 * @author Trump
 	 * 
 	 */
 	public String[] GetArduinoBoards() {
-		if (mLastLoadedData.equals("")) {
+		if (mLastLoadedBoardsFile.equals("")) {
 			String[] sBoards = new String[0];
 			return sBoards;
 		}
+		Set<String> mBoards = new HashSet<String>();
 		for (String s : mArduinoSupportedBoards.keySet()) {
-			if (s != null)
-				mBoards.add(mArduinoSupportedBoards.get(s).get(BoardNameKeyTAG));
+			if (s != null) {
+				String theboardName = mArduinoSupportedBoards.get(s).get(ArduinoConst.BoardNameKeyTAG);
+				if (theboardName != null) {
+					// if
+					// (mArduinoSupportedBoards.get(s).get(ArduinoConst.BoardBuildCoreFolder)
+					// != null) {
+					mBoards.add(theboardName);
+					// }
+				}
+			}
 		}
 		String[] sBoards = new String[mBoards.size()];
 		mBoards.toArray(sBoards);
@@ -203,46 +231,58 @@ public class ArduinoBoards {
 		return sBoards;
 	}
 
-	/**Load loads the board.txt file based on the arduino path.
+	/**
+	 * Load the board.txt file provided.
 	 * 
-	 * @param NewArduinoPath the path where Arduino is installed. Not the board.txt location
+	 * @param BoardsFile
+	 *            the full name to the boards.txt file
 	 * @return true when the action was successful. else false.
-	 * @author Trump
+	 * @author jan
 	 */
-	public boolean Load(IPath NewArduinoPath) {
+	public boolean LoadBoardsFile(String boardsFile) {
 
-		if (mLastLoadedData.equals(NewArduinoPath))
-			return mArduinoPathIsValid; // do nothing when value didn't change
-		mLastLoadedData = NewArduinoPath;
+		if ((mLastLoadedBoardsFile != null) && (mLastLoadedBoardsFile.equals(boardsFile)))
+			return true; // do nothing when value didn't change
+		mLastLoadedBoardsFile = new File(boardsFile);
+		return LoadBoardsFile();
+	}
+
+	/**
+	 * Load loads the board.txt file based on the arduino path.
+	 * 
+	 * @param NewArduinoPath
+	 *            the full path to the file board.txt (including board.txt)
+	 * @return true when the action was successful. else false.
+	 */
+	private boolean LoadBoardsFile() {
+		// If the file doesn't exist ignore it.
+		if (!mLastLoadedBoardsFile.exists())
+			return false;
+
 		mArduinoSupportedBoards.clear();
 
-		File boardsFile =NewArduinoPath.append(ArduinoConst.BOARDS_FILE_SUFFIX).toFile();
-		mArduinoPathIsValid = boardsFile.exists();
 		try {
-			if (mArduinoPathIsValid) {
-				Map<String, String> boardPreferences = new LinkedHashMap<String, String>();
-				load(new FileInputStream(boardsFile), boardPreferences);
-				for (Object k : boardPreferences.keySet()) {
-					String key = (String) k;
-					String board = key.substring(0, key.indexOf('.'));
-					if (!mArduinoSupportedBoards.containsKey(board))
-						mArduinoSupportedBoards.put(board, new HashMap<String, String>());
-					((Map<String, String>) mArduinoSupportedBoards.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
-
-				}
+			Map<String, String> boardPreferences = new LinkedHashMap<String, String>();
+			load(mLastLoadedBoardsFile, boardPreferences);
+			for (Object k : boardPreferences.keySet()) {
+				String key = (String) k;
+				String board = key.substring(0, key.indexOf('.'));
+				if (!mArduinoSupportedBoards.containsKey(board))
+					mArduinoSupportedBoards.put(board, new HashMap<String, String>());
+				(mArduinoSupportedBoards.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
 			}
 
 		} catch (Exception e) {
-			IStatus status = new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read arduino boards at "  + boardsFile.getPath(), e);
-			Common.log(status);
+			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to read arduino boards file "
+					+ mLastLoadedBoardsFile.getName(), e));
 		}
-		return mArduinoPathIsValid;
-	};
-	
+		return true;
+	}
+
 	/**
 	 * @author Trump
 	 */
-	private String getBoardNames(String boardName) {
+	public String getBoardIDFromName(String boardName) {
 		for (Entry<String, Map<String, String>> entry : mArduinoSupportedBoards.entrySet()) {
 			for (Entry<String, String> e2 : entry.getValue().entrySet()) {
 				if (e2.getValue().equals(boardName))
@@ -265,7 +305,8 @@ public class ArduinoBoards {
 	 * @throws IOException
 	 *             when something goes wrong??
 	 */
-	static public void load(InputStream input, Map<String, String> table) throws IOException {
+	static public void load(File inputFile, Map<String, String> table) throws IOException {
+		FileInputStream input = new FileInputStream(inputFile);
 		String[] lines = loadStrings(input); // Reads as UTF-8
 		for (String line : lines) {
 			if ((line.length() == 0) || (line.charAt(0) == '#'))
@@ -279,6 +320,7 @@ public class ArduinoBoards {
 				table.put(key, value);
 			}
 		}
+		input.close();
 	}
 
 	// Taken from PApplet.java
@@ -317,25 +359,14 @@ public class ArduinoBoards {
 			return output;
 
 		} catch (IOException e) {
-			IStatus status = new Status(Status.WARNING, ArduinoConst.CORE_PLUGIN_ID,	"Failed to read stream "  , e);
+			IStatus status = new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to read stream ", e);
 			Common.log(status);
 		}
 		return null;
 	}
 
-	public String getCppCompileOptions(String boardName)
-		{
-			return getBoardSetting( boardName, BuildCppOptionsTAG, "");
-		}
-
-	public String getCCompileOptions(String boardName)
-		{
-			return getBoardSetting( boardName, BuildCOptionsTAG, "");
-		}
-
-	public String getLinkOptions(String boardName)
-		{
-			return getBoardSetting( boardName, BuildLinkOptionsTAG, "");
-		}
+	public String getBoardsTxtName() {
+		return mLastLoadedBoardsFile.getAbsolutePath();
+	}
 
 }

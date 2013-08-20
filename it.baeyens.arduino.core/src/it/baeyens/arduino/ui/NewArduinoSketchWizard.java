@@ -1,18 +1,37 @@
 package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
-import it.baeyens.arduino.tools.ArduinoProperties;
+import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.Stream;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICExclusionPatternPathEntry;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -24,16 +43,10 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 /**
  * This class is the class related to the new arduino sketch
@@ -72,14 +85,14 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 			return true;
 		}
 
-		final IProject projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(mWizardPage.getProjectName().replace(" ", "_"));
+		final IProject projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(mWizardPage.getProjectName()));
 		try {
 
 			URI projectURI = (!mWizardPage.useDefaults()) ? mWizardPage.getLocationURI() : null;
 
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-			final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName().replace(" ", "_"));
+			final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
 
 			desc.setLocationURI(projectURI);
 
@@ -99,7 +112,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 			 * BasicNewProjectResourceWizard class. Consider beefing this up to
 			 * improve error handling.
 			 */
-			getContainer().run(true, true, op);
+			getContainer().run(false, true, op);
 		} catch (InterruptedException e) {
 			return false;
 		} catch (InvocationTargetException e) {
@@ -116,7 +129,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 		BasicNewProjectResourceWizard.updatePerspective(mConfig);
 		IWorkbenchWindow TheWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		BasicNewProjectResourceWizard.selectAndReveal(mProject, TheWindow);
+		BasicNewResourceWizard.selectAndReveal(mProject, TheWindow);
 
 		return true;
 	}
@@ -129,56 +142,124 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	 * @param monitor
 	 * @throws OperationCanceledException
 	 */
-	void createProject(IProjectDescription description, IProject proj, IProgressMonitor monitor) throws OperationCanceledException {
+	void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor) throws OperationCanceledException {
 
 		monitor.beginTask("", 2000);
 		try {
-			proj.create(description, new SubProgressMonitor(monitor, 1000));
+			project.create(description, new SubProgressMonitor(monitor, 1000));
 
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
 			}
 
-			proj.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
-			IContainer container = (IContainer) proj;
+			project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
+			IContainer container = project;
+			String s = "it.baeyens.arduino.core.toolChain.release";
+			ShouldHaveBeenInCDT.setCProjectDescription(project, ManagedBuildManager.getExtensionToolChain(s), "Release", true, monitor); // this
+																																			// creates
+																																			// the
+																																			// .cproject
+																																			// file
 
 			// Add the C C++ AVR and other needed Natures to the project
-			ArduinoHelpers.addTheNatures(proj);
+			ArduinoHelpers.addTheNatures(project);
 
-			/* Add the c configuration file */
-			ArduinoHelpers.addFileToProject(container, new Path(".cproject"), Stream.openContentStream(proj.getName(),"", "templates/cproject.sketch"), monitor);
+			// Add the arduino folder
+			ArduinoHelpers.createNewFolder(project, "arduino", null);
+
+			// Set the environment variables
+			ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+			ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName("Release");
+			mArduinoPage.saveAllSelections(configurationDescription);
+
+			ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, true);
+
+			// Set the path variables
+			IPath platformPath = new Path(new File(mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText().trim()).getParent())
+					.append(ArduinoConst.PLATFORM_FILE_NAME);
+			ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
+
+			// intermediately save or the adding code will fail
+			prjDesc.setActiveConfiguration(configurationDescription);
+
+			// Insert The Arduino Code
+			ArduinoHelpers.addArduinoCodeToProject(project, configurationDescription);
 
 			/* Add the sketch source code file */
-			ArduinoHelpers.addFileToProject(container, new Path(proj.getName() + ".cpp"), Stream.openContentStream(proj.getName(),"", "templates/sketch.cpp"), monitor);
+			ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
+					Stream.openContentStream(project.getName(), "", "templates/sketch.cpp"), monitor);
 
-			ArduinoProperties ProjectProps= mArduinoPage.GetProperties();
 			/* Add the sketch header file */
-			String Include ="WProgram.h";
-			if (ArduinoHelpers.isArduinoIdeOne() ) //this is Arduino version 1.0
-			{ 
-				Include ="Arduino.h";
-			}
-			ArduinoHelpers.addFileToProject(container, new Path(proj.getName() + ".h"), Stream.openContentStream(proj.getName(),Include, "templates/sketch.h"), monitor);
-
-			
-			
-			/* Create the Arduino project */
-			IProject Arduino_Core_project = ArduinoHelpers.createArduino_coreProject(description, monitor,ProjectProps );
-
-			/* Make a reference to the arduino project */
-			ArduinoHelpers.addLibraryDependency(proj, Arduino_Core_project);
-			
-			if (ArduinoHelpers.isArduinoIdeOne() ) //this is Arduino version 1.0
+			String Include = "WProgram.h";
+			if (ArduinoInstancePreferences.isArduinoIdeOne()) // this is Arduino
+																// version 1.0
 			{
-				ArduinoHelpers.addIncludeFolder(proj,new Path("/${ARDUINOBOARDNAME}/${ARDUINOBOARDVARIANT}"));
+				Include = "Arduino.h";
 			}
-			/* Save the properties */
-			mArduinoPage.save(proj);
+			ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
+					Stream.openContentStream(project.getName(), Include, "templates/sketch.h"), monitor);
 
+			// exclude "Librarie/*/?xample from the build
+			// ICSourceEntry[] folder;
+			// folder = configurationDescription.getSourceEntries();
+			// char[][] exclusions = entry.fullExclusionPatternChars();
+			// CoreModelUtil.isExcluded(project.getFullPath(), exclusions);
+			// folder[0].
+			// getResourceDescription(new Path(""), true);
+			// folder[0].createFilter(IResourceFilterDescription.EXCLUDE_ALL |
+			// IResourceFilterDescription.FOLDERS, new
+			// FileInfoMatcherDescription("org.eclipse.core.resources.regexFilterMatcher",
+			// "Librarie/*/?xample"), IResource.BACKGROUND_REFRESH, monitor);
+
+			// IFile file = project.getFile("Librarie/*/?xample");
+			// Object activeConfig;
+			// IResourceConfiguration ResConfig = configurationDescription.
+			// .createResourceConfiguration(file);
+			// ResConfig.setExclude(true);
+
+			ICResourceDescription cfgd = configurationDescription.getResourceDescription(new Path(""), true);
+			ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
+			if (entries.length == 1) {
+				Path exclusionPath[] = new Path[1];
+				exclusionPath[0] = new Path("Libraries/*/?xamples");
+				ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
+						ICSettingEntry.VALUE_WORKSPACE_PATH);
+				ICSourceEntry[] out = null;
+				out = new ICSourceEntry[1];
+				out[0] = (ICSourceEntry) newSourceEntry;
+				try {
+					cfgd.getConfiguration().setSourceEntries(out);
+				} catch (CoreException e) {
+					// ignore
+				}
+
+			} else {
+				// this should not happen
+			}
+
+			// private void saveData() {
+			// ICExclusionPatternPathEntry[] p = new
+			// ICExclusionPatternPathEntry[src.size()];
+			// Iterator<_Entry> it = src.iterator();
+			// int i=0;
+			// while(it.hasNext()) { p[i++] = (it.next()).ent; }
+			// setEntries(cfgd, p);
+			// tree.setInput(cfgd);
+			// updateData(cfgd);
+			// if (page instanceof AbstractPage) {
+			// ICConfigurationDescription cfgDescription =
+			// cfgd.getConfiguration();
+			// ((AbstractPage)page).cfgChanged(cfgDescription);
+			// }
+			// }
+
+			prjDesc.setActiveConfiguration(configurationDescription);
+			prjDesc.setCdtProjectCreated();
+			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjDesc, true, null);
 			monitor.done();
 
 		} catch (CoreException e) {
-			Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create project " + proj.getName(), e));
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create project " + project.getName(), e));
 			throw new OperationCanceledException();
 		}
 
