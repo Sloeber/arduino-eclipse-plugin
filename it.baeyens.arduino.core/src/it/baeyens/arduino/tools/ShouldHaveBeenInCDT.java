@@ -77,7 +77,7 @@ public class ShouldHaveBeenInCDT {
 		CConfigurationData data = cfg.getConfigurationData();
 		ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
 
-		ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
+//		ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
 
 		monitor.worked(50);
 		mngr.setProjectDescription(project, des);
