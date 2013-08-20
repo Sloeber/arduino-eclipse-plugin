@@ -3,50 +3,69 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Arduino Eclipse plugin installation instructions</title>
-<link href="MyStyle.css" rel="Stylesheet" type="text/css"></head>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35483398-1']);
+  _gaq.push(['_setDomainName', 'baeyens.it']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></head>
 <body>
         <div id="header">
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <p id="scream">please help! <a href="donate.html">buy Jantje an Arduino.</a> He needs your support to keep going.</p>
         </div>
 	
 	<h1>Welcome to the Arduino Eclipse installation page</h1>
 	This page contains Detailed instructions on how to install and configure the Arduino Eclipse plugin.<br>
-	People who use MAC OSX may want to read <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">the blog of 
+	People who use MAC OSX and are installing V1 may want to read <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">the blog of 
 	garretto</a> on how to install on OSX.<br>
-	Note that the instructions are a bit outdated from 1.2.2 onwards. <br>
-	For instance in the settings page a private library folder is requested. This setting should point to a location where you down loaded arduino libraries.<br>
-	If you haven't down loaded Arduino libraries yet do as follows<br>
-	1) Consider using the Arduino IDE. (strongly advised)<br>
-	2) Point it to a location where you can download Arduino libraries. (Strongly disadviced) <br>
+
 	
 	<h2>Detailed installation instructions</h2>
 	1) install the Arduino IDE <br>
-	2) <b>install eclipse indigo you need the C++ version</b><br>
+	2) <b>install eclipse indigo ( supports V1 ) or Juno (supports V1 and V2) you need the C++ version and preferably the 32 bit version</b><br>
 	2.1) download the code from here
 	http://www.eclipse.org/downloads/]http://www.eclipse.org/downloads/<br>
-	2.2) Unzip the file downloaded from eclipse( I assume c:/indigo) <br>
+	2.2) Unzip the file downloaded from eclipse( I assume c:/juno) <br>
 	3)	<b>Install the Arduino plugin</b> <br>
 	3.1) Start eclipse <br>
-	3.2) run the program c:/indigo/eclipse/eclipse.exe<br> 
-	3.3) give a name to the workspace (I assume you use "Arduino") <br>
+	3.2) run the program c:/juno/eclipse/eclipse.exe<br> 
+	3.3) give a name to the workspace (I assume you use "c:/Arduino") <br>
 	3.4) Close the welcome screen <br>
 	3.5) Select	help-&gt;install new software <br>
-	3.6) Enter the information as below (select	the newest version of the plugin) Site:
-	http://www.baeyens.it/eclipse/update<br>
+	3.6) for V1 as Site enter : http://www.baeyens.it/eclipse/update for V2 as Site enter : http://www.baeyens.it/eclipse/V2 <br>
+	<b>uncheck "group items by category"</b><br>
 	
-	<img alt="install plugin" src="http://iloapp.baeyens.it/data/_gallery/public/1/1321529171_resized.png?width=640&amp;height=578">
+	<img alt="install plugin" src="http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png"><br>
 	3.7) restart eclipse (as requested by eclipse) <br>
-	3.8 ) open the workspace Arduino <br>
+	3.8 ) open the workspace c:/Arduino <br>
 	4) <b>Configure the plugin</b> <br>
 	4.1) open the preferences (windows -&gt; preferences)<br> 
-	4.2) open the section Arduino-&gt;Arduino Fill it in like below (using your Arduino IDE location)<br>
+	4.2) open the section Arduino-&gt;Arduino (in V1) Arduino (in V2). Fill it in like below (using the location of the Arduino IDE of your choice)<br>
+	Add the location of your private libraries.<br>
+	<img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/134998877869708900_resized.png"><br>
+	If you want to use the serial stuff check whether there is a compatible dll.<br>
+	If not check the FAQ.<br>
+	V2 does not contain the option "use Arduino IDE tools in Eclipse".<br>
+	4.3) select OK to save the preferences
+	<p id="scream">Congratulations: You have now successfully installed and configured the plugin.</p>
 	
-	<img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/1321528286_resized.png"><br>
-	4.3)Following setting in general-&gt; work space is not needed but advised: Set the auto save before build on to avoid different version
-	between uploaded and visible code.<br>
-	<img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/1320528726_resized.png"><br>4.4) Following setting is not needed but strongly advised. Set the the indexer to &quot;include unused headers&quot; 
-	<br><img alt="Tell the indexer to 'include unused headers'" src="http://iloapp.baeyens.it/data/_gallery//public/1/1322069236_resized.png?width=640&amp;height=555"><br>
-	4.5) select OK to save the preferences <br>Congratulations: You have now successfullly installed and configured the plugin.
-
+	Below are some settings which are advised. They are not needed by the plugin but they make my life easier so I guess you would benefit as well.<br>
+	1) In general-&gt; work space set the auto save before build on to avoid different versions	between uploaded and visible code.<br>
+	<img alt="" src="http://iloapp.baeyens.it/data/_gallery//public/1/1320528726_resized.png"><br>
+	2) For V1 an in Indigo: Set the the indexer to &quot;include Arduino.h&quot; <br>
+	Add Arduino with its full path to the "files to index up-front"<br>
+	<img alt="Tell the indexer to 'include Arduino.h'" src="http://iloapp.baeyens.it/data/_gallery//public/1/134998941186241400_resized.png?width=720&height=548"><br>
+	Note Juno is better at indexing therefore it does not have this option. After a compile the indexer should work.
+	 
 </body>
 </html>

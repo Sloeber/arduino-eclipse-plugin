@@ -5,6 +5,10 @@ body {
 	font-family: sans-serif, helvetica, arial;
 	font-size: .8em;
 }
+#scream {
+	color: red;
+	font-size: 3em;
+}
 h1 {
 	color: #336;
 	font-size: 1.5em;
@@ -18,7 +22,7 @@ h4 {
 	font-size: 1em;
 }
 h5 {
-	color: #003366;
+	color: red;
 	font-size: 1.4em;
 }
 a { text-decoration: none; }

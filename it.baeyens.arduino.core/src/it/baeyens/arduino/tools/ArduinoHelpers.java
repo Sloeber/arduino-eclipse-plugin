@@ -3,18 +3,32 @@ package it.baeyens.arduino.tools;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.avreclipse.core.preferences.AVRDudePreferences;
-import it.baeyens.avreclipse.core.preferences.AVRPathsPreferences;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IContributedEnvironment;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
@@ -22,13 +36,9 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
-import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.language.settings.providers.AbstractBuiltinSpecsDetector;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -42,11 +52,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.MessageConsole;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -54,640 +68,882 @@ import org.eclipse.jface.preference.IPreferenceStore;
  * @author Jan Baeyens
  * 
  */
-public class ArduinoHelpers extends Common
-	{
+public class ArduinoHelpers extends Common {
 
-		/**
-		 * ChangeProjectReference changes the reference from one project to another.
-		 * This method is used when you change the board of a project. <br/>
-		 * Then the reference has to change FI from arduino_uno to arduino_mega<br/>
-		 * if the project references OldLibraryProject and does not reference
-		 * NewLibraryProject a reference to NewLibraryProject will be added<br/>
-		 * if project references OldLibraryProject and references NewLibraryProject
-		 * a status message will be logged together with a stack trace<br/>
-		 * if project does not reference OldLibraryProject and does not reference
-		 * NewLibraryProject a reference to NewLibraryProject will be added<br/>
-		 * if project does not reference OldLibraryProject and references
-		 * NewLibraryProject a a status message will be logged together with a stack
-		 * trace<br/>
-		 * Note that this action is enough when you change the board because all
-		 * other references are based on environment parameters
-		 * 
-		 * @param project
-		 *          The project containing a reference to OldLibraryProject an
-		 *          needing a reference to NewLibraryProject
-		 * @param OldLibraryProject
-		 *          the project project referenced to (the reference has to
-		 *          disappear)
-		 * @param NewLibraryProject
-		 *          the project project needs to reference to (the reference has to
-		 *          be added)
-		 */
-		public static void ChangeProjectReference(IProject project, String OldLibraryProject, IProject NewLibraryProject)
-			{
-				try
-					{
-						IProjectDescription projectdescription = project.getDescription();
-						IProject[] OrgReferencedProjects = projectdescription.getReferencedProjects();
+	/**
+	 * This method is the internal working class that adds the provided
+	 * includepath to all configurations and languages.
+	 * 
+	 * @param configurationDescription
+	 *            The configuration description of the project to add it to
+	 * @param IncludePath
+	 *            The path to add to the include folders
+	 * @see addLibraryDependency
+	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 */
+	private static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath) {
+		// find all languages
+		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
+		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
 
-						for (int curProject = 0; curProject < OrgReferencedProjects.length; curProject++)
-							{
-								if ((OrgReferencedProjects[curProject] == null) || (OldLibraryProject.equalsIgnoreCase(OrgReferencedProjects[curProject].getName()))
-										|| (OrgReferencedProjects[curProject] == NewLibraryProject))
-									{
-										OrgReferencedProjects[curProject] = NewLibraryProject;
-										projectdescription.setReferencedProjects(OrgReferencedProjects);
-										try
-											{
-												project.setDescription(projectdescription, 0, null);
-											} catch (NullPointerException e) // something went wrong.
-																												// to get out of the
-																												// situation I remove
-																												// all references and
-																												// only have the new
-																												// reference
-											{
-												IProject[] NewReferencedProjects = new IProject[1];
-												NewReferencedProjects[0] = NewLibraryProject;
-												projectdescription.setReferencedProjects(NewReferencedProjects);
-												Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project; removed all and added new reference", e));
-												// e.printStackTrace();
-											}
-										return; // the OldLibraryProject was found in the
-														// description and has been replaced by
-														// NewLibraryProject
-									}
-							}
-						IProject[] NewReferencedProjects = new IProject[OrgReferencedProjects.length + 1];
-						System.arraycopy(OrgReferencedProjects, 0, NewReferencedProjects, 0, OrgReferencedProjects.length);
-						NewReferencedProjects[OrgReferencedProjects.length] = NewLibraryProject;
-						projectdescription.setReferencedProjects(NewReferencedProjects);
-						try
-							{
-								project.setDescription(projectdescription, 0, null);
-							} catch (NullPointerException e) // something went wrong. to get
-																								// out of the situation I remove
-																								// all references and only have
-																								// the new reference
-							{
-								NewReferencedProjects = new IProject[1];
-								NewReferencedProjects[0] = NewLibraryProject;
-								projectdescription.setReferencedProjects(NewReferencedProjects);
-								Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project; removed all and added new reference", e));
-								// e.printStackTrace();
-							}
-					} catch (CoreException e)
+		// Add include path to all languages
+		for (int idx = 0; idx < languageSettings.length; idx++) {
+			ICLanguageSetting lang = languageSettings[idx];
+			String LangID = lang.getLanguageId();
+			if (LangID != null) {
+				if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
+					ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+					ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
+					System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
+					IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath, ICSettingEntry.VALUE_WORKSPACE_PATH); // (location.toString());
+					lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Removes include folders that are not valid. This method does not save the
+	 * configurationDescription description
+	 * 
+	 * @param configurationDescription
+	 *            the configuration that is checked
+	 * @return true is a include path has been removed. False if the include
+	 *         path remains unchanged.
+	 */
+	public static boolean removeInvalidIncludeFolders(ICConfigurationDescription configurationDescription) {
+		// find all languages
+		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
+		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+		boolean hasChange = false;
+		// Add include path to all languages
+		for (int idx = 0; idx < languageSettings.length; idx++) {
+			ICLanguageSetting lang = languageSettings[idx];
+			String LangID = lang.getLanguageId();
+			if (LangID != null) {
+				if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
+					ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+					ICLanguageSettingEntry[] OrgIncludeEntriesFull = lang.getResolvedSettingEntries(ICSettingEntry.INCLUDE_PATH);
+					int copiedEntry = 0;
+					for (int curEntry = 0; curEntry < OrgIncludeEntries.length; curEntry++) {
+						IPath cusPath = ((CIncludePathEntry) OrgIncludeEntriesFull[curEntry]).getFullPath();
+						if ((ResourcesPlugin.getWorkspace().getRoot().exists(cusPath))
+								|| (((CIncludePathEntry) OrgIncludeEntries[curEntry]).isBuiltIn())) {
+							OrgIncludeEntries[copiedEntry++] = OrgIncludeEntries[curEntry];
+						}
+					}
+					if (copiedEntry != OrgIncludeEntries.length) // do not save
+																	// if
+																	// nothing
+																	// has
+																	// changed
 					{
-						Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to reference the correct project", e));
+						ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[copiedEntry];
+						System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, copiedEntry);
+						lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
+						hasChange = true;
+					}
+				}
+			}
+		}
+		return hasChange;
+	}
+
+	/**
+	 * This method adds the provided path to the include path of all
+	 * configurations and languages.
+	 * 
+	 * @param project
+	 *            The project to add it to
+	 * @param IncludePath
+	 *            The path to add to the include folders
+	 * @see addLibraryDependency
+	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 */
+	public static void addIncludeFolder(IProject project, IPath IncludePath) {
+		// find all languages
+		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+		ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
+		ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
+		addIncludeFolder(configurationDescription, IncludePath);
+
+		projectDescription.setActiveConfiguration(configurationDescription);
+		projectDescription.setCdtProjectCreated();
+		try {
+			mngr.setProjectDescription(project, projectDescription, true, null);
+		} catch (CoreException e) {
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not add folder " + IncludePath.toOSString()
+					+ " to includepoth in project" + project.getName(), e));
+		}
+
+	}
+
+	/**
+	 * This method creates a link folder in the project and add the folder as a
+	 * source path to the project it also adds the path to the include folder if
+	 * the includepath parameter points to a path that contains a subfolder
+	 * named "utility" this subfolder will be added to the include path as well <br/>
+	 * <br/>
+	 * 
+	 * note Arduino has these subfolders in the libraries that need to be
+	 * include.<br/>
+	 * <br/>
+	 * 
+	 * note that in the current eclipse version, there is no need to add the
+	 * subfolder as a code folder. This may change in the future as it looks
+	 * like a bug to me.<br/>
+	 * 
+	 * @param project
+	 * @param Path
+	 * @throws CoreException
+	 * 
+	 * @see addLibraryDependency
+	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 */
+	public static void addCodeFolder(IProject project, String PathVarName, String SubFolder, String LinkName,
+			ICConfigurationDescription configurationDescription) throws CoreException {
+		// ICProjectDescriptionManager mngr =
+		// CoreModel.getDefault().getProjectDescriptionManager();
+		// ICProjectDescription projectDescription =
+		// mngr.getProjectDescription(project, true);
+		// ICConfigurationDescription configurationDescription =
+		// projectDescription.getDefaultSettingConfiguration();
+		IFolder link = project.getFolder(LinkName);// project.getFolder(SubFolder);
+
+		IPath ParentFolders = new Path(LinkName);
+		for (int curfolder = ParentFolders.segmentCount() - 1; curfolder > 0; curfolder--) {
+			try {
+				createNewFolder(project, ParentFolders.removeLastSegments(curfolder).toString(), null);
+			} catch (CoreException e) {// ignore this error as the parent
+										// folders may have been created yet
+			}
+		}
+
+		createNewFolder(project, LinkName, URIUtil.toURI(new Path(PathVarName).append(SubFolder)));
+		addIncludeFolder(configurationDescription, link.getFullPath());
+
+		IPathVariableManager pathMan = project.getPathVariableManager();
+
+		File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append("utility").toString());
+		if (file.exists()) {
+			addIncludeFolder(configurationDescription, link.getFullPath().append("utility"));
+		}
+
+		// projectDescription.setActiveConfiguration(configurationDescription);
+		// projectDescription.setCdtProjectCreated();
+		// mngr.setProjectDescription(project, projectDescription, true, null);
+
+	}
+
+	/**
+	 * This method creates a link folder in the project and add the folder as a
+	 * source path to the project it also adds the path to the include folder if
+	 * the includepath parameter points to a path that contains a subfolder
+	 * named "utility" this subfolder will be added to the include path as well <br/>
+	 * <br/>
+	 * 
+	 * note Arduino has these subfolders in the libraries that need to be
+	 * include.<br/>
+	 * <br/>
+	 * 
+	 * note that in the current eclipse version, there is no need to add the
+	 * subfolder as a code folder. This may change in the future as it looks
+	 * like a bug to me.<br/>
+	 * 
+	 * @param project
+	 * @param Path
+	 * @throws CoreException
+	 * 
+	 * @see addLibraryDependency
+	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 */
+	public static void addCodeFolder(IProject project, IPath Path, ICConfigurationDescription configurationDescription) throws CoreException {
+
+		// create a link to the path
+		String NiceName = Path.lastSegment();
+		String PathName = project.getName() + NiceName;
+		URI ShortPath = URIUtil.toURI(Path.removeTrailingSeparator().removeLastSegments(1));
+
+		IWorkspace workspace = project.getWorkspace();
+		IPathVariableManager pathMan = workspace.getPathVariableManager();
+
+		pathMan.setURIValue(PathName, ShortPath);
+
+		addCodeFolder(project, PathName, NiceName, NiceName, configurationDescription);
+
+	}
+
+	/**
+	 * addTheNatures replaces all existing natures by the natures needed for a
+	 * arduino project
+	 * 
+	 * @param project
+	 *            The project where the natures need to be added to
+	 * @throws CoreException
+	 */
+	public static void addTheNatures(IProject project) throws CoreException {
+		IProjectDescription description = project.getDescription();
+
+		String[] newnatures = new String[5];
+		newnatures[0] = ArduinoConst.Cnatureid;
+		newnatures[1] = ArduinoConst.CCnatureid;
+		newnatures[2] = ArduinoConst.Buildnatureid;
+		newnatures[3] = ArduinoConst.Scannernatureid;
+		newnatures[4] = ArduinoConst.ArduinoNatureID;
+		description.setNatureIds(newnatures);
+		project.setDescription(description, new NullProgressMonitor());
+	}
+
+	/**
+	 * This method add the content of a content stream to a file
+	 * 
+	 * @param container
+	 *            used as a reference to the file
+	 * @param path
+	 *            The path to the file relative from the container
+	 * @param contentStream
+	 *            The stream to put in the file
+	 * @param monitor
+	 *            A monitor to show progress
+	 * @throws CoreException
+	 */
+	public static void addFileToProject(IContainer container, Path path, InputStream contentStream, IProgressMonitor monitor) throws CoreException {
+		final IFile file = container.getFile(path);
+
+		if (file.exists()) {
+			file.setContents(contentStream, true, true, monitor);
+		} else {
+			file.create(contentStream, true, monitor);
+		}
+
+	}
+
+	/**
+	 * This method sets the eclipse path variables to contain the 2 important
+	 * Arduino hardware folders (code wise that is)
+	 * 
+	 * Core path (used when referencing Arduino Code) The Arduino Pin Path (used
+	 * in 1rduino 1.0 to reference the arduino pin variants)
+	 * 
+	 * @param project
+	 */
+	public static void setProjectPathVariables(IProject project, IPath platformPath) {
+
+		// IPath platformPath = new
+		// Path(getBuildEnvironmentVariable(configurationDescription,
+		// ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
+		// platformPath = platformPath.removeLastSegments(1);
+		IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
+		URI arduinoHardwareLibraryPath = URIUtil.toURI(platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+
+		// consider replacing below with see
+		// https://github.com/jantje/arduino-eclipse-plugin/issues/34 why
+		// IPathVariableManager pathMan =
+		// ResourcesPlugin.getWorkspace().getPathVariableManager();
+		IPathVariableManager pathMan = project.getPathVariableManager();
+
+		try {
+			pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, arduinoHardwareLibraryPath);
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
+			// String boardVariant =
+			// getBuildEnvironmentVariable(configurationDescription,
+			// ArduinoConst.ENV_KEY_build_variant, "");
+			// if (!boardVariant.isEmpty()) {
+			pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
+			// } else {
+			// pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS,
+			// null);
+			// }
+		} catch (CoreException e) {
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+					"Failed to create the path variable variables. The setup will not work properly", e));
+			e.printStackTrace();
+		}
+	}
+
+	private static void searchFiles(File folder, HashSet<String> Hardwarelists, String Filename, int depth) {
+		if (depth > 0) {
+			File[] a = folder.listFiles();
+			if (a == null) {
+				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "the folder " + folder + "does not contain any files.", null));
+				return;
+			}
+			for (File f : a) {
+				if (f.isDirectory()) {
+					searchFiles(f, Hardwarelists, Filename, depth - 1);
+				} else if (f.getName().equals(Filename)) {
+					try {
+						Hardwarelists.add(f.getCanonicalPath());
+					} catch (IOException e) {
 						// e.printStackTrace();
 					}
-
+				}
 			}
-
-		/**
-		 * ChangeProjectReference changes the reference from one project to another
-		 * based on library names. This method gets the projects and if needed
-		 * creates the NewLibraryProject Then it calls ChangeProjectReference with
-		 * the projects
-		 * 
-		 * @param project
-		 *          The project that needs different project references
-		 * @param OldLibraryProjectName
-		 *          the name of the project project referenced to (the reference has
-		 *          to disappear)
-		 * @param NewLibraryProjectname
-		 *          the name of the project project needs to reference to (the
-		 *          reference has to be added and maybe the project created)
-		 * @param BoardName
-		 *          The board to use when creating NewLibraryProject
-		 * @see {@link #ChangeProjectReference(IProject , String , IProject )}
-		 */
-		public static void ChangeProjectReference(IProject project, String OldLibraryProjectName, String NewLibraryProjectname, String BoardName)
-			{
-				if (OldLibraryProjectName.equals(NewLibraryProjectname))
-					return; // nothing to do
-				IProject NewLibraryProject = Common.findProjectByName(NewLibraryProjectname);
-				if (NewLibraryProject == null)
-					{
-						IProject OldLibraryProject = Common.findProjectByName(OldLibraryProjectName);
-						if (OldLibraryProject == null)
-							{
-								Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "The New Arduino Board and the old arduino board do not exist (at least one should exist)", null));
-								return; // This should not happen
-							}
-						ArduinoProperties Properties = new ArduinoProperties();
-						// Properties.read(OldLibraryProject);
-						Properties.setArduinoBoard(BoardName);
-						try
-							{
-								NewLibraryProject = createArduino_coreProject(OldLibraryProject.getDescription(), null, Properties);
-							} catch (CoreException e)
-							{
-								Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Failed to create arduino core project " + NewLibraryProjectname, e));
-								e.printStackTrace();
-								return;
-							}
-					}
-				ChangeProjectReference(project, OldLibraryProjectName, NewLibraryProject);
-			}
-
-		/**
-		 * addLibraryDependency adds a dependency to a project. This includes
-		 * following steps <br/>
-		 * Creation of a link reference<br/>
-		 * Creation of a include reference<br/>
-		 * Creation of a code reference<br/>
-		 * 
-		 * @param project
-		 *          the project to add the library dependence to
-		 * @param libraryProject
-		 *          The library that needs to be added
-		 * @throws CoreException
-		 */
-		public static void addLibraryDependency(IProject project, IProject libraryProject) throws CoreException
-			{
-				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-				ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-				ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
-
-				addIncludeFolder(configurationDescription, project.getFullPath());
-
-				ChangeProjectReference(project, "", libraryProject);
-				projectDescription.setActiveConfiguration(configurationDescription);
-				projectDescription.setCdtProjectCreated();
-				mngr.setProjectDescription(project, projectDescription, true, null);
-			}
-
-		/**
-		 * This method adds the provided includepath to all configurations and
-		 * languages.
-		 * 
-		 * @param configurationDescription
-		 *          The configuration description of the project to add it to
-		 * @param IncludePath
-		 *          The path to add to the include folders
-		 * @see addLibraryDependency
-		 *      {@link #addLibraryDependency(IProject, IProject)}
-		 */
-		private static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath)
-			{
-				// find all languages
-				ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
-				ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-
-				// Add include path to all languages
-				for (int idx = 0; idx < languageSettings.length; idx++)
-					{
-						ICLanguageSetting lang = languageSettings[idx];
-						String LangID = lang.getLanguageId();
-						if (LangID != null)
-							{
-								if (LangID.startsWith("org.eclipse.cdt."))
-									{
-										ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-										ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
-										System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-										IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath, ICSettingEntry.VALUE_WORKSPACE_PATH); // (location.toString());
-										lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-									}
-							}
-					}
-
-			}
-
-		/**
-		 * This method adds the provided path to the includepath of all
-		 * configurations and languages.
-		 * 
-		 * @param project
-		 *          The project to add it to
-		 * @param IncludePath
-		 *          The path to add to the include folders
-		 * @see addLibraryDependency
-		 *      {@link #addLibraryDependency(IProject, IProject)}
-		 */
-		public static void addIncludeFolder(IProject project, IPath IncludePath)
-			{
-				// find all languages
-				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-				ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-				ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
-				addIncludeFolder(configurationDescription, IncludePath);
-
-				projectDescription.setActiveConfiguration(configurationDescription);
-				projectDescription.setCdtProjectCreated();
-				try
-					{
-						mngr.setProjectDescription(project, projectDescription, true, null);
-					} catch (CoreException e)
-					{
-						Common.log(new Status(IStatus.ERROR, Common.CORE_PLUGIN_ID, "Could not add folder " + IncludePath.toOSString() + " to includepoth in project" + project.getName(), e));
-						e.printStackTrace();
-					}
-
-			}
-
-		/**
-		 * This method creates a link folder in the project and add the folder as a
-		 * source path to the project it also adds the path to the include folder if
-		 * the includepath parameter points to a path that contains a subfolder
-		 * named "utility" this subfolder will be added to the include path as well <br/>
-		 * <br/>
-		 * 
-		 * note Arduino has these subfolders in the libraries that need to be
-		 * include.<br/>
-		 * <br/>
-		 * 
-		 * note that in the current eclipse version, there is no need to add the
-		 * subfolder as a code folder. This may change in the future as it looks
-		 * like a bug to me.<br/>
-		 * 
-		 * @param project
-		 * @param Path
-		 * @throws CoreException
-		 * 
-		 * @see addLibraryDependency
-		 *      {@link #addLibraryDependency(IProject, IProject)}
-		 */
-		public static void addCodeFolder(IProject project, String PathVarName, String SubFolder) throws CoreException
-			{
-				ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-				ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-				ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
-
-				IFolder link = project.getFolder(SubFolder);
-				IPath location = new Path(PathVarName).append(SubFolder);
-				link.createLink(location, IResource.NONE, null);
-				// Link is now created
-
-				// Use link to add the source
-				Path ExcludeList[] = new Path[1];
-				ExcludeList[0] = new Path("?xamples/*");
-				ICSourceEntry TheCEntry = new CSourceEntry(link.getFullPath(), ExcludeList, 0);
-				ICSourceEntry[] OrgSourceEntries = configurationDescription.getSourceEntries();
-				ICSourceEntry[] sourceEntries = new CSourceEntry[OrgSourceEntries.length + 1];
-				System.arraycopy(OrgSourceEntries, 0, sourceEntries, 0, OrgSourceEntries.length);
-				sourceEntries[OrgSourceEntries.length] = TheCEntry;
-				configurationDescription.setSourceEntries(sourceEntries);
-				// source has been added
-
-				addIncludeFolder(configurationDescription, link.getFullPath());
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				IPathVariableManager pathMan = workspace.getPathVariableManager();
-				File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append("utility").toString());
-				if (file.exists())
-					{
-						addIncludeFolder(configurationDescription, link.getFullPath().append("utility"));
-					}
-
-				projectDescription.setActiveConfiguration(configurationDescription);
-				projectDescription.setCdtProjectCreated();
-				mngr.setProjectDescription(project, projectDescription, true, null);
-
-			}
-
-		/**
-		 * This method creates a link folder in the project and add the folder as a
-		 * source path to the project it also adds the path to the include folder if
-		 * the includepath parameter points to a path that contains a subfolder
-		 * named "utility" this subfolder will be added to the include path as well <br/>
-		 * <br/>
-		 * 
-		 * note Arduino has these subfolders in the libraries that need to be
-		 * include.<br/>
-		 * <br/>
-		 * 
-		 * note that in the current eclipse version, there is no need to add the
-		 * subfolder as a code folder. This may change in the future as it looks
-		 * like a bug to me.<br/>
-		 * 
-		 * @param project
-		 * @param Path
-		 * @throws CoreException
-		 * 
-		 * @see addLibraryDependency
-		 *      {@link #addLibraryDependency(IProject, IProject)}
-		 */
-		public static void addCodeFolder(IProject project, IPath Path) throws CoreException
-			{
-
-				// create a link to the path
-				String NiceName = Path.lastSegment();
-				String PathName = project.getName() + NiceName;
-				URI ShortPath = URIUtil.toURI(Path.removeTrailingSeparator().removeLastSegments(1));
-
-				IWorkspace workspace = project.getWorkspace();
-				IPathVariableManager pathMan = workspace.getPathVariableManager();
-
-				pathMan.setURIValue(PathName, ShortPath);
-
-				addCodeFolder(project, PathName, NiceName);
-
-			}
-
-		/**
-		 * addTheNatures replaces all existing natures by the natures needed for a
-		 * arduino project
-		 * 
-		 * @param project
-		 *          The project where the natures need to be added to
-		 * @throws CoreException
-		 */
-		public static void addTheNatures(IProject project) throws CoreException
-			{
-				IProjectDescription description = project.getDescription();
-
-				String[] newnatures = new String[5];
-				newnatures[0] = Common.Cnatureid;
-				newnatures[1] = Common.CCnatureid;
-				newnatures[2] = Common.Buildnatureid;
-				newnatures[3] = Common.Scannernatureid;
-				newnatures[4] = Common.AVRnatureid;
-				description.setNatureIds(newnatures);
-				project.setDescription(description, new NullProgressMonitor());
-			}
-
-		/**
-		 * Converts a MCU Name to a Library project name If MCUName is atmega168
-		 * this method returns arduino_atmega168
-		 * 
-		 * @param MCUName
-		 * @return If MCUName is atmega168 this method returns arduino_atmega168
-		 */
-		public static String getMCUProjectName(String MCUName)
-			{
-				return Common.MakeNameCompileSafe(Common.CoreProjectNamePrefix + MCUName);
-			}
-
-		/**
-		 * This method add the content of a content stream to a file
-		 * 
-		 * @param container
-		 *          used as a reference to the file
-		 * @param path
-		 *          The path to the file relative from the container
-		 * @param contentStream
-		 *          The stream to put in the file
-		 * @param monitor
-		 *          A monitor to show progress
-		 * @throws CoreException
-		 */
-		public static void addFileToProject(IContainer container, Path path, InputStream contentStream, IProgressMonitor monitor) throws CoreException
-			{
-				final IFile file = container.getFile(path);
-
-				if (file.exists())
-					{
-						file.setContents(contentStream, true, true, monitor);
-					} else
-					{
-						file.create(contentStream, true, monitor);
-					}
-
-			}
-
-		/**
-		 * This method creates a arduino core project
-		 * 
-		 * @param description
-		 *          The project description to start from
-		 * @param monitor
-		 *          the monitor to show progress
-		 * @param Properties
-		 *          the properties to use when creating the arduino project
-		 * @return A arduino core project
-		 * @throws CoreException
-		 */
-		public static IProject createArduino_coreProject(IProjectDescription description, IProgressMonitor monitor, ArduinoProperties Properties) throws CoreException
-			{
-				// Validate if Arduino_core already exists
-				String CoreProjectName = ArduinoHelpers.getMCUProjectName(Properties.getSafeArduinoBoardName());
-				IProject Arduino_Core_project = Common.findProjectByName(CoreProjectName);
-				if (Arduino_Core_project != null)
-					{
-						return Arduino_Core_project; // No need to create as it already
-						// exists
-					}
-
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				final IProjectDescription desc = workspace.newProjectDescription(CoreProjectName);
-				desc.setLocationURI(null);
-
-				SubProgressMonitor SubMonitor1 = null;
-				SubProgressMonitor SubMonitor2 = null;
-				if (monitor != null)
-					{
-						SubMonitor1 = new SubProgressMonitor(monitor, 1000);
-						SubMonitor2 = new SubProgressMonitor(monitor, 1000);
-					}
-
-				// Create the Arduino_Core project
-				Arduino_Core_project = ResourcesPlugin.getWorkspace().getRoot().getProject(CoreProjectName);
-				Arduino_Core_project.create(description, SubMonitor1);
-				if (monitor != null)
-					{
-						if (monitor.isCanceled())
-							{
-								throw new OperationCanceledException();
-							}
-					}
-
-				// open the project
-				Arduino_Core_project.open(IResource.BACKGROUND_REFRESH, SubMonitor2);
-
-				/* Add the c configuration file */
-				addFileToProject(Arduino_Core_project, new Path(".cproject"), Stream.openContentStream(CoreProjectName, "", "templates/cproject.static"), monitor);
-
-				// Add the natures
-				addTheNatures(Arduino_Core_project);
-
-				// set the correct mcu and frequency
-				Properties.save(Arduino_Core_project); // this sets to much but I assume
-				// that is not a problem
-
-				// Add the arduino code
-				addCodeFolder(Arduino_Core_project, PATH_VARIABLE_NAME_ARDUINO_CORE, Properties.getBuildCoreFolder());
-
-				if (isArduinoIdeOne()) // this is Arduino version 1.0
-					{
-						// Add the correct arduino_pins.h
-						ArduinoHelpers.addCodeFolder(Arduino_Core_project, PATH_VARIABLE_NAME_ARDUINO_PINS, Properties.getBoardVariant());
-					}
-
-				return Arduino_Core_project;
-			}
-
-		/**
-		 * Returns whether a project is a static library project or a application
-		 * project Copied from AVR eclipse code
-		 * 
-		 * @param project
-		 *          The project to see what it is
-		 * @return true if it is a static lib. Otherwise false
-		 */
-		public static boolean IsStaticLib(IProject project)
-			{
-
-				IManagedProject p = getManagedProject(project);
-				if (p != null)
-					{
-						IBuildObjectProperties props = p.getBuildProperties();
-						IBuildProperty prop = props.getProperty(Common.StaticLibTag);
-
-						// may be null
-						if (prop != null)
-							{
-								IBuildPropertyValue value = prop.getValue();
-								if (value.getId().equals(Common.StaticLibTag))
-									{
-										return true;
-									}
-							}
-					}
-				return false;
-			}
-
-		/**
-		 * Not sure what it does. Is used by the IsStaticLib method
-		 * 
-		 * @param project
-		 * @return
-		 */
-		private static IManagedProject getManagedProject(IProject project)
-			{
-				IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-				if (buildInfo == null)
-					{
-						// Project is not a managed build project
-						return null;
-					}
-
-				IManagedProject p = buildInfo.getManagedProject();
-				return p;
-			}
-
-		/**
-		 * ConfigureToUseArduinoIDETools set the preferences such that eclipse is
-		 * configured to use the Arduino IDE delivered tools. Therefore it needs to
-		 * set the avrdud to use a custom config Give avr dude the custom config
-		 * file from Arduino IDE Set The paths correctly
-		 * 
-		 * @author Jan Baeyens
-		 * 
-		 */
-		public static void ConfigureToUseArduinoIDETools()
-			{
-				IPath mArduinoPath = ArduinoInstancePreferences.getArduinoPath();
-				setAVRDUDE_ConfigFile(mArduinoPath.append(DUDE_CONFIG_SUFFIX()).toOSString());
-
-				if (Platform.getOS().equals(Platform.OS_WIN32))
-					{
-						setAVRWINSettings(mArduinoPath.append(AVRDUDE_PATH_SUFFIX()).toOSString(), mArduinoPath.append(GCC_PATH_SUFFIX).toString(), mArduinoPath.append(GNU_PATH_SUFFIX()).toString(), mArduinoPath
-								.append(HEADER_PATH_SUFFIX).toOSString(), "true");
-					}
-				if (Platform.getOS().equals(Platform.OS_LINUX))
-					{
-						setAVRWINSettings(mArduinoPath.append(AVRDUDE_PATH_SUFFIX()).toOSString(), KEY_SYSTEM, KEY_SYSTEM, KEY_SYSTEM, "false");
-					}
-			}
-
-		/**
-		 * This method returns the avrdude configuration name which is dependent on
-		 * the Arduino IDE (1.0 has 1 per project) before that it is always the same
-		 * 
-		 * @return The name of the programmer to use in avrdude
-		 */
-		public static String ProgrammerConfigName(IProject project)
-			{
-				if (isArduinoIdeOne())
-					{
-						return ProgrammerConfigName + " for project " + project.getName();
-					}
-				return ProgrammerConfigName;
-			}
-
-		/**
-		 * stores the GCCPATH in the preferences so that WINAVR can read it
-		 * 
-		 * 
-		 * @param GCCPath
-		 *          the path or System to set it to use the system
-		 * @author Jan Baeyens
-		 */
-		public static void setAVRWINSettings(String AVRDudePath, String GCCPath, String GNUPath, String HeaderPath, String ScanAtStartup)
-			{
-
-				IPreferenceStore pathPrefs = AVRPathsPreferences.getPreferenceStore();
-				pathPrefs.setValue(KEY_AVRDUDE_PATH, AVRDudePath);
-				pathPrefs.setValue(KEY_GCC_PATH, GCCPath);
-				pathPrefs.setValue(KEY_GNU_PATH, GNUPath);
-				pathPrefs.setValue(KEY_HEADER_PATH, HeaderPath);
-				pathPrefs.setValue(KEY_NO_SCAN_AT_STARTUP, ScanAtStartup);
-				try
-					{
-						AVRPathsPreferences.savePreferences(pathPrefs);
-					} catch (IOException e)
-					{
-						Common.log(new Status(Status.ERROR, Common.CORE_PLUGIN_ID, "Failed to save AVR path settings settings", e));
-						e.printStackTrace();
-					}
-			}
-
-		/**
-		 * stores the location to the custom AVR dude config file in the preferences
-		 * so that WINAVR can read it
-		 * 
-		 * 
-		 * @param GCCPath
-		 *          the full path file name of the config file
-		 * @author Jan Baeyens
-		 */
-		public static void setAVRDUDE_ConfigFile(String DudeConfigFile)
-			{
-
-				IPreferenceStore avrdudestore = AVRDudePreferences.getPreferenceStore();
-				avrdudestore.setValue(AVRDudePreferences.KEY_USECUSTOMCONFIG, true);
-				avrdudestore.setValue(AVRDudePreferences.KEY_CONFIGFILE, DudeConfigFile);
-				try
-					{
-						AVRDudePreferences.savePreferences(avrdudestore);
-					} catch (IOException e)
-					{
-						Common.log(new Status(Status.ERROR, CORE_PLUGIN_ID, "Failed to save AVRDude settings", e));
-						e.printStackTrace();
-					}
-			}
-
-		/**
-		 * This method sets the eclipse path variables to contain the 4 important
-		 * Arduino folders (code wise that is)
-		 * 
-		 * The arduino library location (used when importing arduino libraries) The
-		 * Private library path (used when importing private libraries) The Arduino
-		 * Core path (used when referencing Arduino Code) The Arduino Pin Path (used
-		 * in 1rduino 1.0 to reference the arduino pin variants)
-		 * 
-		 * @param project
-		 */
-		public static void SetPathVariables()
-			{
-				IPath PinPath = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.VARIANTS_FILE_SUFFIX);
-				IPath CorePath = ArduinoInstancePreferences.getArduinoPath().append(ARDUINO_PATH_CORE);
-
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				IPathVariableManager pathMan = workspace.getPathVariableManager();
-
-				try
-					{
-
-						pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_LIB, URIUtil.toURI(getArduinoLibraryPath()));
-						pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_CORE, URIUtil.toURI(CorePath));
-						pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
-						pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(getPrivateLibraryPath()));
-					} catch (CoreException e)
-					{
-						Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create the eclipse environment variables. The setup will not work properly", e));
-						e.printStackTrace();
-					}
-			}
+		}
 	}
+
+	public static MessageConsole findConsole(String name) {
+		ConsolePlugin plugin = ConsolePlugin.getDefault();
+		IConsoleManager conMan = plugin.getConsoleManager();
+		IConsole[] existing = conMan.getConsoles();
+		for (int i = 0; i < existing.length; i++)
+			if (name.equals(existing[i].getName()))
+				return (MessageConsole) existing[i];
+		// no console found, so create a new one
+		MessageConsole myConsole = new MessageConsole(name, null);
+		conMan.addConsoles(new IConsole[] { myConsole });
+		return myConsole;
+	}
+
+	/**
+	 * This method adds the Arduino code in a subfolder named Arduino. 2 linked
+	 * subfolders named core and variant link to the real Arduino code note if
+	 * your arduino ide version is from before 1.0 only 1 folder is created
+	 * 
+	 * @param project
+	 *            The project to add the arduino code to
+	 * @param ProjectProperties
+	 *            The properties to use to add the core folder
+	 * @throws CoreException
+	 */
+	public static void addArduinoCodeToProject(IProject project, ICConfigurationDescription configurationDescription) throws CoreException {
+
+		String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_variant, "");
+		String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core_folder, "");
+		addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
+				configurationDescription);
+		if (!boardVariant.equals("")) // this is Arduino version 1.0
+		{
+			ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
+		} else {
+			IFolder variantFolder = project.getFolder("arduino/variant");
+			if (variantFolder.exists()) {
+				try {
+					variantFolder.delete(true, null);
+				} catch (CoreException e) {
+					Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to delete the variant folder", e));
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * Creates a new folder resource as a link or local
+	 * 
+	 * @param Project
+	 *            the project the folder is added to
+	 * @param newFolderName
+	 *            the new folder to create (can contain subfolders)
+	 * @param linklocation
+	 *            if null a local folder is created using newFolderName if not
+	 *            null a link folder is created with the name newFolderName and
+	 *            pointing to linklocation
+	 * 
+	 * @return nothing
+	 * @throws CoreException
+	 */
+	public static void createNewFolder(IProject Project, String newFolderName, URI linklocation) throws CoreException {
+		// IPath newFolderPath = Project.getFullPath().append(newFolderName);
+		final IFolder newFolderHandle = Project.getFolder(newFolderName);
+		if (linklocation != null) {
+			newFolderHandle.createLink(linklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+		} else {
+			newFolderHandle.create(0, true, null);
+		}
+	}
+
+	/**
+	 * Remove all the arduino environment variables.
+	 * 
+	 * @param contribEnv
+	 * @param confDesc
+	 */
+	private static void RemoveAllArduinoEnvironmentVariables(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
+
+		IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
+		for (int i = (CurVariables.length - 1); i > 0; i--) {
+			if (CurVariables[i].getName().startsWith(ArduinoConst.ENV_KEY_ARDUINO_START)) {
+				contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
+			}
+		}
+	}
+
+	/**
+	 * Sets the default values. Basically some settings are not set in the
+	 * platform.txt file. Here I set these values. This method should be called
+	 * as first. This way the values in platform.txt and boards.txt will take
+	 * precedence of the default values declared here
+	 * 
+	 * @param contribEnv
+	 * @param confDesc
+	 * @param platformFile
+	 *            Used to define the hardware as different settings are needed
+	 *            for avr and sam
+	 */
+	private static void setTheEnvironmentVariablesSetTheDefaults(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
+			IPath platformFile, boolean firstTime) {
+		// Set some default values because the platform.txt does not contain
+		// them
+		IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_ARDUINO_PATH, getArduinoPath().toString());
+		contribEnv.addVariable(var, confDesc);
+
+		// I'm not sure why but till now arduino refused to put this in the
+		// platform.txt file
+		// I won't call them idiots for this but it is getting close
+		var = new EnvironmentVariable(ENV_KEY_SOFTWARE, "ARDUINO");
+		contribEnv.addVariable(var, confDesc);
+		var = new EnvironmentVariable(ENV_KEY_runtime_ide_version, GetARDUINODefineValue());
+		contribEnv.addVariable(var, confDesc);
+		// End of section permitting denigrating remarks on arduino software
+		// development team
+
+		// Arduino uses the board approach for the upload tool.
+		// as I'm not I create some special entries to work around it
+		var = new EnvironmentVariable("A.CMD", "${A.TOOLS.BOSSAC.CMD}");
+		contribEnv.addVariable(var, confDesc);
+		var = new EnvironmentVariable("A.PATH", "${A.TOOLS.BOSSAC.PATH}");
+		contribEnv.addVariable(var, confDesc);
+		var = new EnvironmentVariable("A.CMD.PATH", "${A.TOOLS.AVRDUDE.CMD.PATH}");
+		contribEnv.addVariable(var, confDesc);
+		var = new EnvironmentVariable("A.CONFIG.PATH", "${A.TOOLS.AVRDUDE.CONFIG.PATH}");
+		contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+												// the board approach for the
+												// upload tool.
+
+		// For Teensy I added a flag that allows to compile everything in one
+		// project not using the archiving functionality
+		// I set the value to default to use the archiver
+		var = new EnvironmentVariable(ENV_KEY_use_archiver, "true");
+		contribEnv.addVariable(var, confDesc);
+		// End of Teensy specific settings
+
+		if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
+			var = new EnvironmentVariable(ENV_KEY_compiler_path, "${A.RUNTIME.IDE.PATH}/hardware/tools/avr/bin/");
+			contribEnv.addVariable(var, confDesc);
+		} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("sam")) {
+			var = new EnvironmentVariable(ENV_KEY_build_system_path, "${A.RUNTIME.IDE.PATH}/hardware/arduino/sam/system");
+			contribEnv.addVariable(var, confDesc);
+			var = new EnvironmentVariable(ENV_KEY_build_generic_path, "${A.RUNTIME.IDE.PATH}/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
+			contribEnv.addVariable(var, confDesc);
+		}
+
+		// some glue to make it work
+		String extraPathForOS = "";
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			extraPathForOS = "${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH + "}/hardware/tools/avr/utils/bin";
+		}
+		var = new EnvironmentVariable("PATH", "${A.COMPILER.PATH}${PathDelimiter}${" + ENV_KEY_build_generic_path + "}" + extraPathForOS
+				+ "${PathDelimiter}${PATH}");
+		contribEnv.addVariable(var, confDesc);
+
+		var = new EnvironmentVariable(ENV_KEY_build_path, "${ProjDirPath}/${ConfigName}");
+		contribEnv.addVariable(var, confDesc);
+
+		var = new EnvironmentVariable(ENV_KEY_build_project_name, "${ProjName}");
+		contribEnv.addVariable(var, confDesc);
+
+		// if (firstTime) {
+		if (getBuildEnvironmentVariable(confDesc, ENV_KEY_SIZE_SWITCH, "").isEmpty()) {
+			var = new EnvironmentVariable(ENV_KEY_SIZE_SWITCH, "${" + ENV_KEY_recipe_size_pattern + "}");
+			contribEnv.addVariable(var, confDesc);
+		}
+		if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_COMMAND, "").isEmpty()) {
+			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_COMMAND, JANTJE_SIZE_COMMAND);
+			contribEnv.addVariable(var, confDesc);
+		}
+
+		var = new EnvironmentVariable(ENV_KEY_archive_file, "arduino.ar");
+		contribEnv.addVariable(var, confDesc);
+
+		// IPath platformPath = new Path(arduinoProperties.getPlatformFolder());
+		// IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
+
+	}
+
+	/**
+	 * This method parses the platform.txt file for values to be added to the
+	 * environment variables
+	 * 
+	 * @param contribEnv
+	 * @param confDesc
+	 * @param platformFile
+	 *            The file to parse
+	 * @throws IOException
+	 */
+	private static void setTheEnvironmentVariablesAddthePlatformTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
+			IPath platformFile) throws IOException {
+		DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
+		BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
+		String strLine;
+		IEnvironmentVariable var = null;
+		// Read File Line By Line
+		while ((strLine = br.readLine()) != null) {
+			String RealData[] = strLine.split("#");// Ignore everything after
+													// first #
+			if (RealData.length > 0) {
+				String Var[] = RealData[0].split("=", 2); // look for assignment
+				if (Var.length == 2) {
+					String Value = MakeEnvironmentString(Var[1].replace("\"{build.path}/syscalls_sam3.c.o\"",
+							"\"{build.path}/arduino/syscalls_sam3.c.o\""));
+					var = new EnvironmentVariable(MakeKeyString(Var[0]), Value);
+					contribEnv.addVariable(var, confDesc);
+				}
+			}
+		}
+		dataInputStream.close(); // Close the platform.txt
+	}
+
+	/**
+	 * This method parses the boards.txt file for values to be added to the
+	 * environment variables First it adds all the variables based on the board
+	 * name [boardID].[key]=[value] results in [key]=[value] (taking in account
+	 * the modifiers) Then it parses for the menu variables
+	 * menu.[menuID].[boardID].[selectionID].[key]=[value] results in
+	 * [key]=[value] (taking in account the modifiers)
+	 * 
+	 * @param contribEnv
+	 * @param confDesc
+	 * @param platformFilename
+	 *            The file to parse
+	 * @throws IOException
+	 */
+	private static void setTheEnvironmentVariablesAddtheBoardsTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
+			IPath boardFileName, String boardName) throws IOException {
+		ArduinoBoards boardsFile = new ArduinoBoards(boardFileName.toOSString());
+		String boardID = boardsFile.getBoardIDFromName(boardName);
+
+		// Get the boards section and add all entries to the environment
+		// variables
+		Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
+		for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
+			contribEnv.addVariable(new EnvironmentVariable(MakeKeyString(currentPair.getKey()), MakeEnvironmentString(currentPair.getValue())),
+					confDesc);
+		}
+
+		Map<String, String> menuSectionMap = boardsFile.getSection("menu");
+		String[] optionNames = boardsFile.getOptionNames();
+		for (int currentOption = 0; currentOption < optionNames.length; currentOption++) {
+			String optionName = optionNames[currentOption];
+			String optionValue = getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_START + optionName, "");
+			if (!optionValue.isEmpty()) {
+				String optionValueID = null;
+				String optionID = null;
+				// Look for the option ID
+				for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+					if (curOption.getValue().equals(optionName)) {
+						String[] keySplit = curOption.getKey().split("\\.");
+						if (keySplit.length == 1)
+							optionID = keySplit[0];
+					}
+				}
+				if (optionID != null) { // we have the option ID lets look for
+										// the option value ID
+					for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+						if (curOption.getValue().equals(optionValue)) {
+							String[] keySplit = curOption.getKey().split("\\.");
+							if (keySplit.length == 3 && keySplit[0].equals(optionID) && keySplit[1].equals(boardID))
+								optionValueID = keySplit[2];
+						}
+					}
+				}
+				if (optionValueID != null) // now we have all the info to find
+											// the key value pairs for the
+											// environment vars
+				{
+					// The arduino menu way
+					String keyStartsWithValue = optionID + "." + boardID + "." + optionValueID + ".";
+					for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+						if (curOption.getKey().startsWith(keyStartsWithValue)) {
+							String key = curOption.getKey().substring(keyStartsWithValue.length());
+							contribEnv
+									.addVariable(new EnvironmentVariable(MakeKeyString(key), MakeEnvironmentString(curOption.getValue())), confDesc);
+						}
+					}
+
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * This method creates environment variables based on the platform.txt and
+	 * boards.txt platform.txt is processed first and then boards.txt. This way
+	 * boards.txt settings can overwrite common settings in platform.txt The
+	 * environment variables are only valid for the project given as parameter
+	 * The projectproperties are used to identify the boards.txt and
+	 * platform.txt as well as the board id to select the settings in the
+	 * board.txt file At the end also the path variable is set
+	 * 
+	 * @param project
+	 *            the project for which the environment variables are set
+	 * @param arduinoProperties
+	 *            the info of the selected board to set the variables for
+	 */
+	public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean firstTime) {
+		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+
+		IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARDS_FILE,
+				ArduinoInstancePreferences.getLastUsedBoardsFile()));
+		IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
+		String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARD_NAME,
+				ArduinoInstancePreferences.getLastUsedArduinoBoardName());
+
+		// first remove all Arduino Variables so there is no memory effect
+		RemoveAllArduinoEnvironmentVariables(contribEnv, confDesc);
+
+		// process the default env variables first. This way the platform.txt
+		// and boards.txt will
+		// overwrite the default settings
+		setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename, firstTime);
+		try {
+			// process the platform.txt file first. This way the boards.txt will
+			// overwrite the default settings
+			setTheEnvironmentVariablesAddthePlatformTxt(contribEnv, confDesc, platformFilename);
+			// now process the boards file
+			setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
+			// Do some post processing
+			setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
+
+		} catch (Exception e) {// Catch exception if any
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + platformFilename + " or " + boardFileName, e));
+			return;
+		}
+
+	}
+
+	/**
+	 * Some post processing is needed because the macro expansion resolves the
+	 * "file tag" Therefore I split the "recipe" patterns in 2 parts (before and
+	 * after the "file tag") the pattern in the toolchain is then ${first part}
+	 * ${files} ${second part}
+	 * 
+	 * @param contribEnv
+	 * @param confDesc
+	 */
+	private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
+		IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
+
+		IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_build_variant_path, pathMan.getURIValue(
+				ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS).getPath()
+				+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
+		contribEnv.addVariable(var, confDesc);
+
+		String recipes[] = { "recipe.c.o.pattern", "recipe.cpp.o.pattern", "recipe.ar.pattern", "recipe.c.combine.pattern",
+				"recipe.objcopy.eep.pattern", "recipe.objcopy.hex.pattern", "recipe.size.pattern" };
+		var = null;
+		for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
+			String recipe = getBuildEnvironmentVariable(confDesc, MakeKeyString(recipes[curRecipe]), "", false);
+			String recipeParts[] = recipe.split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3);
+			switch (recipeParts.length) {
+			case 0:
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), "echo no command for " + recipes[curRecipe]);
+				contribEnv.addVariable(var, confDesc);
+				break;
+			case 1:
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+				contribEnv.addVariable(var, confDesc);
+				break;
+			case 2:
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+				contribEnv.addVariable(var, confDesc);
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+				contribEnv.addVariable(var, confDesc);
+				break;
+			case 3:
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+				contribEnv.addVariable(var, confDesc);
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+				contribEnv.addVariable(var, confDesc);
+				var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".3"), recipeParts[2]);
+				contribEnv.addVariable(var, confDesc);
+				break;
+			default:
+				// this should never happen as the split is limited to 2
+
+			}
+			var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SOFTWARE, "ARDUINO");
+			contribEnv.addVariable(var, confDesc);
+		}
+
+	}
+
+	/**
+	 * When parsing boards.txt and platform.txt some processing needs to be done
+	 * to get "acceptable environment variable values" This method does the
+	 * parsing
+	 * 
+	 * @param inputString
+	 *            the value string as read from the file
+	 * @return the string to be stored as value for the environment variable
+	 */
+	public static String MakeEnvironmentString(String inputString) {
+		// String ret = inputString.replaceAll("-o \"\\{object_file}\"",
+		// "").replaceAll("\"\\{object_file}\"",
+		// "").replaceAll("\"\\{source_file}\"", "")
+		// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
+		String ret = inputString.replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
+		StringBuilder sb = new StringBuilder(ret);
+		String regex = "\\{[^}]*\\}";
+		Pattern p = Pattern.compile(regex); // Create the pattern.
+		Matcher matcher = p.matcher(sb); // Create the matcher.
+		while (matcher.find()) {
+			String buf = sb.substring(matcher.start(), matcher.end()).toUpperCase();
+			sb.replace(matcher.start(), matcher.end(), buf);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * When parsing boards.txt and platform.txt some processing needs to be done
+	 * to get "acceptable environment variable keys" This method does the
+	 * parsing
+	 * 
+	 * @param inputString
+	 *            the key string as read from the file
+	 * @return the string to be used as key for the environment variable
+	 */
+	static String osString = null;
+
+	private static String MakeKeyString(String string) {
+		if (osString == null) {
+			if (Platform.getOS().equals(Platform.OS_LINUX)) {
+				osString = "\\.LINUX";
+			} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
+				osString = "\\.WINDOWS";
+			} else {
+				osString = "\\.\\.";
+			}
+		}
+		return ArduinoConst.ENV_KEY_ARDUINO_START + string.toUpperCase().replaceAll(osString, "");
+	}
+
+	/**
+	 * Set the project to force a rebuild. This method is called after the
+	 * arduino settings have been updated. Note the only way I found I could get
+	 * this to work is by deleting the build folder Still then the "indexer
+	 * needs to recheck his includes from the language provider which still is
+	 * not working
+	 * 
+	 * @param project
+	 */
+	public static void setDirtyFlag(IProject project, ICConfigurationDescription cfgDescription) {
+		IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+		if (buildInfo == null) {
+			return; // Project is not a managed build project
+		}
+
+		IFolder buildFolder = project.getFolder(cfgDescription.getName());
+		if (buildFolder.exists()) {
+			try {
+				buildFolder.delete(true, null);
+			} catch (CoreException e) {
+				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to delete the folder " + cfgDescription.getName(), e));
+			}
+		}
+
+		List<ILanguageSettingsProvider> providers;
+		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+			providers = new ArrayList<ILanguageSettingsProvider>(((ILanguageSettingsProvidersKeeper) cfgDescription).getLanguageSettingProviders());
+			for (ILanguageSettingsProvider provider : providers) {
+				if ((provider instanceof AbstractBuiltinSpecsDetector)) { // basically
+																			// check
+																			// for
+																			// working
+																			// copy
+					// clear and reset isExecuted flag
+					((AbstractBuiltinSpecsDetector) provider).clear();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Given a source file calculates the base of the output file. this method
+	 * may not be needed if I can used the eclipse default behavior. However the
+	 * eclipse default behavior is different from the arduino default behavior.
+	 * So I keep it for now and we'll see how it goes The eclipse default
+	 * behavior is (starting from the project folder [configuration]/Source The
+	 * Arduino default behavior is all in 1 location (so no subfolders)
+	 * 
+	 * @param Source
+	 *            The source file to find the
+	 * @return The base file name for the ouput if Source is "file.cpp" the
+	 *         output is "file.cpp"
+	 */
+	public static IPath GetOutputName(IPath Source) {
+		IPath outputName;
+		if (Source.toString().startsWith("arduino")) {
+			outputName = new Path("arduino").append(Source.lastSegment());
+		} else {
+			outputName = Source;
+		}
+		return outputName;
+	}
+
+	/**
+	 * Searches for all platform.txt files from the arduino hardware folder
+	 * 
+	 * @return all the platform.txt files with full path
+	 */
+	public static String[] getPlatformFiles() {
+
+		File HardwareFolder = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME).toFile();
+
+		HashSet<String> Hardwarelists = new HashSet<String>();
+		searchFiles(HardwareFolder, Hardwarelists, ArduinoConst.PLATFORM_FILE_NAME, 3);
+		if (Hardwarelists.size() == 0) {
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No platform.txt files found in the arduino hardware folder", null));
+			return null;
+		}
+
+		return Hardwarelists.toArray(new String[Hardwarelists.size()]);
+	}
+
+	/**
+	 * Searches for all boards.txt files from the arduino hardware folder
+	 * 
+	 * @return all the boards.txt files with full path
+	 */
+	public static String[] getBoardsFiles() {
+		File HardwareFolder = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME).toFile();
+
+		HashSet<String> Hardwarelists = new HashSet<String>();
+		searchFiles(HardwareFolder, Hardwarelists, ArduinoConst.BOARDS_FILE_NAME, 3);
+		if (Hardwarelists.size() == 0) {
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folder", null));
+			return null;
+		}
+
+		return Hardwarelists.toArray(new String[Hardwarelists.size()]);
+
+	}
+
+	/**
+	 * Reads the version number from the lib/version.txt file
+	 * 
+	 * @return the version number if found if no version number found the error
+	 *         returned by the file read method
+	 */
+	static public String GetIDEVersion(Path arduinoIDEPath) {
+
+		File file = arduinoIDEPath.append(ArduinoConst.LIB_VERSION_FILE).toFile();
+		try {
+			// Open the file that is the first
+			// command line parameter
+			FileInputStream fstream = new FileInputStream(file);
+			// Get the object of DataInputStream
+			DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String strLine = br.readLine();
+			in.close();
+			return strLine;
+		} catch (Exception e) {// Catch exception if any
+			System.err.println("Error: " + e.getMessage());
+			return e.getMessage();
+		}
+	}
+
+}

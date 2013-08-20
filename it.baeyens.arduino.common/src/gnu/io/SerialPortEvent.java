@@ -17,53 +17,53 @@
 |   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 --------------------------------------------------------------------------*/
 package gnu.io;
+
 import java.util.*;
 
 /**
-* @author Trent Jarvi
-* @version %I%, %G%
-* @since JDK1.0
-*/
+ * @author Trent Jarvi
+ * @version %I%, %G%
+ * @since JDK1.0
+ */
 
-public class SerialPortEvent extends EventObject
-{
+public class SerialPortEvent extends EventObject {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final int DATA_AVAILABLE      =1;
-	public static final int OUTPUT_BUFFER_EMPTY =2;
-	public static final int CTS                 =3;
-	public static final int DSR                 =4;
-	public static final int RI                  =5;
-	public static final int CD                  =6;
-	public static final int OE                  =7;
-	public static final int PE                  =8;
-	public static final int FE                  =9;
-	public static final int BI                 =10;
+	public static final int DATA_AVAILABLE = 1;
+	public static final int OUTPUT_BUFFER_EMPTY = 2;
+	public static final int CTS = 3;
+	public static final int DSR = 4;
+	public static final int RI = 5;
+	public static final int CD = 6;
+	public static final int OE = 7;
+	public static final int PE = 8;
+	public static final int FE = 9;
+	public static final int BI = 10;
 
 	private boolean OldValue;
 	private boolean NewValue;
 	private int eventType;
-	/*public int eventType           =0; depricated */
 
-	public SerialPortEvent(SerialPort srcport, int eventtype, boolean oldvalue, boolean newvalue)
-	{
-		super( srcport );	
-		OldValue=oldvalue;
-		NewValue=newvalue;
-		eventType=eventtype;
+	/* public int eventType =0; depricated */
+
+	public SerialPortEvent(SerialPort srcport, int eventtype, boolean oldvalue, boolean newvalue) {
+		super(srcport);
+		OldValue = oldvalue;
+		NewValue = newvalue;
+		eventType = eventtype;
 	}
-	public int getEventType()
-	{
-		return(eventType);
+
+	public int getEventType() {
+		return (eventType);
 	}
-	public boolean getNewValue()
-	{
-		return( NewValue );
+
+	public boolean getNewValue() {
+		return (NewValue);
 	}
-	public boolean getOldValue()
-	{
-		return( OldValue );
+
+	public boolean getOldValue() {
+		return (OldValue);
 	}
 }

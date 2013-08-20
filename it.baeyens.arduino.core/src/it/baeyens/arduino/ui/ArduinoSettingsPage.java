@@ -1,8 +1,6 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.arduino.tools.ArduinoProperties;
-
-import org.eclipse.core.resources.IProject;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -12,22 +10,22 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-/** The ArduinoSettingsPage class is linked to page in the import wizard.
- * It wraps around the ArduinPropertyPage
+/**
+ * The ArduinoSettingsPage class is linked to page in the import wizard. It
+ * wraps around the ArduinPropertyPage
  * 
  * @author Jan Baeyens
- *
+ * 
  */
 public class ArduinoSettingsPage extends WizardPage implements IWizardPage {
 
 	final Shell shell = new Shell();
-	
-	private ArduinoPageLayout mPageLayout= new ArduinoPageLayout();
+
+	protected ArduinoSelectionPage mPageLayout = new ArduinoSelectionPage();
 
 	private Listener completeListener = new Listener() {
 		@Override
-		public void handleEvent(Event e) 
-		{
+		public void handleEvent(Event e) {
 			setPageComplete(mPageLayout.isPageComplete());
 		}
 	};
@@ -37,16 +35,13 @@ public class ArduinoSettingsPage extends WizardPage implements IWizardPage {
 		setPageComplete(false);
 	}
 
-	public ArduinoSettingsPage(String pageName, String title,
-			ImageDescriptor titleImage) {
+	public ArduinoSettingsPage(String pageName, String title, ImageDescriptor titleImage) {
 		super(pageName, title, titleImage);
 		setPageComplete(false);
 	}
 
-	
-@Override
-	public void createControl(Composite parent)  
-	{
+	@Override
+	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		mPageLayout.draw(composite);
 		setControl(composite);
@@ -54,23 +49,8 @@ public class ArduinoSettingsPage extends WizardPage implements IWizardPage {
 		setPageComplete(mPageLayout.isPageComplete());
 	}
 
-public void save(IProject project){
-	mPageLayout.save(project);
-}
-
-//public IPath getArduinoSourceCodeLocation()
-//{
-//	
-//	return mPageLayout.getArduinoSourceCodeLocation();
-//}
-
-public String GetMCUName()
-{
-	return mPageLayout.getMCUName();
-}
-
-public ArduinoProperties GetProperties() {
-	return mPageLayout.getProperties();
-}
+	public void saveAllSelections(ICConfigurationDescription confdesc) {
+		mPageLayout.saveAllSelections(confdesc);
+	}
 
 }

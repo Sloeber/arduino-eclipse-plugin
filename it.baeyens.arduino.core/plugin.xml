@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.3"?>
+<?eclipse version="3.6"?>
 <plugin>
 <!-- 
 ####################################################################################### 
@@ -11,21 +11,48 @@
 ####################################################################################### 
 -->
 
+<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
+<provider
+      class="it.baeyens.arduino.toolchain.ArduinoLanguageProvider"
+      id="it.baeyens.arduino.languageSettingsProvider"
+      name="Arduino Compiler Settings"
+      parameter="${COMMAND} -E -P -v -dD ${INPUTS}"
+      prefer-non-shared="true">
+<language-scope id="org.eclipse.cdt.core.gcc"/>
+<language-scope id="org.eclipse.cdt.core.g++"/>
+</provider>
+</extension>
+
+
+
+
+	<!-- C++ Projects -->
+
+
+
+<!-- 
+####################################################################################### 
+#    Arduino Nature                                                                       # 
+####################################################################################### 
+-->
+ 	<extension point="org.eclipse.core.resources.natures"
+ 		id="it.baeyens.arduinonature" 
+ 		name="Arduino Nature" >
+       <runtime>
+           <run class="it.baeyens.arduino.natures.ArduinoNature" />
+       </runtime>
+       <requires-nature id="org.eclipse.cdt.core.cnature"/>
+   </extension>
 <!--
 ####################################################################################### 
 #    Property Pages                                                                   # 
 ####################################################################################### 
 -->
 	<extension point="org.eclipse.ui.propertyPages">
-        
-		<!-- ############################### -->
-		<!-- Arduino Properties Page -->
-		<!-- ############################### -->
 		<page
             class="it.baeyens.arduino.ui.ArduinoPropertyPage"
             id="it.baeyens.arduino.eclipse.propertypage.ArduinoProperty"
-            name="Arduino"
-            category="it.baeyens.avreclipse.propertypage.Pagemain" >
+            name="%page.name" >
 			<filter
 				name="projectNature"
 				value="it.baeyens.arduinonature">
@@ -40,56 +67,78 @@
 		
 	</extension>
 	
+  
 
+  <extension
+           point="org.eclipse.cdt.ui.cPropertyTab">
+     <tab
+           class="it.baeyens.arduino.ui.ArduinoSelectionPage"
+           icon="icons/arduino.png"
+           name="Arduino board selection"
+           weight="050"
+           parent="it.baeyens.arduino.ui.ArduinoPropertyPage"/>
+     <tab
+           class="it.baeyens.arduino.ui.ArduinoCompileProperties"
+           icon="icons/verify.png"
+           name="Compile Options"
+           parent="it.baeyens.arduino.ui.ArduinoPropertyPage"
+           weight="050">
+     </tab>
+   </extension>
+   
 <!--
 ####################################################################################### 
 #    Wizard Pages                                                                     # 
 ####################################################################################### 
 -->
 
+<!-- New sketch wizar -->
 	<extension point="org.eclipse.ui.newWizards">
 		<category 
 			id="it.baeyens.arduino.eclipse.newWizards"
-			name="Arduino">
+			name="%category.name">
 		</category>
 		<wizard
 			id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard"
 			category="it.baeyens.arduino.eclipse.newWizards"
 	        class="it.baeyens.arduino.ui.NewArduinoSketchWizard"
-	        name="New Arduino sketch"
+	        name="%wizard.name"
 	        icon="icons/arduino.png"
 	        finalPerspective ="org.eclipse.cdt.ui.CPerspective"
 	        project="true">
          <description>
-            Create a new Arduino sketch and import arduino core code if needed.
+            %wizard.description
          </description>	        
 		</wizard>
 	</extension>
 
+<!-- Arduino Library import wizar -->
  <extension point="org.eclipse.ui.importWizards">
  		<category 
 			id="it.baeyens.arduino.eclipse.importWizards"
-			name="Arduino">
+			name="%category.name">
 		</category>
       <wizard 
          id="it.baeyens.arduino.Import_Arduino_Libraries" 
-         name="Import Arduino libraries in the current project" 
+         name="%wizard.name.0" 
          class="it.baeyens.arduino.ui.Import_Arduino_Libraries" 
          icon="icons/arduino.png"
          category="it.baeyens.arduino.eclipse.importWizards">        
          <description> 
-            Use this import wizard to import arduino libraries to you sketch
+            %wizard.description.0
          </description> 
          <selection class="org.eclipse.core.resources.IResource"/> 
-      </wizard>       
+      </wizard>    
+      
+<!-- Source code import wizar -->         
       <wizard 
          id="it.baeyens.arduino.Import_Source_Folder" 
-         name="Import a folder containing source code in the current project" 
+         name="%wizard.name.1" 
          class="it.baeyens.arduino.ui.Import_Source_Folder" 
          icon="icons/arduino.png"
          category="it.baeyens.arduino.eclipse.importWizards">        
          <description> 
-            Use this import wizard to add code in a folder on you local drive to this project
+            %wizard.description.1
          </description> 
          <selection class="org.eclipse.core.resources.IResource"/> 
       </wizard> 
@@ -102,15 +151,607 @@
 ####################################################################################### 
 -->
 	<extension point="org.eclipse.ui.preferencePages">
-		<page name="Arduino"
-			category="it.baeyens.avreclipse.preferences.PreferencePage"
+		<page name="%page.name"
 			class="it.baeyens.arduino.ui.ArduinoPreferencePage"
 			id="it.baeyens.arduino.eclipse.ArduinoPreferencePage">
 		</page>
-
 	</extension>   
-   
+
+<!--
+####################################################################################### 
+#    Arduino Plugin Commands                                                              # 
+####################################################################################### 
+-->
+	<extension point="org.eclipse.ui.commands">	
+		<category
+			name="%category.name"
+			description="%category.description"
+			id="it.baeyens.arduino.commands"/>
+		<command
+        categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
+        description="%command.description"
+        id="it.baeyens.arduino.actions.UploadprojectAction"
+        name="%command.name"/>
+		<command
+        categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.NewSketchHandler"
+        description="%command.description.0"
+        id="it.baeyens.arduino.actions.NewSketchAction"
+        name="%command.name.0"/>
+		<command
+        categoryId="it.baeyens.arduino.commands"
+        description="%command.description.1"
+        id="it.baeyens.arduino.actions.ArduinoBuildAction"
+        name="%command.name.1"/>
+		<command
+        categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.OpenSerialMonitorHandler"
+        description="%command.description.2"
+        id="it.baeyens.arduino.actions.OpenSerialMonitorAction"
+        name="%command.name.2"/>
+  <command
+        categoryId="it.baeyens.arduino.commands"
+        description="%command.description.3"
+        id="it.baeyens.arduino.actions.AddLibraryAction"
+        name="%command.name.3">
+  </command>
+	</extension>
+
+<!-- Defenition: "is this a Arduino project?"  
+   <extension       point="org.eclipse.core.expressions.definitions">
+  -->
+  
+ <!-- Is arduino definition 
+   <definition
+            id="it.baeyens.defenition.isArduinoproject">
+               <iterate ifEmpty="false">
+		       <adapt type="org.eclipse.core.resources.IResource">
+		          <test property="org.eclipse.core.resources.projectNature" 
+		          value="it.baeyens.arduinonature"/>
+		       </adapt> 
+		       </iterate>
+           </definition>
+    </extension  > 
+--> 
+ 
+ <!-- Upload project handler 
+    <extension       point="org.eclipse.ui.handlers">
+      <handler
+            class="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
+            commandId="it.baeyens.arduino.actions.UploadprojectAction">
+            <enabledWhen>
+                <reference
+                    definitionId="it.baeyens.defenition.isArduinoproject">
+                </reference>
+             </enabledWhen>   
+      </handler>          
+      <handler
+            class="it.baeyens.arduino.actions.BuildHandler"
+            commandId="it.baeyens.arduino.actions.ArduinoBuildAction">
+            <enabledWhen>
+                <reference
+                    definitionId="it.baeyens.defenition.isArduinoproject">
+                </reference>
+             </enabledWhen>   
+        </handler>             
+   </extension  >  
+   --> 
+
+
+<!--
+####################################################################################### 
+#    Action Sets (Toolbar & Main Menu)                                                # 
+####################################################################################### 
+-->
+
+<!-- Menu -->  	
+ <extension point="org.eclipse.ui.menus">
+    <menuContribution
+          allPopups="true"
+          locationURI="toolbar:org.eclipse.ui.main.toolbar">
+       <toolbar
+             id="it.baeyens.arduino.toolbar.main">
+          <command
+                commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
+                disabledIcon="icons/check_disabled.png"
+                icon="icons/check.png"
+                label="%command.label"
+                style="push">
+          </command>
+          <command
+                commandId="it.baeyens.arduino.actions.UploadprojectAction"
+                disabledIcon="icons/arrow_disabled.png"
+                icon="icons/arrow.png"
+                label="%command.label.0"
+                style="push">
+          </command>
+          <command
+                commandId="it.baeyens.arduino.actions.NewSketchAction"
+                disabledIcon="icons/new_disabled.png"
+                icon="icons/new.png"
+                label="%command.label.1"
+                style="push">
+          </command>
+          <command
+                commandId="org.eclipse.ui.file.save"
+                disabledIcon="icons/save_disabled.png"
+                icon="icons/save.png"
+                style="push">
+          </command>
+          <command
+                commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"
+                disabledIcon="icons/ser_mon_disabled.png"
+                icon="icons/ser_mon.png"
+                label="%command.label.2"
+                style="push">
+          </command>
+       </toolbar>
+    </menuContribution>
+		<menuContribution locationURI="menu:org.eclipse.ui.main.menu??after=Run">
+		    <menu label="%menu.label" >
+		    <command
+            commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
+            id="buildProject"
+            label="%command.label.3"/>
+			<command
+         commandId="it.baeyens.arduino.actions.UploadprojectAction"
+         tooltip="%command.tooltip"/>
+			<command commandId="it.baeyens.arduino.actions.NewSketchAction"/>
+			<command commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"/>
+   <command
+         commandId="it.baeyens.arduino.actions.AddLibraryAction"
+         style="push">
+   </command>
+			</menu>
+		</menuContribution>
+	</extension>
+
+<!-- Toolbar --> 
+ ated till here -->   
+<!-- ******************* -->
+<!-- ******************* -->
+<!-- ******************* -->
+ 
+ 
+<!-- 
+				icon="icons/upload.gif" 
+				icon="icons/newSketch.gif"
+				icon="icons/openSerial.gif"
+ 
+
+
+####################################################################################### 
+####################################################################################### 
+##                                                                                   ##
+##   BuildDef                                                                        ##
+##                                                                                   ## 
+####################################################################################### 
+####################################################################################### 
+-->
+ 
+	<extension id="it.baeyens.arduino.builddef"
+        point="org.eclipse.cdt.managedbuilder.core.buildDefinitions"
+		name="%extension.name.0" >
+		
+
+<!-- 
+####################################################################################### 
+#    AVR-GCC Compiler                                                                  # 
+####################################################################################### 
+-->
+		<builder
+        autoBuildTarget="all"
+        buildfileGenerator="it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator"
+        cleanBuildTarget="clean"
+        command="make"
+        errorParsers="org.eclipse.cdt.core.MakeErrorParser"
+        id="it.baeyens.arduino.gnu.builder"
+        ignoreErrCmd="-k"
+        incrementalBuildTarget="all"
+        isAbstract="true"
+        isVariableCaseSensitive="false"
+        macroInputDirRelPathValue="$(dir $&lt;)"
+        macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
+        macroInputFileExtValue="$(suffix $(notdir $&lt;))"
+        macroInputFileNameValue="$(notdir $&lt;)"
+        macroInputFileRelPathValue="$&lt;"
+        macroOutputDirRelPathValue="$(dir $@)"
+        macroOutputFileBaseNameValue="$(basename (notdir $@))"
+        macroOutputFileExtValue="$(suffix $(notdir $@)"
+        macroOutputFileNameValue="$(notdir $@)"
+        macroOutputFileRelPathValue="$@"
+        name="%builder.name"
+        parallelBuildCmd="-j*"
+        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
+        variableFormat="${=}">
+  </builder>
+  <projectType
+        id="it.baeyens.arduino.core.sketch"
+        name="%projectType.name">
+     <configuration
+           artifactExtension="hex"
+           cleanCommand="rm -rf"
+           id="it.baeyens.arduino.core.configuration.release"
+           languageSettingsProviders="it.baeyens.arduino.languageSettingsProvider"
+           name="%configuration.name">
+        <toolChain
+              archList="all"
+              id="it.baeyens.arduino.core.toolChain.release"
+              isAbstract="false"
+              languageSettingsProviders="it.baeyens.arduino.languageSettingsProvider"
+              name="%toolChain.name"
+              osList="all"
+              targetTool="it.baeyens.arduino.tool.size">
+           <targetPlatform
+                 archList="all"
+                 binaryParser="org.eclipse.cdt.core.ELF"
+                 id="it.baeyens.arduino.targetplatform"
+                 name="%targetPlatform.name"
+                 osList="all">
+           </targetPlatform>
+           <builder
+                 id="it.baeyens.arduino.sketch.builder"
+                 name="%builder.name.0"
+                 superClass="it.baeyens.arduino.gnu.builder">
+           </builder>
+           <optionCategory
+                 id="it.baeyens.arduino.core.optionCategory.includePaths"
+                 name="%optionCategory.name">
+           </optionCategory>
+           <tool
+                 announcement="%tool.announcement"
+                 command="${A.RECIPE.CPP.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="it.baeyens.arduino.tool.sketch.compiler.cpp"
+                 name="%tool.name"
+                 natureFilter="both">
+              <optionCategory
+                    id="it.baeyens.arduino.core.cpp.optionCategory.includePaths"
+                    name="%optionCategory.name.0">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="it.baeyens.arduino.core.cpp.optionCategory.includePaths"
+                    command="-I"
+                    id="it.baeyens.arduino.compiler.cpp.sketch.option.incpath"
+                    name="%option.name"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
+              <inputType
+                    buildVariable="CPP_SKETCH_FILES"
+                    dependencyCalculator="it.baeyens.arduino.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
+                    id="it.baeyens.arduino.compiler.cpp.sketch.input"
+                    name="%inputType.name"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.cxxSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="it.baeyens.arduino.compiler.cpp.sketch.link.output"
+                    name="%outputType.name"
+                    nameProvider="it.baeyens.arduino.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="it.baeyens.arduino.compiler.cpp.ar.output"
+                    name="%outputType.name.0"
+                    nameProvider="it.baeyens.arduino.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.0"
+                 command="${A.RECIPE.C.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="it.baeyens.arduino.tool.compiler.c"
+                 name="%tool.name.0"
+                 natureFilter="both">
+              <optionCategory
+                    id="it.baeyens.arduino.core.c.optionCategory.includePaths"
+                    name="%optionCategory.name.1">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="it.baeyens.arduino.core.c.optionCategory.includePaths"
+                    command="-I"
+                    id="it.baeyens.arduino.compiler.c.sketch.option.incpath"
+                    name="%option.name.0"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
+              <inputType
+                    buildVariable="C_SKETCH_FILES"
+                    dependencyCalculator="it.baeyens.arduino.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cHeader"
+                    id="it.baeyens.arduino.compiler.c.sketch.input"
+                    multipleOfType="false"
+                    name="%inputType.name.0"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.cSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="it.baeyens.arduino.compiler.c.link.output"
+                    name="%outputType.name.1"
+                    nameProvider="it.baeyens.arduino.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="it.baeyens.arduino.compiler.c.ar.output"
+                    name="%outputType.name.2"
+                    nameProvider="it.baeyens.arduino.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.1"
+                 command="${A.RECIPE.AR.PATTERN}"
+                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
+                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
+                 id="it.baeyens.arduino.tool.ar"
+                 name="%tool.name.1">
+              <outputType
+                    buildVariable="AR"
+                    id="it.baeyens.arduino.tool.archiver.output"
+                    name="%outputType.name.3"
+                    outputNames="${A.BUILD.PATH}/${A.ARCHIVE_FILE}"
+                    outputs="ar"
+                    primaryOutput="true">
+              </outputType>
+              <inputType
+                    assignToOption="A.OBJECT_FILE"
+                    buildVariable="AR_OBJ"
+                    id="it.baeyens.arduino.tool.archiver.input"
+                    multipleOfType="true"
+                    name="%inputType.name.1"
+                    primaryInput="false"
+                    sources="o">
+              </inputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.2"
+                 command="${A.RECIPE.C.COMBINE.PATTERN}"
+                 commandLinePattern="${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.RECIPE.C.COMBINE.PATTERN.3}"
+                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
+                 id="it.baeyens.arduino.tool.combine"
+                 name="%tool.name.2"
+                 natureFilter="both">
+              <outputType
+                    buildVariable="ELF"
+                    id="it.baeyens.arduino.tool.combiner.output"
+                    name="%outputType.name.4"
+                    outputNames="${ProjName}.elf"
+                    outputs="elf"
+                    primaryOutput="true">
+              </outputType>
+              <inputType
+                    buildVariable="LINK_OBJ"
+                    id="it.baeyens.arduino.tool.combiner.ob.input"
+                    multipleOfType="true"
+                    name="%inputType.name.2"
+                    primaryInput="true"
+                    sources="O">
+              </inputType>
+              <inputType
+                    buildVariable="AR"
+                    id="it.baeyens.arduino.tool.combiner.archiver.input"
+                    multipleOfType="true"
+                    sourceContentType="it.baeyens.arduino.tool.archiver.output"
+                    sources="ar">
+              </inputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.3"
+                 command="${A.RECIPE.OBJCOPY.EEP.PATTERN} "
+                 commandLinePattern="${COMMAND}"
+                 id="it.baeyens.arduino.tool.objcopy.eep"
+                 isAbstract="false"
+                 name="%tool.name.3"
+                 natureFilter="both">
+              <inputType
+                    buildVariable="ELF"
+                    dependencyExtensions="elf"
+                    id="it.baeyens.arduino.tool.objcopy.eep.input"
+                    multipleOfType="true"
+                    name="%inputType.name.3"
+                    primaryInput="true"
+                    sourceContentType="it.baeyens.arduino.tool.combiner.output"
+                    sources="elf">
+              </inputType>
+              <outputType
+                    buildVariable="EEP"
+                    id="it.baeyens.arduino.tool.objcopy.eep.output"
+                    multipleOfType="false"
+                    name="%outputType.name.5"
+                    outputNames="${ProjName}.eep"
+                    outputs="eep">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.4"
+                 command="${A.RECIPE.OBJCOPY.HEX.PATTERN} "
+                 commandLinePattern="${COMMAND}"
+                 id="it.baeyens.arduino.tool.objcopy.flash"
+                 isAbstract="false"
+                 name="%tool.name.4"
+                 natureFilter="both">
+              <inputType
+                    buildVariable="EEP"
+                    dependencyExtensions="eep"
+                    id="it.baeyens.arduino.tool.objcopy.flash.input"
+                    multipleOfType="true"
+                    name="%inputType.name.4"
+                    primaryInput="true"
+                    sourceContentType="it.baeyens.arduino.tool.eep.output"
+                    sources="eep">
+              </inputType>
+              <outputType
+                    buildVariable="FLASH_IMAGE"
+                    id="it.baeyens.arduino.tool.objcopy.flash.output"
+                    multipleOfType="false"
+                    name="%outputType.name.6"
+                    nameProvider="it.baeyens.arduino.toolchain.hexNameProvider"
+                    outputs="hex,bin">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.5"
+                 command="${JANTJE.SIZE.SWITCH} "
+                 commandLinePattern="${COMMAND}"
+                 id="it.baeyens.arduino.tool.size"
+                 name="%tool.name.5">
+              <inputType
+                    buildVariable="FLASH_IMAGE"
+                    dependencyExtensions="hex"
+                    id="it.baeyens.arduino.tool.size.input"
+                    multipleOfType="true"
+                    primaryInput="true"
+                    sourceContentType="it.baeyens.arduino.tool.objcopy.flash.output">
+              </inputType>
+              <outputType
+                    buildVariable="SIZEDUMMY"
+                    id="it.baeyens.arduino.tool.size.output"
+                    multipleOfType="false"
+                    outputNames="sizedummy"
+                    outputs="${project}.size"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+        </toolChain>
+     </configuration>
+  </projectType>
+
+<!-- 
+####################################################################################### 
+#    AVR-G++ C++ Compiler                                                                    # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    AVR C Linker                                                                    # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    AVR C++ Linker                                                                    # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    winAVR Archiver                                                                  # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    winAVR Generate Flash ROM image                                                  #
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    winAVR Generate EEPROM image                                                     # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    winAVR create Extended Listing                                                   # 
+####################################################################################### 
+-->
+		
+<!-- 
+####################################################################################### 
+#    winAVR display size of target                                                    # 
+####################################################################################### 
+-->
+		
+
+<!-- 
+####################################################################################### 
+#    AVRDude Tool                                                                     # 
+####################################################################################### 
+-->
+
+		
+<!-- 
+####################################################################################### 
+#    Default builder                                                                  # 
+####################################################################################### 
+-->
+
+<!-- 
+####################################################################################### 
+#    Default toolchain                                                                # 
+####################################################################################### 
+-->
+
+	</extension>
+
+
+
+
+<!-- 
+####################################################################################### 
+#    Content Types                                                                    # 
+####################################################################################### 
+-->
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes">
+    <content-type
+          base-type="org.eclipse.core.runtime.text"
+          file-extensions="eep"
+          id="it.baeyens.arduino.contenttype.eeprom"
+          name="%content-type.name">
+    </content-type>
+		<content-type id="it.baeyens.arduino.contenttype.hex"
+			base-type="org.eclipse.core.runtime.text"
+			file-extensions="hex"
+			name="%content-type.name.0">
+		</content-type>
+	</extension>
+ <extension
+       point="org.eclipse.ui.handlers">
+    <handler
+          class="it.baeyens.arduino.actions.BuildHandler"
+          commandId="it.baeyens.arduino.actions.ArduinoBuildAction">
+       <enabledWhen>
+          <count
+                value="+">
+          </count>
+       </enabledWhen>
+    </handler>
+    <handler
+          class="it.baeyens.arduino.actions.AddLibraryAction"
+          commandId="it.baeyens.arduino.actions.AddLibraryAction">
+       <enabledWhen>
+          <count
+                value="+">
+          </count>
+       </enabledWhen>
+    </handler>
+ </extension>
+
+
+	
+ 
 </plugin>
+
+
 
 		
 		

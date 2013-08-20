@@ -4,6 +4,10 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -18,32 +22,37 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-/**Import_Arduino_Library class is llinked to the gui related to the arduino library import
- * It creates one page. All important action is in the performFinish
+
+/**
+ * Import_Arduino_Library class is linked to the gui related to the arduino
+ * library import It creates one page. All important action is in the
+ * performFinish
  * 
  * @author Jan Baeyens
  * @see performFinish
- *
+ * 
  */
 public class Import_Source_Folder implements IImportWizard {
 
 	private Import_Source_Folder_Page mFolderSelectionPage;
 	private IWizardPage[] mPages;
-	private IWizardContainer mWizardContainer=null;
-	private static String mPageName ="Select";
+	private IWizardContainer mWizardContainer = null;
+	private static String mPageName = "Select";
 	private static String mPageTitle = "Select the folder containing the arduino library";
-	
+
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		mFolderSelectionPage = new Import_Source_Folder_Page(mPageName,StructuredSelection.EMPTY);
+		mFolderSelectionPage = new Import_Source_Folder_Page(mPageName, StructuredSelection.EMPTY);
 		mFolderSelectionPage.setWizard(this);
-		mPages= new IWizardPage[1];
-		mPages[0]=mFolderSelectionPage;
-		mFolderSelectionPage.setImportProject(Common.getProject(selection));
+		mPages = new IWizardPage[1];
+		mPages[0] = mFolderSelectionPage;
+		IProject SelectedProjects[] = Common.getSelectedProjects();
+		if (SelectedProjects.length > 0)
+			mFolderSelectionPage.setImportProject(SelectedProjects[0]);
 	}
 
 	@Override
-	public void addPages() {
+	public void addPages() { // no code needed
 	}
 
 	@Override
@@ -52,11 +61,11 @@ public class Import_Source_Folder implements IImportWizard {
 	}
 
 	@Override
-	public void createPageControls(Composite pageContainer) {
+	public void createPageControls(Composite pageContainer) {// no code needed
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose() {// no code needed
 	}
 
 	@Override
@@ -81,7 +90,8 @@ public class Import_Source_Folder implements IImportWizard {
 
 	@Override
 	public IWizardPage getPage(String pageName) {
-		if (mFolderSelectionPage.getName().equals(pageName)) return mFolderSelectionPage;
+		if (mFolderSelectionPage.getName().equals(pageName))
+			return mFolderSelectionPage;
 		return null;
 	}
 
@@ -135,19 +145,35 @@ public class Import_Source_Folder implements IImportWizard {
 		return true;
 	}
 
-	/**performFinish creates the library and set the environment so that it can be compiled.
+	/**
+	 * performFinish creates the library and set the environment so that it can
+	 * be compiled.
 	 * 
 	 * @author Jan Baeyens
 	 */
 	@Override
 	public boolean performFinish() {
-		try {
-			ArduinoHelpers.addCodeFolder( mFolderSelectionPage.GetProject(), new Path(mFolderSelectionPage.GetLibraryFolder()));
-		} catch (CoreException e) {
-			e.printStackTrace();
-			IStatus status = new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,	"Failed to import library " , e);
-			Common.log(status);
-			return false;
+		IProject project = mFolderSelectionPage.GetProject();
+		ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+		ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
+
+		for (int curConfigurationDescription = 0; curConfigurationDescription < configurationDescriptions.length; curConfigurationDescription++) {
+			try {
+				ArduinoHelpers.addCodeFolder(project, new Path(mFolderSelectionPage.GetLibraryFolder()),
+						configurationDescriptions[curConfigurationDescription]);
+			} catch (CoreException e) {
+				e.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e);
+				Common.log(status);
+				return false;
+			}
+			projectDescription.setActiveConfiguration(configurationDescriptions[curConfigurationDescription]);
+			projectDescription.setCdtProjectCreated();
+			try {
+				CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, projectDescription, true, null);
+			} catch (CoreException e) {
+				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import libraries to project " + project.getName(), e));
+			}
 		}
 		return true;
 	}
@@ -158,4 +184,3 @@ public class Import_Source_Folder implements IImportWizard {
 	}
 
 }
-

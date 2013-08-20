@@ -13,11 +13,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-
-/** the Stream class is used to read the board.txt file
+/**
+ * the Stream class is used to read the board.txt file
  * 
  * @author Trump
- *
+ * 
  */
 public class Stream {
 	/**
