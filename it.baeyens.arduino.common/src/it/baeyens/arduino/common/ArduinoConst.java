@@ -110,4 +110,6 @@ public class ArduinoConst {
 	public static final String ENV_KEY_WARNING_LEVEL_OFF = "";
 	public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
 
+	public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
+	public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
 }
