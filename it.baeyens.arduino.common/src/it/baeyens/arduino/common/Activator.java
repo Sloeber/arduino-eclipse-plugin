@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
@@ -63,6 +64,13 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		// add required properties for Arduino serial port on linux, if not defined
+		if (Platform.getOS().equals(Platform.OS_LINUX) &&
+			System.getProperty(ArduinoConst.ENV_KEY_GNU_SERIAL_PORTS) == null) {
+				System.setProperty(ArduinoConst.ENV_KEY_GNU_SERIAL_PORTS, ArduinoConst.ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
+		}
+		
 		remind();
 		return;
 
