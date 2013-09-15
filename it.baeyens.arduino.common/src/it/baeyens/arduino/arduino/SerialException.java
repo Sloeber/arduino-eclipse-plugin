@@ -21,24 +21,24 @@
 package it.baeyens.arduino.arduino;
 
 public class SerialException extends Exception {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public SerialException() {
-		super();
-	}
+    public SerialException() {
+	super();
+    }
 
-	public SerialException(String message) {
-		super(message);
-	}
+    public SerialException(String message) {
+	super(message);
+    }
 
-	public SerialException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public SerialException(String message, Throwable cause) {
+	super(message, cause);
+    }
 
-	public SerialException(Throwable cause) {
-		super(cause);
-	}
+    public SerialException(Throwable cause) {
+	super(cause);
+    }
 }

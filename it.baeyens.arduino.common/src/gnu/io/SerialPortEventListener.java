@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author Trent Jarvi
@@ -27,5 +27,5 @@ import java.util.*;
  */
 
 public interface SerialPortEventListener extends EventListener {
-	public abstract void serialEvent(SerialPortEvent ev);
+    public abstract void serialEvent(SerialPortEvent ev);
 }

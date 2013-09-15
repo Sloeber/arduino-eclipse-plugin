@@ -20,7 +20,7 @@
  --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author Trent Jarvi
@@ -29,5 +29,5 @@ import java.util.*;
  */
 
 public interface RawPortEventListener extends EventListener {
-	public abstract void RawEvent(RawPortEvent ev);
+    public abstract void RawEvent(RawPortEvent ev);
 }

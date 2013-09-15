@@ -11,13 +11,13 @@ import org.eclipse.ui.console.ConsolePlugin;
 
 public class NewSketchHandler extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IWizard wizard = new NewArduinoSketchWizard();
-		WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
-		wd.setTitle(wizard.getWindowTitle());
-		wd.open();
-		return null;
-	}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+	IWizard wizard = new NewArduinoSketchWizard();
+	WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
+	wd.setTitle(wizard.getWindowTitle());
+	wd.open();
+	return null;
+    }
 
 }

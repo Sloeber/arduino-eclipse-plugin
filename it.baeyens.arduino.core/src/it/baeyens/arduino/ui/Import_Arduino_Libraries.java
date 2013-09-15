@@ -27,140 +27,141 @@ import org.eclipse.ui.IWorkbench;
  */
 public class Import_Arduino_Libraries implements IImportWizard {
 
-	private Wizard_Select_Libraries_Page mProjectSelectionPage;
-	private IWizardPage[] mPages;
-	private IWizardContainer mWizardContainer = null;
+    private Wizard_Select_Libraries_Page mProjectSelectionPage;
+    private IWizardPage[] mPages;
+    private IWizardContainer mWizardContainer = null;
 
-	private static String mPageTitle = "Select the arduino libraries";
+    private static String mPageTitle = "Select the arduino libraries";
 
-	@Override
-	public void init(IWorkbench arg0, IStructuredSelection selection) {
+    @Override
+    public void init(IWorkbench arg0, IStructuredSelection selection) {
 
-		addPages();
+	addPages();
 
+    }
+
+    @Override
+    public void addPages() {// no need to add pages
+	IProject theProject = null;
+	IProject SelectedProjects[] = Common.getSelectedProjects();
+	if (SelectedProjects.length > 0)
+	    theProject = SelectedProjects[0];
+	mProjectSelectionPage = new Wizard_Select_Libraries_Page(theProject,
+		"Select the project to import to", StructuredSelection.EMPTY);
+	mProjectSelectionPage.setWizard(this);
+	mPages = new IWizardPage[1];
+	mPages[0] = mProjectSelectionPage;
+    }
+
+    @Override
+    public boolean canFinish() {
+	return mProjectSelectionPage.canFinish();
+    }
+
+    @Override
+    public void createPageControls(Composite pageContainer) {// no code needed
+
+    }
+
+    @Override
+    public void dispose() {// no code needed
+    }
+
+    @Override
+    public IWizardContainer getContainer() {
+	return mWizardContainer;
+    }
+
+    @Override
+    public Image getDefaultPageImage() {
+	return null;
+    }
+
+    @Override
+    public IDialogSettings getDialogSettings() {
+	return null;
+    }
+
+    @Override
+    public IWizardPage getNextPage(IWizardPage arg0) {
+	for (int i = 0; i < (mPages.length - 1); i++) {
+	    if (arg0 == mPages[i])
+		return mPages[i + 1];
 	}
+	return null;
+    }
 
-	@Override
-	public void addPages() {// no need to add pages
-		IProject theProject = null;
-		IProject SelectedProjects[] = Common.getSelectedProjects();
-		if (SelectedProjects.length > 0)
-			theProject = SelectedProjects[0];
-		mProjectSelectionPage = new Wizard_Select_Libraries_Page(theProject, "Select the project to import to", StructuredSelection.EMPTY);
-		mProjectSelectionPage.setWizard(this);
-		mPages = new IWizardPage[1];
-		mPages[0] = mProjectSelectionPage;
+    @Override
+    public IWizardPage getPage(String pageName) {
+	for (int i = 0; i < mPages.length; i++) {
+	    if (pageName == mPages[i].getName())
+		return mPages[i];
 	}
+	return null;
+    }
 
-	@Override
-	public boolean canFinish() {
-		return mProjectSelectionPage.canFinish();
+    @Override
+    public int getPageCount() {
+	return mPages.length;
+    }
+
+    @Override
+    public IWizardPage[] getPages() {
+	return mPages;
+    }
+
+    @Override
+    public IWizardPage getPreviousPage(IWizardPage arg0) {
+	for (int i = 1; i < mPages.length; i++) {
+	    if (arg0 == mPages[i])
+		return mPages[i - 1];
 	}
+	return null;
+    }
 
-	@Override
-	public void createPageControls(Composite pageContainer) {// no code needed
+    @Override
+    public IWizardPage getStartingPage() {
+	return mPages[0];
+    }
 
-	}
+    @Override
+    public RGB getTitleBarColor() {
+	return null;
+    }
 
-	@Override
-	public void dispose() {// no code needed
-	}
+    @Override
+    public String getWindowTitle() {
+	return mPageTitle;
+    }
 
-	@Override
-	public IWizardContainer getContainer() {
-		return mWizardContainer;
-	}
+    @Override
+    public boolean isHelpAvailable() {
+	return false;
+    }
 
-	@Override
-	public Image getDefaultPageImage() {
-		return null;
-	}
+    @Override
+    public boolean needsPreviousAndNextButtons() {
+	return false;
+    }
 
-	@Override
-	public IDialogSettings getDialogSettings() {
-		return null;
-	}
+    @Override
+    public boolean needsProgressMonitor() {
+	return false;
+    }
 
-	@Override
-	public IWizardPage getNextPage(IWizardPage arg0) {
-		for (int i = 0; i < (mPages.length - 1); i++) {
-			if (arg0 == mPages[i])
-				return mPages[i + 1];
-		}
-		return null;
-	}
+    @Override
+    public boolean performCancel() {
+	return true;
+    }
 
-	@Override
-	public IWizardPage getPage(String pageName) {
-		for (int i = 0; i < mPages.length; i++) {
-			if (pageName == mPages[i].getName())
-				return mPages[i];
-		}
-		return null;
-	}
+    @Override
+    public boolean performFinish() {
+	return mProjectSelectionPage.PerformFinish();
+    }
 
-	@Override
-	public int getPageCount() {
-		return mPages.length;
-	}
-
-	@Override
-	public IWizardPage[] getPages() {
-		return mPages;
-	}
-
-	@Override
-	public IWizardPage getPreviousPage(IWizardPage arg0) {
-		for (int i = 1; i < mPages.length; i++) {
-			if (arg0 == mPages[i])
-				return mPages[i - 1];
-		}
-		return null;
-	}
-
-	@Override
-	public IWizardPage getStartingPage() {
-		return mPages[0];
-	}
-
-	@Override
-	public RGB getTitleBarColor() {
-		return null;
-	}
-
-	@Override
-	public String getWindowTitle() {
-		return mPageTitle;
-	}
-
-	@Override
-	public boolean isHelpAvailable() {
-		return false;
-	}
-
-	@Override
-	public boolean needsPreviousAndNextButtons() {
-		return false;
-	}
-
-	@Override
-	public boolean needsProgressMonitor() {
-		return false;
-	}
-
-	@Override
-	public boolean performCancel() {
-		return true;
-	}
-
-	@Override
-	public boolean performFinish() {
-		return mProjectSelectionPage.PerformFinish();
-	}
-
-	@Override
-	public void setContainer(IWizardContainer wizardContainer) {
-		mWizardContainer = wizardContainer;
-	}
+    @Override
+    public void setContainer(IWizardContainer wizardContainer) {
+	mWizardContainer = wizardContainer;
+    }
 
 }

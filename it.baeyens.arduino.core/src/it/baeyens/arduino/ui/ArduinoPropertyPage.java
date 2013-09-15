@@ -11,8 +11,8 @@ import org.eclipse.cdt.ui.newui.AbstractPage;
  */
 public class ArduinoPropertyPage extends AbstractPage {
 
-	@Override
-	protected boolean isSingle() {
-		return false;
-	}
+    @Override
+    protected boolean isSingle() {
+	return false;
+    }
 }

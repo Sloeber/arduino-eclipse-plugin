@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: it.baeyens.arduino.core;singleton:=true
 Bundle-Version: 2.1.0.4
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7,
- JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
+ JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,

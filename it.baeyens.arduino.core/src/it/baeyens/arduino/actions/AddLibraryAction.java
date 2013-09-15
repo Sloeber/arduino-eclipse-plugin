@@ -18,32 +18,32 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 
 public class AddLibraryAction extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IProject SelectedProjects[] = Common.getSelectedProjects();
-		switch (SelectedProjects.length) {
-		case 0:
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
-			break;
-		case 1:
-			//
-			IWizardDescriptor wizardDescriptor = PlatformUI.getWorkbench().getImportWizardRegistry()
-					.findWizard("it.baeyens.arduino.Import_Arduino_Libraries");
-			IWizard wizard;
-			try {
-				wizard = wizardDescriptor.createWizard();
-			} catch (CoreException e) {
-				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Filed to find import wizard", e));
-				return null;
-			}
-			WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
-			wd.setTitle(wizard.getWindowTitle());
-			wd.open();
-			break;
-		default:
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding libraries to multiple projects is not supported"));
-		}
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+	IProject SelectedProjects[] = Common.getSelectedProjects();
+	switch (SelectedProjects.length) {
+	case 0:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
+	    break;
+	case 1:
+	    //
+	    IWizardDescriptor wizardDescriptor = PlatformUI.getWorkbench().getImportWizardRegistry()
+		    .findWizard("it.baeyens.arduino.Import_Arduino_Libraries");
+	    IWizard wizard;
+	    try {
+		wizard = wizardDescriptor.createWizard();
+	    } catch (CoreException e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Filed to find import wizard", e));
 		return null;
+	    }
+	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
+	    wd.setTitle(wizard.getWindowTitle());
+	    wd.open();
+	    break;
+	default:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding libraries to multiple projects is not supported"));
 	}
+	return null;
+    }
 
 }

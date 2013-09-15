@@ -13,31 +13,30 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
- * This is a handler to connect the plugin.xml to the code for uploading code to
- * arduino teensy ..
+ * This is a handler to connect the plugin.xml to the code for uploading code to arduino teensy ..
  * 
  * @author jan
  * 
  */
 public class ArduinoUploadProjectHandler extends AbstractHandler {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IProject SelectedProjects[] = Common.getSelectedProjects();
-		switch (SelectedProjects.length) {
-		case 0:
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to upload"));
-			break;
-		case 1:
-			UploadArduinoSketch.Do(SelectedProjects[0], CoreModel.getDefault().getProjectDescription(SelectedProjects[0]).getActiveConfiguration()
-					.getName());
-			break;
-		default:
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Only 1 project should be seleted: found "
-					+ Integer.toString(SelectedProjects.length) + " the names are :" + SelectedProjects.toString()));
+    @Override
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+	IProject SelectedProjects[] = Common.getSelectedProjects();
+	switch (SelectedProjects.length) {
+	case 0:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to upload"));
+	    break;
+	case 1:
+	    UploadArduinoSketch.Do(SelectedProjects[0], CoreModel.getDefault().getProjectDescription(SelectedProjects[0]).getActiveConfiguration()
+		    .getName());
+	    break;
+	default:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Only 1 project should be seleted: found "
+		    + Integer.toString(SelectedProjects.length) + " the names are :" + SelectedProjects.toString()));
 
-		}
-		return null;
 	}
+	return null;
+    }
 
 }
