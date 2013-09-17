@@ -27,53 +27,53 @@ import java.util.Enumeration;
  */
 
 public class CommPortEnumerator implements Enumeration<Object> {
-	private CommPortIdentifier index;
-	private final static boolean debug = false;
-	static {
-		if (debug)
-			System.out.println("CommPortEnumerator:{}");
-	}
+    private CommPortIdentifier index;
+    private final static boolean debug = false;
+    static {
+	if (debug)
+	    System.out.println("CommPortEnumerator:{}");
+    }
 
-	CommPortEnumerator() {
-	}
+    CommPortEnumerator() {
+    }
 
-	/*------------------------------------------------------------------------------
-	 nextElement()
-	 accept:
-	 perform:
-	 return:
-	 exceptions:
-	 comments:
-	 ------------------------------------------------------------------------------*/
-	@Override
-	public Object nextElement() {
-		if (debug)
-			System.out.println("CommPortEnumerator:nextElement()");
-		synchronized (CommPortIdentifier.Sync) {
-			if (index != null)
-				index = index.next;
-			else
-				index = CommPortIdentifier.CommPortIndex;
-			return (index);
-		}
+    /*------------------------------------------------------------------------------
+     nextElement()
+     accept:
+     perform:
+     return:
+     exceptions:
+     comments:
+     ------------------------------------------------------------------------------*/
+    @Override
+    public Object nextElement() {
+	if (debug)
+	    System.out.println("CommPortEnumerator:nextElement()");
+	synchronized (CommPortIdentifier.Sync) {
+	    if (index != null)
+		index = index.next;
+	    else
+		index = CommPortIdentifier.CommPortIndex;
+	    return (index);
 	}
+    }
 
-	/*------------------------------------------------------------------------------
-	 hasMoreElements()
-	 accept:
-	 perform:
-	 return:
-	 exceptions:
-	 comments:
-	 ------------------------------------------------------------------------------*/
-	@Override
-	public boolean hasMoreElements() {
-		if (debug)
-			System.out.println("CommPortEnumerator:hasMoreElements() " + CommPortIdentifier.CommPortIndex == null ? false : true);
-		synchronized (CommPortIdentifier.Sync) {
-			if (index != null)
-				return index.next == null ? false : true;
-			return CommPortIdentifier.CommPortIndex == null ? false : true;
-		}
+    /*------------------------------------------------------------------------------
+     hasMoreElements()
+     accept:
+     perform:
+     return:
+     exceptions:
+     comments:
+     ------------------------------------------------------------------------------*/
+    @Override
+    public boolean hasMoreElements() {
+	if (debug)
+	    System.out.println("CommPortEnumerator:hasMoreElements() " + CommPortIdentifier.CommPortIndex == null ? false : true);
+	synchronized (CommPortIdentifier.Sync) {
+	    if (index != null)
+		return index.next == null ? false : true;
+	    return CommPortIdentifier.CommPortIndex == null ? false : true;
 	}
+    }
 }

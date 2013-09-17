@@ -20,7 +20,7 @@
  --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author Trent Jarvi
@@ -29,5 +29,5 @@ import java.util.*;
  */
 
 public interface RS485PortEventListener extends EventListener {
-	public abstract void RS485Event(RS485PortEvent ev);
+    public abstract void RS485Event(RS485PortEvent ev);
 }

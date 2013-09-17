@@ -17,40 +17,42 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jan Baeyens
  * 
  */
+@SuppressWarnings("unused")
 public class ArduinoSettingsPage extends WizardPage implements IWizardPage {
 
-	final Shell shell = new Shell();
+    final Shell shell = new Shell();
 
-	protected ArduinoSelectionPage mPageLayout = new ArduinoSelectionPage();
+    protected ArduinoSelectionPage mPageLayout = new ArduinoSelectionPage();
 
-	private Listener completeListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			setPageComplete(mPageLayout.isPageComplete());
-		}
-	};
-
-	public ArduinoSettingsPage(String pageName) {
-		super(pageName);
-		setPageComplete(false);
-	}
-
-	public ArduinoSettingsPage(String pageName, String title, ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
-		setPageComplete(false);
-	}
-
+    private Listener completeListener = new Listener() {
 	@Override
-	public void createControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NULL);
-		mPageLayout.draw(composite);
-		setControl(composite);
-		mPageLayout.feedbackControl.addListener(SWT.Modify, completeListener);
-		setPageComplete(mPageLayout.isPageComplete());
+	public void handleEvent(Event e) {
+	    setPageComplete(mPageLayout.isPageComplete());
 	}
+    };
 
-	public void saveAllSelections(ICConfigurationDescription confdesc) {
-		mPageLayout.saveAllSelections(confdesc);
-	}
+    public ArduinoSettingsPage(String pageName) {
+	super(pageName);
+	setPageComplete(false);
+    }
+
+    public ArduinoSettingsPage(String pageName, String title,
+	    ImageDescriptor titleImage) {
+	super(pageName, title, titleImage);
+	setPageComplete(false);
+    }
+
+    @Override
+    public void createControl(Composite parent) {
+	Composite composite = new Composite(parent, SWT.NULL);
+	mPageLayout.draw(composite);
+	setControl(composite);
+	mPageLayout.feedbackControl.addListener(SWT.Modify, completeListener);
+	setPageComplete(mPageLayout.isPageComplete());
+    }
+
+    public void saveAllSelections(ICConfigurationDescription confdesc) {
+	mPageLayout.saveAllSelections(confdesc);
+    }
 
 }

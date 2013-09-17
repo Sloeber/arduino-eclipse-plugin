@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventListener;
 
 /**
  * @author Trent Jarvi
@@ -27,5 +27,5 @@ import java.util.*;
  */
 
 public interface ParallelPortEventListener extends EventListener {
-	public abstract void parallelEvent(ParallelPortEvent ev);
+    public abstract void parallelEvent(ParallelPortEvent ev);
 }

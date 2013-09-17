@@ -20,8 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * Listen to the output of a {@link ExternalCommandLauncher} line by line.
  * <p>
- * Implementors can listen to the output of a external program line by line to -
- * for example - update the user interface accordingly.
+ * Implementors can listen to the output of a external program line by line to - for example - update the user interface accordingly.
  * </p>
  * 
  * @author Thomas Holland
@@ -30,45 +29,41 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public interface ICommandOutputListener {
 
-	public enum StreamSource {
-		STDOUT, STDERR;
-	}
+    public enum StreamSource {
+	STDOUT, STDERR;
+    }
 
-	public enum Reason {
-		UNKNOWN, NO_AVRDUDE_FOUND, CANT_ACCESS_AVRDUDE, CONFIG_NOT_FOUND, UNKNOWN_MCU, UNKNOWN_PROGRAMMER, NO_PROGRAMMER, PORT_BLOCKED, NO_USB, TIMEOUT, PARSE_ERROR, INVALID_CWD, USER_CANCEL, SYNC_FAIL, INIT_FAIL, NO_TARGET_POWER, INVALID_PORT, USB_RECEIVE_ERROR;
-	}
+    public enum Reason {
+	UNKNOWN, NO_AVRDUDE_FOUND, CANT_ACCESS_AVRDUDE, CONFIG_NOT_FOUND, UNKNOWN_MCU, UNKNOWN_PROGRAMMER, NO_PROGRAMMER, PORT_BLOCKED, NO_USB, TIMEOUT, PARSE_ERROR, INVALID_CWD, USER_CANCEL, SYNC_FAIL, INIT_FAIL, NO_TARGET_POWER, INVALID_PORT, USB_RECEIVE_ERROR;
+    }
 
-	/**
-	 * Sets the progress monitor for the listener. The listener can use the
-	 * monitor to abort the current launch when it detects errors.
-	 * 
-	 * @param monitor
-	 */
-	public void init(IProgressMonitor monitor);
+    /**
+     * Sets the progress monitor for the listener. The listener can use the monitor to abort the current launch when it detects errors.
+     * 
+     * @param monitor
+     */
+    public void init(IProgressMonitor monitor);
 
-	/**
-	 * @param line
-	 *            The current line from the output of the external program.
-	 * @param source
-	 *            A <code>StreamSource</code> to indicate whether the line came
-	 *            from {@link StreamSource#STDOUT} or from
-	 *            {@link StreamSource#STDERR}.
-	 */
-	public void handleLine(String line, StreamSource source);
+    /**
+     * @param line
+     *            The current line from the output of the external program.
+     * @param source
+     *            A <code>StreamSource</code> to indicate whether the line came from {@link StreamSource#STDOUT} or from {@link StreamSource#STDERR}.
+     */
+    public void handleLine(String line, StreamSource source);
 
-	/**
-	 * Gets the last abort reason.
-	 * 
-	 * @return The last abort reason or <code>null</code> if no errors since
-	 *         init.
-	 */
-	public Reason getAbortReason();
+    /**
+     * Gets the last abort reason.
+     * 
+     * @return The last abort reason or <code>null</code> if no errors since init.
+     */
+    public Reason getAbortReason();
 
-	/**
-	 * Returns the line from the output that caused the abort.
-	 * 
-	 * @return
-	 */
-	public String getAbortLine();
+    /**
+     * Returns the line from the output that caused the abort.
+     * 
+     * @return
+     */
+    public String getAbortLine();
 
 }

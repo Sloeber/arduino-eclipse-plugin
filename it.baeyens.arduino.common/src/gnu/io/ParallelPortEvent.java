@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------*/
 package gnu.io;
 
-import java.util.*;
+import java.util.EventObject;
 
 /**
  * @author Trent Jarvi
@@ -27,35 +27,35 @@ import java.util.*;
  */
 
 public class ParallelPortEvent extends EventObject {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	static public final int PAR_EV_ERROR = 1;
-	static public final int PAR_EV_BUFFER = 2;
+    private static final long serialVersionUID = 1L;
+    static public final int PAR_EV_ERROR = 1;
+    static public final int PAR_EV_BUFFER = 2;
 
-	private boolean OldValue;
-	private boolean NewValue;
-	private int eventType;
+    private boolean OldValue;
+    private boolean NewValue;
+    private int eventType;
 
-	/* public int eventType =0; depricated */
+    /* public int eventType =0; depricated */
 
-	public ParallelPortEvent(ParallelPort srcport, int eventtype, boolean oldvalue, boolean newvalue) {
-		super(srcport);
-		OldValue = oldvalue;
-		NewValue = newvalue;
-		eventType = eventtype;
-	}
+    public ParallelPortEvent(ParallelPort srcport, int eventtype, boolean oldvalue, boolean newvalue) {
+	super(srcport);
+	OldValue = oldvalue;
+	NewValue = newvalue;
+	eventType = eventtype;
+    }
 
-	public int getEventType() {
-		return (eventType);
-	}
+    public int getEventType() {
+	return (eventType);
+    }
 
-	public boolean getNewValue() {
-		return (NewValue);
-	}
+    public boolean getNewValue() {
+	return (NewValue);
+    }
 
-	public boolean getOldValue() {
-		return (OldValue);
-	}
+    public boolean getOldValue() {
+	return (OldValue);
+    }
 }

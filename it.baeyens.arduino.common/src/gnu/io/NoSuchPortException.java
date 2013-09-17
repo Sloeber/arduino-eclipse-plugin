@@ -27,16 +27,16 @@ package gnu.io;
  */
 
 public class NoSuchPortException extends Exception {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	NoSuchPortException(String str) {
-		super(str);
-	}
+    NoSuchPortException(String str) {
+	super(str);
+    }
 
-	public NoSuchPortException() {
-		super();
-	}
+    public NoSuchPortException() {
+	super();
+    }
 }

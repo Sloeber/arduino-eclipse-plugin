@@ -20,41 +20,41 @@ import org.eclipse.core.runtime.Status;
  * 
  */
 public class Stream {
-	/**
-	 * Initialize the file contents to contents of the given resource.
-	 */
-	public static InputStream openContentStream(String title, String Include, String Resource) throws CoreException {
+    /**
+     * Initialize the file contents to contents of the given resource.
+     */
+    public static InputStream openContentStream(String title, String Include, String Resource) throws CoreException {
 
-		/* We want to be truly OS-agnostic */
-		final String newline = System.getProperty("line.separator");
+	/* We want to be truly OS-agnostic */
+	final String newline = System.getProperty("line.separator");
 
-		String line;
-		StringBuffer stringBuffer = new StringBuffer();
+	String line;
+	StringBuffer stringBuffer = new StringBuffer();
 
-		try {
-			InputStream input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
-			// "templates/index-xhtml-template.resource");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-			try {
+	try {
+	    InputStream input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
+	    // "templates/index-xhtml-template.resource");
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+	    try {
 
-				while ((line = reader.readLine()) != null) {
-					line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include);
-					stringBuffer.append(line);
-					stringBuffer.append(newline);
-				}
-
-			} finally {
-				reader.close();
-			}
-
-		} catch (IOException ioe) {
-			IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null);
-			Common.log(status);
-			throw new CoreException(status);
+		while ((line = reader.readLine()) != null) {
+		    line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include);
+		    stringBuffer.append(line);
+		    stringBuffer.append(newline);
 		}
 
-		return new ByteArrayInputStream(stringBuffer.toString().getBytes());
+	    } finally {
+		reader.close();
+	    }
 
+	} catch (IOException ioe) {
+	    IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null);
+	    Common.log(status);
+	    throw new CoreException(status);
 	}
+
+	return new ByteArrayInputStream(stringBuffer.toString().getBytes());
+
+    }
 
 }
