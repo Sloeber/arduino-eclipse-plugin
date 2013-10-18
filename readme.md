@@ -55,6 +55,9 @@ looks like this after it all works:
 images_plugin_dev_setup/imported_projects.png
 
 
+TODO: Work out how to clear up this structure and git -- the project files are copied by default....
+
+
 Then running is very simple - just right clock any of the projects and select run as an Eclipse application (or debug as Eclipse application -- letting you set breakpoints)
 
 Eclipse will launch a new workbench disabling the installed version if any of the plugin and updating with the plugins in the current workspace.
