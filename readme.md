@@ -7,10 +7,20 @@ Add stuff here on normal usage
 
 Add Eclipse Plugin development environment into your Eclipse environment
 
-Add Software: seach for Plug-in
+
+
+Add Software:
+
+Add in PDE
+
+Search for Plug-in
 Under general tools
 
-etc
+images_plugin_dev_setup/adding_pde.png
+
+For completeness
+Add in the JDT
+Add in EGit
 
 
 
@@ -54,7 +64,7 @@ images_plugin_dev_setup/running_check_versions.png
 
 
 Now, just set up fresh again with your project settings:
-Arduino/Preferences to point to IDE and private libs
+Preferences/Arduino to point to IDE and private libs
 
 New Project, Arduino, New Arduino Sketch
 
