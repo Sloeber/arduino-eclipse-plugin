@@ -26,14 +26,12 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 		oscilloscope = new Oscilloscope(parent, SWT.NONE);
-		oscilloscope.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1));
+		oscilloscope.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		registerSerialTracker();
 	}
 
 	private void registerSerialTracker() {
-		FrameworkUtil.getBundle(getClass()).getBundleContext()
-				.addServiceListener(this);
+		FrameworkUtil.getBundle(getClass()).getBundleContext().addServiceListener(this);
 	}
 
 	@Override
@@ -52,8 +50,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 	private void unregisterSerialService(ServiceEvent event) {
 		final ServiceReference<?> reference = event.getServiceReference();
-		final Object service = FrameworkUtil.getBundle(getClass())
-				.getBundleContext().getService(reference);
+		final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 		if (service instanceof Serial) {
 			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 				@Override
@@ -66,8 +63,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 	private void registerSerialService(ServiceEvent event) {
 		final ServiceReference<?> reference = event.getServiceReference();
-		final Object service = FrameworkUtil.getBundle(getClass())
-				.getBundleContext().getService(reference);
+		final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 		if (service instanceof Serial) {
 			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 				@Override

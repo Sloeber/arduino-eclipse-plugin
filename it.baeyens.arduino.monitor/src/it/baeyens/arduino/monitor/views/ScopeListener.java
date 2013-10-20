@@ -13,8 +13,7 @@ public class ScopeListener implements MessageConsumer {
 	private OscilloscopeDispatcher dispatcher;
 	private Integer fDelayLoop = 10;
 	private boolean fTailFade = false;
-	private Pattern fCommandPattern = Pattern
-			.compile(".*?\\\"(setscope\\s.*?)\\\".*");
+	private Pattern fCommandPattern = Pattern.compile(".*?\\\"(setscope\\s.*?)\\\".*");
 
 	public ScopeListener(Oscilloscope oscilloscope) {
 		dispatcher = new OscilloscopeDispatcher(0, oscilloscope) {
@@ -49,8 +48,7 @@ public class ScopeListener implements MessageConsumer {
 				}
 			}
 			value = Integer.valueOf(builder.toString());
-			dispatcher.getOscilloscope().setValue(dispatcher.getChannel(),
-					value);
+			dispatcher.getOscilloscope().setValue(dispatcher.getChannel(), value);
 		} catch (Exception e) {
 			System.out.println("Invalid value " + s);
 		}
@@ -59,7 +57,7 @@ public class ScopeListener implements MessageConsumer {
 	private void setCommand(String s) {
 
 		String command = null;
-		s= s.replaceAll("\r\n", "");
+		s = s.replaceAll("\r\n", "");
 		Matcher matcher = fCommandPattern.matcher(s);
 		if (matcher.matches()) {
 			command = matcher.group(1);
@@ -70,8 +68,7 @@ public class ScopeListener implements MessageConsumer {
 		}
 
 		if (command.startsWith("setscope delayLoop ")) {
-			fDelayLoop = Integer.valueOf(command
-					.replaceAll("setscope delayLoop ", ""));
+			fDelayLoop = Integer.valueOf(command.replaceAll("setscope delayLoop ", ""));
 		}
 
 		if (command.startsWith("setscope toggleTailFade")) {

@@ -84,8 +84,7 @@ public class Serial implements SerialPortEventListener {
 		this(iname, irate, 'N', 8, 1.0f);
 	}
 
-	public Serial(String iname, int irate, char iparity, int idatabits,
-			float istopbits) {
+	public Serial(String iname, int irate, char iparity, int idatabits, float istopbits) {
 		PortName = iname;
 		this.rate = irate;
 
@@ -107,57 +106,40 @@ public class Serial implements SerialPortEventListener {
 	}
 
 	private void registerService() {
-		fServiceRegistration = FrameworkUtil.getBundle(getClass())
-				.getBundleContext().registerService(Serial.class, this, null);
+		fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class, this, null);
 	}
 
 	public void connect() {
 		if (port == null) {
 			try {
-				CommPortEnumerator portList = CommPortIdentifier
-						.getPortIdentifiers();
+				CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
 				while (portList.hasMoreElements()) {
-					CommPortIdentifier portId = (CommPortIdentifier) portList
-							.nextElement();
+					CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
 
 					if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 						if (portId.getName().equals(PortName)) {
-							port = (SerialPort) portId.open("serial madness",
-									2000);
+							port = (SerialPort) portId.open("serial madness", 2000);
 							input = port.getInputStream();
 							output = port.getOutputStream();
-							port.setSerialPortParams(rate, databits, stopbits,
-									parity);
+							port.setSerialPortParams(rate, databits, stopbits, parity);
 							port.addEventListener(this);
 							port.notifyOnDataAvailable(true);
 						}
 					}
 				}
 			} catch (PortInUseException e) {
-				Common.log(new Status(
-						IStatus.ERROR,
-						ArduinoConst.CORE_PLUGIN_ID,
-						"Serial port "
-								+ PortName
-								+ " already in use. Try quiting any programs that may be using it",
-						e));
+				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+						+ " already in use. Try quiting any programs that may be using it", e));
 				return;
 			} catch (Exception e) {
-				Common.log(new Status(IStatus.ERROR,
-						ArduinoConst.CORE_PLUGIN_ID,
-						"Error opening serial port " + PortName, e));
+				Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
 				return;
 			}
 
 			if (port == null) {
 				// jaba 28 feb 2012. I made the log below a warning for issue #7
-				Common.log(new Status(
-						IStatus.WARNING,
-						ArduinoConst.CORE_PLUGIN_ID,
-						"Serial port "
-								+ PortName
-								+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?",
-						null));
+				Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+						+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
 				return;
 			}
 		}
@@ -392,11 +374,8 @@ public class Serial implements SerialPortEventListener {
 
 			int length = found - bufferIndex + 1;
 			if (length > outgoing.length) {
-				Common.log(new Status(IStatus.WARNING,
-						ArduinoConst.CORE_PLUGIN_ID,
-						"readBytesUntil() byte buffer is too small for the "
-								+ length + " bytes up to and including char "
-								+ interesting, null));
+				Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "readBytesUntil() byte buffer is too small for the " + length
+						+ " bytes up to and including char " + interesting, null));
 				return -1;
 			}
 			// byte outgoing[] = new byte[length];
@@ -479,8 +458,7 @@ public class Serial implements SerialPortEventListener {
 	}
 
 	public void write(String what, String LineEnd) {
-		notifyConsumers(System.getProperty("line.separator") + ">>Send to "
-				+ PortName + ": \"" + what + "\"<<"
+		notifyConsumers(System.getProperty("line.separator") + ">>Send to " + PortName + ": \"" + what + "\"<<"
 				+ System.getProperty("line.separator"));
 		write(what.getBytes());
 		if (LineEnd.length() > 0) {
@@ -504,11 +482,9 @@ public class Serial implements SerialPortEventListener {
 	static public Vector<String> list() {
 		Vector<String> list = new Vector<String>();
 		try {
-			CommPortEnumerator portList = CommPortIdentifier
-					.getPortIdentifiers();
+			CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
 			while (portList.hasMoreElements()) {
-				CommPortIdentifier portId = (CommPortIdentifier) portList
-						.nextElement();
+				CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
 
 				if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 					String name = portId.getName();
@@ -533,8 +509,7 @@ public class Serial implements SerialPortEventListener {
 	 * something slightly more intelligent to do.
 	 */
 	static public void errorMessage(String where, Throwable e) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
-				"Error inside Serial. " + where, e));
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e));
 
 	}
 
