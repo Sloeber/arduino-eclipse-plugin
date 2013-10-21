@@ -34,5 +34,7 @@ package it.baeyens.arduino.arduino;
 public interface MessageConsumer {
 
     public void message(String s);
+    
+    public void dispose();
 
 }
