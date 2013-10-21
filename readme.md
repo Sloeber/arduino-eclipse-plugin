@@ -5,6 +5,9 @@ Add stuff here on normal usage
 
 -------------------------- Developing (Improving) the Plugin --------------------------
 
+Fork the repository on github. Get you link like: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
+
+
 Add Eclipse Plugin development environment into your Eclipse environment
 
 
@@ -23,14 +26,15 @@ Add in the JDT
 Add in EGit
 
 
-
-go to your eclipse workspaces directory and get the plugin code from github:
-
-git clone  https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
-git remote add upstream https://github.com/jantje/arduino-eclipse-plugin.git
-
-
 Start up Eclipse:
+
+Import the projects into Eclipse via EGit interface.
+
+Import, Git, Projects from Git
+
+https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
+
+
 
 import, select, plugins, Import Plug-ins and Fragments
 
@@ -38,27 +42,23 @@ images_plugin_dev_setup/import_select.png
 
 Import Plug-ins and Fragments
 
-Select workspace/arduino----- directory
+URI
 
-Select from all -- unchanged
+https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
 
-projects with source folders
+master
 
-images_plugin_dev_setup/plugins_import_config.png
+import all existing projects
 
+FINISH
 
-import 3 newer projects -- all except core.nl1(OLD) version 
-
-images_plugin_dev_setup/plugins_select.png
-
-looks like this after it all works:
+looks something like this after it all works:
 images_plugin_dev_setup/imported_projects.png
 
 
-TODO: Work out how to clear up this structure and git -- the project files are copied by default....
 
 
-Then running is very simple - just right clock any of the projects and select run as an Eclipse application (or debug as Eclipse application -- letting you set breakpoints)
+Then running is very simple - just right clock it.bayaens.arduino.core and select run as an Eclipse application (or debug as Eclipse application -- letting you set breakpoints)
 
 Eclipse will launch a new workbench disabling the installed version if any of the plugin and updating with the plugins in the current workspace.
 
