@@ -386,6 +386,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			int colorindex = SerialConnections.size();
 			Serial newSerial = new Serial(ComPort, BaudRate);
 			if (newSerial.IsConnected()) {
+				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
 				theListener.message(System.getProperty("line.separator") + "Connected to " + ComPort + " at " + BaudRate

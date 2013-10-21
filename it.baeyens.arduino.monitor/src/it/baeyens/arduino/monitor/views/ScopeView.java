@@ -52,12 +52,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		final ServiceReference<?> reference = event.getServiceReference();
 		final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 		if (service instanceof Serial) {
-			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					oscilloscope.getDispatcher(0).stop();
-				}
-			});
+			// do something?
 		}
 	}
 

@@ -58,22 +58,61 @@ public class Serial implements SerialPortEventListener {
 	// for the classloading problem.. because if code ran again,
 	// the static class would have an object that could be closed
 
-	SerialPort port = null;
+	/**
+	 * General error reporting, all corraled here just in case I think of
+	 * something slightly more intelligent to do.
+	 */
+	static public void errorMessage(String where, Throwable e) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e));
 
+	}
+
+	/**
+	 * If this just hangs and never completes on Windows, it may be because the
+	 * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
+	 * knows.
+	 */
+	static public Vector<String> list() {
+		Vector<String> list = new Vector<String>();
+		try {
+			CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
+			while (portList.hasMoreElements()) {
+				CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+
+				if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+					String name = portId.getName();
+					list.addElement(name);
+				}
+			}
+
+		} catch (UnsatisfiedLinkError e) {
+			errorMessage("ports", e);
+
+		} catch (Exception e) {
+			errorMessage("ports", e);
+		}
+		return list;
+		// String outgoing[] = new String[list.size()];
+		// list.copyInto(outgoing);
+		// return outgoing;
+	}
+	SerialPort port = null;
 	int rate;
 	int parity;
 	int databits;
-	int stopbits;
-	boolean monitor = false;
 
 	// read buffer and streams
 
+	int stopbits;
+	boolean monitor = false;
+
 	InputStream input;
 	OutputStream output;
-
 	byte buffer[] = new byte[32768];
 	int bufferIndex;
+
 	int bufferLast;
+
 	String PortName;
 
 	private ServiceRegistration<Serial> fServiceRegistration;
@@ -102,11 +141,30 @@ public class Serial implements SerialPortEventListener {
 		if (istopbits == 2)
 			stopbits = SerialPort.STOPBITS_2;
 		connect();
-		registerService();
+
 	}
 
-	private void registerService() {
-		fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class, this, null);
+	public void addListener(MessageConsumer consumer) {
+		if (fConsumers == null) {
+			fConsumers = new ArrayList<>();
+		}
+		fConsumers.add(consumer);
+	}
+
+	/**
+	 * Returns the number of bytes that have been read from serial and are
+	 * waiting to be dealt with by the user.
+	 */
+	public int available() {
+		return (bufferLast - bufferIndex);
+	}
+
+	/**
+	 * Ignore all the bytes read so far and empty the buffer.
+	 */
+	public void clear() {
+		bufferLast = 0;
+		bufferIndex = 0;
 	}
 
 	public void connect() {
@@ -145,25 +203,6 @@ public class Serial implements SerialPortEventListener {
 		}
 	}
 
-	public void setup() {// JABA is not going to add code
-	}
-
-	public void dispose() {
-		notifyConsumers("Disconnect of port " + port.getName() + " executed");
-		disconnect();
-		if (fServiceRegistration != null) {
-			fServiceRegistration.unregister();
-		}
-	}
-
-	private void notifyConsumers(String message) {
-		if (fConsumers != null) {
-			for (MessageConsumer consumer : fConsumers) {
-				consumer.message(message);
-			}
-		}
-	}
-
 	public void disconnect() {
 		try {
 			// do io streams need to be closed first?
@@ -188,56 +227,33 @@ public class Serial implements SerialPortEventListener {
 		port = null;
 	}
 
-	public void addListener(MessageConsumer consumer) {
-		if (fConsumers == null) {
-			fConsumers = new ArrayList<>();
+	public void dispose() {
+		notifyConsumers("Disconnect of port " + port.getName() + " executed");
+		disconnect();
+		disposeConsumers();
+		if (fServiceRegistration != null) {
+			fServiceRegistration.unregister();
 		}
-		fConsumers.add(consumer);
 	}
 
-	@Override
-	synchronized public void serialEvent(SerialPortEvent serialEvent) {
+	public boolean IsConnected() {
+		return (port != null);
+	}
 
-		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-
-			try {
-				synchronized (buffer) {
-					while (input.available() > 0) {
-
-						if (bufferLast == buffer.length) {
-							byte temp[] = new byte[bufferLast << 1];
-							System.arraycopy(buffer, 0, temp, 0, bufferLast);
-							buffer = temp;
-						}
-						buffer[bufferLast++] = (byte) input.read();
-						if (monitor == true)
-							System.out.print((char) input.read());
-
-					}
-					notifyConsumers(readString());
-				}
-			} catch (IOException e) {
-				errorMessage("serialEvent", e);
-			} catch (Exception e) {// JABA is not going to add code
-				e.printStackTrace();
+	private void notifyConsumers(String message) {
+		if (fConsumers != null) {
+			for (MessageConsumer consumer : fConsumers) {
+				consumer.message(message);
 			}
 		}
 	}
 
-	/**
-	 * Returns the number of bytes that have been read from serial and are
-	 * waiting to be dealt with by the user.
-	 */
-	public int available() {
-		return (bufferLast - bufferIndex);
-	}
-
-	/**
-	 * Ignore all the bytes read so far and empty the buffer.
-	 */
-	public void clear() {
-		bufferLast = 0;
-		bufferIndex = 0;
+	private void disposeConsumers() {
+		if (fConsumers != null) {
+			for (MessageConsumer consumer : fConsumers) {
+				consumer.dispose();
+			}
+		}
 	}
 
 	/**
@@ -257,16 +273,6 @@ public class Serial implements SerialPortEventListener {
 			}
 			return outgoing;
 		}
-	}
-
-	/**
-	 * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if
-	 * nothing is there.
-	 */
-	public char readChar() {
-		if (bufferIndex == bufferLast)
-			return (char) (-1);
-		return (char) read();
 	}
 
 	/**
@@ -391,6 +397,16 @@ public class Serial implements SerialPortEventListener {
 	}
 
 	/**
+	 * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if
+	 * nothing is there.
+	 */
+	public char readChar() {
+		if (bufferIndex == bufferLast)
+			return (char) (-1);
+		return (char) read();
+	}
+
+	/**
 	 * Return whatever has been read from the serial port so far as a String. It
 	 * assumes that the incoming characters are ASCII.
 	 * 
@@ -419,6 +435,80 @@ public class Serial implements SerialPortEventListener {
 		return new String(b);
 	}
 
+	public void registerService() {
+		fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class, this, null);
+	}
+
+	public void reset() {
+		setDTR(false);
+		setRTS(false);
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {// JABA is not going to add code
+		}
+
+		setDTR(true);
+		setRTS(true);
+
+	}
+
+	@Override
+	synchronized public void serialEvent(SerialPortEvent serialEvent) {
+
+		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+
+			try {
+				synchronized (buffer) {
+					while (input.available() > 0) {
+
+						if (bufferLast == buffer.length) {
+							byte temp[] = new byte[bufferLast << 1];
+							System.arraycopy(buffer, 0, temp, 0, bufferLast);
+							buffer = temp;
+						}
+						buffer[bufferLast++] = (byte) input.read();
+						if (monitor == true)
+							System.out.print((char) input.read());
+
+					}
+					notifyConsumers(readString());
+				}
+			} catch (IOException e) {
+				errorMessage("serialEvent", e);
+			} catch (Exception e) {// JABA is not going to add code
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setDTR(boolean state) {
+		port.setDTR(state);
+	}
+
+	public void setRTS(boolean state) {
+		port.setRTS(state);
+	}
+
+	public void setup() {// JABA is not going to add code
+	}
+
+	// needed to fill viewers in jfases
+	@Override
+	public String toString() {
+		return PortName;
+	}
+
+	public void write(byte bytes[]) {
+		try {
+			output.write(bytes);
+			output.flush(); // hmm, not sure if a good idea
+
+		} catch (Exception e) { // null pointer or serial port dead
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * This will handle both ints, bytes and chars transparently.
 	 */
@@ -429,16 +519,6 @@ public class Serial implements SerialPortEventListener {
 
 		} catch (Exception e) { // null pointer or serial port dead
 			errorMessage("write", e);
-		}
-	}
-
-	public void write(byte bytes[]) {
-		try {
-			output.write(bytes);
-			output.flush(); // hmm, not sure if a good idea
-
-		} catch (Exception e) { // null pointer or serial port dead
-			e.printStackTrace();
 		}
 	}
 
@@ -464,76 +544,5 @@ public class Serial implements SerialPortEventListener {
 		if (LineEnd.length() > 0) {
 			write(LineEnd.getBytes());
 		}
-	}
-
-	public void setDTR(boolean state) {
-		port.setDTR(state);
-	}
-
-	public void setRTS(boolean state) {
-		port.setRTS(state);
-	}
-
-	/**
-	 * If this just hangs and never completes on Windows, it may be because the
-	 * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
-	 * knows.
-	 */
-	static public Vector<String> list() {
-		Vector<String> list = new Vector<String>();
-		try {
-			CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
-			while (portList.hasMoreElements()) {
-				CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-
-				if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-					String name = portId.getName();
-					list.addElement(name);
-				}
-			}
-
-		} catch (UnsatisfiedLinkError e) {
-			errorMessage("ports", e);
-
-		} catch (Exception e) {
-			errorMessage("ports", e);
-		}
-		return list;
-		// String outgoing[] = new String[list.size()];
-		// list.copyInto(outgoing);
-		// return outgoing;
-	}
-
-	/**
-	 * General error reporting, all corraled here just in case I think of
-	 * something slightly more intelligent to do.
-	 */
-	static public void errorMessage(String where, Throwable e) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e));
-
-	}
-
-	public boolean IsConnected() {
-		return (port != null);
-	}
-
-	// needed to fill viewers in jfases
-	@Override
-	public String toString() {
-		return PortName;
-	}
-
-	public void reset() {
-		setDTR(false);
-		setRTS(false);
-
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {// JABA is not going to add code
-		}
-
-		setDTR(true);
-		setRTS(true);
-
 	}
 }

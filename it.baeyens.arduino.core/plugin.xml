@@ -199,9 +199,9 @@
   <command
         categoryId="it.baeyens.arduino.commands"
         defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
-        description="%command.description.2"
+        description="%command.description.3"
         id="it.baeyens.arduino.actions.OpenScopeAction"
-        name="%command.name.2">
+        name="%command.label.4">
   </command>
 	</extension>
 
