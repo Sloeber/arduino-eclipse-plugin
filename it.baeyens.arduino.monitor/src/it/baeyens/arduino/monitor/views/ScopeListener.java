@@ -16,7 +16,7 @@ import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeStackAda
 public class ScopeListener implements MessageConsumer {
 
 	private OscilloscopeDispatcher dispatcher;
-	private Queue<Integer> fStack = new LinkedList<>();
+	private Queue<Integer> fStack = new LinkedList<Integer>();
 	private Integer fDelayLoop = 10;
 	private boolean fTailFade = false;
 	private Pattern fCommandPattern = Pattern.compile(".*?\\\"(setscope\\s.*?)\\\".*");
