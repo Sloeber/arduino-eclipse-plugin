@@ -31,6 +31,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+//TODO: Should this be called Import_Arduino_Libraries_Page to make consistent with the source folder import.....
+//TODO: Or Arduino_Libraries_Import_page
+
 public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 
     protected Tree LibrarySelector;
@@ -42,32 +45,32 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 
     protected Wizard_Select_Libraries_Page(IProject project, String name,
 	    IStructuredSelection selection) {
-	super(name, selection);
-	setProject(project);
-	if (mProject == null) {
-	    setTitle("Error no project selected to import to");
-	    setDescription("As no project is selected it is not possible to import libraries");
-	} else {
-	    setTitle("Import arduino libraries");
-	    setDescription("Use this page to select the libraries to import to project "
-		    + mProject.getName());
-	}
+
+		super(name, selection);
+		
+		setImportProject(project);
+		if (mProject == null) {
+		    setTitle("Error no project selected to import to");
+		    setDescription("As no project is selected it is not possible to import libraries");
+		} else {
+		    setTitle("Import Arduino libraries");
+		    setDescription("Use this page to select the libraries to import to project"
+			    + mProject.getName());
+		}
     }
 
-    @Override
-    public void createControl(Composite parent) {
-
-	// }
 	// @Override
-	// protected void createSourceGroup(Composite parent) {
-	if (mProject == null)
-	    return;
+	protected void createSourceGroup(Composite parent) {
+    	
+    	if (mProject == null)
+    		return;
+	
 	Composite composite = new Composite(parent, SWT.NONE);
 	GridLayout theGridLayout = new GridLayout();
 	GridData theGriddata;
 
 	Label line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD);
-	line.setText("Arduino library to import to");
+	line.setText("Arduino library to import to the project-----BKBKBK");
 	theGriddata = new GridData(SWT.FILL, SWT.CENTER, true, false);
 	theGriddata.horizontalSpan = 3;
 	line.setLayoutData(theGriddata);
@@ -99,11 +102,11 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 
 	    if ((HardwareLibraryPath.toFile().exists())
 		    && (HardwareLibraryPath.toFile().list().length > 0)) {
-		// Create Arduino Item
-		ArduinoHardwareLibItem = new TreeItem(LibrarySelector, SWT.NONE);
-		ArduinoHardwareLibItem.setText("Arduino hardware Libs");
-		// Add the arduino Libs
-		AddLibs(ArduinoHardwareLibItem, HardwareLibraryPath);
+	    	// Create Arduino Item
+	    	ArduinoHardwareLibItem = new TreeItem(LibrarySelector, SWT.NONE);
+	    	ArduinoHardwareLibItem.setText("Arduino Hardware Libraries");
+	    	// Add the Arduino Libs
+	    	AddLibs(ArduinoHardwareLibItem, HardwareLibraryPath);
 	    }
 	}
 
@@ -111,8 +114,8 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 	    IPath ArduinoLibraryPath = URIUtil.toPath(ArduinoLibraryURI);
 	    // Create Arduino Item
 	    ArduinoLibItem = new TreeItem(LibrarySelector, SWT.NONE);
-	    ArduinoLibItem.setText("Arduino Libs");
-	    // Add the arduino Libs
+	    ArduinoLibItem.setText("Arduino Libraries");
+	    // Add the Arduino Libs
 	    AddLibs(ArduinoLibItem, ArduinoLibraryPath);
 	}
 
@@ -120,7 +123,7 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 	if (PrivateLibraryURI != null) {
 	    IPath PrivateLibraryPath = URIUtil.toPath(PrivateLibraryURI);
 	    PersonalLibItem = new TreeItem(LibrarySelector, SWT.NONE);
-	    PersonalLibItem.setText("personal Libs");
+	    PersonalLibItem.setText("Personal Libraries");
 	    // Add the personal Libs
 	    AddLibs(PersonalLibItem, PrivateLibraryPath);
 	    ArduinoLibItem.setExpanded(true);
@@ -130,52 +133,44 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 	LibrarySelector.addListener(SWT.Selection, new Listener() {
 	    @Override
 	    public void handleEvent(Event event) {
-		if (event.detail == SWT.CHECK) {
-		    if ((event.item.equals(PersonalLibItem))
-			    | (event.item.equals(ArduinoLibItem))) {
-			event.detail = SWT.NONE;
-			event.type = SWT.None;
-			event.doit = false;
-			try {
-			    LibrarySelector.setRedraw(false);
-			    if (PersonalLibItem != null)
-				PersonalLibItem.setChecked(false);
-			    if (ArduinoLibItem != null)
-				ArduinoLibItem.setChecked(false);
-			    if (ArduinoHardwareLibItem != null)
-				ArduinoHardwareLibItem.setChecked(false);
-			} finally {
-			    LibrarySelector.setRedraw(true);
+	    	
+			if (event.detail == SWT.CHECK) {
+			    if ((event.item.equals(PersonalLibItem))
+				    || (event.item.equals(ArduinoLibItem))) {
+					event.detail = SWT.NONE;
+					event.type = SWT.None;
+					event.doit = false;
+					try {
+					    LibrarySelector.setRedraw(false);
+					    if (PersonalLibItem != null)
+					    	PersonalLibItem.setChecked(false);
+					    if (ArduinoLibItem != null)
+					    	ArduinoLibItem.setChecked(false);
+					    if (ArduinoHardwareLibItem != null)
+					    	ArduinoHardwareLibItem.setChecked(false);
+					} finally {
+					    LibrarySelector.setRedraw(true);
+					}
+			    }
 			}
-		    }
-		}
 	    }
 
 	});
 	// Turn drawing back on!
 	LibrarySelector.setRedraw(true);
-	// setControl(composite);
-	super.createControl(parent);
 
     }
 
     @Override
     protected ITreeContentProvider getFileProvider() {
-	return null;
+    	return null;
     }
 
     @Override
     protected ITreeContentProvider getFolderProvider() {
-	return null;
+    	return null;
     }
 
-    public void setProject(IProject project) {
-	if (project != null) {
-	    mProject = project;
-	    setContainerFieldValue(project.getName());
-	}
-
-    }
 
     @SuppressWarnings("static-method")
     public boolean canFinish() {
@@ -214,12 +209,12 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 	} else {
 	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
 	    for (int i = 0; i < children.length; i++) {
-		// Get filename of file or directory
-		LibFolder = iPath.append(children[i]).toFile();
-		if (LibFolder.isDirectory()) {
-		    TreeItem child = new TreeItem(LibItem, SWT.NONE);
-		    child.setText(children[i]);
-		}
+	    	// Get filename of file or directory
+	    	LibFolder = iPath.append(children[i]).toFile();
+			if (LibFolder.isDirectory()) {
+		    	TreeItem child = new TreeItem(LibItem, SWT.NONE);
+		    	child.setText(children[i]);
+			}
 	    }
 	}
     }
@@ -269,15 +264,17 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 		mngr.setProjectDescription(mProject, projectDescription, true,
 			null);
 	    } catch (CoreException e) {
-		e.printStackTrace();
+	    	e.printStackTrace();
 	    }
 	}
     }
 
-    @Override
-    protected void createSourceGroup(Composite parent) {
-	// TODO Auto-generated method stub
 
+    public void setImportProject(IProject project) {
+		if (project != null) {
+		    mProject = project;
+		    setContainerFieldValue(project.getName());
+		}
     }
-
+    
 }
