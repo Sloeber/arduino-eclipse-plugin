@@ -4,8 +4,8 @@
 // - extern variable definitions
 // In the appropriate section
 
-#ifndef {title}_H_
-#define {title}_H_
+#ifndef _{title}_H_
+#define _{title}_H_
 #include "{Include}"
 //add your includes for the project {title} here
 
@@ -26,4 +26,4 @@ void setup();
 
 
 //Do not add code below this line
-#endif /* {title}_H_ */
+#endif /* _{title}_H_ */

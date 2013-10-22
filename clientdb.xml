@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <com.ibm.magnolia.clientmodel:ClientModelRoot xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:com.ibm.magnolia.clientmodel="http:///com/ibm/magnolia/clientmodel.ecore">
   <workItemEditorHistory>
+    <internalContents date="2013-10-22T23:24:44.074+0200" description="285: synck with github" repository="https://clm.jkebanking.net/ccm/">
+      <workItem itemId="_JX3WsDtgEeOVS9Zte3uxGA"/>
+    </internalContents>
     <internalContents date="2013-10-22T21:46:58.977+0200" description="279: adopt to library specification 1.5 (as much as possible)" repository="https://clm.jkebanking.net/ccm/">
       <workItem itemId="_mZNwgDdDEeODMsLYASdLkg"/>
     </internalContents>
