@@ -67,9 +67,6 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public boolean canFinish() {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF:canFinish -- what is different????. For RCimport this is not part of complete page....."));
-    	
     	return mFolderSelectionPage.canFinish();
     }
 
@@ -98,17 +95,11 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getNextPage -- what is different????. Seems only RC calls this....."));
-    	
 	return null;
     }
 
     @Override
     public IWizardPage getPage(String pageName) {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getPage -- what is different????. Seems only RC calls this....."));
-    	
 		if (mFolderSelectionPage.getName().equals(pageName))
 		    return mFolderSelectionPage;
 		return null;
@@ -121,25 +112,16 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public IWizardPage[] getPages() {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF:getPages -- what is different????."));
-    	
     	return mPages;
     }
 
     @Override
     public IWizardPage getPreviousPage(IWizardPage page) {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "IAL:getPreviousPage -- what is different????."));
-    	
     	return null;
     }
 
     @Override
     public IWizardPage getStartingPage() {
-    	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getStartingPage -- what is different????."));
-    	
     	return mPages[0];
     }
 
