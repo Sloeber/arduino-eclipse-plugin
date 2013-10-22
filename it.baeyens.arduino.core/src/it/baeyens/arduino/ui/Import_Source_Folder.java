@@ -24,8 +24,8 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 
 /**
- * Import_Arduino_Library class is linked to the gui related to the arduino
- * library import It creates one page. All important action is in the
+ * Import_Arduino_Library class is linked to the GUI related to the Arduino
+ * source folder import. It creates one page. All important action is in the
  * performFinish
  * 
  * @author Jan Baeyens
@@ -38,27 +38,39 @@ public class Import_Source_Folder implements IImportWizard {
     private IWizardPage[] mPages;
     private IWizardContainer mWizardContainer = null;
     private static String mPageName = "Select";
-    private static String mPageTitle = "Select the folder containing the arduino library";
+    private static String mPageTitle = "Select the folder containing the source";
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-	mFolderSelectionPage = new Import_Source_Folder_Page(mPageName,
-		StructuredSelection.EMPTY);
-	mFolderSelectionPage.setWizard(this);
-	mPages = new IWizardPage[1];
-	mPages[0] = mFolderSelectionPage;
-	IProject SelectedProjects[] = Common.getSelectedProjects();
-	if (SelectedProjects.length > 0)
-	    mFolderSelectionPage.setImportProject(SelectedProjects[0]);
+    	//Entry point is here when right-click project and import -- as opposed to AddLibraryAction.execute() when done via Arduino menu
     }
 
     @Override
-    public void addPages() { // no code needed
+    public void addPages() {
+    	
+    	//Always create the pages like this at the last minute
+    	
+    	IProject theProject = null;
+    	IProject SelectedProjects[] = Common.getSelectedProjects();
+	
+		if (SelectedProjects.length > 0)
+		{
+		    theProject = SelectedProjects[0];
+		    mFolderSelectionPage = new Import_Source_Folder_Page(theProject,
+	    			mPageName, StructuredSelection.EMPTY);
+			mFolderSelectionPage.setWizard(this);
+			mPages = new IWizardPage[1];
+			mPages[0] = mFolderSelectionPage;
+		    mFolderSelectionPage.setImportProject(SelectedProjects[0]);
+		}
     }
 
     @Override
     public boolean canFinish() {
-	return mFolderSelectionPage.canFinish();
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF:canFinish -- what is different????. For RCimport this is not part of complete page....."));
+    	
+    	return mFolderSelectionPage.canFinish();
     }
 
     @Override
@@ -71,7 +83,7 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public IWizardContainer getContainer() {
-	return mWizardContainer;
+    	return mWizardContainer;
     }
 
     @Override
@@ -86,49 +98,64 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getNextPage -- what is different????. Seems only RC calls this....."));
+    	
 	return null;
     }
 
     @Override
     public IWizardPage getPage(String pageName) {
-	if (mFolderSelectionPage.getName().equals(pageName))
-	    return mFolderSelectionPage;
-	return null;
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getPage -- what is different????. Seems only RC calls this....."));
+    	
+		if (mFolderSelectionPage.getName().equals(pageName))
+		    return mFolderSelectionPage;
+		return null;
     }
 
     @Override
     public int getPageCount() {
-	return mPages.length;
+    	return mPages.length;
     }
 
     @Override
     public IWizardPage[] getPages() {
-	return mPages;
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF:getPages -- what is different????."));
+    	
+    	return mPages;
     }
 
     @Override
     public IWizardPage getPreviousPage(IWizardPage page) {
-	return null;
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "IAL:getPreviousPage -- what is different????."));
+    	
+    	return null;
     }
 
     @Override
     public IWizardPage getStartingPage() {
-	return mPages[0];
+    	
+    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "ISF: getStartingPage -- what is different????."));
+    	
+    	return mPages[0];
     }
 
     @Override
     public RGB getTitleBarColor() {
-	return null;
+    	return null;
     }
 
     @Override
     public String getWindowTitle() {
-	return mPageTitle;
+    	return mPageTitle;
     }
 
     @Override
     public boolean isHelpAvailable() {
-	return false;
+    	return false;
     }
 
     @Override
@@ -154,7 +181,7 @@ public class Import_Source_Folder implements IImportWizard {
      */
     @Override
     public boolean performFinish() {
-	IProject project = mFolderSelectionPage.GetProject();
+	IProject project = mFolderSelectionPage.getProject();
 	ICProjectDescription projectDescription = CoreModel.getDefault()
 		.getProjectDescription(project);
 	ICConfigurationDescription configurationDescriptions[] = projectDescription
@@ -194,7 +221,7 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public void setContainer(IWizardContainer wizardContainer) {
-	mWizardContainer = wizardContainer;
+    	mWizardContainer = wizardContainer;
     }
 
 }

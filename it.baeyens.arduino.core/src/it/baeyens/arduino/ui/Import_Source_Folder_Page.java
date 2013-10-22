@@ -22,6 +22,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+//TODO: Should this be called Wizard_Source_Folder_Page to make consistent with the library import.....
+//TODO: Or Arduino_Source_Folder_Import_Page
+
 /**
  * Import_Source_Folder_Page is the one and only page in the source folder import
  * wizard. It controls a text field and a browse button.
@@ -32,20 +35,29 @@ import org.eclipse.ui.dialogs.WizardResourceImportPage;
 public class Import_Source_Folder_Page extends WizardResourceImportPage {
     protected Text controlLibraryPath;
     private Button controlBrowseButton;
+    
+    private IProject mProject = null;
 
-    protected Import_Source_Folder_Page(String name,
+    protected Import_Source_Folder_Page(IProject project, String name,
 	    IStructuredSelection selection) {
     	
     	super(name, selection);
     	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "Import_Source_Folder_Page()" + " name= " + name));
+    	setImportProject(project);
+		if (mProject == null) {
+		    setTitle("Error no project selected to import to");
+		    setDescription("As no project is selected it is not possible to import a source folder");
+		} else {
+		    setTitle("Import Source Folder");
+		    setDescription("Use this page to select a source folder to import to project"
+			    + mProject.getName());
+		}
 
     }
 
     @Override
     protected void createSourceGroup(Composite parent) {
     	
-    	Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "createSourceGroup()"));
     	
 	Composite composite = new Composite(parent, SWT.NONE);
 	GridLayout theGridLayout = new GridLayout();
@@ -84,6 +96,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	theGriddata.horizontalAlignment = SWT.LEAD;
 	theGriddata.grabExcessHorizontalSpace = false;
 	controlBrowseButton.setLayoutData(theGriddata);
+
 	controlBrowseButton.addSelectionListener(new SelectionAdapter() {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
@@ -130,12 +143,6 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     	return !((controlLibraryPath.getText().equals("")) || (getContainerFullPath() == null));
     }
 
-    public IProject GetProject() {
-		if (validateDestinationGroup()) {
-		    return getSpecifiedContainer().getProject();
-		}
-	return null;
-    }
 
     public String GetLibraryFolder() {
     	return controlLibraryPath.getText() == null ? "" : controlLibraryPath
@@ -143,8 +150,17 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public void setImportProject(IProject project) {
-    	if (project != null)
+    	if (project != null) {
+    		mProject = project;
     		setContainerFieldValue(project.getName());
+    	}
+    }
+    
+    public IProject getProject() {
+		if (validateDestinationGroup()) {
+		    return getSpecifiedContainer().getProject();
+		}
+		return null;
     }
 
 }
