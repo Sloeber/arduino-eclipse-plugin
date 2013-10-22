@@ -39,7 +39,7 @@ public class ArduinoConst {
     public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";
 
     // Serial monitor keys
-    public static final String KEY_SERIAlRATE = "Serial monitor Last selected rate";
+    public static final String KEY_SERIAlRATE = "Serial monitor last selected rate";
     public static final String KEY_SERIAlPORT = "Serial monitor last selected Port";
     public static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index";
     public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";

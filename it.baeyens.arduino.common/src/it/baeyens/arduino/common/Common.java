@@ -673,7 +673,7 @@ public class Common extends ArduinoInstancePreferences {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	try {
 	    return envManager.getVariable(EnvName, configurationDescription, expanded).getValue();
-	} catch (Exception e) {// ignore al errors and return the default value
+	} catch (Exception e) {// ignore all errors and return the default value
 	}
 	return defaultvalue;
     }

@@ -155,8 +155,9 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", "");
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
 	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", "");
-	} else
+	} else {
 	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$
+	}
 
 	return compilerCommand.replaceAll("\"\"", "").replaceAll("  ", " "); // remove
 									     // ""

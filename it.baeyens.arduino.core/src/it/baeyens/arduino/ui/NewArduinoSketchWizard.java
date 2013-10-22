@@ -19,7 +19,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -68,15 +67,15 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 
     @Override
     public void addPages() {
-	mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
-	mWizardPage.setDescription("Create a new Arduino sketch.");
-	mWizardPage.setTitle("New Arduino sketch");
+        mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
+        mWizardPage.setDescription("Create a new Arduino sketch.");
+        mWizardPage.setTitle("New Arduino sketch");
 
-	mArduinoPage = new ArduinoSettingsPage("Arduino information");
-	mArduinoPage.setTitle("Provide the Arduino informtion.");
-	mArduinoPage.setDescription("These settings can be changed later.");
-	addPage(mWizardPage);
-	addPage(mArduinoPage);
+        mArduinoPage = new ArduinoSettingsPage("Arduino information");
+        mArduinoPage.setTitle("Provide the Arduino information.");
+        mArduinoPage.setDescription("These settings can be changed later.");
+        addPage(mWizardPage);
+        addPage(mArduinoPage);
     }
 
     @Override
@@ -166,27 +165,47 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(
 		    monitor, 1000));
 	    IContainer container = project;
-	    String s = "it.baeyens.arduino.core.toolChain.release";
+
+	    //TODO: Consider renaming Release to ArduinoIDEConfig
+	    //TODO: Consider renaming Debug to DragonAVR
+	    String sCfgs[]  = {"Release", "Debug"};
+	    String sTCIds[] = {"it.baeyens.arduino.core.toolChain.release",
+	    					//Debug has same toolchain as release
+	    		           "it.baeyens.arduino.core.toolChain.release"};
+	    
+	    // Creates the .cproject file with the configurations
 	    ShouldHaveBeenInCDT.setCProjectDescription(project,
-		    ManagedBuildManager.getExtensionToolChain(s), "Release",
-		    true, monitor); // this creates the .cproject file
+	    		sTCIds,
+	    		sCfgs,
+		    true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
 	    ArduinoHelpers.addTheNatures(project);
 
-	    // Add the arduino folder
+	    // Add the Arduino folder
 	    ArduinoHelpers.createNewFolder(project, "arduino", null);
 
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault()
 		    .getProjectDescription(project);
-	    ICConfigurationDescription configurationDescription = prjDesc
-		    .getConfigurationByName("Release");
-	    mArduinoPage.saveAllSelections(configurationDescription);
 
+	    //We don't iterate on the configs. Behaviour is a little custom for each.
+	    //Release
+	    ICConfigurationDescription configurationDescriptionRel = prjDesc
+	    		.getConfigurationByName( sCfgs[0] );
+    	mArduinoPage.saveAllSelections(configurationDescriptionRel);
+    	ArduinoHelpers.setTheEnvironmentVariables(project,
+		    configurationDescriptionRel, true, false);
+    	
+    	//Debug
+    	ICConfigurationDescription configurationDescriptionDbg = prjDesc
+	    		.getConfigurationByName( sCfgs[1] );
+    	mArduinoPage.saveAllSelections(configurationDescriptionDbg);
+	    //The last boolean indicates to set debug settings in the compilation
 	    ArduinoHelpers.setTheEnvironmentVariables(project,
-		    configurationDescription, true);
-
+			    configurationDescriptionDbg, true, true);
+	    
+	    
 	    // Set the path variables
 	    IPath platformPath = new Path(new File(
 		    mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText()
@@ -195,12 +214,14 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    ArduinoHelpers.setProjectPathVariables(project,
 		    platformPath.removeLastSegments(1));
 
-	    // intermediately save or the adding code will fail
-	    prjDesc.setActiveConfiguration(configurationDescription);
+	    //Intermediately save or the adding code will fail
+	    //Release is the active config (as that is the "IDE" Arduino type....)
+	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
 
 	    // Insert The Arduino Code
+	    //NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
 	    ArduinoHelpers.addArduinoCodeToProject(project,
-		    configurationDescription);
+		    configurationDescriptionRel);
 
 	    /* Add the sketch source code file */
 	    ArduinoHelpers.addFileToProject(container,
@@ -210,10 +231,9 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 
 	    /* Add the sketch header file */
 	    String Include = "WProgram.h";
-	    if (ArduinoInstancePreferences.isArduinoIdeOne()) // this is Arduino
-							      // version 1.0
+	    if (ArduinoInstancePreferences.isArduinoIdeOne()) //Arduino v1.0+
 	    {
-		Include = "Arduino.h";
+		    Include = "Arduino.h";
 	    }
 	    ArduinoHelpers.addFileToProject(container,
 		    new Path(project.getName() + ".h"), Stream
@@ -238,7 +258,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    // .createResourceConfiguration(file);
 	    // ResConfig.setExclude(true);
 
-	    ICResourceDescription cfgd = configurationDescription
+	    ICResourceDescription cfgd = configurationDescriptionRel
 		    .getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration()
 		    .getSourceEntries();
@@ -277,7 +297,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    // }
 	    // }
 
-	    prjDesc.setActiveConfiguration(configurationDescription);
+	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
 	    prjDesc.setCdtProjectCreated();
 	    CoreModel.getDefault().getProjectDescriptionManager()
 		    .setProjectDescription(project, prjDesc, true, null);

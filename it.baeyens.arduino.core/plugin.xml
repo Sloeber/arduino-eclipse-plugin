@@ -396,6 +396,10 @@
   <projectType
         id="it.baeyens.arduino.core.sketch"
         name="%projectType.name">
+     
+     <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
+     <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
+     <!-- TODO: Consider renaming as base. -->
      <configuration
            artifactExtension="hex"
            cleanCommand="rm -rf"
