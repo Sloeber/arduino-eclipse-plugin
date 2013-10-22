@@ -42,7 +42,7 @@ public class Import_Source_Folder implements IImportWizard {
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-    	//Entry point is here when right-click project and import -- as opposed to AddLibraryAction.execute() when done via Arduino menu
+    	//Entry point is here when right-click project and import -- as opposed to AddSourceFolderAction.execute() when done via Arduino menu
     }
 
     @Override
