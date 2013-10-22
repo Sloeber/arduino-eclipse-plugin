@@ -1,11 +1,10 @@
-
 Add stuff here on normal usage
 
 
 
 -------------------------- Developing (Improving) the Plugin --------------------------
 
-Fork the repository on github. Get you link like: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
+Fork the repository on github. Get your git link like: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
 
 
 Add Eclipse Plugin development environment into your Eclipse environment
@@ -32,7 +31,7 @@ Import the projects into Eclipse via EGit interface.
 
 Import, Git, Projects from Git
 
-https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
+Use URI: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
 
 
 
