@@ -129,6 +129,9 @@ FINISH
 After all it should look like this: 
 ![alt text](images_plugin_dev_setup/Imported_projects.png "Adding the Plugin Development Environment")
 
+###Set the formatting
+To avoid having changes all the time because of different formatting this project contains a formatting xml.
+Go to window->preferences->java->Code style->Formatter import codeformat.xml in the root of the repo.
 
 ###Running the plugin
 

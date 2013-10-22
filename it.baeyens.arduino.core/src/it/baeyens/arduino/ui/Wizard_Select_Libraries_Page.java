@@ -57,7 +57,7 @@ public class Wizard_Select_Libraries_Page extends WizardResourceImportPage {
 	}
     }
 
-    // @Override
+    @Override
     protected void createSourceGroup(Composite parent) {
 
 	if (mProject == null)
