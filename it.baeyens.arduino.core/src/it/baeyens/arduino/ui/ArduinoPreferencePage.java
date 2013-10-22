@@ -46,7 +46,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 public class ArduinoPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private StringFieldEditor mArduinoIdeVersion;
-    private DirectoryFieldEditor mArduinoIdePath;
+    private MyDirectoryFieldEditor mArduinoIdePath;
     private DirectoryFieldEditor mArduinoPrivateLibPath;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
@@ -161,7 +161,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
 
-	addField(mArduinoIdePath);
+	addField(mArduinoIdePath.getfield());
 	mArduinoPrivateLibPath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path", parent);
 	addField(mArduinoPrivateLibPath);
 
