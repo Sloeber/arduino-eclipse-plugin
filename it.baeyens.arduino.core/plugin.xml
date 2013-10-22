@@ -203,7 +203,15 @@
         id="it.baeyens.arduino.actions.AddSourceFolderAction"
         name="%command.name.4">
         </command>
-        
+
+      <command
+            categoryId="it.baeyens.arduino.commands"
+            defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
+            description="%command.description.5"
+            id="it.baeyens.arduino.actions.OpenScopeAction"
+            name="%command.label.5">
+      </command>
+
 	</extension>
 
 <!-- Definition: "is this a Arduino project?"  
@@ -292,6 +300,12 @@
                 disabledIcon="icons/ser_mon_disabled.png"
                 icon="icons/ser_mon.png"
                 label="%command.label.2"
+                style="push">
+          </command>
+          <command
+                commandId="it.baeyens.arduino.actions.OpenScopeAction"
+                icon="icons/scope.png"
+                label="%command.label.5"
                 style="push">
           </command>
        </toolbar>
@@ -647,19 +661,19 @@
 
 <!-- 
 ####################################################################################### 
-#    AVR-G++ C++ Compiler                                                                    # 
+#    AVR-G++ C++ Compiler                                                             # 
 ####################################################################################### 
 -->
 
 <!-- 
 ####################################################################################### 
-#    AVR C Linker                                                                    # 
+#    AVR C Linker                                                                     # 
 ####################################################################################### 
 -->
 
 <!-- 
 ####################################################################################### 
-#    AVR C++ Linker                                                                    # 
+#    AVR C++ Linker                                                                   # 
 ####################################################################################### 
 -->
 
