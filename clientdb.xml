@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <com.ibm.magnolia.clientmodel:ClientModelRoot xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:com.ibm.magnolia.clientmodel="http:///com/ibm/magnolia/clientmodel.ecore">
   <workItemEditorHistory>
+    <internalContents date="2013-10-22T21:46:58.977+0200" description="279: adopt to library specification 1.5 (as much as possible)" repository="https://clm.jkebanking.net/ccm/">
+      <workItem itemId="_mZNwgDdDEeODMsLYASdLkg"/>
+    </internalContents>
+    <internalContents date="2013-10-22T21:41:40.586+0200" description="284: synching with github" repository="https://clm.jkebanking.net/ccm/">
+      <workItem itemId="_H82vEDtREeOVS9Zte3uxGA"/>
+    </internalContents>
     <internalContents date="2013-07-02T00:19:53.824+0200" description="272: make 2.1.4 release and increase wait times" repository="https://clm.jkebanking.net/ccm/">
       <workItem itemId="_RIttoOKcEeK7io-fU_sKrQ"/>
     </internalContents>
@@ -182,6 +188,10 @@
       <columns attribute="owner" sorting="0" sortOrder="0" visible="true" width="-1"/>
       <columns attribute="creator" sorting="0" sortOrder="0" visible="true" width="-1"/>
       <id xsi:nil="true"/>
+    </internalContents>
+    <internalContents name="closed work items for me" repository="https://clm.jkebanking.net/ccm/" uuid="_UrqukDtSEeOVS9Zte3uxGA" id="closed work items for me">
+      <columns attribute="id" sorting="0" sortOrder="-1" visible="true" width="-1"/>
+      <columns attribute="summary" sorting="0" sortOrder="-1" visible="true" width="901"/>
     </internalContents>
     <internalContents name="Default" repository="https://clm.jkebanking.net/ccm/" uuid="_7-Kz0H3EEeKrroe5IR9OeQ" id="com.ibm.magnolia.workItemExplorer.">
       <columns attribute="workItemType" sorting="0" sortOrder="0" visible="true" width="-1"/>
