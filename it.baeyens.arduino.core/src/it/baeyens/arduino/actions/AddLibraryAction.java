@@ -31,10 +31,10 @@ public class AddLibraryAction extends AbstractHandler {
 		    .findWizard("it.baeyens.arduino.Import_Arduino_Libraries");
 	    IWizard wizard;
 	    try {
-		wizard = wizardDescriptor.createWizard();
+	        wizard = wizardDescriptor.createWizard();
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Filed to find import wizard", e));
-		return null;
+	        Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
+	        return null;
 	    }
 	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
 	    wd.setTitle(wizard.getWindowTitle());

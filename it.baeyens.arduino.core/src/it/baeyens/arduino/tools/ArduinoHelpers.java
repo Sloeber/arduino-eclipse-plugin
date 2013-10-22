@@ -174,6 +174,7 @@ public class ArduinoHelpers extends Common {
      * This method creates a link folder in the project and add the folder as a source path to the project it also adds the path to the include folder
      * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
      * well <br/>
+     * Forget about this. Arduino made this all so complicated I don't know anymore what needs to be added to what<br/>
      * <br/>
      * 
      * note Arduino has these subfolders in the libraries that need to be include.<br/>
@@ -212,9 +213,30 @@ public class ArduinoHelpers extends Common {
 
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
-	File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append("utility").toString());
+	String possibleIncludeFolder = "utility";
+	File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
 	if (file.exists()) {
-	    addIncludeFolder(configurationDescription, link.getFullPath().append("utility"));
+	    addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+	}
+
+	possibleIncludeFolder = "src";
+	file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	if (file.exists()) {
+	    addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+	    // possibleIncludeFolder = "src/utility";
+	    // file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	    // if (file.exists()) {
+	    // addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+	    // }
+	}
+
+	possibleIncludeFolder = "arch";
+	file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	if (file.exists()) {
+	    addIncludeFolder(configurationDescription,
+		    link.getFullPath().append(possibleIncludeFolder).append(makeEnvironmentVar(ENV_KEY_ARCHITECTURE)));
+	    // addIncludeFolder(configurationDescription,
+	    // link.getFullPath().append(possibleIncludeFolder).append(makeEnvironmentVar(ENV_KEY_ARCHITECTURE)).append("utility"));
 	}
 
 	// projectDescription.setActiveConfiguration(configurationDescription);
@@ -458,49 +480,54 @@ public class ArduinoHelpers extends Common {
      *            Used to define the hardware as different settings are needed for avr and sam
      */
     private static void setTheEnvironmentVariablesSetTheDefaults(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
-	    IPath platformFile, boolean firstTime) {
+	    IPath platformFile) {
 	// Set some default values because the platform.txt does not contain
 	// them
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_ARDUINO_PATH, getArduinoPath().toString());
 	contribEnv.addVariable(var, confDesc);
 
-	// I'm not sure why but till now arduino refused to put this in the
-	// platform.txt file
+	// from 1.5.3 onwards 2 more enviroment variables need to be added
+	var = new EnvironmentVariable(ENV_KEY_ARCHITECTURE, platformFile.removeLastSegments(1).lastSegment());
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable(ENV_KEY_BUILD_ARCH, platformFile.removeLastSegments(1).lastSegment().toUpperCase());
+	contribEnv.addVariable(var, confDesc);
+
+	// I'm not sure why but till now arduino refused to put this in the platform.txt file
 	// I won't call them idiots for this but it is getting close
 	var = new EnvironmentVariable(ENV_KEY_SOFTWARE, "ARDUINO");
 	contribEnv.addVariable(var, confDesc);
 	var = new EnvironmentVariable(ENV_KEY_runtime_ide_version, GetARDUINODefineValue());
 	contribEnv.addVariable(var, confDesc);
-	// End of section permitting denigrating remarks on arduino software
-	// development team
+	// End of section permitting denigrating remarks on arduino software development team
 
 	// Arduino uses the board approach for the upload tool.
 	// as I'm not I create some special entries to work around it
-	var = new EnvironmentVariable("A.CMD", "${A.TOOLS.BOSSAC.CMD}");
+	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
 	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.PATH", "${A.TOOLS.BOSSAC.PATH}");
+	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
 	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CMD.PATH", "${A.TOOLS.AVRDUDE.CMD.PATH}");
+	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
 	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CONFIG.PATH", "${A.TOOLS.AVRDUDE.CONFIG.PATH}");
+	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
 	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
 					       // the board approach for the
 					       // upload tool.
 
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality
-	// I set the value to default to use the archiver
+	// I set the default value to: use the archiver
 	var = new EnvironmentVariable(ENV_KEY_use_archiver, "true");
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
 	if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
-	    var = new EnvironmentVariable(ENV_KEY_compiler_path, "${A.RUNTIME.IDE.PATH}/hardware/tools/avr/bin/");
+	    var = new EnvironmentVariable(ENV_KEY_compiler_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/tools/avr/bin/");
 	    contribEnv.addVariable(var, confDesc);
 	} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("sam")) {
-	    var = new EnvironmentVariable(ENV_KEY_build_system_path, "${A.RUNTIME.IDE.PATH}/hardware/arduino/sam/system");
+	    var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/sam/system");
 	    contribEnv.addVariable(var, confDesc);
-	    var = new EnvironmentVariable(ENV_KEY_build_generic_path, "${A.RUNTIME.IDE.PATH}/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
+	    var = new EnvironmentVariable(ENV_KEY_build_generic_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH")
+		    + "/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	    contribEnv.addVariable(var, confDesc);
 	}
 
@@ -516,12 +543,12 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_build_path, "${ProjDirPath}/${ConfigName}");
 	contribEnv.addVariable(var, confDesc);
 
-	var = new EnvironmentVariable(ENV_KEY_build_project_name, "${ProjName}");
+	var = new EnvironmentVariable(ENV_KEY_build_project_name, makeEnvironmentVar("ProjName"));
 	contribEnv.addVariable(var, confDesc);
 
 	// if (firstTime) {
 	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_SIZE_SWITCH, "").isEmpty()) {
-	    var = new EnvironmentVariable(ENV_KEY_SIZE_SWITCH, "${" + ENV_KEY_recipe_size_pattern + "}");
+	    var = new EnvironmentVariable(ENV_KEY_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
 	    contribEnv.addVariable(var, confDesc);
 	}
 	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_COMMAND, "").isEmpty()) {
@@ -585,16 +612,33 @@ public class ArduinoHelpers extends Common {
 	ArduinoBoards boardsFile = new ArduinoBoards(boardFileName.toOSString());
 	String boardID = boardsFile.getBoardIDFromName(boardName);
 
-	// Get the boards section and add all entries to the environment
-	// variables
+	// Get the boards section and add all entries to the environment variables
 	Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
 	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
-	    contribEnv.addVariable(new EnvironmentVariable(MakeKeyString(currentPair.getKey()), MakeEnvironmentString(currentPair.getValue())),
-		    confDesc);
+	    // if it is not a menu item add it
+	    if (!currentPair.getKey().startsWith("menu.")) {
+		String keyString = MakeKeyString(currentPair.getKey());
+		String valueString = MakeEnvironmentString(currentPair.getValue());
+		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+	    } else {
+
+		String[] keySplit = currentPair.getKey().split("\\.");
+		String menuID = keySplit[1];
+		String menuItemID = keySplit[2];
+		if (isThisMenuItemSelected(boardsFile, confDesc, boardID, menuID, menuItemID)) {
+		    // we also need to skip the name
+		    String StartValue = "menu." + menuID + "." + menuItemID + ".";
+		    if (currentPair.getKey().startsWith(StartValue)) {
+			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
+			String valueString = MakeEnvironmentString(currentPair.getValue());
+			contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+		    }
+		}
+	    }
 	}
 
 	Map<String, String> menuSectionMap = boardsFile.getSection("menu");
-	String[] optionNames = boardsFile.getOptionNames();
+	String[] optionNames = boardsFile.getMenuNames();
 	for (int currentOption = 0; currentOption < optionNames.length; currentOption++) {
 	    String optionName = optionNames[currentOption];
 	    String optionValue = getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_START + optionName, "");
@@ -639,6 +683,22 @@ public class ArduinoHelpers extends Common {
 	}
     }
 
+    private static boolean isThisMenuItemSelected(ArduinoBoards boardsFile, ICConfigurationDescription confDesc, String boardID, String menuID,
+	    String menuItemID) {
+
+	String MenuName = boardsFile.getMenuNameFromID(menuID);
+	String MenuItemName = boardsFile.getMenuItemNameFromID(boardID, menuID, menuItemID);
+
+	String SelectedMenuItemName = getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_START + MenuName, "");
+	if (SelectedMenuItemName.isEmpty()) {
+	    return false; // This menu item has not been selected
+	    // this should not happen
+	}
+	if (MenuItemName.equalsIgnoreCase(SelectedMenuItemName))
+	    return true;
+	return false;
+    }
+
     /**
      * This method creates environment variables based on the platform.txt and boards.txt platform.txt is processed first and then boards.txt. This
      * way boards.txt settings can overwrite common settings in platform.txt The environment variables are only valid for the project given as
@@ -650,7 +710,7 @@ public class ArduinoHelpers extends Common {
      * @param arduinoProperties
      *            the info of the selected board to set the variables for
      */
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean firstTime) {
+    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc) {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
@@ -666,7 +726,7 @@ public class ArduinoHelpers extends Common {
 	// process the default env variables first. This way the platform.txt
 	// and boards.txt will
 	// overwrite the default settings
-	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename, firstTime);
+	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename);
 	try {
 	    // process the platform.txt file first. This way the boards.txt will
 	    // overwrite the default settings
@@ -904,4 +964,7 @@ public class ArduinoHelpers extends Common {
 	}
     }
 
+    private static String makeEnvironmentVar(String string) {
+	return "${" + string + "}";
+    }
 }

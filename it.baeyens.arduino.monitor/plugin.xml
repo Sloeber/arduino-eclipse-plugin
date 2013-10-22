@@ -10,12 +10,18 @@
       <view id="it.baeyens.arduino.monitor.views.SerialMonitor"
             category="it.baeyens.arduino.monitor"
             class="it.baeyens.arduino.monitor.views.SerialMonitor"
-            icon="icons/sample.gif"
+            icon="icons/arduino.png"
             name="Serial monitor view">
+      </view>
+      <view
+            category="it.baeyens.arduino.monitor"
+            class="it.baeyens.arduino.monitor.views.ScopeView"
+            icon="icons/Oscilloscope.png"
+            id="it.baeyens.arduino.monitor.views.ScopeView"
+            name="Scope"
+            restorable="true">
       </view>
 
 	</extension>
-<extension
-      point="it.baeyens.arduino.monitor">
-</extension>
+
 </plugin>

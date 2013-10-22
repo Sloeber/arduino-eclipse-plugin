@@ -19,3 +19,5 @@ Export-Package: it.baeyens.arduino.monitor;uses:="org.eclipse.jface.resource,org
    org.eclipse.swt.widgets,
    it.baeyens.arduino.common,
    org.eclipse.jface.dialogs"
+Bundle-ClassPath: .,
+ lib/org.eclipse.nebula.widgets.oscilloscope_1.2.0.201310192144.jar

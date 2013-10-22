@@ -30,4 +30,8 @@ public class SerialListener implements MessageConsumer {
 
     }
 
+    @Override
+    public void dispose() {
+	// No need to dispose something
+    }
 }

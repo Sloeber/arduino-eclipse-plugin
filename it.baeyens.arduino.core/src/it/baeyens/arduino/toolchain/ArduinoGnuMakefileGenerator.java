@@ -1256,6 +1256,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	buffer.append(COMMENT_SYMBOL + WHITESPACE + ManagedMakeMessages.getResourceString(SRC_LISTS) + NEWLINE);
 	buffer.append("-include sources.mk" + NEWLINE); //$NON-NLS-1$
 
+	//Change the include of the "root" (our sketch) folder to be before libraries and other files
+	//When it is after it is different to the Arduino IDE and can cause linking/combining issues
+	buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
+	
 	// Add includes for each subdir in child-subdir-first order (required
 	// for makefile rule matching to work).
 	List<String> subDirList = new ArrayList<String>();
@@ -1268,7 +1272,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	for (String dir : subDirList) {
 	    buffer.append("-include " + escapeWhitespaces(dir) + SEPARATOR + "subdir.mk" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
+
+	//Change the include of the "root" (our sketch) folder to be before libraries and other files
+	//buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
 
 	buffer.append("-include objects.mk" + NEWLINE + NEWLINE); //$NON-NLS-1$
 
