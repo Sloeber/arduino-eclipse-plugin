@@ -72,7 +72,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	mWizardPage.setTitle("New Arduino sketch");
 
 	mArduinoPage = new ArduinoSettingsPage("Arduino information");
-	mArduinoPage.setTitle("Provide the Arduino informtion.");
+	mArduinoPage.setTitle("Provide the Arduino information.");
 	mArduinoPage.setDescription("These settings can be changed later.");
 	addPage(mWizardPage);
 	addPage(mArduinoPage);
@@ -151,36 +151,55 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 	    IContainer container = project;
-	    String s = "it.baeyens.arduino.core.toolChain.release";
-	    ShouldHaveBeenInCDT.setCProjectDescription(project, ManagedBuildManager.getExtensionToolChain(s), "Release", true, monitor); // this
-																	 // creates
-																	 // the
-																	 // .cproject
-																	 // file
+
+	    //TODO: Consider renaming Release to ArduinoIDEConfig
+	    //TODO: Consider renaming Debug to DragonAVR
+	    //Debug has same toolchain as release
+	    String sCfgs[]  = {"Release", "Debug"};
+	    String sTCIds[] = {"it.baeyens.arduino.core.toolChain.release",
+	                       "it.baeyens.arduino.core.toolChain.release"};
+	    
+	    // Creates the .cproject file with the configurations
+	    ShouldHaveBeenInCDT.setCProjectDescription(project, sTCIds, sCfgs, true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
 	    ArduinoHelpers.addTheNatures(project);
 
-	    // Add the arduino folder
+	    // Add the Arduino folder
 	    ArduinoHelpers.createNewFolder(project, "arduino", null);
 
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-	    ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName("Release");
-	    mArduinoPage.saveAllSelections(configurationDescription);
 
-	    ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription);
+	    //We don't iterate on the configs. Behaviour is a little custom for each.
+	    //Release
+	    ICConfigurationDescription configurationDescriptionRel = prjDesc
+		    .getConfigurationByName( sCfgs[0] );
+	    mArduinoPage.saveAllSelections(configurationDescriptionRel);
+	    ArduinoHelpers.setTheEnvironmentVariables(project,
+		    configurationDescriptionRel, false);
+	
+	//Debug
+	ICConfigurationDescription configurationDescriptionDbg = prjDesc
+		    .getConfigurationByName( sCfgs[1] );
+	mArduinoPage.saveAllSelections(configurationDescriptionDbg);
+	    //The last boolean indicates to set debug settings in the compilation
+	    ArduinoHelpers.setTheEnvironmentVariables(project,
+		    configurationDescriptionDbg, true);
 
 	    // Set the path variables
 	    IPath platformPath = new Path(new File(mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText().trim()).getParent())
 		    .append(ArduinoConst.PLATFORM_FILE_NAME);
 	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
 
-	    // intermediately save or the adding code will fail
-	    prjDesc.setActiveConfiguration(configurationDescription);
+	    //Intermediately save or the adding code will fail
+	    //Release is the active config (as that is the "IDE" Arduino type....)
+	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
 
 	    // Insert The Arduino Code
-	    ArduinoHelpers.addArduinoCodeToProject(project, configurationDescription);
+	    //NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
+	    ArduinoHelpers.addArduinoCodeToProject(project, configurationDescriptionRel);
+
 
 	    /* Add the sketch source code file */
 	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
@@ -188,8 +207,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    /* Add the sketch header file */
 	    String Include = "WProgram.h";
-	    if (ArduinoInstancePreferences.isArduinoIdeOne()) // this is Arduino
-							      // version 1.0
+	    if (ArduinoInstancePreferences.isArduinoIdeOne()) //Arduino v1.0+
 	    {
 		Include = "Arduino.h";
 	    }
@@ -214,7 +232,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // .createResourceConfiguration(file);
 	    // ResConfig.setExclude(true);
 
-	    ICResourceDescription cfgd = configurationDescription.getResourceDescription(new Path(""), true);
+
+	    ICResourceDescription cfgd = configurationDescriptionRel.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[1];
@@ -250,7 +269,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // }
 	    // }
 
-	    prjDesc.setActiveConfiguration(configurationDescription);
+	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
 	    prjDesc.setCdtProjectCreated();
 	    CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjDesc, true, null);
 	    monitor.done();
