@@ -67,15 +67,15 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 
     @Override
     public void addPages() {
-        mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
-        mWizardPage.setDescription("Create a new Arduino sketch.");
-        mWizardPage.setTitle("New Arduino sketch");
+	mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
+	mWizardPage.setDescription("Create a new Arduino sketch.");
+	mWizardPage.setTitle("New Arduino sketch");
 
-        mArduinoPage = new ArduinoSettingsPage("Arduino information");
-        mArduinoPage.setTitle("Provide the Arduino information.");
-        mArduinoPage.setDescription("These settings can be changed later.");
-        addPage(mWizardPage);
-        addPage(mArduinoPage);
+	mArduinoPage = new ArduinoSettingsPage("Arduino information");
+	mArduinoPage.setTitle("Provide the Arduino information.");
+	mArduinoPage.setDescription("These settings can be changed later.");
+	addPage(mWizardPage);
+	addPage(mArduinoPage);
     }
 
     @Override
@@ -165,18 +165,16 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(
 		    monitor, 1000));
 	    IContainer container = project;
-
 	    //TODO: Consider renaming Release to ArduinoIDEConfig
 	    //TODO: Consider renaming Debug to DragonAVR
+	    //Debug has same toolchain as release
 	    String sCfgs[]  = {"Release", "Debug"};
 	    String sTCIds[] = {"it.baeyens.arduino.core.toolChain.release",
-	    					//Debug has same toolchain as release
-	    		           "it.baeyens.arduino.core.toolChain.release"};
+	                       "it.baeyens.arduino.core.toolChain.release"};
 	    
 	    // Creates the .cproject file with the configurations
 	    ShouldHaveBeenInCDT.setCProjectDescription(project,
-	    		sTCIds,
-	    		sCfgs,
+		    sTCIds, sCfgs,
 		    true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
@@ -192,20 +190,19 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    //We don't iterate on the configs. Behaviour is a little custom for each.
 	    //Release
 	    ICConfigurationDescription configurationDescriptionRel = prjDesc
-	    		.getConfigurationByName( sCfgs[0] );
+		    .getConfigurationByName( sCfgs[0] );
     	mArduinoPage.saveAllSelections(configurationDescriptionRel);
-    	ArduinoHelpers.setTheEnvironmentVariables(project,
+	    ArduinoHelpers.setTheEnvironmentVariables(project,
 		    configurationDescriptionRel, true, false);
     	
     	//Debug
     	ICConfigurationDescription configurationDescriptionDbg = prjDesc
-	    		.getConfigurationByName( sCfgs[1] );
+		    .getConfigurationByName( sCfgs[1] );
     	mArduinoPage.saveAllSelections(configurationDescriptionDbg);
 	    //The last boolean indicates to set debug settings in the compilation
 	    ArduinoHelpers.setTheEnvironmentVariables(project,
-			    configurationDescriptionDbg, true, true);
-	    
-	    
+		    configurationDescriptionDbg, true, true);
+
 	    // Set the path variables
 	    IPath platformPath = new Path(new File(
 		    mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText()
@@ -233,7 +230,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard,
 	    String Include = "WProgram.h";
 	    if (ArduinoInstancePreferences.isArduinoIdeOne()) //Arduino v1.0+
 	    {
-		    Include = "Arduino.h";
+		Include = "Arduino.h";
 	    }
 	    ArduinoHelpers.addFileToProject(container,
 		    new Path(project.getName() + ".h"), Stream
