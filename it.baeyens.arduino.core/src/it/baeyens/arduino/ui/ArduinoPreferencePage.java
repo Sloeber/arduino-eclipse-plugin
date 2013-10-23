@@ -29,36 +29,32 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 /**
- * ArduinoPreferencePage is the class that is behind the preference page of
- * arduino that allows you to select the arduino path and the library path and a
- * option to use disable RXTX <br/>
- * Note that this class uses 2 technologies to change values (the flag and the
- * path). <br/>
+ * ArduinoPreferencePage is the class that is behind the preference page of arduino that allows you to select the arduino path and the library path
+ * and a option to use disable RXTX <br/>
+ * Note that this class uses 2 technologies to change values (the flag and the path). <br/>
  * 
  * 
  * @author Jan Baeyens
  * 
  */
-public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
-	IWorkbenchPreferencePage {
+public class ArduinoPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private StringFieldEditor mArduinoIdeVersion;
-    private DirectoryFieldEditor mArduinoIdePath;
+    private MyDirectoryFieldEditor mArduinoIdePath;
     private DirectoryFieldEditor mArduinoPrivateLibPath;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
 
     /**
      * PropertyChange set the flag mIsDirty to false. <br/>
-     * This is needed because the default PerformOK saves all fields in the
-     * object store. Therefore I set the mIsDirty flag to true as soon as a
-     * field gets change. Then I use this flag in the PerformOK to decide to
-     * call the super performOK or not.
+     * This is needed because the default PerformOK saves all fields in the object store. Therefore I set the mIsDirty flag to true as soon as a field
+     * gets change. Then I use this flag in the PerformOK to decide to call the super performOK or not.
      * 
      * @author Jan Baeyens
      */
@@ -71,8 +67,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
     public ArduinoPreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
 	setDescription("Arduino Settings for this workspace");
-	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE,
-		ArduinoConst.NODE_ARDUINO));
+	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, ArduinoConst.NODE_ARDUINO));
     }
 
     @Override
@@ -86,10 +81,8 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
     }
 
     /**
-     * PerformOK is done when the end users presses OK on a preference page. The
-     * order of the execution of the performOK is undefined. This method saves
-     * the path variables based on the settings and removes the last used
-     * setting.<br/>
+     * PerformOK is done when the end users presses OK on a preference page. The order of the execution of the performOK is undefined. This method
+     * saves the path variables based on the settings and removes the last used setting.<br/>
      * 
      * @see propertyChange
      * 
@@ -104,6 +97,17 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
 	    return false;
 	if (!mIsDirty)
 	    return true;
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.2") > 0) {
+	    String message = "The Arduino core team decided for a library specification which is hard to support. You need to make changes to you arduino libraries to make this work. See eclipse.baeyens.it/librarymadness.html for more info.";
+	    // MessageDialog warningDialog = new MessageDialog(null, , null, message, MessageDialog.WARNING, "OK", 0);
+	    // warningDialog.open();
+
+	    MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+	    dialog.setText("Unsupportable Arduino IDE");
+	    dialog.setMessage(message);
+	    if (dialog.open() == SWT.CANCEL)
+		return false;
+	}
 	super.performOk();
 	setWorkSpacePathVariables();
 	// reset the previous selected values
@@ -115,12 +119,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
     }
 
     /**
-     * This method sets the eclipse path variables to contain the important
-     * Arduino folders (code wise that is)
+     * This method sets the eclipse path variables to contain the important Arduino folders (code wise that is)
      * 
      * 
-     * The arduino library location in the root folder (used when importing
-     * arduino libraries) The Private library path (used when importing private
+     * The arduino library location in the root folder (used when importing arduino libraries) The Private library path (used when importing private
      * libraries) The Arduino IDE root folder
      * 
      * 
@@ -132,23 +134,13 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
 
 	try {
 
-	    pathMan.setURIValue(
-		    ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB,
-		    URIUtil.toURI(new Path(mArduinoIdePath.getStringValue())
-			    .append(ArduinoConst.LIBRARY_PATH_SUFFIX)
-			    .toString()));
-	    pathMan.setURIValue(
-		    ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB,
-		    URIUtil.toURI(mArduinoPrivateLibPath.getStringValue()));
-	    pathMan.setURIValue(
-		    ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO,
-		    URIUtil.toURI(mArduinoIdePath.getStringValue()));
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB,
+		    URIUtil.toURI(new Path(mArduinoIdePath.getStringValue()).append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString()));
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(mArduinoPrivateLibPath.getStringValue()));
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, URIUtil.toURI(mArduinoIdePath.getStringValue()));
 	} catch (CoreException e) {
-	    Common.log(new Status(
-		    IStatus.ERROR,
-		    ArduinoConst.CORE_PLUGIN_ID,
-		    "Failed to create the workspace path variables. The setup will not work properly",
-		    e));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "Failed to create the workspace path variables. The setup will not work properly", e));
 	    e.printStackTrace();
 	}
     }
@@ -167,25 +159,17 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	mArduinoIdePath = new MyDirectoryFieldEditor(
-		ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent,
-		Common.getArduinoIdeSuffix());
+	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
 
-	addField(mArduinoIdePath);
-	mArduinoPrivateLibPath = new DirectoryFieldEditor(
-		ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path",
-		parent);
+	addField(mArduinoIdePath.getfield());
+	mArduinoPrivateLibPath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path", parent);
 	addField(mArduinoPrivateLibPath);
 
 	Dialog.applyDialogFont(parent);
 
-	addField(new BooleanFieldEditor(
-		ArduinoConst.KEY_RXTXDISABLED,
-		"Disable RXTX (disables Arduino reset during upload and the serial monitor)",
+	addField(new BooleanFieldEditor(ArduinoConst.KEY_RXTXDISABLED, "Disable RXTX (disables Arduino reset during upload and the serial monitor)",
 		parent));
-	mArduinoIdeVersion = new StringFieldEditor(
-		ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version",
-		parent);
+	mArduinoIdeVersion = new StringFieldEditor(ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version", parent);
 	addField(mArduinoIdeVersion);
 	mArduinoIdeVersion.setEnabled(false, parent);
 	Button TestButton = new Button(parent, SWT.BUTTON1);
@@ -206,12 +190,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
     }
 
     /**
-     * testStatus test whether the provided information is OK. Here the code
-     * checks whether there is a hardware\arduino\board.txt file under the
+     * testStatus test whether the provided information is OK. Here the code checks whether there is a hardware\arduino\board.txt file under the
      * provide path.
      * 
-     * @return true if the provided info is OK; False if the provided info is
-     *         not OK
+     * @return true if the provided info is OK; False if the provided info is not OK
      * 
      * @author Jan Baeyens
      * 
@@ -222,15 +204,13 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
 
 	// Validate the arduino path
 	Path arduinoFolder = new Path(mArduinoIdePath.getStringValue());
-	File arduinoBoardFile = arduinoFolder.append(
-		ArduinoConst.LIB_VERSION_FILE).toFile();
+	File arduinoBoardFile = arduinoFolder.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	boolean isArduinoFolderValid = arduinoBoardFile.canRead();
 	if (isArduinoFolderValid) {
 	    Path BoardFile = new Path(mArduinoIdePath.getStringValue());
 	    if (!BoardFile.equals(mPrefBoardFile)) {
 		mPrefBoardFile = BoardFile;
-		mArduinoIdeVersion.setStringValue(ArduinoHelpers
-			.GetIDEVersion(BoardFile));
+		mArduinoIdeVersion.setStringValue(ArduinoHelpers.GetIDEVersion(BoardFile));
 	    }
 	} else {
 	    ErrorMessage += Seperator + "Arduino folder is not correct!";
@@ -238,13 +218,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements
 	}
 
 	// Validate the private lib path
-	Path PrivateLibFolder = new Path(
-		mArduinoPrivateLibPath.getStringValue());
-	boolean isArduinoPrivateLibFolderValid = PrivateLibFolder.toFile()
-		.canRead();
+	Path PrivateLibFolder = new Path(mArduinoPrivateLibPath.getStringValue());
+	boolean isArduinoPrivateLibFolderValid = PrivateLibFolder.toFile().canRead();
 	if (!isArduinoPrivateLibFolderValid) {
-	    ErrorMessage += Seperator
-		    + "Private library folder is not correct!";
+	    ErrorMessage += Seperator + "Private library folder is not correct!";
 	    Seperator = "/n";
 	}
 

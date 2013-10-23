@@ -146,7 +146,7 @@ public class Serial implements SerialPortEventListener {
 
 	public void addListener(MessageConsumer consumer) {
 		if (fConsumers == null) {
-			fConsumers = new ArrayList<>();
+			fConsumers = new ArrayList<MessageConsumer>();
 		}
 		fConsumers.add(consumer);
 	}

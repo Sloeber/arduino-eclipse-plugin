@@ -39,7 +39,7 @@ public class ArduinoConst {
     public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";
 
     // Serial monitor keys
-    public static final String KEY_SERIAlRATE = "Serial monitor Last selected rate";
+    public static final String KEY_SERIAlRATE = "Serial monitor last selected rate";
     public static final String KEY_SERIAlPORT = "Serial monitor last selected Port";
     public static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index";
     public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";
@@ -76,6 +76,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_build_system_path = ENV_KEY_ARDUINO_START + "BUILD.SYSTEM.PATH";
     public static final String ENV_KEY_build_generic_path = ENV_KEY_ARDUINO_START + "BUILD.GENERIC.PATH";
     public static final String ENV_KEY_SOFTWARE = ENV_KEY_ARDUINO_START + "SOFTWARE";
+    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_ARDUINO_START + "ARCHITECTURE";
+    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_ARDUINO_START + "BUILD.ARCH";
+
     public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";
     public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";
     public static final String ENV_KEY_build_project_name = ENV_KEY_ARDUINO_START + "BUILD.PROJECT_NAME";

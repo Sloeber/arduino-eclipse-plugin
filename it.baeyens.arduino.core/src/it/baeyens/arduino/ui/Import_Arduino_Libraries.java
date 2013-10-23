@@ -15,11 +15,9 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 
 /**
- * Import_Arduino_Libraries class is the class linked to the gui related to the
- * arduino library import It creates one page. There is an important processing
- * when opened and on the perform finish This import wizard uses 3 folders to
- * import. The arduino library folder Your 3rd party library folder and the
- * arduino library folder of your hardware
+ * Import_Arduino_Libraries class is the class linked to the GUI related to the Arduino library import. It creates one page. There is an important
+ * processing when opened and on the perform finish. This import wizard uses 3 folders to import: The arduino library folder Your 3rd party library
+ * folder and the Arduino library folder of your hardware
  * 
  * @author Jan Baeyens
  * @see performFinish
@@ -31,26 +29,30 @@ public class Import_Arduino_Libraries implements IImportWizard {
     private IWizardPage[] mPages;
     private IWizardContainer mWizardContainer = null;
 
-    private static String mPageTitle = "Select the arduino libraries";
+    private static String mPageName = "Select";
+    private static String mPageTitle = "Select the Arduino libraries";
 
     @Override
     public void init(IWorkbench arg0, IStructuredSelection selection) {
-
-	addPages();
-
+	// Entry point is here when right-click project and import -- as opposed to AddLibraryAction.execute() when done via Arduino menu
     }
 
     @Override
-    public void addPages() {// no need to add pages
+    public void addPages() {
+
+	// Always create the pages like this at the last minute
+
 	IProject theProject = null;
 	IProject SelectedProjects[] = Common.getSelectedProjects();
-	if (SelectedProjects.length > 0)
+
+	if (SelectedProjects.length > 0) {
 	    theProject = SelectedProjects[0];
-	mProjectSelectionPage = new Wizard_Select_Libraries_Page(theProject,
-		"Select the project to import to", StructuredSelection.EMPTY);
-	mProjectSelectionPage.setWizard(this);
-	mPages = new IWizardPage[1];
-	mPages[0] = mProjectSelectionPage;
+	    mProjectSelectionPage = new Wizard_Select_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
+	    mProjectSelectionPage.setWizard(this);
+	    mPages = new IWizardPage[1];
+	    mPages[0] = mProjectSelectionPage;
+	    mProjectSelectionPage.setImportProject(SelectedProjects[0]);
+	}
     }
 
     @Override
@@ -85,8 +87,9 @@ public class Import_Arduino_Libraries implements IImportWizard {
     @Override
     public IWizardPage getNextPage(IWizardPage arg0) {
 	for (int i = 0; i < (mPages.length - 1); i++) {
-	    if (arg0 == mPages[i])
+	    if (arg0 == mPages[i]) {
 		return mPages[i + 1];
+	    }
 	}
 	return null;
     }

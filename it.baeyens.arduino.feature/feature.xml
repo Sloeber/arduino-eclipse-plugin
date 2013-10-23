@@ -6,7 +6,7 @@
       provider-name="jan Baeyens">
 
    <description url="http://www.example.com/description">
-      This feature allows easy creation of arduino projects in a eclipse
+      This feature allows easy creation of Arduino projects in an Eclipse
 environment.
 The main features are
 a new arduino sketch wizard
@@ -116,7 +116,7 @@ Jan
    <copyright>
       All rights reserved by the owning parties.
 Arduino-&gt;       Copyright (c) 2011 Jan Baeyens
-Remaing code of AVR-eclipse
+Remaining code of AVR-eclipse
 AVR-eclipse-&gt;  Copyright (c) 2008, 2010 Thomas Holland (thomas@innot.de)
 Boards code
 Trump211

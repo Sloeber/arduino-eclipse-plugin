@@ -92,7 +92,7 @@
 ####################################################################################### 
 -->
 
-<!-- New sketch wizar -->
+<!-- New sketch wizard -->
 	<extension point="org.eclipse.ui.newWizards">
 		<category 
 			id="it.baeyens.arduino.eclipse.newWizards"
@@ -112,8 +112,8 @@
 		</wizard>
 	</extension>
 
-<!-- Arduino Library import wizar -->
- <extension point="org.eclipse.ui.importWizards">
+<!-- Arduino Library import wizard -->
+    <extension point="org.eclipse.ui.importWizards">
  		<category 
 			id="it.baeyens.arduino.eclipse.importWizards"
 			name="%category.name">
@@ -129,8 +129,8 @@
          </description> 
          <selection class="org.eclipse.core.resources.IResource"/> 
       </wizard>    
-      
-<!-- Source code import wizar -->         
+
+<!-- Source code import wizard -->         
       <wizard 
          id="it.baeyens.arduino.Import_Source_Folder" 
          name="%wizard.name.1" 
@@ -190,22 +190,31 @@
         description="%command.description.2"
         id="it.baeyens.arduino.actions.OpenSerialMonitorAction"
         name="%command.name.2"/>
-  <command
+        <command
         categoryId="it.baeyens.arduino.commands"
         description="%command.description.3"
         id="it.baeyens.arduino.actions.AddLibraryAction"
         name="%command.name.3">
-  </command>
-  <command
+        </command>
+        
+        <command
         categoryId="it.baeyens.arduino.commands"
-        defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
-        description="%command.description.3"
-        id="it.baeyens.arduino.actions.OpenScopeAction"
-        name="%command.label.4">
-  </command>
+        description="%command.description.4"
+        id="it.baeyens.arduino.actions.AddSourceFolderAction"
+        name="%command.name.4">
+        </command>
+
+      <command
+            categoryId="it.baeyens.arduino.commands"
+            defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
+            description="%command.description.5"
+            id="it.baeyens.arduino.actions.OpenScopeAction"
+            name="%command.label.5">
+      </command>
+
 	</extension>
 
-<!-- Defenition: "is this a Arduino project?"  
+<!-- Definition: "is this a Arduino project?"  
    <extension       point="org.eclipse.core.expressions.definitions">
   -->
   
@@ -296,7 +305,7 @@
           <command
                 commandId="it.baeyens.arduino.actions.OpenScopeAction"
                 icon="icons/scope.png"
-                label="%command.label.4"
+                label="%command.label.5"
                 style="push">
           </command>
        </toolbar>
@@ -316,13 +325,18 @@
          commandId="it.baeyens.arduino.actions.AddLibraryAction"
          style="push">
    </command>
+   
+   <command
+         commandId="it.baeyens.arduino.actions.AddSourceFolderAction"
+         style="push">
+   </command>
+   
 			</menu>
 		</menuContribution>
 	</extension>
 
 <!-- Toolbar --> 
- ated till here -->   
-<!-- ******************* -->
+ <!-- ******************* -->
 <!-- ******************* -->
 <!-- ******************* -->
  
@@ -382,6 +396,10 @@
   <projectType
         id="it.baeyens.arduino.core.sketch"
         name="%projectType.name">
+     
+     <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
+     <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
+     <!-- TODO: Consider renaming as base. -->
      <configuration
            artifactExtension="hex"
            cleanCommand="rm -rf"
@@ -647,19 +665,19 @@
 
 <!-- 
 ####################################################################################### 
-#    AVR-G++ C++ Compiler                                                                    # 
+#    AVR-G++ C++ Compiler                                                             # 
 ####################################################################################### 
 -->
 
 <!-- 
 ####################################################################################### 
-#    AVR C Linker                                                                    # 
+#    AVR C Linker                                                                     # 
 ####################################################################################### 
 -->
 
 <!-- 
 ####################################################################################### 
-#    AVR C++ Linker                                                                    # 
+#    AVR C++ Linker                                                                   # 
 ####################################################################################### 
 -->
 
@@ -757,6 +775,17 @@
           </count>
        </enabledWhen>
     </handler>
+    
+    <handler
+          class="it.baeyens.arduino.actions.AddSourceFolderAction"
+          commandId="it.baeyens.arduino.actions.AddSourceFolderAction">
+       <enabledWhen>
+          <count
+                value="+">
+          </count>
+       </enabledWhen>
+    </handler>
+    
  </extension>
 
 
