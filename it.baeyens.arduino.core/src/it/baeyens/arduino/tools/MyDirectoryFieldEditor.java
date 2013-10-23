@@ -1,25 +1,36 @@
 package it.baeyens.arduino.tools;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringButtonFieldEditor;
 import org.eclipse.swt.widgets.Composite;
 
-public class MyDirectoryFieldEditor extends DirectoryFieldEditor {
+public class MyDirectoryFieldEditor {
 
+    StringButtonFieldEditor theEditor;
     String mySuffix = "";// the suffix to append to the given path
 
-    @Override
     public String getStringValue() {
-	// TODO Auto-generated method stub
 	if (mySuffix.isEmpty()) {
-	    return super.getStringValue();
+	    return theEditor.getStringValue();
 	}
-	return new Path(super.getStringValue()).append(mySuffix).toString();
+	return new Path(theEditor.getStringValue()).append(mySuffix).toString();
     }
 
     public MyDirectoryFieldEditor(String name, String labelText, Composite parent, String suffix) {
-	super(name, labelText, parent);
+	if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+	    theEditor = new FileFieldEditor(name, labelText, parent);
+	} else {
+	    theEditor = new DirectoryFieldEditor(name, labelText, parent);
+	}
 	mySuffix = suffix;
+    }
+
+    public FieldEditor getfield() {
+	return theEditor;
     }
 
 }

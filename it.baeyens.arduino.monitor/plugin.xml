@@ -23,12 +23,5 @@
       </view>
 
 	</extension>
-<extension
-      point="org.eclipse.ui.perspectives">
-   <perspective
-         class="it.baeyens.arduino.monitor.PerspectiveFactory1"
-         id="it.baeyens.arduino.monitor.perspective1"
-         name="name">
-   </perspective>
-</extension>
+
 </plugin>

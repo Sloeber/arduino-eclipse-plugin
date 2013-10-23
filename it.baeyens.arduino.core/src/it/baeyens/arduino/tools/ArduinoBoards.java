@@ -85,7 +85,7 @@ public class ArduinoBoards {
      * 
      * @return a list of all the menu option name
      */
-    public String[] getOptionNames() {
+    public String[] getMenuNames() {
 	HashSet<String> ret = new HashSet<String>();
 	for (Entry<String, Map<String, String>> entry : mArduinoSupportedBoards.entrySet()) {
 	    if (entry.getKey().equals("menu")) {
@@ -107,7 +107,7 @@ public class ArduinoBoards {
      *            the name of a board not the ide
      * @return
      */
-    public String[] getOptionValues(String menuLabel, String boardName) {
+    public String[] getMenuItemNames(String menuLabel, String boardName) {
 	String menuID = null;
 	String boardID = getBoardIDFromName(boardName);
 	HashSet<String> ret = new HashSet<String>();
@@ -122,6 +122,17 @@ public class ArduinoBoards {
 	    boolean startOk = e2.getKey().startsWith(SearchKey);
 	    if ((numsubkeys == 3) && (startOk))
 		ret.add(e2.getValue());
+	}
+	// from Arduino IDE 1.5.4 menu is subset of the board. The previous code will not return a result
+	Map<String, String> boardInfo = mArduinoSupportedBoards.get(boardID);
+	if (boardInfo != null) {
+	    SearchKey = "menu." + menuID + ".";
+	    for (Entry<String, String> e2 : boardInfo.entrySet()) {
+		int numsubkeys = e2.getKey().split("\\.").length;
+		boolean startOk = e2.getKey().startsWith(SearchKey);
+		if ((numsubkeys == 3) && (startOk))
+		    ret.add(e2.getValue());
+	    }
 	}
 	return ret.toArray(new String[ret.size()]);
     }
@@ -362,6 +373,60 @@ public class ArduinoBoards {
 
     public String getBoardsTxtName() {
 	return mLastLoadedBoardsFile.getAbsolutePath();
+    }
+
+    public String getMenuNameFromID(String menuID) {
+	Map<String, String> menuSectionMap = getSection("menu");
+	for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+	    if (curOption.getKey().equals(menuID)) {
+		return curOption.getValue();
+	    }
+	}
+	return "menu ID " + menuID + " not found";
+    }
+
+    public String getMenuIDFromName(String menuName) {
+	Map<String, String> menuSectionMap = getSection("menu");
+	for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+	    if (curOption.getValue().equals(menuName)) {
+		return curOption.getKey();
+	    }
+	}
+	return "menu name " + menuName + " not found";
+    }
+
+    public String getMenuItemIDFromName(String boardID, String menuID, String menuItemName) {
+	// look in the pre 1.5.4 way "menu".menuid.boardid.menuitemid=name
+	Map<String, String> menuSectionMap = getSection("menu");
+	for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+	    if (curOption.getValue().equals(menuItemName)) {
+		String[] keySplit = curOption.getKey().split("\\.");
+		if (keySplit.length == 3 && keySplit[0].equals(menuID) && keySplit[1].equals(boardID))
+		    return keySplit[2];
+	    }
+	}
+	// nothing found so look in the post 1.5.4 way boardid."menu".menuid.menuitemid=name
+	// TODO implement in 1.5.4 case
+	return "getMenuItemIDFromName not yet implemented in 1.5.4 way";
+    }
+
+    public String getMenuItemNameFromID(String boardID, String menuID, String menuItemID) {
+	// look in the pre 1.5.4 way "menu".menuid.boardid.menuitemid=name
+	Map<String, String> menuSectionMap = getSection("menu");
+	String lookupValue = menuID + "." + boardID + "." + menuItemID;
+	for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+	    if (curOption.getKey().equalsIgnoreCase(lookupValue))
+		return curOption.getValue();
+	}
+	// nothing found so look in the post 1.5.4 way boardid."menu".menuid.menuitemid=name
+	Map<String, String> BoardIDSectionMap = getSection(boardID);
+	String loopupValue = "menu." + menuID + "." + menuItemID;
+	for (Entry<String, String> curOption : BoardIDSectionMap.entrySet()) {
+	    if (curOption.getKey().equalsIgnoreCase(loopupValue))
+		return curOption.getValue();
+	}
+	// TODO implement 1.5.4 way
+	return "getMenuItemNameFromID did not find " + boardID + " " + menuID + " " + menuItemID;
     }
 
 }

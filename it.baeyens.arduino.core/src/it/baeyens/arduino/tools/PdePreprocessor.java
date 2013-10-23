@@ -226,6 +226,7 @@ public class PdePreprocessor {
      *            PrintStream to write it to.
      */
     protected void writeFooter(PrintStream out) throws java.lang.Exception {
+	// TODO write this code
     }
 
     public List<String> getExtraImports() {
