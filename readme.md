@@ -4,6 +4,8 @@ Add stuff here on normal usage
 
 ##Installation
 
+install [http://git-scm.com/downloads git] and [http://maven.apache.org/download.cgi maven]
+
 git clone https://github.com/jantje/arduino-eclipse-plugin
 
 cd arduino-eclipse-plugin
