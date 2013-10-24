@@ -2,6 +2,23 @@
 
 Add stuff here on normal usage
 
+##Installation
+
+git clone https://github.com/jantje/arduino-eclipse-plugin
+
+cd arduino-eclipse-plugin
+
+mvn verify
+
+
+Running the client
+==================
+win32x64.cmd (if you are on 64 bits windows)
+
+win32x32.cmd (if you are on 32 bits windows)
+
+For other platforms just inspect the cmd file for the path, navigate to the executable and run.
+
 
 ##Developing (Improving) the Plugin
 
