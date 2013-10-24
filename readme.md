@@ -2,6 +2,7 @@
 
 The Arduino Eclipse IDE 
 
+It works on MS Windows, Mac OSX and Linux.
 ##Installation 
 ###prerequisites
 
@@ -27,28 +28,28 @@ For other platforms just inspect the cmd file for the path, navigate to the exec
 
 ##Developing (Improving) the Plugin
 
-Fork the repository on GitHub.
-Your link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
+Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes.
 
+Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git -- we will use it later.
 
-###Add Eclipse Plugin Development Environment into your Eclipse Environment
+###Add needed plugins/features into the Eclipse Environment
 
+You should already have a supported Eclipse version installed (the CDT package makes a good start point). Let's add:
+
+####Add Eclipse Plugin Development Environment
 
 Help-> Install New Software -> Work with: -> All Available Sites
 
-Now select the *Eclipse Plug-in Development Environment*
+Now search/select the *Eclipse Plug-in Development Environment*
 
+Note: This may take a while to download all the available packages.
 
 ![alt text](images_plugin_dev_setup/adding_pde.png "Adding the Plugin Development Environment")
 
-###Recommended plugins
 
-For completeness you should install (if not already installed)
-
-####The Java Development Tools
+####Add Eclipse Java Development Tools
 
 If you're not using Eclipse with the JDT you'll need to install them. To do this you first need to open the Dialog for installing new Software:
-
 
 *Help*-> *Install New Software*
 
@@ -57,7 +58,7 @@ There you select for *Work with:*  *YOUR_ECLIPSE_RELEASE - http://download.eclip
 There you open:
 *Programming Languages -> Eclipse Java Development Tools.*
 
-####EGit - Eclipse Git Team Provider
+####Add EGit - Eclipse Git Team Provider
 
 To install EGit you'll need to do the following:
 
@@ -67,23 +68,23 @@ There have to enter the following URL and press ENTER.
 
  *http://download.eclipse.org/egit/updates*
 
-Now you have to open up the **Eclipse Git Team Provider** Categorry and select **Eclipse Git Team Provider** , now you just have to press next and do what the dialog tells you to do.
+Now you have to open up the **Eclipse Git Team Provider** Category and select **Eclipse Git Team Provider** , now you just have to press next and do what the dialog tells you to do.
+
+<!-- Eclipse GitHub integration with task focused interface -->
 
 
 
-
-
-###Importing the Project
+###Importing the Arduino Plugin Project into Eclipse
 
 After you installed all the plugins you'll need to restart Eclipse to use them.
 
 
-You will need to import the projects into Eclipse, there are two ways to do that:
+Then comes time to get the plugin source code in a place you can use. You will need to import the projects into Eclipse, there are two ways to do that:
 
-####Via command line
+####1)Via command line
 
 
-If youre using Windows you should first install [GitHub for Windows](http://windows.github.com/).
+If you're using Windows you should first install [GitHub for Windows](http://windows.github.com/).
 
 First you should open a command line, and change the directory to the directory where you want to store your Project.
 
@@ -113,8 +114,7 @@ You will select the following:
 Now press Finish, and it should import the selected Projects.
 
 
-<!-- 
- via EGit interface.
+####2)Via EGit interface.
 
 *File -> Import -> Git -> Projects from Git -> Clone URI*
 
@@ -122,46 +122,39 @@ Now type your fork in to URI, for example:
 
 *https://github.com/YOUR_FORK/arduino-eclipse-plugin.git*
 
+Next
 
+Branch Selection: master
 
+Local destination: /home/your_name/git/arduino-eclipse-plugin
+or c:\git\arduino-eclipse-plugin
 
+Rest of page unchanged.
 
-import, select, plugins, Import Plug-ins and Fragments
+Next.
 
-![alt text](images_plugin_dev_setup/import_select.png "Adding the Plugin Development Environment")
+Select a wizard: Import Existing Projects
 
+Next.
 
-Import Plug-ins and Fragments
+Import Projects
 
-URI
-
-https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
-
-master
-
-import all existing projects
+Select all the projects
 
 FINISH
--->
-
-
-
-
 
 After all it should look like this: 
-![alt text](images_plugin_dev_setup/Imported_projects.png "Adding the Plugin Development Environment")
+![alt text](images_plugin_dev_setup/Imported_projects.png "Projects imported")
 
-###Set the formatting
+###Set the code formatting
 To avoid having changes all the time because of different formatting this project contains a formatting xml.
 Go to window->preferences->java->Code style->Formatter import codeformat.xml in the root of the repo.
 
 ###Running the plugin
 
-
 Then running is very simple - just right click it.bayaens.arduino.core and select *run as -> Eclipse Application* (or *debug as -> Eclipse Application* -- letting you set breakpoints)
 
 Eclipse will launch a new workbench disabling the installed version if any of the plugin and updating with the plugins in the current workspace.
-
 
 images_plugin_dev_setup/running_check_versions.png
 
@@ -171,5 +164,5 @@ Preferences/Arduino to point to IDE and private libs
 
 New Project, Arduino, New Arduino Sketch
 
-
+All should work. You can set breakpoints in the launching Eclipse if you ran as debug. Happy developing!
 
