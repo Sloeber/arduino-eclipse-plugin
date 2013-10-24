@@ -1,10 +1,13 @@
 #Arduino-Eclipse-Plugin
 
-Add stuff here on normal usage
+The Arduino Eclipse IDE 
 
-##Installation
+##Installation 
+###prerequisites
 
-install [http://git-scm.com/downloads git] and [http://maven.apache.org/download.cgi maven]
+install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
+
+###Installation
 
 git clone https://github.com/jantje/arduino-eclipse-plugin
 
@@ -13,8 +16,8 @@ cd arduino-eclipse-plugin
 mvn verify
 
 
-Running the client
-==================
+##Running the client
+
 win32x64.cmd (if you are on 64 bits windows)
 
 win32x32.cmd (if you are on 32 bits windows)
