@@ -246,7 +246,7 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method creates a link folder in the project and add the folder as a source path to the project it also adds the path to the include folder
+     * This method creates a link folder in the project and adds the folder as a source path to the project it also adds the path to the include folder
      * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
      * well <br/>
      * <br/>
@@ -486,7 +486,7 @@ public class ArduinoHelpers extends Common {
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_ARDUINO_PATH, getArduinoPath().toString());
 	contribEnv.addVariable(var, confDesc);
 
-	// from 1.5.3 onwards 2 more enviroment variables need to be added
+	// from 1.5.3 onwards 2 more environment variables need to be added
 	var = new EnvironmentVariable(ENV_KEY_ARCHITECTURE, platformFile.removeLastSegments(1).lastSegment());
 	contribEnv.addVariable(var, confDesc);
 	var = new EnvironmentVariable(ENV_KEY_BUILD_ARCH, platformFile.removeLastSegments(1).lastSegment().toUpperCase());
@@ -702,7 +702,7 @@ public class ArduinoHelpers extends Common {
     /**
      * This method creates environment variables based on the platform.txt and boards.txt platform.txt is processed first and then boards.txt. This
      * way boards.txt settings can overwrite common settings in platform.txt The environment variables are only valid for the project given as
-     * parameter The projectproperties are used to identify the boards.txt and platform.txt as well as the board id to select the settings in the
+     * parameter The project properties are used to identify the boards.txt and platform.txt as well as the board id to select the settings in the
      * board.txt file At the end also the path variable is set
      * 
      * @param project
@@ -710,7 +710,10 @@ public class ArduinoHelpers extends Common {
      * @param arduinoProperties
      *            the info of the selected board to set the variables for
      */
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc) {
+
+
+    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean debugConfig) {
+
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
@@ -735,6 +738,11 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
 	    // Do some post processing
 	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
+	    
+	    //If this is a debug config we modify the environment variables for compilation
+	    if(debugConfig) {
+	        setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
+	    }
 
 	} catch (Exception e) {// Catch exception if any
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + platformFilename + " or " + boardFileName, e));
@@ -797,6 +805,48 @@ public class ArduinoHelpers extends Common {
 
     }
 
+    /**
+     * Converts the CPP and C compiler flags to not optimise for space/size and to leave symbols in.
+     * These changes allow step through debugging with JTAG and Dragon AVR
+     * @param confDesc
+     * @param envManager
+     * @param contribEnv
+     */
+
+	private static void setTheEnvironmentVariablesModifyDebugCompilerSettings(
+		ICConfigurationDescription confDesc,
+		IEnvironmentVariableManager envManager,
+		IContributedEnvironment contribEnv) {
+
+		//Modify the compiler flags for the debug configuration
+		//Replace "-g" with "-g2"
+		//Replace "-Os" with ""
+		//TODO: This should move to another location eventually -- a bit hacky here (considering other env vars come from other -- a little bit magical -- places).
+		//I couldn't easily determine where that magic happened :(
+		IEnvironmentVariable original    = null;
+		IEnvironmentVariable replacement = null;
+		
+		original = envManager.getVariable( ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS" , confDesc, true);
+		if(original != null)
+		{
+			replacement = new EnvironmentVariable(original.getName(),
+				original.getValue().replace("-g", "-g2").replace("-Os", ""),
+				original.getOperation(), original.getDelimiter() );
+			contribEnv.addVariable(replacement, confDesc);
+		}
+		
+		original = envManager.getVariable( ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS" , confDesc, true);
+		if(original != null)
+		{
+			replacement = new EnvironmentVariable(original.getName(),
+				original.getValue().replace("-g", "-g2").replace("-Os", ""),
+				original.getOperation(), original.getDelimiter() );
+			contribEnv.addVariable(replacement, confDesc);
+		}
+	}
+
+    
+    
     /**
      * When parsing boards.txt and platform.txt some processing needs to be done to get "acceptable environment variable values" This method does the
      * parsing

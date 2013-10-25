@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>it.baeyens.arduino</groupId>
+	<artifactId>it.baeyens.arduino.parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<tycho.version>0.18.1</tycho.version>
+	</properties>
+
+	<modules>
+		<module>../it.baeyens.arduino.core.nl1</module>
+		<module>../it.baeyens.arduino.feature</module>
+		<module>../it.baeyens.arduino.common</module>
+		<module>../it.baeyens.arduino.core</module>
+		<module>../it.baeyens.arduino.monitor</module>
+		<module>../it.baeyens.arduino.product</module>
+		<module>../it.baeyens.arduino.updatesite</module>
+	</modules>
+
+
+	<build>
+		<plugins>
+			<!-- Enable tycho build extension -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<debug>true</debug>
+					<encoding>UTF-8</encoding>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-packaging-plugin</artifactId>
+					<version>${tycho.version}</version>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+						</archive>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<!-- (Kepler is a p2 repository containing Eclipse's annual release train) -->
+	<repositories>
+		<repository>
+			<id>Nebula</id>
+			<layout>p2</layout>
+			<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+		</repository>
+
+		<repository>
+			<id>platform</id>
+			<layout>p2</layout>
+			<url> http://download.eclipse.org/eclipse/updates/4.2</url>
+		</repository>
+
+		<repository>
+			<id>release-train</id>
+			<layout>p2</layout>
+			<url> http://download.eclipse.org/releases/juno</url>
+		</repository>
+	</repositories>
+
+</project>
+
+ 

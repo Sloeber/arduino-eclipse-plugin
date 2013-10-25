@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
 Bundle-SymbolicName: it.baeyens.arduino.common
-Bundle-Version: 2.1.0.1
+Bundle-Version: 2.1.1.qualifier
 Bundle-Activator: it.baeyens.arduino.common.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
- JavaSE-1.7
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
  it.baeyens.arduino.common
@@ -16,7 +16,5 @@ Import-Package: org.eclipse.cdt.core,
  org.eclipse.cdt.core.model,
  org.eclipse.cdt.core.settings.model,
  org.eclipse.core.resources,
- org.eclipse.jface.text,
- org.eclipse.ui,
  org.eclipse.ui.navigator
 Bundle-Vendor: Jan Baeyens
