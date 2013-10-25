@@ -56,11 +56,11 @@ public class ShouldHaveBeenInCDT {
 	IBuilder bld = cfg.getEditableBuilder();
 	if (bld != null) {
 	    if (bld.isInternalBuilder()) {
-		    IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
-		    IBuilder prefBuilder = prefCfg.getBuilder();
-		    cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), prefBuilder.getName());
-		    bld = cfg.getEditableBuilder();
-		    bld.setBuildPath(null);
+		IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
+		IBuilder prefBuilder = prefCfg.getBuilder();
+		cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), prefBuilder.getName());
+		bld = cfg.getEditableBuilder();
+		bld.setBuildPath(null);
 	    }
 	    bld.setManagedBuildOn(isManagedBuild);
 	} else {
@@ -72,10 +72,10 @@ public class ShouldHaveBeenInCDT {
 
 	// ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
 
-	//BK - 2013.10.18
+	// BK - 2013.10.18
 	// creates/add the configuration to the project description
-    des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, cfg.getConfigurationData());
-	
+	// des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, cfg.getConfigurationData());
+
 	monitor.worked(50);
 	mngr.setProjectDescription(project, des);
 
