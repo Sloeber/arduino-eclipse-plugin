@@ -1,14 +1,30 @@
 #Arduino-Eclipse-Plugin
 
-This plugin helps ease you into the world of Eclipse from Arduino. The Eclipse IDE (integrated developement Environment) is a full featured programming editor with many fantastic features to help you code more quickly and easily. The Arduino IDE is great for what it does -- but it doesn't do much to make writing your code easier.
+The Arduino Eclipse IDE 
 
 It works on MS Windows, Mac OSX and Linux.
+##Installation 
+###prerequisites
 
-TODO: More on the plugin.
+install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
 
-##Installing the Plugin
+###Installation
 
-See http://www.baeyens.it/eclipse/Install.html
+git clone https://github.com/jantje/arduino-eclipse-plugin
+
+cd arduino-eclipse-plugin
+
+mvn verify
+
+
+##Running the client
+
+win32x64.cmd (if you are on 64 bits windows)
+
+win32x32.cmd (if you are on 32 bits windows)
+
+For other platforms just inspect the cmd file for the path, navigate to the executable and run.
+
 
 ##Developing (Improving) the Plugin
 
