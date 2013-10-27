@@ -3,4 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Product
 Bundle-SymbolicName: it.baeyens.arduino.product
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
