@@ -179,7 +179,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    for (int i = 0; i < Math.min(sTCIds.length, sCfgs.length); i++) {
 		ICConfigurationDescription configurationDescriptionRel = prjDesc.getConfigurationByName(sCfgs[i]);
 		mArduinoPage.saveAllSelections(configurationDescriptionRel);
-		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescriptionRel, sCfgs.equals("Debug"));
+		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescriptionRel);
 	    }
 
 	    // Set the path variables

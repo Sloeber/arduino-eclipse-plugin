@@ -246,9 +246,9 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method creates a link folder in the project and adds the folder as a source path to the project it also adds the path to the include folder
-     * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
-     * well <br/>
+     * This method creates a link folder in the project and adds the folder as a source path to the project it also adds the path to the include
+     * folder if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path
+     * as well <br/>
      * <br/>
      * 
      * note Arduino has these subfolders in the libraries that need to be include.<br/>
@@ -711,8 +711,7 @@ public class ArduinoHelpers extends Common {
      *            the info of the selected board to set the variables for
      */
 
-
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean debugConfig) {
+    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc) {
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -738,10 +737,10 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
 	    // Do some post processing
 	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
-	    
-	    //If this is a debug config we modify the environment variables for compilation
-	    if(debugConfig) {
-	        setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
+
+	    // If this is a debug config we modify the environment variables for compilation
+	    if (confDesc.getName().startsWith("Debug")) {
+		setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
 	    }
 
 	} catch (Exception e) {// Catch exception if any
@@ -806,47 +805,41 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * Converts the CPP and C compiler flags to not optimise for space/size and to leave symbols in.
-     * These changes allow step through debugging with JTAG and Dragon AVR
+     * Converts the CPP and C compiler flags to not optimise for space/size and to leave symbols in. These changes allow step through debugging with
+     * JTAG and Dragon AVR
+     * 
      * @param confDesc
      * @param envManager
      * @param contribEnv
      */
 
-	private static void setTheEnvironmentVariablesModifyDebugCompilerSettings(
-		ICConfigurationDescription confDesc,
-		IEnvironmentVariableManager envManager,
-		IContributedEnvironment contribEnv) {
+    private static void setTheEnvironmentVariablesModifyDebugCompilerSettings(ICConfigurationDescription confDesc,
+	    IEnvironmentVariableManager envManager, IContributedEnvironment contribEnv) {
 
-		//Modify the compiler flags for the debug configuration
-		//Replace "-g" with "-g2"
-		//Replace "-Os" with ""
-		//TODO: This should move to another location eventually -- a bit hacky here (considering other env vars come from other -- a little bit magical -- places).
-		//I couldn't easily determine where that magic happened :(
-		IEnvironmentVariable original    = null;
-		IEnvironmentVariable replacement = null;
-		
-		original = envManager.getVariable( ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS" , confDesc, true);
-		if(original != null)
-		{
-			replacement = new EnvironmentVariable(original.getName(),
-				original.getValue().replace("-g", "-g2").replace("-Os", ""),
-				original.getOperation(), original.getDelimiter() );
-			contribEnv.addVariable(replacement, confDesc);
-		}
-		
-		original = envManager.getVariable( ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS" , confDesc, true);
-		if(original != null)
-		{
-			replacement = new EnvironmentVariable(original.getName(),
-				original.getValue().replace("-g", "-g2").replace("-Os", ""),
-				original.getOperation(), original.getDelimiter() );
-			contribEnv.addVariable(replacement, confDesc);
-		}
+	// Modify the compiler flags for the debug configuration
+	// Replace "-g" with "-g2"
+	// Replace "-Os" with ""
+	// TODO: This should move to another location eventually -- a bit hacky here (considering other env vars come from other -- a little bit
+	// magical -- places).
+	// I couldn't easily determine where that magic happened :(
+	IEnvironmentVariable original = null;
+	IEnvironmentVariable replacement = null;
+
+	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS", confDesc, true);
+	if (original != null) {
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+		    original.getOperation(), original.getDelimiter());
+	    contribEnv.addVariable(replacement, confDesc);
 	}
 
-    
-    
+	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS", confDesc, true);
+	if (original != null) {
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+		    original.getOperation(), original.getDelimiter());
+	    contribEnv.addVariable(replacement, confDesc);
+	}
+    }
+
     /**
      * When parsing boards.txt and platform.txt some processing needs to be done to get "acceptable environment variable values" This method does the
      * parsing

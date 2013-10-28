@@ -370,8 +370,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    contribEnv.addVariable(var, confdesc);
 
 	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
-	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc, false);
-
+	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc);
 
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
