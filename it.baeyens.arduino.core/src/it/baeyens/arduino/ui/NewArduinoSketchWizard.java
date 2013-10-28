@@ -19,7 +19,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -152,13 +151,19 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 	    IContainer container = project;
 
-	    //TODO: Consider renaming Release to ArduinoIDEConfig
-	    //TODO: Consider renaming Debug to DragonAVR
-	    //Debug has same toolchain as release
-	    String sCfgs[]  = {"Release", "Debug"};
-	    String sTCIds[] = {"it.baeyens.arduino.core.toolChain.release",
-	                       "it.baeyens.arduino.core.toolChain.release"};
-	    
+	    // String s = "it.baeyens.arduino.core.toolChain.release";
+	    // ShouldHaveBeenInCDT.setCProjectDescription(project, ManagedBuildManager.getExtensionToolChain(s), "Release", true, monitor);
+	    // this creates the .cproject file
+
+	    // TODO: Consider renaming Release to ArduinoIDEConfig JABA:I don't think his is a good idea "standard" or "arduino" may be better
+	    // Note that changing Release invalidates all existing workspaces. So if we change this timing will be very important.
+	    // TODO: Consider renaming Debug to DragonAVR JABA:I think his is a viable idea
+	    // Debug has same toolchain as release
+	    String sCfgs[] = { "Release", "Debug" };
+	    String sTCIds[] = { "it.baeyens.arduino.core.toolChain.release", "it.baeyens.arduino.core.toolChain.release" };
+	    // String sCfgs[] = { "Release" };
+	    // String sTCIds[] = { "it.baeyens.arduino.core.toolChain.release" };
+
 	    // Creates the .cproject file with the configurations
 	    ShouldHaveBeenInCDT.setCProjectDescription(project, sTCIds, sCfgs, true, monitor);
 
@@ -171,35 +176,25 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 
-	    //We don't iterate on the configs. Behaviour is a little custom for each.
-	    //Release
-	    ICConfigurationDescription configurationDescriptionRel = prjDesc
-		    .getConfigurationByName( sCfgs[0] );
-	    mArduinoPage.saveAllSelections(configurationDescriptionRel);
-	    ArduinoHelpers.setTheEnvironmentVariables(project,
-		    configurationDescriptionRel, false);
-	
-	//Debug
-	ICConfigurationDescription configurationDescriptionDbg = prjDesc
-		    .getConfigurationByName( sCfgs[1] );
-	mArduinoPage.saveAllSelections(configurationDescriptionDbg);
-	    //The last boolean indicates to set debug settings in the compilation
-	    ArduinoHelpers.setTheEnvironmentVariables(project,
-		    configurationDescriptionDbg, true);
+	    for (int i = 0; i < Math.min(sTCIds.length, sCfgs.length); i++) {
+		ICConfigurationDescription configurationDescriptionRel = prjDesc.getConfigurationByName(sCfgs[i]);
+		mArduinoPage.saveAllSelections(configurationDescriptionRel);
+		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescriptionRel, sCfgs.equals("Debug"));
+	    }
 
 	    // Set the path variables
 	    IPath platformPath = new Path(new File(mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText().trim()).getParent())
 		    .append(ArduinoConst.PLATFORM_FILE_NAME);
 	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
 
-	    //Intermediately save or the adding code will fail
-	    //Release is the active config (as that is the "IDE" Arduino type....)
-	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
+	    // Intermediately save or the adding code will fail
+	    // Release is the active config (as that is the "IDE" Arduino type....)
+	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName(sCfgs[0]);
+	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code
-	    //NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
-	    ArduinoHelpers.addArduinoCodeToProject(project, configurationDescriptionRel);
-
+	    // NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
+	    ArduinoHelpers.addArduinoCodeToProject(project, defaultConfigDescription);
 
 	    /* Add the sketch source code file */
 	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
@@ -207,7 +202,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    /* Add the sketch header file */
 	    String Include = "WProgram.h";
-	    if (ArduinoInstancePreferences.isArduinoIdeOne()) //Arduino v1.0+
+	    if (ArduinoInstancePreferences.isArduinoIdeOne()) // Arduino v1.0+
 	    {
 		Include = "Arduino.h";
 	    }
@@ -232,8 +227,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // .createResourceConfiguration(file);
 	    // ResConfig.setExclude(true);
 
-
-	    ICResourceDescription cfgd = configurationDescriptionRel.getResourceDescription(new Path(""), true);
+	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[1];
@@ -269,7 +263,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // }
 	    // }
 
-	    prjDesc.setActiveConfiguration(configurationDescriptionRel);
+	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 	    prjDesc.setCdtProjectCreated();
 	    CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjDesc, true, null);
 	    monitor.done();

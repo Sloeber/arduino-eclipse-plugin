@@ -29,7 +29,7 @@ public class hexNameProvider implements IManagedOutputNameProviderJaba {
 	    fileExtension = "bin";
 
 	IPath[] outputNames = new IPath[1];
-	outputNames[0] = new Path(cConf.getName()).append(project.getName()).addFileExtension(fileExtension);
+	outputNames[0] = new Path(project.getName()).addFileExtension(fileExtension);
 	return outputNames;
     }
 }
