@@ -1,8 +1,8 @@
 package it.baeyens.arduino.monitor.views;
 
 import it.baeyens.arduino.arduino.Serial;
-import multichannel.Oscilloscope;
 
+import org.eclipse.nebula.widgets.oscilloscope.multichannel.Oscilloscope;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

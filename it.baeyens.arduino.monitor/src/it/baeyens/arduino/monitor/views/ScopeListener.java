@@ -9,9 +9,9 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import multichannel.Oscilloscope;
-import multichannel.OscilloscopeDispatcher;
-import multichannel.OscilloscopeStackAdapter;
+import org.eclipse.nebula.widgets.oscilloscope.multichannel.Oscilloscope;
+import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeDispatcher;
+import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeStackAdapter;
 
 public class ScopeListener implements MessageConsumer {
 

@@ -46,22 +46,9 @@ Apache Software Foundation http://apache.org/
    </plugins>
 
    <features>
-      <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.platform"/>
-      <feature id="org.eclipse.rcp"/>
-      <feature id="org.eclipse.cdt"/>
-      <feature id="org.eclipse.cdt.debug.ui.memory"/>
-      <feature id="org.eclipse.cdt.msw"/>
-      <feature id="org.eclipse.cdt.build.crossgcc"/>
-      <feature id="org.eclipse.cdt.launch.remote"/>
-      <feature id="org.eclipse.cdt.autotools"/>
-      <feature id="org.eclipse.rse"/>
-      <feature id="org.eclipse.egit"/>
-      <feature id="org.eclipse.egit.import"/>
-      <feature id="org.eclipse.epp.package.common.feature"/>
       <feature id="it.baeyens.arduino.feature"/>
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature"/>
+      <feature id="it.baeyens.arduino.packaging.feature"/>
    </features>
 
    <configurations>
