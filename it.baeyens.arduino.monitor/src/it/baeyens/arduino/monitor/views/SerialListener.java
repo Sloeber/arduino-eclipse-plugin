@@ -14,9 +14,19 @@ public class SerialListener implements MessageConsumer {
     }
 
     @Override
-    public void message(String info) {
+    public void message(byte[] info) {
+	// treat data just like a event
+	event(new String(info));
+    }
 
-	final String TempString = info;
+    @Override
+    public void dispose() {
+	// No need to dispose something
+    }
+
+    @Override
+    public void event(String event) {
+	final String TempString = new String(event);
 	Display.getDefault().asyncExec(new Runnable() {
 	    @Override
 	    public void run() {
@@ -28,10 +38,5 @@ public class SerialListener implements MessageConsumer {
 	    }
 	});
 
-    }
-
-    @Override
-    public void dispose() {
-	// No need to dispose something
     }
 }
