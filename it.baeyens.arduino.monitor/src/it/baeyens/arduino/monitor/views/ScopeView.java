@@ -1,9 +1,13 @@
 package it.baeyens.arduino.monitor.views;
 
 import it.baeyens.arduino.arduino.Serial;
+<<<<<<< HEAD
 import multichannel.Oscilloscope;
 import multichannel.OscilloscopeDispatcher;
+=======
+>>>>>>> 8deb07cce97a2af36feca468a03be763cc148b84
 
+import org.eclipse.nebula.widgets.oscilloscope.multichannel.Oscilloscope;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
