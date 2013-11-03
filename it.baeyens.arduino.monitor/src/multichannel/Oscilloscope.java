@@ -451,10 +451,10 @@ public class Oscilloscope extends Canvas {
     }
 
     protected void widgetDisposed(DisposeEvent e) {
-	bg.dispose();
-	for (int channel = 0; channel < chan.length; channel++) {
-	    chan[channel].fg.dispose();
-	}
+	// bg.dispose();
+	// for (int channel = 0; channel < chan.length; channel++) {
+	// chan[channel].fg.dispose();
+	// }
     }
 
     protected int ConvertValueToScreenPosition(int Value, int ScreenHeight) {
@@ -1098,4 +1098,5 @@ public class Oscilloscope extends Canvas {
     public void setDispatcher(int channel, OscilloscopeDispatcher dispatcher) {
 	chan[channel].dispatcher = dispatcher;
     }
+
 }

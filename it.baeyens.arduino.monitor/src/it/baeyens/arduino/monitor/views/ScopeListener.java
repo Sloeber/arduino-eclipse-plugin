@@ -36,7 +36,7 @@ public class ScopeListener implements MessageConsumer {
 		if (!fStack.isEmpty()) {
 		    oldValue = fStack.remove().intValue();
 		}
-		myScope.setValue(0, oldValue);
+		// myScope.setValue(0, oldValue);
 	    }
 	};
 
