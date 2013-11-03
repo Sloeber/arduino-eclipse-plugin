@@ -9,14 +9,8 @@ import java.nio.ByteOrder;
 import java.util.LinkedList;
 import java.util.Queue;
 
-<<<<<<< HEAD
 import multichannel.Oscilloscope;
 import multichannel.OscilloscopeStackAdapter;
-=======
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.Oscilloscope;
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeDispatcher;
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeStackAdapter;
->>>>>>> 8deb07cce97a2af36feca468a03be763cc148b84
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
