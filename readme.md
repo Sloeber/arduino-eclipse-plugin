@@ -8,7 +8,7 @@ It works on MS Windows, Mac OSX and Linux.
 
 install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
 
-###Installation
+##Build from source
 
 git clone https://github.com/jantje/arduino-eclipse-plugin
 
@@ -24,6 +24,29 @@ win32x64.cmd (if you are on 64 bits windows)
 win32x32.cmd (if you are on 32 bits windows)
 
 For other platforms just inspect the cmd file for the path, navigate to the executable and run.
+
+##Build Options
+You can control the build with the folowing profiles
+* juno (default) (builds against the juno repositories (4.2))
+* kepler (builds agains the kepler repositories (4.3))
+* luna (builds agains the luna repositories (4.4))
+* win32 (builds for 32 bit windows)
+* win64 
+* linux32
+* linux64
+* mac32
+* mac64
+
+
+#####Examples:
+
+mvn verify -Plinux32,kepler
+
+mvn verify -Pwin32,juno,linux32
+
+
+##Building for other platforms
+mvn verify -Pbuild-all
 
 
 ##Developing (Improving) the Plugin
