@@ -44,10 +44,7 @@ mvn verify -Plinux32,kepler
 
 mvn verify -Pwin32,juno,linux32
 
-
-##Building for other platforms
-mvn verify -Pbuild-all
-
+mvn verify (builds for juno and the platform you are running on)
 
 ##Developing (Improving) the Plugin
 
