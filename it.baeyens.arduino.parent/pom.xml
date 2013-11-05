@@ -46,11 +46,12 @@
 				</configuration>
 			</plugin>
 
+
+
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
-
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-packaging-plugin</artifactId>
@@ -65,26 +66,162 @@
 		</pluginManagement>
 	</build>
 
-	<!-- (Kepler is a p2 repository containing Eclipse's annual release train) -->
-	<repositories>
-		<repository>
-			<id>Nebula</id>
-			<layout>p2</layout>
-			<url> http://download.eclipse.org/technology/nebula/snapshot</url>
-		</repository>
 
-		<repository>
-			<id>platform</id>
-			<layout>p2</layout>
-			<url> http://download.eclipse.org/eclipse/updates/4.2</url>
-		</repository>
 
-		<repository>
-			<id>release-train</id>
-			<layout>p2</layout>
-			<url> http://download.eclipse.org/releases/juno</url>
-		</repository>
-	</repositories>
+
+
+	<profiles>
+
+		<profile>
+			<id>build-all</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
+
+								<!-- Linux -->
+								<environment>
+									<os>linux</os>
+									<ws>gtk</ws>
+									<arch>x86</arch>
+								</environment>
+								<environment>
+									<os>linux</os>
+									<ws>gtk</ws>
+									<arch>x86_64</arch>
+								</environment>
+
+								<!-- Windows -->
+								<environment>
+									<os>win32</os>
+									<ws>win32</ws>
+									<arch>x86</arch>
+								</environment>
+								<environment>
+									<os>win32</os>
+									<ws>win32</ws>
+									<arch>x86_64</arch>
+								</environment>
+
+								<!-- Mac -->
+								<environment>
+									<os>macosx</os>
+									<ws>cocoa</ws>
+									<arch>x86</arch>
+								</environment>
+								<environment>
+									<os>macosx</os>
+									<ws>cocoa</ws>
+									<arch>x86_64</arch>
+								</environment>
+
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>build-some</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
+
+								<!-- Linux -->
+								<environment>
+									<os>linux</os>
+									<ws>gtk</ws>
+									<arch>x86</arch>
+								</environment>
+
+								<!-- Windows -->
+								<environment>
+									<os>win32</os>
+									<ws>win32</ws>
+									<arch>x86</arch>
+								</environment>
+
+								<!-- Mac -->
+								<environment>
+									<os>macosx</os>
+									<ws>cocoa</ws>
+									<arch>x86_64</arch>
+								</environment>
+
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>juno</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>Nebula</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+				</repository>
+
+				<repository>
+					<id>platform_juno</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/eclipse/updates/4.2</url>
+				</repository>
+
+				<repository>
+					<id>release-train_juno</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/releases/juno</url>
+				</repository>
+			</repositories>
+		</profile>
+
+		<profile>
+			<id>kepler</id>
+			<repositories>
+				<repository>
+					<id>Nebula</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+				</repository>
+
+				<repository>
+					<id>platform_kepler</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/eclipse/updates/4.3</url>
+				</repository>
+
+				<repository>
+					<id>release-train_kepler</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/releases/kepler</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
 
 </project>
 
