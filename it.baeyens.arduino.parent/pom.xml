@@ -72,8 +72,11 @@
 
 	<profiles>
 
+		
+
 		<profile>
-			<id>build-all</id>
+		
+			<id>win32</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -85,43 +88,60 @@
 							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
-
-								<!-- Linux -->
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86</arch>
-								</environment>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86_64</arch>
-								</environment>
-
-								<!-- Windows -->
 								<environment>
 									<os>win32</os>
 									<ws>win32</ws>
 									<arch>x86</arch>
 								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile><profile>
+			<id>win64</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
 								<environment>
 									<os>win32</os>
 									<ws>win32</ws>
 									<arch>x86_64</arch>
 								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
 
-								<!-- Mac -->
+		<profile>
+			<id>linux32</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
 								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
+									<os>linux</os>
+									<ws>gtk</ws>
 									<arch>x86</arch>
 								</environment>
-								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
-									<arch>x86_64</arch>
-								</environment>
-
 							</environments>
 						</configuration>
 					</plugin>
@@ -130,7 +150,7 @@
 		</profile>
 
 		<profile>
-			<id>build-some</id>
+			<id>linux64</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -142,28 +162,61 @@
 							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
-
-								<!-- Linux -->
 								<environment>
 									<os>linux</os>
 									<ws>gtk</ws>
-									<arch>x86</arch>
+									<arch>x86_64</arch>
 								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
-								<!-- Windows -->
+		<profile>
+			<id>mac32</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
+								<!-- Mac -->
 								<environment>
-									<os>win32</os>
-									<ws>win32</ws>
+									<os>macosx</os>
+									<ws>cocoa</ws>
 									<arch>x86</arch>
 								</environment>
-
+							</environments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile><profile>
+			<id>mac64</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- configure the p2 target environments for multi-platform build -->
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+								spec -->
+							<environments>
 								<!-- Mac -->
 								<environment>
 									<os>macosx</os>
 									<ws>cocoa</ws>
 									<arch>x86_64</arch>
 								</environment>
-
 							</environments>
 						</configuration>
 					</plugin>
@@ -178,12 +231,6 @@
 			</activation>
 
 			<repositories>
-				<repository>
-					<id>Nebula</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/technology/nebula/snapshot</url>
-				</repository>
-
 				<repository>
 					<id>platform_juno</id>
 					<layout>p2</layout>
@@ -202,12 +249,6 @@
 			<id>kepler</id>
 			<repositories>
 				<repository>
-					<id>Nebula</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/technology/nebula/snapshot</url>
-				</repository>
-
-				<repository>
 					<id>platform_kepler</id>
 					<layout>p2</layout>
 					<url> http://download.eclipse.org/eclipse/updates/4.3</url>
@@ -220,8 +261,32 @@
 				</repository>
 			</repositories>
 		</profile>
+
+		<profile>
+			<id>luna</id>
+			<repositories>
+				<repository>
+					<id>platform_luna</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/eclipse/updates/4.4</url>
+				</repository>
+
+				<repository>
+					<id>release-train_luna</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/releases/luna</url>
+				</repository>
+			</repositories>
+		</profile>
 	</profiles>
 
+			<repositories>
+				<repository>
+					<id>Nebula</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+				</repository>
+				</repositories>
 
 </project>
 
