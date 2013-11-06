@@ -6,10 +6,13 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.Stream;
+import it.baeyens.arduino.ui.BuildConfigurationsPage;
+import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.util.ArrayList;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -57,6 +60,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
     private WizardNewProjectCreationPage mWizardPage;
     private ArduinoSettingsPage mArduinoPage;
+    private BuildConfigurationsPage mBuildCfgPage;
     private IConfigurationElement mConfig;
     private IProject mProject;
 
@@ -73,8 +77,14 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	mArduinoPage = new ArduinoSettingsPage("Arduino information");
 	mArduinoPage.setTitle("Provide the Arduino information.");
 	mArduinoPage.setDescription("These settings can be changed later.");
+
+	mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
+	mBuildCfgPage.setTitle("Select additional build configurations for this project.");
+	mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
+	
 	addPage(mWizardPage);
 	addPage(mArduinoPage);
+	addPage(mBuildCfgPage);
     }
 
     @Override
@@ -151,21 +161,11 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 	    IContainer container = project;
 
-	    // String s = "it.baeyens.arduino.core.toolChain.release";
-	    // ShouldHaveBeenInCDT.setCProjectDescription(project, ManagedBuildManager.getExtensionToolChain(s), "Release", true, monitor);
-	    // this creates the .cproject file
-
-	    // TODO: Consider renaming Release to ArduinoIDEConfig JABA:I don't think his is a good idea "standard" or "arduino" may be better
-	    // Note that changing Release invalidates all existing workspaces. So if we change this timing will be very important.
-	    // TODO: Consider renaming Debug to DragonAVR JABA:I think his is a viable idea
-	    // Debug has same toolchain as release
-	    String sCfgs[] = { "Release", "Debug" };
-	    String sTCIds[] = { "it.baeyens.arduino.core.toolChain.release", "it.baeyens.arduino.core.toolChain.release" };
-	    // String sCfgs[] = { "Release" };
-	    // String sTCIds[] = { "it.baeyens.arduino.core.toolChain.release" };
+	    //Get the Build Configurations (names and toolchain IDs) from the property page
+	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = mBuildCfgPage.getBuildConfigurationDescriptors();
 
 	    // Creates the .cproject file with the configurations
-	    ShouldHaveBeenInCDT.setCProjectDescription(project, sTCIds, sCfgs, true, monitor);
+	    ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
 	    ArduinoHelpers.addTheNatures(project);
@@ -176,10 +176,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 
-	    for (int i = 0; i < Math.min(sTCIds.length, sCfgs.length); i++) {
-		ICConfigurationDescription configurationDescriptionRel = prjDesc.getConfigurationByName(sCfgs[i]);
-		mArduinoPage.saveAllSelections(configurationDescriptionRel);
-		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescriptionRel);
+	    for (int i = 0; i < cfgNamesAndTCIds.size() ; i++) {
+	    	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName( cfgNamesAndTCIds.get(i).Name );
+	    	mArduinoPage.saveAllSelections(configurationDescription);
+	    	ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings );
 	    }
 
 	    // Set the path variables
@@ -189,7 +189,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    // Intermediately save or the adding code will fail
 	    // Release is the active config (as that is the "IDE" Arduino type....)
-	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName(sCfgs[0]);
+	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName( cfgNamesAndTCIds.get(0).Name );
 	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code

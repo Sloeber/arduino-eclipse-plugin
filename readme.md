@@ -1,32 +1,46 @@
 #Arduino-Eclipse-Plugin
 
-The Arduino Eclipse IDE 
+The Arduino Eclipse Plugin/IDE.
+
+The Eclipse IDE (Integrated Developement Environment) is a full featured programming editor with many fantastic features to help you code more quickly and easily. The Arduino IDE is great for what it does -- but it doesn't do much to help writing, navigating and understanding your (and other people's) code.
+
+The Arduino Eclipse Plugin bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
 
 It works on MS Windows, Mac OSX and Linux.
-##Installation 
-###prerequisites
 
-install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
+##Quick Installation 
+###Prerequisites
 
-##Build from source
+Install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
+
+###Build from source
 
 git clone https://github.com/jantje/arduino-eclipse-plugin
 
 cd arduino-eclipse-plugin
 
+Windows:
+
 mvn verify
 
+Linux or Mac OSX (this will install and launch):
 
-##Running the client
+./launch_plugin.sh
 
+
+###Running the IDE/Plugin
+
+Windows:
 win32x64.cmd (if you are on 64 bits windows)
 
 win32x32.cmd (if you are on 32 bits windows)
 
-For other platforms just inspect the cmd file for the path, navigate to the executable and run.
+./launch_plugin.sh (Mac OSX and Linux)
 
+
+=======
 ##Build Options
-You can control the build with the folowing profiles
+You can control the build with the following profiles:
 * juno (default) (builds against the juno repositories (4.2))
 * kepler (builds agains the kepler repositories (4.3))
 * luna (builds agains the luna repositories (4.4))
@@ -45,6 +59,13 @@ mvn verify -Plinux32,kepler
 mvn verify -Pwin32,juno,linux32
 
 mvn verify (builds for juno and the platform you are running on)
+
+
+###Setting up a repository
+
+If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local respoitory with location "arduino-eclipse-plugin/it.baeyens.arduino.product/target/repository"
+
+![alt text](images_plugin_dev_setup/add_local_repository.png "Adding a local repository")
 
 ##Developing (Improving) the Plugin
 
