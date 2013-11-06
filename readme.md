@@ -9,11 +9,11 @@ The Arduino Eclipse Plugin bridges that gap and helps move you to a more powerfu
 It works on MS Windows, Mac OSX and Linux.
 
 ##Quick Installation 
-###prerequisites
+###Prerequisites
 
-install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
+Install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi)
 
-###Installation
+###Build from source
 
 git clone https://github.com/jantje/arduino-eclipse-plugin
 
@@ -36,6 +36,30 @@ win32x64.cmd (if you are on 64 bits windows)
 win32x32.cmd (if you are on 32 bits windows)
 
 ./launch_plugin.sh (Mac OSX and Linux)
+
+
+=======
+##Build Options
+You can control the build with the following profiles:
+* juno (default) (builds against the juno repositories (4.2))
+* kepler (builds agains the kepler repositories (4.3))
+* luna (builds agains the luna repositories (4.4))
+* win32 (builds for 32 bit windows)
+* win64 
+* linux32
+* linux64
+* mac32
+* mac64
+
+
+#####Examples:
+
+mvn verify -Plinux32,kepler
+
+mvn verify -Pwin32,juno,linux32
+
+mvn verify (builds for juno and the platform you are running on)
+
 
 ###Setting up a repository
 

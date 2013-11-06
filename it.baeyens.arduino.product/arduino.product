@@ -29,6 +29,7 @@ Apache Software Foundation http://apache.org/
    <windowImages i16="eclipse.png" i32="eclipse32.png" i48="eclipse48.png"/>
 
    <splash
+      location="it.baeyens.arduino.product"
       startupProgressRect="0,280,455,15"
       startupMessageRect="7,220,441,20"
       startupForegroundColor="C8D5EA" />
