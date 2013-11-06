@@ -368,7 +368,7 @@ public class ArduinoHelpers extends Common {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "the folder " + folder + "does not contain any files.", null));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null));
 		return;
 	    }
 	    for (File f : a) {
