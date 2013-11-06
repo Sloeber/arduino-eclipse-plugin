@@ -65,27 +65,37 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     private IProject mProject;
 
     public NewArduinoSketchWizard() {
-	super();
+        super();
     }
 
-    @Override
-    public void addPages() {
-	mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
-	mWizardPage.setDescription("Create a new Arduino sketch.");
-	mWizardPage.setTitle("New Arduino sketch");
+	@Override
+	public void addPages() {
+		//Check if preferences of Arduino IDE path is set/exists.
+		if ( ArduinoInstancePreferences.getArduinoPath().toFile().exists() ) {
+		    //Everything is OK and we want to display the pages
+			mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
+			mWizardPage.setDescription("Create a new Arduino sketch.");
+			mWizardPage.setTitle("New Arduino sketch");
 
-	mArduinoPage = new ArduinoSettingsPage("Arduino information");
-	mArduinoPage.setTitle("Provide the Arduino information.");
-	mArduinoPage.setDescription("These settings can be changed later.");
+			mArduinoPage = new ArduinoSettingsPage("Arduino information");
+			mArduinoPage.setTitle("Provide the Arduino information.");
+			mArduinoPage.setDescription("These settings can be changed later.");
 
-	mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
-	mBuildCfgPage.setTitle("Select additional build configurations for this project.");
-	mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
-	
-	addPage(mWizardPage);
-	addPage(mArduinoPage);
-	addPage(mBuildCfgPage);
-    }
+			mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
+			mBuildCfgPage.setTitle("Select additional build configurations for this project.");
+			mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
+
+			addPage(mWizardPage);
+			addPage(mArduinoPage);
+			addPage(mBuildCfgPage);
+		}else{
+
+			//If not then we bail out with an error.
+			//And no pages are presented (with no option to FINISH).
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino", null));
+			return;
+		}
+	}
 
     @Override
     public boolean performFinish() {
