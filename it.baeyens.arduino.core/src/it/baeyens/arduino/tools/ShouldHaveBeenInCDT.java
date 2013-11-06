@@ -16,6 +16,8 @@ import org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataPro
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
+import java.util.ArrayList;
 
 @SuppressWarnings("restriction")
 // TOFIX Get this code in CDT so I should not have to do this
@@ -33,19 +35,17 @@ public class ShouldHaveBeenInCDT {
      * 
      * @param project
      *            The newly created project that needs a .cproject file.
-     * @param sTCIds
-     *            An array of toolchain IDs to be used with this project
-     * @param configuration
-     *            An array of configuration strings you want to use with this project ["release", "debug", ...]
+     * @param alCfgs
+     *            An array-list of configuration descriptors (names, toolchain IDs) to be used with this project
      * @param isManagedBuild
      *            When true the project is managed build. Else the project is not (read you have to maintain the makefiles yourself)
      * @param monitor
      *            The monitor to follow the process
      * @throws CoreException
      */
-    public static void setCProjectDescription(IProject project, String sTCIds[], // sTCIds and sCfgs -- Need to be ordered the same and the same
-										 // length
-	    String sCfgs[], boolean isManagedBuild, IProgressMonitor monitor) throws CoreException {
+    public static void setCProjectDescription(IProject project,
+    	ArrayList<ConfigurationDescriptor> alCfgs,
+    	boolean isManagedBuild, IProgressMonitor monitor) throws CoreException {
 
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 	ICProjectDescription des = mngr.createProjectDescription(project, false, false);
@@ -78,10 +78,10 @@ public class ShouldHaveBeenInCDT {
 	// ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
 
 	// Iterate across the configurations
-	for (int i = 0; i < Math.min(sTCIds.length, sCfgs.length); i++) {
-	    IToolChain tcs = ManagedBuildManager.getExtensionToolChain(sTCIds[i]);
+	for (int i = 0; i < alCfgs.size(); i++) {
+	    IToolChain tcs = ManagedBuildManager.getExtensionToolChain(alCfgs.get(i).ToolchainID);
 
-	    Configuration cfg = new Configuration(mProj, (ToolChain) tcs, ManagedBuildManager.calculateChildId(sTCIds[i], null), sCfgs[i]);
+	    Configuration cfg = new Configuration(mProj, (ToolChain) tcs, ManagedBuildManager.calculateChildId(alCfgs.get(i).ToolchainID, null), alCfgs.get(i).Name);
 	    IBuilder bld = cfg.getEditableBuilder();
 	    if (bld != null) {
 		// if (bld.isInternalBuilder()) {

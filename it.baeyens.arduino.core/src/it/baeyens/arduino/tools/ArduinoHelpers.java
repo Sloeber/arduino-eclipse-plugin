@@ -711,7 +711,7 @@ public class ArduinoHelpers extends Common {
      *            the info of the selected board to set the variables for
      */
 
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc) {
+    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean debugCompilerSettings) {
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -739,7 +739,7 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
 
 	    // If this is a debug config we modify the environment variables for compilation
-	    if (confDesc.getName().startsWith("Debug")) {
+	    if ( debugCompilerSettings ) {
 		setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
 	    }
 
