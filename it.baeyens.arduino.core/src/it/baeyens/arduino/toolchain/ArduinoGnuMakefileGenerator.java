@@ -4637,7 +4637,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    @Override
+    @SuppressWarnings("hiding")
+	@Override
     public void initialize(int buildKind, IConfiguration cfg, IBuilder builder, IProgressMonitor monitor) {
 	// Save the project so we can get path and member information
 	this.project = cfg.getOwner().getProject();
