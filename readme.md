@@ -189,7 +189,21 @@ After all it should look like this:
 
 ###Set the code formatting
 To avoid having changes all the time because of different formatting this project contains a formatting xml.
-Go to window->preferences->java->Code style->Formatter import codeformat.xml in the root of the repo.
+Go to Window->Preferences->Java->Code Style->Formatter and import codeformat.xml from the root of the repo.
+
+###Set the warning level
+We want to keep the chance of missing a problem in the code to a minimum and to keep clean and tidy code. Development is aiming to keep compiler warnings to a minimum (items that show up in the Problems tab under Warnings) with specific settings. Please change your settings from default as follows:
+
+Go to Window->Preferences->Java->Compiler->Errors/Warnings and change the following from their defaults.
+
+TODO:Jan -- Please indicate how you want this setup and any others you want...
+
+Name shadowing and conflicts. Set all to Warning.
+Unnecessary code. Set all to Warning.
+Null analysis. Set all active (not greyed out) to Warning.
+Potential programming problems. Set all to Warning.
+
+
 
 ###Running the plugin
 

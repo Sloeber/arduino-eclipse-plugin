@@ -469,14 +469,12 @@ public class Oscilloscope extends Canvas {
 	return 0;
     }
 
-    protected void PositionPolyLine(int[] l1) {
+	protected void PositionPolyLine(int[] l1) {
 	for (int i = 0; i < l1.length - 4; i += 4) {
-
-	    l1[i + 1] = ConvertValueToScreenPosition(l1[i + 1], getSize().y);
-	    l1[i + 3] = ConvertValueToScreenPosition(l1[i + 3], getSize().y);
-	    ;
+			l1[i + 1] = ConvertValueToScreenPosition(l1[i + 1], getSize().y);
+			l1[i + 3] = ConvertValueToScreenPosition(l1[i + 3], getSize().y);
+		}
 	}
-    }
 
     protected void paintControl(PaintEvent e) {
 
