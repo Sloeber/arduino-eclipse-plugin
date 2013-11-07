@@ -1,5 +1,6 @@
 package it.baeyens.arduino.actions;
 
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.ui.NewArduinoSketchWizard;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -13,11 +14,12 @@ public class NewSketchHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+	if (!ArduinoInstancePreferences.isConfigured(true))
+	    return null;
 	IWizard wizard = new NewArduinoSketchWizard();
 	WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
 	wd.setTitle(wizard.getWindowTitle());
 	wd.open();
 	return null;
     }
-
 }

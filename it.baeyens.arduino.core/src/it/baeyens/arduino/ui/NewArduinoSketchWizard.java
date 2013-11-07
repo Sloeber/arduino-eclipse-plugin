@@ -6,7 +6,6 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.Stream;
-import it.baeyens.arduino.ui.BuildConfigurationsPage;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 import java.io.File;
@@ -65,37 +64,29 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     private IProject mProject;
 
     public NewArduinoSketchWizard() {
-        super();
+	super();
     }
 
-	@Override
-	public void addPages() {
-		//Check if preferences of Arduino IDE path is set/exists.
-		if ( ArduinoInstancePreferences.getArduinoPath().toFile().exists() ) {
-		    //Everything is OK and we want to display the pages
-			mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
-			mWizardPage.setDescription("Create a new Arduino sketch.");
-			mWizardPage.setTitle("New Arduino sketch");
+    @Override
+    public void addPages() {
+	// We assume everything is OK as it is tested in the handler
+	mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
+	mWizardPage.setDescription("Create a new Arduino sketch.");
+	mWizardPage.setTitle("New Arduino sketch");
 
-			mArduinoPage = new ArduinoSettingsPage("Arduino information");
-			mArduinoPage.setTitle("Provide the Arduino information.");
-			mArduinoPage.setDescription("These settings can be changed later.");
+	mArduinoPage = new ArduinoSettingsPage("Arduino information");
+	mArduinoPage.setTitle("Provide the Arduino information.");
+	mArduinoPage.setDescription("These settings can be changed later.");
 
-			mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
-			mBuildCfgPage.setTitle("Select additional build configurations for this project.");
-			mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
+	mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
+	mBuildCfgPage.setTitle("Select additional build configurations for this project.");
+	mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
 
-			addPage(mWizardPage);
-			addPage(mArduinoPage);
-			addPage(mBuildCfgPage);
-		}else{
+	addPage(mWizardPage);
+	addPage(mArduinoPage);
+	addPage(mBuildCfgPage);
 
-			//If not then we bail out with an error.
-			//And no pages are presented (with no option to FINISH).
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino", null));
-			return;
-		}
-	}
+    }
 
     @Override
     public boolean performFinish() {
@@ -171,7 +162,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 	    IContainer container = project;
 
-	    //Get the Build Configurations (names and toolchain IDs) from the property page
+	    // Get the Build Configurations (names and toolchain IDs) from the property page
 	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = mBuildCfgPage.getBuildConfigurationDescriptors();
 
 	    // Creates the .cproject file with the configurations
@@ -186,10 +177,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 
-	    for (int i = 0; i < cfgNamesAndTCIds.size() ; i++) {
-	    	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName( cfgNamesAndTCIds.get(i).Name );
-	    	mArduinoPage.saveAllSelections(configurationDescription);
-	    	ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings );
+	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
+		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
+		mArduinoPage.saveAllSelections(configurationDescription);
+		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
 	    // Set the path variables
@@ -199,7 +190,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    // Intermediately save or the adding code will fail
 	    // Release is the active config (as that is the "IDE" Arduino type....)
-	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName( cfgNamesAndTCIds.get(0).Name );
+	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
 	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code

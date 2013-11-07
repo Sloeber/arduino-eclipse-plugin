@@ -1,6 +1,7 @@
 package it.baeyens.arduino.actions;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -20,6 +21,8 @@ public class AddLibraryAction extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+	if (!ArduinoInstancePreferences.isConfigured(true))
+	    return null;
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
@@ -31,10 +34,10 @@ public class AddLibraryAction extends AbstractHandler {
 		    .findWizard("it.baeyens.arduino.Import_Arduino_Libraries");
 	    IWizard wizard;
 	    try {
-	        wizard = wizardDescriptor.createWizard();
+		wizard = wizardDescriptor.createWizard();
 	    } catch (CoreException e) {
-	        Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
-	        return null;
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
+		return null;
 	    }
 	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
 	    wd.setTitle(wizard.getWindowTitle());

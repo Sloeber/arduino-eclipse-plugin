@@ -29,14 +29,12 @@ public class ScopeListener implements MessageConsumer {
 	myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
 	myScope = oscilloscope;
 	stackAdapter = new OscilloscopeStackAdapter() {
-	    private int oldValue = 0;
 
 	    @Override
 	    public void stackEmpty(Oscilloscope scope, int channel) {
 		if (!fStack.isEmpty()) {
-		    oldValue = fStack.remove().intValue();
+		    fStack.remove().intValue();
 		}
-		// myScope.setValue(0, oldValue);
 	    }
 	};
 

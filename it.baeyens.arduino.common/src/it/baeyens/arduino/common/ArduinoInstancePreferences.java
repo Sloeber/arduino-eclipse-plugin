@@ -197,4 +197,22 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 
     }
 
+    /**
+     * This method returns boolean whether the arduino IDE has been pointed to or not. If you use the flag error = true a error will be shown to the
+     * end user in case Arduino is not configured.
+     * 
+     * @return
+     */
+    public static boolean isConfigured(boolean showError) {
+	if (ArduinoInstancePreferences.getArduinoPath().toFile().exists())
+	    return true;
+	if (showError) {
+	    // If not then we bail out with an error.
+	    // And no pages are presented (with no option to FINISH).
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino",
+		    null));
+	}
+	return false;
+    }
+
 }

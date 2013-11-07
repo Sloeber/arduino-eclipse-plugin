@@ -1,6 +1,7 @@
 package it.baeyens.arduino.actions;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.UploadArduinoSketch;
 
@@ -22,6 +23,8 @@ public class ArduinoUploadProjectHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+	if (!ArduinoInstancePreferences.isConfigured(true))
+	    return null;
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
