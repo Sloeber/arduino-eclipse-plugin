@@ -234,7 +234,7 @@ public class Serial implements SerialPortEventListener {
     public void dispose() {
 	notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
 	disconnect();
-	disposeConsumers();
+
 	if (fServiceRegistration != null) {
 	    fServiceRegistration.unregister();
 	}
@@ -256,14 +256,6 @@ public class Serial implements SerialPortEventListener {
 	if (fConsumers != null) {
 	    for (MessageConsumer consumer : fConsumers) {
 		consumer.event(message);
-	    }
-	}
-    }
-
-    private void disposeConsumers() {
-	if (fConsumers != null) {
-	    for (MessageConsumer consumer : fConsumers) {
-		consumer.dispose();
 	    }
 	}
     }

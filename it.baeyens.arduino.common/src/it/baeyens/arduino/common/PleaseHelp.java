@@ -84,7 +84,7 @@ public class PleaseHelp extends Dialog {
 		    }
 		};
 		job.setPriority(Job.INTERACTIVE);
-		job.schedule(30000);
+		job.schedule(10000); // used to be 30000 changed to 10000
 
 	    }
 	});

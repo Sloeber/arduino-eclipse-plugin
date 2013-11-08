@@ -22,12 +22,12 @@ import org.osgi.framework.ServiceReference;
 
 public class ScopeView extends ViewPart implements ServiceListener {
 
-    Oscilloscope myScope;
+    Oscilloscope myScope = null;
     ScopeListener myScopelistener = null;
     Serial mySerial = null;
 
     public ScopeView() {
-	// TODO Auto-generated constructor stub
+	// TODO Can we do something here to register if the serial port is already open?
     }
 
     @Override
@@ -38,16 +38,10 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    @Override
 	    public void dispatch() {
 		init();
-		// getOscilloscope().setBackgroundImage(getBackgroundImage());
 
 		for (int i = 0; i < getOscilloscope().getChannels(); i++) {
 
 		    myScope.setPercentage(i, false);
-		    // getOscilloscope()
-		    // .setTailSize(
-		    // i,
-		    // isTailSizeMax() ? Oscilloscope.TAILSIZE_MAX
-		    // : getTailSize());
 		    myScope.setSteady(i, isSteady(), getSteadyPosition());
 		    myScope.setFade(i, false);
 		    myScope.setTailFade(i, 0);
@@ -75,8 +69,6 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    }
 	};
 	myScope = new Oscilloscope(6, dsp, parent, SWT.NONE);
-	// oscilloscope = new Oscilloscope(parent, SWT.NONE);
-	// oscilloscope.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 	GridData theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 7;
 	int ScopeColors[] = { SWT.COLOR_BLUE, SWT.COLOR_CYAN, SWT.COLOR_DARK_BLUE, SWT.COLOR_DARK_GRAY, SWT.COLOR_DARK_GREEN, SWT.COLOR_DARK_RED,
@@ -161,6 +153,9 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 	});
 	myScope.setRange(0, 1050); // I set this as starting range
+	myScope.setStatus("Use the serial monitor to connect to a Serial port.");
+	myScope.setShowLabels(false);
+	myScope.setnewBackgroundImage();
 
 	registerSerialTracker();
     }
@@ -172,6 +167,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
     @Override
     public void setFocus() {
 	myScope.setFocus();
+	myScope.redraw();
     }
 
     @Override
@@ -187,20 +183,31 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	final ServiceReference<?> reference = event.getServiceReference();
 	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 	if (service instanceof Serial) {
-	    // do something?
+	    if (service == mySerial) {
+		mySerial.removeListener(myScopelistener);
+		myScope.setStatus("disconnected from:" + mySerial.toString());
+		myScope.setShowLabels(true);
+		myScope.setnewBackgroundImage();
+		myScopelistener.dispose();
+		myScopelistener = null;
+		mySerial = null;
+	    }
 	}
     }
 
     private void registerSerialService(ServiceEvent event) {
 	final ServiceReference<?> reference = event.getServiceReference();
 	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
-	if ((service instanceof Serial) && (myScopelistener == null)) {
+	if ((service instanceof Serial) && (myScopelistener == null) && (myScope != null)) {
 	    myScopelistener = new ScopeListener(myScope);
 	    mySerial = (Serial) service;
 	    PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 		@Override
 		public void run() {
 		    mySerial.addListener(myScopelistener);
+		    myScope.setStatus("connected to:" + mySerial.toString());
+		    myScope.setShowLabels(true);
+		    myScope.setnewBackgroundImage();
 		}
 	    });
 	}
@@ -210,9 +217,13 @@ public class ScopeView extends ViewPart implements ServiceListener {
     public void dispose() {
 	// As we have a listener we need to remove the listener
 	if ((myScopelistener != null) && (mySerial != null)) {
-	    mySerial.removeListener(myScopelistener);
+	    Serial tempSerial = mySerial;
+	    mySerial = null;
+	    tempSerial.removeListener(myScopelistener);
 	    myScopelistener.dispose();
 	    myScopelistener = null;
+	    myScope.dispose();
+	    myScope = null;
 	}
 	super.dispose();
     }

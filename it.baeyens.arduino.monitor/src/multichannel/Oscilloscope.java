@@ -102,6 +102,15 @@ public class Oscilloscope extends Canvas {
     private int myhighValue = 0;
 
     private boolean ShowLabels = false;
+    private String myStatus = "";
+
+    public String getStatus() {
+	return myStatus;
+    }
+
+    public void setStatus(String status) {
+	myStatus = status;
+    }
 
     public boolean isShowLabels() {
 	return ShowLabels;
@@ -469,12 +478,12 @@ public class Oscilloscope extends Canvas {
 	return 0;
     }
 
-	protected void PositionPolyLine(int[] l1) {
+    protected void PositionPolyLine(int[] l1) {
 	for (int i = 0; i < l1.length - 4; i += 4) {
-			l1[i + 1] = ConvertValueToScreenPosition(l1[i + 1], getSize().y);
-			l1[i + 3] = ConvertValueToScreenPosition(l1[i + 3], getSize().y);
-		}
+	    l1[i + 1] = ConvertValueToScreenPosition(l1[i + 1], getSize().y);
+	    l1[i + 3] = ConvertValueToScreenPosition(l1[i + 3], getSize().y);
 	}
+    }
 
     protected void paintControl(PaintEvent e) {
 
@@ -527,7 +536,7 @@ public class Oscilloscope extends Canvas {
 		long time = System.nanoTime();
 		gc.drawPolyline(l1);
 		gc.drawPolyline(l2);
-		System.out.println(System.nanoTime() - time + " nanoseconds");
+		// System.out.println(System.nanoTime() - time + " nanoseconds");
 	    }
 
 	    // Connects the head with the tail
@@ -536,7 +545,7 @@ public class Oscilloscope extends Canvas {
 	    }
 	}
 
-	System.out.println(System.currentTimeMillis() - start + " milliseconds for all channels");
+	// System.out.println(System.currentTimeMillis() - start + " milliseconds for all channels");
 
     }
 
@@ -564,8 +573,8 @@ public class Oscilloscope extends Canvas {
 
 	// for (int progress = 0; progress < getProgression(c); progress++) {
 
-	if (chan[c].stack.isEmpty() && chan[c].stackListeners != null)
-	    notifyListeners(c);
+	// if (chan[c].stack.isEmpty() && chan[c].stackListeners != null)
+	// notifyListeners(c);
 
 	splitPos = chan[c].tailSize * 4;
 
@@ -704,6 +713,9 @@ public class Oscilloscope extends Canvas {
 		gc.drawString(chan[i].name, 50, 10 + (step * i));
 	    }
 	}
+	gc.setForeground(chan[0].fg);
+	gc.drawString(myStatus, 200, 10);
+
 	// gc.drawString(string, x, y)
 	gc.dispose();
 	return TheImage;
@@ -1095,6 +1107,12 @@ public class Oscilloscope extends Canvas {
 
     public void setDispatcher(int channel, OscilloscopeDispatcher dispatcher) {
 	chan[channel].dispatcher = dispatcher;
+    }
+
+    @Override
+    public void dispose() {
+	// TODO Auto-generated method stub
+	super.dispose();
     }
 
 }

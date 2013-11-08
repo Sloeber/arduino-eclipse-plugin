@@ -46,7 +46,7 @@ public class Activator extends AbstractUIPlugin {
     private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
     private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b";
     private static final String Localflag = "l" + flagStart;
-    private static final String helploc = "http://www.baeyens.it/eclipse/remind2_1.html";
+    private static final String helploc = "http://www.baeyens.it/eclipse/remind2_2.html";
 
     /**
      * The constructor
@@ -83,7 +83,7 @@ public class Activator extends AbstractUIPlugin {
 		int curFsiStatus = myScope.getInt(flagStart, 0) + myScope.getInt(flagMonitor, 0) + myScope.getInt(uploadflag, 0)
 			+ myScope.getInt(buildflag, 0);
 		int lastFsiStatus = myScope.getInt(Localflag, 0);
-		if ((curFsiStatus - lastFsiStatus) > 100) {
+		if ((curFsiStatus - lastFsiStatus) > 50) {
 		    if (isInternetReachable()) {
 			myScope.putInt(Localflag, curFsiStatus);
 			try {

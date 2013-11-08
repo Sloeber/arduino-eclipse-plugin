@@ -1,16 +1,21 @@
 package it.baeyens.arduino.monitor.views;
 
+/**
+ * This class is a class used to listen to the serial port and send data to the scope.
+ * The data from the serial port must be from the format 
+ * 2 bytes as start flag: the value equal to ArduinoConst.SCOPE_START_DATA
+ * 2 bytes=1 short to show the number of bytes that are to be read. The number of shorts is half of this value
+ * bytes to be interpreted per 2 as short
+ * 
+ */
 import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import multichannel.Oscilloscope;
-import multichannel.OscilloscopeStackAdapter;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,47 +23,53 @@ import org.eclipse.swt.widgets.Display;
 
 public class ScopeListener implements MessageConsumer {
 
-    Queue<Integer> fStack = new LinkedList<Integer>();
-    StringBuilder fSaveString = new StringBuilder();
-    private OscilloscopeStackAdapter stackAdapter;
-    Oscilloscope myScope;
+    /**
+     * myScope The scope representing the data
+     */
+    private Oscilloscope myScope;
+    /**
+     * myReceivedScopeData is a fixed size buffer holding the bytes that have been received from the com port
+     * 
+     */
     private ByteBuffer myReceivedScopeData = ByteBuffer.allocate(2000); // if we are more than this behind we will loose data
-    private int myCurEnd = 0;
+    /**
+     * myEndPosition points to the last byte that is still valid in the buffer. This is needed because myReceivedScopeData is fixed size.
+     * 
+     */
+    private int myEndPosition = 0;
 
     public ScopeListener(Oscilloscope oscilloscope) {
 	myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
 	myScope = oscilloscope;
-	stackAdapter = new OscilloscopeStackAdapter() {
-
-	    @Override
-	    public void stackEmpty(Oscilloscope scope, int channel) {
-		if (!fStack.isEmpty()) {
-		    fStack.remove().intValue();
-		}
-	    }
-	};
-
-	oscilloscope.addStackListener(0, stackAdapter);
     }
 
+    /**
+     * Here the message comes in from the serial port. If there is not enough place in If there is enough place in myReceivedScopeData the data is
+     * added to myReceivedScopeData to hold all the data; all the data (that in myReceivedScopeData and in s) is ignored and a warning is dumped If
+     * there is enough place in myReceivedScopeData the data is added to myReceivedScopeData and myReceivedScopeData is scanned for scope data
+     * 
+     */
     @Override
     public synchronized void message(byte[] s) {
-	if (myCurEnd >= myReceivedScopeData.capacity()) {
-	    myCurEnd = 0;
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "skipping scope info"));
+	if (myScope.isDisposed())
+	    return;
+	if (myEndPosition + s.length >= myReceivedScopeData.capacity()) {
+	    myEndPosition = 0;
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
+	} else {
+	    myReceivedScopeData.position(myEndPosition);
+	    myReceivedScopeData.put(s, 0, s.length);
+	    myEndPosition = myReceivedScopeData.position();
+	    internalExtractAndProcessScopeData();
 	}
-	myReceivedScopeData.position(myCurEnd);
-	int readsize = Math.min(myReceivedScopeData.capacity() - myCurEnd, s.length);
-	myReceivedScopeData.put(s, 0, readsize);
-	myCurEnd = myCurEnd + readsize;
-
-	internalExtractAndProcessScopeData();
 
     }
 
     @Override
     public void dispose() {
 	// myScope.removeStackListener(0, stackAdapter);
+	myScope = null;
+	myReceivedScopeData = null;
     }
 
     /**
@@ -74,22 +85,32 @@ public class ScopeListener implements MessageConsumer {
 		try {
 		    myScope.getDispatcher(0).hookPulse(myScope, 1);
 		    myScope.redraw();
-		} catch (Exception e) {// ignore as we get errors when closing
-				       // down
+		} catch (Exception e) {
+		    // ignore as we get errors when closing down
 		}
 	    }
 	});
 
     }
 
+    /**
+     * internalExtractAndProcessScopeData scans for scope data in myReceivedScopeData If data is found it is send to the scope all data that has been
+     * scanned is removed from myReceivedScopeData
+     */
     private void internalExtractAndProcessScopeData() {
-	int scannnedDataPointer = 0;
-	for (scannnedDataPointer = 0; scannnedDataPointer < myCurEnd; scannnedDataPointer++) {
-	    if (myReceivedScopeData.get(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA[0]) {
-		if (myReceivedScopeData.get(scannnedDataPointer + 1) == ArduinoConst.SCOPE_START_DATA[1]) {
-		    // we have a hit.
-		    scannnedDataPointer = scannnedDataPointer + 2;
-		    if (myReceivedScopeData.getShort(scannnedDataPointer) + 2 + scannnedDataPointer < myCurEnd) {
+	int lastFoundData = myEndPosition - 6;
+	// Scan for scope data
+	for (int scannnedDataPointer = 0; scannnedDataPointer < myEndPosition - 6; scannnedDataPointer++) {
+	    if (myReceivedScopeData.getShort(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA) {
+		// we have a hit.
+		lastFoundData = scannnedDataPointer;
+		scannnedDataPointer = scannnedDataPointer + 2;
+		int bytestoRead = myReceivedScopeData.getShort(scannnedDataPointer);
+		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
+		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "There are supposedly " + bytestoRead / 2
+			    + "channels to read"));
+		} else {
+		    if (bytestoRead + 2 + scannnedDataPointer < myEndPosition) {
 			// all data is available
 			int myNumDataSetsToReceive = myReceivedScopeData.getShort(scannnedDataPointer) / 2 + 0;
 			for (int CurData = 0; CurData < myNumDataSetsToReceive; CurData++) {
@@ -98,80 +119,24 @@ public class ScopeListener implements MessageConsumer {
 			}
 			AddValuesToOsciloscope();
 			scannnedDataPointer = scannnedDataPointer + 2 + myNumDataSetsToReceive * 2;
-			for (int curByte = 0; curByte < myCurEnd - scannnedDataPointer; curByte++) {
-			    myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + scannnedDataPointer));
-			}
-			myCurEnd = myCurEnd - scannnedDataPointer;
-			scannnedDataPointer = 0;
+			lastFoundData = scannnedDataPointer;
 
 		    }
 		}
 	    }
 	}
-	// // see whether we have a hit
-	// String[] dataSets = myReceivedScopeData..split(ArduinoConst.SCOPE_START_DATA, 2);
-	//
-	// if (dataSets.length == 1) // no hit found. If the string is longer than 100 only keep the last 5 characters
-	// {
-	// if (myReceivedScopeData.length() > 100)
-	// myReceivedScopeData = myReceivedScopeData.substring(myReceivedScopeData.length() - 5, myReceivedScopeData.length());
-	// return;
-	// }
-	//
-	// myReceivedScopeData = dataSets[1];
-	// for (int curset = 0; curset < dataSets.length; curset++) {
-	// if ((dataSets[curset].length()) > 4) // we need at least the data telling us how long the header is
-	// {
-	//
-	// // we received the number of data elements we should receive
-	// int myNumDataSetsToReceive = getIntValueFromString(dataSets[curset].getBytes(), 0) / 2;
-	// if ((myNumDataSetsToReceive < 0) || (dataSets[curset].length() < (2 + (myNumDataSetsToReceive * 2)))) // Not all data is here
-	// {
-	// // This is the first data or a false hit
-	//
-	// } else {
-	// // all data arrived
-	//
-	// for (int CurData = 0; CurData < myNumDataSetsToReceive; CurData++) {
-	// myScope.setValue(CurData, getIntValueFromString(dataSets[curset].getBytes(), (2 + CurData * 2)));
-	// }
-	//
-	//
-	// if (curset == dataSets.length) // we processed the data in the last data set
-	// {
-	// myReceivedScopeData = dataSets[1].substring((2 + (myNumDataSetsToReceive * 2)));
-	// }
-	// }
-	// }
-	// }
+	// remove all the scanned data
+	for (int curByte = 0; curByte <= myEndPosition - lastFoundData; curByte++) {
+	    try {
+		myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
+	    } catch (IndexOutOfBoundsException e) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
+	    }
+
+	}
+	myEndPosition -= lastFoundData;
 
     }
-
-    // /**
-    // * This method converts the byte stInfo[start] and stInfo[start+1] to a integer Following assumptions are made The bytes are send by arduino.
-    // The
-    // * first and second byte need to be swapped The receiving OS uses the same way of coding negative numbers as the arduino
-    // */
-    // private static int getIntValueFromString(byte[] stInfo, int start) {
-    // ByteBuffer buf = ByteBuffer.allocate(2);
-    // byte val1 = stInfo[start];
-    // byte val2 = stInfo[start + 1];
-    // buf.put(val2);
-    // buf.put(val1);
-    // short ret = buf.getShort(0);
-    // return ret;
-    //
-    // // int val1 = stInfo[start];
-    // // int val2 = stInfo[start + 1];
-    // //
-    // // int ret;
-    // // if ((val2 & 128) == 128)
-    // // ret = (0XFFFF0000 | ((val2 & 0xFF) << 8) | (val1 & 0XFF));
-    // // else
-    // // ret = (((val2 & 0xFF) << 8) | (val1 & 0XFF));
-    // // return ret;
-    //
-    // }
 
     @Override
     public void event(String event) {
