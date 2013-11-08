@@ -7,9 +7,9 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ISerialUser;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -23,7 +23,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -83,7 +85,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     private Composite myparent;
 
     // Below are variables needed for good housekeeping
-    Collection<Serial> SerialConnections; // The serial connections that are
+    Map<Serial, SerialListener> SerialConnections; // The serial connections that are
     // open
     int LastUsedIndex; // the last used index of the SendPostFix combo
     boolean autoScroll; // is auto scroll on or off?
@@ -99,7 +101,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      * The constructor.
      */
     public SerialMonitor() {
-	SerialConnections = new HashSet<Serial>(MaxSerialPorts);
+	SerialConnections = new LinkedHashMap<Serial, SerialListener>(MaxSerialPorts);
 	SerialColor = new Color[MaxSerialPorts];
 	SerialColor[0] = new Color(null, 0, 0, 0);
 	SerialColor[1] = new Color(null, 255, 0, 0);
@@ -132,11 +134,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	for (int curColor = 0; curColor < MaxSerialPorts; curColor++) {
 	    SerialColor[curColor].dispose();
 	}
-	java.util.Iterator<Serial> iterator = SerialConnections.iterator();
-	while (iterator.hasNext()) {
-	    Serial element = iterator.next();
-	    element.dispose();
+
+	for (Entry<Serial, SerialListener> entry : SerialConnections.entrySet()) {
+	    entry.getValue().dispose();
+	    entry.getKey().dispose();
 	}
+	SerialConnections.clear();
     }
 
     /**
@@ -158,7 +161,28 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	MinimuSizeGridData.widthHint = 50;
 	MinimuSizeGridData.horizontalSpan = 1;
 	SerialPorts.getControl().setLayoutData(MinimuSizeGridData);
-	SerialPorts.setContentProvider(new ArrayContentProvider());
+	SerialPorts.setContentProvider(new IStructuredContentProvider() {
+
+	    @Override
+	    public void dispose() {
+		// TODO Auto-generated method stub
+
+	    }
+
+	    @Override
+	    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		// TODO Auto-generated method stub
+
+	    }
+
+	    @Override
+	    public Object[] getElements(Object inputElement) {
+		// TODO Auto-generated method stub
+		Map<Serial, SerialListener> items = (Map<Serial, SerialListener>) inputElement;
+
+		return items.keySet().toArray();
+	    }
+	});
 	SerialPorts.setLabelProvider(new LabelProvider());
 	SerialPorts.setInput(SerialConnections);
 	SerialPorts.addSelectionChangedListener(new ComPortChanged(this));
@@ -269,12 +293,16 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     }
 
     private Serial GetSerial(String ComName) {
-	Iterator<Serial> iterator = SerialConnections.iterator();
-	while (iterator.hasNext()) {
-	    Serial thePortToSendDataTo = iterator.next();
-	    // Do something with element
-	    if (thePortToSendDataTo.toString().matches(ComName))
-		return thePortToSendDataTo;
+	// Iterator<Serial> iterator = SerialConnections.iterator();
+	// while (iterator.hasNext()) {
+	// Serial thePortToSendDataTo = iterator.next();
+	// // Do something with element
+	// if (thePortToSendDataTo.toString().matches(ComName))
+	// return thePortToSendDataTo;
+	// }
+	for (Entry<Serial, SerialListener> entry : SerialConnections.entrySet()) {
+	    if (entry.getKey().toString().matches(ComName))
+		return entry.getKey();
 	}
 	return null;
     }
@@ -318,8 +346,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	    public void run() {
 		Serial newSerial = GetSelectedSerial();
 		if (newSerial != null) {
+		    SerialListener theListener = SerialConnections.get(newSerial);
 		    SerialConnections.remove(newSerial);
+		    newSerial.removeListener(theListener);
 		    newSerial.dispose();
+		    theListener.dispose();
 		    SerialPortsUpdated();
 		}
 	    }
@@ -368,7 +399,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	    {
 		if (CurSelection == null) // nothing was selected
 		{
-		    CurSelection = (Serial) SerialConnections.toArray()[0];
+		    CurSelection = (Serial) SerialConnections.keySet().toArray()[0];
 		}
 		SerialPorts.getCombo().setText(CurSelection.toString());
 		ComboSerialChanged();
@@ -386,7 +417,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		newSerial.addListener(theListener);
 		theListener.event(System.getProperty("line.separator") + "Connected to " + ComPort + " at " + BaudRate
 			+ System.getProperty("line.separator"));
-		SerialConnections.add(newSerial);
+		SerialConnections.put(newSerial, theListener);
 		return;
 	    }
 	} else {

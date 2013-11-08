@@ -23,6 +23,8 @@ import org.osgi.framework.ServiceReference;
 public class ScopeView extends ViewPart implements ServiceListener {
 
     Oscilloscope myScope;
+    ScopeListener myScopelistener = null;
+    Serial mySerial = null;
 
     public ScopeView() {
 	// TODO Auto-generated constructor stub
@@ -83,26 +85,6 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	for (int i = 0; i < myScope.getChannels(); i++) {
 	    myScope.setForeground(i, Display.getDefault().getSystemColor(ScopeColors[i]));
 	}
-	// myScope.setForeground(0,
-	// Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
-	// myScope.setForeground(1,
-	// Display.getDefault().getSystemColor(SWT.COLOR_CYAN));
-	// myScope.setForeground(2,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
-	// myScope.setForeground(3,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-	// myScope.setForeground(4,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
-	// myScope.setForeground(5,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
-	// myScope.setForeground(6,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
-	// myScope.setForeground(7,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN));
-	// myScope.setForeground(8,
-	// Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-	// myScope.setForeground(9,
-	// Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
 	myScope.getDispatcher(0).dispatch();
 
 	Listener listener = new Listener() {
@@ -212,14 +194,26 @@ public class ScopeView extends ViewPart implements ServiceListener {
     private void registerSerialService(ServiceEvent event) {
 	final ServiceReference<?> reference = event.getServiceReference();
 	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
-	if (service instanceof Serial) {
+	if ((service instanceof Serial) && (myScopelistener == null)) {
+	    myScopelistener = new ScopeListener(myScope);
+	    mySerial = (Serial) service;
 	    PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 		@Override
 		public void run() {
-		    Serial serial = (Serial) service;
-		    serial.addListener(new ScopeListener(myScope));
+		    mySerial.addListener(myScopelistener);
 		}
 	    });
 	}
+    }
+
+    @Override
+    public void dispose() {
+	// As we have a listener we need to remove the listener
+	if ((myScopelistener != null) && (mySerial != null)) {
+	    mySerial.removeListener(myScopelistener);
+	    myScopelistener.dispose();
+	    myScopelistener = null;
+	}
+	super.dispose();
     }
 }

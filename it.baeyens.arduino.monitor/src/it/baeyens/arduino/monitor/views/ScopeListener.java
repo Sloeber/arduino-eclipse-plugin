@@ -58,7 +58,7 @@ public class ScopeListener implements MessageConsumer {
 
     @Override
     public void dispose() {
-	myScope.removeStackListener(0, stackAdapter);
+	// myScope.removeStackListener(0, stackAdapter);
     }
 
     /**

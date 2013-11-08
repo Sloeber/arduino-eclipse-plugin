@@ -59,7 +59,7 @@ public class Serial implements SerialPortEventListener {
     // the static class would have an object that could be closed
 
     /**
-     * General error reporting, all corraled here just in case I think of something slightly more intelligent to do.
+     * General error reporting, all correlated here just in case I think of something slightly more intelligent to do.
      */
     static public void errorMessage(String where, Throwable e) {
 	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e));
@@ -148,6 +148,12 @@ public class Serial implements SerialPortEventListener {
 	    fConsumers = new ArrayList<MessageConsumer>();
 	}
 	fConsumers.add(consumer);
+    }
+
+    public void removeListener(MessageConsumer consumer) {
+	if (fConsumers == null)
+	    return;
+	fConsumers.remove(consumer);
     }
 
     /**
