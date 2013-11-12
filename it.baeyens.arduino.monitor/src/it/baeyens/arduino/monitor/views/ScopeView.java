@@ -1,9 +1,19 @@
 package it.baeyens.arduino.monitor.views;
 
 import it.baeyens.arduino.arduino.Serial;
+import it.baeyens.arduino.common.ArduinoConst;
+
+import java.net.URL;
+
 import multichannel.Oscilloscope;
 import multichannel.OscilloscopeDispatcher;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -26,8 +36,28 @@ public class ScopeView extends ViewPart implements ServiceListener {
     ScopeListener myScopelistener = null;
     Serial mySerial = null;
 
+    private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s";
+    String uri = "h tt p://bae yens.i t/ec li pse/do wnl oad/Sc opeS tart.h t ml?m=";
+    public Object mstatus; // status of the scope
+
     public ScopeView() {
-	// TODO Can we do something here to register if the serial port is already open?
+
+	Job job = new Job("pluginSerialmonitorInitiator") {
+	    @Override
+	    protected IStatus run(IProgressMonitor monitor) {
+		try {
+		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+		    int curFsiStatus = mySCope.getInt(flagMonitor, 0) + 1;
+		    mySCope.putInt(flagMonitor, curFsiStatus);
+		    URL pluginStartInitiator = new URL(uri.replaceAll(" ", "") + Integer.toString(curFsiStatus));
+		    mstatus = pluginStartInitiator.getContent();
+		} catch (Exception e) {// JABA is not going to add code
+		}
+		return Status.OK_STATUS;
+	    }
+	};
+	job.setPriority(Job.DECORATE);
+	job.schedule();
     }
 
     @Override

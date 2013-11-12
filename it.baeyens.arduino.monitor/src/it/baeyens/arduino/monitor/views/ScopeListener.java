@@ -50,15 +50,15 @@ public class ScopeListener implements MessageConsumer {
      * 
      */
     @Override
-    public synchronized void message(byte[] s) {
+    public synchronized void message(byte[] newData) {
 	if (myScope.isDisposed())
 	    return;
-	if (myEndPosition + s.length >= myReceivedScopeData.capacity()) {
+	if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
 	    myEndPosition = 0;
 	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
 	} else {
 	    myReceivedScopeData.position(myEndPosition);
-	    myReceivedScopeData.put(s, 0, s.length);
+	    myReceivedScopeData.put(newData, 0, newData.length);
 	    myEndPosition = myReceivedScopeData.position();
 	    internalExtractAndProcessScopeData();
 	}

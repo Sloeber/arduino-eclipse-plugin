@@ -215,4 +215,13 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	return false;
     }
 
+    public static boolean getLastUsedScopeFilter() {
+	return getGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION);
+
+    }
+
+    public static void setLastUsedScopeFilter(boolean newFilter) {
+	setGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, newFilter);
+
+    }
 }

@@ -37,6 +37,7 @@ public class ArduinoConst {
     public static final String KEY_LAST_USED_COM_PORT = "Arduino Port";
     public static final String KEY_LAST_USED_ARDUINO_BOARDS_FILE = "Arduino boards file";
     public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";
+    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Arduino scope filter on off";
 
     // Serial monitor keys
     public static final String KEY_SERIAlRATE = "Serial monitor last selected rate";
