@@ -19,11 +19,12 @@ git clone https://github.com/jantje/arduino-eclipse-plugin
 
 cd arduino-eclipse-plugin
 
-Windows:
-
 mvn verify
 
-Linux or Mac OSX (this will install and launch):
+execute eclipse; for instance on 64 bit mac with 
+open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/eclipseArduino/Eclipse.app
+
+for Linux you can run the verify and start eclipse in on command:
 
 ./launch_plugin.sh
 
