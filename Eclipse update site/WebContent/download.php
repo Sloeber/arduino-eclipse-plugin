@@ -16,6 +16,21 @@ Yust download the correct version for your os unpack and start eclipse.
 You still need to configure (step 4 of the installation instructions)
 
 
+<h2>Linux 64 bit</h2><br>
+<?php
+$dir = "http://eclipse.baeyens.it/download/product";
+$dh = opendir("download/product");
+while ($f = readdir($dh)) {
+  $fullpath = $dir."/".$f;
+  if ($f{0} == "." || is_dir($fullpath)) continue;
+  if (substr($f,0,18)=="linux64.")
+  {
+    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
+  }
+}
+closedir($dh);
+?>
+
 <h2>Linux 32 bit</h2><br>
 <?php
 $dir = "http://eclipse.baeyens.it/download/product";
@@ -23,7 +38,21 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,18)=="linux.gtk.x86.opt.")
+  if (substr($f,0,18)=="linux32.")
+  {
+    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
+  }
+}
+closedir($dh);
+?>
+<h2>win 64 bit</h2>
+<?php
+$dir = "http://eclipse.baeyens.it/download/product";
+$dh = opendir("download/product");
+while ($f = readdir($dh)) {
+  $fullpath = $dir."/".$f;
+  if ($f{0} == "." || is_dir($fullpath)) continue;
+  if (substr($f,0,10)=="win64.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
@@ -37,14 +66,27 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,10)=="win32.x86.")
+  if (substr($f,0,10)=="win32")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
 }
 closedir($dh);
 ?>
-
+<h2>MAC 64 bit</h2>
+<?php
+$dir = "http://eclipse.baeyens.it/download/product";
+$dh = opendir("download/product");
+while ($f = readdir($dh)) {
+  $fullpath = $dir."/".$f;
+  if ($f{0} == "." || is_dir($fullpath)) continue;
+  if (substr($f,0,10)=="mac64")
+  {
+    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
+  }
+}
+closedir($dh);
+?>
 <br>
 </body>
 </html>
