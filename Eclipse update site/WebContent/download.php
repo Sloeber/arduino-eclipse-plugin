@@ -23,7 +23,7 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,18)=="linux64.")
+  if (substr($f,0,8)=="linux64.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
@@ -38,7 +38,7 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,18)=="linux32.")
+  if (substr($f,0,8)=="linux32.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
@@ -52,7 +52,7 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,10)=="win64.")
+  if (substr($f,0,6)=="win64.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
@@ -66,21 +66,21 @@ $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,10)=="win32")
+  if (substr($f,0,6)=="win32.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
 }
 closedir($dh);
 ?>
-<h2>MAC 64 bit</h2>
+<h2>Mac 64 bit</h2>
 <?php
 $dir = "http://eclipse.baeyens.it/download/product";
 $dh = opendir("download/product");
 while ($f = readdir($dh)) {
   $fullpath = $dir."/".$f;
   if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,10)=="mac64")
+  if (substr($f,0,6)=="mac64.")
   {
     echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
   }
