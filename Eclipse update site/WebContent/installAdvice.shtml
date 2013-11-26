@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Arduino Eclipse plugin: Which version to install?</title>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css">
+</head>
+<body>
+        <div id="header">
+            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT> 
+        </div>
+	
+	<h1>Which version to install?</h1>
+	By now there are so many versions involved that some guidance to what to install is appropriate.<br>
+	This page is intended to give this guidance.
+	For the newbies to the plugin who 
+	<ul><li>do not have eclipse installed</li>
+	<li>are willing to do some alfa testing</li>
+	<li>want to use Arduino IDE 1.5.2 beta</li>
+	</ul> 
+	I can strongly advice to download the "brand new" product.
+	These downloads simply need to be extracted (and sometimes you also need to make the eclipse program executable) and you can immediatly configure (read show where your arduino IDE is installed) the plugin and play.
+	You can find the download page <a href="/eclipse/download.php">here</a>.
+	
+	For the others:
+	There are 3 main components in the deployment of the plugin.
+	<ul>
+	<li>The Arduino IDE(s) you want to use</li>
+	<li>The Eclipse version you want to use</li>
+	<li>The Plugin version you want to use</li>
+	</ul>
+	The Arduino IDE has 3 major breakpoints.
+	<ul><li>before 1.5</li>
+	<li>between 1.5.0 and 1.5.2 (included)</li>
+	<li>after 1.5.2</li>
+	</ul>
+	The plugin relates to that as follows:<br>
+	Before 1.5 beta: use V1 of the plugin.<br>
+	between 1.5.0 beta and 1.5.2 beta (included): use 1.5.2 with V2 of the plugin<br>
+	after 1.5.2 beta: not supported<br>
+	
+	V1 of the plugin runs in juno and indigo. I don't know wether kepler works.<br>
+	V2 of the plugin runs in juno only. (kepler does not work)<br>
+	
+	If we summarize this in a table we get:
+	<table border="1">
+	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th></tr>
+	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td></tr>
+	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td></tr>
+	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td></tr></table>
+	
+</body>
+</html>
