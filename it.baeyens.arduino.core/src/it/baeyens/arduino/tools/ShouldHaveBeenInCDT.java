@@ -1,12 +1,16 @@
 package it.baeyens.arduino.tools;
 
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
@@ -20,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("restriction")
 // TOFIX Get this code in CDT so I should not have to do this
@@ -27,14 +32,14 @@ public class ShouldHaveBeenInCDT {
     /*
      * Copied from wizard STDWizardHandler package package org.eclipse.cdt.managedbuilder.ui.wizards;; This method creates the .cProject file in your
      * project.
-     * 
+     *
      * BK: modified this and made it work for multiple configs.
      */
     /**
      * This method creates the .cProject file in your project. it is intended to be used with newly created projects. Using this method with project
      * that have existed for some time is unknown
-     * 
-     * 
+     *
+     *
      * @param project
      *            The newly created project that needs a .cproject file.
      * @param alCfgs
@@ -101,16 +106,52 @@ public class ShouldHaveBeenInCDT {
 	    }
 	    CConfigurationData data = cfg.getConfigurationData();
 	    ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-	    
-	    if (cfgDes instanceof ILanguageSettingsProvidersKeeper) {
-	    	ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper)cfgDes;
-	    	lspk.setDefaultLanguageSettingsProvidersIds(new String[] {alCfgs.get(i).ToolchainID});
-	    }
-//	    ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
+
+	    setDefaultLanguageSettingsProviders(project, alCfgs.get(i), cfg, cfgDes);
 	}
 	monitor.worked(50);
 	mngr.setProjectDescription(project, des);
 
     }
+
+	private static void setDefaultLanguageSettingsProviders(IProject project, ConfigurationDescriptor cfgDes, IConfiguration cfg, ICConfigurationDescription cfgDescription) {
+		// propagate the preference to project properties
+		boolean isPreferenceEnabled = ScannerDiscoveryLegacySupport.isLanguageSettingsProvidersFunctionalityEnabled(null);
+		ScannerDiscoveryLegacySupport.setLanguageSettingsProvidersFunctionalityEnabled(project, isPreferenceEnabled);
+
+		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+	    	ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper)cfgDescription;
+
+	    	lspk.setDefaultLanguageSettingsProvidersIds(new String[] {cfgDes.ToolchainID});
+
+			List<ILanguageSettingsProvider> providers = getDefaultLanguageSettingsProviders(cfg, cfgDescription);
+			lspk.setLanguageSettingProviders(providers);
+		}
+	}
+
+	private static List<ILanguageSettingsProvider> getDefaultLanguageSettingsProviders(IConfiguration cfg, ICConfigurationDescription cfgDescription) {
+		List<ILanguageSettingsProvider> providers = new ArrayList<ILanguageSettingsProvider>();
+		String[] ids = cfg != null ? cfg.getDefaultLanguageSettingsProviderIds() : null;
+
+		if (ids == null) {
+			// Try with legacy providers
+			ids = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(cfgDescription);
+		}
+
+		if (ids != null) {
+			for (String id : ids) {
+				ILanguageSettingsProvider provider = null;
+				if (!LanguageSettingsManager.isPreferShared(id)) {
+					provider = LanguageSettingsManager.getExtensionProviderCopy(id, false);
+				}
+				if (provider == null) {
+					provider = LanguageSettingsManager.getWorkspaceProvider(id);
+				}
+				providers.add(provider);
+			}
+		}
+
+		return providers;
+	}
 
 }
