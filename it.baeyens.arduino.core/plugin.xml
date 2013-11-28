@@ -267,7 +267,7 @@
           allPopups="true"
           locationURI="toolbar:org.eclipse.ui.main.toolbar">
        <toolbar
-             id="it.baeyens.arduino.toolbar.main">
+             id="it.baeyens.arduino.toolbar.main" label="Arduino">
           <command
                 commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
                 disabledIcon="icons/check_disabled.png"
