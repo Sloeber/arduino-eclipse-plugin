@@ -1,5 +1,6 @@
 package it.baeyens.arduino.tools;
 
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -12,11 +13,12 @@ import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
 import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
-import org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
+
 import java.util.ArrayList;
 
 @SuppressWarnings("restriction")
@@ -99,7 +101,12 @@ public class ShouldHaveBeenInCDT {
 	    }
 	    CConfigurationData data = cfg.getConfigurationData();
 	    ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-	    ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
+	    
+	    if (cfgDes instanceof ILanguageSettingsProvidersKeeper) {
+	    	ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper)cfgDes;
+	    	lspk.setDefaultLanguageSettingsProvidersIds(new String[] {alCfgs.get(i).ToolchainID});
+	    }
+//	    ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
 	}
 	monitor.worked(50);
 	mngr.setProjectDescription(project, des);

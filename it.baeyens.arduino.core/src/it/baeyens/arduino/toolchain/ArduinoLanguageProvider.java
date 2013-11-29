@@ -42,7 +42,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    new MacroOptionParser("#define\\s+(\\S*)\\s*(\\S*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), };
 
     @Override
-    protected String getToolchainId() {
+    public String getToolchainId() {
 	return GCC_TOOLCHAIN_ID;
     }
 
