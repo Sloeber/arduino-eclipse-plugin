@@ -9,6 +9,7 @@
         <div id="header">
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
             <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT> 
+            
         </div>
 	
 	<h1>Which version to install?</h1>
@@ -19,18 +20,18 @@
 	<li>are willing to do some alfa testing</li>
 	<li>want to use Arduino IDE 1.5.2 beta</li>
 	</ul> 
-	I can strongly advice to download the "brand new" product.
-	These downloads simply need to be extracted (and sometimes you also need to make the eclipse program executable) and you can immediatly configure (read show where your arduino IDE is installed) the plugin and play.
-	You can find the download page <a href="/eclipse/download.php">here</a>.
-	
-	For the others:
-	There are 3 main components in the deployment of the plugin.
+	I can strongly advice to download the "brand new" product.<br>
+	These downloads simply need to be extracted (and sometimes you also need to make the eclipse program executable) and you can immediatly configure (read show where your arduino IDE is installed) the plugin and play.<br>
+	You can find the download page <a href="download.php">here</a>.<br>
+	<br>
+	For the others:<br>
+	There are 3 main components in the deployment of the plugin.<br>
 	<ul>
 	<li>The Arduino IDE(s) you want to use</li>
 	<li>The Eclipse version you want to use</li>
 	<li>The Plugin version you want to use</li>
 	</ul>
-	The Arduino IDE has 3 major breakpoints.
+	The Arduino IDE has 3 major breakpoints.<br>
 	<ul><li>before 1.5</li>
 	<li>between 1.5.0 and 1.5.2 (included)</li>
 	<li>after 1.5.2</li>
@@ -42,8 +43,8 @@
 	
 	V1 of the plugin runs in juno and indigo. I don't know wether kepler works.<br>
 	V2 of the plugin runs in juno only. (kepler does not work)<br>
-	
-	If we summarize this in a table we get:
+	<br>
+	If we summarize this in a table we get:<br>
 	<table border="1">
 	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th></tr>
 	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td></tr>

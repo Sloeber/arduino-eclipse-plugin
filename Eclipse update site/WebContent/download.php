@@ -12,80 +12,59 @@
             </div>
 <h1>here you can find product versions build by the build machine.</h1>
 product versions can be run without having to install eclipse as the product versions contain eclipse.<br>
-Yust download the correct version for your os unpack and start eclipse.
-You still need to configure (step 4 of the installation instructions)
-
-
-<h2>Linux 64 bit</h2><br>
+Yust download the correct version for your os unpack and start eclipse.<br>
+You still need to configure (step 4 of the installation instructions)<br>
+<br>
+Note1: All versions before 213-11-29 are only tarred even though they are called tar.gz. <br>
+Note2: All this is still pre beta (but working) so there are still some things to do (like spash screen, icons ..). <br>
 <?php
-$dir = "http://eclipse.baeyens.it/download/product";
-$dh = opendir("download/product");
-while ($f = readdir($dh)) {
-  $fullpath = $dir."/".$f;
-  if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,8)=="linux64.")
-  {
-    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
-  }
+
+
+function ListFileNames( $prefix)
+{
+
+  $location="download/product";
+  $dir = opendir($location);
+  while(false != ($file = readdir($dir))) 
+    {
+      if(($file != ".") and ($file != "..") and ($file != "index.php")) 
+        {
+          $files[] = $file; // put in array.
+        }   
+    }
+  rsort($files); // sort.
+  closedir($dir);
+
+  foreach($files as $file) 
+    {
+        $fullpath = $location."/".$file;
+        if (substr($file,0,strlen($prefix))==$prefix)
+        echo "<a href=\"$fullpath\" target=\"_blank\">$file</a>\n<br>";
+    }
 }
-closedir($dh);
+?>
+<h2>Linux 64 bit</h2>
+<?php
+ListFileNames("linux64.");
 ?>
 
-<h2>Linux 32 bit</h2><br>
+<h2>Linux 32 bit</h2>
 <?php
-$dir = "http://eclipse.baeyens.it/download/product";
-$dh = opendir("download/product");
-while ($f = readdir($dh)) {
-  $fullpath = $dir."/".$f;
-  if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,8)=="linux32.")
-  {
-    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
-  }
-}
-closedir($dh);
+ListFileNames("linux32.");
 ?>
+
 <h2>win 64 bit</h2>
 <?php
-$dir = "http://eclipse.baeyens.it/download/product";
-$dh = opendir("download/product");
-while ($f = readdir($dh)) {
-  $fullpath = $dir."/".$f;
-  if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,6)=="win64.")
-  {
-    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
-  }
-}
-closedir($dh);
+ListFileNames("win64.");
 ?>
 <h2>win 32 bit</h2>
 <?php
-$dir = "http://eclipse.baeyens.it/download/product";
-$dh = opendir("download/product");
-while ($f = readdir($dh)) {
-  $fullpath = $dir."/".$f;
-  if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,6)=="win32.")
-  {
-    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
-  }
-}
-closedir($dh);
+ListFileNames("win32.");
 ?>
+
 <h2>Mac 64 bit</h2>
 <?php
-$dir = "http://eclipse.baeyens.it/download/product";
-$dh = opendir("download/product");
-while ($f = readdir($dh)) {
-  $fullpath = $dir."/".$f;
-  if ($f{0} == "." || is_dir($fullpath)) continue;
-  if (substr($f,0,6)=="mac64.")
-  {
-    echo "<a href=\"$fullpath\" target=\"_blank\">$f</a>\n<br>";
-  }
-}
-closedir($dh);
+ListFileNames("mac64.");
 ?>
 <br>
 </body>
