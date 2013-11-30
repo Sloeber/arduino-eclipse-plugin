@@ -28,7 +28,7 @@
             name="Eclipse Arduino">
          <property
                name="windowImages"
-               value="platform:/plugin/it.baeyens.arduino.application/icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png">
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png">
          </property>
          <property
                name="preferenceCustomization"
@@ -36,7 +36,7 @@
          </property>
          <property
                name="aboutText"
-               value="Eclipse IDE for Arduino Developers&#x0A;&#x0A;Version: Juno Service Release 2&#x0A;Build id: {0}&#x0A;&#x0A;(c) Copyright Eclipse contributors and others 2000, 2013.  All rights reserved.&#x0A;Visit http://eclipse.org/&#x0A;&#x0A;This product includes software developed by the&#x0A;Apache Software Foundation http://apache.org/">
+               value="Eclipse IDE for Arduino Developers&#x0D;&#x0A;&#x0D;&#x0A;Info: http://eclipse.baeyens.it/&#x0D;&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0D;&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0D;&#x0A;&#x0D;&#x0A;Contributors: jantje, brodykenrick, wimjongman, neuweiler, &#x0D;&#x0A;darcade, amorellgarcia&#x0D;&#x0A;&#x0D;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
          </property>
          <property
                name="startupForegroundColor"
