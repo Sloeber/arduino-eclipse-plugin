@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Application
+Bundle-SymbolicName: it.baeyens.arduino.application;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

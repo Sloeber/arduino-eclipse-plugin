@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Eclipse Arduino" uid="it.baeyens.arduino.product" id="org.eclipse.epp.package.cpp.product" application="org.eclipse.ui.ide.workbench" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Eclipse Arduino" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="eclipse_lg.gif"/>
+      <image path="/it.baeyens.arduino.application/icons/logo_128.png"/>
       <text>
          Eclipse IDE for Arduino Developers
 
@@ -23,15 +23,16 @@ Apache Software Foundation http://apache.org/
    </configIni>
 
    <launcherArgs>
+      <programArgs>-perspective org.eclipse.cdt.ui.CPerspective</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="eclipse.png" i32="eclipse32.png" i48="eclipse48.png"/>
+   <windowImages i16="platform:/plugin/it.baeyens.arduino.application/icons/logo_16.png" i32="/it.baeyens.arduino.application/icons/logo_32.png" i48="/it.baeyens.arduino.application/icons/logo_48.png" i64="/it.baeyens.arduino.application/icons/logo_64.png" i128="/it.baeyens.arduino.application/icons/logo_128.png"/>
 
    <splash
-      location="it.baeyens.arduino.product"
-      startupProgressRect="0,280,455,15"
-      startupMessageRect="7,220,441,20"
+      location="it.baeyens.arduino.application"
+      startupProgressRect="97,370,100,4"
+      startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
    <launcher>
       <solaris/>
@@ -39,6 +40,7 @@ Apache Software Foundation http://apache.org/
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
