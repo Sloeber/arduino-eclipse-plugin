@@ -1,5 +1,9 @@
 package it.baeyens.arduino.tools;
 
+import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
+
+import java.util.ArrayList;
+
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -13,13 +17,10 @@ import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
 import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
+import org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-
-import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
-
-import java.util.ArrayList;
 
 @SuppressWarnings("restriction")
 // TOFIX Get this code in CDT so I should not have to do this
@@ -45,9 +46,8 @@ public class ShouldHaveBeenInCDT {
      *            The monitor to follow the process
      * @throws CoreException
      */
-    public static void setCProjectDescription(IProject project,
-    	ArrayList<ConfigurationDescriptor> alCfgs,
-    	boolean isManagedBuild, IProgressMonitor monitor) throws CoreException {
+    public static void setCProjectDescription(IProject project, ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild,
+	    IProgressMonitor monitor) throws CoreException {
 
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 	ICProjectDescription des = mngr.createProjectDescription(project, false, false);
@@ -83,7 +83,8 @@ public class ShouldHaveBeenInCDT {
 	for (int i = 0; i < alCfgs.size(); i++) {
 	    IToolChain tcs = ManagedBuildManager.getExtensionToolChain(alCfgs.get(i).ToolchainID);
 
-	    Configuration cfg = new Configuration(mProj, (ToolChain) tcs, ManagedBuildManager.calculateChildId(alCfgs.get(i).ToolchainID, null), alCfgs.get(i).Name);
+	    Configuration cfg = new Configuration(mProj, (ToolChain) tcs, ManagedBuildManager.calculateChildId(alCfgs.get(i).ToolchainID, null),
+		    alCfgs.get(i).Name);
 	    IBuilder bld = cfg.getEditableBuilder();
 	    if (bld != null) {
 		// if (bld.isInternalBuilder()) {
@@ -101,12 +102,13 @@ public class ShouldHaveBeenInCDT {
 	    }
 	    CConfigurationData data = cfg.getConfigurationData();
 	    ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-	    
+
 	    if (cfgDes instanceof ILanguageSettingsProvidersKeeper) {
-	    	ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper)cfgDes;
-	    	lspk.setDefaultLanguageSettingsProvidersIds(new String[] {alCfgs.get(i).ToolchainID});
+		ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper) cfgDes;
+		lspk.setDefaultLanguageSettingsProvidersIds(new String[] { alCfgs.get(i).ToolchainID });
 	    }
-//	    ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
+	    // without this line the indexer doesn't work properly in juno
+	    ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
 	}
 	monitor.worked(50);
 	mngr.setProjectDescription(project, des);
