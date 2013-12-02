@@ -224,4 +224,24 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	setGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, newFilter);
 
     }
+    //
+    // get/set last used "use default sketch location"
+    //
+    public static boolean getLastUsedDefaultSketchSelection(){
+	return getGlobalBoolean(ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT);
+    }
+
+    public static void setLastUsedDefaultSketchSelection(boolean newFilter) {
+	setGlobalBoolean(ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
+    }
+    //
+    // get/set last used sketch template folder parameters
+    //
+    public static String getLastTemplateFolderName() {
+	return getGlobalValue(ENV_KEY_SKETCH_TEMPLATE_FOLDER);
+    }
+    public static void setLastTemplateFolderName(String folderName) {
+	setGlobalValue(ENV_KEY_SKETCH_TEMPLATE_FOLDER, folderName);
+
+    }
 }
