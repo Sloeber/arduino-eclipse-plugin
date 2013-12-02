@@ -108,7 +108,12 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";
+    //
+    // template Sketch information
 
+    public static final String ENV_KEY_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
+    public static final String ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT"; 
+    
     public static final String JANTJE_SIZE_COMMAND = "\"${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}\" --format=avr --mcu=${A.BUILD.MCU} \"${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf\"";
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = "";
