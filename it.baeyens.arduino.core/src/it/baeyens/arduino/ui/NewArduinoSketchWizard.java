@@ -6,6 +6,7 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.Stream;
+import it.baeyens.arduino.tools.DiskStream;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 import java.io.File;
@@ -57,9 +58,10 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
 
-    private WizardNewProjectCreationPage mWizardPage;
-    private ArduinoSettingsPage mArduinoPage;
-    private BuildConfigurationsPage mBuildCfgPage;
+    private WizardNewProjectCreationPage mWizardPage;	// first page of the dialog
+    private SketchTemplatePage mSketchTemplatePage;	// add the folder for the templates	
+    private ArduinoSettingsPage mArduinoPage;		// add Arduino board and comp port
+    private BuildConfigurationsPage mBuildCfgPage;	// build the configuration
     private IConfigurationElement mConfig;
     private IProject mProject;
 
@@ -68,42 +70,79 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     }
 
     @Override
+    /**
+     * adds pages to the wizard. We are using the standard project wizard of Eclipse
+     */
     public void addPages() {
+	//
 	// We assume everything is OK as it is tested in the handler
+	// create each page and fill in the title and description
+	// first page to fill in the project name
+	//
 	mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
 	mWizardPage.setDescription("Create a new Arduino sketch.");
 	mWizardPage.setTitle("New Arduino sketch");
-
+	//
+	// settings for template file location
+	//
+	mSketchTemplatePage = new SketchTemplatePage("Sketch Template location");
+	mSketchTemplatePage.setTitle("Provide the sketch template folder");
+	mSketchTemplatePage.setDescription("The folder must contain a sketch.cpp and sketch.h");
+	//
+	// settings for Arduino board etc
+	//
 	mArduinoPage = new ArduinoSettingsPage("Arduino information");
 	mArduinoPage.setTitle("Provide the Arduino information.");
 	mArduinoPage.setDescription("These settings can be changed later.");
-
+	//
+	// configuration page but I haven't seen it
+	//
 	mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
 	mBuildCfgPage.setTitle("Select additional build configurations for this project.");
 	mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
-
+	//
+	// actually add the pages to the wizard
+	///
 	addPage(mWizardPage);
+	addPage(mSketchTemplatePage);
 	addPage(mArduinoPage);
 	addPage(mBuildCfgPage);
-
     }
-
+    /**
+     * this method is required by IWizard otherwise nothing will actually happen
+     */
     @Override
     public boolean performFinish() {
-
+	//
+	// if the project is filled in then we are done
+	//
 	if (mProject != null) {
 	    return true;
 	}
-
+	//
+	// get an IProject handle to our project
+	//
 	final IProject projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(mWizardPage.getProjectName()));
+	//
+	// let's validate it
+	//
 	try {
-
+	    //
+	    // get the URL if it is filled in. This depends on the check box "use defaults" is checked
+	    // or not
+	    //
 	    URI projectURI = (!mWizardPage.useDefaults()) ? mWizardPage.getLocationURI() : null;
-
+	    //
+	    // get the workspace name
+	    //
 	    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
+	    //
+	    // the project descriptions is set equal to the name of the project
+	    //
 	    final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
-
+	    //
+	    // get our workspace location
+	    //
 	    desc.setLocationURI(projectURI);
 
 	    /*
@@ -112,6 +151,9 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 		@Override
 		protected void execute(IProgressMonitor monitor) throws CoreException {
+		    //
+		    // actually create the project
+		    //
 		    createProject(desc, projectHandle, monitor);
 		}
 	    };
@@ -127,13 +169,18 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    MessageDialog.openError(getShell(), "Error", realException.getMessage());
 	    return false;
 	}
-
+	//
+	// so the project is created we can start 
+	//
 	mProject = projectHandle;
 
 	if (mProject == null) {
 	    return false;
 	}
-
+	//
+	// so now we set Eclipse to the right perspective and switch to our just created
+	// project
+	//
 	BasicNewProjectResourceWizard.updatePerspective(mConfig);
 	IWorkbenchWindow TheWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 	BasicNewResourceWizard.selectAndReveal(mProject, TheWindow);
@@ -179,6 +226,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
+		mSketchTemplatePage.saveAllSelections(configurationDescription);
 		mArduinoPage.saveAllSelections(configurationDescription);
 		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
@@ -197,19 +245,46 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
 	    ArduinoHelpers.addArduinoCodeToProject(project, defaultConfigDescription);
 
-	    /* Add the sketch source code file */
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
+	    //
+	    // depending on the the Use Default selection we will either select the default
+	    // templates or the ones specified in the Template Sketch folder
+	    //
+	    // Add the sketch source code file
+	    //
+	    if (ArduinoInstancePreferences.getLastUsedDefaultSketchSelection() == true) {
+		//
+		// we will use the default sketch.cpp and sketch.h
+		//
+		ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
 		    Stream.openContentStream(project.getName(), "", "templates/sketch.cpp"), monitor);
 
-	    /* Add the sketch header file */
-	    String Include = "WProgram.h";
-	    if (ArduinoInstancePreferences.isArduinoIdeOne()) // Arduino v1.0+
-	    {
-		Include = "Arduino.h";
-	    }
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
+		/* Add the sketch header file */
+		String Include = "WProgram.h";
+		if (ArduinoInstancePreferences.isArduinoIdeOne()) // Arduino v1.0+
+		{
+		    Include = "Arduino.h";
+		}
+		ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
 		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h"), monitor);
+	    } else {
+		//
+		// we are using our own created sketch.cpp and sketch.h. We use a different streaming mechanism
+		// here. Standard used relative paths (Stream class). I created a different Class (DiskStream) to
+		// handle absolute paths
+		//
+		String folderName = ArduinoInstancePreferences.getLastTemplateFolderName();
+		ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
+		    DiskStream.openContentStream(project.getName(), "", folderName + "\\sketch.cpp"), monitor);
 
+		/* Add the sketch header file */
+		String Include = "WProgram.h";
+		if (ArduinoInstancePreferences.isArduinoIdeOne()) // Arduino v1.0+
+		{
+		    Include = "Arduino.h";
+		}
+		ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
+		    DiskStream.openContentStream(project.getName(), Include, folderName + "\\sketch.h"), monitor);
+	    }
 	    // exclude "Librarie/*/?xample from the build
 	    // ICSourceEntry[] folder;
 	    // folder = configurationDescription.getSourceEntries();
