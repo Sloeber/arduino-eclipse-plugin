@@ -6,11 +6,9 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.Stream;
-import it.baeyens.arduino.tools.DiskStream;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -59,10 +57,10 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
 
-    private WizardNewProjectCreationPage mWizardPage;	// first page of the dialog
-    private SketchTemplatePage mSketchTemplatePage;	// add the folder for the templates	
-    private ArduinoSettingsPage mArduinoPage;		// add Arduino board and comp port
-    private BuildConfigurationsPage mBuildCfgPage;	// build the configuration
+    private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
+    private SketchTemplatePage mSketchTemplatePage; // add the folder for the templates
+    private ArduinoSettingsPage mArduinoPage; // add Arduino board and comp port
+    private BuildConfigurationsPage mBuildCfgPage; // build the configuration
     private IConfigurationElement mConfig;
     private IProject mProject;
 
@@ -84,17 +82,17 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	mWizardPage.setDescription("Create a new Arduino sketch.");
 	mWizardPage.setTitle("New Arduino sketch");
 	//
-	// settings for template file location
-	//
-	mSketchTemplatePage = new SketchTemplatePage("Sketch Template location");
-	mSketchTemplatePage.setTitle("Provide the sketch template folder");
-	mSketchTemplatePage.setDescription("The folder must contain a sketch.cpp and sketch.h");
-	//
 	// settings for Arduino board etc
 	//
 	mArduinoPage = new ArduinoSettingsPage("Arduino information");
 	mArduinoPage.setTitle("Provide the Arduino information.");
 	mArduinoPage.setDescription("These settings can be changed later.");
+	//
+	// settings for template file location
+	//
+	mSketchTemplatePage = new SketchTemplatePage("Sketch Template location");
+	mSketchTemplatePage.setTitle("Provide the sketch template folder");
+	mSketchTemplatePage.setDescription("The folder must contain a sketch.cpp and sketch.h");
 	//
 	// configuration page but I haven't seen it
 	//
@@ -103,12 +101,13 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
 	//
 	// actually add the pages to the wizard
-	///
+	// /
 	addPage(mWizardPage);
-	addPage(mSketchTemplatePage);
 	addPage(mArduinoPage);
+	addPage(mSketchTemplatePage);
 	addPage(mBuildCfgPage);
     }
+
     /**
      * this method is required by IWizard otherwise nothing will actually happen
      */
@@ -171,7 +170,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    return false;
 	}
 	//
-	// so the project is created we can start 
+	// so the project is created we can start
 	//
 	mProject = projectHandle;
 
@@ -259,48 +258,35 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    //
 	    // Create the source files (sketch.cpp and sketch.h)
 	    //
-	    InputStream cppTemplateFile = null;
-	    InputStream hTemplateFile   = null;
-	    
+	    String cppTemplateFile;
+	    String hTemplateFile;
+	    boolean isfile = true;
+
 	    if (ArduinoInstancePreferences.getLastUsedDefaultSketchSelection() == true) {
 		//
 		// we will use the default sketch.cpp and sketch.h
 		//
-		cppTemplateFile = Stream.openContentStream(project.getName(), "", "templates/sketch.cpp");
-		hTemplateFile	= Stream.openContentStream(project.getName(), Include, "templates/sketch.h");
+		cppTemplateFile = "templates/sketch.cpp";
+		hTemplateFile = "templates/sketch.h";
+		isfile = false;
 	    } else {
 		//
 		// we are using our own created sketch.cpp and sketch.h. We use a different streaming mechanism
 		// here. Standard used relative paths (Stream class). I created a different Class (DiskStream) to
 		// handle absolute paths
 		//
-		String folderName = ArduinoInstancePreferences.getLastTemplateFolderName();		
-		cppTemplateFile	= DiskStream.openContentStream(project.getName(), "", folderName + "\\sketch.cpp");
-		hTemplateFile	= DiskStream.openContentStream(project.getName(), Include, folderName + "\\sketch.h");
+		String folderName = ArduinoInstancePreferences.getLastTemplateFolderName();
+		cppTemplateFile = folderName + "\\sketch.cpp";
+		hTemplateFile = folderName + "\\sketch.h";
+		isfile = true;
 	    }
 	    //
 	    // add both files to the project
 	    //
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"), cppTemplateFile, monitor);
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"), hTemplateFile, monitor);
-	    
-	    // exclude "Librarie/*/?xample from the build
-	    // ICSourceEntry[] folder;
-	    // folder = configurationDescription.getSourceEntries();
-	    // char[][] exclusions = entry.fullExclusionPatternChars();
-	    // CoreModelUtil.isExcluded(project.getFullPath(), exclusions);
-	    // folder[0].
-	    // getResourceDescription(new Path(""), true);
-	    // folder[0].createFilter(IResourceFilterDescription.EXCLUDE_ALL |
-	    // IResourceFilterDescription.FOLDERS, new
-	    // FileInfoMatcherDescription("org.eclipse.core.resources.regexFilterMatcher",
-	    // "Librarie/*/?xample"), IResource.BACKGROUND_REFRESH, monitor);
-
-	    // IFile file = project.getFile("Librarie/*/?xample");
-	    // Object activeConfig;
-	    // IResourceConfiguration ResConfig = configurationDescription.
-	    // .createResourceConfiguration(file);
-	    // ResConfig.setExclude(true);
+	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
+		    Stream.openContentStream(project.getName(), Include, cppTemplateFile, isfile), monitor);
+	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
+		    Stream.openContentStream(project.getName(), Include, hTemplateFile, isfile), monitor);
 
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
@@ -321,22 +307,6 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    } else {
 		// this should not happen
 	    }
-
-	    // private void saveData() {
-	    // ICExclusionPatternPathEntry[] p = new
-	    // ICExclusionPatternPathEntry[src.size()];
-	    // Iterator<_Entry> it = src.iterator();
-	    // int i=0;
-	    // while(it.hasNext()) { p[i++] = (it.next()).ent; }
-	    // setEntries(cfgd, p);
-	    // tree.setInput(cfgd);
-	    // updateData(cfgd);
-	    // if (page instanceof AbstractPage) {
-	    // ICConfigurationDescription cfgDescription =
-	    // cfgd.getConfiguration();
-	    // ((AbstractPage)page).cfgChanged(cfgDescription);
-	    // }
-	    // }
 
 	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 	    prjDesc.setCdtProjectCreated();

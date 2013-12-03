@@ -5,6 +5,7 @@ import it.baeyens.arduino.ui.NewArduinoSketchWizard;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,16 +24,21 @@ public class Stream {
     /**
      * Initialize the file contents to contents of the given resource.
      */
-    public static InputStream openContentStream(String title, String Include, String Resource) throws CoreException {
+    public static InputStream openContentStream(String title, String Include, String Resource, boolean isFile) throws CoreException {
 
 	/* We want to be truly OS-agnostic */
 	final String newline = System.getProperty("line.separator");
 
 	String line;
 	StringBuffer stringBuffer = new StringBuffer();
-
+	InputStream input = null;
 	try {
-	    InputStream input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
+
+	    if (isFile) {
+		input = new FileInputStream(Resource);
+	    } else {
+		input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
+	    }
 	    // "templates/index-xhtml-template.resource");
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 	    try {
@@ -48,9 +54,27 @@ public class Stream {
 	    }
 
 	} catch (IOException ioe) {
+	    if (input != null) {
+		try {
+		    input.close();
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	    }
+	    input = null;
 	    IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null);
 	    Common.log(status);
 	    throw new CoreException(status);
+	} finally {
+	    if (input != null) {
+		try {
+		    input.close();
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	    }
 	}
 
 	return new ByteArrayInputStream(stringBuffer.toString().getBytes());

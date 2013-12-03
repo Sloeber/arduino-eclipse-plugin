@@ -2,11 +2,8 @@ package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.common.Common;
-//import it.baeyens.arduino.tools.ArduinoBoards;
-//import it.baeyens.arduino.tools.ArduinoHelpers;
 
-//import java.io.File;
+import java.io.File;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -17,43 +14,28 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.*;
-import static java.nio.file.FileVisitResult.*;
-import static java.nio.file.FileVisitOption.*;
-import java.util.*;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-//import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Composite;
-//import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
-//import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+//import java.io.File;
+//import org.eclipse.swt.widgets.Combo;
+//import org.eclipse.swt.widgets.Event;
+//import org.eclipse.swt.widgets.Listener;
 //import org.eclipse.swt.widgets.Widget;
 
-
 /**
- * The SketchSelection class is used in the new wizard and the selecting the folder with the sketch templates
- * This class controls the gui and the data underneath the gui. 
+ * The SketchSelection class is used in the new wizard and the selecting the folder with the sketch templates This class controls the gui and the data
+ * underneath the gui.
  * 
  * @author Nico Verduin
  * @date 25-11-2013
@@ -65,38 +47,39 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
     //
     // Gui Elements used
     //
-    protected Label 	mLabel;		// "template folder"  
-    protected Text  	mFolderName;	// input folder name
-    protected Button 	mBrowseButton;	// browse button to find correct folder
-    protected Button    mCheckBox;	// checkbox wheter to use default template
+    protected Label mLabel; // "template folder"
+    protected Text mFolderName; // input folder name
+    protected Button mBrowseButton; // browse button to find correct folder
+    protected Button mCheckBox; // checkbox wheter to use default template
 
-    private final int ncol = 4;		// we have 6 columns in the dialog box
+    private final int ncol = 4; // we have 6 columns in the dialog box
 
-    private boolean mValidAndComplete; 	// Is the form valid and completely
-				       	// filled in?
+    private boolean mValidAndComplete; // Is the form valid and completely
+				       // filled in?
+
     @Override
     public void createControls(Composite parent, ICPropertyProvider provider) {
 	super.createControls(parent, provider);
 	draw(parent);
     }
 
-     /**
+    /**
      * @function draw
      * @param composite
-     * builds the layout and displays it
+     *            builds the layout and displays it
      */
     public void draw(Composite composite) {
 	//
 	// local variables
 	//
-	GridLayout 	theGridLayout;	// references the layout
-	GridData 	theGriddata;	// references a grid 
-	
+	GridLayout theGridLayout; // references the layout
+	GridData theGriddata; // references a grid
+
 	//
 	// create the grid layout and add it to the composite
 	//
-	theGridLayout  			= new GridLayout();
-	theGridLayout.numColumns 	= ncol;		// 4 columns
+	theGridLayout = new GridLayout();
+	theGridLayout.numColumns = ncol; // 4 columns
 	composite.setLayout(theGridLayout);
 	//
 	// check box Use default
@@ -132,12 +115,12 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");
 	    }
 	});
-	
+
 	//
 	// label field
 	//
-	mLabel= new Label(composite, SWT.NONE);
-	mLabel.setText("Template Folder Location:"); 
+	mLabel = new Label(composite, SWT.NONE);
+	mLabel.setText("Template Folder Location:");
 	theGriddata = new GridData();
 	theGriddata.horizontalAlignment = SWT.LEFT;
 	theGriddata.horizontalSpan = 4;
@@ -157,7 +140,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	mFolderName.addModifyListener(new ModifyListener() {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
-	    public void modifyText(ModifyEvent event) {	
+	    public void modifyText(ModifyEvent event) {
 		//
 		// if the user changes the field directly, validate the page
 		//
@@ -165,7 +148,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 		feedbackControl.setText(mValidAndComplete ? "true" : "false");
 	    }
 	});
-	// 
+	//
 	// Browse button
 	//
 	mBrowseButton = new Button(composite, SWT.NONE);
@@ -242,11 +225,11 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	//
 	feedbackControl.setText(mValidAndComplete ? "true" : "false");
     }
+
     /**
-     * @name SetControls()
-     * Enables or disables the controls based on the mCheckbox settings
+     * @name SetControls() Enables or disables the controls based on the mCheckbox settings
      */
-    private void SetControls(){
+    private void SetControls() {
 	if (mCheckBox.getSelection() == true) {
 	    //
 	    // we are using default settings so disable
@@ -266,35 +249,34 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	    mValidAndComplete = false;
 	}
     }
+
     /**
-     * @name validatePage()
-     * Check if the user has decided to use another folder for the Sketch.cpp and Sketch.h template
-     * files. If so, validate the folder actually contains both files.
-     * If the validation meets the criteria, set mValidAndComplete to true. Ohterwise false.
+     * @name validatePage() Check if the user has decided to use another folder for the Sketch.cpp and Sketch.h template files. If so, validate the
+     *       folder actually contains both files. If the validation meets the criteria, set mValidAndComplete to true. Ohterwise false.
      */
-    private void validatePage(){
+    private void validatePage() {
 	//
 	// check if the default is selected
 	//
-	if (mCheckBox.getSelection() == false){    
-    	    //
-    	    // check if the folder contains a Sketch.cpp and a Sketch.h
-    	    //
-    	    String pathName = mFolderName.getText();
-    	    boolean existFile = new File(pathName + "\\sketch.cpp").isFile();		    
-    	    mValidAndComplete = false;
-    	    if (existFile == true) {
-    	        //
-    	        // sketch.cpp exists now check if sketch.h exists
-    	        //
-    	        existFile = new File(pathName + "\\sketch.h").isFile();		    
-    	        if (existFile == true) {
-    		    //
-    		    // they both exist so this is a valid folder
-    		    //
-    		    mValidAndComplete = true;
-    	        }
-    	    }
+	if (mCheckBox.getSelection() == false) {
+	    //
+	    // check if the folder contains a Sketch.cpp and a Sketch.h
+	    //
+	    String pathName = mFolderName.getText();
+	    boolean existFile = new File(pathName + "\\sketch.cpp").isFile();
+	    mValidAndComplete = false;
+	    if (existFile == true) {
+		//
+		// sketch.cpp exists now check if sketch.h exists
+		//
+		existFile = new File(pathName + "\\sketch.h").isFile();
+		if (existFile == true) {
+		    //
+		    // they both exist so this is a valid folder
+		    //
+		    mValidAndComplete = true;
+		}
+	    }
 	} else {
 	    //
 	    // we are using a default setting
@@ -313,7 +295,6 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
     public boolean isPageComplete() {
 	return mValidAndComplete;
     }
-
 
     @Override
     public boolean canBeVisible() {
@@ -348,11 +329,11 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	    saveAllSelections(getResDesc().getConfiguration());
 	}
     }
+
     /**
      * @name saveAllSelections
      * @param confdesc
-     * Save the folder name and the check Box whether to use the default location for
-     * the sketch template files
+     *            Save the folder name and the check Box whether to use the default location for the sketch template files
      */
     public void saveAllSelections(ICConfigurationDescription confdesc) {
 	//
@@ -372,9 +353,9 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	ArduinoInstancePreferences.setLastTemplateFolderName(folderName);
 	ArduinoInstancePreferences.setLastUsedDefaultSketchSelection(defaultChecked);
     }
+
     /**
-     * @name restoreAllSelections()
-     * Restore all necessary variables into the respective controls 
+     * @name restoreAllSelections() Restore all necessary variables into the respective controls
      */
     private void restoreAllSelections() {
 	//
