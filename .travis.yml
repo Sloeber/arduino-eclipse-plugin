@@ -1,4 +1,5 @@
 #Build the Arduino Eclipse Plugin using Maven
 node:
 #TODO: work out about adding other entries for different platforms and Eclipse variants
-script: mvn verify -Pall
+#script: mvn verify -Pall #This didn't work
+script: mvn verify -Pall,juno
