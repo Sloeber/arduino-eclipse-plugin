@@ -1,0 +1,3 @@
+#Build the Arduino Eclipse Plugin using Maven
+node:
+script: mvn install
