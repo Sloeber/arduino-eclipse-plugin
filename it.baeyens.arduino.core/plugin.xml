@@ -230,7 +230,16 @@
            </definition>
     </extension  > 
 --> 
- 
+
+<!-- Definition to know if the active perspective is Arduino -->
+<extension point="org.eclipse.core.expressions.definitions">
+  <definition id="it.baeyens.definition.isArduinoPerspective">
+    <with variable="activeWorkbenchWindow.activePerspective">
+       <equals value="org.eclipse.cdt.ui.CPerspective"/>
+    </with>
+  </definition>
+</extension>
+
  <!-- Upload project handler 
     <extension       point="org.eclipse.ui.handlers">
       <handler
