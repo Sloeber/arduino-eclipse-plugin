@@ -277,12 +277,18 @@
           locationURI="toolbar:org.eclipse.ui.main.toolbar">
        <toolbar
              id="it.baeyens.arduino.toolbar.main" label="Arduino">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           <command
                 commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
                 disabledIcon="icons/check_disabled.png"
                 icon="icons/check.png"
                 label="%command.label"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.UploadprojectAction"
@@ -290,6 +296,9 @@
                 icon="icons/arrow.png"
                 label="%command.label.0"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.NewSketchAction"
@@ -297,12 +306,18 @@
                 icon="icons/new.png"
                 label="%command.label.1"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
           <command
                 commandId="org.eclipse.ui.file.save"
                 disabledIcon="icons/save_disabled.png"
                 icon="icons/save.png"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"
@@ -310,17 +325,26 @@
                 icon="icons/ser_mon.png"
                 label="%command.label.2"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenScopeAction"
                 icon="icons/scope.png"
                 label="%command.label.5"
                 style="push">
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
           </command>
        </toolbar>
     </menuContribution>
 		<menuContribution locationURI="menu:org.eclipse.ui.main.menu??after=Run">
 		    <menu label="%menu.label" >
+                <visibleWhen>
+                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
+                </visibleWhen>
 		    <command
             commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
             id="buildProject"
