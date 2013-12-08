@@ -1,5 +1,3 @@
 #Build the Arduino Eclipse Plugin using Maven
 node:
-#TODO After Kepler issue is fixed-- script: mvn verify -Pall,juno,all,kepler,all,luna
-script: mvn verify -Pall,juno
-
+script: mvn verify -Pall,juno,all,kepler,all,luna
