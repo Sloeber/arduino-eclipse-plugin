@@ -7,7 +7,8 @@ script: mvn deploy -Pall,juno,all,kepler,all,luna
 #Note when testing on your local setup then you need to set/export: CI_DEPLOY_USERNAME and CI_DEPLOY_OAUTH2_TOKEN
 env:
   global:
-  # Name, password and oauth2
+    MAVEN_OPTS="-Xmx1024M"
+    #Travis Encrypted Github name and oauth2
     - secure: "GzqdusL3C5WD7YgHFax4zb2xtkE9UPAyG4UlRPpyDUwM8VzZAujkwigxUVT0Swt3eJj16mmPi1E+krarsGUACoeM1buiWEqG6AMBn5eVHxehgPVYTPZ2CfQAiniJd/wgYBqoB+RXKyLhcWyJJDxfZq/IH+C7fF9WQOTfo8ER5Bc="
     - secure: "T6kinvAdTDaNPggIcYGCyVfa/HXYRc9uPx51M2aFKt8eY5bxZ3fgTpgPJNOiuEdlukWgtmi+uz4apiVDTUEVijmr7szY/ddfcixQFQkVKgUE/y50nDV0tUwJh7b0DTYpFZOjaSLHaHlV59tDUtNIay+bPw+cQ/7pCeZK4q0lux4="
 
