@@ -13,8 +13,6 @@
         <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
-
-
 	<modules>
 		<module>../it.baeyens.arduino.core.nl1</module>
 		<module>../it.baeyens.arduino.feature</module>
@@ -26,7 +24,6 @@
 		<module>../it.baeyens.arduino.updatesite</module>
 		<module>../it.baeyens.arduino.application</module>
 	</modules>
-
 
 	<build>
 		<plugins>
