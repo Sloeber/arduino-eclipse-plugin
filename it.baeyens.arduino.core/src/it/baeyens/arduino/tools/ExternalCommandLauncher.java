@@ -17,7 +17,6 @@ package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ICommandOutputListener.StreamSource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -66,9 +65,6 @@ public class ExternalCommandLauncher {
     private List<String> fStdOut;
     private List<String> fStdErr;
 
-    /** The listener to be informed about each new line of output */
-    protected ICommandOutputListener fLogEventListener = null;
-
     private MessageConsole fConsole = null;
 
     private final static int COLOR_STDOUT = SWT.COLOR_DARK_GREEN;
@@ -81,7 +77,6 @@ public class ExternalCommandLauncher {
 
 	private final BufferedReader fReader;
 	private final List<String> fLog;
-	private final StreamSource fSource;
 	private MessageConsoleStream fConsoleOutput = null;
 
 	/**
@@ -96,9 +91,8 @@ public class ExternalCommandLauncher {
 	 * @param consolestream
 	 *            <code>OutputStream</code> for secondary console output, or <code>null</code> for no console output.
 	 */
-	public LogStreamRunner(InputStream instream, StreamSource source, List<String> log, MessageConsoleStream consolestream) {
+	public LogStreamRunner(InputStream instream, List<String> log, MessageConsoleStream consolestream) {
 	    fReader = new BufferedReader(new InputStreamReader(instream));
-	    fSource = source;
 	    fLog = log;
 	    fConsoleOutput = consolestream;
 	}
@@ -116,11 +110,6 @@ public class ExternalCommandLauncher {
 		    // If a Listener has been registered, call it
 		    String line = fReader.readLine();
 		    if (line != null) {
-			synchronized (ExternalCommandLauncher.this) {
-			    if (fLogEventListener != null) {
-				fLogEventListener.handleLine(line, fSource);
-			    }
-			}
 			// Add the line to the total output
 			fLog.add(line);
 
@@ -283,8 +272,8 @@ public class ExternalCommandLauncher {
 
 	    process = fProcessBuilder.start();
 
-	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), StreamSource.STDOUT, fStdOut, stdoutConsoleStream));
-	    Thread stderrRunner = new Thread(new LogStreamRunner(process.getErrorStream(), StreamSource.STDERR, fStdErr, stderrConsoleStream));
+	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), fStdOut, stdoutConsoleStream));
+	    Thread stderrRunner = new Thread(new LogStreamRunner(process.getErrorStream(), fStdErr, stderrConsoleStream));
 
 	    synchronized (fRunLock) {
 		// Wait either for the logrunners to terminate or the user to
@@ -362,30 +351,6 @@ public class ExternalCommandLauncher {
      */
     public List<String> getStdErr() {
 	return fStdErr;
-    }
-
-    /**
-     * Sets a listener that will receive all lines from the external program output as they are read.
-     * <p>
-     * The listener can be used to update the user interface according to the current output.
-     * </p>
-     * 
-     * @param listener
-     *            Object implementing the {@link ICommandOutputListener} Interface.
-     */
-    public synchronized void setCommandOutputListener(ICommandOutputListener listener) {
-	Assert.isNotNull(listener);
-	fLogEventListener = listener;
-    }
-
-    /**
-     * Removes the current command output listener.
-     * <p>
-     * While it is safe to call this while an external program is running, it is probably better to just ignore superfluous output.
-     * </p>
-     */
-    public synchronized void removeCommandOutputListener() {
-	fLogEventListener = null;
     }
 
     /**

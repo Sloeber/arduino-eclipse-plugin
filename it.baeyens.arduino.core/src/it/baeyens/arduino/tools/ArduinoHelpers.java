@@ -739,7 +739,7 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
 
 	    // If this is a debug config we modify the environment variables for compilation
-	    if ( debugCompilerSettings ) {
+	    if (debugCompilerSettings) {
 		setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
 	    }
 
@@ -1009,5 +1009,20 @@ public class ArduinoHelpers extends Common {
 
     private static String makeEnvironmentVar(String string) {
 	return "${" + string + "}";
+    }
+
+    /**
+     * Give the string entered in the com port try to extract a host. If no host is found return null yun at xxx.yyy.zzz (arduino yun) returns
+     * yun.local
+     * 
+     * @param mComPort
+     * @return
+     */
+    public static String getHostFromComPort(String mComPort) {
+	// TODO Auto-generated method stub
+	String host = mComPort.split(" ")[0];
+	if (host.equals(mComPort))
+	    return null;
+	return host + ".local";
     }
 }

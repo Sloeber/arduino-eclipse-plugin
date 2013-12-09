@@ -63,6 +63,7 @@ public class ArduinoConst {
     // tags to interpret the arduino input files
     public static final String BoardNameKeyTAG = "name";
     public static final String UploadToolTeensy = "teensy_reboot";
+    public static final String Upload_ssh = "ssh upload";
 
     public static final String ENV_KEY_ARDUINO_START = "A.";
     public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";
@@ -112,8 +113,8 @@ public class ArduinoConst {
     // template Sketch information
 
     public static final String ENV_KEY_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
-    public static final String ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT"; 
-    
+    public static final String ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";
+
     public static final String JANTJE_SIZE_COMMAND = "\"${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}\" --format=avr --mcu=${A.BUILD.MCU} \"${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf\"";
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = "";

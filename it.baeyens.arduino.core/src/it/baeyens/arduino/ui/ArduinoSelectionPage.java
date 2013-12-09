@@ -13,6 +13,7 @@ import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
@@ -220,7 +221,8 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	theGriddata.horizontalSpan = (ncol - 1);
 	controlUploadPort.setLayoutData(theGriddata);
 	controlUploadPort.setEnabled(false);
-	controlUploadPort.setItems(Common.listComPorts());
+
+	controlUploadPort.setItems(ArrayUtil.addAll(activator.bonjourDiscovery.getList(), Common.listComPorts()));
 
 	createLine(composite, ncol);
 	boardOptionCombos = new labelcombo[boardsFiles.length][];
