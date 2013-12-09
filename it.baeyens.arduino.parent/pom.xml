@@ -10,7 +10,10 @@
 
 	<properties>
 		<tycho.version>0.18.1</tycho.version>
+        <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
+
+
 
 	<modules>
 		<module>../it.baeyens.arduino.core.nl1</module>
