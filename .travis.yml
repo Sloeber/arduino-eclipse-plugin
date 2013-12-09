@@ -3,15 +3,15 @@
 before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
 
 node:
-#script: mvn verify -Pall,juno,all,kepler,all,luna 
-script: mvn verify -Pall,juno,all,kepler,all,luna --settings target/travis/settings.xml
-
+#script: mvn verify -Pall,juno,all,kepler,all,luna --settings target/travis/settings.xml
+#script: mvn deploy -Pall,juno,all,kepler,all,luna --settings target/travis/settings.xml
+#TODO: Delete travis branch (pom.xml does the same thing)...???
+script: mvn deploy -Pjuno,linux64
 
 env:
   global:
-  # See http://stackoverflow.com/questions/18148318/installing-gems-results-in-error if you have travis gem issues
-  #BK
+  # Name, password and oauth2
     - secure: "GzqdusL3C5WD7YgHFax4zb2xtkE9UPAyG4UlRPpyDUwM8VzZAujkwigxUVT0Swt3eJj16mmPi1E+krarsGUACoeM1buiWEqG6AMBn5eVHxehgPVYTPZ2CfQAiniJd/wgYBqoB+RXKyLhcWyJJDxfZq/IH+C7fF9WQOTfo8ER5Bc="
     - secure: "WiKJWaiOiHVYB39rH/m3uE21rWwnreAOy2SgKRBcoiAjx337RX/DQiaGkI2y57aXggWLhV5JGe/4WqgssPLTV1/KMU19HTaSNOi+VOUaPC5uflFQ4Dk1lhIf0NVjj4emI9pyMu3aqddjoPmFwKeBNbervw7dyq4B/57Ip07fWvU="
-  #Jantje
-  #TBD
+    - secure: "T6kinvAdTDaNPggIcYGCyVfa/HXYRc9uPx51M2aFKt8eY5bxZ3fgTpgPJNOiuEdlukWgtmi+uz4apiVDTUEVijmr7szY/ddfcixQFQkVKgUE/y50nDV0tUwJh7b0DTYpFZOjaSLHaHlV59tDUtNIay+bPw+cQ/7pCeZK4q0lux4="
+
