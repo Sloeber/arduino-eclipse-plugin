@@ -1,5 +1,6 @@
 package it.baeyens.arduino.common;
 
+
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.
  * 
@@ -31,6 +32,7 @@ public class ArduinoConst {
     public static final String KEY_RXTXDISABLED = "Arduino DisAbleRXTX";
     public static final String KEY_ARDUINOPATH = "Arduino Path";
     public static final String KEY_PRIVATE_LIBRARY_PATH = "Private Library Path";
+    public static final String KEY_PRIVATE_HARDWARE_PATH = "Private hardware Path";
 
     // properties keys
     public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";
@@ -80,6 +82,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_SOFTWARE = ENV_KEY_ARDUINO_START + "SOFTWARE";
     public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_ARDUINO_START + "ARCHITECTURE";
     public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_ARDUINO_START + "BUILD.ARCH";
+    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.HARDWARE.PATH";
 
     public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";
     public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";

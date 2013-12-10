@@ -111,7 +111,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	    if ((HardwareLibraryPath.toFile().exists()) && (HardwareLibraryPath.toFile().list().length > 0)) {
 		// Create Arduino Item
 		myArduinoHardwareLibItem = new TreeItem(myLibrarySelector, SWT.NONE);
-		myArduinoHardwareLibItem.setText("Arduino Hardware Libraries");
+		myArduinoHardwareLibItem.setText("Hardware provided Libraries");
 		// Add the Arduino Libs
 		AddLibs(myArduinoHardwareLibItem, HardwareLibraryPath);
 	    }

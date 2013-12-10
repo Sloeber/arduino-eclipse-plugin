@@ -48,6 +48,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private StringFieldEditor mArduinoIdeVersion;
     private MyDirectoryFieldEditor mArduinoIdePath;
     private DirectoryFieldEditor mArduinoPrivateLibPath;
+    private DirectoryFieldEditor mArduinoPrivateHardwarePath;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
 
@@ -175,8 +176,24 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
 
 	addField(mArduinoIdePath.getfield());
+
+	String LibPath = ArduinoInstancePreferences.getPrivateLibraryPath();
+	if (LibPath.isEmpty()) {
+	    String libraryPath = Common.getDefaultPrivateLibraryPath();
+	    new File(libraryPath).mkdirs();
+	    ArduinoInstancePreferences.setPrivateLibraryPath(libraryPath);
+	}
 	mArduinoPrivateLibPath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path", parent);
 	addField(mArduinoPrivateLibPath);
+
+	LibPath = ArduinoInstancePreferences.getPrivateHardwarePath();
+	if (LibPath.isEmpty()) {
+	    String hardwarePath = Common.getDefaultPrivateHardwarePath();
+	    new File(hardwarePath).mkdirs();
+	    ArduinoInstancePreferences.setPrivateHardwarePath(hardwarePath);
+	}
+	mArduinoPrivateHardwarePath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATH, "Private hardware path", parent);
+	addField(mArduinoPrivateHardwarePath);
 
 	Dialog.applyDialogFont(parent);
 

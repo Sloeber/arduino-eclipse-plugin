@@ -486,10 +486,12 @@ public class ArduinoHelpers extends Common {
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_ARDUINO_PATH, getArduinoPath().toString());
 	contribEnv.addVariable(var, confDesc);
 
-	// from 1.5.3 onwards 2 more environment variables need to be added
+	// from 1.5.3 onwards 3 more environment variables need to be added
 	var = new EnvironmentVariable(ENV_KEY_ARCHITECTURE, platformFile.removeLastSegments(1).lastSegment());
 	contribEnv.addVariable(var, confDesc);
 	var = new EnvironmentVariable(ENV_KEY_BUILD_ARCH, platformFile.removeLastSegments(1).lastSegment().toUpperCase());
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable(ENV_KEY_HARDWARE_PATH, platformFile.removeLastSegments(3).toString());
 	contribEnv.addVariable(var, confDesc);
 
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
@@ -972,14 +974,15 @@ public class ArduinoHelpers extends Common {
     public static String[] getBoardsFiles() {
 	File HardwareFolder = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME).toFile();
 
-	HashSet<String> Hardwarelists = new HashSet<String>();
-	searchFiles(HardwareFolder, Hardwarelists, ArduinoConst.BOARDS_FILE_NAME, 3);
-	if (Hardwarelists.size() == 0) {
+	HashSet<String> boardFiles = new HashSet<String>();
+	searchFiles(HardwareFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
+	if (boardFiles.size() == 0) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folder", null));
 	    return null;
 	}
+	searchFiles(new File(getPrivateHardwarePath()), boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
 
-	return Hardwarelists.toArray(new String[Hardwarelists.size()]);
+	return boardFiles.toArray(new String[boardFiles.size()]);
 
     }
 

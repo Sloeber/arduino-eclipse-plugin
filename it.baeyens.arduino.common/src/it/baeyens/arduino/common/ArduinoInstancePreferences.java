@@ -251,4 +251,20 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	setGlobalValue(ENV_KEY_SKETCH_TEMPLATE_FOLDER, folderName);
 
     }
+
+    public static String getPrivateLibraryPath() {
+	return getGlobalValue(KEY_PRIVATE_LIBRARY_PATH);
+    }
+
+    public static void setPrivateLibraryPath(String folderName) {
+	setGlobalValue(KEY_PRIVATE_LIBRARY_PATH, folderName);
+    }
+
+    public static String getPrivateHardwarePath() {
+	return getGlobalValue(KEY_PRIVATE_HARDWARE_PATH);
+    }
+
+    public static void setPrivateHardwarePath(String folderName) {
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATH, folderName);
+    }
 }

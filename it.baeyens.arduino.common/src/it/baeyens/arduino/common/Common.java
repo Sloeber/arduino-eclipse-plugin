@@ -18,7 +18,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -687,6 +689,27 @@ public class Common extends ArduinoInstancePreferences {
 	    return ArduinoIdeSuffix_MAC;
 	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
 	return ArduinoIdeSuffix_WIN;
+    }
+
+    /**
+     * Arduino has the default libraries in the user home directory in subfolder Arduino/libraries. As the home directory is platform dependent
+     * getting the value is resolved by this method
+     * 
+     * @return the folder where Arduino puts the libraries by default.
+     */
+    public static String getDefaultPrivateLibraryPath() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append("Arduino").append("libraries").toString();
+    }
+
+    /**
+     * same as getDefaultLibPath but for the hardware folder
+     * 
+     * @return
+     */
+    public static String getDefaultPrivateHardwarePath() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append("Arduino").append("hardware").toString();
     }
 
 }
