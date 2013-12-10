@@ -137,6 +137,7 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	String type = serviceEvent.getType();
 	String name = serviceEvent.getName();
 
+	@SuppressWarnings("resource")
 	JmDNS dns = serviceEvent.getDNS();
 
 	dns.requestServiceInfo(type, name);
@@ -201,6 +202,7 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	    return;
 	}
 	try {
+	    @SuppressWarnings("resource")
 	    JmDNS jmDNS = JmDNS.create(address);
 	    jmDNS.addServiceListener("_arduino._tcp.local.", this);
 	    mappedJmDNSs.put(address, jmDNS);

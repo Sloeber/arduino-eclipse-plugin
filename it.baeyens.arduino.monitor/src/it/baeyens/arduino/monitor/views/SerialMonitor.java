@@ -54,7 +54,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     /**
      * The ID of the view as specified by the extension.
      */
-    public static final String ID = "it.baeyens.arduino.monitor.views.SerialMonitor";
+    // public static final String ID = "it.baeyens.arduino.monitor.views.SerialMonitor";
     static private final int myMaxSerialPorts = 3; // If you increase this number you must also assign colors
     private Action myConnectToSerialPort; // Connect to a serial port
     private Action myDisconnectSerialPort; // this action will disconnect the serial port selected by the SerialPorts combi
@@ -162,9 +162,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	    @Override
 	    public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
-		Map<Serial, SerialListener> items = (Map<Serial, SerialListener>) inputElement;
 
+		@SuppressWarnings("unchecked")
+		Map<Serial, SerialListener> items = (Map<Serial, SerialListener>) inputElement;
 		return items.keySet().toArray();
 	    }
 	});

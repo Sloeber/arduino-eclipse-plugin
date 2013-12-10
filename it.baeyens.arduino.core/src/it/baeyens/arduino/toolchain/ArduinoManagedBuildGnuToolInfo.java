@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.Status;
  * 
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({ "restriction" })
+@SuppressWarnings({ "restriction", "deprecation" })
 public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo {
 
     /*
@@ -840,8 +840,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 
     private boolean callDependencyCalculator(ArduinoGnuMakefileGenerator makeGen, IConfiguration config, HashSet<String> handledInputExtensions,
 	    IManagedDependencyGeneratorType depGen, String[] extensionsList, Vector<String> myCommandDependencies,
-	    HashMap<String, List<IPath>> myOutputMacros, Vector<String> myAdditionalTargets, ToolInfoHolder h, boolean done) {
-
+	    HashMap<String, List<IPath>> myOutputMacros, Vector<String> myAdditionalTargets, ToolInfoHolder h, boolean _done) {
+	boolean done = _done;
 	int calcType = depGen.getCalculatorType();
 	switch (calcType) {
 	case IManagedDependencyGeneratorType.TYPE_COMMAND:

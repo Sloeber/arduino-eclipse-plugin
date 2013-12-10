@@ -321,8 +321,8 @@ public class PdePreprocessor {
 	return buffer.toString();
     }
 
-    private static ArrayList<String> prototypes(String in) {
-	in = collapseBraces(strip(in));
+    private static ArrayList<String> prototypes(String _in) {
+	String in = collapseBraces(strip(_in));
 
 	// XXX: doesn't handle ... varargs
 	// XXX: doesn't handle function pointers

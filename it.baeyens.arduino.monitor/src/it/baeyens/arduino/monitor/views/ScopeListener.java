@@ -26,7 +26,7 @@ public class ScopeListener implements MessageConsumer {
     /**
      * myScope The scope representing the data
      */
-    private Oscilloscope myScope;
+    Oscilloscope myScope;
     /**
      * myReceivedScopeData is a fixed size buffer holding the bytes that have been received from the com port
      * 

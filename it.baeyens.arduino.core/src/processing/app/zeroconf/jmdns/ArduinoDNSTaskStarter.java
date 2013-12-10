@@ -64,9 +64,9 @@ public class ArduinoDNSTaskStarter implements DNSTaskStarter.Factory.ClassDelega
 	    public void startReaper() {
 		new RecordReaper(jmDNSImpl) {
 		    @Override
-		    public void start(Timer timer) {
+		    public void start(Timer _timer) {
 			if (!this.getDns().isCanceling() && !this.getDns().isCanceled()) {
-			    timer.schedule(this, 0, 500);
+			    _timer.schedule(this, 0, 500);
 			}
 		    }
 		}.start(timer);

@@ -2,6 +2,7 @@ package it.baeyens.arduino.monitor.views;
 
 import it.baeyens.arduino.arduino.Serial;
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.monitor.Activator;
 
 import java.net.URL;
 
@@ -191,6 +192,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
     }
 
     private void registerSerialTracker() {
+	registerExistingSerialService();
 	FrameworkUtil.getBundle(getClass()).getBundleContext().addServiceListener(this);
     }
 
@@ -206,6 +208,12 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    registerSerialService(event);
 	} else if (event.getType() == ServiceEvent.UNREGISTERING) {
 	    unregisterSerialService(event);
+	} else {
+	    final ServiceReference<?> reference = event.getServiceReference();
+	    final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
+	    if (service instanceof Serial) {
+		System.err.println("Serial message missed");
+	    }
 	}
     }
 
@@ -228,9 +236,32 @@ public class ScopeView extends ViewPart implements ServiceListener {
     private void registerSerialService(ServiceEvent event) {
 	final ServiceReference<?> reference = event.getServiceReference();
 	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
-	if ((service instanceof Serial) && (myScopelistener == null) && (myScope != null)) {
+	if ((service instanceof Serial)) {
+	    registerSerialService((Serial) service);
+	}
+    }
+
+    /**
+     * When the scope starts it needs to look is there are already serial services running. This method looks for the serial services and if found
+     * this class is added as listener
+     */
+    private void registerExistingSerialService() {
+	final ServiceReference<?> reference = Activator.context.getServiceReference(Serial.class.getName());
+	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
+	if (service instanceof Serial) {
+	    registerSerialService((Serial) service);
+	}
+    }
+
+    /**
+     * There we actually add the listener to the service.
+     * 
+     * @param service
+     */
+    private void registerSerialService(Serial service) {
+	if ((myScopelistener == null) && (myScope != null)) {
 	    myScopelistener = new ScopeListener(myScope);
-	    mySerial = (Serial) service;
+	    mySerial = service;
 	    PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 		@Override
 		public void run() {

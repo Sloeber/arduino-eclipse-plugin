@@ -24,6 +24,5 @@ public abstract class OscilloscopeStackAdapter {
      * 
      * @param scope
      */
-    public void stackEmpty(Oscilloscope scope, int channel) {
-    }
+    public abstract void stackEmpty(Oscilloscope scope, int channel);
 }
