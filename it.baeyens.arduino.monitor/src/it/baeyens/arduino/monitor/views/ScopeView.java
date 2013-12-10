@@ -247,9 +247,11 @@ public class ScopeView extends ViewPart implements ServiceListener {
      */
     private void registerExistingSerialService() {
 	final ServiceReference<?> reference = Activator.context.getServiceReference(Serial.class.getName());
-	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
-	if (service instanceof Serial) {
-	    registerSerialService((Serial) service);
+	if (reference != null) {
+	    final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
+	    if (service instanceof Serial) {
+		registerSerialService((Serial) service);
+	    }
 	}
     }
 
