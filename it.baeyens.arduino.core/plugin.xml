@@ -354,6 +354,7 @@
          tooltip="%command.tooltip"/>
 			<command commandId="it.baeyens.arduino.actions.NewSketchAction"/>
 			<command commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"/>
+			<command commandId="it.baeyens.arduino.actions.OpenScopeAction"/>
    <command
          commandId="it.baeyens.arduino.actions.AddLibraryAction"
          style="push">
