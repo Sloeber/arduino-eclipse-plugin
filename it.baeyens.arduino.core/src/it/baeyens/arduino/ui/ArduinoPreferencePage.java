@@ -80,6 +80,16 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	return testStatus();
     }
 
+    private boolean showError(String dialogMessage) {
+	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.";
+	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+	dialog.setText("Considerations about Arduino IDE compatibility");
+	dialog.setMessage(FullDialogMessage);
+	if (dialog.open() == SWT.CANCEL)
+	    return false;
+	return true;
+    }
+
     /**
      * PerformOK is done when the end users presses OK on a preference page. The order of the execution of the performOK is undefined. This method
      * saves the path variables based on the settings and removes the last used setting.<br/>
@@ -97,17 +107,20 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    return false;
 	if (!mIsDirty)
 	    return true;
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.2") > 0) {
-	    String message = "The Arduino core team decided for a library specification which is hard to support. You need to make changes to you arduino libraries to make this work. See eclipse.baeyens.it/librarymadness.html for more info.";
-	    // MessageDialog warningDialog = new MessageDialog(null, , null, message, MessageDialog.WARNING, "OK", 0);
-	    // warningDialog.open();
 
-	    MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-	    dialog.setText("Unsupportable Arduino IDE");
-	    dialog.setMessage(message);
-	    if (dialog.open() == SWT.CANCEL)
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
+	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
+	    return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.3") || mArduinoIdeVersion.getStringValue().equals("1.5.4")) {
+	    if (!showError("Arduino IDE 1.5.3 and 1.5.4 are not supported out of the box."))
 		return false;
 	}
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.5") > 0) {
+	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
+		return false;
+	}
+
 	super.performOk();
 	setWorkSpacePathVariables();
 	// reset the previous selected values
