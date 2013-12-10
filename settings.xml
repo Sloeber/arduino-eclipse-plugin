@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <servers>
+        <server>
+            <id>sonatype-nexus-snapshots</id>
+            <username>${env.CI_NEXUS_USERNAME}</username>
+            <password>${env.CI_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>sonatype-nexus-staging</id>
+            <username>${env.CI_NEXUS_USERNAME}</username>
+            <password>${env.CI_NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+	<profiles>
+        <profile>
+            <id>sign</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.passphrase>${env.CI_GPG_PASSPHRASE}</gpg.passphrase>
+            </properties>
+        </profile>
+        
+        <!-- This is the Nexus groupId (target destination). Leave as BK for deployment for now. -->
+        <profile>
+            <id>inject-parent.groupId</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <parent.groupId>${env.CI_NEXUS_GROUPID}</parent.groupId>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>inject-github.repo.username</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <github.repo.username>${env.CI_GITHUB_REPOUSERNAME}</github.repo.username>
+            </properties>
+        </profile>
+        
+    </profiles>
+</settings>
+
