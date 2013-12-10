@@ -42,13 +42,12 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
-   <launcher>
+   <launcher name="eclipseArduinoIDE">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
