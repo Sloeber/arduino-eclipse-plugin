@@ -1,7 +1,7 @@
 #Build the Arduino Eclipse Plugin using Maven
 
 node:
-#Make quiet to reduce logs (Travis will kill if 4MB log excedded)
+#Make quiet to reduce logs (Travis will kill if 4MB log exceeded)
 #But not too quiet - we break apart the build (Travis will kill after 10 mins of no output)
 #we also need to keep it under 75 mins
 script:
