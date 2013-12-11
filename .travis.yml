@@ -2,16 +2,14 @@
 
 node:
 #Make quiet to reduce logs (Travis will kill if 4MB log exceeded)
-#But not too quiet - we break apart the build (Travis will kill after 10 mins of no output)
+#But not too quiet - see travis_exec_and_print_time.sh (Travis will kill after 10 mins of no output)
 #we also need to keep it under 75 mins
 script:
+  #Check if we have access to our Nexus login details.
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
 
-  #Test only - TODO remove
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'sleep 5'; else ./travis_exec_and_print_time.sh 'sleep 5'; fi"
-
+  #Execute the maven commands depending on SECURE availabilty and print the elapsed time out periodically.
   #mvn deploy (or verify) -Pall,juno,kepler,luna --quiet --settings settings.xml
-  
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml'; fi"
 
   
