@@ -10,7 +10,7 @@ script:
 
   #Execute the maven commands depending on SECURE availabilty and print the elapsed time out periodically.
   #mvn deploy (or verify) -Pall,juno,kepler,luna --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml'; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; fi"
 
   
 
