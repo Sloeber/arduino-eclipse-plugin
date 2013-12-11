@@ -467,7 +467,7 @@
            <tool
                  announcement="%tool.announcement"
                  command="${A.RECIPE.CPP.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
+                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="it.baeyens.arduino.tool.sketch.compiler.cpp"
                  name="%tool.name"
@@ -514,7 +514,7 @@
            <tool
                  announcement="%tool.announcement.0"
                  command="${A.RECIPE.C.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
+                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="it.baeyens.arduino.tool.compiler.c"
                  name="%tool.name.0"
