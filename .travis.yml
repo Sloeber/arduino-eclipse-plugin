@@ -11,7 +11,6 @@ script: mvn deploy -Plinux32,juno --settings setings.xml
 #CI_NEXUS_USERNAME
 #CI_NEXUS_OAUTH2_TOKEN
 #CI_GPG_PASSPHRASE
-#CI_NEXUS_GROUPID
 #CI_GITHUB_REPOUSERNAME
 env:
   global:
@@ -19,8 +18,8 @@ env:
     - MAVEN_OPTS="-Xmx1024M"
 
     #These are the Nexus details and GPG signing token for Nexus deployment.
-    #This Nexus repo is good to use until we want more consistency in naming
-    - CI_NEXUS_GROUPID=com.github.brodykenrick.arduino-eclipse-plugin
+    #The Nexus repo is hardcoded as com.github.brodykenrick.arduino-eclipse-plugin in the POM.XML (doing otherwise produces warnings)
+    #This is good to use until we want more consistency in naming
     #Travis encrypted variables names and tokens (need to change for correct repo though for encryption to work).
     #Nexus Username, pass and GPG
     # These point to the above nexus server/groupid but need to be encrypted against the repo Travis is getting code from (i.e. change it).
