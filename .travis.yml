@@ -1,9 +1,8 @@
 #Build the Arduino Eclipse Plugin using Maven
 
 node:
-#script: mvn verify -Pall,juno,all,kepler,all,luna
-#script: mvn deploy -Pall,juno,all,kepler,all,luna
-script: mvn deploy -Plinux32,juno --settings settings.xml
+#script: mvn verify -Pall,juno,kepler,luna --settings settings.xml
+script: mvn deploy -Pall,juno,kepler,luna --settings settings.xml
 
 #Several usernames and passwords/tokens are required for deployment.
 #When testing on your local/remote setup then you need to set/export env. variables:
