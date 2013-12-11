@@ -7,31 +7,12 @@ node:
 script:
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
 
-  #TODO: Rework this to use the build matrix (or find a way to get a few extra messages in the log)
-  #- mvn deploy -Pall,juno --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,juno --quiet --settings settings.xml; else mvn verify -Pwin32,juno --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,juno --quiet --settings settings.xml; else mvn verify -Pwin64,juno --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,juno --quiet --settings settings.xml; else mvn verify -Pmac32,juno --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,juno --quiet --settings settings.xml; else mvn verify -Pmac64,juno --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,juno --quiet --settings settings.xml; else mvn verify -Plinux32,juno --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,juno --quiet --settings settings.xml; else mvn verify -Plinux64,juno --quiet --settings settings.xml; fi"
+  #Test only - TODO remove
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh "sleep 5"; else ./travis_exec_and_print_time.sh "sleep 5"; fi"
 
-  #- mvn deploy -Pall,kepler --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,juno --quiet --settings settings.xml; else mvn verify -Pwin32,kepler --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,kepler --quiet --settings settings.xml; else mvn verify -Pwin64,kepler --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,kepler --quiet --settings settings.xml; else mvn verify -Pmac32,kepler --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,kepler --quiet --settings settings.xml; else mvn verify -Pmac64,kepler --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,kepler --quiet --settings settings.xml; else mvn verify -Plinux32,kepler --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,kepler --quiet --settings settings.xml; else mvn verify -Plinux64,kepler --quiet --settings settings.xml; fi"
-
-
-  #- mvn deploy -Pall,luna --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,luna --quiet --settings settings.xml; else mvn verify -Pwin32,luna --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,luna --quiet --settings settings.xml; else mvn verify -Pwin64,luna --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,luna --quiet --settings settings.xml; else mvn verify -Pmac32,luna --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,luna --quiet --settings settings.xml; else mvn verify -Pmac64,luna --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,luna --quiet --settings settings.xml; else mvn verify -Plinux32,luna --quiet --settings settings.xml; fi"
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,luna --quiet --settings settings.xml; else mvn verify -Plinux64,luna --quiet --settings settings.xml; fi"
+  #mvn deploy (or verify) -Pall,juno,kepler,luna --quiet --settings settings.xml
+  
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh "mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml"; else ./travis_exec_and_print_time.sh "mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml"; fi"
 
   
 
