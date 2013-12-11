@@ -1,9 +1,13 @@
 #Build the Arduino Eclipse Plugin using Maven
 
 node:
-#Make quiet to reduce logs (Travis is capped at a 4MB log)
-#script: mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml
-script: mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml
+#Make quiet to reduce logs (Travis will kill if 4MB log excedded)
+#But not too quiet - we break apart the build (Travis will kill after 10 mins of no output)
+#we also need to keep it under 75 mins
+script:
+  - mvn deploy -Pall,juno --quiet --settings settings.xml
+  - mvn deploy -Pall,kepler --quiet --settings settings.xml
+  - mvn deploy -Pall,luna --quiet --settings settings.xml
 
 #Several usernames and passwords/tokens are required for deployment.
 #When testing on your local/remote setup then you need to set/export env. variables:
