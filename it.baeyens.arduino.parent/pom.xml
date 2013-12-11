@@ -3,14 +3,42 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>it.baeyens.arduino</groupId>
+    <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 	<artifactId>it.baeyens.arduino.parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
 		<tycho.version>0.18.1</tycho.version>
+        <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
+
+	<parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+        <relativePath>org.sonatype.oss:oss-parent</relativePath>
+    </parent>
+
+	<scm>
+        <connection>scm:git:git://github.com/${github.repo.username}/arduino-eclipse-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:${github.repo.username}/arduino-eclipse-plugin.git</developerConnection>
+        <url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
+    </scm>
+
+    <!-- Sonatype repos -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus snapshot repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus release repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 	<modules>
 		<module>../it.baeyens.arduino.core.nl1</module>
@@ -23,7 +51,6 @@
 		<module>../it.baeyens.arduino.updatesite</module>
 		<module>../it.baeyens.arduino.application</module>
 	</modules>
-
 
 	<build>
 		<plugins>
@@ -47,7 +74,15 @@
 				</configuration>
 			</plugin>
 
-
+            <!-- Maven release with PGP signing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+                </configuration>
+            </plugin>
 
 		</plugins>
 
@@ -67,12 +102,39 @@
 		</pluginManagement>
 	</build>
 
-
-
-
-
 	<profiles>
-	
+        <!-- GPG Signing -->
+	    <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+            <property>
+            <name>performRelease</name>
+            <value>true</value>
+            </property>
+            </activation>
+            <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.4</version>
+                    <configuration>
+                        <passphrase>${gpg.passphrase}</passphrase>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+            </build>
+        </profile>
+
 		<profile>
 			<id>all</id>
 			<build>
@@ -327,7 +389,7 @@
 
 	<repositories>
 		<repository>
-			<id>Nebula</id>
+			<id>nebula</id>
 			<layout>p2</layout>
 			<url> http://download.eclipse.org/technology/nebula/snapshot</url>
 		</repository>

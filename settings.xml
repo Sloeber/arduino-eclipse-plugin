@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <servers>
+        <server>
+            <id>sonatype-nexus-snapshots</id>
+            <username>${env.CI_NEXUS_USERNAME}</username>
+            <password>${env.CI_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>sonatype-nexus-staging</id>
+            <username>${env.CI_NEXUS_USERNAME}</username>
+            <password>${env.CI_NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+	<profiles>
+        <profile>
+            <id>sign</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.passphrase>${env.CI_GPG_PASSPHRASE}</gpg.passphrase>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>inject-github.repo.username</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <github.repo.username>${env.CI_GITHUB_REPOUSERNAME}</github.repo.username>
+            </properties>
+        </profile>
+        
+    </profiles>
+</settings>
+
