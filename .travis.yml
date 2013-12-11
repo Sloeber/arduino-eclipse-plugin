@@ -7,9 +7,12 @@ node:
 script:
   #This is testing (I am not sure if travis encrypted vars are available in pull requests)
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo TRAVIS SECURE AVAILABLE; else echo TRAVIS SECURE NOT AVAIALABLE; fi"
-  - mvn deploy -Pall,juno --quiet --settings settings.xml
-  - mvn deploy -Pall,kepler --quiet --settings settings.xml
-  - mvn deploy -Pall,luna --quiet --settings settings.xml
+  #- mvn deploy -Pall,juno --quiet --settings settings.xml
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,juno --quiet --settings settings.xml; else mvn verify -Pall,juno --quiet --settings settings.xml; fi"
+  #- mvn deploy -Pall,kepler --quiet --settings settings.xml
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,kepler --quiet --settings settings.xml; else mvn verify -Pall,kepler --quiet --settings settings.xml; fi"
+  #- mvn deploy -Pall,luna --quiet --settings settings.xml
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,luna --quiet --settings settings.xml; else mvn verify -Pall,luna --quiet --settings settings.xml; fi"
   
 
 #Several usernames and passwords/tokens are required for deployment.
