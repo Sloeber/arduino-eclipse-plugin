@@ -5,9 +5,10 @@ node:
 #But not too quiet - we break apart the build (Travis will kill after 10 mins of no output)
 #we also need to keep it under 75 mins
 script:
-  - mvn deploy -Pall,juno --quiet --settings settings.xml
-  - mvn deploy -Pall,kepler --quiet --settings settings.xml
-  - mvn deploy -Pall,luna --quiet --settings settings.xml
+  #- mvn deploy -Pall,juno --quiet --settings settings.xml
+  #- mvn deploy -Pall,kepler --quiet --settings settings.xml
+  #- mvn deploy -Pall,luna --quiet --settings settings.xml
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo TRAVIS SECURE AVAILABLE; else echo TRAVIS SECURE NOT AVAIALABLE; fi"
 
 #Several usernames and passwords/tokens are required for deployment.
 #When testing on your local/remote setup then you need to set/export env. variables:
