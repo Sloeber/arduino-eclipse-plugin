@@ -5,14 +5,34 @@ node:
 #But not too quiet - we break apart the build (Travis will kill after 10 mins of no output)
 #we also need to keep it under 75 mins
 script:
-  #This is testing (I am not sure if travis encrypted vars are available in pull requests)
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo TRAVIS SECURE AVAILABLE; else echo TRAVIS SECURE NOT AVAIALABLE; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
+
+  #TODO: Rework this to use the build matrix (or find a way to get a few extra messages in the log)
   #- mvn deploy -Pall,juno --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,juno --quiet --settings settings.xml; else mvn verify -Pall,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,juno --quiet --settings settings.xml; else mvn verify -Pwin32,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,juno --quiet --settings settings.xml; else mvn verify -Pwin64,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,juno --quiet --settings settings.xml; else mvn verify -Pmac32,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,juno --quiet --settings settings.xml; else mvn verify -Pmac64,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,juno --quiet --settings settings.xml; else mvn verify -Plinux32,juno --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,juno --quiet --settings settings.xml; else mvn verify -Plinux64,juno --quiet --settings settings.xml; fi"
+
   #- mvn deploy -Pall,kepler --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,kepler --quiet --settings settings.xml; else mvn verify -Pall,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,juno --quiet --settings settings.xml; else mvn verify -Pwin32,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,kepler --quiet --settings settings.xml; else mvn verify -Pwin64,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,kepler --quiet --settings settings.xml; else mvn verify -Pmac32,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,kepler --quiet --settings settings.xml; else mvn verify -Pmac64,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,kepler --quiet --settings settings.xml; else mvn verify -Plinux32,kepler --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,kepler --quiet --settings settings.xml; else mvn verify -Plinux64,kepler --quiet --settings settings.xml; fi"
+
+
   #- mvn deploy -Pall,luna --quiet --settings settings.xml
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pall,luna --quiet --settings settings.xml; else mvn verify -Pall,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin32,luna --quiet --settings settings.xml; else mvn verify -Pwin32,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pwin64,luna --quiet --settings settings.xml; else mvn verify -Pwin64,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac32,luna --quiet --settings settings.xml; else mvn verify -Pmac32,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Pmac64,luna --quiet --settings settings.xml; else mvn verify -Pmac64,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux32,luna --quiet --settings settings.xml; else mvn verify -Plinux32,luna --quiet --settings settings.xml; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then mvn deploy -Plinux64,luna --quiet --settings settings.xml; else mvn verify -Plinux64,luna --quiet --settings settings.xml; fi"
+
   
 
 #Several usernames and passwords/tokens are required for deployment.
