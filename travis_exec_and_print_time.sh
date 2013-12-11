@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-echo "Exec and print time periodically"
+echo "Exec and print time periodically (overcoming our very long quiet times)"
+#Test command
 #CMD="sleep 5"
 #echo "CMD=$CMD"
 #$CMD &
@@ -16,7 +17,7 @@ echo "Testing for PID=$PID"
 #Sleep for X seconds and then test if the PID is still active
 # inefficient but not too bad for this use case
 # also not safe from race conditions in general but fine here
-while sleep 60
+while sleep 180
       kill -0 $PID >/dev/null 2>&1
 do
     echo "Still running at $SECONDS seconds"
