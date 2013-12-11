@@ -8,11 +8,11 @@ script:
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
 
   #Test only - TODO remove
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh "sleep 5"; else ./travis_exec_and_print_time.sh "sleep 5"; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'sleep 5'; else ./travis_exec_and_print_time.sh 'sleep 5'; fi"
 
   #mvn deploy (or verify) -Pall,juno,kepler,luna --quiet --settings settings.xml
   
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh "mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml"; else ./travis_exec_and_print_time.sh "mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml"; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,kepler,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,kepler,luna --quiet --settings settings.xml'; fi"
 
   
 
