@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsEditableProvider;
 import org.eclipse.cdt.core.language.settings.providers.IWorkingDirectoryTracker;
@@ -153,17 +154,25 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	// End of Bug fix for CDT 8.1 fixed in 8.2
 	if (languageId.equals("org.eclipse.cdt.core.gcc")) {
 	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", "");
-	    compilerCommand = compilerCommand + " "
-		    + envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true).getValue();
-	    compilerCommand = compilerCommand + " "
-		    + envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true).getValue();
+	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
+	    if (op1 != null) {
+		compilerCommand = compilerCommand + " " + op1.getValue();
+	    }
+	    if (op2 != null) {
+		compilerCommand = compilerCommand + " " + op2.getValue();
+	    }
 	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1";
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
 	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", "");
-	    compilerCommand = compilerCommand + " "
-		    + envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true).getValue();
-	    compilerCommand = compilerCommand + " "
-		    + envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true).getValue();
+	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
+	    if (op1 != null) {
+		compilerCommand = compilerCommand + " " + op1.getValue();
+	    }
+	    if (op2 != null) {
+		compilerCommand = compilerCommand + " " + op2.getValue();
+	    }
 	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1";
 	} else {
 	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$
