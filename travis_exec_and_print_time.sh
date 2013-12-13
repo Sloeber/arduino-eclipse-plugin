@@ -17,7 +17,7 @@ echo "Testing for PID=$PID"
 #Sleep for X seconds and then test if the PID is still active
 # inefficient (only breaks in intervals of timer) but not too bad for this use case
 # also not safe from race conditions in general but fine here
-while  ps | grep " $PID " | grep -v grep 2>&1
+while  ps | grep " $PID " | grep -v grep > /dev/null 2>&1
 do
     sleep 180
     echo "PID=$PID still running at $SECONDS seconds"
