@@ -5,6 +5,8 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class Perspective implements IPerspectiveFactory {
 
-	public void createInitialLayout(IPageLayout layout) {
-	}
+    @Override
+    public void createInitialLayout(IPageLayout layout) {
+	// TODO add scope and serial monitor
+    }
 }
