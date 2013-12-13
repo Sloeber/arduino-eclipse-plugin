@@ -8,6 +8,9 @@ The Arduino Eclipse Plugin bridges that gap and helps move you to a more powerfu
 
 It works on MS Windows, Mac OSX and Linux.
 
+##Are you a regular user?
+If you are a regular user and don't want to build from source then there are precompiled product packages and update sites available. See the details at http://www.baeyens.it/eclipse/.
+
 ##Quick Installation 
 ###Prerequisites
 
@@ -26,7 +29,7 @@ open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macos
 
 for Linux you can run the verify and start eclipse in on command:
 
-./launch_plugin.sh
+./build_then_launch_plugin.sh
 
 
 ###Running the IDE/Plugin
@@ -36,12 +39,12 @@ win32x64.cmd (if you are on 64 bits windows)
 
 win32x32.cmd (if you are on 32 bits windows)
 
-./launch_plugin.sh (Mac OSX and Linux)
+./build_then_launch_plugin.sh (Mac OSX and Linux)
 
 
 =======
 ##Build Options
-You can control the build with the following profiles:
+You can control the maven build with the following profiles:
 * juno (default) (builds against the juno repositories (4.2))
 * kepler (builds agains the kepler repositories (4.3))
 * luna (builds agains the luna repositories (4.4))
