@@ -333,10 +333,12 @@
 
 		<profile>
 			<id>juno</id>
+            <properties>
+                <platform-version-name>juno</platform-version-name>
+            </properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-
 			<repositories>
 				<repository>
 					<id>platform_juno</id>
@@ -354,6 +356,9 @@
 
 		<profile>
 			<id>kepler</id>
+            <properties>
+                <platform-version-name>kepler</platform-version-name>
+            </properties>
 			<repositories>
 				<repository>
 					<id>platform_kepler</id>
@@ -371,6 +376,9 @@
 
 		<profile>
 			<id>luna</id>
+            <properties>
+                <platform-version-name>luna</platform-version-name>
+            </properties>
 			<repositories>
 				<repository>
 					<id>platform_luna</id>
