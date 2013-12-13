@@ -235,7 +235,13 @@
 <extension point="org.eclipse.core.expressions.definitions">
   <definition id="it.baeyens.definition.isArduinoPerspective">
     <with variable="activeWorkbenchWindow.activePerspective">
-       <equals value="org.eclipse.cdt.ui.CPerspective"/>
+       <or>
+          <equals
+                value="it.baeyens.arduino.application.perspective">
+          </equals>
+          <equals
+                value="org.eclipse.cdt.ui.CPerspective">
+          </equals></or>
     </with>
   </definition>
 </extension>
