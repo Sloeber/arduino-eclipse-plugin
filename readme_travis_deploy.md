@@ -1,13 +1,19 @@
 #Travis Continuous Integration and Nexus Sonatype Deployment
 
 ##Travis Continuous Integration
-This project uses the free to OSS Travis CI to test commits.
+This project uses the free-to-OSS Travis CI to test commits.
 
 This allows us to test commits to the master branch and pull requests to see any issues.
 
+The CI overall looks very much like: 
+
+![alt text](images_plugin_dev_setup/ci_deploy_overview.png "CI and Deployment Overview")
+
+
+
 Github integrates well with Travis CI and at many points there are links/images that are travis CI indications that a build was successful (or not).
 
-There are two kinds of Travis CI builds performaed:
+There are two kinds of Travis CI builds performed:
  * If it is a pull request, then we do a mvn verify
  * If it is a commit on the master (i.e. a merged pull request or any direct commit by Jantje), then we do a mvn deploy
 
@@ -16,6 +22,8 @@ Maven verify does a build (but does not send outputs out of Travis). It checks t
 
 ###Deploy commit (on master)
 Maven deploy builds and then uploads the outputs to the Sonatype Nexus staging platform.  A status code will fail if there are issues.
+
+_This means that after every change on the master branch we will have a built set of targets that can be tested._
 
 The deploy staging (currently) goes to brodykenrick's Nexus OSS account.
 
@@ -32,6 +40,10 @@ The snapshot all-in-one product packages go to : http://oss.sonatype.org/content
 The snapshot update site goes to : http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/ (for example http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/1.0.0-SNAPSHOT/)
 
 
+####Deployment Data lifecycle
+TBD: We need to understand the duration of data being held at the Nexus repo for these snapshots.
+
+
 ###Travis CI Configuration
 
 See .travis.yml for the details of how this is implemented.
@@ -43,7 +55,7 @@ Jantje's Travis CI is at: https://travis-ci.org/jantje/arduino-eclipse-plugin
 
 ##Nexus Sonatype Deployment
 
-For deployment we use a free to OSS Nexus setup from Sonatype -- https://oss.sonatype.org/
+For deployment we use a free-to-OSS Nexus setup from Sonatype -- https://oss.sonatype.org/
 
 Deployment is taken care of by tycho/maven after some configuration in the POM.xml files. Essentially pointing a few key variables to the appropriate Nexus repository details and executing _'mvn deploy'_.
 
