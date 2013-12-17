@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.baeyens.arduino-eclipse-plugin</groupId>
+    <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 	<artifactId>it.baeyens.arduino.parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -333,10 +333,12 @@
 
 		<profile>
 			<id>juno</id>
+            <properties>
+                <platform-version-name>juno</platform-version-name>
+            </properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-
 			<repositories>
 				<repository>
 					<id>platform_juno</id>
@@ -354,6 +356,9 @@
 
 		<profile>
 			<id>kepler</id>
+            <properties>
+                <platform-version-name>kepler</platform-version-name>
+            </properties>
 			<repositories>
 				<repository>
 					<id>platform_kepler</id>
@@ -371,6 +376,9 @@
 
 		<profile>
 			<id>luna</id>
+            <properties>
+                <platform-version-name>luna</platform-version-name>
+            </properties>
 			<repositories>
 				<repository>
 					<id>platform_luna</id>
