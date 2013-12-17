@@ -14,11 +14,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     @Override
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
+	System.out.println("Jaba Was here");
 	return new ApplicationActionBarAdvisor(configurer);
     }
 
     @Override
     public void preWindowOpen() {
+	System.out.println("Jaba Was here");
 	IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 	configurer.setInitialSize(new Point(400, 300));
 	configurer.setShowCoolBar(true);

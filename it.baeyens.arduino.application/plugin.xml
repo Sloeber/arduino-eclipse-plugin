@@ -5,7 +5,9 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application>
+      <application
+            cardinality="*"
+            visible="true">
          <run
                class="it.baeyens.arduino.application.Application">
          </run>
@@ -19,66 +21,6 @@
             id="it.baeyens.arduino.application.perspective"
             name="Arduino">
       </perspective>
-   </extension>
-   <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.eclipse.ui.ide.workbench"
-            name="Eclipse Arduino">
-         <property
-               name="windowImages"
-               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png">
-         </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
-         </property>
-         <property
-               name="aboutText"
-               value="Eclipse IDE for Arduino Developers&#x0D;&#x0A;&#x0D;&#x0A;Info: http://eclipse.baeyens.it/&#x0D;&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0D;&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0D;&#x0A;&#x0D;&#x0A;Contributors: jantje, brodykenrick, wimjongman, neuweiler, &#x0D;&#x0A;darcade, amorellgarcia&#x0D;&#x0A;&#x0D;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
-         </property>
-         <property
-               name="startupForegroundColor"
-               value="C8D5EA">
-         </property>
-         <property
-               name="startupMessageRect"
-               value="400,370,441,20">
-         </property>
-         <property
-               name="startupProgressRect"
-               value="97,370,100,4">
-         </property>
-         <property
-               name="aboutImage"
-               value="icons/logo_128.png">
-         </property>
-         <property
-               name="introBrandingImage"
-               value="product:intro-eclipse.png">
-         </property>
-         <property
-               name="introTitle"
-               value="Welcome to Eclipse for RCP and RAP Developers">
-         </property>
-         <property
-               name="introBrandingImageText"
-               value="Eclipse Project">
-         </property>
-         <property
-               name="cssTheme"
-               value="org.eclipse.e4.ui.css.theme.e4_default">
-         </property>
-         <property
-               name="applicationCSSResources"
-               value="platform:/plugin/org.eclipse.platform/images/">
-         </property>
-         <property
-               name="appName"
-               value="Eclipse Arduino">
-         </property>
-      </product>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -130,6 +72,73 @@
                relative="org.eclipse.ui.views.ProblemView">
          </view>
       </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+            id="it.baeyens.arduino.application.intro">
+      </intro>
+      <introProductBinding
+            introId="it.baeyens.arduino.application.intro"
+            productId="it.baeyens.arduino.application.product">
+      </introProductBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro.config">
+      <config
+            content="introContent.xml"
+            id="it.baeyens.arduino.application.introConfigId"
+            introId="it.baeyens.arduino.application.intro">
+         <presentation
+               home-page-id="root">
+            <implementation
+                  kind="html"
+                  os="win32,linux,macosx"
+                  style="content/shared.css">
+            </implementation>
+         </presentation>
+      </config>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Eclipse Arduino IDE">
+         <property
+               name="windowImages"
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png">
+         </property>
+         <property
+               name="aboutText"
+               value="Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: http://eclipse.baeyens.it/&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0A;&#x0A;Contributors: jantje, brodykenrick, wimjongman, neuweiler, &#x0A;darcade, amorellgarcia&#x0A;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/logo_128.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="C8D5EA">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="97,370,100,4">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="400,370,441,20">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="appName"
+               value="Eclipse Arduino IDE">
+         </property>
+      </product>
    </extension>
 
 </plugin>

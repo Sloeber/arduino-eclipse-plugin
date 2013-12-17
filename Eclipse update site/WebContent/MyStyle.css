@@ -299,3 +299,7 @@ pre {
 	background-image: url(poll_end.jpg);
 	background-repeat: no-repeat;
 }
+
+.boxed {
+  border: 1px solid green ;
+}

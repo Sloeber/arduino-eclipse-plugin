@@ -23,7 +23,8 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>-perspective it.baeyens.arduino.application.perspective
+      <programArgs>-perspective 
+it.baeyens.arduino.application.perspective
 --launcher.defaultAction openFile
 --launcher.XXMaxPermSize 256M
 --launcher.XXMaxPermSize 256m
@@ -48,6 +49,8 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
          <bmp/>
       </win>
    </launcher>
+
+   <intro introId="it.baeyens.arduino.application.intro"/>
 
    <vm>
    </vm>
@@ -292,9 +295,46 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    <features>
       <feature id="it.baeyens.arduino.feature"/>
       <feature id="it.baeyens.arduino.packaging.feature"/>
+      <feature id="org.eclipse.mylyn.wikitext_feature"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.nebula.widgets.oscilloscope.feature"/>
+      <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.cdt.build.crossgcc"/>
+      <feature id="org.eclipse.cdt.autotools"/>
+      <feature id="org.eclipse.help"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.cdt"/>
+      <feature id="org.eclipse.cdt.gnu.build"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
+      <feature id="org.eclipse.cdt.msw"/>
+      <feature id="org.eclipse.equinox.p2.user.ui"/>
+      <feature id="org.eclipse.cvs"/>
+      <feature id="org.eclipse.mylyn.ide_feature"/>
+      <feature id="org.eclipse.mylyn.team_feature"/>
+      <feature id="org.eclipse.epp.mpc"/>
+      <feature id="org.eclipse.cdt.platform"/>
+      <feature id="org.eclipse.epp.package.common.feature"/>
+      <feature id="org.eclipse.egit"/>
+      <feature id="org.eclipse.mylyn_feature"/>
+      <feature id="org.eclipse.cdt.debug.ui.memory"/>
+      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.rcp"/>
+      <feature id="org.eclipse.mylyn.bugzilla_feature"/>
+      <feature id="org.eclipse.cdt.mylyn"/>
+      <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.rse"/>
+      <feature id="org.eclipse.cdt.launch.remote"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature"/>
+      <feature id="org.eclipse.cdt.gnu.dsf"/>
+      <feature id="org.eclipse.mylyn.context_feature"/>
+      <feature id="org.eclipse.cdt.gdb"/>
+      <feature id="org.eclipse.cdt.gnu.debug"/>
    </features>
 
    <configurations>
+      <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="61" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
    </configurations>

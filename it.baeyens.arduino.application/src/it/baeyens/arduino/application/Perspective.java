@@ -8,5 +8,6 @@ public class Perspective implements IPerspectiveFactory {
     @Override
     public void createInitialLayout(IPageLayout layout) {
 	// TODO add scope and serial monitor
+	System.out.println("Jaba Was here");
     }
 }

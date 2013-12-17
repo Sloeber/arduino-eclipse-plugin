@@ -4,5 +4,7 @@ Bundle-Name: Application
 Bundle-SymbolicName: it.baeyens.arduino.application;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui
+ org.eclipse.ui,
+ it.baeyens.arduino.monitor;bundle-version="2.1.8",
+ org.eclipse.ui.intro
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

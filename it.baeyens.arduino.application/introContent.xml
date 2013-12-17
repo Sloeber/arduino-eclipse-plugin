@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+    <!-- Root page -->
+    <page id="root" style="html/style.css"  style-id="page" >
+    <html text="hhh" id="my web site" src="http://www.baeyens.it/eclipse/product/V2_2.shtml" type="inline"  />	
+    </page> 
+  
+</introContent>
