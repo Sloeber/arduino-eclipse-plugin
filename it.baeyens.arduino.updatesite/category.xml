@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/it.baeyens.arduino.feature_2.1.4.qualifier.jar" id="it.baeyens.arduino.feature" version="2.1.4.qualifier">
+   <feature url="features/it.baeyens.arduino.feature_2.2.0.jar" id="it.baeyens.arduino.feature" version="2.2.0">
       <category name="Arduino"/>
    </feature>
    <category-def name="Arduino" label="Arduino"/>
