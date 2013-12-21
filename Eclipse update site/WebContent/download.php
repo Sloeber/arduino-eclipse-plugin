@@ -17,6 +17,7 @@ You still need to configure (step 4 of the installation instructions)<br>
 <br>
 Note1: All versions before 213-11-29 are only tarred even though they are called tar.gz. <br>
 Note2: All this is still pre beta (but working) so there are still some things to do (like spash screen, icons ..). <br>
+note3: Windows users: use 7Zip to uncompress and the use 7Zip to unpak the tar file.
 <?php
 
 
