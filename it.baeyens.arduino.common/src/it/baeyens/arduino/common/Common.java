@@ -649,6 +649,25 @@ public class Common extends ArduinoInstancePreferences {
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 	return getBuildEnvironmentVariable(prjDesc.getConfigurationByName(configName), EnvName, defaultvalue);
     }
+    
+    /**
+     * 
+     * Wrapping method for {@link #getBuildEnvironmentVariable(ICConfigurationDescription, String, String)}.
+     * Only converts returned value to Boolean.
+     * 
+     * @param project
+     *            the project that contains the environment variable
+     * @param EnvName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
+     * @return
+     */
+    static public boolean getBuildEnvironmentVariableBoolean(IProject project, String configName, String EnvName, boolean defaultvalue) {
+		String value = getBuildEnvironmentVariable(project, configName,
+				EnvName, Boolean.toString(defaultvalue));
+		return (value != null ? value.equalsIgnoreCase(ArduinoConst.TRUE) : false);
+    }
 
     /**
      * 

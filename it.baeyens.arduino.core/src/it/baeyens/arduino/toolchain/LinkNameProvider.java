@@ -21,9 +21,9 @@ public class LinkNameProvider implements IManagedOutputNameProviderJaba {
 
     @Override
     public IPath[] getOutputNames(IProject project, IConfiguration cConf, ITool tool, IPath[] primaryInputNames) {
-	boolean bUseArchiver = Common.getBuildEnvironmentVariable(project, cConf.getName(),
-			ArduinoConst.ENV_KEY_use_archiver, ArduinoConst.TRUE)
-			.equalsIgnoreCase(ArduinoConst.TRUE);
+    	boolean bUseArchiver = Common.getBuildEnvironmentVariableBoolean(
+    			project, cConf.getName(),
+    			ArduinoConst.ENV_KEY_use_archiver, true);
 	IPath[] outputNames = new IPath[primaryInputNames.length];
 	for (int curPath = 0; curPath < outputNames.length; curPath++) {
 	    if (primaryInputNames[curPath].toString().startsWith("arduino") && (bUseArchiver)) {
