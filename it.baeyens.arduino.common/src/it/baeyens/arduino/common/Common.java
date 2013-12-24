@@ -205,9 +205,7 @@ public class Common extends ArduinoInstancePreferences {
      * @see parseInt. After error checking and modifications parseInt is used for the conversion
      **/
     public static int ToInt(String Number) {
-	if (Number == null)
-	    return 0;
-	if (Number.equals(""))
+	if (Number == null || Number.isEmpty())
 	    return 0;
 	return Integer.parseInt(Number.trim());
     }

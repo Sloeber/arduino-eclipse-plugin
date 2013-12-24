@@ -290,7 +290,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 			.getItemCount() == 0);
 	    }
 
-	    mValidAndComplete = !mcontrolBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("")
+	    mValidAndComplete = !mcontrolBoardName.getText().trim().isEmpty() && !controlUploadPort.getText().trim().isEmpty()
 		    && MenuOpionsValidAndComplete;
 	    feedbackControl.setText(mValidAndComplete ? "true" : "false");
 	    if (mValidAndComplete)

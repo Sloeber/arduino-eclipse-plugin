@@ -1265,7 +1265,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	List<String> subDirList = new ArrayList<String>();
 	for (IContainer subDir : getSubdirList()) {
 	    IPath projectRelativePath = subDir.getProjectRelativePath();
-	    if (!projectRelativePath.toString().equals("")) //$NON-NLS-1$
+	    if (!projectRelativePath.toString().isEmpty())
 		subDirList.add(0, projectRelativePath.toString());
 	}
 	Collections.sort(subDirList, Collections.reverseOrder());

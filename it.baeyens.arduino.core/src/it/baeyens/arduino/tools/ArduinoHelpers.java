@@ -414,7 +414,7 @@ public class ArduinoHelpers extends Common {
 	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core_folder, "");
 	addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
 		configurationDescription);
-	if (!boardVariant.equals("")) // this is Arduino version 1.0
+	if (!boardVariant.isEmpty()) // this is Arduino version 1.0
 	{
 	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
 	} else {

@@ -215,7 +215,7 @@ public class ArduinoBoards {
      * 
      */
     public String[] GetArduinoBoards() {
-	if (mLastLoadedBoardsFile.equals("")) {
+	if (mLastLoadedBoardsFile == null || mLastLoadedBoardsFile.toString().isEmpty()) {
 	    String[] sBoards = new String[0];
 	    return sBoards;
 	}
@@ -247,11 +247,11 @@ public class ArduinoBoards {
      * @author jan
      */
     public boolean LoadBoardsFile(String boardsFile) {
-
-	if ((mLastLoadedBoardsFile != null) && (mLastLoadedBoardsFile.equals(boardsFile)))
-	    return true; // do nothing when value didn't change
-	mLastLoadedBoardsFile = new File(boardsFile);
-	return LoadBoardsFile();
+    	File newFile = new File(boardsFile);
+		if (newFile.equals(mLastLoadedBoardsFile))
+			return true; // do nothing when value didn't change
+		mLastLoadedBoardsFile = newFile;
+		return LoadBoardsFile();
     }
 
     /**
