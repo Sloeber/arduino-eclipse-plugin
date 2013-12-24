@@ -1,6 +1,5 @@
 package it.baeyens.arduino.toolchain;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.ToolInfoHolder;
 
@@ -37,9 +36,7 @@ import org.eclipse.cdt.managedbuilder.makegen.gnu.IManagedBuildGnuToolInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 
 /**
  * This class represents information about a Tool's inputs and outputs while a Gnu makefile is being generated.
@@ -635,8 +632,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			} catch (Exception e) {
 			    // The provided class is not a
 			    // IManagedOutputNameProviderJaba class;
-			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-				    "The provided class is not of type IManagedOutputNameProviderJaba", e));
+			    Common.logError(
+				    "The provided class is not of type IManagedOutputNameProviderJaba", e);
 			}
 			// } else {
 			// outNames = nameProvider.getOutputNames(tool,

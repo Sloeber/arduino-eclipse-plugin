@@ -222,7 +222,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 			ArduinoHelpers.addCodeFolder(myProject, PathVarName, AllItems[CurItem].getText(), ArduinoConst.WORKSPACE_LIB_FOLDER
 				+ AllItems[CurItem].getText(), configurationDescriptions[curConfig]);
 		    } catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+			Common.logError("Failed to import library ", e);
 		    }
 		}
 	    }

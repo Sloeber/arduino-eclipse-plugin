@@ -314,7 +314,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    monitor.done();
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create project " + project.getName(), e));
+	    Common.logError("Failed to create project " + project.getName(), e);
 	    throw new OperationCanceledException();
 	}
 

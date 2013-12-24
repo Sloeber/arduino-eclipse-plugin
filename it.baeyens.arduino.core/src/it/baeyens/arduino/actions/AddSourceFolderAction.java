@@ -28,7 +28,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
+	    Common.logError("No project found to build");
 	    break;
 	case 1:
 	    //
@@ -38,7 +38,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    try {
 		wizard = wizardDescriptor.createWizard();
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
+		Common.logError("Failed to find import wizard", e);
 		return null;
 	    }
 	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
@@ -46,7 +46,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    wd.open();
 	    break;
 	default:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding a source folder to multiple projects is not supported"));
+	    Common.logError("Adding a source folder to multiple projects is not supported");
 	}
 	return null;
     }

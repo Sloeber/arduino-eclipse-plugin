@@ -31,7 +31,7 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.logWarn("Unable to open Serial port " + ComPort, e);
 	    return false;
 	}
 
@@ -68,7 +68,7 @@ public class ArduinoSerial {
 	    }
 	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
 	    if (NumTries++ > 70) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset"));
+		Common.logError("Leonardo upload port is not disappearing after reset");
 		return defaultComPort;
 	    }
 	    NewPorts = Serial.list();
@@ -82,7 +82,7 @@ public class ArduinoSerial {
 	NumTries = 0;
 	do {
 	    if (NumTries++ > 70) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not appearing after reset"));
+		Common.logError("Leonardo upload port is not appearing after reset");
 		return defaultComPort;
 	    }
 	    NewPorts = Serial.list();
@@ -187,12 +187,12 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.logWarn("Unable to open Serial port " + ComPort, e);
 	    return ComPort;
 	    // throw new RunnerException(e.getMessage());
 	}
 	if (!serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, null));
+	    Common.logWarn("Unable to open Serial port " + ComPort);
 	    return ComPort;
 	}
 

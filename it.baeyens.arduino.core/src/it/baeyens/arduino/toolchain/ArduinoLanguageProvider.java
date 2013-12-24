@@ -19,8 +19,6 @@ import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.language.settings.providers.ToolchainBuiltinSpecsDetector;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector implements ILanguageSettingsEditableProvider {
     // ID must match the tool-chain definition in
@@ -148,7 +146,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    try {
 		buildFolder.create(true, true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e));
+		Common.logError("failed to create folder " + confDesc.getName(), e);
 	    }
 	}
 	// End of Bug fix for CDT 8.1 fixed in 8.2

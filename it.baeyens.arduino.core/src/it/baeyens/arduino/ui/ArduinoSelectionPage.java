@@ -183,7 +183,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	switch (allBoardsFiles.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No platform files found: check your Arduino preferences ", null));
+	    Common.logError("No platform files found: check your Arduino preferences ");
 	    break;
 	case 1: {
 	    break;
@@ -377,7 +377,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
 	    } catch (CoreException e1) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error adding the arduino code", e1));
+		Common.logError("Error adding the arduino code", e1);
 	    }
 	    ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
 

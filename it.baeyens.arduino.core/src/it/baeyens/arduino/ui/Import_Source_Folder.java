@@ -1,6 +1,5 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
@@ -9,9 +8,7 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -176,10 +173,7 @@ public class Import_Source_Folder implements IImportWizard {
 			configurationDescriptions[curConfigurationDescription]);
 	    } catch (CoreException e) {
 		e.printStackTrace();
-		IStatus status = new Status(IStatus.ERROR,
-			ArduinoConst.CORE_PLUGIN_ID,
-			"Failed to import library ", e);
-		Common.log(status);
+		Common.logError("Failed to import library ", e);
 		return false;
 	    }
 	    projectDescription
@@ -192,10 +186,7 @@ public class Import_Source_Folder implements IImportWizard {
 			.setProjectDescription(project, projectDescription,
 				true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR,
-			ArduinoConst.CORE_PLUGIN_ID,
-			"Failed to import libraries to project "
-				+ project.getName(), e));
+		Common.logError("Failed to import libraries to project " + project.getName(), e);
 	    }
 	}
 	return true;

@@ -30,7 +30,6 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import java.io.IOException;
@@ -40,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
@@ -62,7 +59,7 @@ public class Serial implements SerialPortEventListener {
      * General error reporting, all correlated here just in case I think of something slightly more intelligent to do.
      */
     static public void errorMessage(String where, Throwable e) {
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e));
+	Common.logError("Error inside Serial. " + where, e);
 
     }
 
@@ -190,18 +187,18 @@ public class Serial implements SerialPortEventListener {
 		    }
 		}
 	    } catch (PortInUseException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " already in use. Try quiting any programs that may be using it", e));
+		Common.logError("Serial port " + PortName + " already in use. "
+				+ "Try quiting any programs that may be using it", e);
 		return;
 	    } catch (Exception e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
+		Common.logError("Error opening serial port " + PortName, e);
 		return;
 	    }
 
 	    if (port == null) {
 		// jaba 28 feb 2012. I made the log below a warning for issue #7
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+		Common.logWarn("Serial port " + PortName + " not found."
+				+ " Did you select the right one from the project properties -> Arduino -> Arduino?");
 		return;
 	    }
 	}
@@ -377,8 +374,8 @@ public class Serial implements SerialPortEventListener {
 
 	    int length = found - bufferIndex + 1;
 	    if (length > outgoing.length) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "readBytesUntil() byte buffer is too small for the " + length
-			+ " bytes up to and including char " + interesting, null));
+		Common.logWarn("readBytesUntil() byte buffer is too small for the " + length
+			+ " bytes up to and including char " + interesting);
 		return -1;
 	    }
 	    // byte outgoing[] = new byte[length];

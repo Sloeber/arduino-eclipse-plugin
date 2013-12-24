@@ -31,7 +31,7 @@ public class SerialListener implements MessageConsumer {
 
 	    if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
 		myEndPosition = 0;
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
+		Common.logWarn("Scope: skipping scope info to avoid buffer overflow");
 	    } else {
 		myReceivedScopeData.position(myEndPosition);
 		myReceivedScopeData.put(newData, 0, newData.length);
@@ -69,9 +69,9 @@ public class SerialListener implements MessageConsumer {
 
 			MonitorMessage += new String(dst);
 		    } catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+			Common.logWarn(
 				"Serial Montor: buffer copy still not fixed scannnedScopePointer" + scannnedScopePointer + " scannnedStartPointer "
-					+ scannnedStartPointer + " bufsize " + (scannnedScopePointer - scannnedStartPointer)));
+					+ scannnedStartPointer + " bufsize " + (scannnedScopePointer - scannnedStartPointer));
 		    }
 
 		}
@@ -82,8 +82,8 @@ public class SerialListener implements MessageConsumer {
 		} else {
 		    int bytestoRead = myReceivedScopeData.getShort(scannnedScopePointer + 2);
 		    if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial Montor: There are supposedly " + bytestoRead / 2
-				+ "channels to read"));
+			Common.logWarn("Serial Montor: There are supposedly " + bytestoRead / 2
+				+ "channels to read");
 			scannnedStartPointer = scannnedScopePointer; // process scope data as normal data
 		    } else {
 			if (bytestoRead + 4 + scannnedScopePointer < myEndPosition) {
@@ -112,7 +112,7 @@ public class SerialListener implements MessageConsumer {
 		try {
 		    myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
 		} catch (IndexOutOfBoundsException e) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
+		    Common.logWarn("buffer overflow in ScopeListener ", e);
 		}
 
 	    }
