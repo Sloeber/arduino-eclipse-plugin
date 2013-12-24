@@ -12,8 +12,7 @@ import it.baeyens.arduino.common.Common;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+
 
 public class ArduinoSerial {
     /**

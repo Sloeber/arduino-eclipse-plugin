@@ -17,8 +17,6 @@ import java.nio.ByteOrder;
 
 import multichannel.Oscilloscope;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 public class ScopeListener implements MessageConsumer {

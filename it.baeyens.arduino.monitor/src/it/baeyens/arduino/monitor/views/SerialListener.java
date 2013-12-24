@@ -7,8 +7,6 @@ import it.baeyens.arduino.common.Common;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 public class SerialListener implements MessageConsumer {
