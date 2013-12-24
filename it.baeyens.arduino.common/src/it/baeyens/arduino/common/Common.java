@@ -114,7 +114,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return sret;
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
+	    logError("Failed to read persistent setting " + Tag, e);
 	    // e.printStackTrace();
 	    return "";
 	}
@@ -128,7 +128,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return Integer.parseInt(sret);
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
+	    logError("Failed to read persistent setting " + Tag, e);
 	    // e.printStackTrace();
 	    return defaultValue;
 	}
@@ -151,9 +151,7 @@ public class Common extends ArduinoInstancePreferences {
 									      // downwards
 									      // compatibility
 	} catch (CoreException e) {
-	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
-	    Common.log(status);
-
+	    logError("Failed to write arduino properties", e);
 	}
     }
 
@@ -179,6 +177,76 @@ public class Common extends ArduinoInstancePreferences {
 	}
 
     }
+    
+    /**
+     * Log message to the status information with ArduinoConst.CORE_PLUGIN_CORE
+     * as pluginId.
+     * Equals to: 
+     * <code>log(new Status(severity, ArduinoConst.CORE_PLUGIN_ID, msg))</code>
+     */
+    public static void logStatus(int severity, String msg) {
+    	log(new Status(severity, ArduinoConst.CORE_PLUGIN_ID, msg));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.ERROR as severity and
+     * ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, msg))</code>
+     */
+    public static void logError(String msg) {
+    	log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, msg));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.ERROR as severity and
+     * ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, msg, e))</code>
+     */
+    public static void logError(String msg, Throwable e) {
+    	log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, msg, e));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.WARNING as severity
+     * and ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, msg))</code>
+     */
+    public static void logWarn(String msg) {
+    	log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, msg));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.WARNING as severity
+     * and ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, msg, e))</code>
+     */
+    public static void logWarn(String msg, Throwable e) {
+    	log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, msg, e));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.INFO as severity
+     * and ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, msg))</code>
+     */
+    public static void logInfo(String msg) {
+    	log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, msg));
+    }
+    
+    /**
+     * Log message to the status information with IStatus.INFO as severity
+     * and ArduinoConst.CORE_PLUGIN_CORE as pluginId.
+     * Equals to: 
+     * <code>log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, msg, e))</code>
+     */
+    public static void logInfo(String msg, Throwable e) {
+    	log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, msg, e));
+    }
 
     /**
      * This method returns the avrdude upload port prefix which is dependent on the platform
@@ -192,7 +260,7 @@ public class Common extends ArduinoInstancePreferences {
 	    return UploadPortPrefix_LINUX;
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return UploadPortPrefix_MAC;
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
+	logWarn("Unsupported operating system");
 	return UploadPortPrefix_WIN;
     }
 
@@ -205,9 +273,7 @@ public class Common extends ArduinoInstancePreferences {
      * @see parseInt. After error checking and modifications parseInt is used for the conversion
      **/
     public static int ToInt(String Number) {
-	if (Number == null)
-	    return 0;
-	if (Number.equals(""))
+	if (Number == null || Number.isEmpty())
 	    return 0;
 	return Integer.parseInt(Number.trim());
     }
@@ -586,7 +652,7 @@ public class Common extends ArduinoInstancePreferences {
 	}
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return getArduinoPath() + "/contents/Resources/java/LibrtxSerial.jnilib";
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system for serial functionality", null));
+	Common.logWarn("Unsupported operating system for serial functionality");
 	return getArduinoPath() + "/rxtxSerial.dll";
     }
 
@@ -607,7 +673,7 @@ public class Common extends ArduinoInstancePreferences {
 	}
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return "rxtxSerial";
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system for serial functionality", null));
+	Common.logWarn("Unsupported operating system for serial functionality");
 	return "rxtxSerial";
     }
 
@@ -651,6 +717,41 @@ public class Common extends ArduinoInstancePreferences {
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 	return getBuildEnvironmentVariable(prjDesc.getConfigurationByName(configName), EnvName, defaultvalue);
     }
+    
+    /**
+     * Wrapper method for {@link #getBuildEnvironmentVariable(IProject, String, String, String)}.
+     * Uses an empty string ("") as default value
+     * 
+     * @param project
+     *            the project that contains the environment variable
+     * @param EnvName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
+     * @return
+     */
+    static public String getBuildEnvironmentVariable(IProject project, String configName, String EnvName) {
+    	return getBuildEnvironmentVariable(project, configName, ArduinoConst.EMPTY_STRING);
+    }
+    
+    /**
+     * 
+     * Wrapping method for {@link #getBuildEnvironmentVariable(ICConfigurationDescription, String, String)}.
+     * Only converts returned value to Boolean.
+     * 
+     * @param project
+     *            the project that contains the environment variable
+     * @param EnvName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
+     * @return
+     */
+    static public boolean getBuildEnvironmentVariableBoolean(IProject project, String configName, String EnvName, boolean defaultvalue) {
+		String value = getBuildEnvironmentVariable(project, configName,
+				EnvName, Boolean.toString(defaultvalue));
+		return (value != null ? value.equalsIgnoreCase(ArduinoConst.TRUE) : false);
+    }
 
     /**
      * 
@@ -687,7 +788,7 @@ public class Common extends ArduinoInstancePreferences {
 	    return ArduinoIdeSuffix_LINUX;
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return ArduinoIdeSuffix_MAC;
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
+	logWarn("Unsupported operating system");
 	return ArduinoIdeSuffix_WIN;
     }
 

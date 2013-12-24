@@ -12,8 +12,7 @@ import it.baeyens.arduino.common.Common;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+
 
 public class ArduinoSerial {
     /**
@@ -31,7 +30,7 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.logWarn("Unable to open Serial port " + ComPort, e);
 	    return false;
 	}
 
@@ -68,7 +67,7 @@ public class ArduinoSerial {
 	    }
 	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
 	    if (NumTries++ > 70) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset"));
+		Common.logError("Leonardo upload port is not disappearing after reset");
 		return defaultComPort;
 	    }
 	    NewPorts = Serial.list();
@@ -82,7 +81,7 @@ public class ArduinoSerial {
 	NumTries = 0;
 	do {
 	    if (NumTries++ > 70) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not appearing after reset"));
+		Common.logError("Leonardo upload port is not appearing after reset");
 		return defaultComPort;
 	    }
 	    NewPorts = Serial.list();
@@ -160,15 +159,17 @@ public class ArduinoSerial {
 	if (Common.RXTXDisabled())
 	    return ComPort;
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
-	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false");
-	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
-		.equalsIgnoreCase("true");
-	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
-		.equalsIgnoreCase("true");
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME, "");
+	boolean use_1200bps_touch = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, false);
+	boolean bDisableFlushing = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, false);
+	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, false);
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME);
 
-	if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
-		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase("true")) {
+	if (boardName.equalsIgnoreCase("Arduino leonardo")
+			|| boardName.equalsIgnoreCase("Arduino Micro")
+			|| boardName.equalsIgnoreCase("Arduino Esplora")
+			|| boardName.startsWith("Arduino Due")
+			|| use_1200bps_touch)
+	{
 	    Vector<String> OriginalPorts = Serial.list();
 	    // OriginalPorts.remove(ComPort);
 	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due"))
@@ -185,12 +186,12 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.logWarn("Unable to open Serial port " + ComPort, e);
 	    return ComPort;
 	    // throw new RunnerException(e.getMessage());
 	}
 	if (!serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, null));
+	    Common.logWarn("Unable to open Serial port " + ComPort);
 	    return ComPort;
 	}
 

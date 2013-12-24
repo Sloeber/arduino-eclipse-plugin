@@ -7,15 +7,14 @@ import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
+
 
 public class hexNameProvider implements IManagedOutputNameProviderJaba {
 
     @Override
     public IPath[] getOutputNames(ITool tool, IPath[] primaryInputNames) {
-	Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "hexNameProvider: The call should go to the overloaded function not here."));
+	Common.logError("hexNameProvider: The call should go to the overloaded function not here.");
 	return null;
     }
 

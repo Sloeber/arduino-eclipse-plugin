@@ -21,9 +21,7 @@ import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -183,7 +181,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	switch (allBoardsFiles.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No platform files found: check your Arduino preferences ", null));
+	    Common.logError("No platform files found: check your Arduino preferences ");
 	    break;
 	case 1: {
 	    break;
@@ -290,9 +288,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 			.getItemCount() == 0);
 	    }
 
-	    mValidAndComplete = !mcontrolBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("")
+	    mValidAndComplete = !mcontrolBoardName.getText().trim().isEmpty() && !controlUploadPort.getText().trim().isEmpty()
 		    && MenuOpionsValidAndComplete;
-	    feedbackControl.setText(mValidAndComplete ? "true" : "false");
+	    feedbackControl.setText(Boolean.toString(mValidAndComplete));
 	    if (mValidAndComplete)
 		saveAllSelections();
 	}
@@ -377,7 +375,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
 	    } catch (CoreException e1) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error adding the arduino code", e1));
+		Common.logError("Error adding the arduino code", e1);
 	    }
 	    ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
 

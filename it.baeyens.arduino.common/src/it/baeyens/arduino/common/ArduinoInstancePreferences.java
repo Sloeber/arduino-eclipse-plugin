@@ -1,9 +1,7 @@
 package it.baeyens.arduino.common;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
@@ -87,7 +85,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key));
+	    Common.logWarn("failed to set global variable of type string " + key);
 	    e.printStackTrace();
 	}
     }
@@ -98,7 +96,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type int " + key));
+	    Common.logWarn("failed to set global variable of type int " + key);
 	    e.printStackTrace();
 	}
     }
@@ -109,7 +107,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean " + key));
+	    Common.logWarn("failed to set global variable of type boolean " + key);
 	    e.printStackTrace();
 	}
     }
@@ -213,8 +211,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	if (showError) {
 	    // If not then we bail out with an error.
 	    // And no pages are presented (with no option to FINISH).
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino",
-		    null));
+	    Common.logError("Arduino IDE path does not exist. Check Window>Preferences>Arduino");
 	}
 	return false;
     }

@@ -49,16 +49,16 @@ public class UploadSketchWrapper {
 	// Check that we have a AVR Project
 	try {
 	    if (Project == null || !Project.hasNature(ArduinoConst.ArduinoNatureID)) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The current selected project is not an arduino sketch", null));
+		Common.logError("The current selected project is not an arduino sketch");
 		return;
 	    }
 	} catch (CoreException e) {
 	    // Log the Exception
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Can't access project nature", e));
+	    Common.logError("Can't access project nature", e);
 	}
 
-	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_upload_tool, "");
-	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_COM_PORT, "");
+	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_upload_tool);
+	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_COM_PORT);
 	myConsole = ArduinoHelpers.findConsole("upload console");
 	myConsole.clearConsole();
 	myConsole.activate();
@@ -78,7 +78,7 @@ public class UploadSketchWrapper {
 	    myHighLevelConsoleStream.println("using ssh loader");
 	    PasswordManager pwdManager = new PasswordManager();
 	    if (!pwdManager.setHost(host)) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No credentials to logon to " + host));
+		Common.logError("No credentials to logon to " + host);
 	    }
 
 	    String password = pwdManager.getPassword();
@@ -152,26 +152,26 @@ public class UploadSketchWrapper {
 	    String myComPort = "";
 	    try {
 		monitor.beginTask(Common.getBuildEnvironmentVariable(myProject, myCConf, "A.TOOLS." + myNAmeTag + ".NAME", "no name provided"), 2);
-		myComPort = Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.ENV_KEY_COM_PORT, "");
+		myComPort = Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.ENV_KEY_COM_PORT);
 
 		try {
 		    WeStoppedTheComPort = Common.StopSerialMonitor(myComPort);
 		} catch (Exception e) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to handle Com port properly", e));
+		    Common.logWarn("Failed to handle Com port properly", e);
 		}
 		IFile hexFile = myProject.getFile(new Path(myCConf).append(myProject.getName() + ".hex"));
 		myUploader.uploadUsingPreferences(hexFile, myProject, false, monitor);
 		myHighLevelConsoleStream.println("upload done");
 
 	    } catch (Exception e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to upload", e));
+		Common.logError("Failed to upload", e);
 	    } finally {
 		try {
 		    if (WeStoppedTheComPort) {
 			Common.StartSerialMonitor(myComPort);
 		    }
 		} catch (Exception e) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to restart serial monitor", e));
+		    Common.logWarn("Failed to restart serial monitor", e);
 		}
 		monitor.done();
 	    }

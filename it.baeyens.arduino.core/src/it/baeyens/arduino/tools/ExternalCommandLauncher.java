@@ -15,7 +15,6 @@
  *******************************************************************************/
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import java.io.BufferedReader;
@@ -29,9 +28,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -123,8 +120,7 @@ public class ExternalCommandLauncher {
 		}
 	    } catch (IOException e) {
 		// This is unlikely to happen, but log it nevertheless
-		IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "I/O Error reading output", e);
-		Common.log(status);
+		Common.logError("I/O Error reading output", e);
 	    } finally {
 		try {
 		    fReader.close();

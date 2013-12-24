@@ -1,6 +1,5 @@
 package it.baeyens.arduino.actions;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.uploaders.UploadSketchWrapper;
@@ -10,8 +9,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 /**
  * This is a handler to connect the plugin.xml to the code for uploading code to arduino teensy ..
@@ -28,15 +25,16 @@ public class ArduinoUploadProjectHandler extends AbstractHandler {
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to upload"));
+	    Common.logError("No project found to upload");
 	    break;
 	case 1:
 	    UploadSketchWrapper.upload(SelectedProjects[0], CoreModel.getDefault().getProjectDescription(SelectedProjects[0]).getActiveConfiguration()
 		    .getName());
 	    break;
 	default:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Only 1 project should be seleted: found "
-		    + Integer.toString(SelectedProjects.length) + " the names are :" + SelectedProjects.toString()));
+	    Common.logError("Only 1 project should be seleted: found "
+		    + Integer.toString(SelectedProjects.length)
+		    + " the names are :" + SelectedProjects.toString());
 
 	}
 	return null;

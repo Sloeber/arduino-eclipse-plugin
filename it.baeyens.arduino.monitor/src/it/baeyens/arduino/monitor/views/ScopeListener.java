@@ -17,8 +17,6 @@ import java.nio.ByteOrder;
 
 import multichannel.Oscilloscope;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 public class ScopeListener implements MessageConsumer {
@@ -55,7 +53,7 @@ public class ScopeListener implements MessageConsumer {
 	    return;
 	if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
 	    myEndPosition = 0;
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
+	    Common.logWarn("Scope: skipping scope info to avoid buffer overflow");
 	} else {
 	    myReceivedScopeData.position(myEndPosition);
 	    myReceivedScopeData.put(newData, 0, newData.length);
@@ -107,8 +105,8 @@ public class ScopeListener implements MessageConsumer {
 		scannnedDataPointer = scannnedDataPointer + 2;
 		int bytestoRead = myReceivedScopeData.getShort(scannnedDataPointer);
 		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "There are supposedly " + bytestoRead / 2
-			    + "channels to read"));
+		    Common.logWarn("There are supposedly " + bytestoRead / 2
+			    + "channels to read");
 		} else {
 		    if (bytestoRead + 2 + scannnedDataPointer < myEndPosition) {
 			// all data is available
@@ -130,7 +128,7 @@ public class ScopeListener implements MessageConsumer {
 	    try {
 		myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
 	    } catch (IndexOutOfBoundsException e) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
+		Common.logWarn("buffer overflow in ScopeListener");
 	    }
 
 	}

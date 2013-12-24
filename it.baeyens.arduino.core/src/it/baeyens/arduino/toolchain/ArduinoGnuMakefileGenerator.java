@@ -1,6 +1,5 @@
 package it.baeyens.arduino.toolchain;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import java.io.ByteArrayInputStream;
@@ -1265,7 +1264,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	List<String> subDirList = new ArrayList<String>();
 	for (IContainer subDir : getSubdirList()) {
 	    IPath projectRelativePath = subDir.getProjectRelativePath();
-	    if (!projectRelativePath.toString().equals("")) //$NON-NLS-1$
+	    if (!projectRelativePath.toString().isEmpty())
 		subDirList.add(0, projectRelativePath.toString());
 	}
 	Collections.sort(subDirList, Collections.reverseOrder());
@@ -3263,8 +3262,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    } catch (Exception e) {
 			// The provided class is not a
 			// IManagedOutputNameProviderJaba class;
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-				"The provided class is not of type IManagedOutputNameProviderJaba", e));
+			Common.logError("The provided class is not of type IManagedOutputNameProviderJaba", e);
 		    }
 		    if (outPaths != null) { // MODDED BY JABA ADDED to handle
 					    // null as return value
@@ -4585,7 +4583,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    try {
 		folder.delete(true, new SubProgressMonitor(monitor, 1));
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), e));
+		Common.logInfo("Folder deletion failed " + folder.toString(), e);
 	    }
 	}
     }

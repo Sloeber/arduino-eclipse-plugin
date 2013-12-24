@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 /**
  * ArduinoBoards is that class that hides the Arduino Boards.txt file <br/>
@@ -194,7 +192,7 @@ public class ArduinoBoards {
     // */
     // public boolean getDisableFlushing(String boardName) {
     // return getBoardSetting(boardName, ArduinoConst.disableFlushingKeyTAG,
-    // "").equalsIgnoreCase("TRUE");
+    // "").equalsIgnoreCase(ArduinoConst.TRUE);
     // }
     //
     // public String getUploadTool(String boardName) {
@@ -215,7 +213,7 @@ public class ArduinoBoards {
      * 
      */
     public String[] GetArduinoBoards() {
-	if (mLastLoadedBoardsFile.equals("")) {
+	if (mLastLoadedBoardsFile == null || mLastLoadedBoardsFile.toString().isEmpty()) {
 	    String[] sBoards = new String[0];
 	    return sBoards;
 	}
@@ -247,11 +245,11 @@ public class ArduinoBoards {
      * @author jan
      */
     public boolean LoadBoardsFile(String boardsFile) {
-
-	if ((mLastLoadedBoardsFile != null) && (mLastLoadedBoardsFile.equals(boardsFile)))
-	    return true; // do nothing when value didn't change
-	mLastLoadedBoardsFile = new File(boardsFile);
-	return LoadBoardsFile();
+    	File newFile = new File(boardsFile);
+		if (newFile.equals(mLastLoadedBoardsFile))
+			return true; // do nothing when value didn't change
+		mLastLoadedBoardsFile = newFile;
+		return LoadBoardsFile();
     }
 
     /**
@@ -280,8 +278,8 @@ public class ArduinoBoards {
 	    }
 
 	} catch (Exception e) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to read arduino boards file "
-		    + mLastLoadedBoardsFile.getName(), e));
+	    Common.logWarn("Failed to read arduino boards file "
+		    + mLastLoadedBoardsFile.getName(), e);
 	}
 	return true;
     }
@@ -365,8 +363,7 @@ public class ArduinoBoards {
 	    return output;
 
 	} catch (IOException e) {
-	    IStatus status = new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to read stream ", e);
-	    Common.log(status);
+	    Common.logWarn("Failed to read stream ", e);
 	}
 	return null;
     }

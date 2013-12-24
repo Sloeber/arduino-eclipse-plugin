@@ -112,7 +112,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 		//
 		// let the host know of the status so it can set the Next and Finish buttons
 		//
-		feedbackControl.setText(mValidAndComplete ? "true" : "false");
+		feedbackControl.setText(Boolean.toString(mValidAndComplete));
 	    }
 	});
 
@@ -145,7 +145,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 		// if the user changes the field directly, validate the page
 		//
 		validatePage();
-		feedbackControl.setText(mValidAndComplete ? "true" : "false");
+		feedbackControl.setText(Boolean.toString(mValidAndComplete));
 	    }
 	});
 	//
@@ -193,7 +193,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 		// the parent
 		//
 		validatePage();
-		feedbackControl.setText(mValidAndComplete ? "true" : "false");
+		feedbackControl.setText(Boolean.toString(mValidAndComplete));
 	    }
 	});
 
@@ -223,7 +223,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	//
 	// inform the parent
 	//
-	feedbackControl.setText(mValidAndComplete ? "true" : "false");
+	feedbackControl.setText(Boolean.toString(mValidAndComplete));
     }
 
     /**
@@ -347,7 +347,7 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SKETCH_TEMPLATE_FOLDER, folderName);
 	    contribEnv.addVariable(var, confdesc);
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT, defaultChecked ? "true" : "false");
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT, Boolean.toString(defaultChecked));
 	    contribEnv.addVariable(var, confdesc);
 	}
 	ArduinoInstancePreferences.setLastTemplateFolderName(folderName);

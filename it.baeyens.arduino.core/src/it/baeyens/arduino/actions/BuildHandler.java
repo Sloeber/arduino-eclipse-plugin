@@ -43,7 +43,7 @@ class JobHandler extends Job {
 	    myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to build the code", e));
+	    Common.logError("Failed to build the code", e);
 	}
 	return Status.OK_STATUS;
     }
@@ -56,7 +56,7 @@ public class BuildHandler extends AbstractHandler {
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
+	    Common.logError("No project found to build");
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);

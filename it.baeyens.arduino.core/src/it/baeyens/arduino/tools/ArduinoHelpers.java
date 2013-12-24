@@ -52,11 +52,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -164,8 +162,8 @@ public class ArduinoHelpers extends Common {
 	try {
 	    mngr.setProjectDescription(project, projectDescription, true, null);
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not add folder " + IncludePath.toOSString()
-		    + " to includepoth in project" + project.getName(), e));
+	    Common.logError("Could not add folder " + IncludePath.toOSString()
+		    + " to includepoth in project" + project.getName(), e);
 	}
 
     }
@@ -358,8 +356,7 @@ public class ArduinoHelpers extends Common {
 	    // null);
 	    // }
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "Failed to create the path variable variables. The setup will not work properly", e));
+	    Common.logError("Failed to create the path variable variables. The setup will not work properly", e);
 	    e.printStackTrace();
 	}
     }
@@ -368,7 +365,7 @@ public class ArduinoHelpers extends Common {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null));
+		Common.logError("The folder " + folder + " does not contain any files.");
 		return;
 	    }
 	    for (File f : a) {
@@ -414,7 +411,7 @@ public class ArduinoHelpers extends Common {
 	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core_folder, "");
 	addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
 		configurationDescription);
-	if (!boardVariant.equals("")) // this is Arduino version 1.0
+	if (!boardVariant.isEmpty()) // this is Arduino version 1.0
 	{
 	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
 	} else {
@@ -423,7 +420,7 @@ public class ArduinoHelpers extends Common {
 		try {
 		    variantFolder.delete(true, null);
 		} catch (CoreException e) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to delete the variant folder", e));
+		    Common.logError("failed to delete the variant folder", e);
 		}
 	    }
 	}
@@ -518,7 +515,7 @@ public class ArduinoHelpers extends Common {
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality
 	// I set the default value to: use the archiver
-	var = new EnvironmentVariable(ENV_KEY_use_archiver, "true");
+	var = new EnvironmentVariable(ENV_KEY_use_archiver, ArduinoConst.TRUE);
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
@@ -746,7 +743,7 @@ public class ArduinoHelpers extends Common {
 	    }
 
 	} catch (Exception e) {// Catch exception if any
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + platformFilename + " or " + boardFileName, e));
+	    Common.logError("Error parsing " + platformFilename + " or " + boardFileName, e);
 	    return;
 	}
 
@@ -908,7 +905,7 @@ public class ArduinoHelpers extends Common {
 	    try {
 		buildFolder.delete(true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to delete the folder " + cfgDescription.getName(), e));
+		Common.logError("failed to delete the folder " + cfgDescription.getName(), e);
 	    }
 	}
 
@@ -959,7 +956,7 @@ public class ArduinoHelpers extends Common {
 	HashSet<String> Hardwarelists = new HashSet<String>();
 	searchFiles(HardwareFolder, Hardwarelists, ArduinoConst.PLATFORM_FILE_NAME, 3);
 	if (Hardwarelists.size() == 0) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No platform.txt files found in the arduino hardware folder", null));
+	    Common.logError("No platform.txt files found in the arduino hardware folder");
 	    return null;
 	}
 
@@ -977,7 +974,7 @@ public class ArduinoHelpers extends Common {
 	HashSet<String> boardFiles = new HashSet<String>();
 	searchFiles(HardwareFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
 	if (boardFiles.size() == 0) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folder", null));
+	    Common.logError("No boards.txt files found in the arduino hardware folder");
 	    return null;
 	}
 	searchFiles(new File(getPrivateHardwarePath()), boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);

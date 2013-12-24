@@ -127,7 +127,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public boolean canFinish() {
-	return !((controlLibraryPath.getText().equals("")) || (getContainerFullPath() == null));
+	return !(controlLibraryPath.getText().isEmpty() || getContainerFullPath() == null);
     }
 
     public String GetLibraryFolder() {

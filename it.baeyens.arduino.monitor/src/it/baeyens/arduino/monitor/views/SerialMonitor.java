@@ -468,7 +468,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		return;
 	    }
 	} else {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No more serial ports supported ", null));
+	    Common.logError("No more serial ports supported ");
 	}
 
     }

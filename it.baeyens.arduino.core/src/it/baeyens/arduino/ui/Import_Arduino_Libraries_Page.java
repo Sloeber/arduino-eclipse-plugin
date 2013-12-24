@@ -16,8 +16,6 @@ import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -222,7 +220,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 			ArduinoHelpers.addCodeFolder(myProject, PathVarName, AllItems[CurItem].getText(), ArduinoConst.WORKSPACE_LIB_FOLDER
 				+ AllItems[CurItem].getText(), configurationDescriptions[curConfig]);
 		    } catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+			Common.logError("Failed to import library ", e);
 		    }
 		}
 	    }
