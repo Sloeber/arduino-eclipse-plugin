@@ -651,6 +651,22 @@ public class Common extends ArduinoInstancePreferences {
     }
     
     /**
+     * Wrapper method for {@link #getBuildEnvironmentVariable(IProject, String, String, String)}.
+     * Uses an empty string ("") as default value
+     * 
+     * @param project
+     *            the project that contains the environment variable
+     * @param EnvName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
+     * @return
+     */
+    static public String getBuildEnvironmentVariable(IProject project, String configName, String EnvName) {
+    	return getBuildEnvironmentVariable(project, configName, ArduinoConst.EMPTY_STRING);
+    }
+    
+    /**
      * 
      * Wrapping method for {@link #getBuildEnvironmentVariable(ICConfigurationDescription, String, String)}.
      * Only converts returned value to Boolean.

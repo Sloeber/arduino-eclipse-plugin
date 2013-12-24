@@ -163,7 +163,7 @@ public class ArduinoSerial {
 	boolean use_1200bps_touch = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, false);
 	boolean bDisableFlushing = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, false);
 	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariableBoolean(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, false);
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME, "");
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME);
 
 	if (boardName.equalsIgnoreCase("Arduino leonardo")
 			|| boardName.equalsIgnoreCase("Arduino Micro")

@@ -45,8 +45,8 @@ public class GenericLocalUploader implements IRealUpload {
 	int step = 1;
 	String patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN";
 	String commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME";
-	String stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag, "");
-	String stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag, "");
+	String stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag);
+	String stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag);
 	do {
 	    monitor.subTask("Running " + stepName);
 	    myOutconsole.println(stepPattern);
@@ -59,8 +59,8 @@ public class GenericLocalUploader implements IRealUpload {
 	    step++;
 	    patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN";
 	    commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME";
-	    stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag, "");
-	    stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag, "");
+	    stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag);
+	    stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag);
 	} while (!stepPattern.isEmpty());
 
 	return true;
