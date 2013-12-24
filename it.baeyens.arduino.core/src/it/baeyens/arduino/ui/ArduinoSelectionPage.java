@@ -292,7 +292,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	    mValidAndComplete = !mcontrolBoardName.getText().trim().isEmpty() && !controlUploadPort.getText().trim().isEmpty()
 		    && MenuOpionsValidAndComplete;
-	    feedbackControl.setText(mValidAndComplete ? "true" : "false");
+	    feedbackControl.setText(Boolean.toString(mValidAndComplete));
 	    if (mValidAndComplete)
 		saveAllSelections();
 	}

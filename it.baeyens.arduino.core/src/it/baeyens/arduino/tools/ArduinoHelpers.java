@@ -518,7 +518,7 @@ public class ArduinoHelpers extends Common {
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality
 	// I set the default value to: use the archiver
-	var = new EnvironmentVariable(ENV_KEY_use_archiver, "true");
+	var = new EnvironmentVariable(ENV_KEY_use_archiver, ArduinoConst.TRUE);
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 

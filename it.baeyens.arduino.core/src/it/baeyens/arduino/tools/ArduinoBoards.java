@@ -194,7 +194,7 @@ public class ArduinoBoards {
     // */
     // public boolean getDisableFlushing(String boardName) {
     // return getBoardSetting(boardName, ArduinoConst.disableFlushingKeyTAG,
-    // "").equalsIgnoreCase("TRUE");
+    // "").equalsIgnoreCase(ArduinoConst.TRUE);
     // }
     //
     // public String getUploadTool(String boardName) {

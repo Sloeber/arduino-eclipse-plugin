@@ -160,15 +160,15 @@ public class ArduinoSerial {
 	if (Common.RXTXDisabled())
 	    return ComPort;
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
-	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false");
-	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
-		.equalsIgnoreCase("true");
-	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
-		.equalsIgnoreCase("true");
+	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, ArduinoConst.FALSE);
+	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, ArduinoConst.FALSE)
+		.equalsIgnoreCase(ArduinoConst.TRUE);
+	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, ArduinoConst.FALSE)
+		.equalsIgnoreCase(ArduinoConst.TRUE);
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME, "");
 
 	if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
-		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase("true")) {
+		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase(ArduinoConst.TRUE)) {
 	    Vector<String> OriginalPorts = Serial.list();
 	    // OriginalPorts.remove(ComPort);
 	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due"))

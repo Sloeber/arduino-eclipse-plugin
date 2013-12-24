@@ -25,6 +25,7 @@
 
 package gnu.io;
 
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import java.io.File;
@@ -40,7 +41,7 @@ public class RXTXCommDriver implements CommDriver {
 
     private final static boolean debug = false;
     private final static boolean devel = true;
-    private final static boolean noVersionOutput = "true".equals(System.getProperty("gnu.io.rxtx.NoVersionOutput"));
+    private final static boolean noVersionOutput = ArduinoConst.TRUE.equals(System.getProperty("gnu.io.rxtx.NoVersionOutput"));
 
     static {
 	if (debug)
