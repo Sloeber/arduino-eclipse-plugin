@@ -181,6 +181,7 @@
         name="%command.name.0"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.BuildHandler"
         description="%command.description.1"
         id="it.baeyens.arduino.actions.ArduinoBuildAction"
         name="%command.name.1"/>
