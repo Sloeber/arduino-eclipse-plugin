@@ -166,6 +166,7 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	    if (info.hasData()) {
 		newItem.board = info.getPropertyString("board");
 		newItem.distroversion = info.getPropertyString("distro_version");
+		newItem.name = info.getServer();
 	    }
 	    newItem.port = Integer.toString(info.getPort());
 
