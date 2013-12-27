@@ -59,6 +59,7 @@ public class SSHUpload implements IRealUpload {
 	    SSH ssh = new SSH(session);
 	    myHighLevelConsoleStream.println("Sending sketch " + hexFile + " to " + myHost);
 	    scpFiles(scp, hexFile);
+	    myHighLevelConsoleStream.println("Sketch is now on yun: /tmp/sketch.hex");
 
 	    // String additionalParams = verbose ? prefs.get("upload.params.verbose") : prefs.get("upload.params.quiet");
 	    String additionalParams = "";// Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst. upload.params.quiet, "");
@@ -109,11 +110,13 @@ public class SSHUpload implements IRealUpload {
 	return ret;
     }
 
-    private static void scpFiles(SCP scp, IFile hexFile) throws IOException {
+    private void scpFiles(SCP scp, IFile hexFile) throws IOException {
+	File uploadFile = null;
 	try {
 	    scp.open();
 	    scp.startFolder("tmp");
-	    scp.sendFile(new File(hexFile.getLocationURI()), "sketch.hex");
+	    uploadFile = hexFile.getLocation().toFile();
+	    scp.sendFile(uploadFile, "sketch.hex");
 	    scp.endFolder();
 
 	    // if (canUploadWWWFiles(project, ssh)) {
@@ -125,6 +128,10 @@ public class SSHUpload implements IRealUpload {
 	    // scp.endFolder();
 	    // scp.endFolder();
 	    // }
+	} catch (IOException e) {
+	    myHighLevelConsoleStream.println("failed to upload " + uploadFile);
+	    throw (e);
+
 	} finally {
 	    scp.close();
 	}

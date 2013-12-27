@@ -160,8 +160,11 @@ public class UploadSketchWrapper {
 		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to handle Com port properly", e));
 		}
 		IFile hexFile = myProject.getFile(new Path(myCConf).append(myProject.getName() + ".hex"));
-		myUploader.uploadUsingPreferences(hexFile, myProject, false, monitor);
-		myHighLevelConsoleStream.println("upload done");
+		if (myUploader.uploadUsingPreferences(hexFile, myProject, false, monitor)) {
+		    myHighLevelConsoleStream.println("upload done");
+		} else {
+		    myHighLevelConsoleStream.println("upload failed");
+		}
 
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to upload", e));
