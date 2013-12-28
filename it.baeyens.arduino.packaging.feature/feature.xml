@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.packaging.feature"
       label="Arduino Eclipse Features"
-      version="2.2.0">
+      version="2.2.0.qualifier">
 
    <description>
       An IDE for C/C++ developers with Arduino integration.
