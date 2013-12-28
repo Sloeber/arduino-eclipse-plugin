@@ -1026,6 +1026,6 @@ public class ArduinoHelpers extends Common {
 	String host = mComPort.split(" ")[0];
 	if (host.equals(mComPort))
 	    return null;
-	return host + ".local";
+	return host;
     }
 }
