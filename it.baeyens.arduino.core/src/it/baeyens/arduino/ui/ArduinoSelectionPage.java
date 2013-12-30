@@ -15,6 +15,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICMultiConfigDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
@@ -328,7 +329,16 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
     private void saveAllSelections() {
 	if (page != null) {
-	    saveAllSelections(getResDesc().getConfiguration());
+	    ICConfigurationDescription confdesc = getResDesc().getConfiguration();
+	    if (confdesc instanceof ICMultiConfigDescription) {
+		ICMultiConfigDescription multiConfDesc = (ICMultiConfigDescription) confdesc;
+		ICConfigurationDescription confdescs[] = (ICConfigurationDescription[]) multiConfDesc.getItems();
+		for (int curdesc = 0; curdesc < confdescs.length; curdesc++) {
+		    saveAllSelections(confdescs[curdesc]);
+		}
+	    } else {
+		saveAllSelections(confdesc);
+	    }
 	}
     }
 
