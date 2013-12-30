@@ -102,7 +102,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	myScope = new Oscilloscope(6, dsp, parent, SWT.NONE);
 	GridData theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 7;
-	int ScopeColors[] = { SWT.COLOR_BLUE, SWT.COLOR_CYAN, SWT.COLOR_DARK_BLUE, SWT.COLOR_DARK_GRAY, SWT.COLOR_DARK_GREEN, SWT.COLOR_DARK_RED,
+	int ScopeColors[] = { SWT.COLOR_BLUE, SWT.COLOR_CYAN, SWT.COLOR_BLACK, SWT.COLOR_DARK_GRAY, SWT.COLOR_DARK_GREEN, SWT.COLOR_DARK_RED,
 		SWT.COLOR_DARK_YELLOW, SWT.COLOR_DARK_CYAN, SWT.COLOR_WHITE, SWT.COLOR_DARK_MAGENTA };
 	myScope.setLayoutData(theGriddata);
 	for (int i = 0; i < myScope.getChannels(); i++) {
