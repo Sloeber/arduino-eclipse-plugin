@@ -10,14 +10,16 @@
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
             <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT> 
             </div>
-<h1>here you can find product versions build by the build machine.</h1>
+<h1>here you can find product versions build by the build machine during the nightly build.</h1>
+The nightly build builds the latest and greatest version off the code. There is no guarantee that these version are "better than the previous version".<br>
+Since (2014-01-08)The nightly build is only uploaded when there is a change in the github content (that is inclusive this web site)<br>
+<br>
 product versions can be run without having to install eclipse as the product versions contain eclipse.<br>
 Yust download the correct version for your os unpack and start eclipse.<br>
 You still need to configure (step 4 of the installation instructions)<br>
 <br>
-Note1: All versions before 213-11-29 are only tarred even though they are called tar.gz. <br>
-Note2: All this is still pre beta (but working) so there are still some things to do (like spash screen, icons ..). <br>
-note3: Windows users: use 7Zip to uncompress and the use 7Zip to unpak the tar file.
+note: Windows users: I use 7Zip to uncompress and then I use 7Zip to unpak the tar file.<br>
+
 <?php
 
 
