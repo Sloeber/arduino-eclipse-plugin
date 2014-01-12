@@ -54,10 +54,10 @@
 	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td></tr>
 	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td></tr></table>
 	The library specification 1.5 has not been completely undone in 1.5.5 as such these libraries will not compile in the plugin.<br>
-	The libraries that have issues are tha ones that have multiple folders under the arch subfolder (normally sam and avr).<br>
+	The libraries that have issues are the ones that have multiple folders under the arch subfolder (normally sam and avr).<br>
 	As the plugin includes all code recursively under the library folder all arch code is included which gives problems.<br>
 	To fix this problem add #ifdef ARDUINO_ARCH_[upercase(architecture)] at the top of each file and #endif at the bottom.<br>
-	So for the files in the sam folder that becomes #ifdef ARDUINO_ARCH_SAM ..... #ifdef<br>
+	So for the files in the sam folder that becomes #ifdef ARDUINO_ARCH_SAM ..... #endif<br>
 	Unix users can run the code below in the hardware folder to fix the issue automatically.<br>
 	<code># /bin/bash<br>
 arch=avr<br>
