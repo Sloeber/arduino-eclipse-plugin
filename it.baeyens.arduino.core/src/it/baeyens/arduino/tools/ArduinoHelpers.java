@@ -762,6 +762,7 @@ public class ArduinoHelpers extends Common {
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
 	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
 
+	// TODO consider moving this to the set defaults (not sure why this is here. If it needs to be here document why
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_build_variant_path, pathMan.getURIValue(
 		ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS).getPath()
 		+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
