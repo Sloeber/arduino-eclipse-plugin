@@ -6,7 +6,11 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -82,12 +86,41 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     }
 
     private boolean showError(String dialogMessage) {
-	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.";
-	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.\n";
+	FullDialogMessage = FullDialogMessage
+		+ "Yes continue and ignore the warning\nNo do not continue and open install advice in browser\ncancel do not continue";
+	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.CANCEL | SWT.NO);
 	dialog.setText("Considerations about Arduino IDE compatibility");
 	dialog.setMessage(FullDialogMessage);
-	if (dialog.open() == SWT.CANCEL)
+	int ret = dialog.open();
+	if (ret == SWT.CANCEL)
 	    return false;
+	if (ret == SWT.NO) {
+	    boolean openedDialog = false;
+	    try {
+		URI uri = new URI("http://eclipse.baeyens.it/installAdvice.shtml");
+
+		Desktop desktop = null;
+		if (Desktop.isDesktopSupported()) {
+		    desktop = Desktop.getDesktop();
+		    desktop.browse(uri);
+		    openedDialog = true;
+		}
+	    } catch (URISyntaxException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    if (!openedDialog) {
+		dialog = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+		dialog.setText("A error occured!");
+		dialog.setMessage("Failed to open browser!");
+		dialog.open();
+	    }
+	    return false;
+	}
 	return true;
     }
 
@@ -114,7 +147,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    return false;
 	}
 	if (mArduinoIdeVersion.getStringValue().equals("1.5.3") || mArduinoIdeVersion.getStringValue().equals("1.5.4")) {
-	    if (!showError("Arduino IDE 1.5.3 and 1.5.4 are not supported out of the box."))
+	    if (!showError("Arduino IDE 1.5.3 and 1.5.4 are not supported."))
+		return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.5")) {
+	    if (!showError("Arduino IDE 1.5.5 works but you need to adapt some libraries."))
 		return false;
 	}
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.5") > 0) {
