@@ -46,6 +46,11 @@ function ListFileNames( $prefix)
     }
 }
 ?>
+<h2>Releases</h2>
+<?php
+ListFileNames("V");
+?>
+
 <h2>Linux 64 bit</h2>
 <?php
 ListFileNames("linux64.");
