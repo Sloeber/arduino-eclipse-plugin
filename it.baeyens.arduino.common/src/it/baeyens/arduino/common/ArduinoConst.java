@@ -1,6 +1,5 @@
 package it.baeyens.arduino.common;
 
-
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.
  * 
@@ -89,9 +88,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_build_project_name = ENV_KEY_ARDUINO_START + "BUILD.PROJECT_NAME";
     public static final String ENV_KEY_build_variant_path = ENV_KEY_ARDUINO_START + "BUILD.VARIANT.PATH";
     public static final String ENV_KEY_archive_file = ENV_KEY_ARDUINO_START + "ARCHIVE_FILE";
-    public static final String ENV_KEY_upload_use_1200bps_touch = ENV_KEY_ARDUINO_START + "UPLOAD.USE_1200bps_touch";
+    public static final String ENV_KEY_upload_use_1200bps_touch = ENV_KEY_ARDUINO_START + "UPLOAD.USE_1200BPS_TOUCH";
     public static final String ENV_KEY_upload_disable_flushing = ENV_KEY_ARDUINO_START + "UPLOAD.DISABLE_FLUSHING";
-    public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "WAIT_FOR_UPLOAD_PORT";
+    public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
     public static final String ENV_KEY_upload_tool = ENV_KEY_ARDUINO_START + "UPLOAD.TOOL";
     public static final String ENV_KEY_build_core_folder = ENV_KEY_ARDUINO_START + "BUILD.CORE";
     public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";
