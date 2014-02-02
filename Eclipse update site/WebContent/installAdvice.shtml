@@ -48,17 +48,18 @@
 	<br>
 	If we summarize this in a table we get:<br>
 	<table border="1">
-	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th></tr>
-	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td></tr>
-	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td></tr>
-	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td></tr>
-	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td></tr></table>
+	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th><th>Product</th></tr>
+	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td><td>not available</td></tr>
+	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td><td>from V2.2 only</td></tr>
+	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
+	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr></table>
 	The library specification 1.5 has not been completely undone in 1.5.5 as such these libraries will not compile in the plugin.<br>
 	The libraries that have issues are the ones that have multiple folders under the arch subfolder (normally sam and avr).<br>
 	As the plugin includes all code recursively under the library folder all arch code is included which gives problems.<br>
 	To fix this problem add #ifdef ARDUINO_ARCH_[upercase(architecture)] at the top of each file and #endif at the bottom.<br>
 	So for the files in the sam folder that becomes #ifdef ARDUINO_ARCH_SAM ..... #endif<br>
 	Unix users can run the code below in the hardware folder to fix the issue automatically.<br>
+	<a href="http://rlogiacco.wordpress.com/2014/01/24/stepping-up-in-arduino-development/">This user explains how you can do it in windows with cygwin. </a>
 	<code># /bin/bash<br>
 arch=avr<br>
 prepend="#ifdef ARDUINO_ARCH_"${arch^^}<br>

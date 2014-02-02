@@ -15,9 +15,10 @@
 	When you are here I assume you have a good idea of what you want to install.<br>
 	If not please see the <a href="installAdvice.shtml">install advice page</a> before installing.<br>
 	<br>
-	To install the product see <a href="http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/installation-of-the-arduino-eclipse-ide-teensyduino-win-7/">windows 7 specific instructions.</a> which go for all other platforms as well<br>
+	To install the product (and teensy) see <a href="http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/installation-of-the-arduino-eclipse-ide-teensyduino-win-7/">windows 7 specific instructions.</a> which go for all other platforms as well<br>
 	To install the eclipse plugin V1.x V2.x see <a href="Install_plugin.shtml">these installation instructions</a>.<br>
 	Or use these instructions explicitly written for 2.2 by a fan and mac user <a href="http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/arduino-eclipse-ide-and-plugin-v2-2-installation/">V2.2 instructions</a>.<br>
+	<a href="http://rlogiacco.wordpress.com/2014/01/24/stepping-up-in-arduino-development/">Here is someone explaining his experiances with V2.2 on Win7 64 bit</a>
 	
 
  
