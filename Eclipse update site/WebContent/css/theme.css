@@ -1,0 +1,20 @@
+body {
+  font-family: 'Open Sans', serif;
+}
+
+.navbar {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.navbar-brand {
+  font-family: 'Open Sans Condensed', sans-serif;
+}
+
+.navbar-nav {
+  font-weight: 700;
+}
+
+.jumbotron {
+  font-family: 'Open Sans Condensed', sans-serif;
+}
+
