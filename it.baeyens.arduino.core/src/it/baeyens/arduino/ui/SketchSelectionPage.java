@@ -345,9 +345,9 @@ public class SketchSelectionPage extends AbstractCPropertyTab {
 	if (confdesc != null) {
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SKETCH_TEMPLATE_FOLDER, folderName);
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, folderName);
 	    contribEnv.addVariable(var, confdesc);
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT, defaultChecked ? "true" : "false");
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, defaultChecked ? "true" : "false");
 	    contribEnv.addVariable(var, confdesc);
 	}
 	ArduinoInstancePreferences.setLastTemplateFolderName(folderName);

@@ -1721,8 +1721,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    String command = tool.getToolCommand();
 	    try {
 		// try to resolve the build macros in the tool command
-		String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(command, EMPTY_STRING, WHITESPACE,
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool));
+		String resolvedCommand = ManagedBuildManager
+			.getBuildMacroProvider()
+			.resolveValueToMakefileFormat(command, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+				new FileContextData(null, null, null, tool)).replaceFirst(" -w ", " ");
 		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
 		    command = resolvedCommand;
 
@@ -1752,8 +1754,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    // resolve any remaining macros in the command after it has been
 	    // generated
 	    try {
-		String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool));
+		String resolvedCommand = ManagedBuildManager
+			.getBuildMacroProvider()
+			.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+				new FileContextData(null, null, null, tool)).replaceFirst(" -w ", " ");
 		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
 		    buildCmd = resolvedCommand;
 
@@ -2318,13 +2322,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    {
 		resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, "", //$NON-NLS-1$
 			" ", //$NON-NLS-1$
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(inputLocation, outputLocation, null, tool));
+			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(inputLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 	    }
 
 	    else {
 		resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd, "", //$NON-NLS-1$
 			" ", //$NON-NLS-1$
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(inputLocation, outputLocation, null, tool));
+			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(inputLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 	    }
 	    if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
 		cmd = resolvedCommand;
@@ -2525,14 +2529,18 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	try {
 	    String resolvedCommand = null;
 	    if (!needExplicitRuleForFile) {
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd, EMPTY_STRING, WHITESPACE,
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(sourceLocation, outputLocation, null, tool));
+		resolvedCommand = ManagedBuildManager
+			.getBuildMacroProvider()
+			.resolveValueToMakefileFormat(cmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+				new FileContextData(sourceLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 	    } else {
 		// if we need an explicit rule then don't use any builder
 		// variables, resolve everything
 		// to explicit strings
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, EMPTY_STRING, WHITESPACE,
-			IBuildMacroProvider.CONTEXT_FILE, new FileContextData(sourceLocation, outputLocation, null, tool));
+		resolvedCommand = ManagedBuildManager
+			.getBuildMacroProvider()
+			.resolveValue(cmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+				new FileContextData(sourceLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 	    }
 
 	    if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
@@ -2673,14 +2681,15 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			    IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
 			    if (!needExplicitRuleForFile) {
 				resolvedCommand = provider.resolveValueToMakefileFormat(preCmd, EMPTY_STRING, WHITESPACE,
-					IBuildMacroProvider.CONTEXT_FILE, new FileContextData(sourceLocation, outputLocation, null, tool));
+					IBuildMacroProvider.CONTEXT_FILE, new FileContextData(sourceLocation, outputLocation, null, tool))
+					.replaceFirst(" -w ", " ");
 			    } else {
 				// if we need an explicit rule then don't use
 				// any builder
 				// variables, resolve everything to explicit
 				// strings
 				resolvedCommand = provider.resolveValue(preCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-					new FileContextData(sourceLocation, outputLocation, null, tool));
+					new FileContextData(sourceLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 			    }
 			    if (resolvedCommand != null)
 				buffer.append(resolvedCommand + NEWLINE);
@@ -2776,12 +2785,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
 		if (!needExplicitRuleForFile) {
 		    resolvedCommand = provider.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-			    new FileContextData(sourceLocation, outputLocation, null, tool));
+			    new FileContextData(sourceLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 		} else {
 		    // if we need an explicit rule then don't use any builder
 		    // variables, resolve everything to explicit strings
 		    resolvedCommand = provider.resolveValue(buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-			    new FileContextData(sourceLocation, outputLocation, null, tool));
+			    new FileContextData(sourceLocation, outputLocation, null, tool)).replaceFirst(" -w ", " ");
 		}
 
 		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)

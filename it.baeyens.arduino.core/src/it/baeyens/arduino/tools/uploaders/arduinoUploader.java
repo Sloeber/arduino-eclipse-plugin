@@ -28,8 +28,8 @@ public class arduinoUploader implements IRealUpload {
 
     @Override
     public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
-	String MComPort = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_COM_PORT, "");
-	String boardName = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_BOARD_NAME, "");
+	String MComPort = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
+	String boardName = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 	String NewComPort = MComPort;
 	String command = Common.getBuildEnvironmentVariable(myProject, mycConf, "A.TOOLS." + myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", "");
 	NewComPort = ArduinoSerial.makeArduinoUploadready(myProject, mycConf, MComPort);

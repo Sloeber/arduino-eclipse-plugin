@@ -58,7 +58,7 @@ public class UploadSketchWrapper {
 	}
 
 	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_upload_tool, "");
-	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_COM_PORT, "");
+	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
 	myConsole = ArduinoHelpers.findConsole("upload console");
 	myConsole.clearConsole();
 	myConsole.activate();
@@ -152,7 +152,7 @@ public class UploadSketchWrapper {
 	    String myComPort = "";
 	    try {
 		monitor.beginTask(Common.getBuildEnvironmentVariable(myProject, myCConf, "A.TOOLS." + myNAmeTag + ".NAME", "no name provided"), 2);
-		myComPort = Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.ENV_KEY_COM_PORT, "");
+		myComPort = Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
 
 		try {
 		    WeStoppedTheComPort = Common.StopSerialMonitor(myComPort);

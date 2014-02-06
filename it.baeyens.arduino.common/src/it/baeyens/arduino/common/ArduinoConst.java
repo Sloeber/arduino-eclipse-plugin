@@ -100,13 +100,13 @@ public class ArduinoConst {
     public static final String ArduinoIdeSuffix_MAC = "Contents/Resources/Java";
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
-    public static final String ENV_KEY_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
+    public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
     public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_JANTJE_START + "SIZE_COMMAND";
-    public static final String ENV_KEY_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
-    public static final String ENV_KEY_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
-    public static final String ENV_KEY_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
-    public static final String ENV_KEY_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
-    public static final String ENV_KEY_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
+    public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
+    public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
+    public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
+    public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
+    public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";
@@ -114,12 +114,12 @@ public class ArduinoConst {
     //
     // template Sketch information
 
-    public static final String ENV_KEY_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
-    public static final String ENV_KEY_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";
 
     public static final String JANTJE_SIZE_COMMAND = "\"${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}\" --format=avr --mcu=${A.BUILD.MCU} \"${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf\"";
 
-    public static final String ENV_KEY_WARNING_LEVEL_OFF = "";
+    public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
 
     public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";

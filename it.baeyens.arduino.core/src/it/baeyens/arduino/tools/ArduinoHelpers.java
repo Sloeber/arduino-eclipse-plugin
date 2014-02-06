@@ -549,12 +549,18 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 
 	// if (firstTime) {
-	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_SIZE_SWITCH, "").isEmpty()) {
-	    var = new EnvironmentVariable(ENV_KEY_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
+	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, "").isEmpty()) {
+	    var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
 	    contribEnv.addVariable(var, confDesc);
 	}
 	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_COMMAND, "").isEmpty()) {
 	    var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_COMMAND, JANTJE_SIZE_COMMAND);
+	    contribEnv.addVariable(var, confDesc);
+	}
+
+	// Set the warning level default off like arduino does
+	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_WARNING_LEVEL, "").isEmpty()) {
+	    var = new EnvironmentVariable(ENV_KEY_JANTJE_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_OFF);
 	    contribEnv.addVariable(var, confDesc);
 	}
 
@@ -718,10 +724,10 @@ public class ArduinoHelpers extends Common {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARDS_FILE,
+	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE,
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
-	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
-	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARD_NAME,
+	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
+	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
 		ArduinoInstancePreferences.getLastUsedArduinoBoardName());
 
 	// first remove all Arduino Variables so there is no memory effect
@@ -773,6 +779,7 @@ public class ArduinoHelpers extends Common {
 	var = null;
 	for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
 	    String recipe = getBuildEnvironmentVariable(confDesc, MakeKeyString(recipes[curRecipe]), "", false);
+
 	    String recipeParts[] = recipe.split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3);
 	    switch (recipeParts.length) {
 	    case 0:

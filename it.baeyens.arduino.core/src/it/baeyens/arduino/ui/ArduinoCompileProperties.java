@@ -69,13 +69,13 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
 			    .getContributedEnvironment();
 		    if (myWarningLevel.getSelection() == true) {
 			IEnvironmentVariable var = new EnvironmentVariable(
-				ArduinoConst.ENV_KEY_WARNING_LEVEL,
+				ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL,
 				ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
 			contribEnv.addVariable(var, getResDesc()
 				.getConfiguration());
 		    } else {
 			IEnvironmentVariable var = new EnvironmentVariable(
-				ArduinoConst.ENV_KEY_WARNING_LEVEL,
+				ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL,
 				ArduinoConst.ENV_KEY_WARNING_LEVEL_OFF);
 			contribEnv.addVariable(var, getResDesc()
 				.getConfiguration());
@@ -100,14 +100,14 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
 			    .getContributedEnvironment();
 		    if (mySizeCommand.getSelection() == true) {
 			IEnvironmentVariable var = new EnvironmentVariable(
-				ArduinoConst.ENV_KEY_SIZE_SWITCH,
+				ArduinoConst.ENV_KEY_JANTJE_SIZE_SWITCH,
 				"${" + ArduinoConst.ENV_KEY_JANTJE_SIZE_COMMAND
 					+ "}");
 			contribEnv.addVariable(var, getResDesc()
 				.getConfiguration());
 		    } else {
 			IEnvironmentVariable var = new EnvironmentVariable(
-				ArduinoConst.ENV_KEY_SIZE_SWITCH,
+				ArduinoConst.ENV_KEY_JANTJE_SIZE_SWITCH,
 				"${" + ArduinoConst.ENV_KEY_recipe_size_pattern
 					+ "}");
 			contribEnv.addVariable(var, getResDesc()
@@ -227,14 +227,14 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
 	IContributedEnvironment contribEnv = envManager
 		.getContributedEnvironment();
 	IEnvironmentVariable var = contribEnv.getVariable(
-		ArduinoConst.ENV_KEY_WARNING_LEVEL, confDesc);
+		ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL, confDesc);
 	if (var == null)
 	    myWarningLevel.setSelection(false);
 	else
 	    myWarningLevel.setSelection((var.getValue()
 		    .equalsIgnoreCase(ArduinoConst.ENV_KEY_WARNING_LEVEL_ON)));
 	var = contribEnv
-		.getVariable(ArduinoConst.ENV_KEY_SIZE_SWITCH, confDesc);
+		.getVariable(ArduinoConst.ENV_KEY_JANTJE_SIZE_SWITCH, confDesc);
 	if (var == null)
 	    mySizeCommand.setSelection(false);
 	else
