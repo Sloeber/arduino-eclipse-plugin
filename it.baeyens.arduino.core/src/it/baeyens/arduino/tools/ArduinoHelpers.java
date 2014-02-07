@@ -774,34 +774,35 @@ public class ArduinoHelpers extends Common {
 		+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
 	contribEnv.addVariable(var, confDesc);
 
-	String recipes[] = { "recipe.c.o.pattern", "recipe.cpp.o.pattern", "recipe.ar.pattern", "recipe.c.combine.pattern",
-		"recipe.objcopy.eep.pattern", "recipe.objcopy.hex.pattern", "recipe.size.pattern" };
+	String recipes[] = { ENV_KEY_recipe_c_o_pattern, ENV_KEY_recipe_cpp_o_pattern, ENV_KEY_recipe_S_o_pattern,
+		ENV_KEY_recipe_objcopy_hex_pattern, ENV_KEY_recipe_objcopy_eep_pattern, ENV_KEY_recipe_size_pattern, ENV_KEY_recipe_AR_pattern,
+		ENV_KEY_recipe_c_combine_pattern };
 	var = null;
 	for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
-	    String recipe = getBuildEnvironmentVariable(confDesc, MakeKeyString(recipes[curRecipe]), "", false);
+	    String recipe = getBuildEnvironmentVariable(confDesc, recipes[curRecipe], "", false);
 
 	    String recipeParts[] = recipe.split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3);
 	    switch (recipeParts.length) {
 	    case 0:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), "echo no command for " + recipes[curRecipe]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", "echo no command for " + recipes[curRecipe]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 1:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 2:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".2", recipeParts[1]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 3:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".2", recipeParts[1]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".3"), recipeParts[2]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".3", recipeParts[2]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    default:

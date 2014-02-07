@@ -72,8 +72,13 @@ public class ArduinoConst {
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
     public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.O.PATTERN";
     public static final String ENV_KEY_recipe_cpp_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.CPP.O.PATTERN";
+    public static final String ENV_KEY_recipe_S_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.S.O.PATTERN";
     public static final String ENV_KEY_recipe_objcopy_hex_pattern = ENV_KEY_ARDUINO_START + "RECIPE.OBJCOPY.HEX.PATTERN";
+    public static final String ENV_KEY_recipe_objcopy_eep_pattern = ENV_KEY_ARDUINO_START + "RECIPE.OBJCOPY.EEP.PATTERN";
     public static final String ENV_KEY_recipe_size_pattern = ENV_KEY_ARDUINO_START + "RECIPE.SIZE.PATTERN";
+    public static final String ENV_KEY_recipe_AR_pattern = ENV_KEY_ARDUINO_START + "RECIPE.AR.PATTERN";
+    public static final String ENV_KEY_recipe_c_combine_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.COMBINE.PATTERN";
+
     public static final String ENV_KEY_build_variant = ENV_KEY_ARDUINO_START + "BUILD.VARIANT";
     public static final String ENV_KEY_compiler_path = ENV_KEY_ARDUINO_START + "COMPILER.PATH";
     public static final String ENV_KEY_build_system_path = ENV_KEY_ARDUINO_START + "BUILD.SYSTEM.PATH";

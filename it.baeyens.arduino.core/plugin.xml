@@ -472,23 +472,23 @@
                  name="%optionCategory.name">
            </optionCategory>
            <tool
-                 announcement="%tool.announcement"
+                 announcement="%tool.Arduino.CPP.announcement"
                  command="${A.RECIPE.CPP.O.PATTERN}"
                  commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="it.baeyens.arduino.tool.sketch.compiler.cpp"
-                 name="%tool.name"
+                 name="%tool.Arduino.CPP2O.name"
                  natureFilter="both">
               <optionCategory
                     id="it.baeyens.arduino.core.cpp.optionCategory.includePaths"
-                    name="%optionCategory.name.0">
+                    name="%optionCategory.include.name">
               </optionCategory>
               <option
                     browseType="directory"
                     category="it.baeyens.arduino.core.cpp.optionCategory.includePaths"
                     command="-I"
                     id="it.baeyens.arduino.compiler.cpp.sketch.option.incpath"
-                    name="%option.name"
+                    name="%option.include.path.name"
                     resourceFilter="project"
                     valueType="includePath">
               </option>
@@ -497,14 +497,14 @@
                     dependencyCalculator="it.baeyens.arduino.toolchain.ArduinoDependencyCalculator"
                     dependencyContentType="org.eclipse.cdt.core.cxxHeader"
                     id="it.baeyens.arduino.compiler.cpp.sketch.input"
-                    name="%inputType.name"
+                    name="%inputType.CPP.name"
                     primaryInput="true"
                     sourceContentType="org.eclipse.cdt.core.cxxSource">
               </inputType>
               <outputType
                     buildVariable="LINK_OBJ"
                     id="it.baeyens.arduino.compiler.cpp.sketch.link.output"
-                    name="%outputType.name"
+                    name="%outputType.CPP.link.name"
                     nameProvider="it.baeyens.arduino.toolchain.LinkNameProvider"
                     outputs="o"
                     primaryOutput="true">
@@ -512,30 +512,30 @@
               <outputType
                     buildVariable="AR_OBJ"
                     id="it.baeyens.arduino.compiler.cpp.ar.output"
-                    name="%outputType.name.0"
+                    name="%outputType.CPP.AR.name"
                     nameProvider="it.baeyens.arduino.toolchain.ArchiveNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
            </tool>
            <tool
-                 announcement="%tool.announcement.0"
+                 announcement="%tool.Arduino.C.announcement"
                  command="${A.RECIPE.C.O.PATTERN}"
                  commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="it.baeyens.arduino.tool.compiler.c"
-                 name="%tool.name.0"
+                 name="%tool.Arduino.C2O.name"
                  natureFilter="both">
               <optionCategory
                     id="it.baeyens.arduino.core.c.optionCategory.includePaths"
-                    name="%optionCategory.name.1">
+                    name="%optionCategory.include.name">
               </optionCategory>
               <option
                     browseType="directory"
                     category="it.baeyens.arduino.core.c.optionCategory.includePaths"
                     command="-I"
                     id="it.baeyens.arduino.compiler.c.sketch.option.incpath"
-                    name="%option.name.0"
+                    name="%option.include.path.name"
                     resourceFilter="project"
                     valueType="includePath">
               </option>
@@ -545,14 +545,14 @@
                     dependencyContentType="org.eclipse.cdt.core.cHeader"
                     id="it.baeyens.arduino.compiler.c.sketch.input"
                     multipleOfType="false"
-                    name="%inputType.name.0"
+                    name="%inputType.C.name"
                     primaryInput="true"
                     sourceContentType="org.eclipse.cdt.core.cSource">
               </inputType>
               <outputType
                     buildVariable="LINK_OBJ"
                     id="it.baeyens.arduino.compiler.c.link.output"
-                    name="%outputType.name.1"
+                    name="%outputType.C.link.name"
                     nameProvider="it.baeyens.arduino.toolchain.LinkNameProvider"
                     outputs="o"
                     primaryOutput="true">
@@ -560,14 +560,48 @@
               <outputType
                     buildVariable="AR_OBJ"
                     id="it.baeyens.arduino.compiler.c.ar.output"
-                    name="%outputType.name.2"
+                    name="%outputType.C.AR.name"
                     nameProvider="it.baeyens.arduino.toolchain.ArchiveNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
            </tool>
            <tool
-                 announcement="%tool.announcement.1"
+                 announcement="%tool.Arduino.S.announcement"
+                 command="${A.RECIPE.S.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.S.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="it.baeyens.arduino.tool.sketch.compiler.s"
+                 name="%tool.Arduino.S20.name"
+                 natureFilter="both">
+              <inputType
+                    buildVariable="S_SKETCH_FILES"
+                    dependencyCalculator="it.baeyens.arduino.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
+                    id="it.baeyens.arduino.compiler.S.sketch.input"
+                    name="%inputType.Asembly.name"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.asmSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="it.baeyens.arduino.compiler.S.sketch.link.output"
+                    name="%outputType.S.link.name"
+                    nameProvider="it.baeyens.arduino.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="it.baeyens.arduino.compiler.S.ar.output"
+                    name="%outputType.S.AR.name"
+                    nameProvider="it.baeyens.arduino.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.Arduino.archiver.announcement"
                  command="${A.RECIPE.AR.PATTERN}"
                  commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
@@ -592,7 +626,7 @@
               </inputType>
            </tool>
            <tool
-                 announcement="%tool.announcement.2"
+                 announcement="%tool.Arduino.combiner.announcement"
                  command="${A.RECIPE.C.COMBINE.PATTERN}"
                  commandLinePattern="${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.RECIPE.C.COMBINE.PATTERN.3}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
