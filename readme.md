@@ -230,3 +230,4 @@ New Project, Arduino, New Arduino Sketch
 
 All should work. You can set breakpoints in the launching Eclipse if you ran as debug. Happy developing!
 
+<a href="http://with-eclipse.github.io/" target="_blank"><img alt="with-Eclipse logo" src="http://with-eclipse.github.io/with-eclipse-1.jpg" /></a>
