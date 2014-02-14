@@ -141,7 +141,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	// IContributedEnvironment contribEnv =
 	// envManager.getContributedEnvironment();
-	ICConfigurationDescription confDesc = prjDesc.getConfigurations()[0];
+	ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
 	// Bug fix for CDT 8.1 fixed in 8.2
 	IFolder buildFolder = currentProject.getFolder(confDesc.getName());
 	if (!buildFolder.exists()) {
