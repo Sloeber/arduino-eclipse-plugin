@@ -388,6 +388,11 @@ public class Common extends ArduinoInstancePreferences {
 				}
 			    }
 			}
+			// if (part instanceof IConsoleView) {
+			// IConsoleView epart = (IConsoleView) part;
+			// IProject project = epart.
+			//
+			// }
 		    }
 		}
 
@@ -464,7 +469,7 @@ public class Common extends ArduinoInstancePreferences {
 		viewCount += (viewRef != null) ? 1 : 0;
 		theViewRef = (theViewRef == null) ? viewRef : theViewRef;
 
-		if (theViewRef != null && viewCount == 1) {
+		if (theViewRef != null && viewCount >= 1) {
 		    IViewPart view = theViewRef.getView(false);
 		    if (view != null) {
 			ISelection cdtSelection = view.getSite().getSelectionProvider().getSelection();
