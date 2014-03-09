@@ -169,7 +169,6 @@
 			id="it.baeyens.arduino.commands"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
-        defaultHandler="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
         description="%command.description"
         id="it.baeyens.arduino.actions.UploadprojectAction"
         name="%command.name"/>
@@ -762,6 +761,15 @@
     <handler
           class="it.baeyens.arduino.actions.AddSourceFolderAction"
           commandId="it.baeyens.arduino.actions.AddSourceFolderAction">
+       <enabledWhen>
+          <count
+                value="+">
+          </count>
+       </enabledWhen>
+    </handler>
+    <handler
+          class="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
+          commandId="it.baeyens.arduino.actions.UploadprojectAction">
        <enabledWhen>
           <count
                 value="+">
