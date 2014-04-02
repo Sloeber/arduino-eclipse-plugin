@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.renameParticipants">
+      <renameParticipant
+            class="it.baeyens.cdt.refactor.RenameFolder"
+            id="it.baeyens.cdt.refactor.renameFolder"
+            name="name">
+         <enablement>
+            <with
+                  variable="affectedNatures">
+               <iterate operator="or">
+                  <equals
+                        value="org.eclipse.cdt.core.cnature">
+                  </equals>
+               </iterate>
+            </with>
+         </enablement>
+      </renameParticipant>
+   </extension>
+
+</plugin>
