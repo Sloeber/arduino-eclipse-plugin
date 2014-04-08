@@ -10,11 +10,6 @@
          <enablement>
             <with
                   variable="affectedNatures">
-               <iterate operator="or">
-                  <equals
-                        value="org.eclipse.cdt.core.cnature">
-                  </equals>
-               </iterate>
             </with>
          </enablement>
       </renameParticipant>
