@@ -324,39 +324,35 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method sets the eclipse path variables to contain the 2 important Arduino hardware folders (code wise that is)
+     * This method sets the eclipse path variables to contain the 3 important Arduino hardware folders (code wise that is)
      * 
-     * Core path (used when referencing Arduino Code) The Arduino Pin Path (used in 1rduino 1.0 to reference the arduino pin variants)
+     * Core path (used when referencing Arduino Code) The Arduino Pin Path (used from Arduino 1.0 to reference the arduino pin variants) The libraries
+     * path (used to find libraries)
+     * 
+     * Paths are given relative to the arduino folder to avoid conflict when a version control system is being used (these values are in the .project
+     * file) As the arduino folder location is in the workspace all values in the .project file become relative avoiding conflict.
      * 
      * @param project
      */
     public static void setProjectPathVariables(IProject project, IPath platformPath) {
-
-	// IPath platformPath = new
-	// Path(getBuildEnvironmentVariable(configurationDescription,
-	// ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
-	// platformPath = platformPath.removeLastSegments(1);
 	IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
-	URI arduinoHardwareLibraryPath = URIUtil.toURI(platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+	IPath arduinoHardwareLibraryPath = platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX);
 
-	// consider replacing below with see
-	// https://github.com/jantje/arduino-eclipse-plugin/issues/34 why
-	// IPathVariableManager pathMan =
-	// ResourcesPlugin.getWorkspace().getPathVariableManager();
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
 	try {
-	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, arduinoHardwareLibraryPath);
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
-	    // String boardVariant =
-	    // getBuildEnvironmentVariable(configurationDescription,
-	    // ArduinoConst.ENV_KEY_build_variant, "");
-	    // if (!boardVariant.isEmpty()) {
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
-	    // } else {
-	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS,
-	    // null);
-	    // }
+	    Path arduinoPath = new Path(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO).getRawPath());
+	    // Path ArduinoPath = new Path(ArduinoURI.toString());
+	    String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
+	    String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
+	    URI uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, uriTest);
+	    test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
+	    uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, uriTest);
+	    test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
+	    uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
