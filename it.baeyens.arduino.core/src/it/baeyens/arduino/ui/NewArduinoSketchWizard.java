@@ -291,8 +291,9 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
-		Path exclusionPath[] = new Path[1];
+		Path exclusionPath[] = new Path[2];
 		exclusionPath[0] = new Path("Libraries/*/?xamples");
+		exclusionPath[1] = new Path("Libraries/*/?xtras");
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
 		ICSourceEntry[] out = null;
