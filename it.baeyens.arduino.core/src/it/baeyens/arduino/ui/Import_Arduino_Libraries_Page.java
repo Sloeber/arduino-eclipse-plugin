@@ -101,9 +101,9 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	// IWorkspace workspace = ResourcesPlugin.getWorkspace();
 	IPathVariableManager pathMan = myProject.getPathVariableManager();
 
-	URI ArduinoLibraryURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	URI PrivateLibraryURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
-	URI HardwareLibrarURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
+	URI ArduinoLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB));
+	URI PrivateLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB));
+	URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
 
 	if (HardwareLibrarURI != null) {
 	    IPath HardwareLibraryPath = URIUtil.toPath(HardwareLibrarURI);
