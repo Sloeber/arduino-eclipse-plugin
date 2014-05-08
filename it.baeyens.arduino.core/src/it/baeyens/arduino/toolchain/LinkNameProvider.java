@@ -28,6 +28,12 @@ public class LinkNameProvider implements IManagedOutputNameProviderJaba {
 	    if (primaryInputNames[curPath].toString().startsWith("arduino") && (bUseArchiver)) {
 		return null;
 	    }
+	    if (primaryInputNames[curPath].toString().endsWith(".ino") && (bUseArchiver)) {
+		return null;
+	    }
+	    if (primaryInputNames[curPath].toString().endsWith(".pde") && (bUseArchiver)) {
+		return null;
+	    }
 	    outputNames[curPath] = ArduinoHelpers.GetOutputName(primaryInputNames[curPath]).addFileExtension("o");
 	}
 	return outputNames;

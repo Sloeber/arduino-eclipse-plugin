@@ -2,6 +2,7 @@ package it.baeyens.arduino.actions;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.PdePreprocessor;
 
 import java.net.URL;
 
@@ -61,6 +62,15 @@ public class BuildHandler extends AbstractHandler {
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
 	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
+		// Added for debugging
+		// do not check this in !!!
+		try {
+		    PdePreprocessor.processProject(SelectedProjects[curProject]);
+		} catch (CoreException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+		// end of added for debugging
 		Job buildJob = new JobHandler(SelectedProjects[curProject]);
 		buildJob.setPriority(Job.INTERACTIVE);
 		buildJob.schedule();

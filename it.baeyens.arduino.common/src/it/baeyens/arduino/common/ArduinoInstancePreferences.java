@@ -232,12 +232,12 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     //
     // get/set last used "use default sketch location"
     //
-    public static boolean getLastUsedDefaultSketchSelection() {
-	return getGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, true);
+    public static int getLastUsedDefaultSketchSelection() {
+	return getGlobalInt(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT);
     }
 
-    public static void setLastUsedDefaultSketchSelection(boolean newFilter) {
-	setGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
+    public static void setLastUsedDefaultSketchSelection(int newFilter) {
+	setGlobalInt(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
     }
 
     //
