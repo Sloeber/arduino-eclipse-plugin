@@ -15,17 +15,20 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -99,14 +102,21 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		return myScope.getSize().x - 10; // Oscilloscope.TAILSIZE_MAX;
 	    }
 	};
-	myScope = new Oscilloscope(6, dsp, parent, SWT.NONE);
+
+	IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+	ITheme currentTheme = themeManager.getCurrentTheme();
+	ColorRegistry colorRegistry = currentTheme.getColorRegistry();
+
+	myScope = new Oscilloscope(6, dsp, parent, SWT.NONE, colorRegistry.get("it.baeyens.scope.color.background"),
+		colorRegistry.get("it.baeyens.scope.color.foreground"), colorRegistry.get("it.baeyens.scope.color.grid"));
 	GridData theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 7;
-	int ScopeColors[] = { SWT.COLOR_BLUE, SWT.COLOR_CYAN, SWT.COLOR_DARK_GRAY, SWT.COLOR_DARK_GREEN, SWT.COLOR_DARK_RED, SWT.COLOR_DARK_YELLOW,
-		SWT.COLOR_DARK_CYAN, SWT.COLOR_WHITE, SWT.COLOR_DARK_MAGENTA, SWT.COLOR_BLACK };
+
 	myScope.setLayoutData(theGriddata);
 	for (int i = 0; i < myScope.getChannels(); i++) {
-	    myScope.setForeground(i, Display.getDefault().getSystemColor(ScopeColors[i]));
+	    String colorID = "it.baeyens.scope.color." + (1 + i);
+	    Color color = colorRegistry.get(colorID);
+	    myScope.setForeground(i, color);
 	}
 	myScope.getDispatcher(0).dispatch();
 
