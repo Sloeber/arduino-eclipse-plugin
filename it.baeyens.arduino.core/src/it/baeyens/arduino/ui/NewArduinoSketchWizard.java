@@ -11,6 +11,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IContributedEnvironment;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -283,6 +288,12 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    } else {
 		// this should not happen
 	    }
+
+	    // set warning levels default on
+	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL, ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
+	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
 	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 	    prjDesc.setCdtProjectCreated();
