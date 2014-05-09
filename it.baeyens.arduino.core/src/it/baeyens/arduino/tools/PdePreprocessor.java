@@ -84,8 +84,8 @@ public class PdePreprocessor {
 		for (IASTNode astNode : astNodes) {
 		    if (astNode instanceof CPPASTFunctionDefinition) {
 			// String debug = astNode.getRawSignature();
-			body += astNode.getRawSignature().replaceAll("\n", " ").replaceAll("\\{.*\\}", ";");
-			body += "\n";
+			body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
+			body += ";\n";
 		    }
 		}
 		IInclude includes[] = tu.getIncludes();
