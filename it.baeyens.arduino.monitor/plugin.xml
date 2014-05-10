@@ -103,7 +103,7 @@ The font for in the serial monitor
 </description>
 </fontDefinition>
 
-<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.1" label="serial Channel 1 Color" value="COLOR_WHITE">
+<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.1" label="serial Channel 1 Color" value="COLOR_BLACK">
 <description>
 The color used by the first serial connection of the serial monitor
 </description>
