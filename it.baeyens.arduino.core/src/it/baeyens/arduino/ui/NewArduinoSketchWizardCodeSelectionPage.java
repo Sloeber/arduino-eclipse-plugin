@@ -7,7 +7,7 @@ import it.baeyens.arduino.tools.Stream;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -228,11 +228,8 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	case sample:
 	    try {
 		java.io.File target = project.getLocation().toFile();
-		File exampleFolders[] = mExampleEditor.getSelectedExamples();
-		for (File exampleFolder : exampleFolders) {
-		    FileUtils.copyDirectory(exampleFolder, target);
+		mExampleEditor.CopySelectedExamples(target);
 
-		}
 	    } catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -257,6 +254,23 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	    mArduinoExamplePath = arduinoExample;
 	    mPrivateLibraryPath = privateLibrary;
 	    mPlatformPathPath = platformPath;
+	}
+
+    }
+
+    public void importLibraries(IProject project, ICConfigurationDescription configurationDescriptions[]) {
+	switch (mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
+	case defaultIno:
+	case defaultCPP:
+	case CustomTemplate:
+	    // no need to attach libraries here
+	    break;
+	case sample:
+	    mExampleEditor.importSelectedLibraries(project, configurationDescriptions);
+	    break;
+	default:
+
+	    break;
 	}
 
     }

@@ -267,6 +267,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // add the correct files to the project
 	    //
 	    mNewArduinoSketchWizardCodeSelectionPage.createFiles(project, monitor);
+	    //
+	    // add the libraries to the project if needed
+	    //
+	    mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjDesc.getConfigurations());
 
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();

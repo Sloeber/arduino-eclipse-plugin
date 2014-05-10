@@ -1,10 +1,19 @@
 package it.baeyens.arduino.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoHelpers;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -72,24 +81,26 @@ public class ArduinoSampleSelector extends Composite {
 	removeExamples();
 
 	if (hardwareLibrary.toFile().exists()) {
-	    addExamples(hardwareLibrary);
+	    addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
 	}
 
 	if (arduinoExample.toFile().exists()) {
 	    // Create Arduino Item
-	    TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
-	    myArduinoExampleItem.setText("Arduino examples");
-	    // Add the Arduino Libs
-	    addExamples(myArduinoExampleItem, arduinoExample);
+	    // TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
+	    // myArduinoExampleItem.setText("Arduino examples");
+	    // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	    // // Add the Arduino Libs
+	    // addExamples(myArduinoExampleItem, arduinoExample);
+	    addExamples(arduinoExample, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
 	}
 
 	if (privateLibrary.toFile().exists()) {
-	    addExamples(privateLibrary);
+	    addLibExamples(privateLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
 	}
 
     }
 
-    private void addExamples(IPath iPath) {
+    private void addExamples(IPath iPath, String pathVarName) {
 	File LibRoot = iPath.toFile();
 	IPath LibFolder;
 	String[] children = LibRoot.list();
@@ -100,6 +111,27 @@ public class ArduinoSampleSelector extends Composite {
 	    for (int i = 0; i < children.length; i++) {
 		TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
 		libItem.setText(children[i]);
+		libItem.setData(pathVarName);
+		LibFolder = iPath.append(children[i]);
+		if (LibFolder.toFile().isDirectory()) {
+		    addExamples(libItem, LibFolder);
+		}
+	    }
+	}
+    }
+
+    private void addLibExamples(IPath iPath, String pathVarName) {
+	File LibRoot = iPath.toFile();
+	IPath LibFolder;
+	String[] children = LibRoot.list();
+	if (children == null) {
+	    // Either dir does not exist or is not a directory
+	} else {
+	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
+	    for (int i = 0; i < children.length; i++) {
+		TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
+		libItem.setText(children[i]);
+		libItem.setData(pathVarName);
 		LibFolder = iPath.append(children[i]).append("examples");
 		if (LibFolder.toFile().isDirectory()) {
 		    addExamples(libItem, LibFolder);
@@ -139,18 +171,43 @@ public class ArduinoSampleSelector extends Composite {
 	myLabel.setEnabled(enable);
     }
 
-    public File[] getSelectedExamples() {
-	List<File> filelist = new ArrayList<File>();
+    public void CopySelectedExamples(File target) throws IOException {
+
 	myTreeSelector.getItems();
 	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
 	    for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 		if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
-		    filelist.add((File) curchildTreeItem.getData());
+		    FileUtils.copyDirectory((File) curchildTreeItem.getData(), target);
 		}
 	    }
 	}
-	File ret[] = new File[filelist.size()];
+    }
 
-	return filelist.toArray(ret);
+    public void importSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[]) {
+	// ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+	// ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
+	// ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
+	myTreeSelector.getItems();
+	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
+	    String PathVarName = (String) curTreeItem.getData();
+	    for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
+		if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+		    try {
+			ArduinoHelpers.addCodeFolder(project, PathVarName, curTreeItem.getText(),
+				ArduinoConst.WORKSPACE_LIB_FOLDER + curTreeItem.getText(), configurationDescriptions);
+		    } catch (CoreException e) {
+			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+		    }
+		    break;
+		}
+	    }
+	}
+	// try {
+	// // projectDescription.(configurationDescription);
+	// mngr.setProjectDescription(project, projectDescription, true, null);
+	// } catch (CoreException e) {
+	// e.printStackTrace();
+	// }
+
     }
 }
