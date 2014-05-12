@@ -20,8 +20,6 @@ package it.baeyens.arduino.tools;
  */
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,6 +34,7 @@ import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionDefinition;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -46,7 +45,8 @@ public class PdePreprocessor {
 
     public static void processProject(IProject ff) throws CoreException {
 	String body = "";
-	String includePart = "#include \"Arduino.h\"\n";
+	String includeHeaderPart = "#include \"Arduino.h\"\n";
+	String includeCodePart = "\n";
 	String header = "//This is a automatic generated file\n";
 	header += "//Please do not modify this file\n";
 	header += "//If you touch this file your change will be overwritten during the next build\n";
@@ -56,50 +56,98 @@ public class PdePreprocessor {
 	header += "\n";
 	ICProject tt = CoreModel.getDefault().create(ff);
 	IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
-	FilenameFilter inoFileFilter = new FilenameFilter() {
+	// FilenameFilter inoFileFilter = new FilenameFilter() {
+	//
+	// @Override
+	// public boolean accept(File dir, String name) {
+	// if (name.endsWith(".pde"))
+	// return true;
+	// return name.endsWith(".ino");
+	// }
+	// };
+	//
+	// String allInoFiles[] = ff.getLocation().toFile().list(inoFileFilter);
+	IResource allResources[] = ff.members(0);// .getFolder("").members(0);
+	int numInoFiles = 0;
+	for (IResource curResource : allResources) {
+	    String extension = curResource.getFileExtension();
+	    if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
+		numInoFiles++;
+		if (curResource.isLinked()) {
+		    includeCodePart += "#include \"" + curResource.getLocation() + "\"\n";
+		} else {
+		    includeCodePart += "#include \"" + curResource.getName() + "\"\n";
+		}
 
-	    @Override
-	    public boolean accept(File dir, String name) {
-		if (name.endsWith(".pde"))
-		    return true;
-		return name.endsWith(".ino");
-	    }
-	};
+		IPath path = curResource.getFullPath();// ff.getFullPath().append(inoFile);
 
-	String allInoFiles[] = ff.getLocation().toFile().list(inoFileFilter);
-	for (String inoFile : allInoFiles) {
-	    IPath path = ff.getFullPath().append(inoFile);
-
-	    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-	    // Create translation unit for file
-	    ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
-	    if (tu == null) {
-		body += "\n";
-		body += "#error the file: " + inoFile + " is not found in the indexer though it exists on the file system.\n";
-		body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
-		body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
-	    } else {
-		IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
-		IASTNode astNodes[] = asttu.getChildren();
-		for (IASTNode astNode : astNodes) {
-		    if (astNode instanceof CPPASTFunctionDefinition) {
-			// String debug = astNode.getRawSignature();
-			body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
-			body += ";\n";
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+		// Create translation unit for file
+		ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
+		if (tu == null) {
+		    body += "\n";
+		    body += "#error the file: " + curResource.getName() + " is not found in the indexer though it exists on the file system.\n";
+		    body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
+		    body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
+		} else {
+		    IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
+		    IASTNode astNodes[] = asttu.getChildren();
+		    for (IASTNode astNode : astNodes) {
+			if (astNode instanceof CPPASTFunctionDefinition) {
+			    // String debug = astNode.getRawSignature();
+			    body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
+			    body += ";\n";
+			}
+		    }
+		    IInclude includes[] = tu.getIncludes();
+		    for (IInclude include : includes) {
+			includeHeaderPart += include.getSource();
+			includeHeaderPart += "\n";
 		    }
 		}
-		IInclude includes[] = tu.getIncludes();
-		for (IInclude include : includes) {
-		    includePart += include.getSource();
-		    includePart += "\n";
-		}
 	    }
 	}
-	body += "\n";
-	for (String inoFile : allInoFiles) {
-	    body += "#include \"" + inoFile + "\"\n";
+
+	if (numInoFiles == 0) {
+	    IResource inofile = ff.findMember(tempFile);
+	    if (inofile != null) {
+		inofile.delete(true, null);
+	    }
+	    return;
 	}
-	String output = header + includePart + body;
+	// for (String inoFile : allInoFiles) {
+	// IPath path = ff.getFullPath().append(inoFile);
+	//
+	// IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+	// // Create translation unit for file
+	// ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
+	// if (tu == null) {
+	// body += "\n";
+	// body += "#error the file: " + inoFile + " is not found in the indexer though it exists on the file system.\n";
+	// body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
+	// body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
+	// } else {
+	// IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
+	// IASTNode astNodes[] = asttu.getChildren();
+	// for (IASTNode astNode : astNodes) {
+	// if (astNode instanceof CPPASTFunctionDefinition) {
+	// // String debug = astNode.getRawSignature();
+	// body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
+	// body += ";\n";
+	// }
+	// }
+	// IInclude includes[] = tu.getIncludes();
+	// for (IInclude include : includes) {
+	// includePart += include.getSource();
+	// includePart += "\n";
+	// }
+	// }
+	// }
+	body += "\n";
+	// for (String inoFile : allInoFiles) {
+	// includeCodePart += "#include \"" + inoFile + "\"\n";
+	// }
+	String output = header + includeHeaderPart + body + includeCodePart;
 	ArduinoHelpers.addFileToProject(ff, new Path(tempFile), new ByteArrayInputStream(output.getBytes()), null);
 
     }
