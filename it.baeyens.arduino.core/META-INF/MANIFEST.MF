@@ -18,6 +18,7 @@ Export-Package: it.baeyens.arduino.tools,
  it.baeyens.arduino.ui
 Import-Package: it.baeyens.arduino.arduino,
  it.baeyens.arduino.common,
+ org.apache.commons.io;version="1.2.0",
  org.eclipse.cdt.core,
  org.eclipse.cdt.core.envvar,
  org.eclipse.cdt.core.language.settings.providers,

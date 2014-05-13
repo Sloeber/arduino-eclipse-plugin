@@ -5,14 +5,17 @@ import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
-import it.baeyens.arduino.tools.Stream;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IContributedEnvironment;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -21,7 +24,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -40,6 +42,8 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -58,8 +62,8 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
 
     private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
-    private SketchTemplatePage mSketchTemplatePage; // add the folder for the templates
-    private ArduinoSettingsPage mArduinoPage; // add Arduino board and comp port
+    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add the folder for the templates
+    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board and comp port
     private BuildConfigurationsPage mBuildCfgPage; // build the configuration
     private IConfigurationElement mConfig;
     private IProject mProject;
@@ -84,15 +88,15 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	//
 	// settings for Arduino board etc
 	//
-	mArduinoPage = new ArduinoSettingsPage("Arduino information");
+	mArduinoPage = new NewArduinoSketchWizardBoardPage("Arduino information");
 	mArduinoPage.setTitle("Provide the Arduino information.");
 	mArduinoPage.setDescription("These settings can be changed later.");
 	//
 	// settings for template file location
 	//
-	mSketchTemplatePage = new SketchTemplatePage("Sketch Template location");
-	mSketchTemplatePage.setTitle("Provide the sketch template folder");
-	mSketchTemplatePage.setDescription("The folder must contain a sketch.cpp and sketch.h");
+	mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage("Sketch Template location");
+	mNewArduinoSketchWizardCodeSelectionPage.setTitle("Provide the sketch template folder");
+	mNewArduinoSketchWizardCodeSelectionPage.setDescription("The folder must contain a sketch.cpp and sketch.h");
 	//
 	// configuration page but I haven't seen it
 	//
@@ -104,8 +108,26 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	// /
 	addPage(mWizardPage);
 	addPage(mArduinoPage);
-	addPage(mSketchTemplatePage);
+	addPage(mNewArduinoSketchWizardCodeSelectionPage);
 	addPage(mBuildCfgPage);
+
+	mArduinoPage.setListener(new Listener() {
+
+	    @Override
+	    public void handleEvent(Event event) {
+		if (event == null) {
+		    mNewArduinoSketchWizardCodeSelectionPage.removeExamples();
+		} else {
+		    IPath PlatformPath = mArduinoPage.getPlatformFolder().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
+		    IPath arduinoExample = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_EXAMPLE_FOLDER_NAME);
+		    IPath privateLibrary = new Path(ArduinoInstancePreferences.getPrivateLibraryPath());
+
+		    mNewArduinoSketchWizardCodeSelectionPage.AddAllExamples(arduinoExample, privateLibrary, PlatformPath);
+		}
+
+	    }
+	});
+
     }
 
     /**
@@ -207,7 +229,6 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    }
 
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
-	    IContainer container = project;
 
 	    // Get the Build Configurations (names and toolchain IDs) from the property page
 	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = mBuildCfgPage.getBuildConfigurationDescriptors();
@@ -226,15 +247,12 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
-		mSketchTemplatePage.saveAllSelections(configurationDescription);
 		mArduinoPage.saveAllSelections(configurationDescription);
 		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
 	    // Set the path variables
-	    IPath platformPath = new Path(new File(mArduinoPage.mPageLayout.mControlBoardsTxtFile.getText().trim()).getParent())
-		    .append(ArduinoConst.PLATFORM_FILE_NAME);
-	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
+	    ArduinoHelpers.setProjectPathVariables(project, mArduinoPage.getPlatformFolder());
 
 	    // Intermediately save or the adding code will fail
 	    // Release is the active config (as that is the "IDE" Arduino type....)
@@ -244,55 +262,22 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // Insert The Arduino Code
 	    // NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
 	    ArduinoHelpers.addArduinoCodeToProject(project, defaultConfigDescription);
-	    //
-	    // depending on the the Use Default selection we will either select the default
-	    // templates or the ones specified in the Template Sketch folder
-	    //
-	    // first determine type of include due to Arduino version. Since version 1.0 we use Arduino.h
-	    //
-	    String Include = "WProgram.h";
-	    if (ArduinoInstancePreferences.isArduinoIdeOne()) // Arduino v1.0+
-	    {
-		Include = "Arduino.h";
-	    }
-	    //
-	    // Create the source files (sketch.cpp and sketch.h)
-	    //
-	    String cppTemplateFile;
-	    String hTemplateFile;
-	    boolean isfile = true;
 
-	    if (ArduinoInstancePreferences.getLastUsedDefaultSketchSelection() == true) {
-		//
-		// we will use the default sketch.cpp and sketch.h
-		//
-		cppTemplateFile = "templates/sketch.cpp";
-		hTemplateFile = "templates/sketch.h";
-		isfile = false;
-	    } else {
-		//
-		// we are using our own created sketch.cpp and sketch.h. We use a different streaming mechanism
-		// here. Standard used relative paths (Stream class). I created a different Class (DiskStream) to
-		// handle absolute paths
-		//
-		String folderName = ArduinoInstancePreferences.getLastTemplateFolderName();
-		cppTemplateFile = folderName + "\\sketch.cpp";
-		hTemplateFile = folderName + "\\sketch.h";
-		isfile = true;
-	    }
 	    //
-	    // add both files to the project
+	    // add the correct files to the project
 	    //
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".cpp"),
-		    Stream.openContentStream(project.getName(), Include, cppTemplateFile, isfile), monitor);
-	    ArduinoHelpers.addFileToProject(container, new Path(project.getName() + ".h"),
-		    Stream.openContentStream(project.getName(), Include, hTemplateFile, isfile), monitor);
+	    mNewArduinoSketchWizardCodeSelectionPage.createFiles(project, monitor);
+	    //
+	    // add the libraries to the project if needed
+	    //
+	    mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjDesc.getConfigurations());
 
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
-		Path exclusionPath[] = new Path[1];
+		Path exclusionPath[] = new Path[2];
 		exclusionPath[0] = new Path("Libraries/*/?xamples");
+		exclusionPath[1] = new Path("Libraries/*/?xtras");
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
 		ICSourceEntry[] out = null;
@@ -307,6 +292,12 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    } else {
 		// this should not happen
 	    }
+
+	    // set warning levels default on
+	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL, ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
+	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
 	    prjDesc.setActiveConfiguration(defaultConfigDescription);
 	    prjDesc.setCdtProjectCreated();

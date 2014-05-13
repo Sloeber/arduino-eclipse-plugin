@@ -101,9 +101,9 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	// IWorkspace workspace = ResourcesPlugin.getWorkspace();
 	IPathVariableManager pathMan = myProject.getPathVariableManager();
 
-	URI ArduinoLibraryURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	URI PrivateLibraryURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
-	URI HardwareLibrarURI = pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
+	URI ArduinoLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB));
+	URI PrivateLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB));
+	URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
 
 	if (HardwareLibrarURI != null) {
 	    IPath HardwareLibraryPath = URIUtil.toPath(HardwareLibrarURI);
@@ -215,15 +215,14 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 	ICProjectDescription projectDescription = mngr.getProjectDescription(myProject, true);
 	ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
-	for (int curConfig = 0; curConfig < configurationDescriptions.length; curConfig++) {
-	    for (int CurItem = 0; CurItem < AllItems.length; CurItem++) {
-		if (AllItems[CurItem].getChecked()) {
-		    try {
-			ArduinoHelpers.addCodeFolder(myProject, PathVarName, AllItems[CurItem].getText(), ArduinoConst.WORKSPACE_LIB_FOLDER
-				+ AllItems[CurItem].getText(), configurationDescriptions[curConfig]);
-		    } catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
-		    }
+
+	for (TreeItem CurItem : AllItems) {
+	    if (CurItem.getChecked()) {
+		try {
+		    ArduinoHelpers.addCodeFolder(myProject, PathVarName, CurItem.getText(), ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem.getText(),
+			    configurationDescriptions);
+		} catch (CoreException e) {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
 		}
 	    }
 

@@ -132,5 +132,6 @@ public class ArduinoConst {
     // scope stuff
     public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the flag that indicates scope data is following
     // least significant first 0xCDAB;
+    public static final String ARDUINO_EXAMPLE_FOLDER_NAME = "examples";
 
 }

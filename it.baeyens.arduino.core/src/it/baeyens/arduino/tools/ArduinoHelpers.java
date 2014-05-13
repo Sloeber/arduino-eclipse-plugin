@@ -170,6 +170,14 @@ public class ArduinoHelpers extends Common {
 
     }
 
+    public static void addCodeFolder(IProject project, String PathVarName, String SubFolder, String LinkName,
+	    ICConfigurationDescription configurationDescriptions[]) throws CoreException {
+	for (ICConfigurationDescription curConfig : configurationDescriptions) {
+	    ArduinoHelpers.addCodeFolder(project, PathVarName, SubFolder, LinkName, curConfig);
+	}
+
+    }
+
     /**
      * This method creates a link folder in the project and add the folder as a source path to the project it also adds the path to the include folder
      * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
@@ -214,13 +222,15 @@ public class ArduinoHelpers extends Common {
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
 	String possibleIncludeFolder = "utility";
-	File file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	File file = new File(new Path(pathMan.resolveURI(pathMan.getURIValue(PathVarName)).getPath()).append(SubFolder).append(possibleIncludeFolder)
+		.toString());
 	if (file.exists()) {
 	    addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 	}
 
 	possibleIncludeFolder = "src";
-	file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	file = new File(new Path(pathMan.resolveURI(pathMan.getURIValue(PathVarName)).getPath()).append(SubFolder).append(possibleIncludeFolder)
+		.toString());
 	if (file.exists()) {
 	    addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 	    // possibleIncludeFolder = "src/utility";
@@ -231,7 +241,8 @@ public class ArduinoHelpers extends Common {
 	}
 
 	possibleIncludeFolder = "arch";
-	file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
+	file = new File(new Path(pathMan.resolveURI(pathMan.getURIValue(PathVarName)).getPath()).append(SubFolder).append(possibleIncludeFolder)
+		.toString());
 	if (file.exists()) {
 	    addIncludeFolder(configurationDescription,
 		    link.getFullPath().append(possibleIncludeFolder).append(makeEnvironmentVar(ENV_KEY_ARCHITECTURE)));

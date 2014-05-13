@@ -779,8 +779,21 @@
     
  </extension>
 
+<!-- 
+####################################################################################### 
+#    ino and pde association  
+#   this makes that the *.ino and *.pde files are treated as cpp files                
+# 
+####################################################################################### 
+-->
+ <extension point="org.eclipse.core.contenttype.contentTypes">
 
-	
+<!-- declares a content type for ino and pde source files -->
+<content-type id="cxxSource" name="%cxxSourceName"
+base-type="org.eclipse.cdt.core.cSource"
+file-extensions="ino,pde"
+priority="high"/>
+ </extension>
  
 </plugin>
 

@@ -1,6 +1,7 @@
 package it.baeyens.arduino.ui;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -15,11 +16,15 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jan Baeyens
  * 
  */
-public class ArduinoSettingsPage extends WizardPage {
+public class NewArduinoSketchWizardBoardPage extends WizardPage {
 
     final Shell shell = new Shell();
 
     protected ArduinoSelectionPage mPageLayout = new ArduinoSelectionPage();
+
+    public void setListener(Listener BoardSelectionChangedListener) {
+	mPageLayout.setListener(BoardSelectionChangedListener);
+    }
 
     private Listener completeListener = new Listener() {
 	@Override
@@ -28,12 +33,12 @@ public class ArduinoSettingsPage extends WizardPage {
 	}
     };
 
-    public ArduinoSettingsPage(String pageName) {
+    public NewArduinoSketchWizardBoardPage(String pageName) {
 	super(pageName);
 	setPageComplete(false);
     }
 
-    public ArduinoSettingsPage(String pageName, String title, ImageDescriptor titleImage) {
+    public NewArduinoSketchWizardBoardPage(String pageName, String title, ImageDescriptor titleImage) {
 	super(pageName, title, titleImage);
 	setPageComplete(false);
     }
@@ -49,6 +54,10 @@ public class ArduinoSettingsPage extends WizardPage {
 
     public void saveAllSelections(ICConfigurationDescription confdesc) {
 	mPageLayout.saveAllSelections(confdesc);
+    }
+
+    public IPath getPlatformFolder() {
+	return mPageLayout.getPlatformFolder();
     }
 
 }
