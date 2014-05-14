@@ -136,6 +136,10 @@ public class ArduinoSampleSelector extends Composite {
 		if (LibFolder.toFile().isDirectory()) {
 		    addExamples(libItem, LibFolder);
 		}
+		LibFolder = iPath.append(children[i]).append("Examples");
+		if (LibFolder.toFile().isDirectory()) {
+		    addExamples(libItem, LibFolder);
+		}
 	    }
 	}
     }
