@@ -35,8 +35,18 @@ function ListFileNames( $prefix)
           $files[] = $file; // put in array.
         }   
     }
-  rsort($files); // sort.
   closedir($dir);
+  $location="../download/product";
+  $dir = opendir($location);
+  while(false != ($file = readdir($dir))) 
+    {
+      if(($file != ".") and ($file != "..") and ($file != "index.php")) 
+        {
+          $files[] = $file; // put in array.
+        }   
+    }
+  closedir($dir);
+  rsort($files); // sort.
 
   foreach($files as $file) 
     {
