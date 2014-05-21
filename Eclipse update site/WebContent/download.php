@@ -32,17 +32,18 @@ function ListFileNames( $prefix)
     {
       if(($file != ".") and ($file != "..") and ($file != "index.php")) 
         {
-          $files[] = $file; // put in array.
+          $files[] = $location."/".$file; // put in array.
         }   
     }
   closedir($dir);
+
   $location="../download/product";
   $dir = opendir($location);
   while(false != ($file = readdir($dir))) 
     {
       if(($file != ".") and ($file != "..") and ($file != "index.php")) 
         {
-          $files[] = $file; // put in array.
+          $files[] = $location."/".$file; // put in array.
         }   
     }
   closedir($dir);
@@ -50,9 +51,9 @@ function ListFileNames( $prefix)
 
   foreach($files as $file) 
     {
-        $fullpath = $location."/".$file;
-        if (substr($file,0,strlen($prefix))==$prefix)
-        echo "<a href=\"$fullpath\" target=\"_blank\">$file</a>\n<br>";
+        $refname=basename($file);
+        if (substr($refname,0,strlen($prefix))==$prefix)
+        echo "<a href=\"$file\" target=\"_blank\">$refname</a>\n<br>";
     }
 }
 ?>
@@ -87,4 +88,3 @@ ListFileNames("mac64.");
 <br>
 </body>
 </html>
-
