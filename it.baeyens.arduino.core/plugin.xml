@@ -104,7 +104,7 @@
 	        class="it.baeyens.arduino.ui.NewArduinoSketchWizard"
 	        name="%wizard.name"
 	        icon="icons/arduino.png"
-	        finalPerspective ="org.eclipse.cdt.ui.CPerspective"
+	        finalPerspective ="it.baeyens.arduino.application.perspective"
 	        project="true">
          <description>
             %wizard.description
