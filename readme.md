@@ -45,9 +45,8 @@ win32x32.cmd (if you are on 32 bits windows)
 =======
 ##Build Options
 You can control the maven build with the following profiles:
-* juno (default) (builds against the juno repositories (4.2))
-* kepler (builds agains the kepler repositories (4.3))
 * luna (builds agains the luna repositories (4.4))
+* mars (builds agains the mars repositories (4.5))
 * win32 (builds for 32 bit windows)
 * win64 
 * linux32
@@ -58,11 +57,11 @@ You can control the maven build with the following profiles:
 
 #####Examples:
 
-mvn verify -Plinux32,kepler
+mvn verify -Plinux32 (builds for luna and linux 32 bits)
 
-mvn verify -Pwin32,juno,linux32
+mvn verify -Pwin32,mars,linux32
 
-mvn verify (builds for juno and the platform you are running on)
+mvn verify (builds for luna and the platform you are running on)
 
 
 ###Setting up a repository
