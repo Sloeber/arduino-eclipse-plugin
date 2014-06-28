@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>0.18.1</tycho.version>
+		<tycho.version>0.20.0</tycho.version>
         <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
@@ -330,53 +330,14 @@
 		</profile>
 
 		<profile>
-			<id>juno</id>
-            <properties>
-                <platform-version-name>juno</platform-version-name>
-            </properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<repositories>
-				<repository>
-					<id>platform_juno</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.2</url>
-				</repository>
-
-				<repository>
-					<id>release-train_juno</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/juno</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>kepler</id>
-            <properties>
-                <platform-version-name>kepler</platform-version-name>
-            </properties>
-			<repositories>
-				<repository>
-					<id>platform_kepler</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.3</url>
-				</repository>
-
-				<repository>
-					<id>release-train_kepler</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/kepler</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
 			<id>luna</id>
             <properties>
                 <platform-version-name>luna</platform-version-name>
             </properties>
+            <activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
 			<repositories>
 				<repository>
 					<id>platform_luna</id>
