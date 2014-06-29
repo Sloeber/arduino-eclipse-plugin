@@ -29,11 +29,14 @@ it.baeyens.arduino.application.perspective
 --launcher.XXMaxPermSize 256M
 --launcher.XXMaxPermSize 256m
 --launcher.defaultAction openFile
---launcher.appendVmargs</programArgs>
+--launcher.appendVmargs
+      </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.6
 -Xms40m
--Xmx512m</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-Xmx512m
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/it.baeyens.arduino.application/icons/logo_16.png" i32="/it.baeyens.arduino.application/icons/logo_32.png" i48="/it.baeyens.arduino.application/icons/logo_48.png" i64="/it.baeyens.arduino.application/icons/logo_64.png" i128="/it.baeyens.arduino.application/icons/logo_128.png"/>
@@ -309,7 +312,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.equinox.p2.rcp.feature"/>
       <feature id="org.eclipse.cdt.msw"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.cvs"/>
       <feature id="org.eclipse.mylyn.ide_feature"/>
       <feature id="org.eclipse.mylyn.team_feature"/>
       <feature id="org.eclipse.epp.mpc"/>
@@ -331,10 +333,25 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.mylyn.context_feature"/>
       <feature id="org.eclipse.cdt.gdb"/>
       <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="org.eclipse.jdt"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.mylyn.commons.repositories"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
+      <feature id="org.eclipse.mylyn.commons.identity"/>
+      <feature id="org.eclipse.mylyn.monitor"/>
+      <feature id="org.eclipse.mylyn.commons"/>
+      <feature id="org.eclipse.mylyn.commons.notifications"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="org.eclipse.mylyn.discovery"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.equinox.executable"/>
+      <feature id="org.eclipse.equinox.core.feature"/>
    </features>
 
    <configurations>
-      <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="61" />
+      <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
    </configurations>
