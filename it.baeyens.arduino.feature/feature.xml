@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="it.baeyens.arduino.feature"
-      label="Arduino eclipse extensions"
+      label="Arduino Eclipse Extensions"
       version="2.2.0.qualifier"
-      provider-name="jan Baeyens">
+      provider-name="Jan Baeyens">
 
    <description url="http://www.example.com/description">
       This feature allows easy creation of Arduino projects in an Eclipse
@@ -135,15 +135,7 @@ If you do not agree with this policy, then please do not install this software.
    </url>
 
    <requires>
-      <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.cdt.core" version="5.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.resources" version="3.7.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.navigator"/>
-      <import plugin="org.eclipse.cdt.managedbuilder.core" version="8.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.filesystem" version="1.3.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.console"/>
+      <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -173,5 +165,12 @@ If you do not agree with this policy, then please do not install this software.
          install-size="0"
          version="0.0.0"
          fragment="true"/>
+
+   <plugin
+         id="it.baeyens.arduino.application"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
