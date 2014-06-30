@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.1">
+  <actions/>
+  <description></description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>10</daysToKeep>
+    <numToKeep>10</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.8">
+      <projectUrl>https://github.com/jantje/arduino-eclipse-plugin.git/</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.0.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://jantje@github.com/jantje/arduino-eclipse-plugin.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>H 2 * * *</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+    <artifactId>root</artifactId>
+  </rootModule>
+  <goals>verify -Pall,luna</goals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <archivingDisabled>true</archivingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>true</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers>
+    <org.jenkins__ci.plugins.flexible__publish.FlexiblePublisher plugin="flexible-publish@0.12">
+      <publishers>
+        <org.jenkins__ci.plugins.flexible__publish.ConditionalPublisher>
+          <condition class="org.jenkins_ci.plugins.run_condition.contributed.ShellCondition" plugin="run-condition@1.0">
+            <command>#!/bin/bash
+changelog=${WORKSPACE}/../builds/${BUILD_ID}/changelog.xml
+content=`head -1 &quot;${changelog}&quot;`
+echo ${content}
+if [ &quot;${content}&quot; == &quot;&lt;log/&gt;&quot; ]; then
+  echo No change
+  exit 1
+fi
+if [ &quot;${content}&quot; == &quot;&quot; ]; then
+  echo No change
+  exit 2
+fi
+echo change
+exit 0
+</command>
+          </condition>
+          <publisher class="jenkins.plugins.publish_over_ftp.BapFtpPublisherPlugin" plugin="publish-over-ftp@1.10">
+            <consolePrefix>FTP: </consolePrefix>
+            <delegate>
+              <publishers>
+                <jenkins.plugins.publish__over__ftp.BapFtpPublisher>
+                  <configName>ftp.baeyens.it</configName>
+                  <verbose>false</verbose>
+                  <transfers>
+                    <jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                      <remoteDirectory></remoteDirectory>
+                      <sourceFiles>Eclipse*/WebContent/*</sourceFiles>
+                      <excludes></excludes>
+                      <removePrefix>Eclipse update site/WebContent</removePrefix>
+                      <remoteDirectorySDF>false</remoteDirectorySDF>
+                      <flatten>false</flatten>
+                      <cleanRemote>false</cleanRemote>
+                      <noDefaultExcludes>false</noDefaultExcludes>
+                      <makeEmptyDirs>false</makeEmptyDirs>
+                      <patternSeparator>[, ]+</patternSeparator>
+                      <asciiMode>false</asciiMode>
+                    </jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                    <jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                      <remoteDirectory>download/product</remoteDirectory>
+                      <sourceFiles>*.tar.gz</sourceFiles>
+                      <excludes></excludes>
+                      <removePrefix></removePrefix>
+                      <remoteDirectorySDF>false</remoteDirectorySDF>
+                      <flatten>false</flatten>
+                      <cleanRemote>false</cleanRemote>
+                      <noDefaultExcludes>false</noDefaultExcludes>
+                      <makeEmptyDirs>false</makeEmptyDirs>
+                      <patternSeparator>[, ]+</patternSeparator>
+                      <asciiMode>false</asciiMode>
+                    </jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                    <jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                      <remoteDirectory>nightly</remoteDirectory>
+                      <sourceFiles>it.baeyens.arduino.updatesite/target/repository/</sourceFiles>
+                      <excludes></excludes>
+                      <removePrefix>it.baeyens.arduino.updatesite/target/repository</removePrefix>
+                      <remoteDirectorySDF>false</remoteDirectorySDF>
+                      <flatten>false</flatten>
+                      <cleanRemote>false</cleanRemote>
+                      <noDefaultExcludes>false</noDefaultExcludes>
+                      <makeEmptyDirs>false</makeEmptyDirs>
+                      <patternSeparator>[, ]+</patternSeparator>
+                      <asciiMode>false</asciiMode>
+                    </jenkins.plugins.publish__over__ftp.BapFtpTransfer>
+                  </transfers>
+                  <useWorkspaceInPromotion>false</useWorkspaceInPromotion>
+                  <usePromotionTimestamp>false</usePromotionTimestamp>
+                </jenkins.plugins.publish__over__ftp.BapFtpPublisher>
+              </publishers>
+              <continueOnError>false</continueOnError>
+              <failOnError>false</failOnError>
+              <alwaysPublishFromMaster>false</alwaysPublishFromMaster>
+              <hostConfigurationAccess class="jenkins.plugins.publish_over_ftp.BapFtpPublisherPlugin" reference="../.."/>
+            </delegate>
+          </publisher>
+          <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail" plugin="run-condition@1.0"/>
+        </org.jenkins__ci.plugins.flexible__publish.ConditionalPublisher>
+      </publishers>
+    </org.jenkins__ci.plugins.flexible__publish.FlexiblePublisher>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>rlogiacco web publish</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
+  <buildWrappers/>
+  <prebuilders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/ash
+rm *.tar.gz
+exit 0</command>
+    </hudson.tasks.Shell>
+  </prebuilders>
+  <postbuilders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/ash
+cd &quot;${WORKSPACE}/it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86/opt&quot;
+tar -zcvf &quot;${WORKSPACE}/linux32.${BUILD_ID}.tar.gz&quot; eclipseArduino
+cd &quot;${WORKSPACE}/it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86_64/opt&quot;
+tar -zcvf &quot;${WORKSPACE}/linux64.${BUILD_ID}.tar.gz&quot; eclipseArduino
+cd &quot;${WORKSPACE}/it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/win32/win32/x86_64&quot;
+tar -zcvf &quot;${WORKSPACE}/win64.${BUILD_ID}.tar.gz&quot; eclipseArduino
+cd &quot;${WORKSPACE}/it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/win32/win32/x86&quot;
+tar -zcvf &quot;${WORKSPACE}/win32.${BUILD_ID}.tar.gz&quot; eclipseArduino
+cd &quot;${WORKSPACE}/it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64&quot;
+tar -zcvf &quot;${WORKSPACE}/mac64.${BUILD_ID}.tar.gz&quot; eclipseArduino
+exit 0
+
+</command>
+    </hudson.tasks.Shell>
+  </postbuilders>
+  <runPostStepsIfResult>
+    <name>SUCCESS</name>
+    <ordinal>0</ordinal>
+    <color>BLUE</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
