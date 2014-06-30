@@ -31,7 +31,7 @@ it.baeyens.arduino.application.perspective
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.6
+      <vmArgs>-Dosgi.requiredJavaVersion=1.7
 -Xms40m
 -Xmx512m
       </vmArgs>
