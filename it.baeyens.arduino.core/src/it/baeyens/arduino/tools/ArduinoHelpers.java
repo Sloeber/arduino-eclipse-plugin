@@ -574,6 +574,12 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_archive_file, "arduino.ar");
 	contribEnv.addVariable(var, confDesc);
 
+	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
+	URI buildVariantURI = pathMan.getURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS);
+	buildVariantURI = pathMan.resolveURI(buildVariantURI);
+	String buildVariantPath = buildVariantURI.getPath() + "/${" + ArduinoConst.ENV_KEY_build_variant + "}";
+	var = new EnvironmentVariable(ENV_KEY_build_variant_path, buildVariantPath);
+	contribEnv.addVariable(var, confDesc);
 	// IPath platformPath = new Path(arduinoProperties.getPlatformFolder());
 	// IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
 
@@ -773,18 +779,11 @@ public class ArduinoHelpers extends Common {
      * @param confDesc
      */
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
-	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
-
-	// TODO consider moving this to the set defaults (not sure why this is here. If it needs to be here document why
-	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_build_variant_path, pathMan.getURIValue(
-		ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS).getPath()
-		+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
-	contribEnv.addVariable(var, confDesc);
 
 	String recipes[] = { ENV_KEY_recipe_c_o_pattern, ENV_KEY_recipe_cpp_o_pattern, ENV_KEY_recipe_S_o_pattern,
 		ENV_KEY_recipe_objcopy_hex_pattern, ENV_KEY_recipe_objcopy_eep_pattern, ENV_KEY_recipe_size_pattern, ENV_KEY_recipe_AR_pattern,
 		ENV_KEY_recipe_c_combine_pattern };
-	var = null;
+	IEnvironmentVariable var = null;
 	for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
 	    String recipe = getBuildEnvironmentVariable(confDesc, recipes[curRecipe], "", false);
 
