@@ -41,7 +41,6 @@
 	<modules>
 		<module>../it.baeyens.arduino.core.nl1</module>
 		<module>../it.baeyens.arduino.feature</module>
-		<module>../it.baeyens.arduino.packaging.feature</module>
 		<module>../it.baeyens.arduino.common</module>
 		<module>../it.baeyens.arduino.core</module>
 		<module>../it.baeyens.arduino.monitor</module>
