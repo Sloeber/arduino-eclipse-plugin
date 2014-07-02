@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.Path;
 public class PdePreprocessor {
     private static String tempFile = ".ino.cpp";
 
-    public static void processProject(IProject ff) throws CoreException {
+    public static void processProject(IProject iProject) throws CoreException {
 	String body = "";
 	String includeHeaderPart = "#include \"Arduino.h\"\n";
 	String includeCodePart = "\n";
@@ -54,20 +54,10 @@ public class PdePreprocessor {
 	header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 	header += "\n";
 	header += "\n";
-	ICProject tt = CoreModel.getDefault().create(ff);
+	ICProject tt = CoreModel.getDefault().create(iProject);
 	IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
-	// FilenameFilter inoFileFilter = new FilenameFilter() {
-	//
-	// @Override
-	// public boolean accept(File dir, String name) {
-	// if (name.endsWith(".pde"))
-	// return true;
-	// return name.endsWith(".ino");
-	// }
-	// };
-	//
-	// String allInoFiles[] = ff.getLocation().toFile().list(inoFileFilter);
-	IResource allResources[] = ff.members(0);// .getFolder("").members(0);
+
+	IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
 	int numInoFiles = 0;
 	for (IResource curResource : allResources) {
 	    String extension = curResource.getFileExtension();
@@ -82,7 +72,6 @@ public class PdePreprocessor {
 		IPath path = curResource.getFullPath();// ff.getFullPath().append(inoFile);
 
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-		// Create translation unit for file
 		ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
 		if (tu == null) {
 		    body += "\n";
@@ -94,9 +83,14 @@ public class PdePreprocessor {
 		    IASTNode astNodes[] = asttu.getChildren();
 		    for (IASTNode astNode : astNodes) {
 			if (astNode instanceof CPPASTFunctionDefinition) {
-			    // String debug = astNode.getRawSignature();
-			    body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
-			    body += ";\n";
+			    String addString = astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ")
+				    .replaceAll("\\{.+\\}", "");
+			    if (addString.contains("=")) {
+				// ignore when there are assignements in the declaration
+			    } else {
+				body += addString + ";\n";
+			    }
+
 			}
 		    }
 		    IInclude includes[] = tu.getIncludes();
@@ -109,7 +103,7 @@ public class PdePreprocessor {
 	}
 
 	if (numInoFiles == 0) {
-	    IResource inofile = ff.findMember(tempFile);
+	    IResource inofile = iProject.findMember(tempFile);
 	    if (inofile != null) {
 		inofile.delete(true, null);
 	    }
@@ -148,7 +142,7 @@ public class PdePreprocessor {
 	// includeCodePart += "#include \"" + inoFile + "\"\n";
 	// }
 	String output = header + includeHeaderPart + body + includeCodePart;
-	ArduinoHelpers.addFileToProject(ff, new Path(tempFile), new ByteArrayInputStream(output.getBytes()), null);
+	ArduinoHelpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()), null);
 
     }
 }
