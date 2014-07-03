@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.filesystem,
  org.eclipse.ui.ide,
  org.eclipse.cdt.core,
- org.eclipse.equinox.security;bundle-version="1.1.100"
+ org.eclipse.equinox.security;bundle-version="1.1.100",
+ org.eclipse.ui.navigator
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.tools,
