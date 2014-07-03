@@ -356,23 +356,24 @@ public class ArduinoHelpers extends Common {
 	    // TODO the code below was changed for issue #34 (better multiple user support) but fails on Mac
 	    // So i split it to use the old code on mac.
 	    // but they should be merged
-	    if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-		pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, URIUtil.toURI(arduinoHardwareLibraryPath));
-		pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
-		pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
-	    } else {
-
-		String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
-		String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
-		URI uriTest = URIUtil.toURI(test);
-		pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, uriTest);
-		test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
-		uriTest = URIUtil.toURI(test);
-		pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, uriTest);
-		test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
-		uriTest = URIUtil.toURI(test);
-		pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
-	    }
+	    // if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, URIUtil.toURI(arduinoHardwareLibraryPath));
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
+	    // } else {
+	    //
+	    // String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
+	    // String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
+	    // // URI uriTest = URIUtil.toURI(test, false);
+	    //
+	    // pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, pathMan.getURIValue(test));
+	    // test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
+	    // // uriTest = URIUtil.toURI(test, false);
+	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, pathMan.getURIValue(test));
+	    // test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
+	    // URI uriTest = URIUtil.toURI(pathMan.convertFromUserEditableFormat(test, true));
+	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
+	    // }
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
@@ -428,12 +429,23 @@ public class ArduinoHelpers extends Common {
 
 	String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_variant, "");
 	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core_folder, "");
-	addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
-		configurationDescription);
-	if (!boardVariant.equals("")) // this is Arduino version 1.0
-	{
-	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
+	if (buildCoreFolder.contains(":")) {
+	    String sections[] = buildCoreFolder.split(":");
+	    if (sections.length != 2) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "the value for key " + ENV_KEY_build_core_folder
+			+ " in boards.txt is invalid:" + buildCoreFolder, null));
+	    } else {
+		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE, "");
+		addCodeFolder(project, WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, ARDUINO_HARDWARE_FOLDER_NAME + "/" + sections[1] + "/" + architecture
+			+ "/" + ARDUINO_CORE_FOLDER_NAME + "/" + sections[1], "arduino/core", configurationDescription);
+	    }
 	} else {
+	    addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
+		    configurationDescription);
+	}
+	if (!boardVariant.equals("")) {
+	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
+	} else {// this is Arduino version 1.0
 	    IFolder variantFolder = project.getFolder("arduino/variant");
 	    if (variantFolder.exists()) {
 		try {
@@ -748,7 +760,19 @@ public class ArduinoHelpers extends Common {
 
 	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE,
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
+	// TODO arduino specification makes it possible to have more than 1 platformfile lets for now assume there is only 1
 	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
+	if (!platformFilename.toFile().exists()) {
+	    // TODO lets for now hardcode this is arduino
+	    for (int cursegment = 0; cursegment < platformFilename.segmentCount(); cursegment++) {
+		if (ARDUINO_HARDWARE_FOLDER_NAME.equals(platformFilename.segment(cursegment))) {
+
+		    platformFilename = getArduinoPath().append(ARDUINO_HARDWARE_FOLDER_NAME).append("arduino")
+			    .append(platformFilename.removeFirstSegments(cursegment + 2));
+		    cursegment = platformFilename.segmentCount();
+		}
+	    }
+	}
 	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
 		ArduinoInstancePreferences.getLastUsedArduinoBoardName());
 
