@@ -778,6 +778,15 @@
     </handler>
     
  </extension>
+ <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension
+          targetID="it.baeyens.arduino.application.perspective">
+       <newWizardShortcut
+             id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard">
+       </newWizardShortcut>
+    </perspectiveExtension>
+ </extension>
 
 
 	
