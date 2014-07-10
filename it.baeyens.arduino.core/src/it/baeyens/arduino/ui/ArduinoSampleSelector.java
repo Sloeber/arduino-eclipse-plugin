@@ -76,9 +76,23 @@ public class ArduinoSampleSelector extends Composite {
 
     }
 
-    public void AddAllExamples(IPath arduinoExample, IPath privateLibrary, IPath hardwareLibrary) {
-	// IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    /**
+     * This method adds all examples to the selection listbox All examples already in the listbox are removed first.
+     * 
+     * @param arduinoExample
+     *            The folder with the arduino samples
+     * @param privateLibrary
+     *            The folder with the private libraries
+     * @param hardwareLibrary
+     *            The folder with the hardware libraries
+     * @param mPlatformPathPath
+     */
+    public void AddAllExamples(IPath arduinoExample, IPath arduinoLibPath, IPath privateLibrary, IPath hardwareLibrary) {
 	removeExamples();
+
+	if (arduinoLibPath.toFile().exists()) {
+	    addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	}
 
 	if (hardwareLibrary.toFile().exists()) {
 	    addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
@@ -91,7 +105,7 @@ public class ArduinoSampleSelector extends Composite {
 	    // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
 	    // // Add the Arduino Libs
 	    // addExamples(myArduinoExampleItem, arduinoExample);
-	    addExamples(arduinoExample, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	    addExamplesFolder(arduinoExample, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
 	}
 
 	if (privateLibrary.toFile().exists()) {
@@ -100,7 +114,14 @@ public class ArduinoSampleSelector extends Composite {
 
     }
 
-    private void addExamples(IPath iPath, String pathVarName) {
+    /**
+     * This method adds a folder of examples. There is no search. The provided folder is assumed to be a tree where the parents of the leaves are
+     * assumed examples
+     * 
+     * @param iPath
+     * @param pathVarName
+     */
+    private void addExamplesFolder(IPath iPath, String pathVarName) {
 	File LibRoot = iPath.toFile();
 	IPath LibFolder;
 	String[] children = LibRoot.list();
@@ -144,6 +165,16 @@ public class ArduinoSampleSelector extends Composite {
 	}
     }
 
+    /**
+     * This method does the actual adding of the examples to the listbox.
+     * 
+     * This method is recursive so we can go deeper in the folder structure on disk. It stops when a .ino file is found
+     * 
+     * @param LibItem
+     *            the parent to add the new examples to
+     * @param iPath
+     *            The path where the examples are located.
+     */
     private static void addExamples(TreeItem LibItem, IPath iPath) {
 	File LibRoot = iPath.toFile();
 	IPath LibFolder;
@@ -159,6 +190,7 @@ public class ArduinoSampleSelector extends Composite {
 		    TreeItem child = new TreeItem(LibItem, SWT.NONE);
 		    child.setText(children[i]);
 		    child.setData(LibFolder.toFile());
+		    addExamples(child, LibFolder);
 		}
 	    }
 	}
@@ -175,43 +207,45 @@ public class ArduinoSampleSelector extends Composite {
 	myLabel.setEnabled(enable);
     }
 
-    public void CopySelectedExamples(File target) throws IOException {
-
-	myTreeSelector.getItems();
-	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
-	    for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
-		if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
-		    FileUtils.copyDirectory((File) curchildTreeItem.getData(), target);
-		}
+    private void recursiveCopySelectedExamples(File target, TreeItem TreeItem) throws IOException {
+	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
+	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+		FileUtils.copyDirectory((File) curchildTreeItem.getData(), target);
 	    }
+	    recursiveCopySelectedExamples(target, curchildTreeItem);
 	}
     }
 
+    public void CopySelectedExamples(File target) throws IOException {
+	myTreeSelector.getItems();
+	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
+	    recursiveCopySelectedExamples(target, curTreeItem);
+	}
+    }
+
+    private void recurseimportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], String PathVarName,
+	    TreeItem curTreeItem, String LibName) {
+	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
+	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+		try {
+		    ArduinoHelpers.addCodeFolder(project, PathVarName, LibName, ArduinoConst.WORKSPACE_LIB_FOLDER + LibName,
+			    configurationDescriptions);
+		} catch (CoreException e) {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+		}
+		break;
+	    }
+	    recurseimportSelectedLibraries(project, configurationDescriptions, PathVarName, curchildTreeItem, LibName);
+	}
+
+    }
+
     public void importSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[]) {
-	// ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-	// ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-	// ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
 	myTreeSelector.getItems();
 	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
 	    String PathVarName = (String) curTreeItem.getData();
-	    for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
-		if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
-		    try {
-			ArduinoHelpers.addCodeFolder(project, PathVarName, curTreeItem.getText(),
-				ArduinoConst.WORKSPACE_LIB_FOLDER + curTreeItem.getText(), configurationDescriptions);
-		    } catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
-		    }
-		    break;
-		}
-	    }
+	    recurseimportSelectedLibraries(project, configurationDescriptions, PathVarName, curTreeItem, curTreeItem.getText());
 	}
-	// try {
-	// // projectDescription.(configurationDescription);
-	// mngr.setProjectDescription(project, projectDescription, true, null);
-	// } catch (CoreException e) {
-	// e.printStackTrace();
-	// }
 
     }
 }
