@@ -154,7 +154,16 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    if (!showError("Arduino IDE 1.5.5 works but you need to adapt some libraries."))
 		return false;
 	}
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.5") > 0) {
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.6")) {
+	    if (!showError("Arduino IDE 1.5.6 works but you need to adapt some libraries."))
+		return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.6-r2")) {
+	    if (!showError("Arduino IDE 1.5.6R2 works but you need to adapt some libraries."))
+		return false;
+	}
+
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.7") > 0) {
 	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
 		return false;
 	}
