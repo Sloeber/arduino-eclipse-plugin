@@ -173,4 +173,11 @@ If you do not agree with this policy, then please do not install this software.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="it.baeyens.cdt.refactor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
