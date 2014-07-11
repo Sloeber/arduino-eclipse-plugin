@@ -300,9 +300,23 @@ If you are not be willing to set up your own server to run RTC/CVS/subversion/gi
 
 <a name="Mac_Small_font"></a>
 <h2>On Mac the font of the project explorer is small.</h2>
-There is a standard eclipse way to change this font but in the product version from 1 july 2014 onwards you can delete following line in the eclipseArduinoIDE.ino.<br>
--Dorg.eclipse.swt.internal.carbon.smallFonts<br>
-That will increase the font. a bit
+Note that while there is a standard way to alter the font size of the text editor and some other things, it is not possible to alter the project explorer font size in a "normal" manner in eclipse.<br>
+Below descibes different ways how you can alter the project explorer font:<br>
+On the Mac the application looks like a file while it is effectively a directory structure.<br> 
+In the product version from 1 july 2014 onwards you can delete following line in the eclipseArduinoIDE.ino.<br> 
+-Dorg.eclipse.swt.internal.carbon.smallFonts <br>
+That will increase the font a bit <br>
+The eclipseArduinoIDE.ino file is situated inside the eclipseArduinoIDE application. To find it do as follows:<br>
+select eclipseArduinoIDE in the folder eclipseArduino right click the mouse and select "Show Package Content" from the popup menu.<br> 
+Next go into the folder Contents and then into folder MacOS in this location the file eclipseArduinoIDE.ini is situated. <br>
+<br>
+An alternative way to alter the font size and many other things, is to edit the file e4_default_mac.css in the folder "eclipseArduino/plugins/or.eclipse.ui.themses_xxxxxx/css".<br> 
+Before editing it is advised to download CSS Spy, select the part on the screen of which you want to alter something, pres Shift-Alt-F5, the selected part gets a red border to indicate what was selected and a window pops up with all kinds of CSS related information.<br> 
+Lots of things can be inspected and the relevant CSS class and id are shown. With this information the CSS file can be edited with new entries. Also the new additions to the css file can be tried out on the fly via the CSS scratchpad of CSS Spy, which can be invoked via the keys Shift-Alt-F6.<br> 
+For example to increase the font size of the project explorer one could add the following to the CSS file or put into the scratchpad of CSS Spy. <br>
+#org-eclipse-ui-navigator-ProjectExplorer Tree{ font-size: 13; } <br>
+<br>
+Another way to do something on the appearance of eclipse is to download Jeeyul's eclipse themes from the eclipse market place.<br>
 
 
 <h1>General usage Advice</h1>
