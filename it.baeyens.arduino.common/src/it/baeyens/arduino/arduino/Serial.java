@@ -33,6 +33,7 @@ import gnu.io.SerialPortEventListener;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -190,8 +191,22 @@ public class Serial implements SerialPortEventListener {
 		    }
 		}
 	    } catch (PortInUseException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " already in use. Try quiting any programs that may be using it", e));
+		String OS = System.getProperty("os.name", "generic").toLowerCase();
+		boolean isMac, haveVarLock = false;
+		isMac = ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0));
+		if (isMac) {
+		    File varLock = new File("/var/lock");
+		    haveVarLock = varLock.exists() && varLock.canWrite();
+		}
+		if (isMac && !haveVarLock) {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " is not accessible or already in use: try quitting all other programs that may be using it."
+				    + "\n\nIf that doesn't fix it, please run the following command:"
+				    + "\n\nsudo mkdir -p /var/lock && sudo chmod 777 /var/lock\n"));
+		} else {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " already in use. Try to quit all other programs that may be using it.", e));
+		}
 		return;
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
@@ -232,7 +247,9 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void dispose() {
-	notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
+	if (port != null)
+		notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
+
 	disconnect();
 
 	if (fServiceRegistration != null) {
