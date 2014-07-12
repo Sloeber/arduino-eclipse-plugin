@@ -200,8 +200,8 @@ public class Serial implements SerialPortEventListener {
 		}
 		if (isMac && !haveVarLock) {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-				    + " is not accessible or already in use: try to quit all other programs that may be using it."
-				    + " If that doesn't fix it, please run the following command:"
+				    + " is not accessible or already in use: try quitting all other programs that may be using it."
+				    + "\n\nIf that doesn't fix it, please run the following command:"
 				    + "\n\nsudo mkdir -p /var/lock && sudo chmod 777 /var/lock\n"));
 		} else {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
