@@ -193,18 +193,18 @@ public class Serial implements SerialPortEventListener {
 	    } catch (PortInUseException e) {
 		String OS = System.getProperty("os.name", "generic").toLowerCase();
 		boolean isMac, haveVarLock = false;
-        isMac = ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0));
+		isMac = ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0));
 		if (isMac) {
 		    File varLock = new File("/var/lock");
 		    haveVarLock = varLock.exists() && varLock.canWrite();
-        }
+		}
 		if (isMac && !haveVarLock) {
-    		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " not accessible: please run the following command: 'sudo mkdir -p /var/lock && sudo chmod 777 /var/lock'"));
-        } else {
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " already in use. Try quiting any programs that may be using it", e));
-        }
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " not accessible: please run the following command: 'sudo mkdir -p /var/lock && sudo chmod 777 /var/lock'"));
+		} else {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " already in use. Try quiting any programs that may be using it", e));
+		}
 		return;
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));

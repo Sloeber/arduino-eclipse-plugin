@@ -61,17 +61,17 @@ public class ArduinoSerial {
 
 	// wait for port to disappear
 	int NumTries = 0;
-    int MaxTries = 200; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
-    int delayMs = 10;   // on faster computers Esplora reconnects *extremely* quickly and we can't catch this
+	int MaxTries = 200; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
+	int delayMs = 10;   // on faster computers Esplora reconnects *extremely* quickly and we can't catch this
 	do {
-        if (NumTries > 0) {
-            try {
-                Thread.sleep(delayMs);
-            } catch (InterruptedException e) {// Jaba is not going to write this
-                // code
-            }
-        }
 	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
+	    if (NumTries > 0) {
+		try {
+		    Thread.sleep(delayMs);
+		} catch (InterruptedException e) {// Jaba is not going to write this
+		    // code
+		}
+	    }
 	    if (NumTries++ > MaxTries) {
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset and " + NumTries + " checks"));
 		return defaultComPort;
