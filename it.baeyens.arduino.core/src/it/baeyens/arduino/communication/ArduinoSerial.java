@@ -159,32 +159,39 @@ public class ArduinoSerial {
      * 
      * @param project
      *            The project related to the com port to reset
+     * @param configName
+     *            Key into build environment variables hash
      * @param comPort
      *            The name of the com port to reset
      * @return The com port to upload to
      */
-    public static String makeArduinoUploadready(IProject project, String configName, String comPort) {
+    public static String makeArduinoUploadReady(IProject project, String configName, String comPort) {
+
 	if (Common.RXTXDisabled())
 	    return comPort;
 
-	boolean use1200bpsTouch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false")
+	boolean bUse1200bpsTouch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false")
 			.equalsIgnoreCase("true");
 	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
 			.equalsIgnoreCase("true");
-	boolean bwaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
+	boolean bWaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
+			.equalsIgnoreCase("true");
+	boolean bForceNoWaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_force_no_wait_for_upload_port, "false")
 			.equalsIgnoreCase("true");
 
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 
-	if (boardRequiresBaudReset(boardName) || use1200bpsTouch) {
+	if (boardRequiresBaudReset(boardName) || bUse1200bpsTouch) {
 	    Vector<String> serialPorts = Serial.list();
 	    if (!resetArduinoByBaudRate(comPort, 1200, 0) || boardRequiresResetPause(boardName)) {
 		// Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
 		waitFor(2000);
 		return comPort;
 	    }
-	    if (boardNeedsToWaitForPorts(boardName) || bwaitForUploadPort) {
-		return waitForComPortsToReappear(serialPorts, comPort, boardName);
+	    if (!bForceNoWaitForUploadPort) {  // allows completely skipping waiting for ports to speed things up
+		if (boardNeedsToWaitForPorts(boardName) || bWaitForUploadPort) {
+		    return waitForComPortsToReappear(serialPorts, comPort, boardName);
+		}
 	    }
 	}
 
