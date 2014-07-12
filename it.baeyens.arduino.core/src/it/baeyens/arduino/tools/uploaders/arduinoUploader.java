@@ -46,7 +46,7 @@ public class arduinoUploader implements IRealUpload {
 	    return false;
 	}
 	if (boardName.startsWith("Arduino Due ")) {
-	    ArduinoSerial.reset_Arduino_by_baud_rate(MComPort, 115200, 100);
+	    ArduinoSerial.resetArduinoByBaudRate(MComPort, 115200, 100);
 	}
 
 	return true;
