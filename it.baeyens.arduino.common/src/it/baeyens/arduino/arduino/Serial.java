@@ -200,10 +200,12 @@ public class Serial implements SerialPortEventListener {
 		}
 		if (isMac && !haveVarLock) {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-				    + " not accessible: please run the following command: 'sudo mkdir -p /var/lock && sudo chmod 777 /var/lock'"));
+				    + " is not accessible or already in use: try to quit all other programs that may be using it."
+				    + " If that doesn't fix it, please run the following command:"
+				    + "\n\nsudo mkdir -p /var/lock && sudo chmod 777 /var/lock\n"));
 		} else {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-				    + " already in use. Try quiting any programs that may be using it", e));
+				    + " already in use. Try to quit all other programs that may be using it.", e));
 		}
 		return;
 	    } catch (Exception e) {
@@ -245,7 +247,9 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void dispose() {
-	notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
+	if (port != null)
+		notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
+
 	disconnect();
 
 	if (fServiceRegistration != null) {
