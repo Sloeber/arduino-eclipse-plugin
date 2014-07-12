@@ -214,9 +214,8 @@ public class Serial implements SerialPortEventListener {
 	    }
 
 	    if (port == null) {
-		// jaba 28 feb 2012. I made the log below a warning for issue #7
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+			+ " not found. Did you assign proper serial port to your project, in Project Properties → Arduino → Port?", null));
 		return;
 	    }
 	}
