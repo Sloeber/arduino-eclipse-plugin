@@ -9,7 +9,6 @@ import it.baeyens.arduino.arduino.Serial;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
@@ -17,100 +16,91 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 public class ArduinoSerial {
-
     /**
-     * This method resets Arduino based on setting the baud rate and disconnecting from the port.
-     * Used for due, leonardo, esplora, and others.  Here is from Esplora documentation:
-     *
-     * 	   Rather than requiring a physical press of the reset button before an upload, the Esplora is
-     * 	   designed in a way that allows it to be reset by software running on a connected computer.
-     * 	   The reset is triggered when the Esplora's virtual (CDC) serial / COM port is opened at
-     * 	   1200 baud and then closed. When this happens, the processor will reset, breaking the USB
-     * 	   connection to the computer (meaning that the virtual serial / COM port will disappear).
-     * 	   After the processor resets, the bootloader starts, remaining active for about 8 seconds
+     * This method resets arduino based on setting the baud rate. Used for due, leonardo and others
      * 
-     * @param comPort
+     * @param ComPort
      *            The port to set the baud rate
-     * @param baudRate
+     * @param bautrate
      *            The baud rate to set
-     * @param keepOpenPeriod
-     *            How long to keep the port open (ms)
-     *
      * @return true is successful otherwise false
      */
-    public static boolean resetArduinoByBaudRate (String comPort, int baudRate, long keepOpenPeriod) {
+    public static boolean reset_Arduino_by_baud_rate(String ComPort, int baudrate, long openTime) {
 	Serial serialPort;
-
 	try {
-	    serialPort = new Serial(comPort, baudRate);
+	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " +
-			    comPort + " and baudRate " + baudRate, e));
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
 	    return false;
 	}
 
-	waitFor(keepOpenPeriod);
-
-	if (serialPort != null)
-	    serialPort.dispose();
-
+	try {
+	    Thread.sleep(openTime);
+	} catch (InterruptedException e) {// Jaba is not going to write this
+					  // code
+	}
+	serialPort.dispose();
 	return true;
     }
 
     /**
      * Waits for a serial port to appear. It is assumed that the default comport is not available on the system
      * 
-     * @param originalPorts
+     * @param OriginalPorts
      *            The ports available on the system
-     * @param comPort
+     * @param defaultComPort
      *            The port to return if no new com port is found
      * @return the new comport if found else the defaultComPort
      */
-    public static String waitForComPortsToReappear (Vector<String> originalPorts, String comPort, String boardName) {
+    public static String wait_for_com_Port_to_appear(Vector<String> OriginalPorts, String defaultComPort) {
+
+	Vector<String> NewPorts;
+	Vector<String> OriginalPortsCopy;
+
 
 	// wait for port to disappear
-	int maxAttempts = 200;
-	int pauseForMs = 5;
-	int attemptsCount;
-
-	Vector<String> disconnectedPorts = null;
-
-	for (attemptsCount = 0; attemptsCount < maxAttempts; attemptsCount++) {
-	    Vector<String> currentPorts = Serial.list();
-	    if (currentPorts.size() < originalPorts.size()) {
-		disconnectedPorts = new Vector<String>(originalPorts);
-		disconnectedPorts.removeAll(currentPorts);
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID,
-			boardName + " port(s) disconnected [" + disconnectedPorts.toString() + "] after " + attemptsCount * pauseForMs +"ms"));
-		break;
+	int NumTries = 0;
+	int MaxTries = 200; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
+	int delayMs = 10;   // on faster computers Esplora reconnects *extremely* quickly and we can't catch this
+	do {
+	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
+	    if (NumTries > 0) {
+		try {
+		    Thread.sleep(delayMs);
+		} catch (InterruptedException e) {// Jaba is not going to write this
+		    // code
+		}
+	    }
+	    if (NumTries++ > MaxTries) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset and " + NumTries + " checks"));
+		return defaultComPort;
+	    }
+	    NewPorts = Serial.list();
+	    for (int i = 0; i < NewPorts.size(); i++) {
+		OriginalPortsCopy.remove(NewPorts.get(i));
 	    }
 
-	    if (attemptsCount > 0)
-		waitFor(pauseForMs);
-	}
+	} while (OriginalPortsCopy.size() != 1);
+	OriginalPorts.remove(OriginalPortsCopy.get(0));
 
-	if (attemptsCount == maxAttempts && (disconnectedPorts == null || disconnectedPorts.isEmpty())) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, boardName + " upload port is not disappearing after reset and " + attemptsCount * pauseForMs + "ms"));
-	    return comPort;
-	}
-
-	for (attemptsCount = 0; attemptsCount < maxAttempts; attemptsCount++) {
-	    if (Serial.list().contains(comPort)) {
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID,
-				boardName + " port " + comPort + " reconnected after " + attemptsCount * pauseForMs));
-		return comPort;
+	NumTries = 0;
+	do {
+	    if (NumTries++ > MaxTries) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not appearing after reset"));
+		return defaultComPort;
 	    }
-	    if (attemptsCount > 0)
-		waitFor(pauseForMs);
-	}
-
-	if (attemptsCount == maxAttempts) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, boardName + " upload port is not appearing after reset"));
-
-	}
-
-	return comPort;
+	    NewPorts = Serial.list();
+	    for (int i = 0; i < OriginalPorts.size(); i++) {
+		NewPorts.remove(OriginalPorts.get(i));
+	    }
+	    try {
+		Thread.sleep(delayMs);
+	    } catch (InterruptedException e) {// Jaba is not going to write this
+					      // code
+	    }
+	} while (NewPorts.size() != 1);
+	return NewPorts.get(0);
     }
 
     /**
@@ -126,7 +116,11 @@ public class ArduinoSerial {
 	serialPort.setDTR(false);
 	serialPort.setRTS(false);
 
-	waitFor(delay);
+	try {
+	    Thread.sleep(delay);
+	} catch (InterruptedException e) {// Jaba is not going to write this
+					  // code
+	}
 
 	serialPort.setDTR(true);
 	serialPort.setRTS(true);
@@ -142,12 +136,16 @@ public class ArduinoSerial {
     public static void flushSerialBuffer(Serial serialPort) {
 	while (serialPort.available() > 0) {
 	    serialPort.readBytes();
-	    // TOFIX I think this is bad; not to bad as
-	    // readBytes reads all info but
-	    // if the boards sends data at a speed higher
-	    // than 1 ever 100ms we will never get out of
-	    // this loop
-	    waitFor(100);
+	    try {
+		Thread.sleep(100); // TOFIX I think this is bad; not to bad as
+				   // readBytes reads all info but
+				   // if the boards sends data at a speed higher
+				   // than 1 ever 100ms we will never get out of
+				   // this loop
+	    } catch (InterruptedException e) { // we can safely ignore all
+					       // errors here as we are throwing
+					       // everything away anyway
+	    }
 	}
     }
 
@@ -159,58 +157,54 @@ public class ArduinoSerial {
      * 
      * @param project
      *            The project related to the com port to reset
-     * @param comPort
+     * @param ComPort
      *            The name of the com port to reset
      * @return The com port to upload to
      */
-    public static String makeArduinoUploadready(IProject project, String configName, String comPort) {
+    public static String makeArduinoUploadready(IProject project, String configName, String ComPort) {
 	if (Common.RXTXDisabled())
-	    return comPort;
-
-	boolean use1200bpsTouch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false")
-			.equalsIgnoreCase("true");
+	    return ComPort;
+	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
+	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false");
 	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
-			.equalsIgnoreCase("true");
-	boolean bwaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
-			.equalsIgnoreCase("true");
-
+		.equalsIgnoreCase("true");
+	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
+		.equalsIgnoreCase("true");
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 
-	if (boardRequiresBaudReset(boardName) || use1200bpsTouch) {
-	    Vector<String> serialPorts = Serial.list();
-	    if (!resetArduinoByBaudRate(comPort, 1200, 0) || boardRequiresResetPause(boardName)) {
+	if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
+		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase("true")) {
+	    Vector<String> OriginalPorts = Serial.list();
+	    // OriginalPorts.remove(ComPort);
+
+	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due") || boardName.startsWith("Digistump DigiX")) {
 		// Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
-		waitFor(2000);
-		return comPort;
+		try {
+		    Thread.sleep(2000);
+		} catch (InterruptedException ex) {
+		    // ignore error
+		}
+		return ComPort;
 	    }
-	    if (boardNeedsToWaitForPorts(boardName) || bwaitForUploadPort) {
-		return waitForComPortsToReappear(serialPorts, comPort, boardName);
+	    if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
+		    || boardName.equalsIgnoreCase("Arduino Esplora") || bwait_for_upload_port) {
+		return wait_for_com_Port_to_appear(OriginalPorts, ComPort);
 	    }
 	}
 
-	reconnectAndFlushSerialPort(comPort, bDisableFlushing);
-
-	return comPort;
-    }
-
-
-    // ____________________________________________________________________________
-    //
-    // private helpers
-
-
-    private static void reconnectAndFlushSerialPort (String comPort, boolean bDisableFlushing) {
 	// connect to the serial port
-	Serial serialPort = null;
+	Serial serialPort;
 	try {
-	    serialPort = new Serial(comPort, 9600);
+	    serialPort = new Serial(ComPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + comPort, e));
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    return ComPort;
+	    // throw new RunnerException(e.getMessage());
 	}
-
-	if (serialPort == null || !serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + comPort, null));
+	if (!serialPort.IsConnected()) {
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, null));
+	    return ComPort;
 	}
 
 	if (!bDisableFlushing) {
@@ -221,32 +215,9 @@ public class ArduinoSerial {
 	}
 	// reset arduino
 	ToggleDTR(serialPort, 100);
+
 	serialPort.dispose();
+	return ComPort;
+
     }
-
-    private static void waitFor(long delayMs) {
-	try {
-	    Thread.sleep(delayMs);
-	} catch (InterruptedException e) {
-	}
-    }
-
-    private static final String[] BOARDS_RESET_BY_BAUD = {"arduino leonardo", "arduino micro", "arduino esplora", "arduino due"};
-    private static final String[] BOARDS_NEEDING_RESET_PAUSE = {"arduino due", "digistump digix"};
-    private static final String[] BOARDS_NEEDING_TO_WAIT_FOR_PORTS = {"arduino leonardo", "arduino micro", "arduino esplora"};
-
-    private static boolean boardRequiresBaudReset(String board) {
-	return Arrays.asList(BOARDS_RESET_BY_BAUD).contains(board.toLowerCase());
-    }
-
-    private static boolean boardRequiresResetPause(String board) {
-	return Arrays.asList(BOARDS_NEEDING_RESET_PAUSE).contains(board.toLowerCase());
-    }
-
-    private static boolean boardNeedsToWaitForPorts(String board) {
-	return Arrays.asList(BOARDS_NEEDING_TO_WAIT_FOR_PORTS).contains(board.toLowerCase());
-    }
-
-
-
 }
