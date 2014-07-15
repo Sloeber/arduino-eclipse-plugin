@@ -23,15 +23,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
@@ -243,25 +239,9 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	Dialog.applyDialogFont(parent);
 
-	addField(new BooleanFieldEditor(ArduinoConst.KEY_RXTXDISABLED, "Disable RXTX (disables Arduino reset during upload and the serial monitor)",
-		parent));
 	mArduinoIdeVersion = new StringFieldEditor(ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version", parent);
 	addField(mArduinoIdeVersion);
 	mArduinoIdeVersion.setEnabled(false, parent);
-	Button TestButton = new Button(parent, SWT.BUTTON1);
-	TestButton.setText("test RXTX");
-	TestButton.addSelectionListener(new SelectionListener() {
-
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		Common.LoadRXTX(getShell());
-	    }
-
-	    @Override
-	    public void widgetDefaultSelected(SelectionEvent e) {
-		// Needs to be implemented but I don't use it
-	    }
-	});
 
     }
 
