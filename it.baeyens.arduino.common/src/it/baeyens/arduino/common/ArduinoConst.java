@@ -28,7 +28,6 @@ public class ArduinoConst {
 
     // preference keys
     public static final String KEY_ARDUINO_IDE_VERSION = "Arduino IDE Version";
-    public static final String KEY_RXTXDISABLED = "Arduino DisAbleRXTX";
     public static final String KEY_ARDUINOPATH = "Arduino Path";
     public static final String KEY_PRIVATE_LIBRARY_PATH = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATH = "Private hardware Path";
