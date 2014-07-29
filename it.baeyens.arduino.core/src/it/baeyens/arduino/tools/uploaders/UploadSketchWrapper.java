@@ -58,7 +58,7 @@ public class UploadSketchWrapper {
 	}
 
 	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_upload_tool, "");
-	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
+	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");	
 	myConsole = ArduinoHelpers.findConsole("upload console");
 	myConsole.clearConsole();
 	myConsole.activate();
