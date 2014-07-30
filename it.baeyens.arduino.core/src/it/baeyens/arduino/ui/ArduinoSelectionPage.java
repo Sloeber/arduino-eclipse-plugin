@@ -51,7 +51,8 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
     // GUI elements
     protected Combo mControlBoardsTxtFile;
     protected Combo mcontrolBoardName;
-    protected Combo controlUploadPort,controlUploadProtocol;
+    protected Combo controlUploadPort;
+    protected Combo controlUploadProtocol;
     protected LabelCombo[][] boardOptionCombos = null;
     private final int ncol = 2;
     private String mPreviousSelectedBoard = "";
