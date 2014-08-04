@@ -58,9 +58,15 @@ function ListFileNames( $prefix)
 }
 ?>
 <h2>Releases</h2>
+<h3>latest V2.3</h3>
 <?php
-ListFileNames("V");
+ListFileNames("V2.3");
 ?>
+<h3>Previous V2.2</h3>
+<?php
+ListFileNames("V2.2");
+?>
+
 
 <h2>Linux 64 bit</h2>
 <?php

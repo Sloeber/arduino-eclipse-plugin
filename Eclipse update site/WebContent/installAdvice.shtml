@@ -15,6 +15,8 @@
 	<h1>Which version to install?</h1>
 	By now there are so many versions involved that some guidance to what to install is appropriate.<br>
 	This page is intended to give this guidance.
+	Please note: we are moving away from RXTX so there will be problems in the latest builds.
+	If you do not want to have problems with your USB ports stick to the latest stable version for now.
 	For the newbies to the plugin who 
 	<ul><li>do not have eclipse installed</li>
 	<li>are willing to do some alfa testing</li>
@@ -53,9 +55,10 @@
 	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th><th>Product</th></tr>
 	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td><td>not available</td></tr>
 	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
-	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.6 beta</td><td>V2.2</td><td>juno and kepler (RXTX no longer part of arduino IDE)</td><td>from V2.2 only</td></tr>
+	<tr><td>1.5.2 beta and later</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
+	<tr><td>1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr>
+	<tr><td>1.5.6 beta</td><td>V2.2</td><td>juno and kepler (RXTX no longer part of arduino IDE)</td><td>from V2.2 only</td>
+	<tr><td>1.5.7 beta and later</td><td>V2.2</td><td>juno and kepler (Make no longer part of Arduino IDE)</td><td>from V2.2 only</td></tr>
 	</table>
 	<h1>Where to find your version?</h1>
 	The table below points to installation information
