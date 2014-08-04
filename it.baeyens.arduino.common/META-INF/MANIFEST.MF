@@ -19,3 +19,5 @@ Import-Package: org.eclipse.cdt.core,
  org.eclipse.core.resources,
  org.eclipse.ui.navigator
 Bundle-Vendor: Jan Baeyens
+Bundle-Classpath: .,
+ lib/jssc-2.8.0.jar
