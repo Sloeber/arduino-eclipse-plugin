@@ -35,6 +35,27 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     public static String getLastUsedUploadPort() {
 	return getGlobalValue(KEY_LAST_USED_COM_PORT);
     }
+    /**
+     * This method reads the arduino upload programmer from the configuration memory
+     * 
+     * @return the upload port
+     * @author Jan Baeyens
+     */
+    public static String getLastUsedUploadProgrammer() {
+	return getGlobalValue(KEY_LAST_USED_PROGRAMMER);
+    }
+    /**
+     * saves the last used arduino upload port
+     * 
+     * @param UploadPort
+     *            The port to use to upload to save
+     * 
+     * @author Jan Baeyens
+     */
+    public static void SetLastUsedUploadProgrammer(String UploadProgrammer) {
+	setGlobalValue(KEY_LAST_USED_PROGRAMMER, UploadProgrammer);
+
+    }
 
     /**
      * saves the last used arduino upload port

@@ -30,6 +30,7 @@ public class arduinoUploader implements IRealUpload {
     public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
 	String MComPort = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
 	String boardName = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
+	String programmerProtocol = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, "wiring");
 	String NewComPort = MComPort;
 	String command = Common.getBuildEnvironmentVariable(myProject, mycConf, "A.TOOLS." + myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", "");
 	NewComPort = ArduinoSerial.makeArduinoUploadready(myProject, mycConf, MComPort);
@@ -37,6 +38,7 @@ public class arduinoUploader implements IRealUpload {
 	command = command.replaceAll(" -P ", " -P " + NewComPort + " ");
 	String nakedPort = NewComPort.replace("/dev/", "");
 	command = command.replaceAll(" --port= ", " --port=" + nakedPort + " ");
+	command = command.replaceAll(" -cwiring ", " -c" + programmerProtocol + " ");
 
 	try {
 	    GenericLocalUploader.RunConsoledCommand(myConsole, command, new SubProgressMonitor(monitor, 1));

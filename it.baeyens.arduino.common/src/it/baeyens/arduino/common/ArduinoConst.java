@@ -36,6 +36,7 @@ public class ArduinoConst {
     // properties keys
     public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";
     public static final String KEY_LAST_USED_COM_PORT = "Arduino Port";
+    public static final String KEY_LAST_USED_PROGRAMMER = "Arduino Programmer";
     public static final String KEY_LAST_USED_ARDUINO_BOARDS_FILE = "Arduino boards file";
     public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Arduino scope filter on off";
@@ -111,6 +112,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
+	public static final String ENV_KEY_JANTJE_COM_PROG = ENV_KEY_JANTJE_START + "COM_PROGMR";	
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
