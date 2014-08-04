@@ -102,7 +102,7 @@ public class ArduinoConst {
 
     public static final String ArduinoIdeSuffix_WIN = "";
     public static final String ArduinoIdeSuffix_LINUX = "";
-    public static final String ArduinoIdeSuffix_MAC = "Contents/Resources/Java";
+    public static final String ArduinoIdeSuffix_MAC = "Contents/Java";
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
