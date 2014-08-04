@@ -2,7 +2,6 @@ package it.baeyens.arduino.common;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -35,6 +34,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     public static String getLastUsedUploadPort() {
 	return getGlobalValue(KEY_LAST_USED_COM_PORT);
     }
+
     /**
      * This method reads the arduino upload programmer from the configuration memory
      * 
@@ -44,6 +44,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     public static String getLastUsedUploadProgrammer() {
 	return getGlobalValue(KEY_LAST_USED_PROGRAMMER);
     }
+
     /**
      * saves the last used arduino upload port
      * 
@@ -218,8 +219,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static IPath getArduinoPath() {
-	return new Path(getGlobalValue(KEY_ARDUINOPATH)).append(Common.getArduinoIdeSuffix());
-
+	return Common.getArduinoIDEPathFromUserSelection(getGlobalValue(KEY_ARDUINOPATH));
     }
 
     /**

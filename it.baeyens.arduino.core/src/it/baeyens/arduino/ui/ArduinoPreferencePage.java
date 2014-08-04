@@ -103,10 +103,8 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		    openedDialog = true;
 		}
 	    } catch (URISyntaxException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    } catch (IOException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	    if (!openedDialog) {
@@ -159,6 +157,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		return false;
 	}
 
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.7")) {
+	    if (!showError("Arduino IDE 1.5.7 works but you need to add your own make as it is no longer delivered with arduino."))
+		return false;
+	}
+
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.7") > 0) {
 	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
 		return false;
@@ -189,11 +192,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	IPathVariableManager pathMan = workspace.getPathVariableManager();
 
 	try {
-
+	    IPath ArduinoIDEPath = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB,
-		    URIUtil.toURI(new Path(mArduinoIdePath.getStringValue()).append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString()));
+		    URIUtil.toURI(ArduinoIDEPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString()));
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(mArduinoPrivateLibPath.getStringValue()));
-	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, URIUtil.toURI(mArduinoIdePath.getStringValue()));
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, URIUtil.toURI(ArduinoIDEPath));
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the workspace path variables. The setup will not work properly", e));
@@ -215,7 +218,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
+	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent);
 
 	addField(mArduinoIdePath.getfield());
 

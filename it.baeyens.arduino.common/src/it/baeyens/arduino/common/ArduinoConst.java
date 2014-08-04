@@ -100,9 +100,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_build_core_folder = ENV_KEY_ARDUINO_START + "BUILD.CORE";
     public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";
 
-    public static final String ArduinoIdeSuffix_WIN = "";
-    public static final String ArduinoIdeSuffix_LINUX = "";
-    public static final String ArduinoIdeSuffix_MAC = "Contents/Resources/Java";
+    public static final String ArduinoIdeSuffix_WIN[] = { "" };
+    public static final String ArduinoIdeSuffix_LINUX[] = { "" };
+    public static final String ArduinoIdeSuffix_MAC[] = { "Contents/Resources/Java", "Contents/Resources/Java" };
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
@@ -111,7 +111,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
-	public static final String ENV_KEY_JANTJE_COM_PROG = ENV_KEY_JANTJE_START + "COM_PROGMR";	
+    public static final String ENV_KEY_JANTJE_COM_PROG = ENV_KEY_JANTJE_START + "COM_PROGMR";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";

@@ -575,7 +575,7 @@ public class Common extends ArduinoInstancePreferences {
 	return defaultvalue;
     }
 
-    static public String getArduinoIdeSuffix() {
+    static private String[] getArduinoIdeSuffix() {
 	if (Platform.getOS().equals(Platform.OS_WIN32))
 	    return ArduinoIdeSuffix_WIN;
 	if (Platform.getOS().equals(Platform.OS_LINUX))
@@ -584,6 +584,21 @@ public class Common extends ArduinoInstancePreferences {
 	    return ArduinoIdeSuffix_MAC;
 	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
 	return ArduinoIdeSuffix_WIN;
+    }
+
+    /**
+     * Method only needed for MAC for now as there seems to be a wierd subfolder Implemented for all supported os's for compatibility reasons
+     * 
+     * @param SelectedFolder
+     *            the folder the user thinks is the root
+     * 
+     * @return the root of arduino which is the same for all os's
+     */
+    static public IPath getArduinoIDEPathFromUserSelection(String SelectedFolder) {
+	String[] suffixes = getArduinoIdeSuffix();
+
+	return new Path(SelectedFolder).append(suffixes[0]);
+
     }
 
     /**
