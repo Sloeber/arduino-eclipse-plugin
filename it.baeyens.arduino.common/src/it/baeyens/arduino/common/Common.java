@@ -589,6 +589,8 @@ public class Common extends ArduinoInstancePreferences {
     /**
      * Method only needed for MAC for now as there seems to be a wierd subfolder Implemented for all supported os's for compatibility reasons
      * 
+     * As in mac the folder changed I do I have a list of possible options per OS and I select the first folder that exist.
+     * 
      * @param SelectedFolder
      *            the folder the user thinks is the root
      * 
@@ -596,9 +598,13 @@ public class Common extends ArduinoInstancePreferences {
      */
     static public IPath getArduinoIDEPathFromUserSelection(String SelectedFolder) {
 	String[] suffixes = getArduinoIdeSuffix();
-
-	return new Path(SelectedFolder).append(suffixes[0]);
-
+	Path root = new Path(SelectedFolder);
+	for (String suffix : suffixes) {
+	    if (root.append(suffix).toFile().exists()) {
+		return root.append(suffix);
+	    }
+	}
+	return root.append(suffixes[0]);
     }
 
     /**
