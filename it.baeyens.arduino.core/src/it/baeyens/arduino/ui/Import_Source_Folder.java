@@ -60,8 +60,7 @@ public class Import_Source_Folder implements IImportWizard {
 	    mPages[0] = mFolderSelectionPage;
 	    mFolderSelectionPage.setImportProject(SelectedProjects[0]);
 	} else {
-
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The selected project is not a arduino project."));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The selected project is not an arduino project."));
 	}
     }
 

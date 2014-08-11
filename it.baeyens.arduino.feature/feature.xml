@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino Eclipse Extensions"
-      version="2.2.0.qualifier"
+      version="2.4.0.qualifier"
       provider-name="Jan Baeyens">
 
    <description url="http://www.example.com/description">
