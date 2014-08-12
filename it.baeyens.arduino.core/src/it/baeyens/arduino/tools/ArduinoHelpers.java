@@ -848,7 +848,14 @@ public class ArduinoHelpers extends Common {
 		// this should never happen as the split is limited to 2
 
 	    }
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SOFTWARE, "ARDUINO");
+
+	}
+	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SOFTWARE, "ARDUINO");
+	contribEnv.addVariable(var, confDesc);
+	String uploadProg = ArduinoInstancePreferences.getLastUsedUploadProgrammer();
+	// If the user selected a different upload protocol replace the protocol with the selected one
+	if (!uploadProg.equals(ArduinoConst.DEFAULT)) {
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_ARDUINO_UPLOAD_PROTOCOL, uploadProg);
 	    contribEnv.addVariable(var, confDesc);
 	}
 

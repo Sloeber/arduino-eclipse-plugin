@@ -187,9 +187,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	mControlBoardsTxtFile.setItems(allBoardsFiles);
 
 	createLine(composite, ncol);
-	//-------
-	
-	//------
+	// -------
+
+	// ------
 	createLabel(composite, ncol, "Your Arduino board specifications"); //$NON-NLS-1$
 	new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
 	mcontrolBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
@@ -199,7 +199,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	mcontrolBoardName.setLayoutData(theGriddata);
 	mcontrolBoardName.setEnabled(false);
 
-	//----
+	// ----
 	new Label(composite, SWT.None).setText("Uploading Protocol: ");
 	controlUploadProtocol = new Combo(composite, SWT.BORDER);
 	theGriddata = new GridData();
@@ -208,9 +208,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	controlUploadProtocol.setLayoutData(theGriddata);
 	controlUploadProtocol.setEnabled(false);
 
-	//controlUploadPort.setItems(ArrayUtil.addAll(activator.bonjourDiscovery.getList(), Common.listComPorts()));
+	controlUploadProtocol.add(ArduinoConst.DEFAULT);
 
-	//-----
+	// -----
 	new Label(composite, SWT.None).setText("Port: ");
 	controlUploadPort = new Combo(composite, SWT.BORDER);
 	theGriddata = new GridData();
@@ -366,6 +366,12 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	String boardName = mcontrolBoardName.getText().trim();
 	String uploadPort = controlUploadPort.getText().trim();
 	String uploadProg = controlUploadProtocol.getText().trim();
+	ArduinoInstancePreferences.setLastUsedBoardsFile(boardFile);
+	ArduinoInstancePreferences.SetLastUsedArduinoBoard(boardName);
+	ArduinoInstancePreferences.SetLastUsedUploadPort(uploadPort);
+	ArduinoInstancePreferences.SetLastUsedUploadProgrammer(uploadProg);
+	ArduinoInstancePreferences.setLastUsedMenuOption(""); // TOFIX implement
+							      // the options
 	if (confdesc != null) {
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -382,7 +388,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    contribEnv.addVariable(var, confdesc);
 	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProg);
 	    contribEnv.addVariable(var, confdesc);
-		
+
 	    for (int curBoardFile = 0; curBoardFile < allBoardsFiles.length; curBoardFile++) {
 		for (int curCombo = 0; curCombo < boardOptionCombos[curBoardFile].length; curCombo++) {
 		    String OptionName = (String) boardOptionCombos[curBoardFile][curCombo].mCombo.getData("Menu");
@@ -416,12 +422,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    ArduinoHelpers.setDirtyFlag(project, confdesc);
 
 	}
-	ArduinoInstancePreferences.setLastUsedBoardsFile(boardFile);
-	ArduinoInstancePreferences.SetLastUsedArduinoBoard(boardName);
-	ArduinoInstancePreferences.SetLastUsedUploadPort(uploadPort);
-	ArduinoInstancePreferences.SetLastUsedUploadProgrammer(uploadProg);
-	ArduinoInstancePreferences.setLastUsedMenuOption(""); // TOFIX implement
-							      // the options
 
     }
 
@@ -430,9 +430,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	String boardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
 	String uploadPort = ArduinoInstancePreferences.getLastUsedUploadPort();
 	String uploadProtocol = ArduinoInstancePreferences.getLastUsedUploadProgrammer();
-	if ("".equals(uploadProtocol))
-		uploadProtocol="wiring";
-	// TODO add the options here
 
 	if (page != null) {
 
@@ -440,7 +437,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    boardFile = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
 	    boardName = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
-		uploadProtocol = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProtocol);
+	    uploadProtocol = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProtocol);
 	}
 	mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first

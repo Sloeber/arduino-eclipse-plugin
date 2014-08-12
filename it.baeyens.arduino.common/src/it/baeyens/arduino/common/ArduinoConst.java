@@ -49,6 +49,7 @@ public class ArduinoConst {
     public static final String LIBRARY_PATH_SUFFIX = "libraries";
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
+    public static final String DEFAULT = "Default";
     public static final String BOARDS_FILE_NAME = "boards.txt";
     public static final String PLATFORM_FILE_NAME = "platform.txt";
     public static final String LIB_VERSION_FILE = "lib/version.txt";
@@ -68,6 +69,7 @@ public class ArduinoConst {
 
     public static final String ENV_KEY_ARDUINO_START = "A.";
     public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";
+    public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";
     public static final String WORKSPACE_LIB_FOLDER = "Libraries/";
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
     public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.O.PATTERN";

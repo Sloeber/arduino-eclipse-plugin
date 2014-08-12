@@ -42,7 +42,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedUploadProgrammer() {
-	return getGlobalValue(KEY_LAST_USED_PROGRAMMER);
+	return getGlobalValue(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
     }
 
     /**
@@ -83,9 +83,13 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	setGlobalValue(KEY_LAST_USED_ARDUINOBOARD, ArduinoBoardName);
     }
 
-    public static String getGlobalValue(String key) {
+    public static String getGlobalValue(String key, String defaultValue) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-	return myScope.get(key, "");
+	return myScope.get(key, defaultValue);
+    }
+
+    public static String getGlobalValue(String key) {
+	return getGlobalValue(key, "");
     }
 
     protected static boolean getGlobalBoolean(String key) {
