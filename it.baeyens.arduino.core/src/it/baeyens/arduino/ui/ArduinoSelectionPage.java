@@ -263,7 +263,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    mControlBoardsTxtFile.setEnabled((allBoardsFiles.length > 1));
 	} else {
 	    mControlBoardsTxtFile.setEnabled((allBoardsFiles.length > 1)
-		    && (getResDesc().getConfiguration().getProjectDescription().getConfigurations().length < 2));
+	    /* && (getResDesc().getConfiguration().getProjectDescription().getConfigurations().length < 2) */);
 	}
 	mControlBoardsTxtFile.setVisible(allBoardsFiles.length > 1);
 
