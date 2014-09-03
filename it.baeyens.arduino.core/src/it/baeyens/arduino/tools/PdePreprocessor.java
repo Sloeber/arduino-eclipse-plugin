@@ -83,8 +83,12 @@ public class PdePreprocessor {
 		    IASTNode astNodes[] = asttu.getChildren();
 		    for (IASTNode astNode : astNodes) {
 			if (astNode instanceof CPPASTFunctionDefinition) {
-			    String addString = astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ")
-				    .replaceAll("\\{.+\\}", "");
+			    String addString = astNode.getRawSignature();
+			    addString = addString.replaceAll("\r\n", "\n");
+			    addString = addString.replaceAll("\r", "\n");
+			    addString = addString.replaceAll("//[^\n]+\n", " ");
+			    addString = addString.replaceAll("\n", " ");
+			    addString = addString.replaceAll("\\{.+\\}", "");
 			    if (addString.contains("=")) {
 				// ignore when there are assignements in the declaration
 			    } else {
