@@ -262,11 +262,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	String Seperator = "";
 
 	// Validate the arduino path
-	Path arduinoFolder = new Path(mArduinoIdePath.getStringValue());
+	IPath arduinoFolder = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	File arduinoBoardFile = arduinoFolder.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	boolean isArduinoFolderValid = arduinoBoardFile.canRead();
 	if (isArduinoFolderValid) {
-	    Path BoardFile = new Path(mArduinoIdePath.getStringValue());
+	    IPath BoardFile= Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	    if (!BoardFile.equals(mPrefBoardFile)) {
 		mPrefBoardFile = BoardFile;
 		mArduinoIdeVersion.setStringValue(ArduinoHelpers.GetIDEVersion(BoardFile));

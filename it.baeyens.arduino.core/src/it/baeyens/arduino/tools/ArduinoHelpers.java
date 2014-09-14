@@ -1046,7 +1046,7 @@ public class ArduinoHelpers extends Common {
      * 
      * @return the version number if found if no version number found the error returned by the file read method
      */
-    static public String GetIDEVersion(Path arduinoIDEPath) {
+    static public String GetIDEVersion(IPath arduinoIDEPath) {
 
 	File file = arduinoIDEPath.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	try {
