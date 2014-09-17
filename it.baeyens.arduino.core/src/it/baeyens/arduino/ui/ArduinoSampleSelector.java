@@ -189,7 +189,7 @@ public class ArduinoSampleSelector extends Composite {
 		if (LibFolder.toFile().isDirectory()) {
 		    TreeItem child = new TreeItem(LibItem, SWT.NONE);
 		    child.setText(children[i]);
-		    child.setData(LibFolder.toFile());
+		    child.setData(LibFolder);
 		    addExamples(child, LibFolder);
 		}
 	    }
@@ -207,19 +207,23 @@ public class ArduinoSampleSelector extends Composite {
 	myLabel.setEnabled(enable);
     }
 
-    private void recursiveCopySelectedExamples(File target, TreeItem TreeItem) throws IOException {
+    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link) throws IOException {
 	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
-		FileUtils.copyDirectory((File) curchildTreeItem.getData(), target);
+		if (link) {
+		    ArduinoHelpers.linkDirectory(project, (IPath) curchildTreeItem.getData(), target);
+		} else {
+		    FileUtils.copyDirectory(((IPath) curchildTreeItem.getData()).toFile(), project.getLocation().toFile());
+		}
 	    }
-	    recursiveCopySelectedExamples(target, curchildTreeItem);
+	    recursiveCopySelectedExamples(project, target, curchildTreeItem, link);
 	}
     }
 
-    public void CopySelectedExamples(File target) throws IOException {
+    public void CopySelectedExamples(IProject project, IPath target, boolean link) throws IOException {
 	myTreeSelector.getItems();
 	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
-	    recursiveCopySelectedExamples(target, curTreeItem);
+	    recursiveCopySelectedExamples(project, target, curTreeItem, link);
 	}
     }
 
