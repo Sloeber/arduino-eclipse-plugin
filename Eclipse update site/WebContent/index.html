@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     <title>Arduino Eclipse Plugin - Welcome!</title>
 
     <!-- Bootstrap core CSS and theme -->
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
 
     <!-- Custom styles  -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -23,57 +23,21 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="js/marked.min.js"></script>
+    <script src="js/angular-marked.min.js"></script>
+    <script src="js/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/app.js"></script>
   </head>
 
-  <body role="document">
+  <body role="document" ng-app='arduinoEclipse'>
 
     <!-- Fixed navbar -->
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <p class="navbar-brand">Arduino Eclipse</p>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Download <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">Version 2</li>
-                <li><a href="bundle.html">Bundle</a></li>
-                <li><a href="plugin-v2.html">Plugin</a></li>
-                <li class="dropdown-header">Version 1</li>
-                <li><a href="plugin-v1.html">Plugin</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Instructions <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Linux</a></li>
-                <li><a href="#">Mac OS</a></li>
-                <li class="dropdown-header">Windows</li>
-                <li><a href="#">Windows XP</a></li>
-                <li><a href="#">Windows Vista</a></li>
-                <li><a href="#">Windows 7</a></li>
-                <li><a href="#">Windows 8</a></li>
-                <li class="divider"></li>
-                <li><a href="#">64bits</a></li>
-              </ul>
-            </li>
-            <li><a href="faq.html">FAQs</a></li>
-            <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank">Github</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
+      <ng-include src="'fragments/navbar.html'"/>
     </div>
 
-    <div class="container theme-showcase" role="main">
+    <div class="container" role="main">
       <div class="jumbotron">
         <h1>Where <b>Arduino</b> meets <b>Eclipse</b></h1>
         <p>You like <b>Arduino</b>, your projects are getting bigger and you feel the Arduino IDE is not powerful enough?</p>
@@ -91,7 +55,7 @@
           <h2><span class="glyphicon glyphicon-link" style="color:blue"></span>&nbsp;Links</h2>
           <div class="list-group">
             <a class="list-group-item" href="donate.html">If you would like to support, <b>buy Jantje an Arduino</b></a>
-            <a class="list-group-item" href="http://blog.baeyens.it/#home">Read Jantje's blog if you want to stay up to date on changes</a>
+            <a class="list-group-item" href="http://blog.baeyens.it/#home">Read <b>Jantje's blog<b/> if you want to stay up to date on changes</a>
             <a class="list-group-item" href="installAdvice.shtml"><b>Installation advice</b> can be found here</a>
             <a class="list-group-item" href="download.php"><b>Nightly builds</b> of the product can be found here</a>
             <a class="list-group-item" href="Install.html"><b>Installation instructions</b> can be found here</a>
@@ -103,21 +67,10 @@
         </div>
         <div class="col-md-4">
           <h2><span class="glyphicon glyphicon-star" style="color:orange"></span>&nbsp;News</h2>
-          <div><a class="twitter-timeline" data-dnt="true" "https://twitter.com/Arduino_jantje" height="400" data-widget-id="433339655606394880" data-chrome="nofooter noheader">Latest News</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></div>
-          <!--ul class="list-group">
-            <li class="list-group-item">Creation of an Arduino sketch</li>
-            <li class="list-group-item">Import of an Arduino or private Library</li>
-            <li class="list-group-item">Import of source code available on your system</li>
-            <li class="list-group-item">Integrated serial monitor</li>
-            <li class="list-group-item">Change the Arduino board</li>
-            <li class="list-group-item">Multiple hardwares (version 2)</li>
-            <li class="list-group-item">Support for the HalfKay boot loader  (version 2)</li>
-            <li class="list-group-item">Change the COM port</li>
-            <li class="list-group-item">Upload to the board</li>
-            <li class="list-group-item">Real time build</li>
-            <li class="list-group-item">User selected build.</li>
-          </ul-->
+          <div>
+            <a class="twitter-timeline" data-dnt="true" "https://twitter.com/Arduino_jantje" height="400" data-widget-id="433339655606394880" data-chrome="nofooter noheader">Latest News</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          </div>
         </div>
         <div class="col-md-4">
           <h2><span class="glyphicon glyphicon-heart" style="color:red"></span>&nbsp;Help us!</h2>
@@ -152,16 +105,8 @@
     </div> <!-- /container -->
 
     <div id="footer">
-      <hr/>
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
-      </div>
+      <ng-include src="'fragments/footer.html'"/>
     </div>
-
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="js/analytics.min.js"></script>
   </body>
 </html>
 
