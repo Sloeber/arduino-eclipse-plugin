@@ -46,7 +46,7 @@ public class Activator extends AbstractUIPlugin {
     private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
     private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b";
     private static final String Localflag = "l" + flagStart;
-    private static final String helploc = "http://www.baeyens.it/eclipse/remind2_2.html";
+    private static final String helploc = "http://www.baeyens.it/eclipse/remind3_0.html";
 
     /**
      * The constructor

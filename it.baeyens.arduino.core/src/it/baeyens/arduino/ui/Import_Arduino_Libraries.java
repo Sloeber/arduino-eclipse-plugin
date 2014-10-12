@@ -1,8 +1,11 @@
 package it.baeyens.arduino.ui;
 
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -51,6 +54,9 @@ public class Import_Arduino_Libraries implements IImportWizard {
 	    mProjectSelectionPage.setWizard(this);
 	    mPages = new IWizardPage[1];
 	    mPages[0] = mProjectSelectionPage;
+	} else {
+
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The selected project is not an arduino project."));
 	}
     }
 

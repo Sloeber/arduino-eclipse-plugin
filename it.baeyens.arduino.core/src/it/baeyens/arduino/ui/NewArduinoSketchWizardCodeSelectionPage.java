@@ -41,7 +41,9 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
     protected DirectoryFieldEditor mTemplateFolderEditor;
     protected ArduinoSampleSelector mExampleEditor = null;
     protected Button mCheckBoxUseCurrentSettingsAsDefault; // checkbox whether to use the current settings as default
+    protected Button mCheckBoxUseCurrentLinkSample;
     private IPath mArduinoExamplePath = null;
+    private IPath mArduinoLibPath = null;
     private IPath mPrivateLibraryPath = null;
     private IPath mPlatformPathPath = null;
 
@@ -101,6 +103,13 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	theGriddata.horizontalAlignment = SWT.LEAD;
 	theGriddata.grabExcessHorizontalSpace = false;
 	mCheckBoxUseCurrentSettingsAsDefault.setLayoutData(theGriddata);
+	mCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
+	mCheckBoxUseCurrentLinkSample.setText("Link to sample code.");
+	theGriddata = new GridData();
+	theGriddata.horizontalSpan = ncol;
+	theGriddata.horizontalAlignment = SWT.LEAD;
+	theGriddata.grabExcessHorizontalSpace = false;
+	mCheckBoxUseCurrentLinkSample.setLayoutData(theGriddata);
 	//
 
 	//
@@ -110,7 +119,7 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	restoreAllSelections();// load the default settings
 	SetControls();// set the controls according to the setting
 	if (mArduinoExamplePath != null) {
-	    mExampleEditor.AddAllExamples(mArduinoExamplePath, mPrivateLibraryPath, mPlatformPathPath);
+	    mExampleEditor.AddAllExamples(mArduinoExamplePath, mArduinoLibPath, mPrivateLibraryPath, mPlatformPathPath);
 	}
 
 	validatePage();// validate the page
@@ -227,11 +236,9 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	    break;
 	case sample:
 	    try {
-		java.io.File target = project.getLocation().toFile();
-		mExampleEditor.CopySelectedExamples(target);
-
+		boolean MakeLinks = mCheckBoxUseCurrentLinkSample.getSelection();
+		mExampleEditor.CopySelectedExamples(project, new Path("/"), MakeLinks);
 	    } catch (IOException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	    break;
@@ -247,11 +254,12 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
     }
 
-    public void AddAllExamples(IPath arduinoExample, IPath privateLibrary, IPath platformPath) {
+    public void AddAllExamples(IPath arduinoExample, IPath ArduinoLibPath, IPath privateLibrary, IPath platformPath) {
 	if (mExampleEditor != null) {
-	    mExampleEditor.AddAllExamples(arduinoExample, privateLibrary, platformPath);
+	    mExampleEditor.AddAllExamples(arduinoExample, ArduinoLibPath, privateLibrary, platformPath);
 	} else {
 	    mArduinoExamplePath = arduinoExample;
+	    mArduinoLibPath = ArduinoLibPath;
 	    mPrivateLibraryPath = privateLibrary;
 	    mPlatformPathPath = platformPath;
 	}

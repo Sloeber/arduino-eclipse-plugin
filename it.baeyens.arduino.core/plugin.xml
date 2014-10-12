@@ -103,8 +103,8 @@
 			category="it.baeyens.arduino.eclipse.newWizards"
 	        class="it.baeyens.arduino.ui.NewArduinoSketchWizard"
 	        name="%wizard.name"
-	        icon="icons/arduino.png"
-	        finalPerspective ="org.eclipse.cdt.ui.CPerspective"
+	        icon="icons/new.png"
+	        finalPerspective ="it.baeyens.arduino.application.perspective"
 	        project="true">
          <description>
             %wizard.description
@@ -777,6 +777,32 @@
        </enabledWhen>
     </handler>
     
+ </extension>
+ <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension
+          targetID="it.baeyens.arduino.application.perspective">
+       <newWizardShortcut
+             id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard">
+       </newWizardShortcut>
+    </perspectiveExtension>
+ </extension>
+ <extension
+       point="org.eclipse.ui.navigator.navigatorContent">
+    <commonWizard
+          type="new"
+          wizardId="it.baeyens.arduino.eclipse.NewArduinoSketchWizard">
+       <enablement>
+          <or>
+             <adapt
+                   type="org.eclipse.core.resources.IProject">
+             </adapt>
+             <adapt
+                   type="org.eclipse.core.resources.IWorkspaceRoot">
+             </adapt>
+          </or>
+       </enablement>
+    </commonWizard>
  </extension>
 
 <!-- 

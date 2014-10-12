@@ -58,17 +58,22 @@ public class ArduinoSerial {
 	Vector<String> NewPorts;
 	Vector<String> OriginalPortsCopy;
 
+
 	// wait for port to disappear
 	int NumTries = 0;
+    int MaxTries = 200; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
+    int delayMs = 10;   // on faster computers Esplora reconnects *extremely* quickly and we can't catch this
 	do {
-	    try {
-		Thread.sleep(100);
-	    } catch (InterruptedException e) {// Jaba is not going to write this
-					      // code
-	    }
+        if (NumTries > 0) {
+            try {
+                Thread.sleep(delayMs);
+            } catch (InterruptedException e) {// Jaba is not going to write this
+                // code
+            }
+        }
 	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
-	    if (NumTries++ > 70) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset"));
+	    if (NumTries++ > MaxTries) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset and " + NumTries + " checks"));
 		return defaultComPort;
 	    }
 	    NewPorts = Serial.list();
@@ -81,7 +86,7 @@ public class ArduinoSerial {
 
 	NumTries = 0;
 	do {
-	    if (NumTries++ > 70) {
+	    if (NumTries++ > MaxTries) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not appearing after reset"));
 		return defaultComPort;
 	    }
@@ -90,7 +95,7 @@ public class ArduinoSerial {
 		NewPorts.remove(OriginalPorts.get(i));
 	    }
 	    try {
-		Thread.sleep(100);
+		Thread.sleep(delayMs);
 	    } catch (InterruptedException e) {// Jaba is not going to write this
 					      // code
 	    }
@@ -157,8 +162,6 @@ public class ArduinoSerial {
      * @return The com port to upload to
      */
     public static String makeArduinoUploadready(IProject project, String configName, String ComPort) {
-	if (Common.RXTXDisabled())
-	    return ComPort;
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
 	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false");
 	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")

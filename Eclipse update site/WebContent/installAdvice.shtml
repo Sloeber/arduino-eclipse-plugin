@@ -15,6 +15,8 @@
 	<h1>Which version to install?</h1>
 	By now there are so many versions involved that some guidance to what to install is appropriate.<br>
 	This page is intended to give this guidance.
+	Please note: we are moving away from RXTX so there will be problems in the latest builds.
+	If you do not want to have problems with your USB ports stick to the latest stable version for now.
 	For the newbies to the plugin who 
 	<ul><li>do not have eclipse installed</li>
 	<li>are willing to do some alfa testing</li>
@@ -42,7 +44,7 @@
 	between 1.5.0 beta and 1.5.2 beta (included): use 1.5.2 with V2 of the plugin<br>
 	between 1.5.2 beta and 1.5.5 beta: not supported<br>
 	1.5.5 beta works with V2.2 but you need to fix the remaining V1.5 Libraries (see below)<br>
-	1.5.6 beta switched from RXTX to JSSC. This means that the RXTX dll is no longer delivered as part of the Arduino IDE. The plugin comes with a RXTX library but the Arduino core team has done some adaptations to the rxtx library which improves user experiance. <br> 
+	1.5.6 beta switched from RXTX to JSSC. This means that the RXTX dll is no longer delivered as part of the Arduino IDE. The plugin comes with a RXTX library which does not contain the adaptations the Arduino team did which improves user experiance. (mostly windows and mac)<br> 
 	
 	V1 of the plugin runs in juno and indigo. I don't know wether kepler works.<br>
 	V2 of the plugin runs in juno only. (kepler does not work)<br>
@@ -53,9 +55,10 @@
 	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th><th>Product</th></tr>
 	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td><td>not available</td></tr>
 	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
-	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.6 beta</td><td>V2.2</td><td>juno and kepler (RXTX no longer part of arduino IDE)</td><td>from V2.2 only</td></tr>
+	<tr><td>1.5.2 beta and later</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
+	<tr><td>1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr>
+	<tr><td>1.5.6 beta</td><td>V2.2</td><td>juno and kepler (RXTX no longer part of arduino IDE)</td><td>from V2.2 only</td>
+	<tr><td>1.5.7 beta and later</td><td>V2.2</td><td>juno and kepler (Make no longer part of Arduino IDE)</td><td>from V2.2 only</td></tr>
 	</table>
 	<h1>Where to find your version?</h1>
 	The table below points to installation information
@@ -68,7 +71,7 @@
 	<br>
 	<h1>How to maintain your version?</h1>
 	For V1 there is only the product site and there will probably never be a newer version.<br>
-	For V2 you can upgrade both the roduc as the latest stable with the latest stable and the nightly build.<br>
+	For V2 you can upgrade both the product (only the very latest versions) and the plugin with the nightly build update site.<br>
 	<h1>Library madness</h1>
 	The library specification 1.5 has not been completely undone in 1.5.5 as such these libraries will not compile in the plugin.<br>
 	It looks like 1.5.6 implemented the workaround below (the cpp files are tagged with ifdef but the headers not)
@@ -76,6 +79,7 @@
 	As the plugin includes all code recursively under the library folder all arch code is included which gives problems.<br>
 	To fix this problem add #ifdef ARDUINO_ARCH_[upercase(architecture)] at the top of each file and #endif at the bottom.<br>
 	So for the files in the sam folder that becomes #ifdef ARDUINO_ARCH_SAM ..... #endif<br>
+	in 1.5.7 this problem has been solved completely.<br>
 	<h2>Unix script (also works for mac)</h2>
 	Unix users can run the code below in the hardware folder to fix the issue automatically.<br>
 	

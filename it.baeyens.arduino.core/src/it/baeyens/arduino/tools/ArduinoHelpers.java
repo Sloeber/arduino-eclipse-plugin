@@ -179,6 +179,37 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
+     * Creates a folder and links the folder to an existing folder Parent folders of the target folder are created if needed. In case this method
+     * fails an error is logged.
+     * 
+     * @param project
+     *            the project the newly created folder will belong to
+     * @param target
+     *            the folder name relative to the project
+     * @param source
+     *            the fully qualified name of the folder to link to
+     */
+    public static void LinkFolderToFolder(IProject project, IPath source, IPath target) {
+
+	// create target parent folder and grandparents
+	IPath ParentFolders = new Path(target.toString()).removeLastSegments(1);
+	for (int curfolder = ParentFolders.segmentCount() - 1; curfolder >= 0; curfolder--) {
+	    try {
+		createNewFolder(project, ParentFolders.removeLastSegments(curfolder).toString(), null);
+	    } catch (CoreException e) {// ignore this error as the parent
+				       // folders may have been created yet
+	    }
+	}
+
+	// create the actual link
+	try {
+	    createNewFolder(project, target.toString(), URIUtil.toURI(source));
+	} catch (CoreException e) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not create folder " + target, e));
+	}
+    }
+
+    /**
      * This method creates a link folder in the project and add the folder as a source path to the project it also adds the path to the include folder
      * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
      * well <br/>
@@ -199,24 +230,11 @@ public class ArduinoHelpers extends Common {
      */
     public static void addCodeFolder(IProject project, String PathVarName, String SubFolder, String LinkName,
 	    ICConfigurationDescription configurationDescription) throws CoreException {
-	// ICProjectDescriptionManager mngr =
-	// CoreModel.getDefault().getProjectDescriptionManager();
-	// ICProjectDescription projectDescription =
-	// mngr.getProjectDescription(project, true);
-	// ICConfigurationDescription configurationDescription =
-	// projectDescription.getDefaultSettingConfiguration();
-	IFolder link = project.getFolder(LinkName);// project.getFolder(SubFolder);
+	IFolder link = project.getFolder(LinkName);
 
-	IPath ParentFolders = new Path(LinkName);
-	for (int curfolder = ParentFolders.segmentCount() - 1; curfolder > 0; curfolder--) {
-	    try {
-		createNewFolder(project, ParentFolders.removeLastSegments(curfolder).toString(), null);
-	    } catch (CoreException e) {// ignore this error as the parent
-				       // folders may have been created yet
-	    }
-	}
+	LinkFolderToFolder(project, new Path(PathVarName).append(SubFolder), new Path(LinkName));
 
-	createNewFolder(project, LinkName, URIUtil.toURI(new Path(PathVarName).append(SubFolder)));
+	// Now the folder has been created we need to make sure the special folders are added to the path
 	addIncludeFolder(configurationDescription, link.getFullPath());
 
 	IPathVariableManager pathMan = project.getPathVariableManager();
@@ -233,11 +251,6 @@ public class ArduinoHelpers extends Common {
 		.toString());
 	if (file.exists()) {
 	    addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
-	    // possibleIncludeFolder = "src/utility";
-	    // file = new File(new Path(pathMan.getURIValue(PathVarName).getPath()).append(SubFolder).append(possibleIncludeFolder).toString());
-	    // if (file.exists()) {
-	    // addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
-	    // }
 	}
 
 	possibleIncludeFolder = "arch";
@@ -246,14 +259,7 @@ public class ArduinoHelpers extends Common {
 	if (file.exists()) {
 	    addIncludeFolder(configurationDescription,
 		    link.getFullPath().append(possibleIncludeFolder).append(makeEnvironmentVar(ENV_KEY_ARCHITECTURE)));
-	    // addIncludeFolder(configurationDescription,
-	    // link.getFullPath().append(possibleIncludeFolder).append(makeEnvironmentVar(ENV_KEY_ARCHITECTURE)).append("utility"));
 	}
-
-	// projectDescription.setActiveConfiguration(configurationDescription);
-	// projectDescription.setCdtProjectCreated();
-	// mngr.setProjectDescription(project, projectDescription, true, null);
-
     }
 
     /**
@@ -311,7 +317,7 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method add the content of a content stream to a file
+     * This method adds the content of a content stream to a file
      * 
      * @param container
      *            used as a reference to the file
@@ -325,7 +331,6 @@ public class ArduinoHelpers extends Common {
      */
     public static void addFileToProject(IContainer container, Path path, InputStream contentStream, IProgressMonitor monitor) throws CoreException {
 	final IFile file = container.getFile(path);
-
 	if (file.exists()) {
 	    file.setContents(contentStream, true, true, monitor);
 	} else {
@@ -348,22 +353,31 @@ public class ArduinoHelpers extends Common {
     public static void setProjectPathVariables(IProject project, IPath platformPath) {
 	IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
 	IPath arduinoHardwareLibraryPath = platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX);
-
 	IPathVariableManager pathMan = project.getPathVariableManager();
-
 	try {
-	    Path arduinoPath = new Path(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO).getRawPath());
-	    // Path ArduinoPath = new Path(ArduinoURI.toString());
-	    String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
-	    String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
-	    URI uriTest = URIUtil.toURI(test);
-	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, uriTest);
-	    test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
-	    uriTest = URIUtil.toURI(test);
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, uriTest);
-	    test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
-	    uriTest = URIUtil.toURI(test);
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
+	    // TODO the code below was changed for issue #34 (better multiple user support) but fails on Mac
+	    // So i split it to use the old code on mac.
+	    // but they should be merged
+	    // then it turned out nothing worked anymore. So I reverted to the old code
+	    // Path arduinoPath = new Path(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO).getRawPath());
+	    // if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, URIUtil.toURI(arduinoHardwareLibraryPath));
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
+	    // } else {
+	    //
+	    // String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
+	    // String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
+	    // // URI uriTest = URIUtil.toURI(test, false);
+	    //
+	    // pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, pathMan.getURIValue(test));
+	    // test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
+	    // // uriTest = URIUtil.toURI(test, false);
+	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, pathMan.getURIValue(test));
+	    // test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
+	    // URI uriTest = URIUtil.toURI(pathMan.convertFromUserEditableFormat(test, true));
+	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
+	    // }
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
@@ -375,7 +389,7 @@ public class ArduinoHelpers extends Common {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null));
+		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null));
 		return;
 	    }
 	    for (File f : a) {
@@ -419,12 +433,23 @@ public class ArduinoHelpers extends Common {
 
 	String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_variant, "");
 	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core_folder, "");
-	addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
-		configurationDescription);
-	if (!boardVariant.equals("")) // this is Arduino version 1.0
-	{
-	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
+	if (buildCoreFolder.contains(":")) {
+	    String sections[] = buildCoreFolder.split(":");
+	    if (sections.length != 2) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "the value for key " + ENV_KEY_build_core_folder
+			+ " in boards.txt is invalid:" + buildCoreFolder, null));
+	    } else {
+		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE, "");
+		addCodeFolder(project, WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, ARDUINO_HARDWARE_FOLDER_NAME + "/" + sections[1] + "/" + architecture
+			+ "/" + ARDUINO_CORE_FOLDER_NAME + "/" + sections[1], "arduino/core", configurationDescription);
+	    }
 	} else {
+	    addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PLATFORM, ARDUINO_CORE_FOLDER_NAME + "/" + buildCoreFolder, "arduino/core",
+		    configurationDescription);
+	}
+	if (!boardVariant.equals("")) {
+	    ArduinoHelpers.addCodeFolder(project, PATH_VARIABLE_NAME_ARDUINO_PINS, boardVariant, "arduino/variant", configurationDescription);
+	} else {// this is Arduino version 1.0
 	    IFolder variantFolder = project.getFolder("arduino/variant");
 	    if (variantFolder.exists()) {
 		try {
@@ -459,6 +484,7 @@ public class ArduinoHelpers extends Common {
 	} else {
 	    newFolderHandle.create(0, true, null);
 	}
+
     }
 
     /**
@@ -574,6 +600,12 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_archive_file, "arduino.ar");
 	contribEnv.addVariable(var, confDesc);
 
+	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
+	URI buildVariantURI = pathMan.getURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS);
+	buildVariantURI = pathMan.resolveURI(buildVariantURI);
+	String buildVariantPath = buildVariantURI.getPath() + "/${" + ArduinoConst.ENV_KEY_build_variant + "}";
+	var = new EnvironmentVariable(ENV_KEY_build_variant_path, buildVariantPath);
+	contribEnv.addVariable(var, confDesc);
 	// IPath platformPath = new Path(arduinoProperties.getPlatformFolder());
 	// IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
 
@@ -733,7 +765,19 @@ public class ArduinoHelpers extends Common {
 
 	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE,
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
+	// TODO arduino specification makes it possible to have more than 1 platformfile lets for now assume there is only 1
 	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
+	if (!platformFilename.toFile().exists()) {
+	    // TODO lets for now hardcode this is arduino
+	    for (int cursegment = 0; cursegment < platformFilename.segmentCount(); cursegment++) {
+		if (ARDUINO_HARDWARE_FOLDER_NAME.equals(platformFilename.segment(cursegment))) {
+
+		    platformFilename = getArduinoPath().append(ARDUINO_HARDWARE_FOLDER_NAME).append("arduino")
+			    .append(platformFilename.removeFirstSegments(cursegment + 2));
+		    cursegment = platformFilename.segmentCount();
+		}
+	    }
+	}
 	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
 		ArduinoInstancePreferences.getLastUsedArduinoBoardName());
 
@@ -773,18 +817,11 @@ public class ArduinoHelpers extends Common {
      * @param confDesc
      */
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
-	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
-
-	// TODO consider moving this to the set defaults (not sure why this is here. If it needs to be here document why
-	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_build_variant_path, pathMan.getURIValue(
-		ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS).getPath()
-		+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
-	contribEnv.addVariable(var, confDesc);
 
 	String recipes[] = { ENV_KEY_recipe_c_o_pattern, ENV_KEY_recipe_cpp_o_pattern, ENV_KEY_recipe_S_o_pattern,
 		ENV_KEY_recipe_objcopy_hex_pattern, ENV_KEY_recipe_objcopy_eep_pattern, ENV_KEY_recipe_size_pattern, ENV_KEY_recipe_AR_pattern,
 		ENV_KEY_recipe_c_combine_pattern };
-	var = null;
+	IEnvironmentVariable var = null;
 	for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
 	    String recipe = getBuildEnvironmentVariable(confDesc, recipes[curRecipe], "", false);
 
@@ -816,7 +853,14 @@ public class ArduinoHelpers extends Common {
 		// this should never happen as the split is limited to 2
 
 	    }
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SOFTWARE, "ARDUINO");
+
+	}
+	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SOFTWARE, "ARDUINO");
+	contribEnv.addVariable(var, confDesc);
+	String uploadProg = ArduinoInstancePreferences.getLastUsedUploadProgrammer();
+	// If the user selected a different upload protocol replace the protocol with the selected one
+	if (!uploadProg.equals(ArduinoConst.DEFAULT)) {
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_ARDUINO_UPLOAD_PROTOCOL, uploadProg);
 	    contribEnv.addVariable(var, confDesc);
 	}
 
@@ -1007,7 +1051,7 @@ public class ArduinoHelpers extends Common {
      * 
      * @return the version number if found if no version number found the error returned by the file read method
      */
-    static public String GetIDEVersion(Path arduinoIDEPath) {
+    static public String GetIDEVersion(IPath arduinoIDEPath) {
 
 	File file = arduinoIDEPath.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	try {
@@ -1038,10 +1082,41 @@ public class ArduinoHelpers extends Common {
      * @return
      */
     public static String getHostFromComPort(String mComPort) {
-	// TODO Auto-generated method stub
 	String host = mComPort.split(" ")[0];
 	if (host.equals(mComPort))
 	    return null;
 	return host;
+    }
+
+    /**
+     * creates links to the root files and folders of the source location
+     * 
+     * @param source
+     *            the location where the files are that need to be linked to
+     * @param target
+     *            the location where the links are to be created
+     */
+    public static void linkDirectory(IProject project, IPath source, IPath target) {
+
+	File[] a = source.toFile().listFiles();
+	if (a == null) {
+	    Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "The folder you want to link to '" + source
+		    + "' does not contain any files.", null));
+	    return;
+	}
+	for (File f : a) {
+	    if (f.isDirectory()) {
+		LinkFolderToFolder(project, source.append(f.getName()), target.append(f.getName()));
+	    } else {
+		final IFile newFileHandle = project.getFile(target.append(f.getName()));
+		try {
+		    newFileHandle.createLink(source.append(f.getName()), IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+		} catch (CoreException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	    }
+	}
+
     }
 }

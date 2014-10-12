@@ -120,9 +120,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 		} else {
 		    IPath PlatformPath = mArduinoPage.getPlatformFolder().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
 		    IPath arduinoExample = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_EXAMPLE_FOLDER_NAME);
+		    IPath arduinoLibPath = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
 		    IPath privateLibrary = new Path(ArduinoInstancePreferences.getPrivateLibraryPath());
 
-		    mNewArduinoSketchWizardCodeSelectionPage.AddAllExamples(arduinoExample, privateLibrary, PlatformPath);
+		    mNewArduinoSketchWizardCodeSelectionPage.AddAllExamples(arduinoExample, arduinoLibPath, privateLibrary, PlatformPath);
 		}
 
 	    }
