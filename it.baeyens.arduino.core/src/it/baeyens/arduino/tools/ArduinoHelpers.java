@@ -527,6 +527,10 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_HARDWARE_PATH, platformFile.removeLastSegments(3).toString());
 	contribEnv.addVariable(var, confDesc);
 
+	// from 1.5.8 onward 1 more environment variable is needed
+	var = new EnvironmentVariable(ENV_KEY_PLATFORM_PATH, platformFile.removeLastSegments(1).toString());
+	contribEnv.addVariable(var, confDesc);
+
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
 	// I won't call them idiots for this but it is getting close
 	var = new EnvironmentVariable(ENV_KEY_SOFTWARE, "ARDUINO");
@@ -535,18 +539,18 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	// End of section permitting denigrating remarks on arduino software development team
 
-	// Arduino uses the board approach for the upload tool.
-	// as I'm not I create some special entries to work around it
-	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
-	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
-					       // the board approach for the
-					       // upload tool.
+	// // Arduino uses the board approach for the upload tool.
+	// // as I'm not I create some special entries to work around it
+	// var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
+	// contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+	// // the board approach for the
+	// // upload tool.
 
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality
@@ -864,6 +868,20 @@ public class ArduinoHelpers extends Common {
 	    contribEnv.addVariable(var, confDesc);
 	}
 
+	// Arduino uses the board approach for the upload tool.
+	// as I'm not I create some special entries to work around it
+	String uploadTool = contribEnv.getVariable(ArduinoConst.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
+	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD.PATH"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CONFIG.PATH"));
+	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+					       // the board approach for the
+					       // upload tool.
+
     }
 
     /**
@@ -915,7 +933,7 @@ public class ArduinoHelpers extends Common {
 	// "").replaceAll("\"\\{object_file}\"",
 	// "").replaceAll("\"\\{source_file}\"", "")
 	// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
-	String ret = inputString.replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
+	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
 	StringBuilder sb = new StringBuilder(ret);
 	String regex = "\\{[^}]*\\}";
 	Pattern p = Pattern.compile(regex); // Create the pattern.
