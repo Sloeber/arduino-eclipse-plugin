@@ -572,8 +572,9 @@ public class ArduinoHelpers extends Common {
 
 	// some glue to make it work
 	String extraPathForOS = "";
-	if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	    extraPathForOS = "${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH + "}/hardware/tools/avr/utils/bin";
+	if (Platform.getWS().equals(Platform.WS_WIN32)) {
+	    extraPathForOS = "${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH + "}/hardware/tools/avr/utils/bin${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH
+		    + "}";
 	}
 	var = new EnvironmentVariable("PATH", "${A.COMPILER.PATH}${PathDelimiter}${" + ENV_KEY_build_generic_path + "}" + extraPathForOS
 		+ "${PathDelimiter}${PATH}");
