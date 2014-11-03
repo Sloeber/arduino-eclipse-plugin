@@ -1,0 +1,51 @@
+#Build the Arduino Eclipse Plugin using Maven
+
+node:
+#Make Maven builds quiet to reduce logs (Travis will kill the process if 4MB log exceeded)
+#But not too quiet - see travis_exec_and_print_time.sh for our timer (Travis will kill the process after 10 mins of no output)
+#Also needs to be kept under 75 mins (keep as short as possible as there are nice people making these servers free for our use)
+script:
+  #Show if we have access to our Travis "secure" Nexus login details.
+  #If not available it is a pull request which we just verify
+  #If available it is a commit on the master and we deploy (to the Nexus repository)
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
+
+  #Execute the maven commands depending on SECURE availabilty and print the elapsed time out periodically.
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; fi"
+
+#Several usernames and passwords/tokens are required for deployment.
+#When testing on your local/remote setup then you need to set/export env. variables:
+#(See settings.xml)
+#CI_NEXUS_USERNAME
+#CI_NEXUS_OAUTH2_TOKEN
+#CI_GPG_PASSPHRASE
+#CI_GITHUB_REPOUSERNAME
+env:
+  global:
+    #Make sure Maven doesn't run out of heap memory.
+    - MAVEN_OPTS="-Xmx1024M"
+
+    #These are the Nexus details and GPG signing token for Nexus deployment.
+    #The Nexus repo is hardcoded as com.github.brodykenrick.arduino-eclipse-plugin in the POM.XML (doing otherwise produces warnings)
+    #This is good to use until we want more consistency in naming
+    #Travis encrypted variables names and tokens (need to change triggering github repo for encryption to work).
+    #Nexus Username, pass and GPG
+    # These point to the above nexus server/groupid but need to be encrypted against the repo Travis is getting code from (i.e. change it).
+
+    #jantje/arduino-eclipse-plugin
+    - secure: "kC8R35qKesohed2C47R2xO4uVKhRGahuO+7kEDaJwWIn7QlefJSgJ8IK9tGng+IcUUXD4ClKAT1RJgJnnchtO0jpUEy+MIXDQi1PCc2UkIsYa6XMw5Nf0EMppHiJM2LLbf1n/urGmuo/RwKWXLdC7SLuSmqgLD82AbrGA2xXSXM="
+    - secure: "gUpJ6dlh/SBsJP+QlNFbNhchZzKRDmwuWjrId7lTyToVhAzoQSygNS7DfuemfJkhIdHVkZELnvfTx3FaeIfW59zQ2654HMiUrvUINFys+pq6C0vwPyQzAXg4KLn6kExgbn6md5zb8w2fE68Mb2y20jduhzBOAVWvK361lC4oeSI="
+    - secure: "ZNF1Tc17sq5tsChKi4+yAv6mqhxOfq/zZ38TnRYr1zos2G1jCJJNw4zq1ojUGFViCxdt76xwlDYwavjzAMfsdI3/zoPePtaFJj3w8V6y4C10rgGW67bY4HwW2i0sudIbSWQ+skmG2zbVvJLrIMj2c6IXDM13sTW1Dv+Pt4tTaSs="
+
+    #Only for development work on brodykenrick's repo
+    #brodykenrick/arduino-eclipse-plugin
+#    - secure: "CkTScsFgbeqTznfGoAhhS0XRie2jr+syjpD3Vvn8Gw/OFCXkKjDEBWUebQdpJjXe9ia23dmTdQMFwp2HcPhrUj6cpnHNcOqVSfPRKfYPbYgXMmVSciGfqkgY3aWArddQ1G8SOMzivfYW6QZIkhanFsk00HkWOrYzxppXyA3m4GY="
+#    - secure: "bd0gCncNkyhwmIHkir2d7jprS+HNTd4DOVutYpIKQTVaJpvFKRw4anqZGMZp3wwxPyP3i30fMVvPoFJVCEphxRuJRomeqgrJJUpKAsh5QAIODYj9A2A8/KDa+jrTtbpPh16YAiMPmnMgq4NT3Wd5cjZuuBHxRmvaMMlb6BoJCO0="
+#    - secure: "oFSaKCjBm8L8ZgSvC3rAPKIXcXXJuEb+3eQ+lJbU84QK6C7wRd+2mz4fQ0E5GNSNxWACPbtypopUCPj4auCazhcbudO2wzpAksfJJpkIXd6vZN6xmxJLRzQWp7aNQG7a0UWvuY49/11IY834uhxPoJHBIFRh9jALHMLeF4epfko="
+
+    # This is the Github username of the repository of the source we are building.
+    #Needs to be inline with the repo being built (i.e. change it).
+    - CI_GITHUB_REPOUSERNAME=jantje
+    #Only for development work on brodykenrick's repo
+#    - CI_GITHUB_REPOUSERNAME=brodykenrick
+

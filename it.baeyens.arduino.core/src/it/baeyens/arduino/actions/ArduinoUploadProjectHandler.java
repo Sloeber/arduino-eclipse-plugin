@@ -1,8 +1,9 @@
 package it.baeyens.arduino.actions;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.UploadArduinoSketch;
+import it.baeyens.arduino.tools.uploaders.UploadSketchWrapper;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.core.commands.AbstractHandler;
@@ -22,13 +23,15 @@ public class ArduinoUploadProjectHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+	if (!ArduinoInstancePreferences.isConfigured(true))
+	    return null;
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to upload"));
 	    break;
 	case 1:
-	    UploadArduinoSketch.Do(SelectedProjects[0], CoreModel.getDefault().getProjectDescription(SelectedProjects[0]).getActiveConfiguration()
+	    UploadSketchWrapper.upload(SelectedProjects[0], CoreModel.getDefault().getProjectDescription(SelectedProjects[0]).getActiveConfiguration()
 		    .getName());
 	    break;
 	default:

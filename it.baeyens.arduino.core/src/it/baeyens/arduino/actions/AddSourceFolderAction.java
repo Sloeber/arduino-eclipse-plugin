@@ -1,6 +1,7 @@
 package it.baeyens.arduino.actions;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -22,30 +23,32 @@ public class AddSourceFolderAction extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-		IProject SelectedProjects[] = Common.getSelectedProjects();
-		switch (SelectedProjects.length) {
-		case 0:
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
-		    break;
-		case 1:
-		    //
-		    IWizardDescriptor wizardDescriptor = PlatformUI.getWorkbench().getImportWizardRegistry()
-			    .findWizard("it.baeyens.arduino.Import_Source_Folder");
-		    IWizard wizard;
-		    try {
-		        wizard = wizardDescriptor.createWizard();
-		    } catch (CoreException e) {
-		        Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
-		        return null;
-		    }
-		    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
-		    wd.setTitle(wizard.getWindowTitle());
-		    wd.open();
-		    break;
-		default:
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding a source folder to multiple projects is not supported"));
-		}
+	if (!ArduinoInstancePreferences.isConfigured(true))
+	    return null;
+	IProject SelectedProjects[] = Common.getSelectedProjects();
+	switch (SelectedProjects.length) {
+	case 0:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build"));
+	    break;
+	case 1:
+	    //
+	    IWizardDescriptor wizardDescriptor = PlatformUI.getWorkbench().getImportWizardRegistry()
+		    .findWizard("it.baeyens.arduino.Import_Source_Folder");
+	    IWizard wizard;
+	    try {
+		wizard = wizardDescriptor.createWizard();
+	    } catch (CoreException e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e));
 		return null;
+	    }
+	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
+	    wd.setTitle(wizard.getWindowTitle());
+	    wd.open();
+	    break;
+	default:
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding a source folder to multiple projects is not supported"));
+	}
+	return null;
     }
 
 }

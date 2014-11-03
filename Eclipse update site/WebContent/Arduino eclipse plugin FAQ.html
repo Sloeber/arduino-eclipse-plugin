@@ -24,7 +24,7 @@
         <div id="header">
             <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" 
             width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
-            <p id="scream">please help! <a href="donate.html">buy Jantje an Arduino.</a> He needs your support to keep going.</p>
+            <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT>
         </div>
 	
 
@@ -36,9 +36,10 @@
 		<a href="#Versions">On Which versions is this plugin tested?</a><br> 
 		<a href="#platforms">On which platforms is this plugin tested?</a><br>
 		<a href="#serial">Where is the serial monitor?</a><br>
+		<a href="#scope">Did you say there is a scope?</a><br>
 		<a href="#debug">How Do I debug?</a><br>
 		<a href="#report">Where Can I report bugs?</a><br>
-		<a href="#WINAVR">I use WinAVR...</a><br>
+		<a href="#AVRECLIPSE">I use AVRECLIPSE...</a><br>
 		<a href="#FreePlugin">How come this plugin is free</a><br>
 		<a href="#OpenSource">You state the plugin is open source. Where can I find the source?</a>
 		
@@ -50,7 +51,7 @@
 		<a href="#develop">What do I need to know to develop code for Arduino with this plugin.</a>
 		
 		<h3>Configuration</h3><br>
-		<a href="#2Locations">There are 2 locations where I can set configuration info. Where Should I set it?</a><br>
+		<a href="#2Locations">In V2 there are 2 locations where I can set configuration info. Where Should I set it?</a><br>
 		<a href="#versionControl">Can I use the plugin with a version control tool.</a><br>
 		<a href="#Private_Library">What is this private library in the settings page</a><br>
 		
@@ -90,29 +91,29 @@
 		<h1>General</h1>
 		<a name="Contact"></a>
 		<h2>How can I contact the author of this great plugin</h2>
-		First of all ask yourself: "Do I have something of interest to share with Jantje? I mean interesting for Jantje not for you?"<br>
-		Consider this: "Jantje has spend many days working on this plugin. 
-		                Jantje is still spending way to much time on improving the plugin. 
-		                Jantje gives it to you all for free.
-		                The only thing Jantje asks in return is that when you have a problem/question: look for yourself and when you really need Jantjes advice 
-		                you at least have the decency to write a proper mail. 
+		First of all ask yourself: "Do I have something of interest to share with Jantje? I mean interesting for Jantje, not for you?"<br>
+		Consider this: "Jantje has spend many days working on this plugin. <br>
+		                Jantje is still spending way to much time on improving the plugin.<br> 
+		                Jantje gives it to you all for free.<br>
+		                The only thing Jantje asks in return is that when you have a problem/question: <br>
+		                <ul>
+		                <li> look for yourself and when you really need Jantjes advice</li> 
+		                <li> you at least have the decency to write a proper mail.</li>
+		                </ul> 
 		                So don't be surprised when Jantje is not responding nicely when you ask a question you should not have asked him in the first place."<br>
 		
 		If you think I'm blunt; you should see the one-liner mails I get.<br> 
 		I'm not the only person in the world who feels like this. So before sending a mail; learn something and read the 
 		<a href="http://www.catb.org/~esr/faqs/smart-questions.html">eclipse guidance when formulating your question</a>	
-note the eclipse link is not a link to a help desk. it is a link to a document explaining how to ask questions the smart way.
-<br>
+note the eclipse link is not a link to a help desk. it is a link to a document explaining how to ask questions the smart way.<br>
 <br>
 So unless you want to send a mail saying "thank you" or "well done" Consider following alternatives:<br>
 <ul><li>
 Use the arduino forum to ask questions. There are 2 threads which have been going for a while and contain lots of info. I actively monitor these threads. <br>
-<a href="http://arduino.cc/forum/index.php/topic,70547.0.html" >Please do not post in this one</a><br>
-<a href="http://arduino.cc/forum/index.php/topic,79595.0.html" >Please post in this one</a></li><li>
-If you think you have found a bug you can log the bug at <a href="https://github.com/jantje/arduino-eclipse-plugin">github</a>
-</li><li>
-If you want to support/bribe Jantje;<a href="donate.html">Buy him an Arduino.</a><br>
-</li></ul>
+<a href="http://arduino.cc/forum/index.php/topic,79595.0.html" >Please post in this one</a><br>
+<a href="http://arduino.cc/forum/index.php/topic,70547.0.html" >Please do not post in this one</a></li><li>
+If you think you have found a bug you can log the bug at <a href="https://github.com/jantje/arduino-eclipse-plugin">github</a></li><li>
+If you want to support/bribe Jantje;<a href="donate.html">Buy him an Arduino.</a></li></ul>
 If all of the above are not appropriate then you want to discuss something in private with Jantje, which -you think- is really interesting to Jantje: you may reach him at <br>
 <a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.<br>
 Note: If you want to increase your chanses of getting a nice answer :<a href="donate.html">Buy him an Arduino.</a><br>
@@ -120,46 +121,61 @@ Note: If you want to increase your chanses of getting a nice answer :<a href="do
 
 <a name="Versions"></a><br>
 <h2>On Which versions is this plugin tested?</h2>
-The plugin is tested on Arduino 0022 0023 1.0 and Arduino 1.0.1.<br>
-Note: not all versions are tested on all platforms.
+Due to machine changes test setups have detoriated. Basically tests are now first done by developpers and then by users.
+
 <a name="platforms"></a>
 <h2>On which platforms is this plugin tested?</h2>
-The plugin is tested on Windows 7 Windows XP and Opensuse.<br>
-<a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get it working on MAC OS.
-<a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/"> You can find the doc here</a><br>
-Note: not all versions are tested on all platforms.
+When I ask for testers I try to get a tester for each platform. As it is all volunteer work there are however no guarantees.<br>
+I designed/test on Red hat and Windows XP.<br>
+There are some loyal Mac users who'm I ask to test specific mac features.<br>
+<a href="http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/arduino-eclipse-plugin-installation/">My biggest fan</a> on V2 Teensy and Mac<br>
+<a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get V1 working on MAC OS.<br>
+<a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/"> Another doc on V1</a><br>
+
 <a name="serial"></a>
 <h2>Where is the serial monitor?</h2>
 From 1.2.2 onwards you can use the included serial monitor. Select menu item windows-&gt;show view-&gt;other-&gt;arduino-&gt;serial monitor view.<br>
-From V2 onwards press hte serial monitor icon in the toolbar (the same as Arduino is using) or open it via the arduino menu.<br>
+From V2 onwards press the serial monitor icon in the toolbar (the same as Arduino is using) or open it via the arduino menu.<br>
 There is no serial monitor in the tool before version 1.2.2 Use the serial monitor of your choice.<br>
+
+<a name="scope"></a>
+<h2>Did you say there is a scope?</h2>
+Thanks to Wim Jongman version 2.1.1 introduced scope functionality. It is a 6 channel scope that works exactly like <a href="http://www.negtronics.com/simplot"> simplot</a><br>
+You can use the sample code from that site.<br>
+Basically you can send any integer vallue to the scope. A good example for debugging could be that you send the actual read value and the mean; average ...<br>
+
 <a name="debug"></a>
 <h2>How Do I debug?</h2>
 There is no debug functionality with this eclipse plugin.<br>
 <a href=http://husks.wordpress.com/2012/03/29/hardware-debugging-the-arduino-using-eclipse-and-the-avr-dragon>
-But here is a nice article that explains how to debug in linux and windows</a> 
+But here is a nice article that explains how to debug in linux and windows</a> <br>
+From 2.1.1 you can select to have a debug configuration in the sketch creation wizard.<br> 
+
 <a name="report"></a>
 <h2>Where Can I report bugs?</h2>
 Please report bug at <a href="https://github.com/jantje/arduino-eclipse-plugin/issues">github</a><br>
-<a name="WINAVR"></a>
-<h2>I use WinAVR...</h2>
-Great, excellent choice, a neat tool. This plugin uses WinAVR. The code from WinAVR has been forked and included in this plugin. 
-To avoid conflict between this plugin and WINAVR I had to change all the internal ID's of WINAVR. 
+
+<a name="AVRECLIPSE"></a>
+<h2>I use AVRECLIPSE...</h2>
+Great, excellent choice, a neat tool. This plugin uses WinAVR. The code from WinAVR has been forked and included in V1 of this plugin. 
+To avoid conflict between this plugin and WINAVR I had to change all the internal ID's of AVRECLIPSE. 
 As a user you should not notice this unless you want to swap bewteen WINAVR projects  and arduino eclipse projects created with this plugin. <br>
 You may wonder whether it was a good idea to fork. Wouldn't it have been better to build on top like the plugin builds on top of CDT who builds on top of Eclipse.<br>
 I fully agree that this would have been better.  New releases of WinAVR could have been applied without hassle.<br>
  It was the original idea but due to circumstances (there is no one to blame) it worked out differently.<br>
- My plugin adds the create arduino sketch, the add library, a preference page, a property page and a sample sketch to start from and the Arduino reset.<br>
+ My plugin adds amongst others: the create arduino sketch, the add library, a preference page, a property page and a sample sketch to start from and the Arduino reset.<br>
  <br>
- So basically when you installed this tool you have the WINAVR on your system. But what is the difference between WINAVR plugin and the WinAVR included in this plugin? <br>
+ So basically when you installed this tool you have the AVRECLIPSE on your system. But what is the difference between WINAVR plugin and the WinAVR included in this plugin? <br>
  1) As mentioned above I had to change all the ID's.<br>
- 2) The WINAVR tool works with external tools like GCC and AVRDude. So does the Arduino IDE.When you set the option &quot;use Arduino IDE tools in Eclipse&quot; 
- you actually set all the WINAVR settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.<br>
+ 2) The AVRECLIPSE tool works with external tools like GCC and AVRDude. So does the Arduino IDE.When you set the option &quot;use Arduino IDE tools in Eclipse&quot; 
+ you actually set all the AVRECLIPSE settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.<br>
  3)  I fixed some bugs. Each time a tool gets used in a different way some bugs will pop up. I fixed the ones that bothered me.<br>
  4)I added the Arduino reset (still needed for the mega)<br>
  So unless I made a mistake and (as long as there is no newer WinAVR version) you can use only my plugin to do project development on non-Arduino and Arduino in the same environment.<br>
  Note that as I only changed the ID's and not the names installing WinAVR next to my plugin works but has the drawback 
  that menu items will appear twice and you can't tell them from each other.<br>
+ V2 removed AVRECLIPSE because due is no longer a AVR. The benefits of using AVRECLIPSE no longer outweighed the drawbacks of having to support SAM.
+ This is actually very good news for people who need the full AVRECLIPSE functionality as now you can run both at the same time without drawbacks.
  
  <a name="FreePlugin"></a>
  <h2>How come this plugin is free</h2>
@@ -184,12 +200,14 @@ I fully agree that this would have been better.  New releases of WinAVR could ha
  I don't want to think about this, because if I do I quit on the spot.<br>
  ......(Jantje stopped thinking)<br>
  Update: The Arduino team has provided me with plenty of real Arduinos". I'm really pleased they have made those boards available to me. Mostly because I consider it as a recognition to my work by the core Arduino team.<br>
+ Update 2: Some people jumped in with the development. Some hard to fix (for me) issues are now fixed for me too.<br>
  <sup>*</sup>I mean free and not free for 3 years.
  
 <a name="OpenSource"></a>
 <h2>You state the plugin is open source. Where can I find the source?</h2>
 The first thing to note is that I only update the open source code when I release a new version. The latest and greatest code is as such not available.<br>
 You can find the code at <a href="https://github.com/jantje/arduino-eclipse-plugin">https://github.com/jantje/arduino-eclipse-plugin</a> 
+Update: due to more people collaborating the latest version is at github.
 
 <h1>Arduino IDE Versus The arduino Plugin</h1>
 <a name="why"></a>
@@ -197,8 +215,7 @@ You can find the code at <a href="https://github.com/jantje/arduino-eclipse-plug
 This plugin is not meant to replace the Arduino IDE. I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
 However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. 
 In that case the eclipse plugin may be an alternative.<br>
-Advantages the eclipse environment has to the Arduino IDE are described in 
-
+Advantages the eclipse environment has to the Arduino IDE are described in the next paragraphs. <br>
 
 <a name="benefitIDE"></a>
 <h2>What is the benefit of the Arduino IDE to the eclipse plugin</h2>
@@ -244,13 +261,13 @@ Easy location of variables and methods in files. (gray boxes right of the editor
 A system to keep hold of your Tasks. (simply adding a comment that starts with TODO will add the todo to the task view )</li><li>
 ......
 </li></ul>
-
+Did I mention compilation speed?<br>
 So there are plenty of good things a software developer misses in the Arduino IDE.
 
 <a name="develop"></a>
 <h2>What do I need to know to develop code for Arduino with this plugin?</h2>
 After you
-have read the pro and con's question you may wonder &quot;��how much is there to learn
+have read the pro and con's question you may wonder &quot;how much is there to learn
 before I get this plugin to work?&quot;<br>
 
 There is good news and there is bad news. 
@@ -269,7 +286,7 @@ you get your first programs running.<br>
 <h1>Configuration</h1>
 
  <a name="2Locations"></a>
- <h2>There are 2 locations where I can set configuration info. Where Should I set it?</h2>
+ <h2>In V2 there are 2 locations where I can set configuration info. Where Should I set it?</h2>
  As explained above; this plugin is build on top of the WINAVR and CDT plugins. The plugin sets the "default arduino settings" and groups all arduino settings in one place.
  So when you change a arduino setting; the plugin sets the CDT and WinAVR setting accordingly. 
  The settings are only set when you set them (in other words they are not verified and corrected afterwards.)

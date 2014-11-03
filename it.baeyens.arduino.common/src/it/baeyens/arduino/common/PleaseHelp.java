@@ -1,12 +1,7 @@
 package it.baeyens.arduino.common;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -15,7 +10,6 @@ import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -51,40 +45,40 @@ public class PleaseHelp extends Dialog {
 	browser.setLayoutData(data);
 
 	browser.addProgressListener(new ProgressListener() {
-	    @SuppressWarnings("synthetic-access")
+	    // @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void changed(ProgressEvent event) {
-		ph.getButton(IDialogConstants.OK_ID).setEnabled(false);
-		ph.getButton(IDialogConstants.CANCEL_ID).setEnabled(false);
+		// ph.getButton(IDialogConstants.OK_ID).setEnabled(false);
+		// ph.getButton(IDialogConstants.CANCEL_ID).setEnabled(false);
 	    }
 
 	    @Override
 	    public void completed(ProgressEvent event) {
 		ph.setBlockOnOpen(false);
 		ph.open();
-		Job job = new Job("delayed Activate Buttons") {
-		    @Override
-		    protected IStatus run(IProgressMonitor monitor) {
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-			    @SuppressWarnings("synthetic-access")
-			    @Override
-			    public void run() {
-				Button curbutton = ph.getButton(IDialogConstants.OK_ID);
-				if (curbutton != null) {
-				    curbutton.setEnabled(true);
-				}
-				curbutton = ph.getButton(IDialogConstants.CANCEL_ID);
-				if (curbutton != null) {
-				    curbutton.setEnabled(true);
-				}
-			    }
-			});
-
-			return Status.OK_STATUS;
-		    }
-		};
-		job.setPriority(Job.INTERACTIVE);
-		job.schedule(30000);
+		// Job job = new Job("delayed Activate Buttons") {
+		// @Override
+		// protected IStatus run(IProgressMonitor monitor) {
+		// PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+		// @SuppressWarnings("synthetic-access")
+		// @Override
+		// public void run() {
+		// Button curbutton = ph.getButton(IDialogConstants.OK_ID);
+		// if (curbutton != null) {
+		// curbutton.setEnabled(true);
+		// }
+		// curbutton = ph.getButton(IDialogConstants.CANCEL_ID);
+		// if (curbutton != null) {
+		// curbutton.setEnabled(true);
+		// }
+		// }
+		// });
+		//
+		// return Status.OK_STATUS;
+		// }
+		// };
+		// job.setPriority(Job.INTERACTIVE);
+		// job.schedule(10000); // used to be 30000 changed to 10000
 
 	    }
 	});

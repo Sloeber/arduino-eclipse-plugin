@@ -246,9 +246,9 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method creates a link folder in the project and add the folder as a source path to the project it also adds the path to the include folder
-     * if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path as
-     * well <br/>
+     * This method creates a link folder in the project and adds the folder as a source path to the project it also adds the path to the include
+     * folder if the includepath parameter points to a path that contains a subfolder named "utility" this subfolder will be added to the include path
+     * as well <br/>
      * <br/>
      * 
      * note Arduino has these subfolders in the libraries that need to be include.<br/>
@@ -324,39 +324,35 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method sets the eclipse path variables to contain the 2 important Arduino hardware folders (code wise that is)
+     * This method sets the eclipse path variables to contain the 3 important Arduino hardware folders (code wise that is)
      * 
-     * Core path (used when referencing Arduino Code) The Arduino Pin Path (used in 1rduino 1.0 to reference the arduino pin variants)
+     * Core path (used when referencing Arduino Code) The Arduino Pin Path (used from Arduino 1.0 to reference the arduino pin variants) The libraries
+     * path (used to find libraries)
+     * 
+     * Paths are given relative to the arduino folder to avoid conflict when a version control system is being used (these values are in the .project
+     * file) As the arduino folder location is in the workspace all values in the .project file become relative avoiding conflict.
      * 
      * @param project
      */
     public static void setProjectPathVariables(IProject project, IPath platformPath) {
-
-	// IPath platformPath = new
-	// Path(getBuildEnvironmentVariable(configurationDescription,
-	// ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
-	// platformPath = platformPath.removeLastSegments(1);
 	IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
-	URI arduinoHardwareLibraryPath = URIUtil.toURI(platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+	IPath arduinoHardwareLibraryPath = platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX);
 
-	// consider replacing below with see
-	// https://github.com/jantje/arduino-eclipse-plugin/issues/34 why
-	// IPathVariableManager pathMan =
-	// ResourcesPlugin.getWorkspace().getPathVariableManager();
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
 	try {
-	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, arduinoHardwareLibraryPath);
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
-	    // String boardVariant =
-	    // getBuildEnvironmentVariable(configurationDescription,
-	    // ArduinoConst.ENV_KEY_build_variant, "");
-	    // if (!boardVariant.isEmpty()) {
-	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
-	    // } else {
-	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS,
-	    // null);
-	    // }
+	    Path arduinoPath = new Path(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO).getRawPath());
+	    // Path ArduinoPath = new Path(ArduinoURI.toString());
+	    String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
+	    String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
+	    URI uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, uriTest);
+	    test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
+	    uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, uriTest);
+	    test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
+	    uriTest = URIUtil.toURI(test);
+	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
@@ -368,7 +364,7 @@ public class ArduinoHelpers extends Common {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "the folder " + folder + "does not contain any files.", null));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null));
 		return;
 	    }
 	    for (File f : a) {
@@ -486,10 +482,12 @@ public class ArduinoHelpers extends Common {
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_ARDUINO_PATH, getArduinoPath().toString());
 	contribEnv.addVariable(var, confDesc);
 
-	// from 1.5.3 onwards 2 more enviroment variables need to be added
+	// from 1.5.3 onwards 3 more environment variables need to be added
 	var = new EnvironmentVariable(ENV_KEY_ARCHITECTURE, platformFile.removeLastSegments(1).lastSegment());
 	contribEnv.addVariable(var, confDesc);
 	var = new EnvironmentVariable(ENV_KEY_BUILD_ARCH, platformFile.removeLastSegments(1).lastSegment().toUpperCase());
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable(ENV_KEY_HARDWARE_PATH, platformFile.removeLastSegments(3).toString());
 	contribEnv.addVariable(var, confDesc);
 
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
@@ -547,12 +545,18 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 
 	// if (firstTime) {
-	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_SIZE_SWITCH, "").isEmpty()) {
-	    var = new EnvironmentVariable(ENV_KEY_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
+	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, "").isEmpty()) {
+	    var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
 	    contribEnv.addVariable(var, confDesc);
 	}
 	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_COMMAND, "").isEmpty()) {
 	    var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_COMMAND, JANTJE_SIZE_COMMAND);
+	    contribEnv.addVariable(var, confDesc);
+	}
+
+	// Set the warning level default off like arduino does
+	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_WARNING_LEVEL, "").isEmpty()) {
+	    var = new EnvironmentVariable(ENV_KEY_JANTJE_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_OFF);
 	    contribEnv.addVariable(var, confDesc);
 	}
 
@@ -702,7 +706,7 @@ public class ArduinoHelpers extends Common {
     /**
      * This method creates environment variables based on the platform.txt and boards.txt platform.txt is processed first and then boards.txt. This
      * way boards.txt settings can overwrite common settings in platform.txt The environment variables are only valid for the project given as
-     * parameter The projectproperties are used to identify the boards.txt and platform.txt as well as the board id to select the settings in the
+     * parameter The project properties are used to identify the boards.txt and platform.txt as well as the board id to select the settings in the
      * board.txt file At the end also the path variable is set
      * 
      * @param project
@@ -710,14 +714,16 @@ public class ArduinoHelpers extends Common {
      * @param arduinoProperties
      *            the info of the selected board to set the variables for
      */
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc) {
+
+    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean debugCompilerSettings) {
+
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARDS_FILE,
+	IPath boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE,
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
-	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_PLATFORM_FILE, ""));
-	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_BOARD_NAME,
+	IPath platformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
+	String boardName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
 		ArduinoInstancePreferences.getLastUsedArduinoBoardName());
 
 	// first remove all Arduino Variables so there is no memory effect
@@ -736,6 +742,11 @@ public class ArduinoHelpers extends Common {
 	    // Do some post processing
 	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
 
+	    // If this is a debug config we modify the environment variables for compilation
+	    if (debugCompilerSettings) {
+		setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
+	    }
+
 	} catch (Exception e) {// Catch exception if any
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + platformFilename + " or " + boardFileName, e));
 	    return;
@@ -753,38 +764,41 @@ public class ArduinoHelpers extends Common {
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
 	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
 
+	// TODO consider moving this to the set defaults (not sure why this is here. If it needs to be here document why
 	IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_build_variant_path, pathMan.getURIValue(
 		ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS).getPath()
 		+ "/${" + ArduinoConst.ENV_KEY_build_variant + "}");
 	contribEnv.addVariable(var, confDesc);
 
-	String recipes[] = { "recipe.c.o.pattern", "recipe.cpp.o.pattern", "recipe.ar.pattern", "recipe.c.combine.pattern",
-		"recipe.objcopy.eep.pattern", "recipe.objcopy.hex.pattern", "recipe.size.pattern" };
+	String recipes[] = { ENV_KEY_recipe_c_o_pattern, ENV_KEY_recipe_cpp_o_pattern, ENV_KEY_recipe_S_o_pattern,
+		ENV_KEY_recipe_objcopy_hex_pattern, ENV_KEY_recipe_objcopy_eep_pattern, ENV_KEY_recipe_size_pattern, ENV_KEY_recipe_AR_pattern,
+		ENV_KEY_recipe_c_combine_pattern };
 	var = null;
 	for (int curRecipe = 0; curRecipe < recipes.length; curRecipe++) {
-	    String recipe = getBuildEnvironmentVariable(confDesc, MakeKeyString(recipes[curRecipe]), "", false);
+	    String recipe = getBuildEnvironmentVariable(confDesc, recipes[curRecipe], "", false);
+
 	    String recipeParts[] = recipe.split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3);
 	    switch (recipeParts.length) {
 	    case 0:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), "echo no command for " + recipes[curRecipe]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", "echo no command for " + recipes[curRecipe]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 1:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 2:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".2", recipeParts[1]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    case 3:
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".1"), recipeParts[0]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".1", recipeParts[0]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".2"), recipeParts[1]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".2", recipeParts[1]);
 		contribEnv.addVariable(var, confDesc);
-		var = new EnvironmentVariable(MakeKeyString(recipes[curRecipe] + ".3"), recipeParts[2]);
+		var = new EnvironmentVariable(recipes[curRecipe] + ".3", recipeParts[2]);
 		contribEnv.addVariable(var, confDesc);
 		break;
 	    default:
@@ -795,6 +809,42 @@ public class ArduinoHelpers extends Common {
 	    contribEnv.addVariable(var, confDesc);
 	}
 
+    }
+
+    /**
+     * Converts the CPP and C compiler flags to not optimise for space/size and to leave symbols in. These changes allow step through debugging with
+     * JTAG and Dragon AVR
+     * 
+     * @param confDesc
+     * @param envManager
+     * @param contribEnv
+     */
+
+    private static void setTheEnvironmentVariablesModifyDebugCompilerSettings(ICConfigurationDescription confDesc,
+	    IEnvironmentVariableManager envManager, IContributedEnvironment contribEnv) {
+
+	// Modify the compiler flags for the debug configuration
+	// Replace "-g" with "-g2"
+	// Replace "-Os" with ""
+	// TODO: This should move to another location eventually -- a bit hacky here (considering other env vars come from other -- a little bit
+	// magical -- places).
+	// I couldn't easily determine where that magic happened :(
+	IEnvironmentVariable original = null;
+	IEnvironmentVariable replacement = null;
+
+	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS", confDesc, true);
+	if (original != null) {
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+		    original.getOperation(), original.getDelimiter());
+	    contribEnv.addVariable(replacement, confDesc);
+	}
+
+	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS", confDesc, true);
+	if (original != null) {
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+		    original.getOperation(), original.getDelimiter());
+	    contribEnv.addVariable(replacement, confDesc);
+	}
     }
 
     /**
@@ -929,14 +979,15 @@ public class ArduinoHelpers extends Common {
     public static String[] getBoardsFiles() {
 	File HardwareFolder = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME).toFile();
 
-	HashSet<String> Hardwarelists = new HashSet<String>();
-	searchFiles(HardwareFolder, Hardwarelists, ArduinoConst.BOARDS_FILE_NAME, 3);
-	if (Hardwarelists.size() == 0) {
+	HashSet<String> boardFiles = new HashSet<String>();
+	searchFiles(HardwareFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
+	if (boardFiles.size() == 0) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folder", null));
 	    return null;
 	}
+	searchFiles(new File(getPrivateHardwarePath()), boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
 
-	return Hardwarelists.toArray(new String[Hardwarelists.size()]);
+	return boardFiles.toArray(new String[boardFiles.size()]);
 
     }
 
@@ -966,5 +1017,20 @@ public class ArduinoHelpers extends Common {
 
     private static String makeEnvironmentVar(String string) {
 	return "${" + string + "}";
+    }
+
+    /**
+     * Give the string entered in the com port try to extract a host. If no host is found return null yun at xxx.yyy.zzz (arduino yun) returns
+     * yun.local
+     * 
+     * @param mComPort
+     * @return
+     */
+    public static String getHostFromComPort(String mComPort) {
+	// TODO Auto-generated method stub
+	String host = mComPort.split(" ")[0];
+	if (host.equals(mComPort))
+	    return null;
+	return host;
     }
 }

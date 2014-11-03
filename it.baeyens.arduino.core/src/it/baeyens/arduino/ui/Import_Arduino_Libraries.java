@@ -25,7 +25,7 @@ import org.eclipse.ui.IWorkbench;
  */
 public class Import_Arduino_Libraries implements IImportWizard {
 
-    private Wizard_Select_Libraries_Page mProjectSelectionPage;
+    private Import_Arduino_Libraries_Page mProjectSelectionPage;
     private IWizardPage[] mPages;
     private IWizardContainer mWizardContainer = null;
 
@@ -47,17 +47,16 @@ public class Import_Arduino_Libraries implements IImportWizard {
 
 	if (SelectedProjects.length > 0) {
 	    theProject = SelectedProjects[0];
-	    mProjectSelectionPage = new Wizard_Select_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
+	    mProjectSelectionPage = new Import_Arduino_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
 	    mProjectSelectionPage.setWizard(this);
 	    mPages = new IWizardPage[1];
 	    mPages[0] = mProjectSelectionPage;
-	    mProjectSelectionPage.setImportProject(SelectedProjects[0]);
 	}
     }
 
     @Override
     public boolean canFinish() {
-	return mProjectSelectionPage.canFinish();
+	return true;
     }
 
     @Override

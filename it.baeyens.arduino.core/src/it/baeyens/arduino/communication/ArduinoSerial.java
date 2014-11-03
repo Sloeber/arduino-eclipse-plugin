@@ -165,14 +165,22 @@ public class ArduinoSerial {
 		.equalsIgnoreCase("true");
 	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
 		.equalsIgnoreCase("true");
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_BOARD_NAME, "");
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 
 	if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
 		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase("true")) {
 	    Vector<String> OriginalPorts = Serial.list();
 	    // OriginalPorts.remove(ComPort);
-	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due"))
+
+	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due") || boardName.startsWith("Digistump DigiX")) {
+		// Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
+		try {
+		    Thread.sleep(2000);
+		} catch (InterruptedException ex) {
+		    // ignore error
+		}
 		return ComPort;
+	    }
 	    if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
 		    || boardName.equalsIgnoreCase("Arduino Esplora") || bwait_for_upload_port) {
 		return wait_for_com_Port_to_appear(OriginalPorts, ComPort);

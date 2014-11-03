@@ -33,8 +33,10 @@ package it.baeyens.arduino.arduino;
  */
 public interface MessageConsumer {
 
-    public void message(String s);
-    
+    public void message(byte[] s);
+
+    public void event(String event);
+
     public void dispose();
 
 }

@@ -6,7 +6,11 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -46,8 +50,9 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 public class ArduinoPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private StringFieldEditor mArduinoIdeVersion;
-    private DirectoryFieldEditor mArduinoIdePath;
+    private MyDirectoryFieldEditor mArduinoIdePath;
     private DirectoryFieldEditor mArduinoPrivateLibPath;
+    private DirectoryFieldEditor mArduinoPrivateHardwarePath;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
 
@@ -80,6 +85,45 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	return testStatus();
     }
 
+    private boolean showError(String dialogMessage) {
+	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.\n";
+	FullDialogMessage = FullDialogMessage
+		+ "Yes continue and ignore the warning\nNo do not continue and open install advice in browser\ncancel do not continue";
+	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.CANCEL | SWT.NO);
+	dialog.setText("Considerations about Arduino IDE compatibility");
+	dialog.setMessage(FullDialogMessage);
+	int ret = dialog.open();
+	if (ret == SWT.CANCEL)
+	    return false;
+	if (ret == SWT.NO) {
+	    boolean openedDialog = false;
+	    try {
+		URI uri = new URI("http://eclipse.baeyens.it/installAdvice.shtml");
+
+		Desktop desktop = null;
+		if (Desktop.isDesktopSupported()) {
+		    desktop = Desktop.getDesktop();
+		    desktop.browse(uri);
+		    openedDialog = true;
+		}
+	    } catch (URISyntaxException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    if (!openedDialog) {
+		dialog = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+		dialog.setText("A error occured!");
+		dialog.setMessage("Failed to open browser!");
+		dialog.open();
+	    }
+	    return false;
+	}
+	return true;
+    }
+
     /**
      * PerformOK is done when the end users presses OK on a preference page. The order of the execution of the performOK is undefined. This method
      * saves the path variables based on the settings and removes the last used setting.<br/>
@@ -97,17 +141,24 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    return false;
 	if (!mIsDirty)
 	    return true;
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.2") > 0) {
-	    String message = "The Arduino core team decided for a library specification which is hard to support. You need to make changes to you arduino libraries to make this work. See eclipse.baeyens.it/librarymadness.html for more info.";
-	    // MessageDialog warningDialog = new MessageDialog(null, , null, message, MessageDialog.WARNING, "OK", 0);
-	    // warningDialog.open();
 
-	    MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-	    dialog.setText("Unsupportable Arduino IDE");
-	    dialog.setMessage(message);
-	    if (dialog.open() == SWT.CANCEL)
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
+	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
+	    return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.3") || mArduinoIdeVersion.getStringValue().equals("1.5.4")) {
+	    if (!showError("Arduino IDE 1.5.3 and 1.5.4 are not supported."))
 		return false;
 	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.5")) {
+	    if (!showError("Arduino IDE 1.5.5 works but you need to adapt some libraries."))
+		return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.5") > 0) {
+	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
+		return false;
+	}
+
 	super.performOk();
 	setWorkSpacePathVariables();
 	// reset the previous selected values
@@ -161,9 +212,25 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
 
-	addField(mArduinoIdePath);
+	addField(mArduinoIdePath.getfield());
+
+	String LibPath = ArduinoInstancePreferences.getPrivateLibraryPath();
+	if (LibPath.isEmpty()) {
+	    String libraryPath = Common.getDefaultPrivateLibraryPath();
+	    new File(libraryPath).mkdirs();
+	    ArduinoInstancePreferences.setPrivateLibraryPath(libraryPath);
+	}
 	mArduinoPrivateLibPath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path", parent);
 	addField(mArduinoPrivateLibPath);
+
+	LibPath = ArduinoInstancePreferences.getPrivateHardwarePath();
+	if (LibPath.isEmpty()) {
+	    String hardwarePath = Common.getDefaultPrivateHardwarePath();
+	    new File(hardwarePath).mkdirs();
+	    ArduinoInstancePreferences.setPrivateHardwarePath(hardwarePath);
+	}
+	mArduinoPrivateHardwarePath = new DirectoryFieldEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATH, "Private hardware path", parent);
+	addField(mArduinoPrivateHardwarePath);
 
 	Dialog.applyDialogFont(parent);
 

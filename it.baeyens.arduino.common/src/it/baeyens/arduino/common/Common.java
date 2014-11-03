@@ -18,7 +18,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -386,6 +388,11 @@ public class Common extends ArduinoInstancePreferences {
 				}
 			    }
 			}
+			// if (part instanceof IConsoleView) {
+			// IConsoleView epart = (IConsoleView) part;
+			// IProject project = epart.
+			//
+			// }
 		    }
 		}
 
@@ -462,7 +469,7 @@ public class Common extends ArduinoInstancePreferences {
 		viewCount += (viewRef != null) ? 1 : 0;
 		theViewRef = (theViewRef == null) ? viewRef : theViewRef;
 
-		if (theViewRef != null && viewCount == 1) {
+		if (theViewRef != null && viewCount >= 1) {
 		    IViewPart view = theViewRef.getView(false);
 		    if (view != null) {
 			ISelection cdtSelection = view.getSite().getSelectionProvider().getSelection();
@@ -673,7 +680,7 @@ public class Common extends ArduinoInstancePreferences {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	try {
 	    return envManager.getVariable(EnvName, configurationDescription, expanded).getValue();
-	} catch (Exception e) {// ignore al errors and return the default value
+	} catch (Exception e) {// ignore all errors and return the default value
 	}
 	return defaultvalue;
     }
@@ -687,6 +694,27 @@ public class Common extends ArduinoInstancePreferences {
 	    return ArduinoIdeSuffix_MAC;
 	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
 	return ArduinoIdeSuffix_WIN;
+    }
+
+    /**
+     * Arduino has the default libraries in the user home directory in subfolder Arduino/libraries. As the home directory is platform dependent
+     * getting the value is resolved by this method
+     * 
+     * @return the folder where Arduino puts the libraries by default.
+     */
+    public static String getDefaultPrivateLibraryPath() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append("Arduino").append("libraries").toString();
+    }
+
+    /**
+     * same as getDefaultLibPath but for the hardware folder
+     * 
+     * @return
+     */
+    public static String getDefaultPrivateHardwarePath() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append("Arduino").append("hardware").toString();
     }
 
 }

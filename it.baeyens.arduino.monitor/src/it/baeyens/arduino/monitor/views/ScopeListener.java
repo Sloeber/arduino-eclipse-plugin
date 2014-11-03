@@ -1,129 +1,146 @@
 package it.baeyens.arduino.monitor.views;
 
+/**
+ * This class is a class used to listen to the serial port and send data to the scope.
+ * The data from the serial port must be from the format 
+ * 2 bytes as start flag: the value equal to ArduinoConst.SCOPE_START_DATA
+ * 2 bytes=1 short to show the number of bytes that are to be read. The number of shorts is half of this value
+ * bytes to be interpreted per 2 as short
+ * 
+ */
 import it.baeyens.arduino.arduino.MessageConsumer;
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.Oscilloscope;
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeDispatcher;
-import org.eclipse.nebula.widgets.oscilloscope.multichannel.OscilloscopeStackAdapter;
+import multichannel.Oscilloscope;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
 
 public class ScopeListener implements MessageConsumer {
 
-    OscilloscopeDispatcher dispatcher;
-    Queue<Integer> fStack = new LinkedList<Integer>();
-    int fDelayLoop = 10;
-    boolean fTailFade = false;
-    private Pattern fCommandPattern = Pattern.compile(".*?\\\"(setscope\\s.*?)\\\".*");
-    StringBuilder fSaveString = new StringBuilder();
-    private OscilloscopeStackAdapter stackAdapter;
+    /**
+     * myScope The scope representing the data
+     */
+    Oscilloscope myScope;
+    /**
+     * myReceivedScopeData is a fixed size buffer holding the bytes that have been received from the com port
+     * 
+     */
+    private ByteBuffer myReceivedScopeData = ByteBuffer.allocate(2000); // if we are more than this behind we will loose data
+    /**
+     * myEndPosition points to the last byte that is still valid in the buffer. This is needed because myReceivedScopeData is fixed size.
+     * 
+     */
+    private int myEndPosition = 0;
 
     public ScopeListener(Oscilloscope oscilloscope) {
-	dispatcher = new OscilloscopeDispatcher(0, oscilloscope) {
-	    @Override
-	    public int getDelayLoop() {
-		return fDelayLoop;
-	    }
-
-	    @Override
-	    public boolean getFade() {
-		return fTailFade;
-	    }
-	};
-
-	stackAdapter = new OscilloscopeStackAdapter() {
-	    private int oldValue = 0;
-
-	    @Override
-	    public void stackEmpty(Oscilloscope scope, int channel) {
-		if (!fStack.isEmpty()) {
-		    oldValue = fStack.remove().intValue();
-		}
-		dispatcher.getOscilloscope().setValue(0, oldValue);
-	    }
-	};
-
-	oscilloscope.addStackListener(0, stackAdapter);
-	dispatcher.dispatch();
+	myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
+	myScope = oscilloscope;
     }
 
+    /**
+     * Here the message comes in from the serial port. If there is not enough place in If there is enough place in myReceivedScopeData the data is
+     * added to myReceivedScopeData to hold all the data; all the data (that in myReceivedScopeData and in s) is ignored and a warning is dumped If
+     * there is enough place in myReceivedScopeData the data is added to myReceivedScopeData and myReceivedScopeData is scanned for scope data
+     * 
+     */
     @Override
-    public synchronized void message(String s) {
-
-	s = fSaveString.toString() + s;
-	fSaveString = new StringBuilder();
-
-	if (!s.contains("\r\n")) {
-	    fSaveString.append(s);
+    public synchronized void message(byte[] newData) {
+	if (myScope.isDisposed())
 	    return;
+	if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
+	    myEndPosition = 0;
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
+	} else {
+	    myReceivedScopeData.position(myEndPosition);
+	    myReceivedScopeData.put(newData, 0, newData.length);
+	    myEndPosition = myReceivedScopeData.position();
+	    internalExtractAndProcessScopeData();
 	}
 
-	String[] split = s.split("\r\n");
-	List<String> result = Arrays.asList(split);
-	if (!s.endsWith("\r\n")) {
-	    fSaveString.append(result.get(result.size() - 1));
-	    result = result.subList(0, result.size() - 1);
-	}
-
-	for (String message : result) {
-	    if (message.length() > 0) {
-		Integer value = null;
-		try {
-
-		    if (message.startsWith(">>")) {
-			parseCommand(message);
-			return;
-		    }
-
-		    StringBuilder stringBuilder = new StringBuilder();
-		    for (char c : message.toCharArray()) {
-			if ((c >= '0' && c <= '9') || c == '-') {
-			    stringBuilder.append(c);
-			}
-		    }
-
-		    String buildString = stringBuilder.toString();
-		    // System.out.println(buildString);
-		    value = Integer.valueOf(buildString);
-		    fStack.add(value);
-
-		} catch (Exception e) {
-		    // System.out.println("Invalid value " + s);
-		}
-	    }
-	}
-    }
-
-    private void parseCommand(String s) {
-
-	String command = null;
-	s = s.replaceAll("\r\n", "");
-	Matcher matcher = fCommandPattern.matcher(s);
-	if (matcher.matches()) {
-	    command = matcher.group(1);
-	}
-
-	if (command == null) {
-	    return;
-	}
-
-	if (command.startsWith("setscope delayLoop ")) {
-	    fDelayLoop = Integer.valueOf(command.replaceAll("setscope delayLoop ", "")).intValue();
-	}
-
-	if (command.startsWith("setscope toggleTailFade")) {
-	    fTailFade = !fTailFade;
-	}
     }
 
     @Override
     public void dispose() {
-	dispatcher.getOscilloscope().removeStackListener(0, stackAdapter);
-	dispatcher.stop();
+	// myScope.removeStackListener(0, stackAdapter);
+	myScope = null;
+	myReceivedScopeData = null;
+    }
+
+    /**
+     * AddValuesToOsciloscope This method makes the scope to draw the values that have been delivered to the scope
+     */
+    public void AddValuesToOsciloscope() {
+	if (myScope.isDisposed())
+	    return;
+	// run on the gui thread only
+	Display.getDefault().asyncExec(new Runnable() {
+	    @Override
+	    public void run() {
+		try {
+		    myScope.getDispatcher(0).hookPulse(myScope, 1);
+		    myScope.redraw();
+		} catch (Exception e) {
+		    // ignore as we get errors when closing down
+		}
+	    }
+	});
+
+    }
+
+    /**
+     * internalExtractAndProcessScopeData scans for scope data in myReceivedScopeData If data is found it is send to the scope all data that has been
+     * scanned is removed from myReceivedScopeData
+     */
+    private void internalExtractAndProcessScopeData() {
+	int lastFoundData = myEndPosition - 6;
+	// Scan for scope data
+	for (int scannnedDataPointer = 0; scannnedDataPointer < myEndPosition - 6; scannnedDataPointer++) {
+	    if (myReceivedScopeData.getShort(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA) {
+		// we have a hit.
+		lastFoundData = scannnedDataPointer;
+		scannnedDataPointer = scannnedDataPointer + 2;
+		int bytestoRead = myReceivedScopeData.getShort(scannnedDataPointer);
+		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
+		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "There are supposedly " + bytestoRead / 2
+			    + "channels to read"));
+		} else {
+		    if (bytestoRead + 2 + scannnedDataPointer < myEndPosition) {
+			// all data is available
+			int myNumDataSetsToReceive = myReceivedScopeData.getShort(scannnedDataPointer) / 2 + 0;
+			for (int CurData = 0; CurData < myNumDataSetsToReceive; CurData++) {
+			    int data = myReceivedScopeData.getShort(scannnedDataPointer + 2 + CurData * 2);
+			    myScope.setValue(CurData, data);
+			}
+			AddValuesToOsciloscope();
+			scannnedDataPointer = scannnedDataPointer + 2 + myNumDataSetsToReceive * 2;
+			lastFoundData = scannnedDataPointer;
+
+		    }
+		}
+	    }
+	}
+	// remove all the scanned data
+	for (int curByte = 0; curByte <= myEndPosition - lastFoundData; curByte++) {
+	    try {
+		myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
+	    } catch (IndexOutOfBoundsException e) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
+	    }
+
+	}
+	myEndPosition -= lastFoundData;
+
+    }
+
+    @Override
+    public void event(String event) {
+	// ignore events
+
     }
 }

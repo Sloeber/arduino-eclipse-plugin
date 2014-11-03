@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+  <artifactId>root</artifactId>
+  <version>2.2.0</version>
+  <packaging>pom</packaging>
+  
+	<parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+        <relativePath>org.sonatype.oss:oss-parent</relativePath>
+    </parent>
+
+	<scm>
+        <connection>scm:git:git://github.com/${github.repo.username}/arduino-eclipse-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:${github.repo.username}/arduino-eclipse-plugin.git</developerConnection>
+        <url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
+    </scm>
+
+    <!-- Sonatype repos -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus snapshot repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype Nexus release repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+  
+  <modules>
+    <module>it.baeyens.arduino.parent</module>
+  </modules>
+</project>

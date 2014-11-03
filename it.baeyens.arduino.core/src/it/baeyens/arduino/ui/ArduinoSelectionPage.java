@@ -13,7 +13,9 @@ import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICMultiConfigDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
@@ -220,7 +222,8 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	theGriddata.horizontalSpan = (ncol - 1);
 	controlUploadPort.setLayoutData(theGriddata);
 	controlUploadPort.setEnabled(false);
-	controlUploadPort.setItems(Common.listComPorts());
+
+	controlUploadPort.setItems(ArrayUtil.addAll(activator.bonjourDiscovery.getList(), Common.listComPorts()));
 
 	createLine(composite, ncol);
 	boardOptionCombos = new labelcombo[boardsFiles.length][];
@@ -275,6 +278,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
     }
 
+    /**
+     * This method sets the mValidAndComplete flag to true when all data is provided and valid. in all other cases mValidAndComplete is set to false.
+     */
     protected void validatePage() {
 
 	boolean MenuOpionsValidAndComplete = true;
@@ -288,7 +294,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 			.getItemCount() == 0);
 	    }
 
-	    mValidAndComplete = !mcontrolBoardName.getText().trim().equals("") && !controlUploadPort.getText().trim().equals("")
+	    mValidAndComplete = !mcontrolBoardName.getText().trim().isEmpty() && !controlUploadPort.getText().trim().isEmpty()
 		    && MenuOpionsValidAndComplete;
 	    feedbackControl.setText(mValidAndComplete ? "true" : "false");
 	    if (mValidAndComplete)
@@ -326,7 +332,16 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
     private void saveAllSelections() {
 	if (page != null) {
-	    saveAllSelections(getResDesc().getConfiguration());
+	    ICConfigurationDescription confdesc = getResDesc().getConfiguration();
+	    if (confdesc instanceof ICMultiConfigDescription) {
+		ICMultiConfigDescription multiConfDesc = (ICMultiConfigDescription) confdesc;
+		ICConfigurationDescription confdescs[] = (ICConfigurationDescription[]) multiConfDesc.getItems();
+		for (int curdesc = 0; curdesc < confdescs.length; curdesc++) {
+		    saveAllSelections(confdescs[curdesc]);
+		}
+	    } else {
+		saveAllSelections(confdesc);
+	    }
 	}
     }
 
@@ -343,11 +358,11 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    IProject project = confdesc.getProjectDescription().getProject();
 	    IPath platformPath = new Path(new File(mControlBoardsTxtFile.getText().trim()).getParent()).append(ArduinoConst.PLATFORM_FILE_NAME);
 
-	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_BOARDS_FILE, boardFile);
+	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
 	    contribEnv.addVariable(var, confdesc);
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_BOARD_NAME, boardName);
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    contribEnv.addVariable(var, confdesc);
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_COM_PORT, uploadPort);
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
 	    contribEnv.addVariable(var, confdesc);
 	    for (int curBoardFile = 0; curBoardFile < allBoardsFiles.length; curBoardFile++) {
 		for (int curCombo = 0; curCombo < boardOptionCombos[curBoardFile].length; curCombo++) {
@@ -366,11 +381,11 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    }
 
 	    // below are calculated values
-	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_PLATFORM_FILE, platformPath.toString());
+	    var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
 	    contribEnv.addVariable(var, confdesc);
 
 	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
-	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc);
+	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc, false);
 
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
@@ -399,9 +414,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	if (page != null) {
 
 	    ICConfigurationDescription confdesc = getResDesc().getConfiguration();
-	    boardFile = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_BOARDS_FILE, boardFile);
-	    boardName = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_BOARD_NAME, boardName);
-	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_COM_PORT, uploadPort);
+	    boardFile = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
+	    boardName = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
+	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
 	}
 	mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first

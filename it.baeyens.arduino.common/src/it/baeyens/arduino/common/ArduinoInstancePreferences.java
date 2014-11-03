@@ -67,8 +67,12 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     protected static boolean getGlobalBoolean(String key) {
+	return getGlobalBoolean(key, false);
+    }
+
+    protected static boolean getGlobalBoolean(String key, boolean def) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-	return myScope.getBoolean(key, false);
+	return myScope.getBoolean(key, def);
     }
 
     protected static int getGlobalInt(String key) {
@@ -197,4 +201,70 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 
     }
 
+    /**
+     * This method returns boolean whether the arduino IDE has been pointed to or not. If you use the flag error = true a error will be shown to the
+     * end user in case Arduino is not configured.
+     * 
+     * @return
+     */
+    public static boolean isConfigured(boolean showError) {
+	if (ArduinoInstancePreferences.getArduinoPath().toFile().exists())
+	    return true;
+	if (showError) {
+	    // If not then we bail out with an error.
+	    // And no pages are presented (with no option to FINISH).
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino",
+		    null));
+	}
+	return false;
+    }
+
+    public static boolean getLastUsedScopeFilter() {
+	return getGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION);
+
+    }
+
+    public static void setLastUsedScopeFilter(boolean newFilter) {
+	setGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, newFilter);
+
+    }
+
+    //
+    // get/set last used "use default sketch location"
+    //
+    public static boolean getLastUsedDefaultSketchSelection() {
+	return getGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, true);
+    }
+
+    public static void setLastUsedDefaultSketchSelection(boolean newFilter) {
+	setGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
+    }
+
+    //
+    // get/set last used sketch template folder parameters
+    //
+    public static String getLastTemplateFolderName() {
+	return getGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER);
+    }
+
+    public static void setLastTemplateFolderName(String folderName) {
+	setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, folderName);
+
+    }
+
+    public static String getPrivateLibraryPath() {
+	return getGlobalValue(KEY_PRIVATE_LIBRARY_PATH);
+    }
+
+    public static void setPrivateLibraryPath(String folderName) {
+	setGlobalValue(KEY_PRIVATE_LIBRARY_PATH, folderName);
+    }
+
+    public static String getPrivateHardwarePath() {
+	return getGlobalValue(KEY_PRIVATE_HARDWARE_PATH);
+    }
+
+    public static void setPrivateHardwarePath(String folderName) {
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATH, folderName);
+    }
 }

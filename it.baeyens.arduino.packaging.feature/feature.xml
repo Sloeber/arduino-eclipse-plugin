@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="it.baeyens.arduino.packaging.feature"
+      label="Arduino Eclipse Features"
+      version="2.2.0.qualifier"
+      provider-name="jan Baeyens">
+
+   <description>
+      An IDE for C/C++ developers with Arduino integration.
+   </description>
+
+   <license url="license.html">
+      %license
+   </license>
+
+   <url>
+      <discovery label="Juno" url="http://download.eclipse.org/releases/juno/"/>
+      <discovery label="Eclipse Platform 4.2" url="http://download.eclipse.org/eclipse/updates/4.2"/>
+   </url>
+
+   <includes
+         id="org.eclipse.cvs"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.equinox.p2.user.ui"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.help"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.platform"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.rcp"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.debug.ui.memory"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.msw"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.build.crossgcc"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.launch.remote"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.autotools"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.cdt.mylyn"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn.context_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn.team_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn.ide_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn.bugzilla_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.mylyn.wikitext_feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.rse"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.egit"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.epp.package.common.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.nebula.widgets.oscilloscope.feature"
+         version="0.0.0"/>
+
+   <plugin
+         id="it.baeyens.arduino.application"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

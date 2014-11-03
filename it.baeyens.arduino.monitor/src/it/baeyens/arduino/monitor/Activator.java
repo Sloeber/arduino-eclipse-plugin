@@ -14,6 +14,7 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
+    public static BundleContext context;
 
     /**
      * The constructor
@@ -24,27 +25,24 @@ public class Activator extends AbstractUIPlugin {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-     * )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext )
      */
     @Override
-    public void start(BundleContext context) throws Exception {
-	super.start(context);
+    public void start(BundleContext _context_) throws Exception {
+	super.start(_context_);
 	plugin = this;
+	context = _context_;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-     * )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
      */
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext _context_) throws Exception {
 	plugin = null;
-	super.stop(context);
+	super.stop(_context_);
     }
 
     /**
@@ -57,8 +55,7 @@ public class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Returns an image descriptor for the image file at the given plug-in
-     * relative path
+     * Returns an image descriptor for the image file at the given plug-in relative path
      * 
      * @param path
      *            the path
