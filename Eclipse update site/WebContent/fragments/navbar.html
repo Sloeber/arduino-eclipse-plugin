@@ -12,32 +12,31 @@
           <ul class="nav navbar-nav">
             <li ng-class="navlinks.home"><a href="{{navlinks.home.url}}">Home</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Download <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">Version 2</li>
-                <li ng-class="navlinks.bundle_v2"><a href="{{navlinks.bundle_v2.url}}">Bundle</a></li>
-                <li ng-class="navlinks.plugin_v2"><a href="{{navlinks.plugin_v2.url}}">Plugin</a></li>
-                <li class="dropdown-header">Version 1</li>
-                <li ng-class="navlinks.plugin_v1"><a href="{{navlinks.plugin_v1.url}}">Plugin</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Install <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li ng-class="navlinks.linux"><a href="{{navlinks.linux.url}}">Linux</a></li>
-                <li ng-class="navlinks.macos"><a href="{{navlinks.macos.url}}">Mac OS</a></li>
-                <li class="dropdown-header">Windows</li>
-                <li ng-class="navlinks.winxp"><a href="{{navlinks.winxp.url}}">Windows XP</a></li>
-                <li ng-class="navlinks.winvista"><a href="{{navlinks.winvista.url}}">Windows Vista</a></li>
-                <li ng-class="navlinks.win7"><a href="{{navlinks.win7.url}}">Windows 7</a></li>
-                <li ng-class="navlinks.win8"><a href="{{navlinks.win8.url}}">Windows 8</a></li>
-                <li class="divider"></li>
-                <li ng-class="navlinks.x64"><a href="{{navlinks.x64.url}}">64bits</a></li>
+                <li ng-class="navlinks.starting"><a href="{{navlinks.starting.url}}">Pre Requisites</a></li>
+                <li class="dropdown-header">Stable</li>
+                <li ng-class="navlinks.linux"><a href="{{navlinks.stable.linux.url}}">Linux</a></li>
+                <li ng-class="navlinks.win"><a href="{{navlinks.stable.win.url}}">Windows</a></li>
+                <li ng-class="navlinks.osx"><a href="{{navlinks.stable.osx.url}}">MacOS</a></li>
+                <li class="dropdown-header">Nightly Builds</li>
+                <li ng-class="navlinks.linux-nightly"><a href="{{navlinks.linux_nightly.url}}">Linux</a></li>
+                <li ng-class="navlinks.win-nightly"><a href="{{navlinks.win_nightly.url}}">Windows</a></li>
+                <li ng-class="navlinks.osx-nightly"><a href="{{navlinks.osx_nightly.url}}">MacOS</a></li>
+                <li class="dropdown-header">Archivied Versions</li>
+                <li ng-class="navlinks.archived-v1"><a href="{{navlinks.archived-v1.url}}">Plugin v1.x</a></li>
               </ul>
             </li>
             <li ng-class="navlinks.howto"><a href="{{navlinks.howto.url}}">How To</b></a></li>
             <li ng-class="navlinks.faq"><a href="{{navlinks.faq.url}}">FAQs</a></li>
-            <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank">Github</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank">Forum Discussion</a></li>
+                <li><a href="http://forum.arduino.cc/index.php?topic=79595" target="_blank">Report Issue</a></li>
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank"><img src="css/GitHub-Mark-32px.png" class="pull-right" height="20"/>Github</a></li>
+              </ul>
+            </li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

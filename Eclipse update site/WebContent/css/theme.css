@@ -1,9 +1,10 @@
 body {
   font-family: 'Open Sans', serif;
-
   padding-top: 70px;
   padding-bottom: 30px;
 }
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
 .navbar {
   font-family: 'Open Sans', sans-serif;
@@ -30,4 +31,11 @@ body {
 
 .theme-showcase > p > .btn {
   margin: 5px 0;
+}
+
+.dropdown-header {
+  padding-left: 10px;
+  c: #423D78;
+  c2: #837EAB;
+  color: #000000;
 }

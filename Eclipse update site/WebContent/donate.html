@@ -5,15 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     <title>Arduino Eclipse Plugin - Donate!</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.css">
 
     <!-- Custom styles  -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -24,55 +23,21 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="js/marked.min.js"></script>
+    <script src="js/angular-marked.min.js"></script>
+    <script src="js/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/app.js"></script>
   </head>
 
-  <body role="document">
+  <body role="document" ng-app='arduinoEclipse'>
 
     <!-- Fixed navbar -->
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <p class="navbar-brand">Arduino Eclipse</p>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="index.html">Home</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Download <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">Version 2</li>
-                <li><a href="bundle.html">Bundle</a></li>
-                <li><a href="plugin-v2.html">Plugin</a></li>
-                <li class="dropdown-header">Version 1</li>
-                <li><a href="plugin-v1.html">Plugin</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Instructions <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Linux</a></li>
-                <li><a href="#">Mac OS</a></li>
-                <li class="dropdown-header">Windows</li>
-                <li><a href="#">Windows XP</a></li>
-                <li><a href="#">Windows Vista</a></li>
-                <li><a href="#">Windows 7</a></li>
-                <li><a href="#">Windows 8</a></li>
-                <li class="divider"></li>
-                <li><a href="#">64bits</a></li>
-              </ul>
-            </li>
-            <li><a href="faq.html">FAQs</a></li>
-            <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank">Github</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
 
     <div class="container" role="main">
       <div class="page-header">
@@ -132,15 +97,7 @@
     </div> <!-- /container -->
 
     <div id="footer">
-      <hr/>
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
-      </div>
+      <ng-include src="'fragments/footer.html'"/>
     </div>
-
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/analytics.min.js"></script>
   </body>
 </html>

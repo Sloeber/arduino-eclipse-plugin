@@ -16,23 +16,20 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
 })
 .controller('NavBarCtrl', function($scope, $window){
 	$scope.navlinks = {
-		home: {url: 'index.html'},
-		faq: {url: 'faq.html'},
-		howto: {url: 'learn.html'},
-		bundle_v2: {url: 'bundle-v2.html'},
-		plugin_v2: {url: 'plugin-v2.html'},
-		plugin_v1: {url: 'plugin-v1.html'},
-		linux: {url: '-.html'},
-		macos: {url: '-.html'},
-		winxp: {url: '-.html'},
-		winvista: {url: '-.html'},
-		win7: {url: '-.html'},
-		win8: {url: '-.html'},
-		x64: {url: '-.html'}
+		"home": {url: 'index.html'},
+		"faq": {url: 'faq.html'},
+		"howto": {url: 'learn.html'},
+		"linux": {url: '-.html'},
+    "osx": {url: '-.html'},
+    "win": {url: '-.html'},
+    "linux_nightly": {url: 'nightly-linux.html'},
+    "osx_nightly": {url: 'nightly-osx.html'},
+    "win_nightly": {url: 'nightly-win.html'},
+		"archivied-v1": {url: '-.html'}
 	}
 	$scope.init = function() {
 		for (var item in $scope.navlinks) {
-			if ($window.location.href.indexOf($scope.navlinks[item].url) == $window.location.href.length - $scope.navlinks[item].url.length) {
+			if ($window.location.href.indexOf('/' + $scope.navlinks[item].url) > 0) {
 				$scope.navlinks[item].active = true
 			}
 		}
