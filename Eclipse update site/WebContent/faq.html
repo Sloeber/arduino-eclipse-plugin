@@ -23,13 +23,6 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-    <script src="js/marked.min.js"></script>
-    <script src="js/angular-marked.min.js"></script>
-    <script src="js/ui-bootstrap-tpls.min.js"></script>
-    <script src="js/app.js"></script>
   </head>
 
   <body role="document" ng-app='arduinoEclipse'>
@@ -43,23 +36,7 @@
       <div class="page-header">
         <h1>FAQs <small>please check this list first...</small></h1>
       </div>
-<!--      <ul class="nav nav-pills" role="tablist">
-        <li role="presentation" class="active"><a href="#general" role="tab" data-toggle="tab">General</a></li>
-        <li role="presentation"><a href="#ide_vs_plugin" role="tab" data-toggle="tab">Arduino IDE vs the Arduino Plugin</a></li>
-        <li role="presentation"><a href="#configuration" role="tab" data-toggle="tab">Configuration</a></li>
-        <li role="presentation"><a href="#usage" role="tab" data-toggle="tab">General usage advices</a></li>
-        <li role="presentation"><a href="#troubleshooting" role="tab" data-toggle="tab">Troubleshooting</a></li>
-        <li role="presentation"><a href="#background" role="tab" data-toggle="tab">Background information</a></li>
-      </ul>
-      <div class="tab-content">
-        <div role="tabpanel" class="tab-pane fade in active" id="general"><ng-include src="'fragments/faq/general.html'"/></div>
-        <div role="tabpanel" class="tab-pane fade" id="ide_vs_plugin"><ng-include src="'fragments/faq/ide_vs_plugin.html'"/></div>
-        <div role="tabpanel" class="tab-pane fade" id="configuration"><ng-include src="'fragments/faq/configuration.html'"/></div>
-        <div role="tabpanel" class="tab-pane fade" id="usage"><ng-include src="'fragments/faq/advices.html'"/></div>
-        <div role="tabpanel" class="tab-pane fade" id="troubleshooting"><ng-include src="'fragments/faq/troubleshooting.html'"/></div>
-        <div role="tabpanel" class="tab-pane fade" id="background"><ng-include src="'fragments/faq/background.html'"/></div>
-      </div>
--->
+
       <tabset type="pills">
         <tab heading="General"><ng-include src="'fragments/faq/general.html'"/></tab>
         <tab heading="Arduino IDE vs the Arduino Plugin"><ng-include src="'fragments/faq/ide_vs_plugin.html'"/></tab>
@@ -75,4 +52,12 @@
       <ng-include src="'fragments/footer.html'"/>
     </div>
   </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
 </html>

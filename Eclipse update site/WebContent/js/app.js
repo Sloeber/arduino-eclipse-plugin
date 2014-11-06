@@ -19,13 +19,14 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
 		"home": {url: 'index.html'},
 		"faq": {url: 'faq.html'},
 		"howto": {url: 'learn.html'},
-		"linux": {url: '-.html'},
-    "osx": {url: '-.html'},
-    "win": {url: '-.html'},
+		"linux": {url: 'stable-linux.html'},
+    "osx": {url: 'stable-osx.html'},
+    "win": {url: 'stable-win.html'},
     "linux_nightly": {url: 'nightly-linux.html'},
     "osx_nightly": {url: 'nightly-osx.html'},
     "win_nightly": {url: 'nightly-win.html'},
-		"archivied-v1": {url: '-.html'}
+    "archived_1_x": {url: 'archived-1.x.html'},
+    "archived_2_2": {url: 'archived-2.2.html'}
 	}
 	$scope.init = function() {
 		for (var item in $scope.navlinks) {

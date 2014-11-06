@@ -1,10 +1,16 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
   font-family: 'Open Sans', serif;
   padding-top: 70px;
   padding-bottom: 30px;
+  margin-bottom: 80px;
 }
 
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.nav, .pagination, .carousel, .panel-title a, tr.clickable { cursor: pointer; }
 
 .navbar {
   font-family: 'Open Sans', sans-serif;
@@ -38,4 +44,16 @@ body {
   c: #423D78;
   c2: #837EAB;
   color: #000000;
+}
+
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
+  background-color: #FFFF00;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 80px;
 }
