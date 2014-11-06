@@ -38,52 +38,21 @@
         <a name="top">&nbsp;</a>
       </div>
 
-      <tabset type="pills" vertical="true" scroll-target="top" scroll-margin="150">
-        <tab heading="Creation of an Arduino sketch">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Import of an Arduino or private library">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Import of source code available on your system">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Integrated serial monitor">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Change the Arduino board">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Multiple hardwares (version 2)">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Support for the HalfKay boot loader  (version 2)">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Change the COM port">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Upload to the board">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="Real time build">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-        <tab heading="User selected build">
-            <div marked ng-include="'fragments/learn/create.md'"></div>
-            <a href="#top" scroll-to="top">Back to top</a>
-        </tab>
-      </tabset>
+      <div ng-controller="AffixCtrl">
+        <div class="col-md-3 col-md-push-9">
+          <div class="list-group hidden-print">
+            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">A</a>
+            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">b</a>
+            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">c</a>
+          </div>
+        </div>
+        <div class="col-md-9 col-md-pull-3">
+          <section ng-show="tab.welcome">Welcome</section>
+          <section ng-show="tab.a" marked ng-include="'fragments/learn/create.md'"></section>
+          <section ng-show="tab.b" marked>...</section>
+          <section ng-show="tab.c" marked ng-include="'fragments/learn/create.md'"></section>
+        </div>
+      </div>
 
     </div><!-- /container -->
 

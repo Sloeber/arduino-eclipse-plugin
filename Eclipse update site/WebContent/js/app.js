@@ -14,11 +14,12 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
       }
     }
 })
-.controller('NavBarCtrl', function($scope, $window){
+.controller('NavBarCtrl', function($scope, $window) {
 	$scope.navlinks = {
 		"home": {url: 'index.html'},
 		"faq": {url: 'faq.html'},
 		"howto": {url: 'learn.html'},
+    "starting": {url: 'getting-started.html'},
 		"linux": {url: 'stable-linux.html'},
     "osx": {url: 'stable-osx.html'},
     "win": {url: 'stable-win.html'},
@@ -35,4 +36,11 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
 			}
 		}
 	}
+})
+.controller('AffixCtrl', function($scope) {
+  $scope.select = function(tab) {
+    for (prop in $scope.tab) { if ($scope.tab.hasOwnProperty(prop)) { delete $scope.tab[prop] } };
+    $scope.tab[tab] = {active: true};
+  }
+  $scope.tab = {'welcome': true};
 })
