@@ -36,16 +36,25 @@
       <div class="page-header">
         <h1>FAQs <small>please check this list first...</small></h1>
       </div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="active"><a href="#general" role="tab" data-toggle="tab">General</a></li>
+        <li role="presentation"><a href="#ide_vs_plugin" role="tab" data-toggle="tab">IDE vs Plugin</a></li>
+        <li role="presentation"><a href="#configuration" role="tab" data-toggle="tab">Configuration</a></li>
+        <li role="presentation"><a href="#advices" role="tab" data-toggle="tab">General advices</a></li>
+        <li role="presentation"><a href="#troubleshooting" role="tab" data-toggle="tab">Troubleshooting</a></li>
+        <li role="presentation"><a href="#background" role="tab" data-toggle="tab">Background info</a></li>
+      </ul>
 
-      <tabset type="pills">
-        <tab heading="General"><ng-include src="'fragments/faq/general.html'"/></tab>
-        <tab heading="Arduino IDE vs the Arduino Plugin"><ng-include src="'fragments/faq/ide_vs_plugin.html'"/></tab>
-        <tab heading="Configuration"><ng-include src="'fragments/faq/configuration.html'"/></tab>
-        <tab heading="General usage advices"><ng-include src="'fragments/faq/advices.html'"/></tab>
-        <tab heading="Troubleshooting"><ng-include src="'fragments/faq/troubleshooting.html'"/></tab>
-        <tab heading="Background information"><ng-include src="'fragments/faq/background.html'"/></tab>
-      </tabset>
-
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="general"><ng-include src="'fragments/faq/general.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="ide_vs_plugin"><ng-include src="'fragments/faq/ide_vs_plugin.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="configuration"><ng-include src="'fragments/faq/configuration.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="advices"><ng-include src="'fragments/faq/advices.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="troubleshooting"><ng-include src="'fragments/faq/troubleshooting.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="background"><ng-include src="'fragments/faq/background.html'"/></div>
+      </div>
     </div><!-- /container -->
 
     <div id="footer">
