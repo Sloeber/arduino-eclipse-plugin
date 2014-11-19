@@ -559,6 +559,8 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
+	
+//	TODO add mtk?
 	if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
 	    var = new EnvironmentVariable(ENV_KEY_compiler_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/tools/avr/bin/");
 	    contribEnv.addVariable(var, confDesc);
@@ -568,6 +570,9 @@ public class ArduinoHelpers extends Common {
 	    var = new EnvironmentVariable(ENV_KEY_build_generic_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH")
 		    + "/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	    contribEnv.addVariable(var, confDesc);
+	} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("mtk")) {
+		var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/mtk/system");
+		contribEnv.addVariable(var, confDesc);
 	}
 
 	// some glue to make it work
@@ -640,6 +645,8 @@ public class ArduinoHelpers extends Common {
 		if (Var.length == 2) {
 		    String Value = MakeEnvironmentString(Var[1].replace("\"{build.path}/syscalls_sam3.c.o\"",
 			    "\"{build.path}/arduino/syscalls_sam3.c.o\""));
+		    Value = MakeEnvironmentString(Var[1].replace("\"{build.path}/syscalls_mtk.c.o\"",
+			    "\"{build.path}/arduino/syscalls_mtk.c.o\""));
 		    var = new EnvironmentVariable(MakeKeyString(Var[0]), Value);
 		    contribEnv.addVariable(var, confDesc);
 		}
