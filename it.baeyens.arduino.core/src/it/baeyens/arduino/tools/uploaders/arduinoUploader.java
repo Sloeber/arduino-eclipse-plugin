@@ -36,6 +36,7 @@ public class arduinoUploader implements IRealUpload {
 
 	command = command.replaceAll(" -P ", " -P " + NewComPort + " ");
 	String nakedPort = NewComPort.replace("/dev/", "");
+	command = command.replaceAll(" -port ", " -port " + nakedPort + " ");
 	command = command.replaceAll(" --port= ", " --port=" + nakedPort + " ");
 
 	try {
