@@ -70,6 +70,11 @@ import org.eclipse.ui.console.MessageConsole;
  */
 public class ArduinoHelpers extends Common {
 
+	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
+	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
+	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_sam3.c.o\"";
+	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
+
     /**
      * This method is the internal working class that adds the provided includepath to all configurations and languages.
      * 
@@ -559,6 +564,7 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
+	
 	if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
 	    var = new EnvironmentVariable(ENV_KEY_compiler_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/tools/avr/bin/");
 	    contribEnv.addVariable(var, confDesc);
@@ -568,6 +574,9 @@ public class ArduinoHelpers extends Common {
 	    var = new EnvironmentVariable(ENV_KEY_build_generic_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH")
 		    + "/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	    contribEnv.addVariable(var, confDesc);
+	} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("mtk")) {
+		var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/mtk/system");
+		contribEnv.addVariable(var, confDesc);
 	}
 
 	// some glue to make it work
@@ -638,9 +647,13 @@ public class ArduinoHelpers extends Common {
 	    if (RealData.length > 0) {
 		String Var[] = RealData[0].split("=", 2); // look for assignment
 		if (Var.length == 2) {
-		    String Value = MakeEnvironmentString(Var[1].replace("\"{build.path}/syscalls_sam3.c.o\"",
-			    "\"{build.path}/arduino/syscalls_sam3.c.o\""));
-		    var = new EnvironmentVariable(MakeKeyString(Var[0]), Value);
+		    String value = Var[1];
+		    if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
+			value = MakeEnvironmentString(value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3));
+		    } else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
+			value = MakeEnvironmentString(value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK));
+		    }
+		    var = new EnvironmentVariable(MakeKeyString(Var[0]), value);
 		    contribEnv.addVariable(var, confDesc);
 		}
 	    }
