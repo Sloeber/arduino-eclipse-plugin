@@ -560,7 +560,6 @@ public class ArduinoHelpers extends Common {
 	// End of Teensy specific settings
 
 	
-//	TODO add mtk?
 	if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
 	    var = new EnvironmentVariable(ENV_KEY_compiler_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/tools/avr/bin/");
 	    contribEnv.addVariable(var, confDesc);
