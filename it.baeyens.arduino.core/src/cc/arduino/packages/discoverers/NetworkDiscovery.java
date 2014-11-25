@@ -48,10 +48,6 @@ import javax.jmdns.impl.DNSTaskStarter;
 
 import processing.app.zeroconf.jmdns.ArduinoDNSTaskStarter;
 import cc.arduino.packages.discoverers.network.NetworkChecker;
-//import processing.app.Base;
-//import processing.app.helpers.NetUtils;
-//import processing.app.helpers.PreferencesMap;
-//import processing.app.zeroconf.jmdns.ArduinoDNSTaskStarter;
 
 public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.discoverers.network.NetworkTopologyListener {
 
@@ -137,7 +133,6 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	String type = serviceEvent.getType();
 	String name = serviceEvent.getName();
 
-	@SuppressWarnings("resource")
 	JmDNS dns = serviceEvent.getDNS();
 
 	dns.requestServiceInfo(type, name);
@@ -206,7 +201,6 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	    return;
 	}
 	try {
-	    @SuppressWarnings("resource")
 	    JmDNS jmDNS = JmDNS.create(address);
 	    jmDNS.addServiceListener("_arduino._tcp.local.", this);
 	    mappedJmDNSs.put(address, jmDNS);

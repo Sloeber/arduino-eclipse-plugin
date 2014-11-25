@@ -50,7 +50,6 @@ public class SSH {
 	return execSyncCommand(command, null, null);
     }
 
-    @SuppressWarnings("resource")
     public boolean execSyncCommand(String command, PrintStream stdoutConsumer, PrintStream stderrConsumer) throws JSchException, IOException {
 	InputStream stdout = null;
 	InputStream stderr = null;
