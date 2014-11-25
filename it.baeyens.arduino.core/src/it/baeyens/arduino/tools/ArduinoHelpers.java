@@ -72,8 +72,8 @@ public class ArduinoHelpers extends Common {
 
 	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
+	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
+	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\"";
 
     /**
      * This method is the internal working class that adds the provided includepath to all configurations and languages.
@@ -639,22 +639,22 @@ public class ArduinoHelpers extends Common {
 	DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
 	BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
 	String strLine;
-	IEnvironmentVariable var = null;
+	
 	// Read File Line By Line
 	while ((strLine = br.readLine()) != null) {
-	    String RealData[] = strLine.split("#");// Ignore everything after
+	    String realData[] = strLine.split("#");// Ignore everything after
 						   // first #
-	    if (RealData.length > 0) {
-		String Var[] = RealData[0].split("=", 2); // look for assignment
-		if (Var.length == 2) {
-		    String value = Var[1];
+	    if (realData.length > 0) {
+		String var[] = realData[0].split("=", 2); // look for assignment
+		if (var.length == 2) {
+		    String value = var[1];
 		    if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
-			value = MakeEnvironmentString(value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3));
+			value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
 		    } else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
-			value = MakeEnvironmentString(value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK));
+			value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 		    }
-		    var = new EnvironmentVariable(MakeKeyString(Var[0]), value);
-		    contribEnv.addVariable(var, confDesc);
+		    IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value));
+		    contribEnv.addVariable(envVar, confDesc);
 		}
 	    }
 	}
