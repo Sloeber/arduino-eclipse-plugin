@@ -13,8 +13,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -77,6 +79,11 @@ public class RenameFolderChangeHandler extends Change {
 					languageChanged = true;
 					projectDescriptionChanged = true;
 					IncludeEntries[curIncludeEntry] = new CIncludePathEntry(newValue, ICSettingEntry.VALUE_WORKSPACE_PATH);
+					Activator
+						.getDefault()
+						.getLog()
+						.log(new Status(IStatus.INFO, "it.baeyens.cdt.refactor", "changed path from " + myOldName + " to "
+							+ myNewName));
 				    }
 				}
 				if (languageChanged) {
