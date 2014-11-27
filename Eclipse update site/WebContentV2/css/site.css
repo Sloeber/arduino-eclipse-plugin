@@ -1,6 +1,12 @@
 body {
   padding-top: 50px;
 }
+.reading-font {
+font-family: Georgia, "Times New Roman", Times, serif;
+}
+.font-size-bigger {
+font-size:16px;
+}
 bar {
 width:900px;
 }
