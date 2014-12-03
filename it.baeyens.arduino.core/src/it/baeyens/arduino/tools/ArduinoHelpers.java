@@ -70,10 +70,10 @@ import org.eclipse.ui.console.MessageConsole;
  */
 public class ArduinoHelpers extends Common {
 
-	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\"";
+    private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
+    private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
+    private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
+    private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\"";
 
     /**
      * This method is the internal working class that adds the provided includepath to all configurations and languages.
@@ -564,7 +564,6 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
-	
 	if (platformFile.segment(platformFile.segmentCount() - 2).equals("avr")) {
 	    var = new EnvironmentVariable(ENV_KEY_compiler_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/tools/avr/bin/");
 	    contribEnv.addVariable(var, confDesc);
@@ -575,8 +574,8 @@ public class ArduinoHelpers extends Common {
 		    + "/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	    contribEnv.addVariable(var, confDesc);
 	} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("mtk")) {
-		var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/mtk/system");
-		contribEnv.addVariable(var, confDesc);
+	    var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/mtk/system");
+	    contribEnv.addVariable(var, confDesc);
 	}
 
 	// some glue to make it work
@@ -639,7 +638,7 @@ public class ArduinoHelpers extends Common {
 	DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
 	BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
 	String strLine;
-	
+
 	// Read File Line By Line
 	while ((strLine = br.readLine()) != null) {
 	    String realData[] = strLine.split("#");// Ignore everything after
@@ -921,14 +920,14 @@ public class ArduinoHelpers extends Common {
 
 	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS", confDesc, true);
 	if (original != null) {
-	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g ", "-g2 ").replaceFirst("-O.? ", " "),
 		    original.getOperation(), original.getDelimiter());
 	    contribEnv.addVariable(replacement, confDesc);
 	}
 
 	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS", confDesc, true);
 	if (original != null) {
-	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replaceFirst("-O.? ", " "),
 		    original.getOperation(), original.getDelimiter());
 	    contribEnv.addVariable(replacement, confDesc);
 	}
