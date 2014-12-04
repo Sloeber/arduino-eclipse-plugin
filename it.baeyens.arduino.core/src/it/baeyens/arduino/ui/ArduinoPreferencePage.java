@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
@@ -157,14 +158,24 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		return false;
 	}
 
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.7")) {
-	    if (!showError("Arduino IDE 1.5.7 works but you need to add your own make as it is no longer delivered with arduino."))
-		return false;
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.7") || mArduinoIdeVersion.getStringValue().equals("1.5.8")) {
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (!showError("Arduino IDE 1.5.7 and 1.5.8 Have serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
+		    return false;
+	    } else {
+		if (!showError("Arduino IDE 1.5.7 and 1.5.8 work but you may need to add your own make as it is no longer delivered with arduino."))
+		    return false;
+	    }
 	}
 
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.7") > 0) {
-	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
-		return false;
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.8") > 0) {
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (!showError("Arduino IDE 1.5.7 and 1.5.8 Have serious issues on windows so this version probably as well. THIS IS NOT SUPPORTED!!!!"))
+		    return false;
+	    } else {
+		if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
+		    return false;
+	    }
 	}
 
 	super.performOk();
@@ -266,7 +277,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	File arduinoBoardFile = arduinoFolder.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	boolean isArduinoFolderValid = arduinoBoardFile.canRead();
 	if (isArduinoFolderValid) {
-	    IPath BoardFile= Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
+	    IPath BoardFile = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	    if (!BoardFile.equals(mPrefBoardFile)) {
 		mPrefBoardFile = BoardFile;
 		mArduinoIdeVersion.setStringValue(ArduinoHelpers.GetIDEVersion(BoardFile));

@@ -14,6 +14,7 @@ public class PasswordManager {
     private String myhost = null;
 
     public PasswordManager() {
+	// no constructor needed
     }
 
     public String getPassword() {

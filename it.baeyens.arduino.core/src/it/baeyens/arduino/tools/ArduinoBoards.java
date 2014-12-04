@@ -40,6 +40,7 @@ public class ArduinoBoards {
     }
 
     public ArduinoBoards() {
+	// no constructor needed
     }
 
     /**

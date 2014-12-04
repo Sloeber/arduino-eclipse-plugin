@@ -70,6 +70,11 @@ import org.eclipse.ui.console.MessageConsole;
  */
 public class ArduinoHelpers extends Common {
 
+    private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
+    private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\"";
+    private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
+    private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\"";
+
     /**
      * This method is the internal working class that adds the provided includepath to all configurations and languages.
      * 
@@ -527,6 +532,10 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_HARDWARE_PATH, platformFile.removeLastSegments(3).toString());
 	contribEnv.addVariable(var, confDesc);
 
+	// from 1.5.8 onward 1 more environment variable is needed
+	var = new EnvironmentVariable(ENV_KEY_PLATFORM_PATH, platformFile.removeLastSegments(1).toString());
+	contribEnv.addVariable(var, confDesc);
+
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
 	// I won't call them idiots for this but it is getting close
 	var = new EnvironmentVariable(ENV_KEY_SOFTWARE, "ARDUINO");
@@ -535,18 +544,18 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	// End of section permitting denigrating remarks on arduino software development team
 
-	// Arduino uses the board approach for the upload tool.
-	// as I'm not I create some special entries to work around it
-	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
-	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
-					       // the board approach for the
-					       // upload tool.
+	// // Arduino uses the board approach for the upload tool.
+	// // as I'm not I create some special entries to work around it
+	// var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
+	// contribEnv.addVariable(var, confDesc);
+	// var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
+	// contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+	// // the board approach for the
+	// // upload tool.
 
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality
@@ -564,12 +573,16 @@ public class ArduinoHelpers extends Common {
 	    var = new EnvironmentVariable(ENV_KEY_build_generic_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH")
 		    + "/hardware/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	    contribEnv.addVariable(var, confDesc);
+	} else if (platformFile.segment(platformFile.segmentCount() - 2).equals("mtk")) {
+	    var = new EnvironmentVariable(ENV_KEY_build_system_path, makeEnvironmentVar("A.RUNTIME.IDE.PATH") + "/hardware/arduino/mtk/system");
+	    contribEnv.addVariable(var, confDesc);
 	}
 
 	// some glue to make it work
 	String extraPathForOS = "";
-	if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	    extraPathForOS = "${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH + "}/hardware/tools/avr/utils/bin";
+	if (Platform.getWS().equals(Platform.WS_WIN32)) {
+	    extraPathForOS = "${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH + "}/hardware/tools/avr/utils/bin${PathDelimiter}${" + ENV_KEY_ARDUINO_PATH
+		    + "}";
 	}
 	var = new EnvironmentVariable("PATH", "${A.COMPILER.PATH}${PathDelimiter}${" + ENV_KEY_build_generic_path + "}" + extraPathForOS
 		+ "${PathDelimiter}${PATH}");
@@ -625,18 +638,22 @@ public class ArduinoHelpers extends Common {
 	DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
 	BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
 	String strLine;
-	IEnvironmentVariable var = null;
+
 	// Read File Line By Line
 	while ((strLine = br.readLine()) != null) {
-	    String RealData[] = strLine.split("#");// Ignore everything after
+	    String realData[] = strLine.split("#");// Ignore everything after
 						   // first #
-	    if (RealData.length > 0) {
-		String Var[] = RealData[0].split("=", 2); // look for assignment
-		if (Var.length == 2) {
-		    String Value = MakeEnvironmentString(Var[1].replace("\"{build.path}/syscalls_sam3.c.o\"",
-			    "\"{build.path}/arduino/syscalls_sam3.c.o\""));
-		    var = new EnvironmentVariable(MakeKeyString(Var[0]), Value);
-		    contribEnv.addVariable(var, confDesc);
+	    if (realData.length > 0) {
+		String var[] = realData[0].split("=", 2); // look for assignment
+		if (var.length == 2) {
+		    String value = var[1];
+		    if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
+			value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
+		    } else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
+			value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
+		    }
+		    IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value));
+		    contribEnv.addVariable(envVar, confDesc);
 		}
 	    }
 	}
@@ -864,6 +881,20 @@ public class ArduinoHelpers extends Common {
 	    contribEnv.addVariable(var, confDesc);
 	}
 
+	// Arduino uses the board approach for the upload tool.
+	// as I'm not I create some special entries to work around it
+	String uploadTool = contribEnv.getVariable(ArduinoConst.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
+	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD.PATH"));
+	contribEnv.addVariable(var, confDesc);
+	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CONFIG.PATH"));
+	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+					       // the board approach for the
+					       // upload tool.
+
     }
 
     /**
@@ -889,14 +920,14 @@ public class ArduinoHelpers extends Common {
 
 	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS", confDesc, true);
 	if (original != null) {
-	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g ", "-g2 ").replaceFirst("-O.? ", " "),
 		    original.getOperation(), original.getDelimiter());
 	    contribEnv.addVariable(replacement, confDesc);
 	}
 
 	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS", confDesc, true);
 	if (original != null) {
-	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replace("-Os", ""),
+	    replacement = new EnvironmentVariable(original.getName(), original.getValue().replace("-g", "-g2").replaceFirst("-O.? ", " "),
 		    original.getOperation(), original.getDelimiter());
 	    contribEnv.addVariable(replacement, confDesc);
 	}
@@ -915,7 +946,7 @@ public class ArduinoHelpers extends Common {
 	// "").replaceAll("\"\\{object_file}\"",
 	// "").replaceAll("\"\\{source_file}\"", "")
 	// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
-	String ret = inputString.replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
+	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
 	StringBuilder sb = new StringBuilder(ret);
 	String regex = "\\{[^}]*\\}";
 	Pattern p = Pattern.compile(regex); // Create the pattern.

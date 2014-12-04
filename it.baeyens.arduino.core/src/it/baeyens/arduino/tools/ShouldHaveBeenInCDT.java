@@ -60,29 +60,6 @@ public class ShouldHaveBeenInCDT {
 	info.setManagedProject(mProj);
 	monitor.worked(20);
 
-	// String s = "it.baeyens.arduino.core.toolChain.release";
-	// IToolChain tcs = ManagedBuildManager.getExtensionToolChain(s);
-	//
-	// Configuration cfg = new Configuration(mProj, (ToolChain) tcs, ManagedBuildManager.calculateChildId(s, null), "Release");
-	// IBuilder bld = cfg.getEditableBuilder();
-	// if (bld != null) {
-	// if (bld.isInternalBuilder()) {
-	// IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
-	// IBuilder prefBuilder = prefCfg.getBuilder();
-	// cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), prefBuilder.getName());
-	// bld = cfg.getEditableBuilder();
-	// bld.setBuildPath(null);
-	// }
-	// bld.setManagedBuildOn(isManagedBuild);
-	// } else {
-	// System.out.println("Messages.StdProjectTypeHandler_3");
-	// }
-	// cfg.setArtifactName(mProj.getDefaultArtifactName());
-	// CConfigurationData data = cfg.getConfigurationData();
-	// ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-	//
-	// ConfigurationDataProvider.setDefaultLanguageSettingsProviders(project, cfg, cfgDes);
-
 	// Iterate across the configurations
 	for (int i = 0; i < alCfgs.size(); i++) {
 	    IToolChain tcs = ManagedBuildManager.getExtensionToolChain(alCfgs.get(i).ToolchainID);
@@ -91,14 +68,6 @@ public class ShouldHaveBeenInCDT {
 		    alCfgs.get(i).Name);
 	    IBuilder bld = cfg.getEditableBuilder();
 	    if (bld != null) {
-		// if (bld.isInternalBuilder()) {
-		// IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
-		// IBuilder prefBuilder = prefCfg.getBuilder();
-		// String name = prefBuilder.getName();
-		// cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), name);
-		// bld = cfg.getEditableBuilder();
-		// bld.setBuildPath(null);
-		// }
 		bld.setManagedBuildOn(isManagedBuild);
 		cfg.setArtifactName("${ProjName}");
 	    } else {

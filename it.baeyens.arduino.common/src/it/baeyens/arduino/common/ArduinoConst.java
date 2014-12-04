@@ -89,6 +89,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_ARDUINO_START + "ARCHITECTURE";
     public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_ARDUINO_START + "BUILD.ARCH";
     public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.HARDWARE.PATH";
+    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.PLATFORM.PATH";
 
     public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";
     public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";
