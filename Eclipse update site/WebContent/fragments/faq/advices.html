@@ -1,6 +1,7 @@
 <h2>General usage advices</h2>
 <accordion close-others="true">
   <accordion-group heading="Do you advice to use 32 or 64 bit Eclipse?">
+  Update:Due to market praktises 64bit becomes more and more a must. So if you have a 64 bit system use 64 bit eclipse.<br/>
     Use 32 bit. No doubth. Why? The benefit of 64 is when you need more than 3Gig of memory to run the eclipse environment.<br/>
     Unless you integrate your projects with a suite of professional tools you will never hit this limit.<br/>
     Arduino comes with a  set of 32 bit tools. 64 bit Eclipse can not closely integrate with these tools. As a consequence "64 bit alternatives" are delivered with the plugin.<br/>
@@ -8,7 +9,8 @@
     See for instance RTTX library on mac and ubuntu.<br/>
     Also the tools are not tested by arduino in 64 bit. This explains  for instance why the serial monitor does not work with Leonardo in 64 bit but it does in 32 bit.<br/>
     So unless you really need 64bit eclipse I strongly advice 32 bit eclipse.<br/>
-    Update: Arduino started to support 64 bit on Linux so that may be an exception.
+    Update: Arduino started to support 64 bit on Linux so that may be an exception.<br/>
+    
   </accordion-group>
   <accordion-group heading="Are there any restrictions to the project name?">
     Because of the toolchain used folowing characters are changed to '_' when given as project name in the new project wizard : ' '; '(' ; ')'.<br/>
@@ -23,12 +25,14 @@
   </accordion-group>
   <accordion-group heading="What is the best way to work with multiple arduino versions (0022 0023 1.0 1.01)?">
     Each arduino version should have its own eclipse workspace. Changing Arduino version in the plugin may corrupt the plugin settings.
+    In V2 I have experimented with creating hardwares that are actually arduino versions. This works out fine but has the drawback that it is very easy to make mistakes.
+    
   </accordion-group>
   <accordion-group heading="How do you advice to use the Eclipse workspaces?">
     I keep all my arduino projects in one eclipse workspace. I make sure they al compile so there are no errors in the problem view.<br/>
     I work this way, and I'm not sure I would advice this way of working.<br/>
     I would advice starting with only one workspace. You may decide not to upgrade all you projects to the latest arduino version.<br/>
     At that point in time you will need an extra workspace. If you end up with plenty of projects in the same workspace you may find it is easier to split the workspace.<br/>
-    Note that splitting a workspace does not involve plenty of work.
+    Note that splitting a workspace does not involve plenty of work as eclipse supports drag and drop.
   </accordion-group>
 </accordion>
