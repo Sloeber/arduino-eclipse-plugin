@@ -34,24 +34,35 @@
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>Pre Requisites <small>hot to prepare your environment</small></h1>
+        <h1><small>Understanding the components   to prepare your environment</small></h1>
         <a name="top">&nbsp;</a>
       </div>
-      <p>The Arduino Eclipse plugin is based on existing software and tecnologies, as such it has a set of requirements that must be met in order to set it up: please read carefully the following sections in order to avoid long troubleshhoting sessions.</p>
+      <p>The Arduino Eclipse plugin is based on existing software and technologies, as such it has a set of requirements that must be met in order to set it up: please read carefully the following sections in order to avoid long troubleshoting sessions.</p>
 
       <div ng-controller="AffixCtrl">
         <div class="col-md-3 col-md-push-9">
           <div class="list-group hidden-print">
-            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">A</a>
-            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">b</a>
-            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">c</a>
+            <a href="#" ng-class="tab.intro" class="list-group-item small" ng-click="select('intro')">Overview</a>
+            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">Java</a>
+            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Arduino IDE</a>
+            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">Eclipse</a>
+            <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Eclipse CDT plugin</a>
+            <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Arduino Eclipse plugin</a>
+            <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Make</a>
+            <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Toolchain</a>
+            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Avr Dude</a>
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
-          <section ng-show="tab.welcome">Welcome</section>
-          <section ng-show="tab.a" marked ng-include="'fragments/learn/create.md'"></section>
-          <section ng-show="tab.b" marked>...</section>
-          <section ng-show="tab.c" marked ng-include="'fragments/learn/create.md'"></section>
+          <section ng-show="tab.intro" marked ng-include="'fragments/getting-started/intro.md'"></section>
+          <section ng-show="tab.a" marked ng-include="'fragments/getting-started/java.md'"></section>
+          <section ng-show="tab.b" marked ng-include="'fragments/getting-started/arduino_ide.md'"></section>
+          <section ng-show="tab.c" marked ng-include="'fragments/getting-started/eclipse.md'"></section>
+          <section ng-show="tab.d" marked ng-include="'fragments/getting-started/eclipse_cdt_plugin.md'"></section>
+          <section ng-show="tab.e" marked ng-include="'fragments/getting-started/arduino_eclipse_plugin.md'"></section>
+          <section ng-show="tab.f" marked ng-include="'fragments/getting-started/make.md'"></section>
+          <section ng-show="tab.g" marked ng-include="'fragments/getting-started/toolchain.md'"></section>
+          <section ng-show="tab.h" marked ng-include="'fragments/getting-started/avrdude.md'"></section>
         </div>
       </div>
     </div><!-- /container -->
