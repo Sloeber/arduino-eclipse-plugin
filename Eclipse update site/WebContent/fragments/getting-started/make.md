@@ -12,9 +12,13 @@ Warning for windows users
 =======
 Windows users who are using an Arduino IDE later than 1.5.5 need to install make.
 You can copy it from an older Arduino IDE installation 
+
 [pre 1.5.6 Arduino]/hardware/tools/avr/utils/bin
+
 to
+
 [post 1.5.5 Arduino]/hardware/tools/avr/utils/bin
+
 
 On most Linux and MAC systems make is already available. 
 
