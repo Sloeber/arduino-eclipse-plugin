@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Jan Baeyens">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>How to configure! - Arduino Eclipse Plugin</title>
+
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="css/theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" ng-app='arduinoEclipse'>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
+    This page contains Detailed instructions on how to install and configure the Arduino Eclipse plugin.<br>
+	If you are not sure you want to install plugin please see the <a href="installAdvice.shtml">install advice page</a>.<br>
+	To find the other install instructions go to the <a href="install.shtml">install page</a>.<br>
+	People who use MAC OSX and are installing V1 may want to read <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">the blog of 
+	garretto</a> on how to install on OSX.<br>
+	
+
+	
+	<h2>Detailed installation instructions</h2>
+	1) install the Arduino IDE <br>
+	2) <b>install eclipse indigo ( supports V1 ) or Juno (supports V1 and V2) you need the C++ version and preferably the 32 bit version</b><br>
+	2.1) download the code from here
+	http://www.eclipse.org/downloads/]http://www.eclipse.org/downloads/<br>
+	2.2) Unzip the file downloaded from eclipse( I assume c:/juno) <br>
+	3)	<b>Install the Arduino plugin</b> <br>
+	3.1) Start eclipse <br>
+	3.2) run the program c:/juno/eclipse/eclipse.exe<br> 
+	3.3) give a name to the workspace (I assume you use "c:/Arduino") <br>
+	3.4) Close the welcome screen <br>
+	3.5) Select	help-&gt;install new software <br>
+	3.6) for V1 as Site enter : http://www.baeyens.it/eclipse/update for V2 as Site enter : http://www.baeyens.it/eclipse/V2 <br>
+	<b>uncheck "group items by category"</b><br>
+	
+	<img alt="install plugin" src="http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png"><br>
+	3.7) restart eclipse (as requested by eclipse) <br>
+      </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
+</html>
