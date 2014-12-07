@@ -56,7 +56,7 @@
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
-          <section ng-show="tab.welcome">Welcome</section>
+          <section ng-show="tab.welcome">Welcome<br/>Select the how to on the left for instructions.<br/>Unfortunately images do not yet work.</section>
           <section ng-show="tab.a" marked ng-include="'fragments/how_to/install_advice.md'"></section>
           <section ng-show="tab.b" marked ng-include="'fragments/how_to/install_V1_plugin.md'"></section>
           <section ng-show="tab.c" marked ng-include="'fragments/how_to/install_V2_plugin.md'"></section>

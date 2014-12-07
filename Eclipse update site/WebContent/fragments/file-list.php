@@ -11,6 +11,15 @@
       }
     }
     closedir($dir);
+    $location="../download/product";
+    //$location=".";
+    $dir = opendir($location);
+    while(false != ($file = readdir($dir))) {
+      if(($file != ".") and ($file != "..") and ($file != "index.php")) {
+        $files[] = $location."/".$file; // put in array.
+      }
+    }
+    closedir($dir);
     rsort($files);
     foreach($files as $file) {
       $refname=basename($file);
