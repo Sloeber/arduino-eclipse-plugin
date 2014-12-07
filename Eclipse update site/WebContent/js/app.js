@@ -17,9 +17,9 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
 .controller('NavBarCtrl', function($scope, $window) {
 	$scope.navlinks = {
 		"home": {url: 'index.html'},
-		"faq": {url: 'faq.html'},
-		"howto": {url: 'learn.html'},
-    "starting": {url: 'getting-started.html'},
+		"faq": {url: 'faq.shtml'},
+		"howto": {url: 'how_to.shtml'},
+    "starting": {url: 'getting-started.shtml'},
 		"linux": {url: 'stable-linux.html'},
     "osx": {url: 'stable-osx.html'},
     "win": {url: 'stable-win.html'},
