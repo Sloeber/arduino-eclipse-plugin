@@ -42,7 +42,7 @@
       <div ng-controller="AffixCtrl">
         <div class="col-md-3 col-md-push-9">
           <div class="list-group hidden-print">
-            <a href="#" ng-class="tab.intro" class="list-group-item small" ng-click="select('intro')">Overview</a>
+            <a href="#" ng-class="tab.welcome" class="list-group-item small" ng-click="select('intro')">Overview</a>
             <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">Java</a>
             <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Arduino IDE</a>
             <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">Eclipse</a>
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
-          <section ng-show="tab.intro" marked ng-include="'fragments/getting-started/intro.md'"></section>
+          <section ng-show="tab.welcom" marked ng-include="'fragments/getting-started/intro.md'"></section>
           <section ng-show="tab.a" marked ng-include="'fragments/getting-started/java.md'"></section>
           <section ng-show="tab.b" marked ng-include="'fragments/getting-started/arduino_ide.md'"></section>
           <section ng-show="tab.c" marked ng-include="'fragments/getting-started/eclipse.md'"></section>
