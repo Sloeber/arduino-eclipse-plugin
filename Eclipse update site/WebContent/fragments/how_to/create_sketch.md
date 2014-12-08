@@ -22,8 +22,9 @@ Here are some ways
 Once in the wizard you'll go through these steps to make a sketch.
 Note the described steps are the latest and greatest. If you do not have all these steps consider upgrading.
 
-Provide a name for the sketch and press next (note that in the image below the finish is enabled because I already created a sketch)
-![Name the Sketch](http://iloapp.baeyens.it/data/_gallery/public/1/1320529645_resized.png)
+Provide a name for the sketch and press next (note that in the image below the finish is enabled because I already created a sketch)  
+![Name the Sketch](http://iloapp.baeyens.it/data/_gallery/public/1/1320529645_resized.png)  
+Do not unchek "use default location". That is not supported by the tool.
 
 Provide the Arduino information and select next  
 ![before 1.3 board settings](http://iloapp.baeyens.it/data/_gallery//public/1/1320529644_resized.png)  

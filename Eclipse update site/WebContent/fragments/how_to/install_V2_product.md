@@ -7,10 +7,12 @@ If you are not sure what you want to install please see the
 
 WINDOWS USERS BE AWARE
 ====
-From Arduino IDE 1.5.6 make is no longer part of the Arduino IDE.  
-Moreover the [toolchain delivered as part of Arduino IDE contains a bug.](https://github.com/arduino/Arduino/issues/2422)  
+
+ 1. From Arduino IDE 1.5.6 make is no longer part of the Arduino IDE.  
+ 2. Moreover the [toolchain delivered as part of Arduino IDE contains a bug.](https://github.com/arduino/Arduino/issues/2422)  
 As such we do not advise to Arduino IDE 1.5.6 or later on windows.  
 Mac and linux normally come with make preinstalled and do not suffer the bug.
+ 3. In windows unpack is a 2 step process. I use 7Zip to uncompress and then I use 7Zip to unpak the tar file.
 
 Detailed installation instructions
 -----
@@ -22,10 +24,9 @@ Detailed installation instructions
 **install arduino eclipse product**
 
  1. [Download the product version for your platform from ](http://eclipse.baeyens.it/download.php) 
- 2. Unzip the file downloaded in a folder without spaces ( I assume c:/eclipse) 
+ 2. Unpack the file downloaded in a folder without spaces ( I assume c:/eclipse) 
   
 
-  
  
  **Party success**
  
