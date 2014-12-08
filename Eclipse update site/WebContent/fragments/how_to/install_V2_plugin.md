@@ -36,7 +36,7 @@ You want the C++ version
  6. as Site enter : http://www.baeyens.it/eclipse/V2 or http://www.baeyens.it/eclipse/nightly
  7. wait for the page to load.
  8. **uncheck "group items by category"**  
- ![install plugin]("http://iloapp.baeyens.it/data/_gallery/public/6/141797573364988100_resized.png")
+ ![install plugin](http://iloapp.baeyens.it/data/_gallery/public/6/141797573364988100_resized.png)
  9. Select the arduino eclipse extensions
  10. Select next
  11. when eclipse tells you the project is not signed select OK

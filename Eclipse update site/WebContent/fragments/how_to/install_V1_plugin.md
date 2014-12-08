@@ -29,7 +29,7 @@ You want the C++ version and preferably the 32 bit version
  6. as Site enter : http://www.baeyens.it/eclipse/update
  7. wait for the page to load.
  8. **uncheck "group items by category"**
- ![install plugin]("http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png")
+ ![install plugin](http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png)
  9. Select the arduino eclipse extensions
  10. Select next
  11. when eclipse tells you the project is not signed select OK

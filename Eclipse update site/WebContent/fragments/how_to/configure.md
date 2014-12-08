@@ -13,9 +13,9 @@ This section assumes you have installed the arduino eclipse plugin or product.
  7. Fill it in like below (using the location of the Arduino IDE c:/arduino)
  8.	Add the location of your private libraries.
  in V1 this looks like
-	![V1]("http://iloapp.baeyens.it/data/_gallery//public/1/134998877869708900_resized.png")  
+	![V1](http://iloapp.baeyens.it/data/_gallery/public/1/134998877869708900_resized.png)  
  in V2 this looks like  
- ![V2]("http://iloapp.baeyens.it/data/_gallery/public/6/141798497248313500_resized.png")  
+ ![V2](http://iloapp.baeyens.it/data/_gallery/public/6/141798497248313500_resized.png)  
 	The newer version no longer uses RXTX so there is no longer a "test serial dll" button. If the button is there click it.  
 	V2 does not contain the option "use Arduino IDE tools in Eclipse".  
 	V2.2 fills in mosts fields automatically and adds a "private hardware path" folder.
@@ -26,7 +26,7 @@ This section assumes you have installed the arduino eclipse plugin or product.
   We need to tell Eclipse to treat ino and pde files as C/C++ file.  
   To do so goto menu:window->preferences->C/C++->file types    
   and add ino and pde files as c/c++ files one by one using the new button.  
-  ![file types]("http://iloapp.baeyens.it/data/_gallery/public/1/1320784770_resized.png")  
+  ![file types](http://iloapp.baeyens.it/data/_gallery/public/1/1320784770_resized.png)  
   
  
  **Party success**
