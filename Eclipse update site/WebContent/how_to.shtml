@@ -53,6 +53,7 @@
             <a href="#" ng-class="tab.j" class="list-group-item small" ng-click="select('j')">Create a library</a>
             <a href="#" ng-class="tab.k" class="list-group-item small" ng-click="select('k')">Keep code in sync with arduino IDE (pre ino support)</a>
             <a href="#" ng-class="tab.l" class="list-group-item small" ng-click="select('l')">Keep code in sync with arduino IDE (post ino support)</a>
+            <a href="#" ng-class="tab.m" class="list-group-item small" ng-click="select('m')">Change compiltion settings</a>
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
@@ -68,7 +69,8 @@
           <section ng-show="tab.i" marked ng-include="'fragments/how_to/work_with_teensy.md'"></section>
           <section ng-show="tab.j" marked ng-include="'fragments/how_to/create_a_library.md'"></section>
           <section ng-show="tab.k" marked ng-include="'fragments/how_to/sync_pre_ino.md'"></section>
-          <section ng-show="tab.l" marked ng-include="'fragments/how_to/syn_post_ino.md'"></section>
+          <section ng-show="tab.l" marked ng-include="'fragments/how_to/sync_post_ino.md'"></section>
+          <section ng-show="tab.m" marked ng-include="'fragments/how_to/change_compilation settings.md'"></section>
 
         </div>
       </div>
