@@ -1,7 +1,7 @@
 <?php
   function listFiles($prefix) {
     date_default_timezone_set('UTC');
-    $location="download/product";
+    $location="../download/product";
     //$location=".";
     echo "<!-- listing files in $location with prefix $prefix -->";
     $dir = opendir($location);
@@ -11,7 +11,7 @@
       }
     }
     closedir($dir);
-    $location="../download/product";
+    $location="../../download/product";
     //$location=".";
     $dir = opendir($location);
     while(false != ($file = readdir($dir))) {
