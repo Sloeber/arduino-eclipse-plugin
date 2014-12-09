@@ -46,7 +46,9 @@ There are 4 main options:
  Default cpp will create a cpp and header file with setup() and loop().  
  With custom template you can select the location where your template is located.  
  Sample sketch lets you select (multiple) sketches delivered by Arduino or by any installed library.  
- For each sample you select the wizard will import the library that delivered that sketch. It will import parent libraries.
+ For each sample you select the wizard will import the library that delivered that sketch. It will import parent libraries.  
+ **use current settings as default** will save your settings but will not save the sketch(es) you selected in case ou selected a sample sketch.
+**Link to sample code** will not make a copy of the sample code but lets you modify the code directly in your project. This is extremely handy if you are developing/maintaining examples of a library. see [my blog for more detail](http://blog.baeyens.it/#post15)    
  
  
 Lastly you can have a debug configuration created as well  
