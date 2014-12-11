@@ -3,10 +3,10 @@ Make
 Make is an old tool that is used to launch a sequence of commands where there are file dependencies on each other. So perfect to launch a C/C++ build.
 These commands are the tools in the toolchain.
 
-Simplified eclipse CDT does not Build the code but it makes a make file and launches make.
-The Arduino eclipse plugin directs eclipse CDT on how to make the makefile.
+Simplified Eclipse CDT does not Build the code but it makes a make file and launches make.
+The Arduino Eclipse plugin directs Eclipse CDT on how to make the makefile.
 
-The Arduino IDE does not use make but Make came with the arduino IDE until Arduino IDE 1.5.6. 
+The Arduino IDE does not use make but Make came with the Arduino IDE until Arduino IDE 1.5.6. 
 
 Warning for windows users
 =======

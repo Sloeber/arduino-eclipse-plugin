@@ -1,8 +1,9 @@
-Keeping the eclipse project compatible with the IDE pre ino  
-==
-**Below is the old description. But as the newer version of the plugin support ino files you're way better off upgrading to a newer version.**
+Keeping the Eclipse project compatible with the IDE (pre .ino)
+=============================================================
 
-The compatibility between the arduino IDE and the arduino eclipse plugin can only be guaranteed from the Arduino Eclipse Plugin to the Arduino IDE and not the other way around. Currently the arduino eclipse plugin is out of the box not compatible with the Arduino IDE. The incompatibility is caused by the fact that the arduino eclipse plugin works with C++ files only. The arduino IDE can handle C++ files but needs at least one ino/PDE file (for amongst others) to identify the classpath.  
+**Below is the old description. But as the newer version of the plugin support ino files you're way better off upgrading.**
+
+The compatibility between the Arduino IDE and the Arduino Eclipse plugin can only be guaranteed from the Arduino Eclipse Plugin to the Arduino IDE and not the other way around. Currently the Arduino Eclipse plugin is out of the box not compatible with the Arduino IDE. The incompatibility is caused by the fact that the Arduino Eclipse plugin works with C++ files only. The Arduino IDE can handle C++ files but needs at least one ino/PDE file (for amongst others) to identify the classpath.  
 To be able to compile your code directly in the Arduino IDE you need to do something extra at three common actions during Arduino code development  
 
  1. After installation tell Eclipse to process ino(and/or pde) files like C++ file
@@ -19,7 +20,7 @@ In the menu select Windows ->preferences
 In the section C/C++ -> file types press new  
 enter *.pde and or *.ino as filename and C++Source file as type.  
 After creation of a new sketch rename cpp file to pde  
-Right click the .cpp file created by the new arduino sketch wizard  
+Right click the .cpp file created by the new Arduino sketch wizard  
 select rename  
 change the .cpp to .ino or .pde  
 After inclusion of a library add an include reference to the library to the ino or pde file.  

@@ -21,7 +21,7 @@ Detailed installation instructions
  1. [Download Arduino ](http://arduino.cc/en/Main/Software)
  2. Unzip in a local folder without spaces. (I assume c:/arduino)
  
-**install arduino eclipse product**
+**install Arduino Eclipse product**
 
  1. [Download the product version for your platform from ](http://eclipse.baeyens.it/download.php) 
  2. Unpack the file downloaded in a folder without spaces ( I assume c:/eclipse) 

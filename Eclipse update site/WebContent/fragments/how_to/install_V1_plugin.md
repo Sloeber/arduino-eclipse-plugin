@@ -13,12 +13,12 @@ Detailed installation instructions
  1. [Download Arduino ](http://arduino.cc/en/Main/Software)
  2. Unzip in a local folder without spaces. (I assume c:/arduino)
  
-**install eclipse indigo or Juno** (I'm not sure kepler and luna work.)
+**install Eclipse Indigo or Juno** (I'm not sure kepler and luna work.)
 
 You want the C++ version and preferably the 32 bit version
 
- 1. download the eclipse version from [indigo](http://www.eclipse.org/indigo/) or [juno](http://www.eclipse.org/juno/)
- 2. Unzip the file downloaded from eclipse in a folder without spaces ( I assume c:/eclipse) 
+ 1. download the Eclipse version from [Indigo](http://www.eclipse.org/indigo/) or [Juno](http://www.eclipse.org/juno/)
+ 2. Unzip the file downloaded from Eclipse in a folder without spaces (I assume C:/eclipse) 
   
  **Install the Arduino plugin** 
  
@@ -30,10 +30,10 @@ You want the C++ version and preferably the 32 bit version
  7. wait for the page to load.
  8. **uncheck "group items by category"**
  ![install plugin](http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png)
- 9. Select the arduino eclipse extensions
+ 9. Select the Arduino Eclipse extensions
  10. Select next
- 11. when eclipse tells you the project is not signed select OK
- 12. when eclipse asks you to restart select ok
+ 11. when Eclipse tells you the project is not signed select OK
+ 12. when Eclipse asks you to restart select ok
   
  
  **Party success**

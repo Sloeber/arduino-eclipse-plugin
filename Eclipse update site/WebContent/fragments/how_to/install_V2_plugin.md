@@ -18,14 +18,14 @@ Detailed installation instructions
  **Install an Arduino IDE 1.5.0 beta or later**
  
  1. [Download Arduino ](http://arduino.cc/en/Main/Software)
- 2. Unzip in a local folder without spaces. (I assume c:/arduino)
+ 2. Unzip in a local folder without spaces. (I assume c:/Arduino)
  
-**install eclipse luna** (everything starting from juno should work.)
+**install Eclipse Luna** (everything starting from Juno should work.)
 
 You want the C++ version
 
- 1. download the eclipse version from [eclipse](http://www.eclipse.org/) 
- 2. Unzip the file downloaded from eclipse in a folder without spaces ( I assume c:/eclipse) 
+ 1. download the Eclipse version from [eclipse](http://www.eclipse.org/) 
+ 2. Unzip the file downloaded from Eclipse in a folder without spaces ( I assume c:/eclipse) 
   
  **Install the Arduino plugin** 
  
@@ -37,10 +37,10 @@ You want the C++ version
  7. wait for the page to load.
  8. **uncheck "group items by category"**  
  ![install plugin](http://iloapp.baeyens.it/data/_gallery/public/6/141797573364988100_resized.png)
- 9. Select the arduino eclipse extensions
+ 9. Select the Arduino Eclipse extensions
  10. Select next
- 11. when eclipse tells you the project is not signed select OK
- 12. when eclipse asks you to restart select ok
+ 11. when Eclipse tells you the project is not signed select OK
+ 12. when Eclipse asks you to restart select ok
   
  
  **Party success**

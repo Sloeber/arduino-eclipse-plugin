@@ -1,13 +1,16 @@
-Java
+Java 
 ====
-Java is a platform independent interpreted language. This means that once you have "build a java program the program can only run in a "java interpreter".
+Java is a platform independent interpreted language. This means that once you have built a Java program, the program can only run inside a Java interpreter, also known as the *Java Runtime*.
 
-Java interpreters have been written for windows, Linux and Mac. As such Java is called platform independent.
+Java runtimes have been written for Windows, Linux and Mac. As such Java is called platform independent.
 
-Older versions of the plugin were happy with java 6. Currently Java 7 is needed and you're safer installing the SDK version. Most people have multiple java versions on their machine.
+Older versions of the plugin were happy with Java 6. Currently Java 7 or above is needed and you're safer installing the SDK package which includes the Java Runtime. 
+Most people have multiple versions of the Java Runtime on their machine: don't get too concerned about this.
 
-The Arduino IDE uses java and so does eclipse.
+Eclipse uses Java and so does the Arduino IDE.
+
+To get any flavor of Java visit the [Oracle web site](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or use your OS package manager.
 
 Mac users
 =========
-Mac used to deliver it's own flavor of java but no longer. Install java from the oracle web site like everybody else. 
+Apple used to deliver it's own flavor of Java, but that's no longer the case. Install Java from the [Oracle web site](http://www.oracle.com/technetwork/java/javase/downloads/index.html) like everybody else. 
