@@ -1,4 +1,4 @@
-How to create a library with the arduino eclipse plugin.
+How to create a library with the Arduino Eclipse plugin.
 ==
 
 As you have a real development environment now which allows you to modify libraries as if they are part of your code you may wonder: "how can I make my own libraries?"  
@@ -21,7 +21,7 @@ On my system I created a folder in /home/jan/Arduino/libraries with the name Lib
 
 **Import the library in your project**  
 Because we created a folder the plugin can add the folder to the project.  
-select the arduino item in the menu->import an arduino library.  
+select the Arduino item in the menu->import an Arduino library.  
 ![Add the library to your project](http://iloapp.baeyens.it/data/_gallery/public/6/141814162245895400_resized.png)  
 now your project should look something like:  
 ![a empty library folder](http://iloapp.baeyens.it/data/_gallery/public/6/141814162454370900_resized.png)  

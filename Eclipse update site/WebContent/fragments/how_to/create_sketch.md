@@ -1,7 +1,7 @@
 How to create a sketch - Arduino Eclipse Plugin!
 =====
-This page contains detailed instructions on how to create a sketch with the Arduino eclipse plugin.  
-Note that a sketch is a Arduino term and in eclipse it is called a project. So when I say project I mean sketch and visa versa.  
+This page contains detailed instructions on how to create a sketch with the Arduino Eclipse plugin.  
+Note that a sketch is a Arduino term and in Eclipse it is called a project. So when I say project I mean sketch and visa versa.  
 Note in V1 this is not 100% true because a project is made for each board and for each sketch. But who still uses V1?
 
 **What you should have done before you can do this**
@@ -13,7 +13,7 @@ The plugin contains a wizard that allows to create a project. The wizard can be 
 Here are some ways  
 
  1.	Menu->File->new -> project Select the Arduino sketch and then next  
- ![select arduino sketch](http://iloapp.baeyens.it/data/_gallery/public/1/1320529642_resized.png)
+ ![select Arduino sketch](http://iloapp.baeyens.it/data/_gallery/public/1/1320529642_resized.png)
  2. Menu->File->new->new Arduino sketch
  3. Menu->Arduino->new sketch
  4. Toolbar->new sketch (same icon as arduino)
@@ -59,9 +59,9 @@ In V1 the plugin will create 2 projects. one for the Arduino library and one for
 Normally you will not open the arduino_atmegaXXX project directly yourself. You will edit the project you created.  
 In the image above I opened the my sketch.cpp file by double clicking on it.  
 Pressing the hammer (marked in the image above) will compile the project. Pressing the AVR button (marked above) will upload the project to your Arduino board.    
-When modifying the file later on do not delete the #include directive at the top of the file. If you do the arduino language will not be known to your sketch.  
+When modifying the file later on do not delete the #include directive at the top of the file. If you do the Arduino language will not be known to your sketch.  
 
-In V2 only one project is created. The arduino code is now in a folder Arduino in your project.  
+In V2 only one project is created. The Arduino code is now in a folder Arduino in your project.  
 You can see that in the image below where you also see the import library dialog.
 ![import library](http://iloapp.baeyens.it/data/_gallery/public/1/137950377839940200_resized.png)
 

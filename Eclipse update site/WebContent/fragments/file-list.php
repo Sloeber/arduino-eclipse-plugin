@@ -2,7 +2,6 @@
   function listFiles($prefix) {
     date_default_timezone_set('UTC');
     $location="../download/product";
-    //$location=".";
     echo "<!-- listing files in $location with prefix $prefix -->";
     $dir = opendir($location);
     while(false != ($file = readdir($dir))) {
@@ -12,7 +11,6 @@
     }
     closedir($dir);
     $location="../../download/product";
-    //$location=".";
     $dir = opendir($location);
     while(false != ($file = readdir($dir))) {
       if(($file != ".") and ($file != "..") and ($file != "index.php")) {
@@ -22,8 +20,8 @@
     closedir($dir);
     rsort($files);
     foreach($files as $file) {
-      $refname=basename($file);
-      if (substr($refname,0,strlen($prefix))==$prefix) {
+      $refname = basename($file);
+      if (substr($refname, 0, strlen($prefix)) == $prefix) {
         $stat = stat($file);
         $date = date('Y-m-d',$stat['mtime']);
         $size = formatBytes($stat['size']);
@@ -55,7 +53,6 @@
   </thead>
   <tbody>
   <?php if(isset($_GET["arch"])) listFiles($_GET["arch"]); ?>
-  <?php if(isset($_GET["ver"])) listFiles("V" . $_GET["ver"] . '_'); ?>
   </tbody>
 </table>
 

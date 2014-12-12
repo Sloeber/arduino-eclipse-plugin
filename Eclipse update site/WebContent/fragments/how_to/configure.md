@@ -1,10 +1,10 @@
 This section contains Detailed instructions on how to configure the Arduino Eclipse plugin.
 ===
 
-This section assumes you have installed the arduino eclipse plugin or product.
+This section assumes you have installed the Arduino Eclipse plugin or product.
 
-**tell which arduino IDE you use**  
- 1. Start eclipse that contains the plugin. c:/eclipse/eclipse or c:/eclipse/eclipseArduinoIDE for the product
+**tell which Arduino IDE you use**  
+ 1. Start Eclipse that contains the plugin. c:/eclipse/Eclipse or c:/eclipse/eclipseArduinoIDE for the product
  2. Open a workspace of your choice C:/workspace
  3. If needed close the welcome page
  4. open the preferences (windows -> preferences) 
@@ -22,7 +22,7 @@ This section assumes you have installed the arduino eclipse plugin or product.
  9. select OK to save the preferences
 
 **tell cdt you are using ino file**  
-  ino and pde files are a file extension created by arduino and as such is not recognized as a C/C++ file.  
+  ino and pde files are a file extension created by Arduino and as such is not recognized as a C/C++ file.  
   We need to tell Eclipse to treat ino and pde files as C/C++ file.  
   To do so goto menu:window->preferences->C/C++->file types    
   and add ino and pde files as c/c++ files one by one using the new button.  
