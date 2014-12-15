@@ -1,4 +1,4 @@
-Overview
+DON'T PANIC*
 ========
 On the right you can see the steps needed to decide on what best fits your needs when running the Arduino Eclipse IDE.
 
@@ -8,3 +8,4 @@ Then you decide on the actual version of eclipse, Arduino eclipse IDE and Arduin
 
 Then look at the OS specific info and reevaluate your decision. 
 
+>*It is said that despite its many glaring (and occasionally fatal) inaccuracies, the Hitchhiker's Guide to the Galaxy itself has outsold the Encyclopedia Galactica because it is slightly cheaper, and because it has the words "DON'T PANIC" in large, friendly letters on the cover.
