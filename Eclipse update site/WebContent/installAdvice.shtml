@@ -52,7 +52,7 @@
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Mac comments</a>
             <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Windows comments</a>
             <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Library madness</a>
-            <div>
+            </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
           <section ng-show="tab.welcome" marked ng-include="'fragments/install_advice/intro.md'"></section>
