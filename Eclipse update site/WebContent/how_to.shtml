@@ -38,23 +38,23 @@
         <a name="top">&nbsp;</a>
       </div>
 
-      <div ng-controller="AffixCtrl">
+      <div ng-controller="AffixCtrl" ng-init="init()">
         <div class="col-md-3 col-md-push-9">
           <div class="list-group hidden-print">
-            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">Decide on what to install</a>
-            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Install V1 plugin</a>
-            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">Install V2 plugin</a>
-            <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Install V2 product</a>
-            <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Configure</a>
-            <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Create sketch</a>
-            <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Change the serial port</a>
-            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Change the arduino board</a>
-            <a href="#" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Work with Teensy</a>
-            <a href="#" ng-class="tab.j" class="list-group-item small" ng-click="select('j')">Create a library</a>
-            <a href="#" ng-class="tab.k" class="list-group-item small" ng-click="select('k')">Keep code in sync with arduino IDE (pre ino support)</a>
-            <a href="#" ng-class="tab.l" class="list-group-item small" ng-click="select('l')">Keep code in sync with arduino IDE (post ino support)</a>
-            <a href="#" ng-class="tab.m" class="list-group-item small" ng-click="select('m')">Change compilation settings</a>
-            <a href="#" ng-class="tab.n" class="list-group-item small" ng-click="select('n')">Update my plugin</a>
+            <a href="#a" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">Decide on what to install</a>
+            <a href="#b" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Install V1 plugin</a>
+            <a href="#c" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">Install V2 plugin</a>
+            <a href="#d" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Install V2 product</a>
+            <a href="#e" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Configure</a>
+            <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Create sketch</a>
+            <a href="#g" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Change the serial port</a>
+            <a href="#h" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Change the arduino board</a>
+            <a href="#i" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Work with Teensy</a>
+            <a href="#j" ng-class="tab.j" class="list-group-item small" ng-click="select('j')">Create a library</a>
+            <a href="#k" ng-class="tab.k" class="list-group-item small" ng-click="select('k')">Keep code in sync with Arduino IDE (pre ino support)</a>
+            <a href="#l" ng-class="tab.l" class="list-group-item small" ng-click="select('l')">Keep code in sync with Arduino IDE (post ino support)</a>
+            <a href="#m" ng-class="tab.m" class="list-group-item small" ng-click="select('m')">Change compilation settings</a>
+            <a href="#n" ng-class="tab.n" class="list-group-item small" ng-click="select('n')">Update my plugin</a>
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
