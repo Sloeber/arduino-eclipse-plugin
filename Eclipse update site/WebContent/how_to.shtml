@@ -29,7 +29,7 @@
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <!--#include file="fragments/navbar.html" -->
     </nav>
 
     <div class="container" role="main">
@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
-          <section ng-show="tab.welcome">Welcome<br/>Select the how to on the right  for instructions.</section>
+          <section ng-show="tab.welcome">Welcome<br/>Select the how to on the right for instructions.</section>
           <section ng-show="tab.a" marked ng-include="'fragments/how_to/install_advice.md'"></section>
           <section ng-show="tab.b" marked ng-include="'fragments/how_to/install_V1_plugin.md'"></section>
           <section ng-show="tab.c" marked ng-include="'fragments/how_to/install_V2_plugin.md'"></section>
@@ -80,7 +80,7 @@
     </div><!-- /container -->
 
     <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
+      <!--#include file="fragments/footer.html" -->
     </div>
   </body>
 
