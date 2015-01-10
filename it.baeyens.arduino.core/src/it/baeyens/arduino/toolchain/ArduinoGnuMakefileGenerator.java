@@ -2986,6 +2986,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		flagsCopy[i] = flags[i];
 	    }
 	    for (int i = 0; i < depOptions.length; i++) {
+		// FIXME: SJA Patch begins here.
+		if (depOptions[i].startsWith("-MT")) {
+		    depOptions[i] = "-MT\"$@\"";
+		}
+		// FIXME: SJA Patch ends here.
 		flagsCopy[i + flagsLen] = depOptions[i];
 	    }
 	    return flagsCopy;
