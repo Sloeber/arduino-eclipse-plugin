@@ -38,10 +38,22 @@ angular.module('arduinoEclipse', ['ui.bootstrap','hc.marked'])
 		}
 	}
 })
-.controller('AffixCtrl', function($scope) {
+.controller('AffixCtrl', function($scope, $location) {
   $scope.select = function(tab) {
     for (prop in $scope.tab) { if ($scope.tab.hasOwnProperty(prop)) { delete $scope.tab[prop] } };
     $scope.tab[tab] = {active: true};
   }
   $scope.tab = {'welcome': true};
+  $scope.init = function() {
+    if($location.path()) {
+      $scope.select($location.path().substring(1))
+    }
+  }
+})
+.controller('PillsCtrl', function($scope, $location) {
+  $scope.init = function() {
+    if($location.path()) {
+      $('a[href="#' + $location.path().substring(1) + '"]').tab('show')
+    }
+  }
 })
