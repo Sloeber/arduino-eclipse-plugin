@@ -25,4 +25,4 @@ select rename
 change the .cpp to .ino or .pde  
 After inclusion of a library add an include reference to the library to the ino or pde file.  
 In the ino file at the top add a line that looks like  
-#include < [the imported library].h >   
+    #include < [the imported library].h >   
