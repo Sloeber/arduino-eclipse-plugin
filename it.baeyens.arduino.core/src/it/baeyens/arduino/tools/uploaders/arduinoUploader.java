@@ -32,7 +32,7 @@ public class arduinoUploader implements IRealUpload {
 	String boardName = Common.getBuildEnvironmentVariable(myProject, mycConf, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 	String NewComPort = MComPort;
 	String command = Common.getBuildEnvironmentVariable(myProject, mycConf, "A.TOOLS." + myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", "");
-	NewComPort = ArduinoSerial.makeArduinoUploadready(myProject, mycConf, MComPort);
+	NewComPort = ArduinoSerial.makeArduinoUploadready(myConsole.newMessageStream(), myProject, mycConf, MComPort);
 
 	command = command.replaceAll(" -P ", " -P " + NewComPort + " ");
 	String nakedPort = NewComPort.replace("/dev/", "");

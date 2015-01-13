@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.console.MessageConsoleStream;
 
 public class ArduinoSerial {
     /**
@@ -53,54 +54,55 @@ public class ArduinoSerial {
      *            The port to return if no new com port is found
      * @return the new comport if found else the defaultComPort
      */
-    public static String wait_for_com_Port_to_appear(Vector<String> OriginalPorts, String defaultComPort) {
+    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> OriginalPorts, String defaultComPort) {
 
 	Vector<String> NewPorts;
-	Vector<String> OriginalPortsCopy;
-
+	Vector<String> NewPortsCopy;
 
 	// wait for port to disappear
 	int NumTries = 0;
-    int MaxTries = 200; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
-    int delayMs = 10;   // on faster computers Esplora reconnects *extremely* quickly and we can't catch this
+	int MaxTries = 20; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
+	int delayMs = 100;
 	do {
-        if (NumTries > 0) {
-            try {
-                Thread.sleep(delayMs);
-            } catch (InterruptedException e) {// Jaba is not going to write this
-                // code
-            }
-        }
-	    OriginalPortsCopy = new Vector<String>(OriginalPorts);
-	    if (NumTries++ > MaxTries) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not disappearing after reset and " + NumTries + " checks"));
-		return defaultComPort;
-	    }
-	    NewPorts = Serial.list();
-	    for (int i = 0; i < NewPorts.size(); i++) {
-		OriginalPortsCopy.remove(NewPorts.get(i));
-	    }
 
-	} while (OriginalPortsCopy.size() != 1);
-	OriginalPorts.remove(OriginalPortsCopy.get(0));
-
-	NumTries = 0;
-	do {
-	    if (NumTries++ > MaxTries) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Leonardo upload port is not appearing after reset"));
-		return defaultComPort;
-	    }
 	    NewPorts = Serial.list();
+
+	    NewPortsCopy = new Vector<String>(NewPorts);
 	    for (int i = 0; i < OriginalPorts.size(); i++) {
-		NewPorts.remove(OriginalPorts.get(i));
+		NewPortsCopy.remove(OriginalPorts.get(i));
 	    }
-	    try {
-		Thread.sleep(delayMs);
-	    } catch (InterruptedException e) {// Jaba is not going to write this
-					      // code
+
+	    /* dump the serial ports to the console */
+	    console.print("PORTS {");
+	    for (int i = 0; i < OriginalPorts.size(); i++) {
+		console.print(" " + OriginalPorts.get(i) + ",");
 	    }
-	} while (NewPorts.size() != 1);
-	return NewPorts.get(0);
+	    console.print("} / {");
+	    for (int i = 0; i < NewPorts.size(); i++) {
+		console.print(" " + NewPorts.get(i) + ",");
+	    }
+	    console.print("} => {");
+	    for (int i = 0; i < NewPortsCopy.size(); i++) {
+		console.print(" " + NewPortsCopy.get(i) + ",");
+	    }
+	    console.println("}");
+	    /* end of dump to the console */
+
+	    if (NumTries++ > MaxTries) {
+		console.println("Comport is not behaving as expected");
+		return defaultComPort;
+	    }
+	    if (NewPortsCopy.size() == 0) // wait a while before we do the next try
+	    {
+		try {
+		    Thread.sleep(delayMs);
+		} catch (InterruptedException e) {// Jaba is not going to write this
+		    // code
+		}
+	    }
+	} while (NewPortsCopy.size() == 0);
+
+	return NewPortsCopy.get(0);
     }
 
     /**
@@ -161,60 +163,81 @@ public class ArduinoSerial {
      *            The name of the com port to reset
      * @return The com port to upload to
      */
-    public static String makeArduinoUploadready(IProject project, String configName, String ComPort) {
+    public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName, String ComPort) {
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
-	String use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false");
+	boolean use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false")
+		.equalsIgnoreCase("true");
 	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
 		.equalsIgnoreCase("true");
 	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
 		.equalsIgnoreCase("true");
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 
-	if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
-		|| boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due") || use_1200bps_touch.equalsIgnoreCase("true")) {
+	if (use_1200bps_touch /*
+			       * || boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro") ||
+			       * boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due")
+			       */) {
+	    // Get the list of the current com serial ports
+	    console.println("Starting reset using 1200bps touch process");
 	    Vector<String> OriginalPorts = Serial.list();
-	    // OriginalPorts.remove(ComPort);
 
 	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due") || boardName.startsWith("Digistump DigiX")) {
+		console.println("reset using 1200bps touch failed");
 		// Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
 		try {
 		    Thread.sleep(2000);
 		} catch (InterruptedException ex) {
 		    // ignore error
 		}
+		console.println("Continuing to use " + ComPort);
+		console.println("Ending reset using 1200bps touch process");
 		return ComPort;
 	    }
 	    if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
 		    || boardName.equalsIgnoreCase("Arduino Esplora") || bwait_for_upload_port) {
-		return wait_for_com_Port_to_appear(OriginalPorts, ComPort);
+		String NewComport = wait_for_com_Port_to_appear(console, OriginalPorts, ComPort);
+		console.println("Using comport " + NewComport + " from now onwards");
+		console.println("Ending reset using 1200bps touch process");
+		return NewComport;
 	    }
 	}
 
 	// connect to the serial port
+	console.println("Starting reset using DTR toggle process");
 	Serial serialPort;
 	try {
 	    serialPort = new Serial(ComPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Exception while opening Serial port " + ComPort, e));
+	    console.println("Exception while opening Serial port " + ComPort);
+	    console.println("Continuing to use " + ComPort);
+	    console.println("Ending reset using DTR toggle process");
 	    return ComPort;
 	    // throw new RunnerException(e.getMessage());
 	}
 	if (!serialPort.IsConnected()) {
 	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, null));
+	    console.println("Unable to open Serial port " + ComPort);
+	    console.println("Continuing to use " + ComPort);
+	    console.println("Ending reset using DTR toggle process");
 	    return ComPort;
 	}
 
 	if (!bDisableFlushing) {
 	    // Cleanup the serial buffer
+	    console.println("Flushing buffer");
 	    flushSerialBuffer(serialPort);// I wonder is this code on the right
 					  // place (I mean before the reset?;
 					  // shouldn't it be after?)
 	}
 	// reset arduino
+	console.println("Toggling DTR");
 	ToggleDTR(serialPort, 100);
 
 	serialPort.dispose();
+	console.println("Continuing to use " + ComPort);
+	console.println("Ending reset using DTR toggle process");
 	return ComPort;
 
     }
