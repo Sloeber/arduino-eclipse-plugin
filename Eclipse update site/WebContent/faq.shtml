@@ -32,7 +32,7 @@
       <ng-include src="'fragments/navbar.html'"/>
     </nav>
 
-    <div class="container" role="main">
+    <div class="container" role="main" ng-controller="PillsCtrl" ng-init="init()">
       <div class="page-header">
         <h1>FAQs <small>please check this list first...</small></h1>
       </div>
