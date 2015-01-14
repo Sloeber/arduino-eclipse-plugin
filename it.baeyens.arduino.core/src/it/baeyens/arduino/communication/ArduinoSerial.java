@@ -173,33 +173,33 @@ public class ArduinoSerial {
 		.equalsIgnoreCase("true");
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
 
-	if (use_1200bps_touch /*
-			       * || boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro") ||
-			       * boardName.equalsIgnoreCase("Arduino Esplora") || boardName.startsWith("Arduino Due")
-			       */) {
+	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println("Starting reset using 1200bps touch process");
 	    Vector<String> OriginalPorts = Serial.list();
 
-	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) || boardName.startsWith("Arduino Due") || boardName.startsWith("Digistump DigiX")) {
+	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) /* || */) {
 		console.println("reset using 1200bps touch failed");
-		// Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
-		try {
-		    Thread.sleep(2000);
-		} catch (InterruptedException ex) {
-		    // ignore error
+
+	    } else {
+		if (boardName.startsWith("Digistump DigiX")) {
+		    // Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
+		    try {
+			Thread.sleep(2000);
+		    } catch (InterruptedException ex) {
+			// ignore error
+		    }
 		}
-		console.println("Continuing to use " + ComPort);
-		console.println("Ending reset using 1200bps touch process");
-		return ComPort;
+		if (bwait_for_upload_port) {
+		    String NewComport = wait_for_com_Port_to_appear(console, OriginalPorts, ComPort);
+		    console.println("Using comport " + NewComport + " from now onwards");
+		    console.println("Ending reset using 1200bps touch process");
+		    return NewComport;
+		}
 	    }
-	    if (boardName.equalsIgnoreCase("Arduino leonardo") || boardName.equalsIgnoreCase("Arduino Micro")
-		    || boardName.equalsIgnoreCase("Arduino Esplora") || bwait_for_upload_port) {
-		String NewComport = wait_for_com_Port_to_appear(console, OriginalPorts, ComPort);
-		console.println("Using comport " + NewComport + " from now onwards");
-		console.println("Ending reset using 1200bps touch process");
-		return NewComport;
-	    }
+	    console.println("Continuing to use " + ComPort);
+	    console.println("Ending reset using 1200bps touch process");
+	    return ComPort;
 	}
 
 	// connect to the serial port
