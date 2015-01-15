@@ -37,7 +37,7 @@ public class ArduinoSerial {
 	}
 
 	try {
-	    Thread.sleep(openTime);
+	    Thread.sleep(openTime); // FIXME this should NOT be done on MacOS
 	} catch (InterruptedException e) {// Jaba is not going to write this
 					  // code
 	}
@@ -61,8 +61,8 @@ public class ArduinoSerial {
 
 	// wait for port to disappear
 	int NumTries = 0;
-	int MaxTries = 20; // wait for 2 seconds, leaves us 6secs in case we are not seeing disappearing ports but reset worked
-	int delayMs = 100;
+	int MaxTries = 20; // wait for max 5 seconds, leaves us 3 secs in case we are not seeing disappearing ports but reset worked
+	int delayMs = 250;
 	do {
 
 	    NewPorts = Serial.list();
@@ -102,6 +102,7 @@ public class ArduinoSerial {
 	    }
 	} while (NewPortsCopy.size() == 0);
 
+	console.println("Comport reset took " + (NumTries * delayMs) + "ms");
 	return NewPortsCopy.get(0);
     }
 
@@ -178,7 +179,7 @@ public class ArduinoSerial {
 	    console.println("Starting reset using 1200bps touch process");
 	    Vector<String> OriginalPorts = Serial.list();
 
-	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 100) /* || */) {
+	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 300) /* || */) {
 		console.println("reset using 1200bps touch failed");
 
 	    } else {
