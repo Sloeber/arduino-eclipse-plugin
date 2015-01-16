@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
@@ -35,11 +36,12 @@ public class ArduinoSerial {
 	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
 	    return false;
 	}
-
-	try {
-	    Thread.sleep(openTime); // FIXME this should NOT be done on MacOS
-	} catch (InterruptedException e) {// Jaba is not going to write this
-					  // code
+	if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
+	    try {
+		Thread.sleep(openTime);
+	    } catch (InterruptedException e) {// Jaba is not going to write this
+					      // code
+	    }
 	}
 	serialPort.dispose();
 	return true;
@@ -59,9 +61,9 @@ public class ArduinoSerial {
 	Vector<String> NewPorts;
 	Vector<String> NewPortsCopy;
 
-	// wait for port to disappear
+	// wait for port to disappear and appear
 	int NumTries = 0;
-	int MaxTries = 20; // wait for max 5 seconds, leaves us 3 secs in case we are not seeing disappearing ports but reset worked
+	int MaxTries = 40; // wait for max 10 seconds as arduino does
 	int delayMs = 250;
 	do {
 
