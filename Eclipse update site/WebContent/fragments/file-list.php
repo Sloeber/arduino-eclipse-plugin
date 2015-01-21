@@ -30,7 +30,7 @@ function listFiles($prefix) {
 			$size = formatBytes ( $stat ['size'] );
 			echo "<tr class='clickable'>";
 			echo "<td class='text-center'>$date</td>";
-			echo "<td><a href='$file' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
+			echo "<td><a href='http://eclipse.baeyens.it/download/product/$refname' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
 			echo "<td class='text-right'>$size</td>";
 			echo "</tr>";
 		}
