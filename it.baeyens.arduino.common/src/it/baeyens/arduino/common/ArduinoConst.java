@@ -102,6 +102,8 @@ public class ArduinoConst {
     public static final String ENV_KEY_upload_tool = ENV_KEY_ARDUINO_START + "UPLOAD.TOOL";
     public static final String ENV_KEY_build_core_folder = ENV_KEY_ARDUINO_START + "BUILD.CORE";
     public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";
+    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_ARDUINO_START + "SERIAL.PORT";
+    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_ARDUINO_START + "SERIAL.PORT.FILE";
 
     public static final String ArduinoIdeSuffix_WIN[] = { "" };
     public static final String ArduinoIdeSuffix_LINUX[] = { "" };
