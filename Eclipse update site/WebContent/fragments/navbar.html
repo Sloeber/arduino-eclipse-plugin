@@ -1,11 +1,4 @@
-      <script>
-        (function() {
-          var cx = '000888210889775888983:eeinzw5ta4e';
-          var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-          gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
-        })();
-      </script>
+
       <div class="container" ng-controller="NavBarCtrl" ng-init="init()">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -48,11 +41,15 @@
               </ul>
             </li>
           </ul>
-          <form class="navbar-form navbar-right">
+
+          <form class="navbar-form navbar-right" name="google-search" method="get" action="http://www.google.com/search">
             <div class="form-group has-feedback">
-              <input type="text" class="form-control" id="inputSuccess4"/>
+              <input name="q" type="text" class="form-control" id="inputSuccess4"/>
               <span class="glyphicon glyphicon-search disabled form-control-feedback"></span>
             </div>
+            <input type="hidden" name="sitesearch" value="http://www.baeyens.it/eclipse/" />
+            <input type="hidden" name="sa" value="Google" />
           </form>
+          
         </div><!--/.nav-collapse -->
       </div>
