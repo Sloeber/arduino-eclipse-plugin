@@ -13,6 +13,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -535,6 +538,9 @@ public class ArduinoHelpers extends Common {
 	// from 1.5.8 onward 1 more environment variable is needed
 	var = new EnvironmentVariable(ENV_KEY_PLATFORM_PATH, platformFile.removeLastSegments(1).toString());
 	contribEnv.addVariable(var, confDesc);
+	// Teensy uses build.core.path
+	var = new EnvironmentVariable(ENV_KEY_build_core_path, "${" + ENV_KEY_PLATFORM_PATH + "}/cores/${" + ENV_KEY_build_core_folder + "}");
+	contribEnv.addVariable(var, confDesc);
 
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
 	// I won't call them idiots for this but it is getting close
@@ -561,6 +567,25 @@ public class ArduinoHelpers extends Common {
 	// project not using the archiving functionality
 	// I set the default value to: use the archiver
 	var = new EnvironmentVariable(ENV_KEY_use_archiver, "true");
+	contribEnv.addVariable(var, confDesc);
+
+	// Build Time
+	Date d = new Date();
+	GregorianCalendar cal = new GregorianCalendar();
+	long current = d.getTime() / 1000;
+	long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
+	long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
+	// p.put("extra.time.utc", Long.toString(current));
+	var = new EnvironmentVariable("A.EXTRA.TIME.UTC", Long.toString(current));
+	contribEnv.addVariable(var, confDesc);
+	// p.put("extra.time.local", Long.toString(current + timezone + daylight));
+	var = new EnvironmentVariable("A.EXTRA.TIME.LOCAL", Long.toString(current + timezone + daylight));
+	contribEnv.addVariable(var, confDesc);
+	// p.put("extra.time.zone", Long.toString(timezone));
+	var = new EnvironmentVariable("A.EXTRA.TIME.ZONE", Long.toString(timezone));
+	contribEnv.addVariable(var, confDesc);
+	// p.put("extra.time.dst", Long.toString(daylight));
+	var = new EnvironmentVariable("A.EXTRA.TIME.DTS", Long.toString(daylight));
 	contribEnv.addVariable(var, confDesc);
 	// End of Teensy specific settings
 
