@@ -47,6 +47,7 @@
             <a href="#d" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Install V2 product</a>
             <a href="#e" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Configure</a>
             <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Create sketch</a>
+            <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('lib')">Add a library to a sketch</a>
             <a href="#g" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Change the serial port</a>
             <a href="#h" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Change the arduino board</a>
             <a href="#i" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Work with Teensy</a>
@@ -65,6 +66,7 @@
           <section ng-show="tab.d" marked ng-include="'fragments/how_to/install_V2_product.md'"></section>
           <section ng-show="tab.e" marked ng-include="'fragments/how_to/configure.md'"></section>
           <section ng-show="tab.f" marked ng-include="'fragments/how_to/create_sketch.md'"></section>
+          <section ng-show="tab.lib" marked ng-include="'fragments/how_to/add_library.md'"></section>
           <section ng-show="tab.g" marked ng-include="'fragments/how_to/change_serial_port.md'"></section>
           <section ng-show="tab.h" marked ng-include="'fragments/how_to/change_arduino_bord.md'"></section>
           <section ng-show="tab.i" marked ng-include="'fragments/how_to/work_with_teensy.md'"></section>

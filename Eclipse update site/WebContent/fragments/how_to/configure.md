@@ -25,7 +25,7 @@ This section assumes you have installed the Arduino Eclipse plugin or product.
   ino and pde files are a file extension created by Arduino and as such is not recognized as a C/C++ file.  
   We need to tell Eclipse to treat ino and pde files as C/C++ file.  
   To do so goto menu:window->preferences->C/C++->file types    
-  and add ino and pde files as c/c++ files one by one using the new button.  
+  and add *.ino and *.pde as c/c++ files one by one using the new button.  
   ![file types](http://iloapp.baeyens.it/data/_gallery/public/1/1320784770_resized.png)  
   
  

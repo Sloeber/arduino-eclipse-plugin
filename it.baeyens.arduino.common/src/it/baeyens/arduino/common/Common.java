@@ -540,7 +540,7 @@ public class Common extends ArduinoInstancePreferences {
      *            the key that describes the variable
      * @param defaultvalue
      *            The return value if the variable is not found.
-     * @return
+     * @return The expanded build environment variable
      */
     static public String getBuildEnvironmentVariable(IProject project, String configName, String EnvName, String defaultvalue) {
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
@@ -557,7 +557,7 @@ public class Common extends ArduinoInstancePreferences {
      *            the key that describes the variable
      * @param defaultvalue
      *            The return value if the variable is not found.
-     * @return
+     * @return The expanded build environment variable
      */
     static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription, String EnvName, String defaultvalue) {
 

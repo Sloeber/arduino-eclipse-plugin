@@ -58,12 +58,15 @@ In V1 the plugin will create 2 projects. one for the Arduino library and one for
 
 Normally you will not open the arduino_atmegaXXX project directly yourself. You will edit the project you created.  
 In the image above I opened the my sketch.cpp file by double clicking on it.  
-Pressing the hammer (marked in the image above) will compile the project. Pressing the AVR button (marked above) will upload the project to your Arduino board.    
-When modifying the file later on do not delete the #include directive at the top of the file. If you do the Arduino language will not be known to your sketch.  
+Pressing the hammer (V1:marked in the image above) or the Arduino verify symbol will compile the project. Pressing the AVR button (V1: marked above) or the arduino upload button will upload the project to your Arduino board.
+Note that the arduino upload does not verify first.    
+In V1: When modifying the file later on do not delete the #include directive at the top of the file. If you do the Arduino language will not be known to your sketch.
 
-In V2 only one project is created. The Arduino code is now in a folder Arduino in your project.  
-You can see that in the image below where you also see the import library dialog.
-![import library](http://iloapp.baeyens.it/data/_gallery/public/1/137950377839940200_resized.png)
+In V1 2 projects are created. One for the board and one for the sketch.
+
+In V2: if you have a ino file without libraries the indexer will mark errors. This means that the sketch will compile but the indexer thinks it won't. To fix this simply add #include "Arduino.h" at the top of the ino/pde file.  
+
+In V2 only one project is created. The Arduino code is in folder Arduino in your project.  
 
  **Party success**
  
