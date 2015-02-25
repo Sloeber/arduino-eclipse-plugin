@@ -89,8 +89,8 @@ public class UploadSketchWrapper {
 	    uploadJobName = ArduinoConst.Upload_ssh;
 	} else if (UpLoadTool.equalsIgnoreCase(ArduinoConst.UploadToolTeensy)) {
 	    myHighLevelConsoleStream.println("using generic local uploader");
-	    realUploader = new GenericLocalUploader(ArduinoConst.UploadToolTeensy, Project, cConf, myConsole, myErrconsoleStream, myOutconsoleStream);
-	    uploadJobName = ArduinoConst.UploadToolTeensy;
+	    realUploader = new GenericLocalUploader(UpLoadTool, Project, cConf, myConsole, myErrconsoleStream, myOutconsoleStream);
+	    uploadJobName = UpLoadTool;
 	} else {
 	    myHighLevelConsoleStream.println("using arduino loader");
 	    realUploader = new arduinoUploader(Project, cConf, UpLoadTool, myConsole);

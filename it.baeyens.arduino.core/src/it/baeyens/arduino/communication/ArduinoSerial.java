@@ -175,7 +175,12 @@ public class ArduinoSerial {
 	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
 		.equalsIgnoreCase("true");
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
-
+	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_UPLOAD_PROTOCOL, "");
+	/* Teensy uses halfkay protocol and doesn not require a reset */
+	if (upload_protocol.equalsIgnoreCase("halfkay")) {
+	    return ComPort;
+	}
+	/* end of Teensy and halfkay */
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println("Starting reset using 1200bps touch process");
