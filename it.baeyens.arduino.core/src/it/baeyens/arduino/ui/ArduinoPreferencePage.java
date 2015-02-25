@@ -160,7 +160,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	if (mArduinoIdeVersion.getStringValue().equals("1.5.7") || mArduinoIdeVersion.getStringValue().equals("1.5.8")) {
 	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		if (!showError("Arduino IDE 1.5.7 and 1.5.8 Have serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
+		if (!showError("Arduino IDE 1.5.7, 1.5.8 and 1.6.0 Have serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
 		    return false;
 	    } else {
 		if (!showError("Arduino IDE 1.5.7 and 1.5.8 work but you may need to add your own make as it is no longer delivered with arduino."))
@@ -168,9 +168,19 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    }
 	}
 	if (mArduinoIdeVersion.getStringValue().equals("1.6.0")) {
-	    if (!showError("Arduino IDE 1.6.0 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
-		return false;
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (!showError("Arduino IDE 1.6.0 has serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
+		    return false;
+	    } else {
+		if (!showError("Arduino IDE 1.6.0 is the currently advised version for linux and mac. Remember to add your own make as it is no longer delivered with arduino."))
+		    return false;
+	    }
 	}
+	// if (mArduinoIdeVersion.getStringValue().equals("1.6.1")) {
+	// if
+	// (!showError("Arduino IDE 1.6.0 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
+	// return false;
+	// }
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.6.0") > 0) {
 	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
 		return false;
