@@ -3,7 +3,7 @@ Windows
 
 Windows users keep in mind that spaces cause problems. So do not install the arduino IDE eclipse or the product in "program files". Don't create the workspace in "my documents".  
 
-The biggest problem right now with windows is in the 1.5.x arduino IDE.  
+The biggest problem right now with windows is in the 1.5.x arduino IDE (also in 1.6.0).  
 Arduino IDE 1.5.7 came with a new toolchain which is known to cause 2 problems in windows.  
 
 The first problem is consistent and is that the make file is no longer part of the Arduino IDE delivery. To fix this you can install make or copy make from an older version.  
