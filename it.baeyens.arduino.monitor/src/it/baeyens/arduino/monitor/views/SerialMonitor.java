@@ -516,7 +516,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     public void ResumePort(String PortName) {
 	Serial TheSerial = GetSerial(PortName);
 	if (TheSerial != null) {
-	    TheSerial.connect();
+	    TheSerial.connect(5);
 	}
     }
 

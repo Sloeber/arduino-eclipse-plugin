@@ -146,31 +146,44 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void connect() {
+	connect(1);
+    }
+
+    public void connect(int maxTries) {
 	if (port == null) {
-	    try {
-		port = new SerialPort(PortName);
-		port.openPort();
-		port.setParams(rate, databits, stopbits, parity);
+	    int count = 0;
+	    while (true) {
+		try {
+		    port = new SerialPort(PortName);
+		    port.openPort();
+		    port.setParams(rate, databits, stopbits, parity);
 
-		int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_BREAK;
-		port.addEventListener(this, eventMask);
-		return;
-	    } catch (SerialPortException e) {
-		if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			    + " already in use. Try quiting any programs that may be using it", e));
-		} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
-		} else {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
+		    int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_BREAK;
+		    port.addEventListener(this, eventMask);
+		    return;
+		} catch (SerialPortException e) {
+		    // handle exception
+		    if (++count == maxTries) {
+			if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " already in use. Try quiting any programs that may be using it", e));
+			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+			} else {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
+			}
+		    } else {
+			try {
+			    Thread.sleep(200);
+			} catch (InterruptedException e1) {
+			    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Sleep failed", e1));
+			}
+		    }
 		}
-	    } catch (Exception e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
+		// If an exception was thrown, delete port variable
+		port = null;
 	    }
-
-	    // If an exception was thrown, delete port variable
-	    port = null;
 	}
     }
 
