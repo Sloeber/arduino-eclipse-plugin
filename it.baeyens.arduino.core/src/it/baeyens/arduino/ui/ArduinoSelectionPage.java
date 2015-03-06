@@ -37,8 +37,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * The ArduinoPageLayout class is used in the new wizard and the project properties. This class controls the gui and the data underneath the gui. This
- * class allows to select the arduino board and the port name
+ * The ArduinoSelectionPage class is used in the new wizard and the project properties. This class controls the gui and the data underneath the gui.
+ * This class allows to select the arduino board and the port name
  * 
  * @author Jan Baeyens
  * @see ArduinoProperties ArduinoSettingsPage
