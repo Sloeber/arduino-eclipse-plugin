@@ -453,6 +453,8 @@ public class Serial implements SerialPortEventListener {
 	case SerialPortEvent.BREAK:
 	    errorMessage("Break detected", new Exception());
 	    break;
+	default:
+	    break;
 	}
     }
 

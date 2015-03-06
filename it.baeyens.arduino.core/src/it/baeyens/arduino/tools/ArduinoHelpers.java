@@ -660,29 +660,30 @@ public class ArduinoHelpers extends Common {
      */
     private static void setTheEnvironmentVariablesAddthePlatformTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
 	    IPath platformFile) throws IOException {
-	DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
-	BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
-	String strLine;
+	try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
+		BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));) {
+	    String strLine;
 
-	// Read File Line By Line
-	while ((strLine = br.readLine()) != null) {
-	    String realData[] = strLine.split("#");// Ignore everything after
-						   // first #
-	    if (realData.length > 0) {
-		String var[] = realData[0].split("=", 2); // look for assignment
-		if (var.length == 2) {
-		    String value = var[1];
-		    if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
-			value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
-		    } else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
-			value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
+	    // Read File Line By Line
+	    while ((strLine = br.readLine()) != null) {
+		String realData[] = strLine.split("#");// Ignore everything after
+						       // first #
+		if (realData.length > 0) {
+		    String var[] = realData[0].split("=", 2); // look for assignment
+		    if (var.length == 2) {
+			String value = var[1];
+			if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
+			    value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
+			} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
+			    value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
+			}
+			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value));
+			contribEnv.addVariable(envVar, confDesc);
 		    }
-		    IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value));
-		    contribEnv.addVariable(envVar, confDesc);
 		}
 	    }
+	    dataInputStream.close(); // Close the platform.txt
 	}
-	dataInputStream.close(); // Close the platform.txt
     }
 
     /**
@@ -1115,11 +1116,12 @@ public class ArduinoHelpers extends Common {
 	    // command line parameter
 	    FileInputStream fstream = new FileInputStream(file);
 	    // Get the object of DataInputStream
-	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	    String strLine = br.readLine();
-	    in.close();
-	    return strLine;
+	    try (DataInputStream in = new DataInputStream(fstream); BufferedReader br = new BufferedReader(new InputStreamReader(in));) {
+
+		String strLine = br.readLine();
+		in.close();
+		return strLine;
+	    }
 	} catch (Exception e) {// Catch exception if any
 	    System.err.println("Error: " + e.getMessage());
 	    return e.getMessage();

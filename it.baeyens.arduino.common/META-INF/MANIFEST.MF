@@ -1,13 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Common
-Bundle-SymbolicName: it.baeyens.arduino.common
+Bundle-SymbolicName: it.baeyens.arduino.common;singleton:=true
 Bundle-Version: 2.4.0.qualifier
 Bundle-Activator: it.baeyens.arduino.common.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
- org.eclipse.ui.console
+ org.eclipse.ui.console,
+ org.eclipse.cdt;bundle-version="8.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
