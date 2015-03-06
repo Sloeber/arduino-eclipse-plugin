@@ -134,6 +134,8 @@ public class ArduinoHelpers extends Common {
 			if ((ResourcesPlugin.getWorkspace().getRoot().exists(cusPath))
 				|| (((CIncludePathEntry) OrgIncludeEntries[curEntry]).isBuiltIn())) {
 			    OrgIncludeEntries[copiedEntry++] = OrgIncludeEntries[curEntry];
+			} else {
+			    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Removed invalid include path" + cusPath, null));
 			}
 		    }
 		    if (copiedEntry != OrgIncludeEntries.length) // do not save
@@ -144,6 +146,7 @@ public class ArduinoHelpers extends Common {
 			System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, copiedEntry);
 			lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
 			hasChange = true;
+
 		    }
 		}
 	    }
