@@ -114,6 +114,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 		myArduinoHardwareLibItem.setText("Hardware provided Libraries");
 		// Add the Arduino Libs
 		AddLibs(myArduinoHardwareLibItem, HardwareLibraryPath);
+		myArduinoHardwareLibItem.setExpanded(true);
 	    }
 	}
 
@@ -134,10 +135,10 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	    myPersonalLibItem.setText("Personal Libraries");
 	    // Add the personal Libs
 	    AddLibs(myPersonalLibItem, PrivateLibraryPath);
-	    myLibrarySelector.setRedraw(true);
 	    myPersonalLibItem.setExpanded(true);
 	}
 
+	myLibrarySelector.setRedraw(true);
 	myLibrarySelector.addListener(SWT.Selection, new Listener() {
 	    @Override
 	    public void handleEvent(Event event) {
