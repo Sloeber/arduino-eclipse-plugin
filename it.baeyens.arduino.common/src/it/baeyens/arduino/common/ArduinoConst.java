@@ -28,7 +28,6 @@ public class ArduinoConst {
 
     // preference keys
     public static final String KEY_ARDUINO_IDE_VERSION = "Arduino IDE Version";
-    public static final String KEY_RXTXDISABLED = "Arduino DisAbleRXTX";
     public static final String KEY_ARDUINOPATH = "Arduino Path";
     public static final String KEY_PRIVATE_LIBRARY_PATH = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATH = "Private hardware Path";
@@ -36,6 +35,7 @@ public class ArduinoConst {
     // properties keys
     public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";
     public static final String KEY_LAST_USED_COM_PORT = "Arduino Port";
+    public static final String KEY_LAST_USED_PROGRAMMER = "Arduino Programmer";
     public static final String KEY_LAST_USED_ARDUINO_BOARDS_FILE = "Arduino boards file";
     public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Arduino scope filter on off";
@@ -49,6 +49,7 @@ public class ArduinoConst {
     public static final String LIBRARY_PATH_SUFFIX = "libraries";
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
+    public static final String DEFAULT = "Default";
     public static final String BOARDS_FILE_NAME = "boards.txt";
     public static final String PLATFORM_FILE_NAME = "platform.txt";
     public static final String LIB_VERSION_FILE = "lib/version.txt";
@@ -68,6 +69,7 @@ public class ArduinoConst {
 
     public static final String ENV_KEY_ARDUINO_START = "A.";
     public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";
+    public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";
     public static final String WORKSPACE_LIB_FOLDER = "Libraries/";
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
     public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.O.PATTERN";
@@ -87,6 +89,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_ARDUINO_START + "ARCHITECTURE";
     public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_ARDUINO_START + "BUILD.ARCH";
     public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.HARDWARE.PATH";
+    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.PLATFORM.PATH";
 
     public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";
     public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";
@@ -97,12 +100,16 @@ public class ArduinoConst {
     public static final String ENV_KEY_upload_disable_flushing = ENV_KEY_ARDUINO_START + "UPLOAD.DISABLE_FLUSHING";
     public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
     public static final String ENV_KEY_upload_tool = ENV_KEY_ARDUINO_START + "UPLOAD.TOOL";
+    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";
     public static final String ENV_KEY_build_core_folder = ENV_KEY_ARDUINO_START + "BUILD.CORE";
+    public static final String ENV_KEY_build_core_path = ENV_KEY_ARDUINO_START + "BUILD.CORE.PATH";
     public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";
+    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_ARDUINO_START + "SERIAL.PORT";
+    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_ARDUINO_START + "SERIAL.PORT.FILE";
 
-    public static final String ArduinoIdeSuffix_WIN = "";
-    public static final String ArduinoIdeSuffix_LINUX = "";
-    public static final String ArduinoIdeSuffix_MAC = "Contents/Resources/Java";
+    public static final String ArduinoIdeSuffix_WIN[] = { "" };
+    public static final String ArduinoIdeSuffix_LINUX[] = { "" };
+    public static final String ArduinoIdeSuffix_MAC[] = { "Contents/Resources/Java", "Contents/Java" };
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
@@ -111,6 +118,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
+    public static final String ENV_KEY_JANTJE_COM_PROG = ENV_KEY_JANTJE_START + "COM_PROGMR";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
@@ -132,5 +140,6 @@ public class ArduinoConst {
     // scope stuff
     public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the flag that indicates scope data is following
     // least significant first 0xCDAB;
+    public static final String ARDUINO_EXAMPLE_FOLDER_NAME = "examples";
 
 }

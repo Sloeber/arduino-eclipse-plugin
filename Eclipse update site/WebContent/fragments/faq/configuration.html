@@ -1,0 +1,29 @@
+<h2>Configuration</h2>
+<accordion close-others="true">
+  <accordion-group heading="In V1 there are 2 locations where I can set configuration info. Where Should I set it?">
+	As explained above, this plugin is build on top of the AVRECLIPSE and CDT plugins. The plugin sets the "default Arduino settings" and groups all Arduino settings in one place.
+	So when you change a Arduino setting; the plugin sets the CDT and AVRECLIPSE setting accordingly.<br/>
+	The settings are only set when you set them (in other words they are not verified and corrected afterwards.)
+	This means you can change them directly using the AVRECLIPSE and CDT functionality or indirectly using my plugin settings pages.
+	One nice example to demonstrate this is in the preference page (<i>Window &gt; Preferences &gt; Arduino &gt; Arduino</i>).
+	This page contains the flag &quot;use Arduino ide tools in eclipse&quot;.<br/>
+	If you set this flag the AVRECLIPSE plugin settings will be filled with the locations of the Arduino IDE (compiler/avr dude...).
+	But you can still go to these settings  in the AVRECLIPSE pages and change them.Your changes will be in efffect even though the flag &quot;use Arduino ide tools in eclipse&quot; is set.
+	By removing the flag and resetting the flag you can undo the changes you did.<br/>
+	I hope this is clear.
+  </accordion-group>
+  <accordion-group heading="Can I use the plugin with a version control tool?">
+	Yes you can and should. <a href="https://jazz.net/products/rational-team-concert/">I use Rational team concert.</a> The best version control system available at this time.<br/>
+	You can download 10 free licences (What I'm doing). If you are running an open source project you can get all the free licences you need.<br/>
+	If you are not be willing to set up your own server to run RTC/CVS/subversion/git you may consider using <a href="https://github.com/">github</a>.<br/>
+  </accordion-group>
+  <accordion-group heading="What is this private library in the settings page?">
+	In the settings page a private library folder is requested. This setting should point to a location where you down loaded Arduino libraries.<br/>
+	If you haven't down loaded Arduino libraries yet do as follows:
+	<ol>
+		<li>Consider using the Arduino IDE. (strongly advised)</li>
+		<li>Point it to a location where you can download Arduino libraries.</li>
+	</ol>
+  </accordion-group>
+</accordion>
+

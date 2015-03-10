@@ -1,0 +1,108 @@
+<h2>General</h2>
+<accordion close-others="true">
+  <accordion-group heading="How can I contact the author of this great plugin?">
+    <p>First of all ask yourself: <i>"Do I have something of interest to share with Jantje? I mean interesting for Jantje, not for me?"</i>. <br/>
+    Then consider asking yourself: <i>"Jantje has spent many days working on this plugin. Jantje is still spending way too much time on improving the plugin. Jantje gives it to you all for free. Do I really want to consume Jantje's time?"</i>.</p>
+    <p>If you still believe you want to contact Jantje, please first try searching the web for an existing solution to your problem/question and, only after all the searches you could think of have failed, at least have the decency to write a proper email.</p>
+    <p>So don't be surprised when Jantje is not responding nicely when you ask a question you should not have asked him in the first place.<br/> If you think he's blunt, you should see the one-liner mails he gets!</p>
+    <p>He's not the only person in the world who feels like this. So, before sending a mail, learn something and read the Eclipse guidance when formulating your question <b>note the Eclipse link is not a link to a help desk</b>. <a href="http://www.catb.org/~esr/faqs/smart-questions.html">It is a link to a document explaining how to ask questions the smart way.</a></p>
+    <p>Unless you want to send a mail saying <i>"thank you"</i> or <i>"well done"</i>, consider the following alternatives:
+      <ul>
+        <li>Use the Arduino forum to ask questions. There are 2 threads which have been going for a while and contain lots of info. Jantje actively monitors these threads.
+          <ul>
+            <li>Please post in <a href="http://arduino.cc/forum/index.php/topic,79595.0.html">this one</a></li>
+            <li>Please <b>do not post</b> in <a href="http://arduino.cc/forum/index.php/topic,70547.0.html">this one</a>, but have a look at it nevertheless</li>
+          </ul>
+        </li>
+        <li>If you think you have found a bug you can log the bug at <a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank">Github</a></li>
+        <li>If you want to support/bribe Jantje, <a href="donate.html">buy him an Arduino</a>!</li>
+        <li>If all of the above are not appropriate, then you want to discuss something in private with Jantje, which <b><i>you think</i></b> is really interesting to Jantje: you may reach him at 
+          <a href="mailto:eclipse@baeyens.it">eclipse@baeyens.it</a>.<br/>
+          Note: If you want to increase your chanses of getting a nice answer, <a href="donate.html">buy him an Arduino</a>!</li>
+      </ul>
+    </p>
+  </accordion-group>
+  <accordion-group heading="On which versions is this plugin tested?">
+    <p>Due to machine changes, test setups have deteriorated: basically tests are now first done by developers and then by users.</p>
+  </accordion-group>
+  <accordion-group heading="On which platforms is this plugin tested?">
+    <p>When I ask for testers I try to get a tester for each platform. As it is all volunteer work there are however no guarantees.</p>
+    <p>I designed/tested on RedHat and Windows XP.</p>
+    <p>There are windows users and there are some loyal Mac users whom I ask to test specific Mac features.</p>
+    <a href="http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/arduino-eclipse-plugin-installation/">My biggest fan</a> on V2 Teensy and Mac<br>
+    <a href="http://arduino.cc/forum/index.php?action=profile;u=62557">garretto</a> wrote a doc on how to get V1 working on MacOS.<br>
+    <a href="http://robots.dacloughb.com/project-1/setting-up-the-arduino-eclipse-environment-on-mac-os-x-lion/">Another doc on V1 for MacOS</a><br>
+  </accordion-group>
+  <accordion-group heading="Where is the serial monitor?">
+    From 1.2.2 onwards you can use the included serial monitor.<br/>
+    Select menu item <code><i>Windows &gt; Show View &gt; other &gt; Arduino &gt; Serial monitor View</i></code>.<br>
+    From V2 onwards press the <code>Serial monitor</code> icon in the toolbar (the same as Arduino is using) or open it via the Arduino menu.<br>
+    There is no serial monitor in the tool before version 1.2.2: use the serial monitor of your choice.<br>
+  </accordion-group>
+  <accordion-group heading="Did you say there is a (oscillo)scope?">
+    Thanks to Wim Jongman version 2.1.1 introduced scope functionality. It is a 6 channel scope that works exactly like <a href="http://www.negtronics.com/simplot">Simplot</a><br>
+    You can use the sample code from that site.<br>
+    Basically you can send any integer vallue to the scope. A good example for debugging could be that you send the actual read value and the mean, average, ...<br>
+    <a href="http://blog.baeyens.it/#post12">Here is a blog where I used the scope to monitor the heat buildup of a Arduino controlled PWM motor.</a><br>
+  </accordion-group>
+  <accordion-group heading="How do I debug?">
+    There is no debug functionality with Arduino out of the box.<br>
+    The Arduino Eclipse plugin does support debugging with AVR dragon <a href=http://husks.wordpress.com/2012/03/29/hardware-debugging-the-arduino-using-eclipse-and-the-avr-dragon>here</a> is a nice article that explains how to debug in Linux and Windows.<br>
+    From version 2.1.1 you can select to have a debug configuration in the sketch creation wizard.<br> 
+  </accordion-group>
+  <accordion-group heading="Where can I report bugs?">
+    Please report any bug on <a href="https://github.com/jantje/arduino-eclipse-plugin/issues" target="_blank">Github</a> providing as much information as possible regarding how to reproduce it, your Eclipse environment configuration, the operating system and the hardware you use when the issue occurs.<br>
+  </accordion-group>
+  <accordion-group heading="I use AVRECLIPSE...">
+    <p>
+      Great, excellent choice, a neat tool. V1 of this plugin uses AVRECLIPSE. The code from AVRECLIPSE has been forked and included in V1 of this plugin. To avoid conflict between this plugin and AVRECLIPSE I had to change all the internal ID's of AVRECLIPSE. As a user you should not notice this unless you want to swap between AVRECLIPSE projects and Arduino Eclipse projects created with this plugin.<br>
+      You may wonder whether it was a good idea to fork. Wouldn't it have been better to build on top like the plugin builds on top of CDT who builds on top of Eclipse.<br>
+      I fully agree that this would have been better.  New releases of AVRECLIPSE could have been applied without hassle.<br>
+      It was the original idea but due to circumstances (there is no one to blame) it worked out differently.<br>
+      My plugin adds amongst others: the create Arduino sketch, the add library, a preference page, a property page, a sample sketch to start from and the Arduino reset.<br>
+    </p>
+    <p>
+      So basically when you installed V1 of this tool you have the AVRECLIPSE on your system. But what is the difference between AVRECLIPSE plugin and the AVRECLIPSE included in this plugin? <br>
+      <ol>
+        <li>As mentioned above I had to change all the ID's.</li>
+        <li>The AVRECLIPSE tool works with external tools like GCC and AVRDude. So does the Arduino IDE. When you set the option <code>use Arduino IDE tools in Eclipse</code> you actually set all the AVRECLIPSE settings to point to the Arduino tools. As all these tools are installed underneath the Arduino folder the plugin knows their location.</li>
+        <li>I fixed some bugs. Each time a tool gets used in a different way some bugs will pop up. I fixed the ones that bothered me.</li>
+        <li>I added the Arduino reset (still needed for the mega)</li>
+      </ol>
+      So unless I made a mistake and (as long as there is no newer AVRECLIPSE version) you can use only my plugin to do project development on non-Arduino and Arduino in the same environment.<br>
+      Note that as I only changed the ID's and not the names installing AVRECLIPSE next to my plugin works but has the drawback that menu items will appear twice and you can't tell them from each other.<br>
+      <br>
+      V2 removed AVRECLIPSE because due is no longer a AVR. The benefits of using AVRECLIPSE no longer outweighed the drawbacks of having to support SAM. This is actually very good news for people who need the full AVRECLIPSE functionality as now you can run both at the same time without drawbacks.
+  </accordion-group>
+  <accordion-group heading="How come is this plugin free?">
+    I have written this tool for myself for several reasons.
+    <ul>
+      <li>I lost plenty of time configuring the AVRECLIPSE plugin. As the configuration is per workspace I wanted something better.</li>
+      <li>I truly believe the Arduino needs a software development growth path. Currently there is little available that would be a valid free software development growth path for the arduino.</li>
+      <li>I had some time and wanted to learn more in depth about the Eclipse environment.</li>
+    </ul>
+    <p>
+      As I build it and I did not feel like investing time to make money out of it I published the code in open source.<br>
+      When I build the serial monitor I considered to make a commercial package from it. I decided not to do so because the price/support effort seemed out of balance at that time.<br>
+      In July 2012 I added a <a href=";donate.html">Buy Jantje an Arduino.</a> page to allow people to sponsor this project. Results have been below expectations.<br>
+      During this period my web stats reports a minimum per month of 3289 visits; 5206 page views.<br>
+      During the whole of the 3 first months I received 5 donations.<br>
+      I'm not complaining but I'm looking for a way to convince myself to keep new versions of the plugin available and free. And it is getting harder and harder to convince myself.<br>
+      The main reason is that there are plenty of people around who think: &quot;because Jantje gives away the code for free; he is my personal slave&quot;. In other words: I have to solve their problems and I am really rude if I refuse to do so. The result is that I spend time solving other peoples their problems or spend time getting rid of those people. In both cases my projects <b>for which I designed the plugin</b> are on hold.<br>
+      On the non-money front: the <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">CDT bug for which I asked to vote</a> reports 6 votes after 19 months. Today my Karma at the Arduino forum is 38.<br>
+      Bottom line: Due to lack of return I feel I only loose time and money with this pugin.<br>
+      I don't want to think about this, because if I do I quit on the spot.<br>
+      <i>......(Jantje stopped thinking)</i><br>
+      Update: The Arduino team has provided me with plenty of real Arduinos. I'm really pleased they have made those boards available to me. Mostly because I consider it as a recognition to my work by the core Arduino team.<br>
+      Update 2: Some people jumped in with the development. Some hard to fix (for me) issues are now fixed for me too.
+    </p>
+  </accordion-group>
+  <accordion-group heading="You state the plugin is open source. Where can I find the source code?">
+    The latest and greatest code github is build nightly and available on the nightly update site.<br>
+    You can find the code at <a href="https://github.com/jantje/arduino-eclipse-plugin">https://github.com/jantje/arduino-eclipse-plugin</a> 
+  </accordion-group>
+    <accordion-group heading="How do I know what has changed in the code lately?">
+    The easiest is to look at the travis build history.<br>
+    <a href="https://travis-ci.org/jantje/arduino-eclipse-plugin/builds">travis build history</a> 
+  </accordion-group>
+</accordion>

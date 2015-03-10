@@ -50,33 +50,24 @@ public class SSH {
 	return execSyncCommand(command, null, null);
     }
 
-    @SuppressWarnings("resource")
     public boolean execSyncCommand(String command, PrintStream stdoutConsumer, PrintStream stderrConsumer) throws JSchException, IOException {
-	InputStream stdout = null;
-	InputStream stderr = null;
+
 	Channel channel = null;
 	try {
 	    channel = session.openChannel("exec");
 	    ((ChannelExec) channel).setCommand(command);
 
 	    channel.setInputStream(null);
+	    try (InputStream stdout = channel.getInputStream(); InputStream stderr = ((ChannelExec) channel).getErrStream();) {
 
-	    stdout = channel.getInputStream();
-	    stderr = ((ChannelExec) channel).getErrStream();
+		channel.connect();
 
-	    channel.connect();
+		int exitCode = consumeOutputSyncAndReturnExitCode(channel, stdout, stdoutConsumer, stderr, stderrConsumer);
 
-	    int exitCode = consumeOutputSyncAndReturnExitCode(channel, stdout, stdoutConsumer, stderr, stderrConsumer);
-
-	    return exitCode == 0;
-
+		return exitCode == 0;
+	    }
 	} finally {
-	    if (stdout != null) {
-		stdout.close();
-	    }
-	    if (stderr != null) {
-		stderr.close();
-	    }
+
 	    if (channel != null) {
 		channel.disconnect();
 	    }

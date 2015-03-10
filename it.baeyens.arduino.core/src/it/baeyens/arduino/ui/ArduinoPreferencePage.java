@@ -20,18 +20,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
@@ -107,10 +104,8 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		    openedDialog = true;
 		}
 	    } catch (URISyntaxException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    } catch (IOException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	    if (!openedDialog) {
@@ -154,7 +149,39 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    if (!showError("Arduino IDE 1.5.5 works but you need to adapt some libraries."))
 		return false;
 	}
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.5") > 0) {
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.6")) {
+	    if (!showError("Arduino IDE 1.5.6 works but you need to adapt some libraries."))
+		return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.6-r2")) {
+	    if (!showError("Arduino IDE 1.5.6R2 works but you need to adapt some libraries."))
+		return false;
+	}
+
+	if (mArduinoIdeVersion.getStringValue().equals("1.5.7") || mArduinoIdeVersion.getStringValue().equals("1.5.8")) {
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (!showError("Arduino IDE 1.5.7, 1.5.8 and 1.6.0 Have serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
+		    return false;
+	    } else {
+		if (!showError("Arduino IDE 1.5.7 and 1.5.8 work but you may need to add your own make as it is no longer delivered with arduino."))
+		    return false;
+	    }
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.6.0")) {
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (!showError("Arduino IDE 1.6.0 has serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
+		    return false;
+	    } else {
+		if (!showError("Arduino IDE 1.6.0 is the currently advised version for linux and mac. Remember to add your own make as it is no longer delivered with arduino."))
+		    return false;
+	    }
+	}
+	// if (mArduinoIdeVersion.getStringValue().equals("1.6.1")) {
+	// if
+	// (!showError("Arduino IDE 1.6.0 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
+	// return false;
+	// }
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.6.0") > 0) {
 	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
 		return false;
 	}
@@ -184,11 +211,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	IPathVariableManager pathMan = workspace.getPathVariableManager();
 
 	try {
-
+	    IPath ArduinoIDEPath = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB,
-		    URIUtil.toURI(new Path(mArduinoIdePath.getStringValue()).append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString()));
+		    URIUtil.toURI(ArduinoIDEPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString()));
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(mArduinoPrivateLibPath.getStringValue()));
-	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, URIUtil.toURI(mArduinoIdePath.getStringValue()));
+	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO, URIUtil.toURI(ArduinoIDEPath));
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the workspace path variables. The setup will not work properly", e));
@@ -210,7 +237,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent, Common.getArduinoIdeSuffix());
+	mArduinoIdePath = new MyDirectoryFieldEditor(ArduinoConst.KEY_ARDUINOPATH, "Arduino IDE path", parent);
 
 	addField(mArduinoIdePath.getfield());
 
@@ -234,25 +261,9 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	Dialog.applyDialogFont(parent);
 
-	addField(new BooleanFieldEditor(ArduinoConst.KEY_RXTXDISABLED, "Disable RXTX (disables Arduino reset during upload and the serial monitor)",
-		parent));
 	mArduinoIdeVersion = new StringFieldEditor(ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version", parent);
 	addField(mArduinoIdeVersion);
 	mArduinoIdeVersion.setEnabled(false, parent);
-	Button TestButton = new Button(parent, SWT.BUTTON1);
-	TestButton.setText("test RXTX");
-	TestButton.addSelectionListener(new SelectionListener() {
-
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		Common.LoadRXTX(getShell());
-	    }
-
-	    @Override
-	    public void widgetDefaultSelected(SelectionEvent e) {
-		// Needs to be implemented but I don't use it
-	    }
-	});
 
     }
 
@@ -270,11 +281,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	String Seperator = "";
 
 	// Validate the arduino path
-	Path arduinoFolder = new Path(mArduinoIdePath.getStringValue());
+	IPath arduinoFolder = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	File arduinoBoardFile = arduinoFolder.append(ArduinoConst.LIB_VERSION_FILE).toFile();
 	boolean isArduinoFolderValid = arduinoBoardFile.canRead();
 	if (isArduinoFolderValid) {
-	    Path BoardFile = new Path(mArduinoIdePath.getStringValue());
+	    IPath BoardFile = Common.getArduinoIDEPathFromUserSelection(mArduinoIdePath.getStringValue());
 	    if (!BoardFile.equals(mPrefBoardFile)) {
 		mPrefBoardFile = BoardFile;
 		mArduinoIdeVersion.setStringValue(ArduinoHelpers.GetIDEVersion(BoardFile));

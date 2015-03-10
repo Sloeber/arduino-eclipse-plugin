@@ -32,24 +32,41 @@ function ListFileNames( $prefix)
     {
       if(($file != ".") and ($file != "..") and ($file != "index.php")) 
         {
-          $files[] = $file; // put in array.
+          $files[] = $location."/".$file; // put in array.
         }   
     }
-  rsort($files); // sort.
   closedir($dir);
+
+  $location="../download/product";
+  $dir = opendir($location);
+  while(false != ($file = readdir($dir))) 
+    {
+      if(($file != ".") and ($file != "..") and ($file != "index.php")) 
+        {
+          $files[] = $location."/".$file; // put in array.
+        }   
+    }
+  closedir($dir);
+  rsort($files); // sort.
 
   foreach($files as $file) 
     {
-        $fullpath = $location."/".$file;
-        if (substr($file,0,strlen($prefix))==$prefix)
-        echo "<a href=\"$fullpath\" target=\"_blank\">$file</a>\n<br>";
+        $refname=basename($file);
+        if (substr($refname,0,strlen($prefix))==$prefix)
+        echo "<a href=\"$file\" target=\"_blank\">$refname</a>\n<br>";
     }
 }
 ?>
 <h2>Releases</h2>
+<h3>latest V2.3</h3>
 <?php
-ListFileNames("V");
+ListFileNames("V2.3");
 ?>
+<h3>Previous V2.2</h3>
+<?php
+ListFileNames("V2.2");
+?>
+
 
 <h2>Linux 64 bit</h2>
 <?php
@@ -77,4 +94,3 @@ ListFileNames("mac64.");
 <br>
 </body>
 </html>
-

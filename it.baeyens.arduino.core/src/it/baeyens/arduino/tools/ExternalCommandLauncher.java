@@ -16,6 +16,7 @@
 package it.baeyens.arduino.tools;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 
 import java.io.BufferedReader;
@@ -208,6 +209,7 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
+    @SuppressWarnings("resource")
     public int launch(IProgressMonitor monitor) throws IOException {
 	Process process = null;
 	final MessageConsoleStream defaultConsoleStream;
@@ -270,6 +272,7 @@ public class ExternalCommandLauncher {
 	    fStdOut = new ArrayList<String>();
 	    fStdErr = new ArrayList<String>();
 
+	    fProcessBuilder.directory(ArduinoInstancePreferences.getArduinoPath().toFile());
 	    process = fProcessBuilder.start();
 
 	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), fStdOut, stdoutConsoleStream));

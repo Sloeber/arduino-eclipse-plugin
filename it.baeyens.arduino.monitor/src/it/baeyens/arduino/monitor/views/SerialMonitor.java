@@ -21,6 +21,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -42,6 +44,8 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 /**
  * SerialMonitor implements the view that shows the serial monitor. Serial monitor get sits data from serial Listener. 1 serial listener is created
@@ -55,7 +59,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      * The ID of the view as specified by the extension.
      */
     // public static final String ID = "it.baeyens.arduino.monitor.views.SerialMonitor";
-    static private final int myMaxSerialPorts = 3; // If you increase this number you must also assign colors
+    static private final int myMaxSerialPorts = 4; // If you increase this number you must also assign colors
     private Action myConnectToSerialPort; // Connect to a serial port
     private Action myDisconnectSerialPort; // this action will disconnect the serial port selected by the SerialPorts combi
 
@@ -86,10 +90,15 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      */
     public SerialMonitor() {
 	mySerialConnections = new LinkedHashMap<Serial, SerialListener>(myMaxSerialPorts);
+	IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+	ITheme currentTheme = themeManager.getCurrentTheme();
+	ColorRegistry colorRegistry = currentTheme.getColorRegistry();
 	mySerialColor = new Color[myMaxSerialPorts];
-	mySerialColor[0] = new Color(null, 0, 0, 0);
-	mySerialColor[1] = new Color(null, 255, 0, 0);
-	mySerialColor[2] = new Color(null, 0, 255, 0);
+	for (int i = 0; i < myMaxSerialPorts; i++) {
+	    String colorID = "it.baeyens.serial.color." + (1 + i);
+	    Color color = colorRegistry.get(colorID);
+	    mySerialColor[i] = color;
+	}
 	Common.registerSerialUser(this);
 
 	Job job = new Job("pluginSerialmonitorInitiator") {
@@ -306,7 +315,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	theGriddata.horizontalSpan = 7;
 	myMonitorOutput.setLayoutData(theGriddata);
 	myMonitorOutput.setEditable(false);
-	myMonitorOutput.setText("Currently there are no serial ports registered - please use the + button to add a port to monitor.");
+	IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+	ITheme currentTheme = themeManager.getCurrentTheme();
+	FontRegistry fontRegistry = currentTheme.getFontRegistry();
+	myMonitorOutput.setFont(fontRegistry.get("it.baeyens.serial.fontDefinition"));
+	myMonitorOutput.setText("Currently there are no serial ports registered - please use the + button to add a port to the monitor.");
 
 	myparent.getShell().setDefaultButton(mySendButton);
 	makeActions();
@@ -503,7 +516,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     public void ResumePort(String PortName) {
 	Serial TheSerial = GetSerial(PortName);
 	if (TheSerial != null) {
-	    TheSerial.connect();
+	    TheSerial.connect(5);
 	}
     }
 

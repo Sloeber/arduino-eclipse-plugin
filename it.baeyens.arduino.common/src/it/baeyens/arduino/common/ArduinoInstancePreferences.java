@@ -2,7 +2,6 @@ package it.baeyens.arduino.common;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -37,6 +36,29 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     /**
+     * This method reads the arduino upload programmer from the configuration memory
+     * 
+     * @return the upload port
+     * @author Jan Baeyens
+     */
+    public static String getLastUsedUploadProgrammer() {
+	return getGlobalValue(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
+    }
+
+    /**
+     * saves the last used arduino upload port
+     * 
+     * @param UploadPort
+     *            The port to use to upload to save
+     * 
+     * @author Jan Baeyens
+     */
+    public static void SetLastUsedUploadProgrammer(String UploadProgrammer) {
+	setGlobalValue(KEY_LAST_USED_PROGRAMMER, UploadProgrammer);
+
+    }
+
+    /**
      * saves the last used arduino upload port
      * 
      * @param UploadPort
@@ -61,9 +83,13 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	setGlobalValue(KEY_LAST_USED_ARDUINOBOARD, ArduinoBoardName);
     }
 
-    public static String getGlobalValue(String key) {
+    public static String getGlobalValue(String key, String defaultValue) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-	return myScope.get(key, "");
+	return myScope.get(key, defaultValue);
+    }
+
+    public static String getGlobalValue(String key) {
+	return getGlobalValue(key, "");
     }
 
     protected static boolean getGlobalBoolean(String key) {
@@ -197,8 +223,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static IPath getArduinoPath() {
-	return new Path(getGlobalValue(KEY_ARDUINOPATH)).append(Common.getArduinoIdeSuffix());
-
+	return Common.getArduinoIDEPathFromUserSelection(getGlobalValue(KEY_ARDUINOPATH));
     }
 
     /**
@@ -232,12 +257,12 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     //
     // get/set last used "use default sketch location"
     //
-    public static boolean getLastUsedDefaultSketchSelection() {
-	return getGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, true);
+    public static int getLastUsedDefaultSketchSelection() {
+	return getGlobalInt(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT);
     }
 
-    public static void setLastUsedDefaultSketchSelection(boolean newFilter) {
-	setGlobalBoolean(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
+    public static void setLastUsedDefaultSketchSelection(int newFilter) {
+	setGlobalInt(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
     }
 
     //

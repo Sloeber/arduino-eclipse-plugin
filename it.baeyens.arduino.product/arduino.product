@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="2.2.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/it.baeyens.arduino.application/icons/logo_128.png"/>
@@ -29,11 +29,14 @@ it.baeyens.arduino.application.perspective
 --launcher.XXMaxPermSize 256M
 --launcher.XXMaxPermSize 256m
 --launcher.defaultAction openFile
---launcher.appendVmargs</programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.6
+--launcher.appendVmargs
+      </programArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.7
 -Xms40m
--Xmx512m</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-Xmx512m
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/it.baeyens.arduino.application/icons/logo_16.png" i32="/it.baeyens.arduino.application/icons/logo_32.png" i48="/it.baeyens.arduino.application/icons/logo_48.png" i64="/it.baeyens.arduino.application/icons/logo_64.png" i128="/it.baeyens.arduino.application/icons/logo_128.png"/>
@@ -293,50 +296,69 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </plugins>
 
    <features>
-      <feature id="it.baeyens.arduino.feature"/>
-      <feature id="it.baeyens.arduino.packaging.feature"/>
-      <feature id="org.eclipse.mylyn.wikitext_feature"/>
-      <feature id="org.eclipse.equinox.p2.core.feature"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
-      <feature id="org.eclipse.nebula.widgets.oscilloscope.feature"/>
-      <feature id="org.eclipse.platform"/>
-      <feature id="org.eclipse.cdt.build.crossgcc"/>
-      <feature id="org.eclipse.cdt.autotools"/>
-      <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.cdt"/>
-      <feature id="org.eclipse.cdt.gnu.build"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
-      <feature id="org.eclipse.cdt.msw"/>
-      <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.cvs"/>
-      <feature id="org.eclipse.mylyn.ide_feature"/>
-      <feature id="org.eclipse.mylyn.team_feature"/>
-      <feature id="org.eclipse.epp.mpc"/>
-      <feature id="org.eclipse.cdt.platform"/>
-      <feature id="org.eclipse.epp.package.common.feature"/>
-      <feature id="org.eclipse.egit"/>
-      <feature id="org.eclipse.mylyn_feature"/>
-      <feature id="org.eclipse.cdt.debug.ui.memory"/>
-      <feature id="org.eclipse.jgit"/>
-      <feature id="org.eclipse.rcp"/>
-      <feature id="org.eclipse.mylyn.bugzilla_feature"/>
-      <feature id="org.eclipse.cdt.mylyn"/>
-      <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.eclipse.rse"/>
-      <feature id="org.eclipse.cdt.launch.remote"/>
-      <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature"/>
-      <feature id="org.eclipse.cdt.gnu.dsf"/>
-      <feature id="org.eclipse.mylyn.context_feature"/>
-      <feature id="org.eclipse.cdt.gdb"/>
-      <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="it.baeyens.arduino.feature" installMode="root"/>
+      <feature id="org.eclipse.cdt" installMode="root"/>
+      <feature id="org.eclipse.cdt.autotools" installMode="root"/>
+      <feature id="org.eclipse.cdt.build.crossgcc" installMode="root"/>
+      <feature id="org.eclipse.cdt.debug.ui.memory" installMode="root"/>
+      <feature id="org.eclipse.cdt.gdb" installMode="root"/>
+      <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
+      <feature id="org.eclipse.cdt.gnu.debug" installMode="root"/>
+      <feature id="org.eclipse.cdt.gnu.dsf" installMode="root"/>
+      <feature id="org.eclipse.cdt.launch.remote" installMode="root"/>
+      <feature id="org.eclipse.cdt.msw" installMode="root"/>
+      <feature id="org.eclipse.cdt.mylyn" installMode="root"/>
+      <feature id="org.eclipse.cdt.platform" installMode="root"/>
+      <feature id="org.eclipse.e4.rcp" installMode="root"/>
+      <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature" installMode="root"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
+      <feature id="org.eclipse.egit" installMode="root"/>
+      <feature id="org.eclipse.emf.common" installMode="root"/>
+      <feature id="org.eclipse.emf.ecore" installMode="root"/>
+      <feature id="org.eclipse.epp.mpc" installMode="root"/>
+      <feature id="org.eclipse.epp.package.common.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.executable" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.p2.user.ui" installMode="root"/>
+      <feature id="org.eclipse.help" installMode="root"/>
+      <feature id="org.eclipse.jdt" installMode="root"/>
+      <feature id="org.eclipse.jgit" installMode="root"/>
+      <feature id="org.eclipse.mylyn.bugzilla_feature" installMode="root"/>
+      <feature id="org.eclipse.mylyn.commons" installMode="root"/>
+      <feature id="org.eclipse.mylyn.commons.identity" installMode="root"/>
+      <feature id="org.eclipse.mylyn.commons.notifications" installMode="root"/>
+      <feature id="org.eclipse.mylyn.commons.repositories" installMode="root"/>
+      <feature id="org.eclipse.mylyn.context_feature" installMode="root"/>
+      <feature id="org.eclipse.mylyn.discovery" installMode="root"/>
+      <feature id="org.eclipse.mylyn.ide_feature" installMode="root"/>
+      <feature id="org.eclipse.mylyn.monitor" installMode="root"/>
+      <feature id="org.eclipse.mylyn.team_feature" installMode="root"/>
+      <feature id="org.eclipse.mylyn.wikitext_feature" installMode="root"/>
+      <feature id="org.eclipse.mylyn_feature" installMode="root"/>
+      <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
+      <feature id="org.eclipse.platform" installMode="root"/>
+      <feature id="org.eclipse.rcp" installMode="root"/>
+      <feature id="org.eclipse.rse" installMode="root"/>
    </features>
 
    <configurations>
-      <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="61" />
+      <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
    </configurations>
+
+   <repositories>
+      <repository location="http://download.eclipse.org/releases/luna/" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.4" enabled="true" />
+      <repository location="http://www.baeyens.it/eclipse/nightly" enabled="true" />
+   </repositories>
 
 </product>

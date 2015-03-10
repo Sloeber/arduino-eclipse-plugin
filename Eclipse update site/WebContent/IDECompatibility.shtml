@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Arduino plugin compatibility with the Arduino IDE</title>
+<link href="MyStyle.css" rel="Stylesheet" type="text/css">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35483398-1']);
+  _gaq.push(['_setDomainName', 'baeyens.it']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></head>
+<body>
+        <div id="header">
+            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
+            <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT>
+        </div>
+	<div id="midcolumn">
+<h1>Keeping the eclipse project compatible with the IDE</h1> 
+	The compatibility between the arduino IDE and the arduino eclipse plugin can only be guaranteed from the Arduino Eclipse Plugin to the Arduino IDE and not the other way around.
+	Currently the arduino eclipse plugin is out of the box not compatible with the Arduino IDE. 
+	The incompatibility is caused by the fact that the arduino eclipse plugin works with C++ files only. 
+	The arduino IDE  can handle C++ files but needs at least one  ino/PDE file (for amongst others) to identify the classpath.<br>
+	To be able to compile your code directly in the Arduino IDE you need to do something extra at three common actions  during Arduino code development<br/>
+	1) After installation tell Eclipse to process ino(and/or  pde) files like C++ file<br/> 
+	2) After creation of a new sketch project rename the created cpp file to ino (or pde if you are using a Arduino IDE version below 1.0) <br>
+	3) After inclusion of a library add an include of the library to the ino file (Do not include it in a header file but in the ino directly.). <br>
+	That is all which is needed to be done to create project that are Arduino IDE compatible.<br>
+	When you want to compile the project in the Arduino IDE select file open. Goto the Eclipse workspace folder. In the workspace folder there is a subfolder with your project name. 
+	In that subfolder you will find the .cpp file you renamed to .ide or .ino. Select that file and compile.<br>
+	
+
+	<h2>And here are detailed instructions on how to do this</h2>
+	<h3>After installation tell Eclipse to process ino like C++ file</h3> 
+	In the menu select Windows -&gt;preferences <br/>
+	In the section C/C++ -&gt; file types press new <br/>
+	enter *.pde and or *.ino as filename and C++Source file as type.<br/>
+	<h3>After creation of a new sketch rename cpp file to pde</h3>
+	Right click the .cpp file created by the new arduino sketch wizard<br/>
+	select rename<br/>
+	change the .cpp to .ino or .pde
+	<h3>After inclusion of a library add an include reference to the library to the ino  or pde file.</h3> 
+	In the ino file at the top add a line that looks like<br/>
+		#include &lt; [the imported library].h &gt; <br/>
+		 
+	</div>
+</body>
+</html>

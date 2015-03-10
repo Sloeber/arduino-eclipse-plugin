@@ -24,28 +24,24 @@
 
 package it.baeyens.arduino.arduino;
 
-import gnu.io.CommPortEnumerator;
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+
+import jssc.SerialPort;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
-
-//import static processing.app.I18n._;
 
 public class Serial implements SerialPortEventListener {
 
@@ -70,29 +66,9 @@ public class Serial implements SerialPortEventListener {
      * If this just hangs and never completes on Windows, it may be because the DLL doesn't have its exec bit set. Why the hell that'd be the case,
      * who knows.
      */
-    static public Vector<String> list() {
-	Vector<String> list = new Vector<String>();
-	try {
-	    CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
-	    while (portList.hasMoreElements()) {
-		CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-
-		if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-		    String name = portId.getName();
-		    list.addElement(name);
-		}
-	    }
-
-	} catch (UnsatisfiedLinkError e) {
-	    errorMessage("ports", e);
-
-	} catch (Exception e) {
-	    errorMessage("ports", e);
-	}
-	return list;
-	// String outgoing[] = new String[list.size()];
-	// list.copyInto(outgoing);
-	// return outgoing;
+    public static Vector<String> list() {
+	String[] portNames = SerialPortList.getPortNames();
+	return new Vector<String>(Arrays.asList(portNames));
     }
 
     SerialPort port = null;
@@ -105,8 +81,6 @@ public class Serial implements SerialPortEventListener {
     int stopbits;
     boolean monitor = false;
 
-    InputStream input;
-    OutputStream output;
     byte buffer[] = new byte[32768];
     int bufferIndex;
 
@@ -172,67 +146,60 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void connect() {
-	if (port == null) {
-	    try {
-		CommPortEnumerator portList = CommPortIdentifier.getPortIdentifiers();
-		while (portList.hasMoreElements()) {
-		    CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+	connect(1);
+    }
 
-		    if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-			if (portId.getName().equals(PortName)) {
-			    port = (SerialPort) portId.open("serial madness", 2000);
-			    input = port.getInputStream();
-			    output = port.getOutputStream();
-			    port.setSerialPortParams(rate, databits, stopbits, parity);
-			    port.addEventListener(this);
-			    port.notifyOnDataAvailable(true);
+    public void connect(int maxTries) {
+	if (port == null) {
+	    int count = 0;
+	    while (true) {
+		try {
+		    port = new SerialPort(PortName);
+		    port.openPort();
+		    port.setParams(rate, databits, stopbits, parity);
+
+		    int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_BREAK;
+		    port.addEventListener(this, eventMask);
+		    return;
+		} catch (SerialPortException e) {
+		    // handle exception
+		    if (++count == maxTries) {
+			if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " already in use. Try quiting any programs that may be using it", e));
+			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
+				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+			} else {
+			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
+			}
+		    } else {
+			try {
+			    Thread.sleep(200);
+			} catch (InterruptedException e1) {
+			    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Sleep failed", e1));
 			}
 		    }
 		}
-	    } catch (PortInUseException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " already in use. Try quiting any programs that may be using it", e));
-		return;
-	    } catch (Exception e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
-		return;
-	    }
-
-	    if (port == null) {
-		// jaba 28 feb 2012. I made the log below a warning for issue #7
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-			+ " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
-		return;
+		// If an exception was thrown, delete port variable
+		port = null;
 	    }
 	}
     }
 
     public void disconnect() {
-	try {
-	    // do io streams need to be closed first?
-	    if (input != null)
-		input.close();
-	    if (output != null)
-		output.close();
-
-	} catch (Exception e) {
-	    e.printStackTrace();
+	if (port != null) {
+	    try {
+		port.closePort();
+	    } catch (SerialPortException e) {
+		e.printStackTrace();
+	    }
+	    port = null;
 	}
-	input = null;
-	output = null;
-
-	try {
-	    if (port != null)
-		port.close(); // close the port
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	port = null;
     }
 
     public void dispose() {
-	notifyConsumersOfEvent("Disconnect of port " + port.getName() + " executed");
+	notifyConsumersOfEvent("Disconnect of port " + port.getPortName() + " executed");
 	disconnect();
 
 	if (fServiceRegistration != null) {
@@ -241,7 +208,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public boolean IsConnected() {
-	return (port != null);
+	return (port != null && port.isOpened());
     }
 
     private void notifyConsumersOfData(byte[] message) {
@@ -447,39 +414,68 @@ public class Serial implements SerialPortEventListener {
 
     @Override
     synchronized public void serialEvent(SerialPortEvent serialEvent) {
+	switch (serialEvent.getEventType()) {
+	case SerialPortEvent.RXCHAR:
+	    int bytesCount = serialEvent.getEventValue();
 
-	if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-	    if (input != null)
-		try {
-		    synchronized (buffer) {
-			while (input.available() > 0) {
+	    if (IsConnected() && bytesCount > 0) {
+		synchronized (buffer) {
+		    try {
+			byte[] readBytes = port.readBytes(bytesCount);
 
-			    if (bufferLast == buffer.length) {
-				byte temp[] = new byte[bufferLast << 1];
-				System.arraycopy(buffer, 0, temp, 0, bufferLast);
-				buffer = temp;
+			// Check there is enough buffer to store new bytes
+			if (readBytes.length > buffer.length) {
+			    int newLength = buffer.length;
+			    while (readBytes.length > newLength) {
+				newLength *= 2;
 			    }
-			    buffer[bufferLast++] = (byte) input.read();
-			    if (monitor == true)
-				System.out.print((char) input.read());
 
+			    byte temp[] = new byte[newLength];
+			    System.arraycopy(buffer, 0, temp, 0, buffer.length);
+			    buffer = temp;
 			}
+
+			// Append read bytes to buffer tail
+			System.arraycopy(readBytes, 0, buffer, bufferLast, readBytes.length);
+			if (monitor == true) {
+			    System.out.print(new String(readBytes));
+			}
+			bufferLast += readBytes.length;
+
 			notifyConsumersOfData(readBytes());
+		    } catch (SerialPortException e) {
+			errorMessage("serialEvent", e);
 		    }
-		} catch (IOException e) {
-		    errorMessage("serialEvent", e);
-		} catch (Exception e) {// JABA is not going to add code
-		    e.printStackTrace();
 		}
+	    }
+
+	    break;
+	case SerialPortEvent.BREAK:
+	    errorMessage("Break detected", new Exception());
+	    break;
+	default:
+	    break;
 	}
     }
 
     public void setDTR(boolean state) {
-	port.setDTR(state);
+	if (IsConnected()) {
+	    try {
+		port.setDTR(state);
+	    } catch (SerialPortException e) {
+		e.printStackTrace();
+	    }
+	}
     }
 
     public void setRTS(boolean state) {
-	port.setRTS(state);
+	if (IsConnected()) {
+	    try {
+		port.setRTS(state);
+	    } catch (SerialPortException e) {
+		e.printStackTrace();
+	    }
+	}
     }
 
     public void setup() {// JABA is not going to add code
@@ -492,12 +488,12 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void write(byte bytes[]) {
-	try {
-	    output.write(bytes);
-	    output.flush(); // hmm, not sure if a good idea
-
-	} catch (Exception e) { // null pointer or serial port dead
-	    e.printStackTrace();
+	if (port != null) {
+	    try {
+		port.writeBytes(bytes);
+	    } catch (SerialPortException e) {
+		errorMessage("write", e);
+	    }
 	}
     }
 
@@ -505,12 +501,12 @@ public class Serial implements SerialPortEventListener {
      * This will handle both ints, bytes and chars transparently.
      */
     public void write(int what) { // will also cover char
-	try {
-	    output.write(what & 0xff); // for good measure do the &
-	    output.flush(); // hmm, not sure if a good idea
-
-	} catch (Exception e) { // null pointer or serial port dead
-	    errorMessage("write", e);
+	if (port != null) {
+	    try {
+		port.writeByte((byte) (what & 0xFF));
+	    } catch (SerialPortException e) {
+		errorMessage("write", e);
+	    }
 	}
     }
 

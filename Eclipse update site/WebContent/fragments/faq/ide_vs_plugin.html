@@ -1,0 +1,66 @@
+<h2>Arduino IDE vs the Arduino Plugin</h2>
+<accordion close-others="true">
+  <accordion-group heading="Why would I want to use this plugin?">
+	This plugin is not meant to replace the Arduino IDE.</br>
+	I think the Arduino IDE is the place to get started with Arduino, no matter what is your background. 
+	However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. 
+	In that case the Eclipse plugin may be an alternative.</br>
+  </accordion-group>
+  <accordion-group heading="What is the benefit of the Arduino IDE to the Eclipse plugin?">
+	The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
+	doing their first electronics experience. So if you are new to Arduino stop reading and learn to use the Arduino IDE.</br>
+
+	The Arduino IDE does this by &quot;hiding&quot; C++ code complexity and Hardware complexity.</br>
+
+	The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by the Eclipse plugin.
+	So there is no &quot;real&quot; difference there.</br>
+
+	The plugin does not hide the C++ code complexity.
+	For someone used to develop C/C++ this will not be a problem. People not used
+	to writing C++ will need to learn about:</br>
+
+	<ul type=disc>
+	 <li >Function declarations</li>
+	 <li >Using Include files</li>
+	 <li >The usage of extern</li>
+	</ul>
+
+	This because the way the Arduino IDE is set up it hides or avoids the need of these
+	functionalities. There are plenty of good C/C++ documents on the web that
+	explain these things, so I won't.</br>
+  </accordion-group>
+  <accordion-group heading="What is the benefit of the Eclipse plugin to the Arduino IDE?">
+	With the Eclipseplugin you have a environment that is fully focused on the development of source code. It
+	provides plenty of features. The ones I like the most are: 
+
+	<ul  type=disc>
+	 <li > context sensitive coloring (read the color of the text changes because it is code or non active code or comment or ..) </li><li > 
+	 Immediate documentation (When you hover over a function you get the documentation of the function or even the implementation)</li><li > 
+	 Link through (ctrl clicking on a method sends you to the implementation of definition of the method)</li> <li >
+	 Auto complete (pressing CTRL space when typing a name you get a list of â€œknown namesâ€ that start with these letters)</li><li>
+	 Integration with version control tools.</li><li>
+	Search functionality like "Call hierarchy", include browser.</li><li>
+	Access to code in Arduino libraries and private libraries as if they are part of the same project.</li><li>
+	Not all files of the project need to be open all the time.</li><li>
+	Easy location of errors and warnings in the open file. (read and orange boxes right of the editor)</li><li>
+	Easy location of variables and methods in files. (gray boxes right of the editor)</li><li>
+	A system to keep hold of your Tasks. (simply adding a comment that starts with TODO will add the todo to the task view )</li><li>
+	......
+	</li></ul>
+	Did I mention compilation speed?<br>
+	So there are plenty of good things a software developer misses in the Arduino IDE.
+  </accordion-group>
+  <accordion-group heading="What do I need to know to develop code for Arduino with this plugin">
+	After you have read the pro and con's question you may wonder &quot;how much is there to learn before I get this plugin to work?&quot;<br>
+
+	There is good news and there is bad news.<br>
+
+	The <b>good news</b> is: other people got it to work relatively quickly so why would you not be
+	able to do it. The Eclipse plugin (just like the Arduino IDE) hides AVR-C++ and avrDude<br>
+
+	The <b>bad news</b> is that to get the full benefit you will have to understand more of C/C++
+	development; Eclipse and CDT. Eclipse is a professional development environment
+	and that brings some complexity. But you don't have to understand it all before
+	you get your first programs running.
+  </accordion-group>
+</accordion>

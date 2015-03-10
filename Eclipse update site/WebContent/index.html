@@ -1,100 +1,108 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Welcome to the Arduino Eclipse plugin section</title>
-<link href="MyStyle.css" rel="Stylesheet" type="text/css">
-<script type="text/javascript">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Roberto Lo Giacco">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-35483398-1']);
-  _gaq.push(['_setDomainName', 'baeyens.it']);
-  _gaq.push(['_trackPageview']);
+    <title>Arduino Eclipse Plugin - Welcome!</title>
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
 
-</script></head>
+    <!-- Custom styles  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="css/theme.css" rel="stylesheet">
 
-<body>
-        <div id="header">
-            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
-            <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" ng-app='arduinoEclipse'>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
+
+    <div class="container" role="main">
+      <div class="jumbotron">
+        <h1>Where <b>Arduino</b> meets <b>Eclipse</b></h1>
+        <p>You like <b>Arduino</b>, your projects are getting bigger and you feel the Arduino IDE is not powerful enough?</p>
+        <p>This is about a free, open source, <b>Eclipse</b> plugin to ease your development efforts!</br>
+          As you only need the Arduino IDE, Eclipse and this plugin this represents a completely free and open Arduino IDE alternative.
+        </p>
+        <p>Welcome to a next stage for your Arduino projects!</p>
+        <p>
+        	<a href="learn.shtml" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>
+        	<a href="donate.shtml" class="btn btn-success btn-lg pull-right" role="button">Donations are welcome!</a>
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <h2><span class="glyphicon glyphicon-link" style="color:blue"></span>&nbsp;Links</h2>
+          <div class="list-group">
+            <a class="list-group-item" href="donate.shtml">If you would like to support, <b>buy Jantje an Arduino</b></a>
+            <a class="list-group-item" href="http://blog.baeyens.it/#home">Read <b>Jantje's blog</b> if you want to stay up to date on changes</a>
+            <a class="list-group-item" href="installAdvice.shtml"><b>Installation advice</b> can be found here</a>
+            <a class="list-group-item" href="download.php"><b>Nightly builds</b> of the product can be found here</a>
+            <a class="list-group-item" href="faq.shtml">A list of <b>FAQ</b>s can be found here</a>
+            <a class="list-group-item" href="how_to.shtml">Read here <b>how to</b> use the plugin</a>
+            <a class="list-group-item" href="../serial_demo.wmv">Watch a <b>video</b> demonstrating creating a project uploading it and the serial monitor</a>
+          </div>
         </div>
-	<div id="midcolumn">
+        <div class="col-md-4">
+          <h2><span class="glyphicon glyphicon-star" style="color:orange"></span>&nbsp;News</h2>
+          <div>
+            <a class="twitter-timeline" data-dnt="true" "https://twitter.com/Arduino_jantje" height="400" data-widget-id="433339655606394880" data-chrome="nofooter noheader">Latest News</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h2><span class="glyphicon glyphicon-heart" style="color:red"></span>&nbsp;Help us!</h2>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <h4 class="list-group-item-heading">Programmer</h4>
+              <p class="list-group-item-text">We have plenty of features waiting for your contribution, join us on <a href="https://github.com/jantje/arduino-eclipse-plugin">Github</a></p>
+            </li>
+            <li class="list-group-item">
+              <h4 class="list-group-item-heading">Web designer</h4>
+              <p class="list-group-item-text">A neat and good looking website is a must nowdays. Contact us before doing serious work.</p>
+            </li>
+            <li class="list-group-item">
+              <h4 class="list-group-item-heading">Maker</h4>
+              <p class="list-group-item-text">Why don't you mention this tool when you speak about your little creature?</p>
+            </li>
+            <li class="list-group-item">
+              <h4 class="list-group-item-heading">Blogger/Twitter</h4>
+              <p class="list-group-item-text">Spread the word about the coolness of this amazing tool by linking this site or mentioning <i>#ArduinoEclipsePlugin</i> in your tweets!</p>
+            </li>
+            <li class="list-group-item">
+              <h4 class="list-group-item-heading">Everyone</h4>
+              <p class="list-group-item-text"><a href="donate.shtml" >Your money is very welcome.</a></p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div> <!-- /container -->
 
-		<h1>Welcome to the Arduino eclipse plugin site</h1>
-		<p>This page is about a free eclipse plugin to make development of
-			big Arduino projects easier. As you only need the Arduino IDE, Eclipse
-			and the plugin this Arduino IDE alternative is completely free and
-			open source.</p>
-		<h2>
-			<br>
-			The plugin supports</h2>
-		<ul>
-			<li>Creation of an Arduino sketch</li>
-			<li>Import of an Arduino or private Library</li>
-			<li>Import of source code available on your system</li>
-			<li>Integrated serial monitor</li>
-			<li>Change the Arduino board</li>
-			<li>Multiple hardwares (version 2)</li>
-			<li>Support for the HalfKay boot loader  (version 2)</li>
-			<li>Change the COM port</li>
-			<li>Upload to the board</li>
-			<li>Real time build</li>
-			<li>User selected build.</li>
-		</ul>
+    <div id="footer">
+      <ng-include src="'fragments/footer.html'"/>
+    </div>
+  </body>
 
-
-		<h2>To use it with Arduino boards you only need:</h2>
-		<ul>
-			<li>the Arduino IDE</li>
-			<li>Eclipse Indigo or Juno (C/C++ version)</li>
-			<li>this plugin</li>
-		</ul>
-
-		<h2>Before continuing Note that :</h2>
-		<ul>
-		<li>The latest version for Arduino IDE 1.X is 1.2.5.5. </li>
-		<li>The latest version for Arduino IDE 1.5.x beta is 2.1.1 beta. (use Arduino IDE 1.5.1 1.5.2 or 1.5.5 only!! 1.5.3 and 1.5.4 won't work)</li>
-		<li>The previous version for Arduino IDE 1.5.x beta is 2.1.0.4 beta. (use Arduino IDE 1.5.2 only!! 1.5.3 and 1.5.4 won't work)</li>
-		<li>V2 comes in a product version. This means you can download and unpack eclipse and the plugin in 1 go. <br>
-		  This is ideal for people who want to have a play around or for people who do not have eclipse installed. </li>
-		<li>The plugin now works with the 32 and 64 bit versions of Juno (V2) and indigo(V1) but you are advised to use the same bit version as your arduino.</li>
-		<li>The current version works with cpp files only (no pde  or ino out of the box). <br>
-		    Therefore the plugin is not compatible with the IDE out of the box. (read a sketch may not compile in the plugin)<br> 
-		    Below is a link to instructions on how to keep your plugin developed code Arduino IDE compatible. (read your eclipse project compiles in Arduino)<br>
-		    I use those and I can compile the code between the Arduino IDE and eclipse without changes and defines.</li>
-		<li>The plugin and product work native on windows and Linux and OS X. </li>
-		<li>For 1.X some special installation instructions on Os X are needed </li>
-		<li>For 2.X no special instructions are needed for os x</li>
-		<li>There is  a serial monitor in this project from 1.2.2 onwards. If you are using an earlier version 
-			or the included serial monitor does not work in your environment: Use the IDE one or any one of your choice</li>
-		<li>From 2.1.1 there is a scope functionality</li>
-		<li>There is  USB search  (the Arduino connects through USB) in the tool. </li>
-		<li>Read the <a href="Arduino%20eclipse%20plugin%20FAQ.html">faq</a> on the link between this tool and the WINAVR eclipse plugin.</li>
-		<li>There is no out of the box support for debugging. Read this page on how to debug with the dragon board
-			 <a href=http://husks.wordpress.com/2012/03/29/hardware-debugging-the-arduino-using-eclipse-and-the-avr-dragon>debugging using the dragon board</a></li>
-		<li>Brody made a debug configuration in V2.1.1 and I hope for more debugging info from him.</li>
-		</ul>
-
-
-		<h2>Links</h2>
-		<a href="donate.html">If you would like to support Jantje; <b>buy Jantje an Arduino.</b></a><br>
-		<a href="http://blog.baeyens.it/#home">Read my blog if you want to stay up to date on changes.</a><br>
-		<a href="installAdvice.shtml"><b>Installation advice</b> can be found here</a><br>
-		<a href="download.php"><b>Nightly builds</b> of the product can be found here</a><br>
-		<a href="Install.html"><b>Installation instructions</b> can be found here</a><br>
-		<a href="Arduino%20eclipse%20plugin%20FAQ.html">A <b>FAQ</b> can be found here</a>.<br>
-		<a href="IDECompatibility.html">Instructions on Arduino <b>IDE compatibility</b> are here</a>. <br>
-		<a href="UsethePlugin.html">Read here <b>how to</b> use the plugin</a><br>
-		<a href="serial_demo.wmv">Watch a <b>video</b> demonstrating creating a project uploading it and the serial monitor.</a>
-
-	</div>
-
-
-</body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
 </html>

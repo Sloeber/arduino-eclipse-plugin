@@ -56,30 +56,6 @@ public class PleaseHelp extends Dialog {
 	    public void completed(ProgressEvent event) {
 		ph.setBlockOnOpen(false);
 		ph.open();
-		// Job job = new Job("delayed Activate Buttons") {
-		// @Override
-		// protected IStatus run(IProgressMonitor monitor) {
-		// PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-		// @SuppressWarnings("synthetic-access")
-		// @Override
-		// public void run() {
-		// Button curbutton = ph.getButton(IDialogConstants.OK_ID);
-		// if (curbutton != null) {
-		// curbutton.setEnabled(true);
-		// }
-		// curbutton = ph.getButton(IDialogConstants.CANCEL_ID);
-		// if (curbutton != null) {
-		// curbutton.setEnabled(true);
-		// }
-		// }
-		// });
-		//
-		// return Status.OK_STATUS;
-		// }
-		// };
-		// job.setPriority(Job.INTERACTIVE);
-		// job.schedule(10000); // used to be 30000 changed to 10000
-
 	    }
 	});
 

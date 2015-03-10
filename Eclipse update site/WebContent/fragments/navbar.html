@@ -1,0 +1,55 @@
+
+      <div class="container" ng-controller="NavBarCtrl" ng-init="init()">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <p class="navbar-brand">Arduino Eclipse</p>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li ng-class="navlinks.home"><a href="{{navlinks.home.url}}">Home</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Install <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li ng-class="navlinks.starting"><a href="{{navlinks.starting.url}}">Start here</a></li>
+                <li ng-class="navlinks.components"><a href="{{navlinks.components.url}}">The components</a></li>
+                <li class="dropdown-header">Stable</li>
+                <li ng-class="navlinks.linux"><a href="{{navlinks.linux.url}}">Linux</a></li>
+                <li ng-class="navlinks.win"><a href="{{navlinks.win.url}}">Windows</a></li>
+                <li ng-class="navlinks.osx"><a href="{{navlinks.osx.url}}">MacOS</a></li>
+                <li class="dropdown-header">Nightly Builds</li>
+                <li ng-class="navlinks.linux_nightly"><a href="{{navlinks.linux_nightly.url}}">Linux</a></li>
+                <li ng-class="navlinks.win_nightly"><a href="{{navlinks.win_nightly.url}}">Windows</a></li>
+                <li ng-class="navlinks.osx_nightly"><a href="{{navlinks.osx_nightly.url}}">MacOS</a></li>
+                <li class="dropdown-header">Archived Versions</li>
+                <li ng-class="navlinks.archived_2_2"><a href="{{navlinks.archived_2_2.url}}">Plugin v2.2</a></li>
+                <li ng-class="navlinks.archived_1_x"><a href="{{navlinks.archived_1_x.url}}">Plugin v1.x</a></li>
+              </ul>
+            </li>
+            <li ng-class="navlinks.howto"><a href="{{navlinks.howto.url}}">How To</b></a></li>
+            <li ng-class="navlinks.faq"><a href="{{navlinks.faq.url}}">FAQs</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://forum.arduino.cc/index.php?topic=79595" target="_blank">Forum Discussion</a></li>
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin/issues" target="_blank">Report Issue</a></li>
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank"><img src="css/github.png" class="pull-right" height="20"/>Github</a></li>
+              </ul>
+            </li>
+          </ul>
+
+          <form class="navbar-form navbar-right" name="google-search" method="get" action="http://www.google.com/search">
+            <div class="form-group has-feedback">
+              <input name="q" type="text" class="form-control" id="inputSuccess4"/>
+              <span class="glyphicon glyphicon-search disabled form-control-feedback"></span>
+            </div>
+            <input type="hidden" name="sitesearch" value="http://www.baeyens.it/eclipse/" />
+            <input type="hidden" name="sa" value="Google" />
+          </form>
+          
+        </div><!--/.nav-collapse -->
+      </div>

@@ -16,7 +16,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Animated widget that tries to mimic an Oscilloscope.
@@ -53,6 +52,7 @@ public class Oscilloscope extends Canvas {
     public static final int TAILFADE_NONE = 0;
 
     private Color bg;
+    private Color mGridColor;
 
     public class Data {
 
@@ -299,12 +299,12 @@ public class Oscilloscope extends Canvas {
 	}
     }
 
-    public Oscilloscope(Composite parent, int style) {
-	this(1, null, parent, style);
+    public Oscilloscope(Composite parent, int style, Color backgroundColor, Color foregroundColor, Color gridColor) {
+	this(1, null, parent, style, backgroundColor, foregroundColor, gridColor);
     }
 
-    public Oscilloscope(int channels, Composite parent, int style) {
-	this(channels, null, parent, style);
+    public Oscilloscope(int channels, Composite parent, int style, Color backgroundColor, Color foregroundColor, Color gridColor) {
+	this(channels, null, parent, style, backgroundColor, foregroundColor, gridColor);
     }
 
     /**
@@ -313,9 +313,11 @@ public class Oscilloscope extends Canvas {
      * @param parent
      * @param style
      */
-    public Oscilloscope(int channels, OscilloscopeDispatcher dispatcher, Composite parent, int style) {
+    public Oscilloscope(int channels, OscilloscopeDispatcher dispatcher, Composite parent, int style, Color backgroundColor, Color foregroundColor,
+	    Color gridColor) {
 	super(parent, SWT.DOUBLE_BUFFERED | style);
-
+	bg = backgroundColor;
+	mGridColor = gridColor;
 	chan = new Data[channels];
 	for (int i = 0; i < chan.length; i++) {
 
@@ -327,10 +329,10 @@ public class Oscilloscope extends Canvas {
 		chan[i].dispatcher = dispatcher;
 		dispatcher.setOscilloscope(this);
 	    }
-	    bg = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+
 	    setBackground(bg);
 
-	    chan[i].fg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+	    chan[i].fg = foregroundColor;
 
 	    setTailSize(i, TAILSIZE_DEFAULT);
 	}
@@ -690,12 +692,12 @@ public class Oscilloscope extends Canvas {
 	    return null;
 	Image TheImage = new Image(getDisplay(), rect);
 	GC gc = new GC(TheImage);
-	gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+	gc.setBackground(bg);
 	int step = (getSize().y - 20) / (numHorizontalLines - 1);
 	int width = getSize().x;
 	int height = getSize().y;
 	gc.fillRectangle(0, 0, width, getSize().y);
-	gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN));
+	gc.setForeground(mGridColor);
 	int Value = myLowRangeValue + (int) (10.0 * (float) (myhighValue - myLowRangeValue) / (float) rect.height);
 	int RangeStep = (int) ((float) (rect.height - 20) / (float) (numHorizontalLines - 1) * (float) (myhighValue - myLowRangeValue) / (float) rect.height);
 	for (int i = 0; i < numHorizontalLines; i++) {

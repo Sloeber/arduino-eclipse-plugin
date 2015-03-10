@@ -37,11 +37,11 @@
 			<li>There are multiple monitors in Eclipse world. If you see nothing in the monitor make sure you have the correct monitor view (buttons left top of monitor)</li>
 		</ul>
 		<h2>other things that may interest you</h2>
-		<a href="http://www.eclipse.baeyens.it/donate.html" >This is all hard work by volunteers. <b>Please show your appreciation.</b></a><br>
-		<a href="http://www.eclipse.baeyens.it/Install.html" ><b>Installation instructions</b> can be found here</a><br>
-		<a href="http://www.eclipse.baeyens.it/Arduino%20eclipse%20plugin%20FAQ.html" >A <b>FAQ</b> can be found here</a>.<br>
-		<a href="http://www.eclipse.baeyens.it/IDECompatibility.html" >Instructions on Arduino <b>IDE compatibility</b> are here</a>. <br>
-		<a href="http://www.eclipse.baeyens.it/UsethePlugin.html" >Read here <b>how to</b> use the plugin</a><br>
+		<a href="http://www.eclipse.baeyens.it/donate.shtml" >This is all hard work by volunteers. <b>Please show your appreciation.</b></a><br>
+		<a href="http://www.eclipse.baeyens.it/InstallAdvice.shtml" ><b>Installation instructions</b> can be found here</a><br>
+		<a href="http://www.eclipse.baeyens.it/faq.shtml" >A <b>FAQ</b> can be found here</a>.<br>
+		<a href="http://www.eclipse.baeyens.it/IDECompatibility.shtml" >Instructions on Arduino <b>IDE compatibility</b> are here</a>. <br>
+		<a href="http://www.eclipse.baeyens.it/how_to.shtml" >Read here <b>how to</b> use the plugin</a><br>
 		<a href="http://www.eclipse.baeyens.it/serial_demo.wmv" >Watch a <b>video</b> demonstrating creating a project uploading it and the serial monitor.</a>
 
 	</div>

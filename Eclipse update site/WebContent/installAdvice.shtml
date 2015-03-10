@@ -1,150 +1,83 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Arduino Eclipse plugin: Which version to install?</title>
-<link href="MyStyle.css" rel="Stylesheet" type="text/css">
-</head>
-<body>
-        <div id="header">
-            <a href="http://www.eclipse.org/"><img src="http://download.eclipse.org/eclipse/eclipse.org-common/stylesheets/header_logo.gif" width="163" height="68" border="0" alt="Eclipse Logo" class="logo" /></a>
-            <SCRIPT LANGUAGE="JavaScript" type="text/javascript" src="news.js"></SCRIPT> 
-            
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Roberto Lo Giacco">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Arduino Eclipse Plugin - Pre Requisites</title>
+
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="css/theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" ng-app='arduinoEclipse'>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
+
+    <div class="container" role="main">
+      <div class="page-header">
+        <h1><small>Deciding on  what you want to install</small></h1>
+        <a name="top">&nbsp;</a>
+      </div>
+      <p>The Arduino Eclipse plugin comes in several flavours and so does the Arduino IDE and eclipse. If this is all new to you it is mighty overwhelming. If you know about the eclipse and arduino IDE flavors it is all pretty straightforward.<br>
+      However appart from the normal stuff there is also the special little detail stuff that might hit you. This page is to help you avoid the frustration and enjoy the fun.<br></p>
+
+      <div ng-controller="AffixCtrl">
+        <div class="col-md-3 col-md-push-9">
+          <div class="list-group hidden-print">
+            <a href="#" ng-class="tab.welcome" class="list-group-item small" ng-click="select('welcome')">Overview</a>
+            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">V1? V2? Product? Eclipse</a>
+            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">V1</a>
+            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">V2</a>
+            <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">All os comments</a>
+            <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Linux comments</a>
+            <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Mac comments</a>
+            <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Windows comments</a>
+            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Library madness</a>
+            </div>
         </div>
-	
-	<h1>Which version to install?</h1>
-	By now there are so many versions involved that some guidance to what to install is appropriate.<br>
-	This page is intended to give this guidance.
-	For the newbies to the plugin who 
-	<ul><li>do not have eclipse installed</li>
-	<li>are willing to do some alfa testing</li>
-	<li>want to use Arduino IDE 1.5.2 beta</li>
-	</ul> 
-	I can strongly advice to download the "brand new" product.<br>
-	These downloads simply need to be extracted (and sometimes you also need to make the eclipse program executable) and you can immediatly configure (read show where your arduino IDE is installed) the plugin and play.<br>
-	You can find the download page <a href="download.php">here</a>.<br>
-	<br>
-	For the others:<br>
-	There are 3 main components in the deployment of the plugin.<br>
-	<ul>
-	<li>The Arduino IDE(s) you want to use</li>
-	<li>The Eclipse version you want to use</li>
-	<li>The Plugin version you want to use</li>
-	</ul>
-	The Arduino IDE has 4 major breakpoints.<br>
-	<ul><li>before 1.5</li>
-	<li>between 1.5.0 and 1.5.2 (included)</li>
-	<li>between 1.5.3 and 1.5.5 (included)</li>
-	<li>after 1.5.6</li>
-	</ul>
-	The plugin relates to that as follows:<br>
-	Before 1.5 beta: use V1 of the plugin.<br>
-	between 1.5.0 beta and 1.5.2 beta (included): use 1.5.2 with V2 of the plugin<br>
-	between 1.5.2 beta and 1.5.5 beta: not supported<br>
-	1.5.5 beta works with V2.2 but you need to fix the remaining V1.5 Libraries (see below)<br>
-	1.5.6 beta switched from RXTX to JSSC. This means that the RXTX dll is no longer delivered as part of the Arduino IDE. The plugin comes with a RXTX library but the Arduino core team has done some adaptations to the rxtx library which improves user experiance. <br> 
-	
-	V1 of the plugin runs in juno and indigo. I don't know wether kepler works.<br>
-	V2 of the plugin runs in juno only. (kepler does not work)<br>
-	V2.2 of the plugin runs in juno and kepler<br>
-	<br>
-	If we summarize this in a table we get:<br>
-	<table border="1">
-	<tr><th>Arduino</th><th>plugin</th><th>eclipse</th><th>Product</th></tr>
-	<tr><td>before 1.5 beta</td><td>V1</td><td>juno or indigo</td><td>not available</td></tr>
-	<tr><td>between 1.5.0 beta and 1.5.2 beta (included)</td><td>V2</td><td>juno</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.2 beta</td><td>not supported</td><td>not supported</td><td>not available</td></tr>
-	<tr><td>after 1.5.5 beta</td><td>V2.2</td><td>juno and kepler (needs fix!!)</td><td>from V2.2 only</td></tr>
-	<tr><td>after 1.5.6 beta</td><td>V2.2</td><td>juno and kepler (RXTX no longer part of arduino IDE)</td><td>from V2.2 only</td></tr>
-	</table>
-	<h1>Where to find your version?</h1>
-	The table below points to installation information
-		<table border="1">
-	<tr><th>plugin</th><th>update site</th><th>Product</th></tr>
-	<tr><td>V1</td><td>http://www.baeyens.it/eclipse/update</td><td>not available</td></tr>
-	<tr><td>V2 latest stable</td><td>http://www.baeyens.it/eclipse/V2</td><td><a href="http://eclipse.baeyens.it/download.php">http://eclipse.baeyens.it/download.php</a></td></tr>
-	<tr><td>V2 latest and greatest</td><td> http://www.baeyens.it/eclipse/nightly</td><td><a href="http://eclipse.baeyens.it/download.php">http://eclipse.baeyens.it/download.php</a></td></tr>
-	</table>
-	<br>
-	<h1>How to maintain your version?</h1>
-	For V1 there is only the product site and there will probably never be a newer version.<br>
-	For V2 you can upgrade both the roduc as the latest stable with the latest stable and the nightly build.<br>
-	<h1>Library madness</h1>
-	The library specification 1.5 has not been completely undone in 1.5.5 as such these libraries will not compile in the plugin.<br>
-	It looks like 1.5.6 implemented the workaround below (the cpp files are tagged with ifdef but the headers not)
-	The libraries that have issues are the ones that have multiple folders under the arch subfolder (normally sam and avr).<br>
-	As the plugin includes all code recursively under the library folder all arch code is included which gives problems.<br>
-	To fix this problem add #ifdef ARDUINO_ARCH_[upercase(architecture)] at the top of each file and #endif at the bottom.<br>
-	So for the files in the sam folder that becomes #ifdef ARDUINO_ARCH_SAM ..... #endif<br>
-	<h2>Unix script (also works for mac)</h2>
-	Unix users can run the code below in the hardware folder to fix the issue automatically.<br>
-	
-	<code># /bin/bash<br>
-arch=avr<br>
-prepend="#ifdef ARDUINO_ARCH_"${arch^^}<br>
-append="#endif ARDUINO_ARCH_"${arch^^}<br>
-find -path "*/arch/${arch}/*.cpp" -or -path "*/arch/${arch}/*.h" -or -path "*/arch/${arch}/*.c" |xargs -I % sh -c  "sed -i.bak \"1i ${prepend}\" %; echo "">> %; echo \"$append\">> %;"<br>
-arch=sam<br>
-prepend="#ifdef ARDUINO_ARCH_"${arch^^}<br>
-append="#endif ARDUINO_ARCH_"${arch^^}<br>
-find -path "*/arch/${arch}/*.cpp" -or -path "*/arch/${arch}/*.h" -or -path "*/arch/${arch}/*.c" |xargs -I % sh -c  "sed -i.bak \"1i ${prepend}\" %; echo "">> %;echo \"$append\">> %;"<br>
-	</code>
-	<h2>Windows users </h2>
-<a href="http://rlogiacco.wordpress.com/2014/01/24/stepping-up-in-arduino-development/">This user explains how you can do it in windows with cygwin. </a><br>
-<br>
-Arvid Jedlicka send me this batch file for windows users. I havn't tried the script but it looks ok. I think you can run it in the libraries folder only so it will take less time.<br>
-<code>@ECHO OFF<br>
-<br>
-:: Recommended usage and things that can go wrong ...<br>
-::<br>
-:: This batch file does not tollerate spaces or any other strange characters in the path names.<br>
-::<br>
-:: Recommended usage scenario would be to copy the [arduino_IDE_install_directory]/hardware/arduino directory<br>
-::   to a temporary directory that you created at the root of a drive ... something like C:\_temp will do but feel<br>
-::   free to call it what ever you want as long as there are no spaces or special characters in it. This ensures<br>
-::   there will not be any spaces in any of the path names and also keeps the original files until you are sure<br>
-::   the 1200+ files that will be changed are 'right' before you overwrite the originals.<br>
-::<br>
-:: Now that you have C:\_temp\arduino, put this file in the directory. Make sure the extension is .bat as it may have<br>
-::   been changed to something else to allow it to pass thru spam and virus scanning software.<br>
-::<br>
-:: Run the batch file. It will take a while as it is modifying 1200+ files. If you want to see exactly what it is<br>
-::   doing comment out the '@ECHO OFF' ... ':: @ECHO OFF' ... before you execute the batch file.<br>
-::<br>
-:: After running the batch file and ensuring you are satisfied with the results replace the contents of the<br>
-::   [arduino_IDE_install_directory]/hardware/arduino directory with the contents of the C:\_temp\arduino directory.<br>  
-::<br>
-:: This batch file does not provide any safeguards related to you doing the wrong thing ... i.e. running it a second time<br>
-::   on previously patched files, etc. ... so Stop, Pause, Think is your best course of action.<br>
-::<br>
-<br>
-SET temporaryFile=%CD%\temporary_%RANDOM%.txt<br>
-SET appendFile=%CD%\textToAppend_%RANDOM%.txt<br>
-SET prependFile=%CD%\textToPrepend_%RANDOM%.txt<br>
-<br>
-ECHO #endif>%appendFile%<br>
-<br>
-SET architecture=AVR<br>
-ECHO #ifdef ARDUINO_ARCH_%architecture%>%prependFile%<br>
-ECHO #endif /* ARDUINO_ARCH_%architecture% */>%appendFile%<br>
-<br>
-PUSHD %architecture%<br>
-FOR /F "usebackq delims=*" %%i IN (`dir /b /s *.cpp /s *.h /s *.c`) DO TYPE %prependFile%>%temporaryFile% & TYPE %%i>>%temporaryFile% & TYPE %appendFile%>>%temporaryFile% & MOVE /Y %temporaryFile% %%i<br>
-POPD<br>
-<br>
-SET architecture=SAM<br>
-ECHO #ifdef ARDUINO_ARCH_%architecture%>%prependFile%<br>
-ECHO #endif /* ARDUINO_ARCH_%architecture% */>%appendFile%<br>
-<br>
-PUSHD %architecture%<br>
-FOR /F "usebackq delims=*" %%i IN (`dir /b /s *.cpp /s *.h /s *.c`) DO TYPE %prependFile%>%temporaryFile% & TYPE %%i>>%temporaryFile% & TYPE %appendFile%>>%temporaryFile% & MOVE /Y %temporaryFile% %%i<br>
-POPD<br>
-<br>
-DEL /F /Q %appendFile%<br>
-DEL /F /Q %prependFile%<br>
-</code><br>
+        <div class="col-md-9 col-md-pull-3">
+          <section ng-show="tab.welcome" marked ng-include="'fragments/install_advice/intro.md'"></section>
+          <section ng-show="tab.a" marked ng-include="'fragments/how_to/install_advice.md'"></section>
+          <section ng-show="tab.b" marked ng-include="'fragments/install_advice/V1.md'"></section>
+          <section ng-show="tab.c" marked ng-include="'fragments/install_advice/V2.md'"></section>
+          <section ng-show="tab.d" marked ng-include="'fragments/install_advice/all_os.md'"></section>
+          <section ng-show="tab.e" marked ng-include="'fragments/install_advice/linux.md'"></section>
+          <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac.md'"></section>
+          <section ng-show="tab.g" marked ng-include="'fragments/install_advice/windows.md'"></section>
+          <section ng-show="tab.h" marked ng-include="'fragments/install_advice/library_madness.md'"></section>
+        </div>
+      </div>
+    </div><!-- /container -->
 
+    <div id="footer">
+      <ng-include src="'fragments/footer.html'"/>
+    </div>
+  </body>
 
-	
-</body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
 </html>

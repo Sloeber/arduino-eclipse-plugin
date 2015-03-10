@@ -40,8 +40,8 @@ public class Stream {
 		input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
 	    }
 	    // "templates/index-xhtml-template.resource");
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-	    try {
+
+	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input));) {
 
 		while ((line = reader.readLine()) != null) {
 		    line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include);
@@ -49,8 +49,6 @@ public class Stream {
 		    stringBuffer.append(newline);
 		}
 
-	    } finally {
-		reader.close();
 	    }
 
 	} catch (IOException ioe) {

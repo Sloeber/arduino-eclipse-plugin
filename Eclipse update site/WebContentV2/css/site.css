@@ -1,0 +1,92 @@
+body {
+  padding-top: 50px;
+}
+.reading-font {
+font-family: Georgia, "Times New Roman", Times, serif;
+}
+.font-size-bigger {
+font-size:16px;
+}
+bar {
+width:900px;
+}
+#arduino-pagetitle img{
+height: 50px;
+padding-right: 20px;
+}
+@media (min-width: 768px) {
+.navbar-brand {
+margin-left: -5px;
+}
+}
+@media (min-width:768px){.navbar>.container .navbar-brand,.navbar>.container-fluid .navbar-brand{margin-left:-5px}}
+
+#pagetitle-jumbotron {
+color:#f8f8f8;
+background-color:#152b4c;
+margin-bottom:0px;
+}
+@media (min-width: 768px) {
+#pagetitle-jumbotron {
+background-image:url("../img/arduino-blurred2.jpg");
+background-position-y:-750px;
+background-repeat:no-repeat;
+}
+}
+.navbar-brand {
+background-image: url("../img/logo.png");
+width: 123px;
+background-position-x: 5px;
+background-position-y: 5px;
+background-repeat: no-repeat;
+
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+
+.bs-callout code {
+    border-radius: 3px;
+}
+
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+
+.bs-callout-warning {
+    border-left-color: #f0ad4e;
+}
+
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+
+.bs-callout-info {
+    border-left-color: #337ab7;
+}
+
+.bs-callout-info h4 {
+    color: #337ab7;
+}

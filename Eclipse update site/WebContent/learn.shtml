@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Jan Baeyens">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Arduino Eclipse Plugin - Learn</title>
+
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="css/theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" ng-app='arduinoEclipse'>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
+
+    <div class="container" role="main">
+      <div class="page-header">
+        <h1>Learn <small>about the arduino eclipse plugin</small></h1>
+        <a name="top">&nbsp;</a>
+      </div>
+
+      <div ng-controller="AffixCtrl">
+        <div class="col-md-3 col-md-push-9">
+          <div class="list-group hidden-print">
+            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">About this page</a>
+            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Context sensitive coloring</a>
+            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">More control over Compile options</a>
+            <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Multiple projects in one environment</a>
+            <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Arduino core source code at your finger tips</a>
+            <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Arduino library code at your finger tips</a>
+            <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Lots of search functionalities</a>
+            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Lots easier to make libraries</a>
+            <a href="#" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Multiple configurations</a>
+
+          </div>
+        </div>
+        <div class="col-md-9 col-md-pull-3">
+          <section ng-show="tab.welcome">Welcome<br/>Select a tab on the right to see more details.</section>
+          <section ng-show="tab.a" marked ng-include="'fragments/learn/about.md'"></section>
+          <section ng-show="tab.b" marked ng-include="'fragments/learn/context_sensitive_coloring.md'"></section>
+          <section ng-show="tab.c" marked ng-include="'fragments/learn/compile_options.md'"></section>
+          <section ng-show="tab.d" marked ng-include="'fragments/learn/multiple_projects.md'"></section>
+          <section ng-show="tab.e" marked ng-include="'fragments/learn/arduino_code.md'"></section>
+          <section ng-show="tab.f" marked ng-include="'fragments/learn/library_code.md'"></section>
+          <section ng-show="tab.g" marked ng-include="'fragments/learn/search_functionality.md'"></section>
+          <section ng-show="tab.h" marked ng-include="'fragments/learn/easy_library.md'"></section>
+          <section ng-show="tab.i" marked ng-include="'fragments/learn/multiple_configurations.md'"></section>
+
+        </div>
+      </div>
+
+    </div><!-- /container -->
+
+    <div id="footer">
+      <ng-include src="'fragments/footer.html'"/>
+    </div>
+  </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
+</html>

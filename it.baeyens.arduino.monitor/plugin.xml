@@ -24,4 +24,104 @@
 
 	</extension>
 
+ <!-- 
+####################################################################################### 
+#   fonts and colors used by the plugin              
+# 
+####################################################################################### 
+-->
+ 
+ <extension point="org.eclipse.ui.themes">
+ <themeElementCategory
+      id="it.baeyens.arduino.themeCategory"
+      label="arduino">
+</themeElementCategory>
+<themeElementCategory
+      id="it.baeyens.arduino.scope.themeCategory"
+      label="Arduino scope"
+      parentId="it.baeyens.arduino.themeCategory">
+<description>
+Fonts and colors used by the arduino eclipse plugin scope view
+</description>
+</themeElementCategory>
+<themeElementCategory
+      id="it.baeyens.arduino.serialMonitor.themeCategory"
+      label="Arduino serial monitor"
+      parentId="it.baeyens.arduino.themeCategory">
+<description>
+Fonts and colors used by the arduino eclipse plugin serial monitor view
+</description>
+</themeElementCategory>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.background" label="background Color" value="COLOR_BLACK">
+<description>
+The background color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.foreground" label="foreground Color" value="COLOR_WHITE">
+<description>
+The foreground color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.grid" label="grid Color" value="COLOR_DARK_CYAN">
+<description>
+The grid color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.1" label="Channel 1 Color" value="COLOR_BLUE">
+<description>
+The color used by the first channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.2" label="Channel 2 Color" value="COLOR_CYAN">
+<description>
+The color used by the second channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.3" label="Channel 3 Color" value="COLOR_DARK_GRAY">
+<description>
+The color used by the third channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.4" label="Channel 4 Color" value="COLOR_DARK_GREEN">
+<description>
+The color used by the forth channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.5" label="Channel 5 Color" value="COLOR_DARK_RED">
+<description>
+The color used by the fifth channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.scope.themeCategory" id="it.baeyens.scope.color.6" label="Channel 6 Color" value="COLOR_DARK_YELLOW">
+<description>
+The color used by the sixth channel of the Arduino scope
+</description>
+</colorDefinition>
+<fontDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
+<description>
+The font for in the serial monitor
+</description>
+</fontDefinition>
+
+<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.1" label="serial Channel 1 Color" value="COLOR_BLACK">
+<description>
+The color used by the first serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.2" label="serial Channel 2 Color" value="COLOR_RED">
+<description>
+The color used by the second serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.3" label="serial Channel 3 Color" value="COLOR_GREEN">
+<description>
+The color used by the third serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="it.baeyens.arduino.serialMonitor.themeCategory" id="it.baeyens.serial.color.4" label="serial Channel 4 Color" value="COLOR_BLUE">
+<description>
+The color used by the forth serial connection of the serial monitor
+</description>
+</colorDefinition>
+</extension>
 </plugin>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Roberto Lo Giacco">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Arduino Eclipse Plugin - FAQs</title>
+
+    <!-- Bootstrap core CSS and theme -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles  -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="css/theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" ng-app='arduinoEclipse'>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <ng-include src="'fragments/navbar.html'"/>
+    </nav>
+
+    <div class="container" role="main" ng-controller="PillsCtrl" ng-init="init()">
+      <div class="page-header">
+        <h1>FAQs <small>please check this list first...</small></h1>
+      </div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-pills" role="tablist">
+        <li role="presentation" class="active"><a href="#general" role="tab" data-toggle="tab">General</a></li>
+        <li role="presentation"><a href="#ide_vs_plugin" role="tab" data-toggle="tab">IDE vs Plugin</a></li>
+        <li role="presentation"><a href="#configuration" role="tab" data-toggle="tab">Configuration</a></li>
+        <li role="presentation"><a href="#advices" role="tab" data-toggle="tab">General advices</a></li>
+        <li role="presentation"><a href="#troubleshooting" role="tab" data-toggle="tab">Troubleshooting</a></li>
+        <li role="presentation"><a href="#background" role="tab" data-toggle="tab">Background info</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="general"><ng-include src="'fragments/faq/general.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="ide_vs_plugin"><ng-include src="'fragments/faq/ide_vs_plugin.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="configuration"><ng-include src="'fragments/faq/configuration.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="advices"><ng-include src="'fragments/faq/advices.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="troubleshooting"><ng-include src="'fragments/faq/troubleshooting.html'"/></div>
+        <div role="tabpanel" class="tab-pane" id="background"><ng-include src="'fragments/faq/background.html'"/></div>
+      </div>
+    </div><!-- /container -->
+
+    <div id="footer">
+      <ng-include src="'fragments/footer.html'"/>
+    </div>
+  </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="js/marked.min.js"></script>
+  <script src="js/angular-marked.min.js"></script>
+  <script src="js/ui-bootstrap-tpls.js"></script>
+  <script src="js/app.js"></script>
+</html>

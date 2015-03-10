@@ -40,6 +40,7 @@ public class ArduinoBoards {
     }
 
     public ArduinoBoards() {
+	// no constructor needed
     }
 
     /**
@@ -313,21 +314,22 @@ public class ArduinoBoards {
      *             when something goes wrong??
      */
     static public void load(File inputFile, Map<String, String> table) throws IOException {
-	FileInputStream input = new FileInputStream(inputFile);
-	String[] lines = loadStrings(input); // Reads as UTF-8
-	for (String line : lines) {
-	    if ((line.length() == 0) || (line.charAt(0) == '#'))
-		continue;
+	try (FileInputStream input = new FileInputStream(inputFile);) {
+	    String[] lines = loadStrings(input); // Reads as UTF-8
+	    for (String line : lines) {
+		if ((line.length() == 0) || (line.charAt(0) == '#'))
+		    continue;
 
-	    // this won't properly handle = signs being in the text
-	    int equals = line.indexOf('=');
-	    if (equals != -1) {
-		String key = line.substring(0, equals).trim();
-		String value = line.substring(equals + 1).trim();
-		table.put(key, value);
+		// this won't properly handle = signs being in the text
+		int equals = line.indexOf('=');
+		if (equals != -1) {
+		    String key = line.substring(0, equals).trim();
+		    String value = line.substring(equals + 1).trim();
+		    table.put(key, value);
+		}
 	    }
+	    input.close();
 	}
-	input.close();
     }
 
     // Taken from PApplet.java
@@ -340,20 +342,21 @@ public class ArduinoBoards {
      */
     static public String[] loadStrings(InputStream input) {
 	try {
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-
 	    String lines[] = new String[100];
 	    int lineCount = 0;
-	    String line = null;
-	    while ((line = reader.readLine()) != null) {
-		if (lineCount == lines.length) {
-		    String temp[] = new String[lineCount << 1];
-		    System.arraycopy(lines, 0, temp, 0, lineCount);
-		    lines = temp;
+	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));) {
+
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+		    if (lineCount == lines.length) {
+			String temp[] = new String[lineCount << 1];
+			System.arraycopy(lines, 0, temp, 0, lineCount);
+			lines = temp;
+		    }
+		    lines[lineCount++] = line;
 		}
-		lines[lineCount++] = line;
+		reader.close();
 	    }
-	    reader.close();
 
 	    if (lineCount == lines.length) {
 		return lines;
