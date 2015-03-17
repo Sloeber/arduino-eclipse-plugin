@@ -4,6 +4,7 @@ import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -16,7 +17,17 @@ public class SerialListener implements MessageConsumer {
     SerialMonitor TheMonitor;
     int theColorIndex;
     private ByteBuffer myReceivedScopeData = ByteBuffer.allocate(2000);
-    private int myEndPosition;
+
+    public void removeBytesFromStart(int n) {
+	int index = 0;
+	for (int i = 0; i < n; i++)
+	    myReceivedScopeData.put(i, (byte) 0);
+	for (int i = n; i < myReceivedScopeData.position(); i++) {
+	    myReceivedScopeData.put(index++, myReceivedScopeData.get(i));
+	    myReceivedScopeData.put(i, (byte) 0);
+	}
+	myReceivedScopeData.position(index);
+    }
 
     SerialListener(SerialMonitor Monitor, int ColorIndex) {
 	TheMonitor = Monitor;
@@ -28,16 +39,13 @@ public class SerialListener implements MessageConsumer {
     public void message(byte[] newData) {
 	if (myScopeFilterFlag) {
 	    // filter scope data
-
-	    if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
-		myEndPosition = 0;
+	    try {
+		myReceivedScopeData.put(newData);
+	    } catch (BufferOverflowException e) {
+		myReceivedScopeData.clear();
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
-	    } else {
-		myReceivedScopeData.position(myEndPosition);
-		myReceivedScopeData.put(newData, 0, newData.length);
-		myEndPosition = myReceivedScopeData.position();
-		internalExtractAndProcessScopeData();
 	    }
+	    internalExtractAndProcessScopeData();
 	} else {
 	    // treat data just like a event
 	    event(new String(newData));
@@ -45,86 +53,56 @@ public class SerialListener implements MessageConsumer {
     }
 
     private void internalExtractAndProcessScopeData() {
-	int scannnedStartPointer = 0;
-	byte[] dst;
-	String inputMessage = new String(myReceivedScopeData.array());
-	System.out.print(inputMessage.substring(0, myEndPosition));
 	String MonitorMessage = "";
-	int lastFoundData = -1;
-	for (int scannnedScopePointer = 0; scannnedScopePointer < myEndPosition - 1; scannnedScopePointer++) {
+	boolean dontProcessLastPart = false;
+	for (int scannnedScopePointer = 0; scannnedScopePointer < myReceivedScopeData.position() - 1; scannnedScopePointer++) {
 	    if (myReceivedScopeData.getShort(scannnedScopePointer) == ArduinoConst.SCOPE_START_DATA) {
 		// we have a hit.
-		if (scannnedStartPointer > 0)// there is data before the scopehit
+		if (scannnedScopePointer > 0)// there is data before the scopehit->handle it and remove it
 		{
-		    // // buffer the data to send to scope
-		    // ByteArrayOutputStream result = new ByteArrayOutputStream();
-		    // myReceivedScopeData.position(scannnedStartPointer);
-		    // result.write(myReceivedScopeData.array(), 0, scannnedScopePointer - scannnedStartPointer);
-		    // MonitorMessage += result.toString();
-
-		    dst = new byte[scannnedScopePointer - scannnedStartPointer];
-		    myReceivedScopeData.position(scannnedStartPointer);
-		    try {
-			myReceivedScopeData.get(dst, 0, scannnedScopePointer - scannnedStartPointer);
-
-			MonitorMessage += new String(dst);
-		    } catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
-				"Serial Montor: buffer copy still not fixed scannnedScopePointer" + scannnedScopePointer + " scannnedStartPointer "
-					+ scannnedStartPointer + " bufsize " + (scannnedScopePointer - scannnedStartPointer)));
-		    }
-
+		    for (int n = 0; n < scannnedScopePointer; n++)
+			MonitorMessage += Character.toString((char) myReceivedScopeData.get(n));
+		    removeBytesFromStart(scannnedScopePointer);
 		}
-		if (scannnedScopePointer + 4 >= myEndPosition) // the length of the scopedata set can not be read yet
+		// now we have a hit at the beginning of the buffer.
+		if (myReceivedScopeData.position() < 4) // the scopedata is not complete yet
 		{
-		    lastFoundData = scannnedScopePointer;
-		    scannnedScopePointer = myEndPosition;
+		    scannnedScopePointer = myReceivedScopeData.position(); // stop the loop
+		    dontProcessLastPart = true;
 		} else {
-		    int bytestoRead = myReceivedScopeData.getShort(scannnedScopePointer + 2);
-		    if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
+		    int bytestoRead = myReceivedScopeData.getShort(2);
+		    if ((bytestoRead < 0) || (bytestoRead > (10 * 2))) {
 			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Serial Montor: There are supposedly " + bytestoRead / 2
 				+ "channels to read"));
-			scannnedStartPointer = scannnedScopePointer; // process scope data as normal data
+			myReceivedScopeData.putShort(0, (short) 0); // process scope data as normal data remove the ArduinoConst.SCOPE_START_DATA
 		    } else {
-			if (bytestoRead + 4 + scannnedScopePointer < myEndPosition) {
+			if (bytestoRead + 4 < myReceivedScopeData.position()) {
 			    // all data is available
-			    scannnedScopePointer = scannnedScopePointer + bytestoRead + 4; // continue after the scope data
-			    scannnedStartPointer = scannnedScopePointer;
+			    removeBytesFromStart(bytestoRead + 4);
+			    scannnedScopePointer = -1;
 			} else // not all data arrived for the latest data set
 			{
-			    lastFoundData = scannnedScopePointer;
-			    scannnedScopePointer = myEndPosition;
+			    scannnedScopePointer = myReceivedScopeData.position();
+			    dontProcessLastPart = true;
 			}
 		    }
 		}
 	    }
 	}
-	if (lastFoundData == -1) // we did not end on a scope data set; check wether the last char is start of a new scope data set
+	if (!dontProcessLastPart) // we don't end on a scope data set; check wether the last char is start of a new scope data set
 	{
-	    if (myReceivedScopeData.get(myEndPosition) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
-		lastFoundData = myEndPosition - 1;
+	    if (myReceivedScopeData.get(myReceivedScopeData.position()) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
+		for (int n = 0; n < myReceivedScopeData.position() - 1; n++)
+		    MonitorMessage += Character.toString((char) myReceivedScopeData.get(n));
+		removeBytesFromStart(myReceivedScopeData.position() - 1);
+		myReceivedScopeData.position(1);
+	    } else {
+		for (int n = 0; n < myReceivedScopeData.position(); n++)
+		    MonitorMessage += Character.toString((char) myReceivedScopeData.get(n));
+		removeBytesFromStart(myReceivedScopeData.position());
+		myReceivedScopeData.position(0);
 	    }
 	}
-	if (lastFoundData != -1) // we need to keep some data
-	{
-	    // remove all the scanned data
-	    for (int curByte = 0; curByte <= myEndPosition - lastFoundData; curByte++) {
-		try {
-		    myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
-		} catch (IndexOutOfBoundsException e) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
-		}
-
-	    }
-	    myEndPosition -= lastFoundData;
-	} else {
-	    dst = new byte[myEndPosition - scannnedStartPointer];
-	    myReceivedScopeData.position(scannnedStartPointer);
-	    myReceivedScopeData.get(dst, 0, myEndPosition - scannnedStartPointer);
-	    MonitorMessage += new String(dst);
-	    myEndPosition = 0;
-	}
-
 	event(MonitorMessage);
     }
 

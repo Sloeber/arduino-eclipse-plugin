@@ -164,51 +164,57 @@
 -->
 	<extension point="org.eclipse.ui.commands">	
 		<category
-			name="%category.name"
-			description="%category.description"
+			name="%category.arduino.name"
+			description="%category.arduino.description"
 			id="it.baeyens.arduino.commands"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
-        description="%command.description"
+        description="%command.UploadprojectAction.description"
         id="it.baeyens.arduino.actions.UploadprojectAction"
-        name="%command.name"/>
+        name="%command.UploadprojectAction.name"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
         defaultHandler="it.baeyens.arduino.actions.NewSketchHandler"
-        description="%command.description.0"
+        description="%command.NewSketchAction.description"
         id="it.baeyens.arduino.actions.NewSketchAction"
-        name="%command.name.0"/>
+        name="%command.NewSketchAction.name"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
-        description="%command.description.1"
+        description="%command.ArduinoBuildAction.description"
         id="it.baeyens.arduino.actions.ArduinoBuildAction"
-        name="%command.name.1"/>
+        name="%command.ArduinoBuildAction.name"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
         defaultHandler="it.baeyens.arduino.actions.OpenSerialMonitorHandler"
-        description="%command.description.2"
+        description="%command.OpenSerialMonitorAction.description"
         id="it.baeyens.arduino.actions.OpenSerialMonitorAction"
-        name="%command.name.2"/>
+        name="%command.OpenSerialMonitorAction.name"/>
         <command
         categoryId="it.baeyens.arduino.commands"
-        description="%command.description.3"
+        description="%command.AddLibraryAction.description"
         id="it.baeyens.arduino.actions.AddLibraryAction"
-        name="%command.name.3">
+        name="%command.AddLibraryAction.name">
         </command>
         
         <command
         categoryId="it.baeyens.arduino.commands"
-        description="%command.description.4"
+        description="%command.AddSourceFolder.description"
         id="it.baeyens.arduino.actions.AddSourceFolderAction"
-        name="%command.name.4">
+        name="%command.AddSourceFolder.name">
         </command>
 
       <command
             categoryId="it.baeyens.arduino.commands"
             defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
-            description="%command.description.5"
+            description="%command.openOscilloscope.description"
             id="it.baeyens.arduino.actions.OpenScopeAction"
-            name="%command.label.5">
+            name="%command.openOscilloscope.name">
+      </command>
+      <command
+            categoryId="it.baeyens.arduino.commands"
+            description="%command.ReattachLibraries.description"
+            id="it.baeyens.arduino.actions.ReattachLibraries"
+            name="%command.ReattachLibraries.name">
       </command>
 
 	</extension>
@@ -329,21 +335,34 @@
                 </visibleWhen>
 		    <command
             commandId="it.baeyens.arduino.actions.ArduinoBuildAction"
-            id="buildProject"
-            label="%command.label.3"/>
+            id="buildProject"/>
 			<command
          commandId="it.baeyens.arduino.actions.UploadprojectAction"
+         id="UploadprojectAction"
          tooltip="%command.tooltip"/>
-			<command commandId="it.baeyens.arduino.actions.NewSketchAction"/>
-			<command commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"/>
-			<command commandId="it.baeyens.arduino.actions.OpenScopeAction"/>
+			<command
+         commandId="it.baeyens.arduino.actions.NewSketchAction"
+         id="NewSketchAction"/>
+			<command
+         commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"
+         id="OpenSerialMonitorAction"/>
+			<command
+         commandId="it.baeyens.arduino.actions.OpenScopeAction"
+         id="OpenScopeAction"/>
    <command
          commandId="it.baeyens.arduino.actions.AddLibraryAction"
+         id="AddLibraryAction"
          style="push">
    </command>
    
    <command
          commandId="it.baeyens.arduino.actions.AddSourceFolderAction"
+         id="AddSourceFolderAction"
+         style="push">
+   </command>
+   <command
+         commandId="it.baeyens.arduino.actions.ReattachLibraries"
+         id="ReattachLibrariesAction"
          style="push">
    </command>
    
@@ -586,7 +605,7 @@
                     buildVariable="AR"
                     id="it.baeyens.arduino.tool.archiver.output"
                     name="%outputType.name.3"
-                    outputNames="${A.BUILD.PATH}/${A.ARCHIVE_FILE}"
+                    outputNames="${A.ARCHIVE_FILE}"
                     outputs="ar"
                     primaryOutput="true">
               </outputType>
@@ -770,6 +789,15 @@
     <handler
           class="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
           commandId="it.baeyens.arduino.actions.UploadprojectAction">
+       <enabledWhen>
+          <count
+                value="+">
+          </count>
+       </enabledWhen>
+    </handler>
+        <handler
+          class="it.baeyens.arduino.actions.ReattachLibraries"
+          commandId="it.baeyens.arduino.actions.ReattachLibraries">
        <enabledWhen>
           <count
                 value="+">
