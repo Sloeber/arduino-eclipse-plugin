@@ -8,7 +8,7 @@ Why is that?
 --
 The arduino IDE put the focus on "a low entry level". Honestly with decades of experience in software development I can tell you -hand on hart- that the Arduino IDE is very good designed ... for it's purpose.
 
-But when you start growing and "the low entry level" is no longer your first concern. You start to want a "rich tool", not a "this way it will work always work tool". So a tool that allows you to control more things, and as such does not stop you breaking things.
+But when you start growing and "the low entry level" is no longer your first concern. You start to want a "rich tool", not a "this way it will work always work tool". So a tool that allows you to control more things, and as such does not stop you from breaking things.
 
 As it is nearly impossible to combine a "rich tool" with a "low entry level tool" many "requests for improvements" are rejected by the arduino core team as it may infringe the "low entry level" target.
 

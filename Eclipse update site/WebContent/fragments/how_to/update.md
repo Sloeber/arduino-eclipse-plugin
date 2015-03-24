@@ -27,5 +27,5 @@ In the general preferences make sure you point to the "correct" arduino IDE.
 
 For each and every project go to the project properties->arduino. Verify your settings.  **Select apply and close.**
 
-Note that is is not "abnormal" that after a update the data in the preferences->arduino or project properties-arduino is completely wrong. 
+Note that it is not "abnormal" that after a update the data in the preferences->arduino or project properties-arduino is completely wrong. 
 
