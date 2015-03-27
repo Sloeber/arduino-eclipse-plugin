@@ -137,6 +137,8 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	// ArduinoProperties arduinoProperties = new
 	// ArduinoProperties(currentProject);
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(currentProject);
+	if (prjDesc == null)
+	    return compilerCommand;
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	// IContributedEnvironment contribEnv =

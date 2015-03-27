@@ -5,7 +5,7 @@ Arduino IDE **1.5.2** beta and **1.5.4** beta are **not supported** due to a cha
 
 Arduino IDE **1.5.5** beta works with V2.2 but you **need to fix** the remaining V1.5 Libraries (see library madness)
 
-Arduino IDE **1.5.6** beta switched from **RXTX to JSSC**. This means that the RXTX dll is no longer delivered as part of the Arduino IDE. The plugin comes with a RXTX library which does not contain the adaptations the Arduino team did which improves user experiance. (mostly windows and mac)
-V2 has also changed to JSSC but this version has not yet been released.
+Arduino IDE **1.5.6** beta switched from **RXTX to JSSC**. This means that the RXTX dll is no longer delivered as part of the Arduino IDE. The plugin comes with a RXTX library which does not contain the adaptations the Arduino team did which improves user experience. (mostly windows and mac)
+V2 has also changed to JSSC but this version has not yet been released. You need the nightly for that.
 
-Arduino IDE **1.5.7** comes with a **new toolchain** and no longer includes make. Most mac and linux machines will not be affected but it gives problems in windows
+Arduino IDE **1.5.7** comes with a **new toolchain** and no longer includes the make utility. Most linux machines will not be affected but it gives problems in windows and mac. See the platform dependent info on how to get this fixed.

@@ -551,20 +551,10 @@ public class ArduinoHelpers extends Common {
 	contribEnv.addVariable(var, confDesc);
 	var = new EnvironmentVariable(ENV_KEY_runtime_ide_version, GetARDUINODefineValue());
 	contribEnv.addVariable(var, confDesc);
+	// for the due from arduino IDE 1.6.1 onwards link the due bin builder to the hex binder
+	var = new EnvironmentVariable("A.RECIPE.OBJCOPY.HEX.PATTERN", "${A.RECIPE.OBJCOPY.BIN.PATTERN}");
+	contribEnv.addVariable(var, confDesc);
 	// End of section permitting denigrating remarks on arduino software development team
-
-	// // Arduino uses the board approach for the upload tool.
-	// // as I'm not I create some special entries to work around it
-	// var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS.BOSSAC.CMD"));
-	// contribEnv.addVariable(var, confDesc);
-	// var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS.BOSSAC.PATH"));
-	// contribEnv.addVariable(var, confDesc);
-	// var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CMD.PATH"));
-	// contribEnv.addVariable(var, confDesc);
-	// var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS.AVRDUDE.CONFIG.PATH"));
-	// contribEnv.addVariable(var, confDesc); // End of section Arduino uses
-	// // the board approach for the
-	// // upload tool.
 
 	// For Teensy I added a flag that allows to compile everything in one
 	// project not using the archiving functionality

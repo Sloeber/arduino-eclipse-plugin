@@ -7,7 +7,8 @@ A dialog box will pop up showing all available libraries.
 ![import library](http://iloapp.baeyens.it/data/_gallery/public/1/137950377839940200_resized.png)
 
 
-Note that in contrast to the arduino IDE you will still need to add the include directives to your ino file.
+Note: that in contrast to the arduino IDE you will still need to add the include directives to your ino file.  
+Note: from march 2015 there is no more subsections (hardware/arduino/library) Al libraries are sorted alphabetically.
 
 
  **Party success**

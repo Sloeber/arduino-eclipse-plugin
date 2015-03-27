@@ -1,31 +1,18 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ArduinoLibraries;
 
-import java.io.File;
-import java.net.URI;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
@@ -33,9 +20,6 @@ import org.eclipse.ui.dialogs.WizardResourceImportPage;
 public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 
     protected Tree myLibrarySelector;
-    TreeItem myArduinoLibItem = null;
-    TreeItem myPersonalLibItem = null;
-    TreeItem myArduinoHardwareLibItem = null;
 
     private IProject myProject = null;
 
@@ -66,12 +50,6 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 
 	createSourceGroup(composite);
 
-	// createDestinationGroup(composite);
-
-	// createOptionsGroup(composite);
-
-	// restoreWidgetValues();
-	// updateWidgetEnablements();
 	setPageComplete(true);
 	setErrorMessage(null); // should not initially have error message
 
@@ -95,77 +73,20 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 1;
 	myLibrarySelector.setLayoutData(theGriddata);
+
+	// find the items to add to the list
+	Set<String> allLibraries = ArduinoLibraries.findAllHarwareLibraries(myProject);
+	allLibraries.addAll(ArduinoLibraries.findAllUserLibraries(myProject));
+	allLibraries.addAll(ArduinoLibraries.findAllArduinoLibraries(myProject));
+
 	// Get the data in the tree
 	myLibrarySelector.setRedraw(false);
-
-	// IWorkspace workspace = ResourcesPlugin.getWorkspace();
-	IPathVariableManager pathMan = myProject.getPathVariableManager();
-
-	URI ArduinoLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB));
-	URI PrivateLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB));
-	URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
-
-	if (HardwareLibrarURI != null) {
-	    IPath HardwareLibraryPath = URIUtil.toPath(HardwareLibrarURI);
-
-	    if ((HardwareLibraryPath.toFile().exists()) && (HardwareLibraryPath.toFile().list().length > 0)) {
-		// Create Arduino Item
-		myArduinoHardwareLibItem = new TreeItem(myLibrarySelector, SWT.NONE);
-		myArduinoHardwareLibItem.setText("Hardware provided Libraries");
-		// Add the Arduino Libs
-		AddLibs(myArduinoHardwareLibItem, HardwareLibraryPath);
-		myArduinoHardwareLibItem.setExpanded(true);
-	    }
+	Iterator<String> iterator = allLibraries.iterator();
+	while (iterator.hasNext()) {
+	    TreeItem child = new TreeItem(myLibrarySelector, SWT.NONE);
+	    child.setText(iterator.next());
 	}
 
-	if (ArduinoLibraryURI != null) {
-	    IPath ArduinoLibraryPath = URIUtil.toPath(ArduinoLibraryURI);
-	    // Create Arduino Item
-	    myArduinoLibItem = new TreeItem(myLibrarySelector, SWT.NONE);
-	    myArduinoLibItem.setText("Arduino Libraries");
-	    // Add the Arduino Libs
-	    AddLibs(myArduinoLibItem, ArduinoLibraryPath);
-	    myArduinoLibItem.setExpanded(true);
-	}
-
-	// Create Personal library Item
-	if (PrivateLibraryURI != null) {
-	    IPath PrivateLibraryPath = URIUtil.toPath(PrivateLibraryURI);
-	    myPersonalLibItem = new TreeItem(myLibrarySelector, SWT.NONE);
-	    myPersonalLibItem.setText("Personal Libraries");
-	    // Add the personal Libs
-	    AddLibs(myPersonalLibItem, PrivateLibraryPath);
-	    myPersonalLibItem.setExpanded(true);
-	}
-
-	myLibrarySelector.setRedraw(true);
-	myLibrarySelector.addListener(SWT.Selection, new Listener() {
-	    @Override
-	    public void handleEvent(Event event) {
-
-		if (event.detail == SWT.CHECK) {
-		    if ((event.item.equals(myPersonalLibItem)) || (event.item.equals(myArduinoHardwareLibItem))
-			    || (event.item.equals(myArduinoLibItem))) {
-			event.detail = SWT.NONE;
-			event.type = SWT.None;
-			event.doit = false;
-			try {
-			    myLibrarySelector.setRedraw(false);
-			    if (myPersonalLibItem != null)
-				myPersonalLibItem.setChecked(false);
-			    if (myArduinoLibItem != null)
-				myArduinoLibItem.setChecked(false);
-			    if (myArduinoHardwareLibItem != null)
-				myArduinoHardwareLibItem.setChecked(false);
-			} finally {
-			    myLibrarySelector.setRedraw(true);
-			}
-		    }
-		}
-	    }
-
-	});
-	// Turn drawing back on!
 	myLibrarySelector.setRedraw(true);
 
     }
@@ -180,60 +101,16 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	return null;
     }
 
-    private static void AddLibs(TreeItem LibItem, IPath iPath) {
-	File LibRoot = iPath.toFile();
-	File LibFolder;
-	String[] children = LibRoot.list();
-	if (children == null) {
-	    // Either dir does not exist or is not a directory
-	} else {
-	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
-	    for (int i = 0; i < children.length; i++) {
-		// Get filename of file or directory
-		LibFolder = iPath.append(children[i]).toFile();
-		if (LibFolder.isDirectory()) {
-		    TreeItem child = new TreeItem(LibItem, SWT.NONE);
-		    child.setText(children[i]);
-		}
-	    }
-	}
-    }
-
     public boolean PerformFinish() {
-	if (myArduinoLibItem != null) {
-	    importLibs(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB, myArduinoLibItem.getItems());
+	TreeItem selectedTreeItems[] = myLibrarySelector.getItems();
+	Set<String> selectedLibraries = new TreeSet<String>();
+	for (TreeItem CurItem : selectedTreeItems) {
+	    if (CurItem.getChecked())
+		selectedLibraries.add(CurItem.getText());
 	}
-	if (myPersonalLibItem != null) {
-	    importLibs(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, myPersonalLibItem.getItems());
-	}
-	if (myArduinoHardwareLibItem != null) {
-	    importLibs(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, myArduinoHardwareLibItem.getItems());
-	}
+	ArduinoLibraries.addLibrariesToProject(myProject, selectedLibraries);
+
 	return true;
-    }
-
-    private void importLibs(String PathVarName, TreeItem[] AllItems) {
-	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-	ICProjectDescription projectDescription = mngr.getProjectDescription(myProject, true);
-	ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
-
-	for (TreeItem CurItem : AllItems) {
-	    if (CurItem.getChecked()) {
-		try {
-		    ArduinoHelpers.addCodeFolder(myProject, PathVarName, CurItem.getText(), ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem.getText(),
-			    configurationDescriptions);
-		} catch (CoreException e) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
-		}
-	    }
-
-	    try {
-		// projectDescription.(configurationDescription);
-		mngr.setProjectDescription(myProject, projectDescription, true, null);
-	    } catch (CoreException e) {
-		e.printStackTrace();
-	    }
-	}
     }
 
 }
