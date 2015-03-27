@@ -545,6 +545,10 @@ public class ArduinoHelpers extends Common {
 	var = new EnvironmentVariable(ENV_KEY_build_core_path, "${" + ENV_KEY_PLATFORM_PATH + "}/cores/${" + ENV_KEY_build_core_folder + "}");
 	contribEnv.addVariable(var, confDesc);
 
+	String buildVariantPath = "${" + ENV_KEY_PLATFORM_PATH + "}/variants/${" + ArduinoConst.ENV_KEY_build_variant + "}";
+	var = new EnvironmentVariable(ENV_KEY_build_variant_path, buildVariantPath);
+	contribEnv.addVariable(var, confDesc);
+
 	// I'm not sure why but till now arduino refused to put this in the platform.txt file
 	// I won't call them idiots for this but it is getting close
 	var = new EnvironmentVariable(ENV_KEY_SOFTWARE, "ARDUINO");
@@ -630,15 +634,6 @@ public class ArduinoHelpers extends Common {
 
 	var = new EnvironmentVariable(ENV_KEY_archive_file, "arduino.ar");
 	contribEnv.addVariable(var, confDesc);
-
-	IPathVariableManager pathMan = confDesc.getProjectDescription().getProject().getPathVariableManager();
-	URI buildVariantURI = pathMan.getURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS);
-	buildVariantURI = pathMan.resolveURI(buildVariantURI);
-	String buildVariantPath = buildVariantURI.getPath() + "/${" + ArduinoConst.ENV_KEY_build_variant + "}";
-	var = new EnvironmentVariable(ENV_KEY_build_variant_path, buildVariantPath);
-	contribEnv.addVariable(var, confDesc);
-	// IPath platformPath = new Path(arduinoProperties.getPlatformFolder());
-	// IPath PinPath = platformPath.append(ArduinoConst.VARIANTS_FOLDER);
 
     }
 
