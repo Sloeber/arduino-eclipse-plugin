@@ -208,41 +208,6 @@ public class Common extends ArduinoInstancePreferences {
 	return Integer.parseInt(Number.trim());
     }
 
-    // /**
-    // * Converts a object to a project if it is related to a project
-    // *
-    // * @param item
-    // * an object that one way or anther refers to a IProject
-    // * @return the referred project or an iproject
-    // */
-    // public static IProject getProject(Object item) {
-    // // See if the given is an IProject (directly or via IAdaptable)
-    // if (item instanceof IProject) {
-    // return (IProject) item;
-    // } else if (item instanceof IResource) {
-    // return ((IResource) item).getProject();
-    // } else if (item instanceof IAdaptable) {
-    // IAdaptable adaptable = (IAdaptable) item;
-    // IProject project = (IProject) adaptable.getAdapter(IProject.class);
-    // if (project != null) {
-    // return project;
-    // }
-    // // Try ICProject -> IProject
-    // ICProject cproject = (ICProject) adaptable.getAdapter(ICProject.class);
-    // if (cproject == null) {
-    // // Try ICElement -> ICProject -> IProject
-    // ICElement celement = (ICElement) adaptable.getAdapter(ICElement.class);
-    // if (celement != null) {
-    // cproject = celement.getCProject();
-    // }
-    // }
-    // if (cproject != null) {
-    // return cproject.getProject();
-    // }
-    // }
-    // return null;
-    // }
-
     private static ICConfigurationDescription[] getCfgs(IProject prj) {
 	ICProjectDescription prjd = CoreModel.getDefault().getProjectDescription(prj, false);
 	if (prjd != null) {
@@ -325,20 +290,6 @@ public class Common extends ArduinoInstancePreferences {
 			    project = cproject.getProject();
 		    } else if (selItem instanceof IResource) {
 			project = ((IResource) selItem).getProject();
-			// } else if (selItem instanceof IncludeRefContainer) {
-			// ICProject fCProject =
-			// ((IncludeRefContainer)selItem).getCProject();
-			// if (fCProject != null)
-			// project = fCProject.getProject();
-			// } else if (selItem instanceof IncludeReferenceProxy)
-			// {
-			// IncludeRefContainer irc =
-			// ((IncludeReferenceProxy)selItem).getIncludeRefContainer();
-			// if (irc != null) {
-			// ICProject fCProject = irc.getCProject();
-			// if (fCProject != null)
-			// project = fCProject.getProject();
-			// }
 		    } else if (selItem instanceof IAdaptable) {
 			Object adapter = ((IAdaptable) selItem).getAdapter(IProject.class);
 			if (adapter != null && adapter instanceof IProject) {
@@ -384,11 +335,6 @@ public class Common extends ArduinoInstancePreferences {
 				}
 			    }
 			}
-			// if (part instanceof IConsoleView) {
-			// IConsoleView epart = (IConsoleView) part;
-			// IProject project = epart.
-			//
-			// }
 		    }
 		}
 
@@ -512,7 +458,7 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     public static Object listLineEndings() {
-	String outgoing[] = { "none", "CR", "NL", "NL/CR" };
+	String outgoing[] = { "none", "CR", "NL", "CR/NL" };
 	return outgoing;
     }
 

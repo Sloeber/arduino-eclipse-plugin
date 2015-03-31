@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -50,6 +51,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private MyDirectoryFieldEditor mArduinoIdePath;
     private DirectoryFieldEditor mArduinoPrivateLibPath;
     private DirectoryFieldEditor mArduinoPrivateHardwarePath;
+    private ComboFieldEditor mArduinoBuildBeforeUploadOption;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
 
@@ -264,6 +266,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	mArduinoIdeVersion = new StringFieldEditor(ArduinoConst.KEY_ARDUINO_IDE_VERSION, "Arduino IDE Version", parent);
 	addField(mArduinoIdeVersion);
 	mArduinoIdeVersion.setEnabled(false, parent);
+
+	String[][] buildBeforeUploadOptions = new String[][] { { "Ask every upload", "ASK" }, { "Yes", "YES" }, { "No", "NO" } };
+	mArduinoBuildBeforeUploadOption = new ComboFieldEditor(ArduinoConst.KEY_BUILD_BEFORE_UPLOAD_OPTION, "Build before upload?",
+		buildBeforeUploadOptions, parent);
+	addField(mArduinoBuildBeforeUploadOption);
 
     }
 

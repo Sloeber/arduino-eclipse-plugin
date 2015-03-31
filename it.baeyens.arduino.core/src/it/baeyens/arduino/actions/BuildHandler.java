@@ -26,14 +26,14 @@ import org.eclipse.ui.PlatformUI;
  * @author jan
  * 
  */
-class JobHandler extends Job {
+class BuildJobHandler extends Job {
     IProject myBuildProject = null;
 
-    public JobHandler(String name) {
+    public BuildJobHandler(String name) {
 	super(name);
     }
 
-    public JobHandler(IProject buildProject) {
+    public BuildJobHandler(IProject buildProject) {
 	super("Build the code of project " + buildProject.getName());
 	myBuildProject = buildProject;
     }
@@ -51,6 +51,11 @@ class JobHandler extends Job {
 }
 
 public class BuildHandler extends AbstractHandler {
+    private Job mBuildJob = null;
+
+    public Job getJob() {
+	return mBuildJob;
+    }
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -62,18 +67,14 @@ public class BuildHandler extends AbstractHandler {
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
 	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		// Added for debugging
-		// do not check this in !!!
 		try {
 		    PdePreprocessor.processProject(SelectedProjects[curProject]);
 		} catch (CoreException e) {
-		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
-		// end of added for debugging
-		Job buildJob = new JobHandler(SelectedProjects[curProject]);
-		buildJob.setPriority(Job.INTERACTIVE);
-		buildJob.schedule();
+		mBuildJob = new BuildJobHandler(SelectedProjects[curProject]);
+		mBuildJob.setPriority(Job.INTERACTIVE);
+		mBuildJob.schedule();
 	    }
 	    Job job = new Job("Start build Activator") {
 		@Override

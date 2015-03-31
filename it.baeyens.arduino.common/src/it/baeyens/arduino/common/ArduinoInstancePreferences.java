@@ -5,6 +5,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -14,6 +19,53 @@ import org.osgi.service.prefs.BackingStoreException;
  * 
  */
 public class ArduinoInstancePreferences extends ArduinoConst {
+
+    /***
+     * get the stored option whether a build before the upload is wanted or not. If nothing is stored the option is ask and this method will pop up a
+     * dialogbox
+     * 
+     * @return true if a build is wanted before upload false if no build is wanted before upload
+     */
+    public static boolean getBuildBeforeUploadOption() {
+
+	switch (getGlobalValue(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) {
+	case "YES":
+	    return true;
+	case "NO":
+	    return false;
+	default:
+	    break;
+	}
+	class TheDialog implements Runnable {
+	    boolean ret = false;
+
+	    boolean getAnswer() {
+		return ret;
+	    }
+
+	    @Override
+	    public void run() {
+		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+		dialog.setText("Build before upload?");
+		dialog.setMessage("Do you want to build before upload?\nUse preferences->arduino to set/change your default answer.");
+		switch (dialog.open()) {
+		case SWT.NO:
+		    ret = false;
+		    break;
+		case SWT.YES:
+		    ret = true;
+		    break;
+		default:
+		    ret = false;
+		    break;
+		}
+	    }
+	}
+	TheDialog theDialog = new TheDialog();
+	Display.getDefault().syncExec(theDialog);
+	return theDialog.getAnswer();
+    }
 
     /**
      * This method reads the name of the last used arduino board from the instance preferences

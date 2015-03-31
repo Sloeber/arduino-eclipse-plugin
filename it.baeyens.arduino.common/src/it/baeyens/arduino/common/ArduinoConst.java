@@ -67,6 +67,8 @@ public class ArduinoConst {
     public static final String UploadToolTeensy = "teensy_reboot";
     public static final String Upload_ssh = "ssh upload";
 
+    public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";
+
     public static final String ENV_KEY_ARDUINO_START = "A.";
     public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";
     public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";
