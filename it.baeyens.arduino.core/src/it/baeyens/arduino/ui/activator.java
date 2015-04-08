@@ -1,9 +1,12 @@
 package it.baeyens.arduino.ui;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 
 import java.net.URL;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -45,11 +48,14 @@ public class activator implements BundleActivator {
 		    // if this happens there is no real harm or functionality
 		    // lost
 		}
+		CoreModel singCoreModel = CoreModel.getDefault();
+		singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(), CProjectDescriptionEvent.ABOUT_TO_APPLY);
 		return Status.OK_STATUS;
 	    }
 	};
 	job.setPriority(Job.DECORATE);
 	job.schedule();
+
 	bonjourDiscovery = new NetworkDiscovery();
 	bonjourDiscovery.start();
 	return;
