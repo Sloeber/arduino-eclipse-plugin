@@ -366,29 +366,9 @@ public class ArduinoHelpers extends Common {
 	IPath arduinoHardwareLibraryPath = platformPath.append(ArduinoConst.LIBRARY_PATH_SUFFIX);
 	IPathVariableManager pathMan = project.getPathVariableManager();
 	try {
-	    // TODO the code below was changed for issue #34 (better multiple user support) but fails on Mac
-	    // So i split it to use the old code on mac.
-	    // but they should be merged
-	    // then it turned out nothing worked anymore. So I reverted to the old code
-	    // Path arduinoPath = new Path(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO).getRawPath());
-	    // if (Platform.getOS().equals(Platform.OS_MACOSX)) {
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, URIUtil.toURI(arduinoHardwareLibraryPath));
 	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
 	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
-	    // } else {
-	    //
-	    // String prefix = "${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO + "}/";
-	    // String test = prefix + arduinoHardwareLibraryPath.makeRelativeTo(arduinoPath).toString();
-	    // // URI uriTest = URIUtil.toURI(test, false);
-	    //
-	    // pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, pathMan.getURIValue(test));
-	    // test = prefix + platformPath.makeRelativeTo(arduinoPath).toString();
-	    // // uriTest = URIUtil.toURI(test, false);
-	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, pathMan.getURIValue(test));
-	    // test = prefix + PinPath.makeRelativeTo(arduinoPath).toString();
-	    // URI uriTest = URIUtil.toURI(pathMan.convertFromUserEditableFormat(test, true));
-	    // pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, uriTest);
-	    // }
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
