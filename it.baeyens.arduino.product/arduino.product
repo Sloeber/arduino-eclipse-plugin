@@ -347,6 +347,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.platform" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
+      <feature id="org.eclipse.cdt.testsrunner.feature" version="8.6.0.201502131403"/>
    </features>
 
    <configurations>
