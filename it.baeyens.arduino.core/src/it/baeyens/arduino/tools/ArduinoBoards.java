@@ -91,8 +91,11 @@ public class ArduinoBoards {
 	for (Entry<String, Map<String, String>> entry : mArduinoSupportedBoards.entrySet()) {
 	    if (entry.getKey().equals("menu")) {
 		for (Entry<String, String> e2 : entry.getValue().entrySet()) {
-		    if (!e2.getKey().contains("."))
-			ret.add(e2.getValue());
+		    if (!e2.getKey().contains(".")) {
+			if (!ret.contains(e2.getValue())) {
+			    ret.add(e2.getValue());
+			}
+		    }
 		}
 	    }
 	}

@@ -897,17 +897,21 @@ public class ArduinoHelpers extends Common {
 
 	// Arduino uses the board approach for the upload tool.
 	// as I'm not I create some special entries to work around it
-	String uploadTool = contribEnv.getVariable(ArduinoConst.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
-	var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD.PATH"));
-	contribEnv.addVariable(var, confDesc);
-	var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CONFIG.PATH"));
-	contribEnv.addVariable(var, confDesc); // End of section Arduino uses
-					       // the board approach for the
-					       // upload tool.
+	try {
+	    String uploadTool = contribEnv.getVariable(ArduinoConst.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
+	    var = new EnvironmentVariable("A.CMD", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD"));
+	    contribEnv.addVariable(var, confDesc);
+	    var = new EnvironmentVariable("A.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH"));
+	    contribEnv.addVariable(var, confDesc);
+	    var = new EnvironmentVariable("A.CMD.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD.PATH"));
+	    contribEnv.addVariable(var, confDesc);
+	    var = new EnvironmentVariable("A.CONFIG.PATH", makeEnvironmentVar("A.TOOLS." + uploadTool + ".CONFIG.PATH"));
+	    contribEnv.addVariable(var, confDesc); // End of section Arduino uses
+						   // the board approach for the
+						   // upload tool.
+	} catch (Exception e) {
+	    // ignore this exception as there is no upload tool defined.
+	}
 
     }
 

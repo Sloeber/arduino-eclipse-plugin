@@ -239,6 +239,10 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
 
     @Override
     protected void performDefaults() {
-	// nothing to do here
+	myWarningLevel.setSelection(false);
+	mySizeCommand.setSelection(false);
+	myCCppCommand.setText("");
+	myCCommand.setText("");
+	myCppCommand.setText("");
     }
 }
