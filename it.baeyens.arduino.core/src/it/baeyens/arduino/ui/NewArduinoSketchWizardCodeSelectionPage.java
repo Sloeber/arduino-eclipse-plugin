@@ -155,7 +155,7 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finisch button.
+     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finish button.
      */
     protected void validatePage() {
 	switch (mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
