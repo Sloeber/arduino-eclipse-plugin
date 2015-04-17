@@ -410,10 +410,10 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	mControlUploadPort.setValue(uploadPort);
 	mControlUploadProtocol.setValue(uploadProtocol);
 
-	if (page != null) {
-	    // set the options in the combo boxes before setting the value
-	    for (LabelCombo curLabelCombo : mBoardOptionCombos) {
-		curLabelCombo.setItems(mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
+	// set the options in the combo boxes before setting the value
+	for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+	    curLabelCombo.setItems(mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
+	    if (confdesc != null) {
 		curLabelCombo.getStoredValue(confdesc);
 
 	    }
