@@ -90,7 +90,7 @@ public class BuildHandler extends AbstractHandler {
 			URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
 			pluginStartInitiator.getContent();
 		    } catch (Exception e) {
-			e.printStackTrace();
+			// die silently e.printStackTrace();
 		    }
 		    return Status.OK_STATUS;
 		}
