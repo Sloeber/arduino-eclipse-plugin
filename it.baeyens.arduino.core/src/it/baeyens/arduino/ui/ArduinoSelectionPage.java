@@ -294,10 +294,11 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    return false;
 
 	for (LabelCombo curLabelCombo : mBoardOptionCombos) {
-	    MenuOpionsValidAndComplete &= curLabelCombo.isValid();
+	    MenuOpionsValidAndComplete = MenuOpionsValidAndComplete && curLabelCombo.isValid();
 	}
 
-	ret = !mcontrolBoardName.getText().trim().isEmpty() && !mControlUploadPort.getValue().isEmpty() && MenuOpionsValidAndComplete;
+	ret = !mcontrolBoardName.getText().trim().isEmpty() && mControlUploadPort.isValid() && mControlUploadProtocol.isValid()
+		&& MenuOpionsValidAndComplete;
 	if (!mFeedbackControl.getText().equals(ret ? "true" : "false")) {
 	    mFeedbackControl.setText(ret ? "true" : "false");
 	}
