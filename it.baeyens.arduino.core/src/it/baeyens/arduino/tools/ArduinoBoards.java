@@ -116,6 +116,9 @@ public class ArduinoBoards {
 	String boardID = getBoardIDFromName(boardName);
 	HashSet<String> ret = new HashSet<String>();
 	Map<String, String> menuInfo = mArduinoSupportedBoards.get("menu");
+	if (menuInfo == null) {
+	    return new String[0];
+	}
 	for (Entry<String, String> e2 : menuInfo.entrySet()) {
 	    if (e2.getValue().equals(menuLabel))
 		menuID = e2.getKey();
