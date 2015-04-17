@@ -124,8 +124,10 @@ public class ArduinoLibraries {
 	IFolder link = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER);
 	Set<String> ret = new TreeSet<String>();
 	try {
-	    for (IResource curResource : link.members()) {
-		ret.add(curResource.getName());
+	    if (link.exists()) {
+		for (IResource curResource : link.members()) {
+		    ret.add(curResource.getName());
+		}
 	    }
 	} catch (CoreException e) {
 	    // TODO Auto-generated catch block
