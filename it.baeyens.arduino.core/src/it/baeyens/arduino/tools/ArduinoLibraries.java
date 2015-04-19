@@ -100,7 +100,10 @@ public class ArduinoLibraries {
 		    ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB, CurItem,
 			    ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
 		} else {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Thr library " + CurItem + " is not valid for this board."));
+		    // TODO add check whether this is actually a library
+		    // in case of code added via samples the plugin thinks a library needs to be added. However this is not a library but just a
+		    // folder
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The library " + CurItem + " is not valid for this board."));
 		}
 	    } catch (CoreException e) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
@@ -121,8 +124,10 @@ public class ArduinoLibraries {
 	IFolder link = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER);
 	Set<String> ret = new TreeSet<String>();
 	try {
-	    for (IResource curResource : link.members()) {
-		ret.add(curResource.getName());
+	    if (link.exists()) {
+		for (IResource curResource : link.members()) {
+		    ret.add(curResource.getName());
+		}
 	    }
 	} catch (CoreException e) {
 	    // TODO Auto-generated catch block

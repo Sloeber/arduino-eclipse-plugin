@@ -48,7 +48,7 @@ public class NewArduinoSketchWizardBoardPage extends WizardPage {
 	Composite composite = new Composite(parent, SWT.NULL);
 	mPageLayout.draw(composite);
 	setControl(composite);
-	mPageLayout.feedbackControl.addListener(SWT.Modify, completeListener);
+	mPageLayout.mFeedbackControl.addListener(SWT.Modify, completeListener);
 	setPageComplete(mPageLayout.isPageComplete());
     }
 

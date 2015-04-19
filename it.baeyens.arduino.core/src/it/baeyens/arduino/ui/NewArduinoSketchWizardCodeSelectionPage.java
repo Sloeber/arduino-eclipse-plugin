@@ -83,9 +83,10 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
 	    }
 	};
-	mCodeSourceOptionsCombo = new LabelCombo(composite, "select code", ncol, comboListener);
+	mCodeSourceOptionsCombo = new LabelCombo(composite, "select code", ncol, "", true);
+	mCodeSourceOptionsCombo.addListener(comboListener);
 
-	mCodeSourceOptionsCombo.mCombo.setItems(codeOptions);
+	mCodeSourceOptionsCombo.setItems(codeOptions);
 
 	mTemplateFolderEditor = new DirectoryFieldEditor("temp1", "Custom Template Location:", composite);
 	mExampleEditor = new ArduinoSampleSelector(composite, SWT.NONE, "Select Example code.");
@@ -154,7 +155,7 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finisch button.
+     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finish button.
      */
     protected void validatePage() {
 	switch (mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {

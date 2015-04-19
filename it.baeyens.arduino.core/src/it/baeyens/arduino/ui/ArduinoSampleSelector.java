@@ -105,7 +105,7 @@ public class ArduinoSampleSelector extends Composite {
 	    // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
 	    // // Add the Arduino Libs
 	    // addExamples(myArduinoExampleItem, arduinoExample);
-	    addExamplesFolder(arduinoExample, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	    addExamplesFolder(arduinoExample);
 	}
 
 	if (privateLibrary.toFile().exists()) {
@@ -121,7 +121,7 @@ public class ArduinoSampleSelector extends Composite {
      * @param iPath
      * @param pathVarName
      */
-    private void addExamplesFolder(IPath iPath, String pathVarName) {
+    private void addExamplesFolder(IPath iPath) {
 	File LibRoot = iPath.toFile();
 	IPath LibFolder;
 	String[] children = LibRoot.list();
@@ -132,7 +132,6 @@ public class ArduinoSampleSelector extends Composite {
 	    for (int i = 0; i < children.length; i++) {
 		TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
 		libItem.setText(children[i]);
-		libItem.setData(pathVarName);
 		LibFolder = iPath.append(children[i]);
 		if (LibFolder.toFile().isDirectory()) {
 		    addExamples(libItem, LibFolder);
@@ -227,7 +226,7 @@ public class ArduinoSampleSelector extends Composite {
 	}
     }
 
-    private void recurseimportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], String PathVarName,
+    private void recursiveImportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], String PathVarName,
 	    TreeItem curTreeItem, String LibName) {
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
@@ -239,7 +238,7 @@ public class ArduinoSampleSelector extends Composite {
 		}
 		break;
 	    }
-	    recurseimportSelectedLibraries(project, configurationDescriptions, PathVarName, curchildTreeItem, LibName);
+	    recursiveImportSelectedLibraries(project, configurationDescriptions, PathVarName, curchildTreeItem, LibName);
 	}
 
     }
@@ -248,7 +247,9 @@ public class ArduinoSampleSelector extends Composite {
 	myTreeSelector.getItems();
 	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
 	    String PathVarName = (String) curTreeItem.getData();
-	    recurseimportSelectedLibraries(project, configurationDescriptions, PathVarName, curTreeItem, curTreeItem.getText());
+	    if (PathVarName != null) {
+		recursiveImportSelectedLibraries(project, configurationDescriptions, PathVarName, curTreeItem, curTreeItem.getText());
+	    }
 	}
 
     }

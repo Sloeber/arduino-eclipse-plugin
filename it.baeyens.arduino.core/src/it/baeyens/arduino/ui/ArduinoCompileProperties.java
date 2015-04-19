@@ -30,13 +30,6 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
     public Text myCppCommand;
     public Text myCCommand;
 
-    // private static void createLabel(Composite parent, int ncol, String t) {
-    // Label line = new Label(parent, SWT.HORIZONTAL | SWT.BOLD);
-    // line.setText(t);
-    // GridData gridData = new GridData();
-    // gridData.horizontalSpan = ncol;
-    // line.setLayoutData(gridData);
-    // }
     private static void createLine(Composite parent, int ncol) {
 	Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
 	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -239,6 +232,10 @@ public class ArduinoCompileProperties extends AbstractCPropertyTab {
 
     @Override
     protected void performDefaults() {
-	// nothing to do here
+	myWarningLevel.setSelection(true);
+	mySizeCommand.setSelection(false);
+	myCCppCommand.setText("");
+	myCCommand.setText("");
+	myCppCommand.setText("");
     }
 }

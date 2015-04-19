@@ -155,7 +155,11 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	}
 	// End of Bug fix for CDT 8.1 fixed in 8.2
 	if (languageId.equals("org.eclipse.cdt.core.gcc")) {
-	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+	    try {
+		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+	    } catch (Exception e) {
+		compilerCommand = "gcc";
+	    }
 	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
 	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
