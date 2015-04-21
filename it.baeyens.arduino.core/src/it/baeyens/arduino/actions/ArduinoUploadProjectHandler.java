@@ -38,7 +38,6 @@ class UploadJobHandler extends Job {
     protected IStatus run(IProgressMonitor monitor) {
 	if (ArduinoInstancePreferences.getBuildBeforeUploadOption()) {
 	    try {
-		PlatformUI.getWorkbench().saveAllEditors(false);
 		myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 		Job job = new Job("Start build Activator") {
 		    @Override
@@ -100,6 +99,7 @@ public class ArduinoUploadProjectHandler extends AbstractHandler {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to upload"));
 	    break;
 	case 1:
+	    PlatformUI.getWorkbench().saveAllEditors(false);
 	    IProject myBuildProject = SelectedProjects[0];
 	    Job mBuildJob = new UploadJobHandler(myBuildProject);
 	    mBuildJob.setPriority(Job.INTERACTIVE);
