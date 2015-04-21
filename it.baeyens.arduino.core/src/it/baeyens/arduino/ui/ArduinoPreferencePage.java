@@ -178,11 +178,18 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		    return false;
 	    }
 	}
-	// if (mArduinoIdeVersion.getStringValue().equals("1.6.1")) {
-	// if
-	// (!showError("Arduino IDE 1.6.0 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
-	// return false;
-	// }
+	if (mArduinoIdeVersion.getStringValue().equals("1.6.1")) {
+	    if (!showError("Arduino IDE 1.6.1 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
+		return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.6.2")) {
+	    showError("Arduino IDE 1.6.2 will not work.");
+	    return false;
+	}
+	if (mArduinoIdeVersion.getStringValue().equals("1.6.3")) {
+	    showError("Arduino IDE 1.6.3 will not work.");
+	    return false;
+	}
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.6.0") > 0) {
 	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
 		return false;
