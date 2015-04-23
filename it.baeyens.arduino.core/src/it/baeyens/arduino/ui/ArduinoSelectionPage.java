@@ -17,6 +17,7 @@ import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
+import org.eclipse.cdt.ui.newui.AbstractPage;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -459,6 +460,27 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
 	    ArduinoHelpers.setDirtyFlag(project, confdesc);
 	}
+    }
+
+    private class ArduinoSelectionPageListener implements Listener {
+	private AbstractPage myPage;
+
+	ArduinoSelectionPageListener(AbstractPage page) {
+	    myPage = page;
+	}
+
+	@Override
+	public void handleEvent(Event event) {
+	    myPage.setValid(isPageComplete());
+	}
+    }
+
+    @Override
+    public void handleTabEvent(int kind, Object data) {
+	if (kind == 222) {
+	    mFeedbackControl.addListener(SWT.Modify, new ArduinoSelectionPageListener((AbstractPage) data));
+	}
+	super.handleTabEvent(kind, data);
     }
 
 }
