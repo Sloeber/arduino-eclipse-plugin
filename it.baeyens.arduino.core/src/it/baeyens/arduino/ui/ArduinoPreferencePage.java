@@ -87,7 +87,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private boolean showError(String dialogMessage) {
 	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.\n";
 	FullDialogMessage = FullDialogMessage
-		+ "Yes continue and ignore the warning\nNo do not continue and open install advice in browser\ncancel do not continue";
+		+ "\n\nYes:    continue and ignore the warning\nNo:     do not continue and open install advice in browser\ncancel: do not continue";
 	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.CANCEL | SWT.NO);
 	dialog.setText("Considerations about Arduino IDE compatibility");
 	dialog.setMessage(FullDialogMessage);
@@ -143,56 +143,50 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
 	    return false;
 	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.3") || mArduinoIdeVersion.getStringValue().equals("1.5.4")) {
-	    if (!showError("Arduino IDE 1.5.3 and 1.5.4 are not supported."))
-		return false;
+	String infoMessage = null;
+	boolean addMake = true;
+	switch (mArduinoIdeVersion.getStringValue()) {
+	case "1.5.0":
+	case "1.5.1":
+	case "1.5.2":
+	case "1.5.3":
+	case "1.5.4":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
+	    addMake = false;
+	    break;
+	case "1.5.5":
+	case "1.5.6":
+	case "1.5.6-r2":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works but you need to adapt some libraries. Not Advised";
+	    addMake = false;
+	    break;
+	case "1.5.7":
+	case "1.5.8":
+	case "1.6.0":
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " Has serious issues on windows. THIS IS NOT SUPPORTED!!!!";
+	    } else {
+		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works.";
+	    }
+	    break;
+	case "1.6.1":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is the currently advised version for all platforms.";
+	    break;
+	case "1.6.2":
+	case "1.6.3":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
+	    break;
+	default:
+	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
+	    infoMessage += "\nIf it is a newer version please feed back usage results to Jantje.";
 	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.5")) {
-	    if (!showError("Arduino IDE 1.5.5 works but you need to adapt some libraries."))
-		return false;
-	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.6")) {
-	    if (!showError("Arduino IDE 1.5.6 works but you need to adapt some libraries."))
-		return false;
-	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.6-r2")) {
-	    if (!showError("Arduino IDE 1.5.6R2 works but you need to adapt some libraries."))
-		return false;
-	}
+	if (addMake) {
+	    infoMessage += "\nRemember to add your own make as it is no longer delivered with arduino.";
 
-	if (mArduinoIdeVersion.getStringValue().equals("1.5.7") || mArduinoIdeVersion.getStringValue().equals("1.5.8")) {
-	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		if (!showError("Arduino IDE 1.5.7, 1.5.8 and 1.6.0 Have serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
-		    return false;
-	    } else {
-		if (!showError("Arduino IDE 1.5.7 and 1.5.8 work but you may need to add your own make as it is no longer delivered with arduino."))
-		    return false;
-	    }
 	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.6.0")) {
-	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		if (!showError("Arduino IDE 1.6.0 has serious issues on windows. THIS IS NOT SUPPORTED!!!!"))
-		    return false;
-	    } else {
-		if (!showError("Arduino IDE 1.6.0 is the currently advised version for linux and mac. Remember to add your own make as it is no longer delivered with arduino."))
-		    return false;
-	    }
-	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.6.1")) {
-	    if (!showError("Arduino IDE 1.6.1 is the currently advised version. Remember to add your own make as it is no longer delivered with arduino."))
-		return false;
-	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.6.2")) {
-	    showError("Arduino IDE 1.6.2 will not work.");
+	infoMessage += "\nAdvised version is 1.6.1";
+	if (!showError(infoMessage)) {
 	    return false;
-	}
-	if (mArduinoIdeVersion.getStringValue().equals("1.6.3")) {
-	    showError("Arduino IDE 1.6.3 will not work.");
-	    return false;
-	}
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.6.0") > 0) {
-	    if (!showError("You are using a version of the Arduino IDE that is newer than available at the release of this plugin."))
-		return false;
 	}
 
 	super.performOk();
