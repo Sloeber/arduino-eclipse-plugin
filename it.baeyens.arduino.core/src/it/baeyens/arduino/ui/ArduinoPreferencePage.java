@@ -170,7 +170,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    }
 	    break;
 	case "1.6.1":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is the currently advised version for all platforms.";
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works great.";
 	    break;
 	case "1.6.2":
 	case "1.6.3":
