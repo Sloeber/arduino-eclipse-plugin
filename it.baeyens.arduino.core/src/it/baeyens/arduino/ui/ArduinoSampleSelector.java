@@ -130,10 +130,10 @@ public class ArduinoSampleSelector extends Composite {
 	} else {
 	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
 	    for (int i = 0; i < children.length; i++) {
-		TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
-		libItem.setText(children[i]);
 		LibFolder = iPath.append(children[i]);
 		if (LibFolder.toFile().isDirectory()) {
+		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
+		    libItem.setText(children[i]);
 		    addExamples(libItem, LibFolder);
 		}
 	    }
@@ -149,15 +149,15 @@ public class ArduinoSampleSelector extends Composite {
 	} else {
 	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
 	    for (int i = 0; i < children.length; i++) {
-		TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
-		libItem.setText(children[i]);
-		libItem.setData(pathVarName);
-		LibFolder = iPath.append(children[i]).append("examples");
-		if (LibFolder.toFile().isDirectory()) {
+		if ((LibFolder = iPath.append(children[i]).append("examples")).toFile().isDirectory()) {
+		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
+		    libItem.setText(children[i]);
+		    libItem.setData(pathVarName);
 		    addExamples(libItem, LibFolder);
-		}
-		LibFolder = iPath.append(children[i]).append("Examples");
-		if (LibFolder.toFile().isDirectory()) {
+		} else if ((LibFolder = iPath.append(children[i]).append("Examples")).toFile().isDirectory()) {
+		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
+		    libItem.setText(children[i]);
+		    libItem.setData(pathVarName);
 		    addExamples(libItem, LibFolder);
 		}
 	    }
