@@ -15,3 +15,5 @@ Arduino IDE **1.6.0** can deliver problems in windows
 Arduino IDE **1.6.2** does not work. [See why on github.](https://github.com/arduino/Arduino/issues/2982)
 
 Arduino IDE **1.6.3** does not work. [See why on github.](https://github.com/arduino/Arduino/issues/2982)
+
+Arduino IDE **1.6.4** does not work. [See why on github.](https://github.com/arduino/Arduino/issues/2982)

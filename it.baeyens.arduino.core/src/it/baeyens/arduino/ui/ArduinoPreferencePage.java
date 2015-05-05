@@ -174,6 +174,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    break;
 	case "1.6.2":
 	case "1.6.3":
+	case "1.6.4":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
 	    break;
 	default:
