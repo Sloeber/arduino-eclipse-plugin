@@ -220,12 +220,22 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     public static String GetARDUINODefineValue() {
 	String Ret;
 	Ret = getIDEVersion().trim();
-	if (Ret.contains(".")) {
-	    Ret = Ret.replace(".", "");
-	    if (Ret.length() == 2) {
-		Ret = Ret.concat("0");
+	if (Ret.startsWith("1.5")) {
+	    if (Ret.contains(".")) {
+		Ret = Ret.replace(".", "");
+		if (Ret.length() == 2) {
+		    Ret = Ret.concat("0");
+		}
 	    }
+	} else {
+	    String fields[] = Ret.split("\\.");
+	    if (fields.length != 3) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Malformed Arduino IDE version expected X.Y.Z got " + Ret, null));
+	    }
+	    Ret = String.format("%d%02d%02d", Integer.valueOf(fields[0]), Integer.valueOf(fields[1]), Integer.valueOf(fields[2]));
+
 	}
+
 	return Ret;
     }
 
