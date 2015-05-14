@@ -67,8 +67,16 @@ public class Serial implements SerialPortEventListener {
      * who knows.
      */
     public static Vector<String> list() {
-	String[] portNames = SerialPortList.getPortNames();
-	return new Vector<String>(Arrays.asList(portNames));
+	try {
+	    String[] portNames = SerialPortList.getPortNames();
+	    return new Vector<String>(Arrays.asList(portNames));
+	} catch (Exception e) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", e));
+	    Vector<String> ret = new Vector<String>();
+	    ret.add("config error");
+	    return ret;
+	}
     }
 
     SerialPort port = null;
