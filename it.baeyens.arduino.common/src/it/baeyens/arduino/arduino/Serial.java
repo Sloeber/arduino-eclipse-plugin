@@ -70,11 +70,12 @@ public class Serial implements SerialPortEventListener {
 	try {
 	    String[] portNames = SerialPortList.getPortNames();
 	    return new Vector<String>(Arrays.asList(portNames));
-	} catch (Exception e) {
+	} catch (Error e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", e));
 	    Vector<String> ret = new Vector<String>();
-	    ret.add("config error");
+	    ret.add("config error:");
+	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252");
 	    return ret;
 	}
     }
