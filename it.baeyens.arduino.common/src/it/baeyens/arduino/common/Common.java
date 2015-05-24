@@ -482,6 +482,8 @@ public class Common extends ArduinoInstancePreferences {
      * 
      * @param project
      *            the project that contains the environment variable
+     * @param configName
+     *            the project configuration to use
      * @param EnvName
      *            the key that describes the variable
      * @param defaultvalue
