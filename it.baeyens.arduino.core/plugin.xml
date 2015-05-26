@@ -16,7 +16,7 @@
       class="it.baeyens.arduino.toolchain.ArduinoLanguageProvider"
       id="it.baeyens.arduino.languageSettingsProvider"
       name="Arduino Compiler Settings"
-      parameter="${COMMAND} -E -P -v -dD ${INPUTS}"
+      parameter='${COMMAND} -E -P -v -dD "${INPUTS}"'
       prefer-non-shared="true">
 <language-scope id="org.eclipse.cdt.core.gcc"/>
 <language-scope id="org.eclipse.cdt.core.g++"/>
