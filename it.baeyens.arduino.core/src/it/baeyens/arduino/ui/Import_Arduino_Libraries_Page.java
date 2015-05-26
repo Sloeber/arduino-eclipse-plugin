@@ -80,12 +80,17 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	allLibraries.addAll(ArduinoLibraries.findAllArduinoLibraries(myProject));
 
 	// Get the data in the tree
+	Set<String> allLibrariesAlreadyUsed = ArduinoLibraries.getAllLibrariesFromProject(myProject);
 	myLibrarySelector.setRedraw(false);
 	Iterator<String> iterator = allLibraries.iterator();
 	while (iterator.hasNext()) {
 	    TreeItem child = new TreeItem(myLibrarySelector, SWT.NONE);
-	    child.setText(iterator.next());
+	    String nextLibrary = iterator.next();
+	    child.setText(nextLibrary);
+	    if(allLibrariesAlreadyUsed.contains(nextLibrary))
+	    	child.setChecked(true);
 	}
+	
 
 	myLibrarySelector.setRedraw(true);
 
