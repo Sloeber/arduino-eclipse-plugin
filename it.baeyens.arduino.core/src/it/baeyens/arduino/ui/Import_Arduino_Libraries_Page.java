@@ -109,10 +109,14 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
     public boolean PerformFinish() {
 	TreeItem selectedTreeItems[] = myLibrarySelector.getItems();
 	Set<String> selectedLibraries = new TreeSet<String>();
+	Set<String> unselectedLibraries = new TreeSet<String>();
 	for (TreeItem CurItem : selectedTreeItems) {
 	    if (CurItem.getChecked())
-		selectedLibraries.add(CurItem.getText());
+	    	selectedLibraries.add(CurItem.getText());
+	    else
+	    	unselectedLibraries.add(CurItem.getText());
 	}
+	ArduinoLibraries.removeLibrariesFromProject(myProject, unselectedLibraries);
 	ArduinoLibraries.addLibrariesToProject(myProject, selectedLibraries);
 
 	return true;

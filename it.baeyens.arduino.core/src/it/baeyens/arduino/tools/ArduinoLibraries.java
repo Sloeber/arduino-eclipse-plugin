@@ -78,6 +78,25 @@ public class ArduinoLibraries {
 	return findAllSubFolders(URIUtil.toPath(ArduinoLibraryURI));
 
     }
+    
+    /**
+     * Removes a set of libraries from a project
+     * 
+     * @param project	the project from which to remove libraries
+     * @param confdesc	the configuration from which to remove libraries
+     * @param libraries set of libraries to remove
+     */
+    public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
+    	for (String CurItem : libraries) {
+    	    try {
+    			final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
+    			folderHandle.delete(true, null);
+    		    } catch (CoreException e) {
+    			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to remove library ", e));
+    		    }
+    		}
+    	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
+    }
 
     public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
 	Set<String> hardwareLibraries = findAllHarwareLibraries(project);
@@ -163,6 +182,27 @@ public class ArduinoLibraries {
 	ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
 	for (ICConfigurationDescription CurItem : configurationDescriptions) {
 	    addLibrariesToProject(project, CurItem, selectedLibraries);
+	}
+	try {
+	    mngr.setProjectDescription(project, projectDescription, true, null);
+	} catch (CoreException e) {
+	    e.printStackTrace();
+	}
+
+    }
+
+    /**
+     * Removes a set of libraries from a project in each project configuration
+     * 
+     * @param project	the project from which to remove libraries
+     * @param libraries set of libraries to remove
+     */
+    public static void removeLibrariesFromProject(IProject project, Set<String> selectedLibraries) {
+	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+	ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
+	ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
+	for (ICConfigurationDescription CurItem : configurationDescriptions) {
+	    removeLibrariesFromProject(project, CurItem, selectedLibraries);
 	}
 	try {
 	    mngr.setProjectDescription(project, projectDescription, true, null);
