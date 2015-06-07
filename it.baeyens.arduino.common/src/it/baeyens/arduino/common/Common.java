@@ -2,6 +2,7 @@ package it.baeyens.arduino.common;
 
 import it.baeyens.arduino.arduino.Serial;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
@@ -15,6 +16,7 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -457,7 +459,7 @@ public class Common extends ArduinoInstancePreferences {
 	return outgoing;
     }
 
-    public static Object listLineEndings() {
+    public static String[] listLineEndings() {
 	String outgoing[] = { "none", "CR", "NL", "CR/NL" };
 	return outgoing;
     }
@@ -574,6 +576,17 @@ public class Common extends ArduinoInstancePreferences {
     public static String getDefaultPrivateHardwarePath() {
 	IPath homPath = new Path(System.getProperty("user.home"));
 	return homPath.append("Arduino").append("hardware").toString();
+    }
+
+    public static File getArduinoIDEEnvVarsName() {
+	return getPluginWritePath(ARDUINO_IDE_ENVIRONMENT_VAR_FILE_NAME);
+    }
+
+    private static File getPluginWritePath(String name) {
+	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+	File ret = myWorkspaceRoot.getLocation().append(name).toFile();
+	return ret;
+	// return PlatformUI.getWorkbench(). .getWorkbench().getActiveWorkbenchWindow();
     }
 
 }

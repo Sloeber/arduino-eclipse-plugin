@@ -618,17 +618,17 @@ public class ArduinoHelpers extends Common {
     }
 
     /**
-     * This method parses the platform.txt file for values to be added to the environment variables
+     * This method parses a file with environment variables like the platform.txt file for values to be added to the environment variables
      * 
      * @param contribEnv
      * @param confDesc
-     * @param platformFile
+     * @param envVarFile
      *            The file to parse
      * @throws IOException
      */
-    private static void setTheEnvironmentVariablesAddthePlatformTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
-	    IPath platformFile) throws IOException {
-	try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(platformFile.toOSString()));
+    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc, IPath envVarFile)
+	    throws IOException {
+	try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(envVarFile.toOSString()));
 		BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));) {
 	    String strLine;
 
@@ -799,10 +799,13 @@ public class ArduinoHelpers extends Common {
 	// and boards.txt will
 	// overwrite the default settings
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename);
+
 	try {
+	    IPath arduinoIDEVarsFile = new Path(Common.getArduinoIDEEnvVarsName().getCanonicalPath());
+	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, arduinoIDEVarsFile);
 	    // process the platform.txt file first. This way the boards.txt will
 	    // overwrite the default settings
-	    setTheEnvironmentVariablesAddthePlatformTxt(contribEnv, confDesc, platformFilename);
+	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, platformFilename);
 	    // now process the boards file
 	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
 	    // Do some post processing

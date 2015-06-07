@@ -4,13 +4,17 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ExternalCommandLauncher;
 import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
 import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -136,8 +140,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     public boolean performOk() {
 	if (!testStatus())
 	    return false;
-	if (!mIsDirty)
-	    return true;
 
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
 	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
@@ -145,6 +147,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	}
 	String infoMessage = null;
 	boolean addMake = true;
+	boolean getEnvVarsFromArduinoIDE = true;
 	switch (mArduinoIdeVersion.getStringValue()) {
 	case "1.5.0":
 	case "1.5.1":
@@ -153,12 +156,14 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	case "1.5.4":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
 	    addMake = false;
+	    getEnvVarsFromArduinoIDE = false;
 	    break;
 	case "1.5.5":
 	case "1.5.6":
 	case "1.5.6-r2":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works but you need to adapt some libraries. Not Advised";
 	    addMake = false;
+	    getEnvVarsFromArduinoIDE = false;
 	    break;
 	case "1.5.7":
 	case "1.5.8":
@@ -168,14 +173,17 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    } else {
 		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works.";
 	    }
+	    getEnvVarsFromArduinoIDE = false;
 	    break;
 	case "1.6.1":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works great.";
+	    getEnvVarsFromArduinoIDE = false;
 	    break;
 	case "1.6.2":
 	case "1.6.3":
 	case "1.6.4":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
+	    getEnvVarsFromArduinoIDE = false;
 	    break;
 	default:
 	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
@@ -192,6 +200,46 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	super.performOk();
 	setWorkSpacePathVariables();
+	File arduinoIDEenvVars = Common.getArduinoIDEEnvVarsName();
+
+	if (getEnvVarsFromArduinoIDE) {
+	    IPath ArduinoIDEPath = ArduinoInstancePreferences.getArduinoPath();
+	    String command = "\"" + URIUtil.toURI(ArduinoIDEPath.append("arduino")).getPath() + "\" --get-pref";
+	    ExternalCommandLauncher commandLauncher = new ExternalCommandLauncher(command);
+	    try {
+		if (commandLauncher.launch() != 0) {
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			    "Failed to extract environment info from arduino ide 'arduino --get-pref'. The setup will not work properly", null));
+		}
+	    } catch (IOException e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			"Failed to extract environment info from arduino ide 'arduino --get-pref'. The setup will not work properly", e));
+	    }
+	    // List<String> err = commandLauncher.getStdErr();
+	    List<String> out = commandLauncher.getStdOut();
+	    try (BufferedWriter output = new BufferedWriter(new FileWriter(arduinoIDEenvVars));) {
+		output.write("This file has been generated automatically.");
+		output.newLine();
+		output.write("Please do not change.");
+		output.newLine();
+		for (String item : out) {
+		    output.write(item);
+		    output.newLine();
+		}
+		output.close();
+	    } catch (IOException e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			"Failed to extract environment info from arduino ide 'arduino --get-pref'. The setup will not work properly", e));
+
+	    }
+	} else {
+	    try {
+		arduinoIDEenvVars.delete();
+	    } catch (Exception e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to delete the file " + arduinoIDEenvVars
+			+ ". The setup may not work properly", e));
+	    }
+	}
 	// reset the previous selected values
 	ArduinoInstancePreferences.SetLastUsedArduinoBoard("");
 	ArduinoInstancePreferences.SetLastUsedUploadPort("");

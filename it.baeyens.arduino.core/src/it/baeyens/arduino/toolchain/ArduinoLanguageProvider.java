@@ -158,7 +158,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    try {
 		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
 	    } catch (Exception e) {
-		compilerCommand = "gcc";
+		compilerCommand = "";
 	    }
 	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
 	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
@@ -170,7 +170,11 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    }
 	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1";
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
-	    compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+	    try {
+		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+	    } catch (Exception e) {
+		compilerCommand = "";
+	    }
 	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
 	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {

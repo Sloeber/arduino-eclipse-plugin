@@ -36,11 +36,16 @@ abstract class FamilyJob extends Job {
  */
 public class Activator extends AbstractUIPlugin {
 
+    private static Activator instance;
+
+    public static Activator getDefault() {
+	return instance;
+    }
+
     // The plug-in ID
     public static final String PLUGIN_ID = "it.baeyens.arduino.common"; //$NON-NLS-1$
 
     // The shared instance
-    private static Activator plugin;
     private static final String flagStart = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
     private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s";
     private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
@@ -63,7 +68,7 @@ public class Activator extends AbstractUIPlugin {
     @Override
     public void start(BundleContext context) throws Exception {
 	super.start(context);
-	plugin = this;
+	instance = this;
 
 	// add required properties for Arduino serial port on linux, if not
 	// defined
@@ -115,17 +120,8 @@ public class Activator extends AbstractUIPlugin {
 	IJobManager jobMan = Job.getJobManager();
 	jobMan.cancel(FamilyJob.MY_FAMILY);
 	jobMan.join(FamilyJob.MY_FAMILY, null);
-	plugin = null;
+	instance = null;
 	super.stop(context);
-    }
-
-    /**
-     * Returns the shared instance
-     * 
-     * @return the shared instance
-     */
-    public static Activator getDefault() {
-	return plugin;
     }
 
     static boolean isInternetReachable() {
