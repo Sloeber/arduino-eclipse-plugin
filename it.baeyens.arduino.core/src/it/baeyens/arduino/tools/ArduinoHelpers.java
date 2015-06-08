@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -624,10 +625,8 @@ public class ArduinoHelpers extends Common {
      * @param confDesc
      * @param envVarFile
      *            The file to parse
-     * @throws IOException
      */
-    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc, IPath envVarFile)
-	    throws IOException {
+    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc, IPath envVarFile) {
 	try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(envVarFile.toOSString()));
 		BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));) {
 	    String strLine;
@@ -650,7 +649,10 @@ public class ArduinoHelpers extends Common {
 		    }
 		}
 	    }
-	    dataInputStream.close(); // Close the platform.txt
+	} catch (FileNotFoundException e) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + envVarFile.toString() + " file does not exist. ", e));
+	} catch (IOException e) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + envVarFile.toString() + " I/O exception. ", e));
 	}
     }
 
@@ -663,10 +665,9 @@ public class ArduinoHelpers extends Common {
      * @param confDesc
      * @param platformFilename
      *            The file to parse
-     * @throws IOException
      */
     private static void setTheEnvironmentVariablesAddtheBoardsTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
-	    IPath boardFileName, String boardName) throws IOException {
+	    IPath boardFileName, String boardName) {
 	ArduinoBoards boardsFile = new ArduinoBoards(boardFileName.toOSString());
 	String boardID = boardsFile.getBoardIDFromName(boardName);
 
@@ -800,25 +801,22 @@ public class ArduinoHelpers extends Common {
 	// overwrite the default settings
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename);
 
-	try {
-	    IPath arduinoIDEVarsFile = new Path(Common.getArduinoIDEEnvVarsName().getCanonicalPath());
+	if (Common.getArduinoIDEEnvVarsName().exists()) {
+	    IPath arduinoIDEVarsFile = new Path(Common.getArduinoIDEEnvVarsName().getPath());
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, arduinoIDEVarsFile);
-	    // process the platform.txt file first. This way the boards.txt will
-	    // overwrite the default settings
-	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, platformFilename);
-	    // now process the boards file
-	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
-	    // Do some post processing
-	    setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
+	}
+	// process the platform.txt file first. This way the boards.txt will
+	// overwrite the default settings
+	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, platformFilename);
+	// now process the boards file
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardFileName, boardName);
+	// Do some post processing
+	setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
 
-	    // If this is a debug config we modify the environment variables for compilation
-	    if (debugCompilerSettings) {
-		setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
-	    }
+	// If this is a debug config we modify the environment variables for compilation
+	if (debugCompilerSettings) {
+	    setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
 
-	} catch (Exception e) {// Catch exception if any
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + platformFilename + " or " + boardFileName, e));
-	    return;
 	}
 
     }
