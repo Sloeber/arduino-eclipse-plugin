@@ -57,7 +57,7 @@ public class ArduinoConst {
 
     public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB = "ArduinoLibPath";//$NON-NLS-1$
     public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO = "ArduinoPath";//$NON-NLS-1$
-    public static final String WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB = "ArduinoPivateLibPath";//$NON-NLS-1$
+    public static final String WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB = "ArduinoPrivateLibPath";//$NON-NLS-1$
     public static final String WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB = "ArduinoHardwareLibPath";//$NON-NLS-1$
     public static final String PATH_VARIABLE_NAME_ARDUINO_PINS = "ArduinoPinPath";//$NON-NLS-1$
     public static final String PATH_VARIABLE_NAME_ARDUINO_PLATFORM = "ArduinoPlatformPath";//$NON-NLS-1$
