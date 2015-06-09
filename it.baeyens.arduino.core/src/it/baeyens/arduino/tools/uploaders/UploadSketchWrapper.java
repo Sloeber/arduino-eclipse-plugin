@@ -152,7 +152,7 @@ public class UploadSketchWrapper {
 	    boolean WeStoppedTheComPort = false;
 	    String myComPort = "";
 	    try {
-		monitor.beginTask(Common.getBuildEnvironmentVariable(myProject, myCConf, "A.TOOLS." + myNAmeTag + ".NAME", "no name provided"), 2);
+		monitor.beginTask("Uploading \"" + myProject.getName() + "\"", 2);
 		myComPort = Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
 
 		try {
