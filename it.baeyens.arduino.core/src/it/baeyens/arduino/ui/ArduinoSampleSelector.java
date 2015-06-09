@@ -47,7 +47,6 @@ public class ArduinoSampleSelector extends Composite {
 	myLabel.setLayoutData(theGriddata);
 
 	myTreeSelector = new Tree(composite, SWT.CHECK | SWT.BORDER);
-
 	myTreeSelector.setLayoutData(theGriddata);
 	// Get the data in the tree
 	myTreeSelector.setRedraw(false);
@@ -90,14 +89,6 @@ public class ArduinoSampleSelector extends Composite {
     public void AddAllExamples(IPath arduinoExample, IPath arduinoLibPath, IPath privateLibrary, IPath hardwareLibrary) {
 	removeExamples();
 
-	if (arduinoLibPath.toFile().exists()) {
-	    addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	}
-
-	if (hardwareLibrary.toFile().exists()) {
-	    addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
-	}
-
 	if (arduinoExample.toFile().exists()) {
 	    // Create Arduino Item
 	    // TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
@@ -108,10 +99,17 @@ public class ArduinoSampleSelector extends Composite {
 	    addExamplesFolder(arduinoExample);
 	}
 
+	if (arduinoLibPath.toFile().exists()) {
+	    addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	}
+
+	if (hardwareLibrary.toFile().exists()) {
+	    addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
+	}
+
 	if (privateLibrary.toFile().exists()) {
 	    addLibExamples(privateLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
 	}
-
     }
 
     /**
