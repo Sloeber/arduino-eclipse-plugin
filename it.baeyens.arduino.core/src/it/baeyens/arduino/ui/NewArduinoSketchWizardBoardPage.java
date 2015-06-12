@@ -60,4 +60,16 @@ public class NewArduinoSketchWizardBoardPage extends WizardPage {
 	return mPageLayout.getPlatformFolder();
     }
 
+    public String getPackage() {
+	return mPageLayout.getPackage();
+    }
+
+    public String getArchitecture() {
+	return mPageLayout.getArchitecture();
+    }
+
+    public String getBoardID() {
+	return mPageLayout.getBoardID();
+    }
+
 }

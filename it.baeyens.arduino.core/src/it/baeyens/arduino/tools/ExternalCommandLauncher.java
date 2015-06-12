@@ -210,7 +210,11 @@ public class ExternalCommandLauncher {
      *             An Exception from the underlying Process.
      */
     @SuppressWarnings("resource")
-    public int launch(IProgressMonitor monitor) throws IOException {
+    public int launch(IProgressMonitor inMonitor) throws IOException {
+	IProgressMonitor monitor = inMonitor;
+	if (monitor == null) {
+	    monitor = new NullProgressMonitor();
+	}
 	Process process = null;
 	final MessageConsoleStream defaultConsoleStream;
 	final MessageConsoleStream stdoutConsoleStream;

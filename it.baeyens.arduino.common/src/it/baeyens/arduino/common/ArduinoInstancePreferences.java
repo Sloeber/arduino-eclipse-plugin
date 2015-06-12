@@ -28,7 +28,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      */
     public static boolean getBuildBeforeUploadOption() {
 
-	switch (getGlobalValue(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) {
+	switch (getGlobalString(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) {
 	case "YES":
 	    return true;
 	case "NO":
@@ -74,7 +74,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedArduinoBoardName() {
-	return getGlobalValue(KEY_LAST_USED_ARDUINOBOARD);
+	return getGlobalString(KEY_LAST_USED_ARDUINOBOARD, "");
     }
 
     /**
@@ -84,7 +84,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedUploadPort() {
-	return getGlobalValue(KEY_LAST_USED_COM_PORT);
+	return getGlobalString(KEY_LAST_USED_COM_PORT, "");
     }
 
     /**
@@ -94,7 +94,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedUploadProgrammer() {
-	return getGlobalValue(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
+	return getGlobalString(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
     }
 
     /**
@@ -135,17 +135,9 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	setGlobalValue(KEY_LAST_USED_ARDUINOBOARD, ArduinoBoardName);
     }
 
-    public static String getGlobalValue(String key, String defaultValue) {
+    public static String getGlobalString(String key, String defaultValue) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 	return myScope.get(key, defaultValue);
-    }
-
-    public static String getGlobalValue(String key) {
-	return getGlobalValue(key, "");
-    }
-
-    protected static boolean getGlobalBoolean(String key) {
-	return getGlobalBoolean(key, false);
     }
 
     protected static boolean getGlobalBoolean(String key, boolean def) {
@@ -156,6 +148,11 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     protected static int getGlobalInt(String key) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 	return myScope.getInt(key, 0);
+    }
+
+    protected static long getGlobalLong(String key) {
+	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+	return myScope.getLong(key, 0);
     }
 
     public static void setGlobalValue(String key, String Value) {
@@ -170,7 +167,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	}
     }
 
-    protected static void setGlobalInt(String key, int Value) {
+    protected static void setGlobalValue(String key, int Value) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 	myScope.putInt(key, Value);
 	try {
@@ -181,7 +178,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	}
     }
 
-    protected static void setGlobalBoolean(String key, boolean Value) {
+    protected static void setGlobalValue(String key, boolean Value) {
 	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 	myScope.putBoolean(key, Value);
 	try {
@@ -192,14 +189,25 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	}
     }
 
+    protected static void setGlobalValue(String key, long Value) {
+	IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+	myScope.putLong(key, Value);
+	try {
+	    myScope.flush();
+	} catch (BackingStoreException e) {
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key));
+	    e.printStackTrace();
+	}
+    }
+
     /**
      * getUseIDESettings get the UseIDESettings flag value from the preference store
      * 
      * @return the value in the preference store representing the UseIDESettings flag
      * @author Jan Baeyens
      */
-    public static String getIDEVersion() {
-	return (getGlobalValue(KEY_ARDUINO_IDE_VERSION));
+    public static String getArduinoIDEVersion() {
+	return getGlobalString(KEY_ARDUINO_IDE_VERSION, "").trim();
     }
 
     /**
@@ -211,15 +219,15 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @return true if it is arduino 1.0 or later; otherwise false
      */
     public static boolean isArduinoIdeOne() {
-	return !getIDEVersion().startsWith("00");
+	return !getArduinoIDEVersion().startsWith("00");
     }
 
     /*
      * This method returns the define value for the define ARDUINO
      */
-    public static String GetARDUINODefineValue() {
+    public static String GetArduinoDefineValue() {
 	String Ret;
-	Ret = getIDEVersion().trim();
+	Ret = getArduinoIDEVersion().trim();
 	if (Ret.startsWith("1.5")) {
 	    if (Ret.contains(".")) {
 		Ret = Ret.replace(".", "");
@@ -253,20 +261,20 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @return the index of the last used setting
      */
     public static void SetLastUsedSerialLineEnd(int LastUsedIndex) {
-	setGlobalInt(KEY_RXTX_LAST_USED_LINE_INDES, LastUsedIndex);
+	setGlobalValue(KEY_RXTX_LAST_USED_LINE_INDES, LastUsedIndex);
     }
 
     public static boolean getLastUsedAutoScroll() {
-	return getGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL);
+	return getGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL, false);
     }
 
     public static void setLastUsedAutoScroll(boolean autoScroll) {
-	setGlobalBoolean(KEY_RXTX_LAST_USED_AUTOSCROLL, autoScroll);
+	setGlobalValue(KEY_RXTX_LAST_USED_AUTOSCROLL, autoScroll);
 
     }
 
     public static String getLastUsedBoardsFile() {
-	return getGlobalValue(KEY_LAST_USED_ARDUINO_BOARDS_FILE);
+	return getGlobalString(KEY_LAST_USED_ARDUINO_BOARDS_FILE, "");
     }
 
     public static void setLastUsedBoardsFile(String boardsFile) {
@@ -280,11 +288,11 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String getLastUsedMenuOption() {
-	return getGlobalValue(KEY_LAST_USED_ARDUINO_MENU_OPTIONS);
+	return getGlobalString(KEY_LAST_USED_ARDUINO_MENU_OPTIONS, "");
     }
 
     public static IPath getArduinoPath() {
-	return Common.getArduinoIDEPathFromUserSelection(getGlobalValue(KEY_ARDUINOPATH));
+	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, ""));
     }
 
     /**
@@ -306,12 +314,12 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static boolean getLastUsedScopeFilter() {
-	return getGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION);
+	return getGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, false);
 
     }
 
     public static void setLastUsedScopeFilter(boolean newFilter) {
-	setGlobalBoolean(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, newFilter);
+	setGlobalValue(KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION, newFilter);
 
     }
 
@@ -323,14 +331,14 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static void setLastUsedDefaultSketchSelection(int newFilter) {
-	setGlobalInt(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
+	setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, newFilter);
     }
 
     //
     // get/set last used sketch template folder parameters
     //
     public static String getLastTemplateFolderName() {
-	return getGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER);
+	return getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, "");
     }
 
     public static void setLastTemplateFolderName(String folderName) {
@@ -339,7 +347,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String getPrivateLibraryPath() {
-	return getGlobalValue(KEY_PRIVATE_LIBRARY_PATH);
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATH, "");
     }
 
     public static void setPrivateLibraryPath(String folderName) {
@@ -347,10 +355,18 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String getPrivateHardwarePath() {
-	return getGlobalValue(KEY_PRIVATE_HARDWARE_PATH);
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATH, "");
     }
 
     public static void setPrivateHardwarePath(String folderName) {
 	setGlobalValue(KEY_PRIVATE_HARDWARE_PATH, folderName);
+    }
+
+    public static long getStoredPreferenceModificatonStamp() {
+	return getGlobalLong(KEY_PREFERENCE_MODIFICATION_STAMP);
+    }
+
+    public static void getStoredPreferenceModificatonStamp(long stamp) {
+	setGlobalValue(KEY_PREFERENCE_MODIFICATION_STAMP, stamp);
     }
 }

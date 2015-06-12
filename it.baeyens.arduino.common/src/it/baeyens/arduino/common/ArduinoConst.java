@@ -31,6 +31,7 @@ public class ArduinoConst {
     public static final String KEY_ARDUINOPATH = "Arduino Path";//$NON-NLS-1$
     public static final String KEY_PRIVATE_LIBRARY_PATH = "Private Library Path";//$NON-NLS-1$
     public static final String KEY_PRIVATE_HARDWARE_PATH = "Private hardware Path";//$NON-NLS-1$
+    public static final String KEY_PREFERENCE_MODIFICATION_STAMP = "Arduino IDE preference.txt time stamp";//$NON-NLS-1$
 
     // properties keys
     public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";//$NON-NLS-1$
@@ -126,6 +127,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
     //
     // template Sketch information
 
@@ -144,6 +148,7 @@ public class ArduinoConst {
     // least significant first 0xCDAB;
     public static final String ARDUINO_EXAMPLE_FOLDER_NAME = "examples";//$NON-NLS-1$
 
-    public static final String ARDUINO_IDE_ENVIRONMENT_VAR_FILE_NAME = "ArduinoIDE.txt";
+    public static final String ARDUINO_IDE_DUMP__FILE_NAME_TRAILER = "ArduinoIDE.tmp";
+    public static final String ARDUINO_IDE_DUMP__FILE_NAME_PREFIX = "DUMP_";
 
 }

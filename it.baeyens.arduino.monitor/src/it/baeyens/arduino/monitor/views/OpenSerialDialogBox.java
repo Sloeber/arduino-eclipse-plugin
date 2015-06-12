@@ -23,10 +23,8 @@ public class OpenSerialDialogBox extends Dialog {
 	// deleted after he close
 	SelectedRate = Integer.parseInt(BaudRates.getCombo().getText());
 	SelectedPort = SerialPorts.getCombo().getText();
-	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlRATE,
-		BaudRates.getCombo().getText());
-	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlPORT,
-		SelectedPort);
+	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlRATE, BaudRates.getCombo().getText());
+	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlPORT, SelectedPort);
 	super.okPressed();
     }
 
@@ -64,8 +62,7 @@ public class OpenSerialDialogBox extends Dialog {
 	} else {
 	    SerialPorts = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
 	}
-	SerialPorts.getControl().setLayoutData(
-		new GridData(SWT.LEFT, SWT.NONE, false, false));
+	SerialPorts.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
 	SerialPorts.setContentProvider(new ArrayContentProvider());
 	SerialPorts.setLabelProvider(new LabelProvider());
 	SerialPorts.setInput(comPorts);
@@ -74,18 +71,13 @@ public class OpenSerialDialogBox extends Dialog {
 	Label label2 = new Label(parent, SWT.NONE);
 	label2.setText("Select the baudrate:");
 	BaudRates = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
-	BaudRates.getControl().setLayoutData(
-		new GridData(SWT.LEFT, SWT.NONE, false, false));
+	BaudRates.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
 	BaudRates.setContentProvider(new ArrayContentProvider());
 	BaudRates.setLabelProvider(new LabelProvider());
 	BaudRates.setInput(Common.listBaudRates());
 
-	BaudRates.getCombo().setText(
-		ArduinoInstancePreferences
-			.getGlobalValue(ArduinoConst.KEY_SERIAlRATE));
-	SerialPorts.getCombo().setText(
-		ArduinoInstancePreferences
-			.getGlobalValue(ArduinoConst.KEY_SERIAlPORT));
+	BaudRates.getCombo().setText(ArduinoInstancePreferences.getGlobalString(ArduinoConst.KEY_SERIAlRATE, ""));
+	SerialPorts.getCombo().setText(ArduinoInstancePreferences.getGlobalString(ArduinoConst.KEY_SERIAlPORT, ""));
 	return parent;
 
     }

@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IContributedEnvironment;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICElement;
@@ -503,6 +506,24 @@ public class Common extends ArduinoInstancePreferences {
      * 
      * @param project
      *            the project that contains the environment variable
+     * 
+     * @param EnvName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
+     * @return The expanded build environment variable
+     */
+    static public String getBuildEnvironmentVariable(IProject project, String EnvName, String defaultvalue) {
+	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+	return getBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), EnvName, defaultvalue);
+    }
+
+    /**
+     * 
+     * Provides the build environment variable based on project and string This method does not add any knowledge.(like adding A.)
+     * 
+     * @param project
+     *            the project that contains the environment variable
      * @param EnvName
      *            the key that describes the variable
      * @param defaultvalue
@@ -569,6 +590,16 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     /**
+     * The file aduino IDE stores it's preferences in
+     * 
+     * @return
+     */
+    public static File getPreferenceFile() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append(".arduino").append("preferences.txt").toFile();
+    }
+
+    /**
      * same as getDefaultLibPath but for the hardware folder
      * 
      * @return
@@ -578,15 +609,27 @@ public class Common extends ArduinoInstancePreferences {
 	return homPath.append("Arduino").append("hardware").toString();
     }
 
-    public static File getArduinoIDEEnvVarsName() {
-	return getPluginWritePath(ARDUINO_IDE_ENVIRONMENT_VAR_FILE_NAME);
+    public static File getArduinoIdeDumpName(String packageName, String architecture, String boardID) {
+	return getPluginWritePath(ARDUINO_IDE_DUMP__FILE_NAME_PREFIX + packageName + "_" + architecture + "_" + boardID + "_"
+		+ ARDUINO_IDE_DUMP__FILE_NAME_TRAILER);
     }
 
     private static File getPluginWritePath(String name) {
 	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 	File ret = myWorkspaceRoot.getLocation().append(name).toFile();
 	return ret;
-	// return PlatformUI.getWorkbench(). .getWorkbench().getActiveWorkbenchWindow();
+    }
+
+    public static File getWorkspaceRoot() {
+	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+	File ret = myWorkspaceRoot.getLocation().toFile();
+	return ret;
+    }
+
+    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv, ICConfigurationDescription confdesc, String key, String value) {
+	IEnvironmentVariable var = new EnvironmentVariable(key, value);
+	contribEnv.addVariable(var, confdesc);
+
     }
 
 }

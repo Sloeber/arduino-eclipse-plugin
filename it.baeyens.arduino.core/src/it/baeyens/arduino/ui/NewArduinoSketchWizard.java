@@ -3,6 +3,7 @@ package it.baeyens.arduino.ui;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.ide.connector.ArduinoGetPreferences;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
@@ -245,6 +246,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    // Set the environment variables
 	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+
+	    // since Arduino IDE 1.6.5 a request to arduino IDE needs to be done to know the needed environment variables
+	    ArduinoGetPreferences.generateDumpFileForBoardIfNeeded(mArduinoPage.getPackage(), mArduinoPage.getArchitecture(),
+		    mArduinoPage.getBoardID(), monitor);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);

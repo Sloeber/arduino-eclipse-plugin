@@ -3,6 +3,7 @@ package it.baeyens.arduino.ui;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.ide.connector.ArduinoGetPreferences;
 import it.baeyens.arduino.tools.ArduinoBoards;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
@@ -298,8 +299,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    MenuOpionsValidAndComplete = MenuOpionsValidAndComplete && curLabelCombo.isValid();
 	}
 
-	ret = !mcontrolBoardName.getText().trim().isEmpty() && mControlUploadProtocol.isValid()
-		&& MenuOpionsValidAndComplete;
+	ret = !mcontrolBoardName.getText().trim().isEmpty() && mControlUploadProtocol.isValid() && MenuOpionsValidAndComplete;
 	if (!mFeedbackControl.getText().equals(ret ? "true" : "false")) {
 	    mFeedbackControl.setText(ret ? "true" : "false");
 	}
@@ -369,19 +369,15 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	// Set the path variables
 	IPath platformPath = new Path(new File(mControlBoardsTxtFile.getText().trim()).getParent()).append(ArduinoConst.PLATFORM_FILE_NAME);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProg);
 
-	IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
-	contribEnv.addVariable(var, confdesc);
-	// below are calculated values
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
-	contribEnv.addVariable(var, confdesc);
-
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
-	contribEnv.addVariable(var, confdesc);
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
-	contribEnv.addVariable(var, confdesc);
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProg);
-	contribEnv.addVariable(var, confdesc);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, getBoardID());
 
 	for (LabelCombo curLabelCombo : mBoardOptionCombos) {
 	    curLabelCombo.StoreValue(confdesc);
@@ -445,11 +441,13 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 	ICConfigurationDescription confdesc = getConfdesc();
 	if (confdesc != null) {
+	    saveAllSelections(confdesc);
 	    IProject project = confdesc.getProjectDescription().getProject();
 
 	    IPath platformPath = new Path(contribEnv.getVariable(ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, confdesc).getValue());
 
 	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
+	    ArduinoGetPreferences.generateDumpFileForBoardIfNeeded(getPackage(), getArchitecture(), getBoardID(), null);
 	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc, false);
 
 	    try {
@@ -483,4 +481,28 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	super.handleTabEvent(kind, data);
     }
 
+    public String getPackage() {
+	IPath platformFile = new Path(mControlBoardsTxtFile.getText().trim());
+	String architecture = platformFile.removeLastSegments(1).lastSegment();
+	if (architecture.contains(".")) {
+	    return platformFile.removeLastSegments(4).lastSegment();
+	}
+	return platformFile.removeLastSegments(2).lastSegment();
+    }
+
+    public String getArchitecture() {
+	// TODO Auto-generated method stub
+	IPath platformFile = new Path(mControlBoardsTxtFile.getText().trim());
+	String architecture = platformFile.removeLastSegments(1).lastSegment();
+	if (architecture.contains(".")) {
+	    architecture = platformFile.removeLastSegments(2).lastSegment();
+	}
+	return architecture;
+    }
+
+    public String getBoardID() {
+	int selectedBoardFile = mControlBoardsTxtFile.getSelectionIndex();
+	String boardName = mcontrolBoardName.getText().trim();
+	return mAllBoardsFiles[selectedBoardFile].getBoardIDFromName(boardName);
+    }
 }
