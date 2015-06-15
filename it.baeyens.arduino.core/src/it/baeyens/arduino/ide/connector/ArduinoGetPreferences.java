@@ -31,9 +31,6 @@ public class ArduinoGetPreferences {
      */
     private static boolean arduinoIdeSupportsDumpFiles() {
 	String IDEVersion = ArduinoInstancePreferences.getArduinoIDEVersion();
-	if (IDEVersion.equalsIgnoreCase("nightly")) {
-	    return true;
-	}
 	if (IDEVersion.trim().split("\\.").length != 3)
 	    return false;
 	if (IDEVersion.compareTo("1.6.4") > 0) {
@@ -53,6 +50,16 @@ public class ArduinoGetPreferences {
 	File preferenceFile = Common.getPreferenceFile();
 	long storedPreferenceModificatonStamp = ArduinoInstancePreferences.getStoredPreferenceModificatonStamp();
 	return (preferenceFile.lastModified() != storedPreferenceModificatonStamp);
+    }
+
+    private static void storePreferenceModificationStamp() {
+
+	File preferenceFile = Common.getPreferenceFile();
+	ArduinoInstancePreferences.setStoredPreferenceModificatonStamp(preferenceFile.lastModified());
+    }
+
+    private static void emptyPreferenceModificationStamp() {
+	ArduinoInstancePreferences.setStoredPreferenceModificatonStamp(-1);
     }
 
     /**
@@ -133,10 +140,12 @@ public class ArduinoGetPreferences {
 	    if (newerBoardsAvailable()) {
 		deleteAllDumpFiles();
 		generateDumpFiles(null);
+		storePreferenceModificationStamp();
 		return true;
 	    }
 	    return false;
 	}
+	emptyPreferenceModificationStamp();
 	return deleteAllDumpFiles();
 
     }

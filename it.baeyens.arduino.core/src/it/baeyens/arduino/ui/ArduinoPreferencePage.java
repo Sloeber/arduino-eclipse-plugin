@@ -179,6 +179,9 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	case "1.6.4":
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
 	    break;
+	case "1.6.5":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is currently under test.";
+	    break;
 	default:
 	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
 	    infoMessage += "\nIf it is a newer version please feed back usage results to Jantje.";
@@ -191,8 +194,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	if (!showError(infoMessage)) {
 	    return false;
 	}
-	ArduinoGetPreferences.updateArduinoEnvironmentVariablesForAllProjectsIfNeeded();
+
 	super.performOk();
+	mArduinoIdeVersion.store();
+	ArduinoGetPreferences.updateArduinoEnvironmentVariablesForAllProjectsIfNeeded();
 	setWorkSpacePathVariables();
 
 	// reset the previous selected values
@@ -324,6 +329,12 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	setErrorMessage(ErrorMessage);
 	setValid(false);
 	return false;
+    }
+
+    @Override
+    protected void performApply() {
+	mIsDirty = true;
+	super.performApply();
     }
 
 }

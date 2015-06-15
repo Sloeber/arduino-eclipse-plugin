@@ -366,7 +366,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	return getGlobalLong(KEY_PREFERENCE_MODIFICATION_STAMP);
     }
 
-    public static void getStoredPreferenceModificatonStamp(long stamp) {
+    public static void setStoredPreferenceModificatonStamp(long stamp) {
 	setGlobalValue(KEY_PREFERENCE_MODIFICATION_STAMP, stamp);
     }
 }
