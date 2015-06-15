@@ -135,9 +135,12 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      */
     @Override
     public boolean performOk() {
-	if (!testStatus())
+	if (!mIsDirty) {
+	    return true;
+	}
+	if (!testStatus()) {
 	    return false;
-
+	}
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
 	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
 	    return false;

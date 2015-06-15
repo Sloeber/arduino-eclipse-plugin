@@ -778,7 +778,9 @@ public class ArduinoHelpers extends Common {
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, platformFilename);
 
 	// process the dump file from the arduino IDE
-	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, anduinoIDEEnvNamesPath);
+	if (anduinoIDEEnvNamesFile.exists()) {
+	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, anduinoIDEEnvNamesPath);
+	}
 
 	// process the platform.txt file first. This way the boards.txt will
 	// overwrite the default settings
