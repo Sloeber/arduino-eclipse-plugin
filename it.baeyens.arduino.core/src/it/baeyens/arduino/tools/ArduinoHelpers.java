@@ -554,10 +554,11 @@ public class ArduinoHelpers extends Common {
 	// End of Teensy specific settings
 
 	if (architecture.equals("avr")) {
-	    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_compiler_path, makeEnvironmentVar("A.HARDWARE.PATH") + "/tools/avr/bin/");
+	    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_compiler_path, makeEnvironmentVar(ENV_KEY_HARDWARE_PATH)
+		    + "/tools/avr/bin/");
 	} else if (architecture.equals("sam") || architecture.equals("mtk")) {
 	    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_system_path, makeEnvironmentVar(ENV_KEY_PLATFORM_PATH) + "/system");
-	    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_generic_path, makeEnvironmentVar("A.HARDWARE.PATH")
+	    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_generic_path, makeEnvironmentVar(ENV_KEY_HARDWARE_PATH)
 		    + "/tools/g++_arm_none_eabi/arm-none-eabi/bin");
 	}
 

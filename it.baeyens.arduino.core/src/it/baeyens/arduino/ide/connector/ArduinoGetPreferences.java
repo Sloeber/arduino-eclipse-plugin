@@ -78,7 +78,7 @@ public class ArduinoGetPreferences {
 			String ArchitectureName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, "");
 			if (boardName.isEmpty() || PackageName.isEmpty() || ArchitectureName.isEmpty()) {
 			    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Skipping project \"" + project.getName()
-				    + "\" due to missin configuration."));
+				    + "\" due to missing configuration."));
 			} else {
 			    boardsSet.add(PackageName + ":" + ArchitectureName + ":" + boardName);
 			}

@@ -497,7 +497,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	if (architecture.contains(".")) {
 	    architecture = platformFile.removeLastSegments(2).lastSegment();
 	}
-	return architecture;
+	return architecture.toUpperCase();
     }
 
     public String getBoardID() {
