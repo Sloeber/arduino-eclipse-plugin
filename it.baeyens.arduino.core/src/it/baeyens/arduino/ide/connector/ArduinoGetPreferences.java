@@ -16,6 +16,7 @@ import java.util.Set;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -70,10 +71,21 @@ public class ArduinoGetPreferences {
 	Set<String> boardsSet = new HashSet<String>();
 	for (IProject project : projects) {
 	    if (project.isOpen()) {
-		String boardName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, "");
-		String PackageName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, "");
-		String ArchitectureName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, "");
-		boardsSet.add(PackageName + ":" + ArchitectureName + ":" + boardName);
+		try {
+		    if (project.hasNature(ArduinoConst.ArduinoNatureID)) {
+			String boardName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, "");
+			String PackageName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, "");
+			String ArchitectureName = Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, "");
+			if (boardName.isEmpty() || PackageName.isEmpty() || ArchitectureName.isEmpty()) {
+			    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Skipping project \"" + project.getName()
+				    + "\" due to missin configuration."));
+			} else {
+			    boardsSet.add(PackageName + ":" + ArchitectureName + ":" + boardName);
+			}
+		    }
+		} catch (CoreException e) {
+		    e.printStackTrace();
+		}
 	    }
 	}
 	for (String board : boardsSet) {
