@@ -516,8 +516,8 @@ public class ArduinoHelpers extends Common {
 	}
 	String buildVariantPath = makeEnvironmentVar(ENV_KEY_PLATFORM_PATH) + "/variants/" + makeEnvironmentVar(ArduinoConst.ENV_KEY_build_variant);
 
-	Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, makeEnvironmentVar(ENV_KEY_JANTJE_ARCITECTURE_ID));
-	Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, makeEnvironmentVar(ENV_KEY_JANTJE_ARCITECTURE_ID));
+	Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, architecture.toUpperCase());
+	Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 	// from 1.6.2 the hardware path can also contain a version number
 	// TOFIX test with boardmanager and without board manager
 	Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, platformFile.removeLastSegments(3).toString());
@@ -769,6 +769,7 @@ public class ArduinoHelpers extends Common {
 	String packageName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, "");
 	File anduinoIDEEnvNamesFile = Common.getArduinoIdeDumpName(packageName, architecture, boardID);
 	IPath anduinoIDEEnvNamesPath = new Path(anduinoIDEEnvNamesFile.toString());
+	architecture = architecture.toUpperCase();
 
 	// first remove all Arduino Variables so there is no memory effect
 	RemoveAllArduinoEnvironmentVariables(contribEnv, confDesc);
