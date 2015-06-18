@@ -1,7 +1,9 @@
 package it.baeyens.arduino.common;
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -293,6 +295,14 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 
     public static IPath getArduinoPath() {
 	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, ""));
+    }
+
+    public static String getArduinoIdeProgram() {
+	IPath ArduinoIDEPath = ArduinoInstancePreferences.getArduinoPath();
+
+	if (Platform.getOS().equals(Platform.OS_MACOSX))
+	    return "\"" + URIUtil.toURI(ArduinoIDEPath.removeLastSegments(1).append("MacOS").append("JavaApplicationStub")).getPath() + "\" ";
+	return "\"" + URIUtil.toURI(ArduinoIDEPath.append("arduino")).getPath() + "\" ";
     }
 
     /**
