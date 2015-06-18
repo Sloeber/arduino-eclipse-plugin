@@ -96,7 +96,7 @@
 	<extension point="org.eclipse.ui.newWizards">
 		<category 
 			id="it.baeyens.arduino.eclipse.newWizards"
-			name="%category.name">
+			name="%category.arduino.name">
 		</category>
 		<wizard
 			id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard"
