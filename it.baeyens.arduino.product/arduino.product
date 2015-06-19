@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="2.2.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="2.4.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/it.baeyens.arduino.application/icons/logo_128.png"/>

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: it.baeyens.arduino.core.nl1 Fragment
-Bundle-SymbolicName: it.baeyens.arduino.core.nl1
+Bundle-SymbolicName: it.baeyens.arduino.core.nl1;singleton:=true
 Bundle-Version: 2.4.0.qualifier
 Fragment-Host: it.baeyens.arduino.core;bundle-version="2.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
