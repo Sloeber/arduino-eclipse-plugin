@@ -370,6 +370,8 @@ public class ArduinoHelpers extends Common {
 	    pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, URIUtil.toURI(arduinoHardwareLibraryPath));
 	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PLATFORM, URIUtil.toURI(platformPath));
 	    pathMan.setURIValue(ArduinoConst.PATH_VARIABLE_NAME_ARDUINO_PINS, URIUtil.toURI(PinPath));
+	    pathMan.setURIValue("ArduinoPivateLibPath", URIUtil.toURI("${" + ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB + "}"));
+
 	} catch (CoreException e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
 		    "Failed to create the path variable variables. The setup will not work properly", e));
