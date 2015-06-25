@@ -1045,11 +1045,12 @@ public class ArduinoHelpers extends Common {
     public static String[] getBoardsFiles() {
 	File HardwareFolder = ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME).toFile();
 	IPath homPath = new Path(System.getProperty("user.home"));
-	File HardwareFolder2 = homPath.append(".arduino15").append("packages").append("arduino").append("hardware").toFile();
+	// File HardwareFolder2 = homPath.append(".arduino15").append("packages").append("arduino").append("hardware").toFile();
+	File HardwareFolder2 = homPath.append(".arduino15").append("packages").toFile();
 
 	HashSet<String> boardFiles = new HashSet<String>();
 	searchFiles(HardwareFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
-	searchFiles(HardwareFolder2, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
+	searchFiles(HardwareFolder2, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 5);
 	if (boardFiles.size() == 0) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folder", null));
 	    return null;
