@@ -116,7 +116,7 @@
     <extension point="org.eclipse.ui.importWizards">
  		<category 
 			id="it.baeyens.arduino.eclipse.importWizards"
-			name="%category.name">
+			name="%category.arduino.name">
 		</category>
       <wizard 
          id="it.baeyens.arduino.Import_Arduino_Libraries" 
