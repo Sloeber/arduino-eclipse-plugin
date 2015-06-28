@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 public class ArduinoGetPreferences {
@@ -106,7 +107,7 @@ public class ArduinoGetPreferences {
     private static boolean generateDumpFileForBoard(String packageName, String architecture, String boardID, IProgressMonitor monitor) {
 	File arduinoIDEenvVars = Common.getArduinoIdeDumpName(packageName, architecture, boardID);
 
-	IPath ArduinoIDEPath = ArduinoInstancePreferences.getArduinoPath();
+	IPath ArduinoIDEPath = new Path(ArduinoInstancePreferences.getArduinoIdeProgram());
 	String command = "\"" + URIUtil.toURI(ArduinoIDEPath.append("arduino")).getPath() + "\" --board " + packageName + ":" + architecture + ":"
 		+ boardID + " --get-pref";
 	ExternalCommandLauncher commandLauncher = new ExternalCommandLauncher(command);
