@@ -301,7 +301,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	IPath ArduinoIDEPath = ArduinoInstancePreferences.getArduinoPath();
 
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
-	    return "\"" + URIUtil.toURI(ArduinoIDEPath.removeLastSegments(1).append("MacOS").append("JavaApplicationStub")).getPath() + "\" ";
+	    return "\"" + URIUtil.toURI(ArduinoIDEPath.removeLastSegments(1).append("MacOS").append("Arduino")).getPath() + "\" ";
 	return "\"" + URIUtil.toURI(ArduinoIDEPath.append("arduino")).getPath() + "\" ";
     }
 
