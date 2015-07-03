@@ -242,7 +242,13 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    if (fields.length != 3) {
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Malformed Arduino IDE version expected X.Y.Z got " + Ret, null));
 	    } else {
-		Ret = String.format("%d%02d%02d", Integer.valueOf(fields[0]), Integer.valueOf(fields[1]), Integer.valueOf(fields[2]));
+		try {
+		    Ret = String.format("%d%02d%02d", Integer.valueOf(fields[0]), Integer.valueOf(fields[1]), Integer.valueOf(fields[2]));
+		} catch (NumberFormatException e) {
+		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Malformed Arduino IDE version expected X.Y.Z got " + Ret,
+			    null));
+		    Ret = getArduinoIDEVersion().trim();
+		}
 	    }
 	}
 	return Ret;
