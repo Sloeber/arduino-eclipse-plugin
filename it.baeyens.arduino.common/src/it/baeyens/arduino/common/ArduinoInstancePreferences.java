@@ -3,6 +3,7 @@ package it.baeyens.arduino.common;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -301,6 +302,15 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 
     public static IPath getArduinoPath() {
 	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, ""));
+    }
+
+    public static IPath getArduinoIdeHardwarePath() {
+	return getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME);
+    }
+
+    public static IPath getArduinoBoardsManagerPackagesPath() {
+	IPath homPath = new Path(System.getProperty("user.home"));
+	return homPath.append(".arduino15").append("packages");
     }
 
     public static String getArduinoIdeProgram() {

@@ -50,11 +50,11 @@ public class ShouldHaveBeenInCDT {
      *            The monitor to follow the process
      * @throws CoreException
      */
-    public static void setCProjectDescription(IProject project, ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild,
+    public static ICProjectDescription setCProjectDescription(IProject project, ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild,
 	    IProgressMonitor monitor) throws CoreException {
 
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-	ICProjectDescription des = mngr.createProjectDescription(project, false, false);
+	ICProjectDescription des = mngr.createProjectDescription(project, false, true);
 	ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
 	ManagedProject mProj = new ManagedProject(des);
 	info.setManagedProject(mProj);
@@ -79,7 +79,7 @@ public class ShouldHaveBeenInCDT {
 	    setDefaultLanguageSettingsProviders(project, alCfgs.get(i), cfg, cfgDes);
 	}
 	monitor.worked(50);
-	mngr.setProjectDescription(project, des);
+	return des;
 
     }
 

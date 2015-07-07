@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -236,34 +237,31 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = mBuildCfgPage.getBuildConfigurationDescriptors();
 
 	    // Creates the .cproject file with the configurations
-	    ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true, monitor);
+	    ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
-	    ArduinoHelpers.addTheNatures(project);
+	    ArduinoHelpers.addTheNatures(description);
 
 	    // Add the Arduino folder
 	    ArduinoHelpers.createNewFolder(project, "arduino", null);
-
-	    // Set the environment variables
-	    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 
 	    // since Arduino IDE 1.6.5 a request to arduino IDE needs to be done to know the needed environment variables
 	    ArduinoGetPreferences.generateDumpFileForBoardIfNeeded(mArduinoPage.getPackage(), mArduinoPage.getArchitecture(),
 		    mArduinoPage.getBoardID(), monitor);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
-		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
+		ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
 		mArduinoPage.saveAllSelections(configurationDescription);
 		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
 	    // Set the path variables
-	    ArduinoHelpers.setProjectPathVariables(project, mArduinoPage.getPlatformFolder());
+	    ArduinoHelpers.setProjectPathVariables(prjCDesc.getActiveConfiguration());
 
 	    // Intermediately save or the adding code will fail
 	    // Release is the active config (as that is the "IDE" Arduino type....)
-	    ICConfigurationDescription defaultConfigDescription = prjDesc.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
-	    prjDesc.setActiveConfiguration(defaultConfigDescription);
+	    ICConfigurationDescription defaultConfigDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
+	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code
 	    // NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
@@ -276,7 +274,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    //
 	    // add the libraries to the project if needed
 	    //
-	    mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjDesc.getConfigurations());
+	    mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getConfigurations());
 
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
@@ -305,9 +303,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL, ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
 	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
-	    prjDesc.setActiveConfiguration(defaultConfigDescription);
-	    prjDesc.setCdtProjectCreated();
-	    CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjDesc, true, null);
+	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
+	    prjCDesc.setCdtProjectCreated();
+	    CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjCDesc, true, null);
+	    project.setDescription(description, new NullProgressMonitor());
 	    monitor.done();
 
 	} catch (CoreException e) {

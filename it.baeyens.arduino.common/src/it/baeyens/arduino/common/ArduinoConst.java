@@ -54,7 +54,7 @@ public class ArduinoConst {
     public static final String BOARDS_FILE_NAME = "boards.txt";//$NON-NLS-1$
     public static final String PLATFORM_FILE_NAME = "platform.txt";//$NON-NLS-1$
     public static final String LIB_VERSION_FILE = "lib/version.txt";//$NON-NLS-1$
-    public static final String VARIANTS_FOLDER = "variants";//$NON-NLS-1$
+    public static final String ARDUINO_VARIANTS_FOLDER_NAME = "variants";//$NON-NLS-1$
 
     public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB = "ArduinoLibPath";//$NON-NLS-1$
     public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO = "ArduinoPath";//$NON-NLS-1$
@@ -104,7 +104,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";//$NON-NLS-1$
     public static final String ENV_KEY_upload_tool = ENV_KEY_ARDUINO_START + "UPLOAD.TOOL";//$NON-NLS-1$
     public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
-    public static final String ENV_KEY_build_core_folder = ENV_KEY_ARDUINO_START + "BUILD.CORE";//$NON-NLS-1$
+    public static final String ENV_KEY_build_core = ENV_KEY_ARDUINO_START + "BUILD.CORE";//$NON-NLS-1$
     public static final String ENV_KEY_build_core_path = ENV_KEY_ARDUINO_START + "BUILD.CORE.PATH";//$NON-NLS-1$
     public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";//$NON-NLS-1$
     public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_ARDUINO_START + "SERIAL.PORT";//$NON-NLS-1$
@@ -120,6 +120,7 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_COM_PROG = ENV_KEY_JANTJE_START + "COM_PROGMR";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";//$NON-NLS-1$
@@ -130,6 +131,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";//$NON-NLS-1$
+
     //
     // template Sketch information
 

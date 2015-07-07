@@ -8,6 +8,7 @@ import it.baeyens.arduino.tools.ArduinoBoards;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -187,6 +188,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	GridData theGriddata;
 	mAllBoardsFileNames = ArduinoHelpers.getBoardsFiles();
+	Arrays.sort(mAllBoardsFileNames);
 	mAllBoardsFiles = new ArduinoBoards[mAllBoardsFileNames.length];
 	for (int currentBoardFile = 0; currentBoardFile < mAllBoardsFileNames.length; currentBoardFile++) {
 	    mAllBoardsFiles[currentBoardFile] = new ArduinoBoards(mAllBoardsFileNames[currentBoardFile]);
@@ -437,18 +439,14 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
     }
 
     private void doOK() {
-	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 	ICConfigurationDescription confdesc = getConfdesc();
 	if (confdesc != null) {
 	    saveAllSelections(confdesc);
 	    IProject project = confdesc.getProjectDescription().getProject();
 
-	    IPath platformPath = new Path(contribEnv.getVariable(ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, confdesc).getValue());
-
-	    ArduinoHelpers.setProjectPathVariables(project, platformPath.removeLastSegments(1));
 	    ArduinoGetPreferences.generateDumpFileForBoardIfNeeded(getPackage(), getArchitecture(), getBoardID(), null);
 	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc, false);
+	    ArduinoHelpers.setProjectPathVariables(confdesc);
 
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
