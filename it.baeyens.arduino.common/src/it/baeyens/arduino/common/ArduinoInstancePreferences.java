@@ -309,8 +309,15 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static IPath getArduinoBoardsManagerPackagesPath() {
-	IPath homPath = new Path(System.getProperty("user.home"));
-	return homPath.append(".arduino15").append("packages");
+	switch (Platform.getOS()) {
+	case Platform.OS_MACOSX:
+	    return new Path(System.getProperty("user.home")).append("Library").append("Arduino15").append("packages");
+
+	case Platform.OS_WIN32:
+	    return new Path(System.getenv("APPDATA")).append("Arduino15").append("packages");
+	default:
+	    return new Path(System.getProperty("user.home")).append(".arduino15").append("packages");
+	}
     }
 
     public static String getArduinoIdeProgram() {
