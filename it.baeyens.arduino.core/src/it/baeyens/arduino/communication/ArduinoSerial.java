@@ -65,6 +65,7 @@ public class ArduinoSerial {
 	int NumTries = 0;
 	int MaxTries = 40; // wait for max 10 seconds as arduino does
 	int delayMs = 250;
+	int PrefNewPortsCopySize=-10;
 	do {
 
 	    NewPorts = Serial.list();
@@ -89,6 +90,14 @@ public class ArduinoSerial {
 	    }
 	    console.println("}");
 	    /* end of dump to the console */
+
+	    // code to capture the case: the com port reappears with a name that was in the original list
+	    int NewPortsCopySize = NewPorts.size();
+	    if ((NewPortsCopy.size() == 0) && (NewPortsCopySize == PrefNewPortsCopySize + 1)) {
+		console.println("Comport appeared and disappeared with same name");
+		return defaultComPort;
+	    }
+	    PrefNewPortsCopySize = NewPortsCopySize;
 
 	    if (NumTries++ > MaxTries) {
 		console.println("Comport is not behaving as expected");
