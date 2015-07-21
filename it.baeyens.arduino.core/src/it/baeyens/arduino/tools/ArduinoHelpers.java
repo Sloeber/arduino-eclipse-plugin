@@ -835,6 +835,9 @@ public class ArduinoHelpers extends Common {
     private static void setTheEnvironmentVariablesRedirectToOtherVendors(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
 	    ArduinoBoards boardsFile, String boardID, String architecture) {
 	Map<String, String> boardInfo = boardsFile.getSection(boardID);
+	if (boardInfo == null) {
+	    return; // there is a problem with the board ID
+	}
 	String core = boardInfo.get("build.core");
 	String variant = boardInfo.get("build.variant");
 	if (core != null) {
