@@ -328,14 +328,13 @@
 				</plugins>
 			</build>
 		</profile>
-
 		<profile>
 			<id>luna</id>
             <properties>
                 <platform-version-name>luna</platform-version-name>
             </properties>
             <activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 
 			<repositories>
@@ -349,6 +348,30 @@
 					<id>release-train_luna</id>
 					<layout>p2</layout>
 					<url> http://download.eclipse.org/releases/luna</url>
+				</repository>
+			</repositories>
+		</profile>
+
+		<profile>
+			<id>mars</id>
+            <properties>
+                <platform-version-name>mars</platform-version-name>
+            </properties>
+            <activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>platform_mars</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/eclipse/updates/4.5</url>
+				</repository>
+
+				<repository>
+					<id>release-train_mars</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/releases/mars</url>
 				</repository>
 			</repositories>
 		</profile>
