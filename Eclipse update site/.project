@@ -26,4 +26,11 @@
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>readme.md</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/readme.md</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

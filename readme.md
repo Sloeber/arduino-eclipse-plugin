@@ -160,7 +160,7 @@ You may need to change the directory to match the directory where you cloned the
 Press Next.
 
 In the next window you have to select which Plug-in fragments you want to import.
-You will select the following:
+Select all that are appropriate:
 
 ![alt text](images_plugin_dev_setup/plugins_select.png "Adding the Plugin Development Environment")
 
