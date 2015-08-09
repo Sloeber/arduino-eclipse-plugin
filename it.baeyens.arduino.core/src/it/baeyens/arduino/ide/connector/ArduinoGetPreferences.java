@@ -126,6 +126,10 @@ public class ArduinoGetPreferences {
 	    output.write("#Please do not change.");
 	    output.newLine();
 	    for (String item : out) {
+		String upperItem = item.trim().toUpperCase();
+		if (upperItem.endsWith("=TRUE") || upperItem.endsWith("=FALSE")) {
+		    output.write("#Ignoring this line : ");
+		}
 		output.write(item);
 		output.newLine();
 	    }
