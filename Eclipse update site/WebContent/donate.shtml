@@ -1,104 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Arduino Eclipse Plugin - Donate!</title>
-
-    <!-- Bootstrap core CSS and theme -->
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
-
-    <!-- Custom styles  -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href="css/theme.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body role="document" ng-app='arduinoEclipse'>
-
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
-    </nav>
-
-    <div class="container" role="main">
-      <div class="page-header">
-        <h1>Donate <small>to help Jantie eat and drink</small></h1>
-      </div>
-
-      <div class="row">
-      	<div class="col-md-6">
-          <h2>Donation rules</h2>
-          <ul class="list-group">
-            <li class="list-group-item">Off-course you won't send Jantje a real Arduino, but you get the picture.</li>
-            <li class="list-group-item">There is no obligation at all to buy Jantje an Arduino but if you want to keep this plugin free you'd better act now.</li>
-            <li class="list-group-item">Jantje does not accept gifts from minors (less then 18 years old). </li>
-            <li class="list-group-item">Minors should spend their money on others things.</li>
-            <li class="list-group-item">Minors can increase jantjes karma or help out with the plugin.</li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <h2>Get Jantie drunk</h2>
-          <div class="list-group">
-            <a class="list-group-item" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=23JQUTF47Q42Y&os0=Have%20a%20nice%20drink"><img src="css/duvel.png"/>cheers! (5.00 EUR)</a>
-            <a class="list-group-item" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=23JQUTF47Q42Y&os0=For%20you%20and%20your%20girfirend"><img src="css/duvel.png"/><img src="css/duvel.png"/>one for your girlfriend too (10.00 EUR)</a>
-            <a class="list-group-item" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=23JQUTF47Q42Y&os0=get%20drunk"><img src="css/duvel.png"/><img src="css/duvel.png"/><img src="css/duvel.png"/>go under the table! (15.00 EUR)</a>
-          </div>
-        </div>
-     </div>
-
-     <div class="row">
-        <div class="col-md-6">
-          <h2>Get a Leonardo (16.00 EUR)</h2>
-		  <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T9Z8J33GXYKEY">
-		  	<img src="http://arduino.cc/en/uploads/Main/LeonardoNoHeadersFront_2_450px.jpg" border="0" width="400px" alt="Leonardo">
-		  </a>
-       </div>
-        <div class="col-md-6">
-          <h2>Go for the Mega (47.00 EUR)</h2>
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5AMEPYCP7MGTU">
-		  	<img src="http://arduino.cc/en/uploads/Main/ArduinoMega2560_R3_Front_450px.jpg" border="0" width="400px" alt="Arduino Mega2560">
-		  </a>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Switch to Ethernet with PoE (66.00 EUR)</h2>
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K6YK4ZUMLLTNC">
-		  	<img src="http://arduino.cc/en/uploads/Main/ArduinoEthernetFrontPOE450px.jpg" border="0" width="400px" alt="Arduino ethernet with PoE">
-		  </a>
-        </div>
-        <div class="col-md-6">
-          <h2>Bluetooth is all you need (95.00 EUR)</h2>
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EGDNNMMQA7T3S">
-		  	<img src="http://arduino.cc/en/uploads/Main/ArduinoBT_Front_400px.jpg" border="0" width="400px" alt="Arduino BT">
-		  </a>
-        </div>
-      </div>
-    </div> <!-- /container -->
-
-    <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
-    </div>
-  </body>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-  <script src="js/marked.min.js"></script>
-  <script src="js/angular-marked.min.js"></script>
-  <script src="js/ui-bootstrap-tpls.js"></script>
-  <script src="js/app.js"></script>
+<!DOCTYPE HTML>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="refresh" content="1;url='https://www.patreon.com/jantje?ty=h'">
+        <script type="text/javascript">
+            window.location.href = "https://www.patreon.com/jantje?ty=h"
+        </script>
+        <title>This page has been moved</title>
+    </head>
+    <body>
+        <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
+        If you are not redirected automatically, follow the <a href='https://www.patreon.com/jantje?ty=h'>donate.shtml</a>
+    </body>
 </html>
