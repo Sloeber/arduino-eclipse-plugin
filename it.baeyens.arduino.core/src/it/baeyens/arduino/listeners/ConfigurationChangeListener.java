@@ -15,26 +15,25 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
     @Override
     public void handleEvent(CProjectDescriptionEvent event) {
-	// we are only interested in about to apply
-	// if (event.getEventType() != CProjectDescriptionEvent.ABOUT_TO_APPLY)
-	// return;
-	// if (true)
-	// return;
+	// only handle arduino nature projects
+	try {
+	    if (!event.getProject().hasNature(ArduinoConst.ArduinoNatureID)) {
+		return;
+	    }
+	} catch (Exception e) {
+	    // don't care
+	}
+	// We have a arduino project so we are safe.
 	ICProjectDescription projDesc = event.getNewCProjectDescription();
-
 	if (projDesc.getActiveConfiguration() != null) {
 
 	    ArduinoHelpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(), false);
 	    ArduinoHelpers.setProjectPathVariables(projDesc.getActiveConfiguration());
-	    // try {
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(projDesc.getProject(), projDesc.getActiveConfiguration());
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "failed to add include folder", e));
 	    }
-	    // } catch (CoreException e1) {
-	    // Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error adding the arduino code", e1));
-	    // }
 	    ArduinoLibraries.reAttachLibrariesToProject(projDesc.getActiveConfiguration());
 	}
     }
