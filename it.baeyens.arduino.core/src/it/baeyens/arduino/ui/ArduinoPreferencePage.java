@@ -180,7 +180,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
 	    break;
 	case "1.6.5":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is currently under test.";
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works great.";
 	    break;
 	default:
 	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
@@ -190,7 +190,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    infoMessage += "\nRemember to add your own make as it is no longer delivered with arduino.";
 
 	}
-	infoMessage += "\nAdvised version is 1.6.1";
+	infoMessage += "\nAdvised version is 1.6.5";
 	if (!showError(infoMessage)) {
 	    return false;
 	}
