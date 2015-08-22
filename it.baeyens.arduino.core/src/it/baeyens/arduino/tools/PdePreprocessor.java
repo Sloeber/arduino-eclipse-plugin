@@ -45,6 +45,7 @@ public class PdePreprocessor {
     private static String tempFile = ".ino.cpp";
 
     public static void processProject(IProject iProject) throws CoreException {
+	// first write some standard bla bla
 	String body = "";
 	String includeHeaderPart = "#include \"Arduino.h\"\n";
 	String includeCodePart = "\n";
@@ -58,28 +59,41 @@ public class PdePreprocessor {
 	ICProject tt = CoreModel.getDefault().create(iProject);
 	IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
 
+	// take all the files in the project
 	IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
 	int numInoFiles = 0;
 	for (IResource curResource : allResources) {
 	    String extension = curResource.getFileExtension();
+	    // only process .pde and .ino files
 	    if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
 		numInoFiles++;
+		String addLine;
 		if (curResource.isLinked()) {
-		    includeCodePart += "#include \"" + curResource.getLocation() + "\"\n";
+		    addLine = "#include \"" + curResource.getLocation() + "\"\n";
 		} else {
-		    includeCodePart += "#include \"" + curResource.getName() + "\"\n";
+		    addLine = "#include \"" + curResource.getName() + "\"\n";
+		}
+		// if the name of the ino/pde file matches the project put the file in front
+		// Otherwise add it to the end
+		if (curResource.getName().equals(iProject.getName() + "." + extension)) {
+		    includeCodePart = addLine + includeCodePart;
+		} else {
+		    includeCodePart += addLine;
 		}
 
-		IPath path = curResource.getFullPath();// ff.getFullPath().append(inoFile);
+		IPath path = curResource.getFullPath();
 
+		// check wether the indexer is properly configured.
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 		ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
 		if (tu == null) {
+		    // the indexer is not properly configured so drop a error in the file
 		    body += "\n";
 		    body += "#error the file: " + curResource.getName() + " is not found in the indexer though it exists on the file system.\n";
 		    body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
 		    body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
 		} else {
+		    // add declarations made in ino files.
 		    IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
 		    IASTNode astNodes[] = asttu.getChildren();
 		    for (IASTNode astNode : astNodes) {
@@ -91,13 +105,14 @@ public class PdePreprocessor {
 			    addString = addString.replaceAll("\n", " ");
 			    addString = addString.replaceAll("\\{.+\\}", "");
 			    if (addString.contains("=")) {
-				// ignore when there are assignements in the declaration
+				// ignore when there are assignments in the declaration
 			    } else {
 				body += addString + ";\n";
 			    }
 
 			}
 		    }
+		    // list all includes found in the source files.
 		    IInclude includes[] = tu.getIncludes();
 		    for (IInclude include : includes) {
 			includeHeaderPart += include.getSource();
@@ -106,7 +121,9 @@ public class PdePreprocessor {
 		}
 	    }
 	}
+	body += "\n";
 
+	// delete the generated .ino.cpp file this is to cope with people renaming the ino files to cpp files removing the need for .ino.cpp file
 	if (numInoFiles == 0) {
 	    IResource inofile = iProject.findMember(tempFile);
 	    if (inofile != null) {
@@ -114,38 +131,8 @@ public class PdePreprocessor {
 	    }
 	    return;
 	}
-	// for (String inoFile : allInoFiles) {
-	// IPath path = ff.getFullPath().append(inoFile);
-	//
-	// IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-	// // Create translation unit for file
-	// ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
-	// if (tu == null) {
-	// body += "\n";
-	// body += "#error the file: " + inoFile + " is not found in the indexer though it exists on the file system.\n";
-	// body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
-	// body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
-	// } else {
-	// IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
-	// IASTNode astNodes[] = asttu.getChildren();
-	// for (IASTNode astNode : astNodes) {
-	// if (astNode instanceof CPPASTFunctionDefinition) {
-	// // String debug = astNode.getRawSignature();
-	// body += astNode.getRawSignature().replaceAll("//[^\n]+\n", " ").replaceAll("\n", " ").replaceAll("\\{.+\\}", "");
-	// body += ";\n";
-	// }
-	// }
-	// IInclude includes[] = tu.getIncludes();
-	// for (IInclude include : includes) {
-	// includePart += include.getSource();
-	// includePart += "\n";
-	// }
-	// }
-	// }
-	body += "\n";
-	// for (String inoFile : allInoFiles) {
-	// includeCodePart += "#include \"" + inoFile + "\"\n";
-	// }
+
+	// concatenate the parts and make the .ino.cpp file
 	String output = header + includeHeaderPart + body + includeCodePart;
 	ArduinoHelpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()), null);
 
