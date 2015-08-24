@@ -648,6 +648,11 @@ public class ArduinoHelpers extends Common {
 
 	// Get the boards section and add all entries to the environment variables
 	Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
+	if (boardSectionMap == null) {
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "The project "
+		    + confDesc.getProjectDescription().getProject().getName() + " Has an invalid arduino board configuration."));
+	    return;
+	}
 	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 	    // if it is not a menu item add it
 	    if (!currentPair.getKey().startsWith("menu.")) {
