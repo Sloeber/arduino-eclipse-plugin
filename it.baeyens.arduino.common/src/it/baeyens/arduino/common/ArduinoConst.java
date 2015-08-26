@@ -9,7 +9,7 @@ package it.baeyens.arduino.common;
 public class ArduinoConst {
     // General stuff
     public static final String PluginStart = "it.baeyens."; //$NON-NLS-1$
-    public static final String CORE_PLUGIN_ID = PluginStart + "core"; //$NON-NLS-1$
+    public static final String CORE_PLUGIN_ID = PluginStart + "arduino.core"; //$NON-NLS-1$
 
     // prefix to be added to the arduino environment
     protected static final String UploadPortPrefix_WIN = "-P\\\\.\\"; //$NON-NLS-1$
