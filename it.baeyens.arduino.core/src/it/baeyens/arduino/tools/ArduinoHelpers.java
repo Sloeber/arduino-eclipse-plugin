@@ -778,7 +778,11 @@ public class ArduinoHelpers extends Common {
 	} catch (IOException e1) {
 	    e1.printStackTrace();
 	}
-
+	if (file == null) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "Your setup has gotten corruptes. Missing config/arduino_eclipse_plugin.txt file."));
+	    return;
+	}
 	IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, "");
