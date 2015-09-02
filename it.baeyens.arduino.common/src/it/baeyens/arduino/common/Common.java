@@ -605,8 +605,14 @@ public class Common extends ArduinoInstancePreferences {
      * @return
      */
     public static String getDefaultPrivateHardwarePath() {
+	if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    IPath homPath = new Path(System.getProperty("user.dir"));
+	    return homPath.append("Arduino").append("hardware").toString();
+	}
+
 	IPath homPath = new Path(System.getProperty("user.home"));
 	return homPath.append("Arduino").append("hardware").toString();
+
     }
 
     public static File getArduinoIdeDumpName(String packageName, String architecture, String boardID) {
