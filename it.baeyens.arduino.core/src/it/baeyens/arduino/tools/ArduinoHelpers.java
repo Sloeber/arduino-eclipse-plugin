@@ -648,13 +648,16 @@ public class ArduinoHelpers extends Common {
      *            The file to parse
      */
     private static void setTheEnvironmentVariablesAddtheBoardsTxt(IContributedEnvironment contribEnv, ICConfigurationDescription confDesc,
-	    ArduinoBoards boardsFile, String boardID) {
+	    ArduinoBoards boardsFile, String boardID, boolean warn) {
 
 	// Get the boards section and add all entries to the environment variables
 	Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
 	if (boardSectionMap == null) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "The project "
-		    + confDesc.getProjectDescription().getProject().getName() + " Has an invalid arduino board configuration."));
+	    if (warn) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "The project "
+			+ confDesc.getProjectDescription().getProject().getName() + " Has an invalid arduino board configuration."));
+
+	    }
 	    return;
 	}
 	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
@@ -822,12 +825,12 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, localPlatformFilename);
 	}
 	// now process the boards file
-	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID);
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
 	// also process the file as part of the plugin
 	if (arduinoEclipsePluginFile.toFile().exists()) {
 	    ArduinoBoards myBoardsFile = new ArduinoBoards(arduinoEclipsePluginFile.toOSString());
-	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, myBoardsFile, boardID);
+	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, myBoardsFile, boardID, false);
 	}
 
 	// Do some post processing
