@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,7 +54,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -67,7 +64,6 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
-import org.osgi.framework.Bundle;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -771,22 +767,55 @@ public class ArduinoHelpers extends Common {
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
 	IPath localPlatformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
 
-	Bundle bundle = Platform.getBundle(ArduinoConst.CORE_PLUGIN_ID);
-	URL fileURL = bundle.getEntry("config/arduino_eclipse_plugin.txt");
-	File file = null;
-	try {
-	    file = new File(FileLocator.resolve(fileURL).toURI());
-	} catch (URISyntaxException e1) {
-	    e1.printStackTrace();
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
-	if (file == null) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "Your setup has gotten corruptes. Missing config/arduino_eclipse_plugin.txt file."));
-	    return;
-	}
-	IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
+	/*
+	 * Trying to find the file in the plugin as described here :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
+	 */
+	// Bundle bundle = Platform.getBundle(ArduinoConst.CORE_PLUGIN_ID);
+	// URL fileURL = bundle.getEntry("config/arduino_eclipse_plugin.txt");
+	// File file = null;
+	// try {
+	// file = new File(FileLocator.resolve(fileURL).toURI());
+	// } catch (URISyntaxException e1) {
+	// e1.printStackTrace();
+	// } catch (IOException e1) {
+	// e1.printStackTrace();
+	// }
+	// if (file == null) {
+	// Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	// "Your setup has gotten corrupt. Missing config/arduino_eclipse_plugin.txt file."));
+	// return;
+	// }
+	// IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
+
+	/*
+	 * try the second method as the first method fails
+	 */
+	// URL url;
+	// try {
+	// url = new URL("platform:/plugin/it.baeyens.arduino.core/config/arduino_eclipse_plugin.txt");
+	// } catch (MalformedURLException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// return;
+	// }
+	// File file = null;
+	// try {
+	// URL resolved_url = FileLocator.resolve(url);
+	// URI resolverdURI = resolved_url.toURI();
+	// file = new File(resolverdURI);
+	// } catch (URISyntaxException e1) {
+	// e1.printStackTrace();
+	// } catch (IOException e1) {
+	// e1.printStackTrace();
+	// } catch (Exception e1) {
+	// e1.printStackTrace();
+	// }
+	// if (file == null) {
+	// Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	// "Your setup has gotten corrupt. Missing config/arduino_eclipse_plugin.txt file."));
+	// return;
+	// }
+	// IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, "");
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, "");
@@ -828,10 +857,10 @@ public class ArduinoHelpers extends Common {
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
 	// also process the file as part of the plugin
-	if (arduinoEclipsePluginFile.toFile().exists()) {
-	    ArduinoBoards myBoardsFile = new ArduinoBoards(arduinoEclipsePluginFile.toOSString());
-	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, myBoardsFile, boardID, false);
-	}
+	// if (arduinoEclipsePluginFile.toFile().exists()) {
+	// ArduinoBoards myBoardsFile = new ArduinoBoards(arduinoEclipsePluginFile.toOSString());
+	// setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, myBoardsFile, boardID, false);
+	// }
 
 	// Do some post processing
 	setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
