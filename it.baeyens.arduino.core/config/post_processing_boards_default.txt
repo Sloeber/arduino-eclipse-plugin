@@ -1,1 +1,3 @@
-gemma.AA.post.processing.boards.default=true
+#add the --relax to the compilation options for mega platforms
+mega.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
+megaADK.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
