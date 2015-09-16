@@ -154,5 +154,9 @@ public class ArduinoConst {
 
     public static final String ARDUINO_IDE_DUMP__FILE_NAME_TRAILER = "ArduinoIDE.tmp";
     public static final String ARDUINO_IDE_DUMP__FILE_NAME_PREFIX = "DUMP_";
+    public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
+    public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt";
+    public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
+    public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
 
 }

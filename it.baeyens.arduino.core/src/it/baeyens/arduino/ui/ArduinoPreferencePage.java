@@ -9,9 +9,13 @@ import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -197,6 +201,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	super.performOk();
 	mArduinoIdeVersion.store();
+	makeOurOwnCustomBoards_txt();
 	ArduinoGetPreferences.updateArduinoEnvironmentVariablesForAllProjectsIfNeeded();
 	setWorkSpacePathVariables();
 
@@ -206,6 +211,75 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	ArduinoInstancePreferences.setLastUsedBoardsFile("");
 	ArduinoInstancePreferences.setLastUsedMenuOption("");
 	return true;
+    }
+
+    /**
+     * To be capable of overwriting the boards.txt and platform.txt file settings the plugin contains its own settings. The settings are arduino IDE
+     * version specific and it seems to be relatively difficult to read a boards.txt located in the plugin itself (so outside of the workspace)
+     * Therefore I copy the file during plugin configuration to the workspace root. The file is arduino IDE specific. If no specific file is found the
+     * default is used. There are actually 4 txt files. 2 are for pre-processing 2 are for post processing. each time 1 board.txt an platform.txt I
+     * probably do not need all of them but as I'm setting up this framework it seems best to add all possible combinations.
+     * 
+     */
+    private void makeOurOwnCustomBoards_txt() {
+	// TODO think about the A. and JANTJE. Maybe we do not want to add them automatically
+	// Actually I can not cleanup JANTJE properly so I can't do this
+	IPath workspacePath = new Path(Common.getWorkspaceRoot().getAbsolutePath());
+	makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt", workspacePath.append(ArduinoConst.PRE_PROCESSING_BOARDS_TXT));
+	makeOurOwnCustomBoard_txt("config/post_processing_boards_-.txt", workspacePath.append(ArduinoConst.POST_PROCESSING_BOARDS_TXT));
+	makeOurOwnCustomBoard_txt("config/pre_processing_platform_-.txt", workspacePath.append(ArduinoConst.PRE_PROCESSING_PLATFORM_TXT));
+	makeOurOwnCustomBoard_txt("config/post_processing_platform_-.txt", workspacePath.append(ArduinoConst.POST_PROCESSING_PLATFORM_TXT));
+    }
+
+    /**
+     * This method creates a file in the root of the workspace based on a file delivered with the plugin The file can be arduino IDE version specific.
+     * If no specific version is found the default is used.
+     * 
+     * @param inRegEx
+     *            a string used to search for the version specific file. The $ is replaced by the arduino version or default
+     * @param outFile
+     *            the name of the file that will be created in the root of the workspace
+     */
+    private void makeOurOwnCustomBoard_txt(String inRegEx, IPath outFile) {
+	String VersionSpecificFile = inRegEx.replaceFirst("-", mArduinoIdeVersion.getStringValue());
+	String DefaultFile = inRegEx.replaceFirst("-", "default");
+	/*
+	 * Finding the file in the plugin as described here :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
+	 */
+
+	byte[] buffer = new byte[4096]; // To hold file contents
+	int bytes_read; // How many bytes in buffer
+
+	try (FileOutputStream to = new FileOutputStream(outFile.toString());) {
+	    try {
+		URL specificUrl = new URL("platform:/plugin/it.baeyens.arduino.core/" + VersionSpecificFile);
+		URL defaultUrl = new URL("platform:/plugin/it.baeyens.arduino.core/" + DefaultFile);
+
+		try (InputStream inputStreamSpecific = specificUrl.openConnection().getInputStream();) {
+		    while ((bytes_read = inputStreamSpecific.read(buffer)) != -1) {
+			to.write(buffer, 0, bytes_read); // write
+		    }
+		} catch (IOException e) {
+		    try (InputStream inputStreamDefault = defaultUrl.openConnection().getInputStream();) {
+			while ((bytes_read = inputStreamDefault.read(buffer)) != -1) {
+			    to.write(buffer, 0, bytes_read); // write
+			}
+		    } catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return;
+		    }
+		    return;
+		}
+	    } catch (MalformedURLException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	    }
+	} catch (IOException e2) {
+	    // TODO Auto-generated catch block
+	    e2.printStackTrace();
+	} // Create output stream
+
     }
 
     /**

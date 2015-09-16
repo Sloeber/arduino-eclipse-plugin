@@ -54,33 +54,6 @@ public class ArduinoBoards {
 	return mArduinoSupportedBoards.get(SectionKey);
     }
 
-    // /**
-    // * Generic method to read a value from the boards file
-    // *
-    // * @param boardName
-    // * @param Key
-    // * @return
-    // */
-    // private String getBoardSetting(String boardName, String Key, String
-    // defaultValue) {
-    // if (!mLastLoadedBoard.equals(boardName)) {
-    // mLastLoadedBoard = boardName;
-    // String mapName = getBoardIDFromName(boardName);
-    // settings = mArduinoSupportedBoards.get(mapName);
-    // }
-    //
-    // if (settings != null) {
-    // String TagContent = settings.get(Key);
-    // if (TagContent != null)
-    // return TagContent;
-    // } else {
-    // IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-    // "Settings in ArduinoBoards is null. This should never happen.", null);
-    // Common.log(status);
-    // }
-    // return defaultValue;
-    // }
-
     /**
      * Get all the options in the boards.txt file
      * 
@@ -144,76 +117,6 @@ public class ArduinoBoards {
 	return ret.toArray(new String[ret.size()]);
     }
 
-    //
-    // /**
-    // * getMCUName returns the mcu name for a given board. <br/>
-    // * This function assumes (and does not test so will fail) that the board
-    // file has been loaded
-    // *
-    // * @param boardName
-    // * the board name for which the mcu name will be returned
-    // * @return the MCU name
-    // * @author Jan Baeyens
-    // */
-    // public String getMCUName(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.ProcessorTypeKeyTAG, "");
-    // }
-    //
-    // /**
-    // * getMCUFrequency returns the mcu frequency for a given board. <br/>
-    // * This function assumes (and does not test so will fail) that the board
-    // file has been loaded
-    // *
-    // * @param boardName
-    // * the board name for which the mcu frequency will be returned
-    // * @return the MCU frequency
-    // * @author Jan Baeyens
-    // */
-    // public String getMCUFrequency(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.FrequencyKeyTAG,
-    // "").replaceFirst("L", " ").trim();
-    // }
-    //
-    // /**
-    // * returns the variant of the arduino board<br/>
-    // * This function assumes (and does not test so will fail) that the board
-    // file has been loaded
-    // *
-    // * @param boardName
-    // * the board name for which the board variant will be returned
-    // * @return the Arduino board variant
-    // * @author Jan Baeyens
-    // */
-    // public String getBoardVariant(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.BoardVariantTAG, "");
-    // }
-    //
-    // /**
-    // * getDisableFlushing returns the disable flushing flag for a given board.
-    // <br/>
-    // * This function assumes (and does not test so will fail) that the board
-    // file has been loaded. This function is currently unused
-    // *
-    // * @param boardName
-    // * the board name for which the disable flushing flag will be returned
-    // * @return disable flushing flag
-    // * @author Jan Baeyens
-    // */
-    // public boolean getDisableFlushing(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.disableFlushingKeyTAG,
-    // "").equalsIgnoreCase("TRUE");
-    // }
-    //
-    // public String getUploadTool(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.UploadToolTAG,
-    // ArduinoConst.UploadToolDefault);
-    // }
-    //
-    // public String getBuildCoreFolder(String boardName) {
-    // return getBoardSetting(boardName, ArduinoConst.BoardBuildCoreFolder,
-    // ArduinoConst.BoardBuildCoreFolderdefault);
-    //
-    // }
     /**
      * GetArduinoBoards returns all the boards that are in the currently loaded board.txt file.
      * 
@@ -259,6 +162,10 @@ public class ArduinoBoards {
 	    return true; // do nothing when value didn't change
 	mLastLoadedBoardsFile = new File(boardsFile);
 	return LoadBoardsFile();
+    }
+
+    public boolean exists() {
+	return mLastLoadedBoardsFile.exists();
     }
 
     /**

@@ -1,7 +1,0 @@
-#for the zero to be able to compile
-arduino_zero_edbg.build.usb_product.windows=\"Arduino Zero\"
-arduino_zero_edbg.build.usb_manufacturer.windows=\"Arduino LLC\"
-arduino_zero_edbg.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
-arduino_zero_native.build.usb_product.windows=\"Arduino Zero\"
-arduino_zero_native.build.usb_manufacturer.windows=\"Arduino LLC\"
-arduino_zero_native.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"

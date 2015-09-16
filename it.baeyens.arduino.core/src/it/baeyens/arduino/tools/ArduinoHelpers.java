@@ -621,7 +621,8 @@ public class ArduinoHelpers extends Common {
 			} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
 			    value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 			}
-			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value));
+			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]), MakeEnvironmentString(value,
+				ArduinoConst.ENV_KEY_ARDUINO_START));
 			contribEnv.addVariable(envVar, confDesc);
 		    }
 		}
@@ -660,7 +661,7 @@ public class ArduinoHelpers extends Common {
 	    // if it is not a menu item add it
 	    if (!currentPair.getKey().startsWith("menu.")) {
 		String keyString = MakeKeyString(currentPair.getKey());
-		String valueString = MakeEnvironmentString(currentPair.getValue());
+		String valueString = MakeEnvironmentString(currentPair.getValue(), ArduinoConst.ENV_KEY_ARDUINO_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 	    } else {
 
@@ -672,7 +673,7 @@ public class ArduinoHelpers extends Common {
 		    String StartValue = "menu." + menuID + "." + menuItemID + ".";
 		    if (currentPair.getKey().startsWith(StartValue)) {
 			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
-			String valueString = MakeEnvironmentString(currentPair.getValue());
+			String valueString = MakeEnvironmentString(currentPair.getValue(), ArduinoConst.ENV_KEY_ARDUINO_START);
 			contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 		    }
 		}
@@ -714,8 +715,9 @@ public class ArduinoHelpers extends Common {
 		    for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getKey().startsWith(keyStartsWithValue)) {
 			    String key = curOption.getKey().substring(keyStartsWithValue.length());
-			    contribEnv
-				    .addVariable(new EnvironmentVariable(MakeKeyString(key), MakeEnvironmentString(curOption.getValue())), confDesc);
+			    contribEnv.addVariable(
+				    new EnvironmentVariable(MakeKeyString(key), MakeEnvironmentString(curOption.getValue(),
+					    ArduinoConst.ENV_KEY_ARDUINO_START)), confDesc);
 			}
 		    }
 
@@ -760,6 +762,7 @@ public class ArduinoHelpers extends Common {
 
     public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc, boolean debugCompilerSettings) {
 
+	// first get all the data we need
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
@@ -767,76 +770,36 @@ public class ArduinoHelpers extends Common {
 		ArduinoInstancePreferences.getLastUsedBoardsFile()));
 	IPath localPlatformFilename = new Path(Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ""));
 
-	/*
-	 * Trying to find the file in the plugin as described here :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
-	 */
-	// Bundle bundle = Platform.getBundle(ArduinoConst.CORE_PLUGIN_ID);
-	// URL fileURL = bundle.getEntry("config/arduino_eclipse_plugin.txt");
-	// File file = null;
-	// try {
-	// file = new File(FileLocator.resolve(fileURL).toURI());
-	// } catch (URISyntaxException e1) {
-	// e1.printStackTrace();
-	// } catch (IOException e1) {
-	// e1.printStackTrace();
-	// }
-	// if (file == null) {
-	// Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-	// "Your setup has gotten corrupt. Missing config/arduino_eclipse_plugin.txt file."));
-	// return;
-	// }
-	// IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
-
-	/*
-	 * try the second method as the first method fails
-	 */
-	// URL url;
-	// try {
-	// url = new URL("platform:/plugin/it.baeyens.arduino.core/config/arduino_eclipse_plugin.txt");
-	// } catch (MalformedURLException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// return;
-	// }
-	// File file = null;
-	// try {
-	// URL resolved_url = FileLocator.resolve(url);
-	// URI resolverdURI = resolved_url.toURI();
-	// file = new File(resolverdURI);
-	// } catch (URISyntaxException e1) {
-	// e1.printStackTrace();
-	// } catch (IOException e1) {
-	// e1.printStackTrace();
-	// } catch (Exception e1) {
-	// e1.printStackTrace();
-	// }
-	// if (file == null) {
-	// Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-	// "Your setup has gotten corrupt. Missing config/arduino_eclipse_plugin.txt file."));
-	// return;
-	// }
-	// IPath arduinoEclipsePluginFile = new Path(file.getAbsolutePath());
-
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID, "");
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, "");
 	String packageName = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, "");
 	File anduinoIDEEnvNamesFile = Common.getArduinoIdeDumpName(packageName, architecture, boardID);
 	IPath anduinoIDEEnvNamesPath = new Path(anduinoIDEEnvNamesFile.toString());
 	architecture = architecture.toUpperCase();
+	IPath workspacePath = new Path(Common.getWorkspaceRoot().getAbsolutePath());
+	ArduinoBoards pluginPreProcessingBoardsTxt = new ArduinoBoards(workspacePath.append(ArduinoConst.PRE_PROCESSING_BOARDS_TXT).toString());
+	ArduinoBoards pluginPostProcessingBoardsTxt = new ArduinoBoards(workspacePath.append(ArduinoConst.POST_PROCESSING_BOARDS_TXT).toString());
+	IPath pluginPreProcessingPlatformTxt = new Path(workspacePath.append(ArduinoConst.PRE_PROCESSING_PLATFORM_TXT).toString());
+	IPath pluginPostProcessingPlatformTxt = new Path(workspacePath.append(ArduinoConst.POST_PROCESSING_PLATFORM_TXT).toString());
+	ArduinoBoards boardsFile = new ArduinoBoards(boardFileName.toOSString());
+	if (!(pluginPreProcessingBoardsTxt.exists() && pluginPostProcessingBoardsTxt.exists())) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Plugin is not properly configured. Please reconfigure plugin."));
+	    return;
+	}
+
+	// Now we have all info we can start processing
 
 	// first remove all Arduino Variables so there is no memory effect
 	RemoveAllArduinoEnvironmentVariables(contribEnv, confDesc);
 
-	// process the default env variables first. This way the platform.txt
-	// and boards.txt will
-	// overwrite the default settings
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, localPlatformFilename);
 
+	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPreProcessingPlatformTxt);
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, boardID, true);
+
 	// Do some magic for the arduino:arduino stuff
-	ArduinoBoards boardsFile = new ArduinoBoards(boardFileName.toOSString());
 	setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsFile, boardID, architecture.toLowerCase());// TOFIX again some
 																// dirty thing
-
 	// process the dump file from the arduino IDE
 	if (anduinoIDEEnvNamesFile.exists()) {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, anduinoIDEEnvNamesPath);
@@ -856,19 +819,15 @@ public class ArduinoHelpers extends Common {
 	// now process the boards file
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
-	// also process the file as part of the plugin
-	// if (arduinoEclipsePluginFile.toFile().exists()) {
-	// ArduinoBoards myBoardsFile = new ArduinoBoards(arduinoEclipsePluginFile.toOSString());
-	// setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, myBoardsFile, boardID, false);
-	// }
+	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, boardID, true);
 
-	// Do some post processing
+	// Do some coded post processing
 	setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
 
 	// If this is a debug config we modify the environment variables for compilation
 	if (debugCompilerSettings) {
 	    setTheEnvironmentVariablesModifyDebugCompilerSettings(confDesc, envManager, contribEnv);
-
 	}
 
     }
@@ -1083,12 +1042,12 @@ public class ArduinoHelpers extends Common {
      *            the value string as read from the file
      * @return the string to be stored as value for the environment variable
      */
-    public static String MakeEnvironmentString(String inputString) {
+    public static String MakeEnvironmentString(String inputString, String keyPrefix) {
 	// String ret = inputString.replaceAll("-o \"\\{object_file}\"",
 	// "").replaceAll("\"\\{object_file}\"",
 	// "").replaceAll("\"\\{source_file}\"", "")
 	// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
-	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + ArduinoConst.ENV_KEY_ARDUINO_START);
+	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + keyPrefix);
 	StringBuilder sb = new StringBuilder(ret);
 	String regex = "\\{[^}]*\\}";
 	Pattern p = Pattern.compile(regex); // Create the pattern.
