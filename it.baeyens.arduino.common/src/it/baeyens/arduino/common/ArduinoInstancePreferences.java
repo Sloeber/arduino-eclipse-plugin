@@ -225,12 +225,17 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	return !getArduinoIDEVersion().startsWith("00");
     }
 
+    public static String GetArduinoDefineValue() {
+	return GetArduinoDefineValueInternal(getArduinoIDEVersion());
+    }
+
     /*
      * This method returns the define value for the define ARDUINO
      */
-    public static String GetArduinoDefineValue() {
+    public static String GetArduinoDefineValueInternal(String Version) {
 	String Ret;
-	Ret = getArduinoIDEVersion().trim();
+	Ret = Version.trim();
+	Ret = Ret.split("-")[0];
 	if (Ret.startsWith("1.5")) {
 	    if (Ret.contains(".")) {
 		Ret = Ret.replace(".", "");

@@ -9,7 +9,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.console,
  org.eclipse.cdt;bundle-version="8.5.0",
- org.eclipse.osgi
+ org.eclipse.osgi,
+ org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
