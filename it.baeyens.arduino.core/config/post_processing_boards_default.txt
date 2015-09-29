@@ -1,3 +1,22 @@
 #add the --relax to the compilation options for mega platforms
 mega.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
 megaADK.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
+
+#fix windows issues for zero
+arduino_zero_edbg.build.usb_product.windows=\"Arduino Zero\"
+arduino_zero_edbg.build.usb_manufacturer.windows=\"Arduino LLC\"
+arduino_zero_edbg.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+arduino_zero_native.build.usb_product.windows=\"Arduino Zero\"
+arduino_zero_native.build.usb_manufacturer.windows=\"Arduino LLC\"
+arduino_zero_native.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+arduino_zero_debug.build.usb_product.windows=\"Arduino Zero\"
+arduino_zero_debug.build.usb_manufacturer.windows=\"Arduino LLC\"
+arduino_zero_debug.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+
+#fix windows issues for due
+arduino_due_x_dbg.build.usb_product.windows=\"Arduino Due\"
+arduino_due_x_dbg.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+arduino_due_x_dbg.build.usb_manufacturer.windows=Unknown
+arduino_due_x.build.usb_product.windows=\"Arduino Due\"
+arduino_due_x.build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSBCON "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+arduino_due_x.build.usb_manufacturer.windows=Unknown

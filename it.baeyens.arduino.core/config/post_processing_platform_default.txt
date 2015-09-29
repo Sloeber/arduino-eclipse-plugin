@@ -1,1 +1,0 @@
-AA.post.processing.platform.default=true
