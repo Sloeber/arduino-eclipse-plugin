@@ -1154,7 +1154,10 @@ public class ArduinoHelpers extends Common {
 	searchFiles(boardsManagerPackagesFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 5);
 	searchFiles(privateHardwareFolder, boardFiles, ArduinoConst.BOARDS_FILE_NAME, 3);
 	if (boardFiles.size() == 0) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No boards.txt files found in the arduino hardware folders", null));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "No boards.txt files found in the arduino hardware folders. I looked in:\nPrivate Hardware folder = \"" + privateHardwareFolder
+			    + "\"\nHardwareFolder = \"" + HardwareFolder + "\"\nboardsManagerPackagesFolder = \"" + boardsManagerPackagesFolder
+			    + "\"", null));
 	    return null;
 	}
 	return boardFiles.toArray(new String[boardFiles.size()]);
