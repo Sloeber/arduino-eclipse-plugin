@@ -1,0 +1,2 @@
+#fix for due, zero, Esplora, Leonardo, Robot Control, Robot Motor, Yun, Micro and LillyPad USB
+build.usb_flags.windows=-DUSB_VID={build.vid} -DUSB_PID={build.pid} -DUSB_MANUFACTURER=\"{build.usb_manufacturer}\" -DUSB_PRODUCT=\"{build.usb_product}\"
