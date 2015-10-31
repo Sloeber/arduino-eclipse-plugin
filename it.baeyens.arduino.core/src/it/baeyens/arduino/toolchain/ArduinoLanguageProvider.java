@@ -188,11 +188,11 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$
 	}
 
-	String ret= compilerCommand.replaceAll("[^\\\\]\"\"", "").replaceAll("  ", " "); // remove
-									     // "" except \""
-									     // and
-									     // double
-									     // blanks
+	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", "").replaceAll("  ", " "); // remove
+	// "" except \""
+	// and
+	// double
+	// blanks
 	return ret;
     }
 

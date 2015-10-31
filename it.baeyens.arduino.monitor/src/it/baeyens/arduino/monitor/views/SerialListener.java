@@ -89,7 +89,7 @@ public class SerialListener implements MessageConsumer {
 		}
 	    }
 	}
-	if (!dontProcessLastPart) // we don't end on a scope data set; check wether the last char is start of a new scope data set
+	if (!dontProcessLastPart) // we don't end on a scope data set; check whether the last char is start of a new scope data set
 	{
 	    if (myReceivedScopeData.get(myReceivedScopeData.position()) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
 		for (int n = 0; n < myReceivedScopeData.position() - 1; n++)

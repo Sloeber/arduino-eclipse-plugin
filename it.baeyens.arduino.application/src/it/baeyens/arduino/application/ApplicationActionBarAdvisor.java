@@ -15,14 +15,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     protected void makeActions(IWorkbenchWindow window) {
 	super.makeActions(window);
 	System.out.println("Jaba Was here");
-	// Not sure wether something is needed here JABA
+	// Not sure whether something is needed here JABA
     }
 
     @Override
     protected void fillMenuBar(IMenuManager menuBar) {
 	super.fillMenuBar(menuBar);
 	System.out.println("Jaba Was here");
-	// Not sure wether something is needed here JABA
+	// Not sure whether something is needed here JABA
     }
 
 }

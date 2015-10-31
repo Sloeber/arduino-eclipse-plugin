@@ -83,7 +83,7 @@ public class PdePreprocessor {
 
 		IPath path = curResource.getFullPath();
 
-		// check wether the indexer is properly configured.
+		// check whether the indexer is properly configured.
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 		ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
 		if (tu == null) {
@@ -91,7 +91,7 @@ public class PdePreprocessor {
 		    body += "\n";
 		    body += "#error the file: " + curResource.getName() + " is not found in the indexer though it exists on the file system.\n";
 		    body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file.\n";
-		    body += "#error please check wether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
+		    body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types.\n";
 		} else {
 		    // add declarations made in ino files.
 		    IASTTranslationUnit asttu = tu.getAST(index, ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
