@@ -9,21 +9,16 @@
   <accordion-group heading="What is the benefit of the Arduino IDE to the Eclipse plugin?">
 	The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
 	doing their first electronics experience. So if you are new to Arduino stop reading and learn to use the Arduino IDE.</br>
-
-	The Arduino IDE does this by &quot;hiding&quot; C++ code complexity and Hardware complexity.</br>
-
+	</br>
+	The Arduino IDE does this by &quot;hiding&quot; C++ code complexity, Hardware complexity and build environment complexity .</br>
+	</br>
+	Since the plugin supports .ino files the C++ code complexity is similar in both tools.
+	</br>
 	The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by the Eclipse plugin.
 	So there is no &quot;real&quot; difference there.</br>
-
-	The plugin does not hide the C++ code complexity.
-	For someone used to develop C/C++ this will not be a problem. People not used
-	to writing C++ will need to learn about:</br>
-
-	<ul type=disc>
-	 <li >Function declarations</li>
-	 <li >Using Include files</li>
-	 <li >The usage of extern</li>
-	</ul>
+	</br>
+	Arduino IDE build the build path for you. Tha Arduino eclipse plugin does not do so. This means that you will have to add libraries manually to your project in a very similar way as you can "add" libraries in the arduino ide. (A simple #include "library.h" will not do)</br>
+	This is typically something a real developer wants to take ownership off.</br>
 
 	This because the way the Arduino IDE is set up it hides or avoids the need of these
 	functionalities. There are plenty of good C/C++ documents on the web that
