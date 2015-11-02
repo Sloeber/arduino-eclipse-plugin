@@ -651,7 +651,7 @@ public class ArduinoHelpers extends Common {
 	Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
 	if (boardSectionMap == null) {
 	    if (warn) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "The project "
+		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "The project "
 			+ confDesc.getProjectDescription().getProject().getName() + " Has an invalid arduino board configuration."));
 
 	    }
