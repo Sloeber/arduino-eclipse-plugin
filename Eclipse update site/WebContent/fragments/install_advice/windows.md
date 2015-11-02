@@ -10,8 +10,12 @@ Windows users keep in mind that spaces cause problems. So do not install the ard
 **make no longer part of arduino ide**
 from Arduino IDE 1.5.7 onwards  
 The first problem is consistent and is that the make file is no longer part of the Arduino IDE delivery. To fix this you can install make or copy make from an older version.  
-To install make you can install make from cygwin (only install make and the core components) and add the C:/cygwinXXX/bin folder to your path.  
-You can also install mingw. (If you do please do a write-up and let me know where it is so I can link to it.)
+
+Please use one of the 2 options below:
+ftp://ftp.equation.com/make/32/make.exe
+http://mingw.org/
+[Full explanation can be found here.](https://www.youtube.com/watch?v=cspLbTqBi7k&feature=youtu.be)
+
 
 **Path issues**
 From arduino IDE 1.5.7 until and including 1.6.0
