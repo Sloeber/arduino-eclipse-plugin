@@ -5,17 +5,22 @@ import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.ide.connector.ArduinoGetPreferences;
 import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ExternalCommandLauncher;
 import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
+import java.awt.Color;
 import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -23,6 +28,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -35,7 +41,15 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -59,6 +73,12 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private ComboFieldEditor mArduinoBuildBeforeUploadOption;
     private boolean mIsDirty = false;
     private IPath mPrefBoardFile = null;
+    private org.eclipse.swt.graphics.Color redColor = null;
+    private org.eclipse.swt.graphics.Color greenColor = null;
+    private Label myArduinoVersionOKText;
+    private Label myMakeOKText;
+    private String myAdvisedArduinIDEVersion = "1.6.5";
+    private boolean myIsMakeInstalled;
 
     /**
      * PropertyChange set the flag mIsDirty to false. <br/>
@@ -145,58 +165,13 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	if (!testStatus()) {
 	    return false;
 	}
-	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
-	    showError("This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.");
-	    return false;
-	}
-	String infoMessage = null;
-	boolean addMake = true;
-	switch (mArduinoIdeVersion.getStringValue()) {
-	case "1.5.0":
-	case "1.5.1":
-	case "1.5.2":
-	case "1.5.3":
-	case "1.5.4":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
-	    addMake = false;
-	    break;
-	case "1.5.5":
-	case "1.5.6":
-	case "1.5.6-r2":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works but you need to adapt some libraries. Not Advised";
-	    addMake = false;
-	    break;
-	case "1.5.7":
-	case "1.5.8":
-	case "1.6.0":
-	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " Has serious issues on windows. THIS IS NOT SUPPORTED!!!!";
-	    } else {
-		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works.";
-	    }
-	    break;
-	case "1.6.1":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works great.";
-	    break;
-	case "1.6.2":
-	case "1.6.3":
-	case "1.6.4":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
-	    break;
-	case "1.6.5":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " works great.";
-	    break;
-	default:
-	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
-	    infoMessage += "\nIf it is a newer version please feed back usage results to Jantje.";
-	}
-	if (addMake) {
-	    infoMessage += "\nRemember to add your own make as it is no longer delivered with arduino.";
+	String infoMessage = "";
+	isIDESupported(infoMessage);
 
-	}
-	infoMessage += "\nAdvised version is 1.6.5";
-	if (!showError(infoMessage)) {
-	    return false;
+	if (infoMessage.length() > 1) {
+	    if (!showError(infoMessage)) {
+		return false;
+	    }
 	}
 
 	super.performOk();
@@ -222,7 +197,8 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      * 
      */
     private void makeOurOwnCustomBoards_txt() {
-	// TODO think about the A. and JANTJE. Maybe we do not want to add them automatically
+	// TODO think about the A. and JANTJE. Maybe we do not want to add them
+	// automatically
 	// Actually I can not cleanup JANTJE properly so I can't do this
 	IPath workspacePath = new Path(Common.getWorkspaceRoot().getAbsolutePath());
 	makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt", workspacePath.append(ArduinoConst.PRE_PROCESSING_BOARDS_TXT));
@@ -313,6 +289,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
     @Override
     public void init(IWorkbench workbench) {
+	myIsMakeInstalled = test_make_exe();
 	// nothing to do
     }
 
@@ -357,7 +334,143 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	mArduinoBuildBeforeUploadOption = new ComboFieldEditor(ArduinoConst.KEY_BUILD_BEFORE_UPLOAD_OPTION, "Build before upload?",
 		buildBeforeUploadOptions, parent);
 	addField(mArduinoBuildBeforeUploadOption);
+	createLine(parent, 4);
 
+	myArduinoVersionOKText = new Label(parent, SWT.LEFT | SWT.BOLD);
+	myArduinoVersionOKText.setText("Advised Arduino IDE version : " + myAdvisedArduinIDEVersion);
+	myArduinoVersionOKText.setEnabled(true);
+	myArduinoVersionOKText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 4, 1));
+
+	myMakeOKText = new Label(parent, SWT.LEFT);
+	myMakeOKText.setText("Looking for make");
+	myMakeOKText.setEnabled(true);
+	myMakeOKText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 4, 1));
+
+	// myHelpMakeButton=new;
+	Button myHelpMakeButton = new Button(parent, SWT.BUTTON1);
+	myHelpMakeButton.setText("What is this make thing?");
+	myHelpMakeButton.addSelectionListener(new SelectionListener() {
+
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		switch (Platform.getOS()) {
+		case Platform.OS_MACOSX:
+		    Program.launch("http://eclipse.baeyens.it/make_mac.shtml");
+		    break;
+		case Platform.OS_WIN32:
+		    Program.launch("https://www.youtube.com/watch?v=cspLbTqBi7k&feature=youtu.be");
+		    break;
+		default:
+		    Program.launch("http://lmgtfy.com/?q=install+make+on+linux");
+		    break;
+		}
+	    }
+
+	    @Override
+	    public void widgetDefaultSelected(SelectionEvent e) {
+		// Needs to be implemented but I don't use it
+	    }
+	});
+
+	Button myTestMakeButton = new Button(parent, SWT.BUTTON1);
+	myTestMakeButton.setText("test if make can be found");
+	myTestMakeButton.addSelectionListener(new SelectionListener() {
+
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		myIsMakeInstalled = test_make_exe();
+		MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+
+		if (myIsMakeInstalled) {
+		    messageBox.setText("Success");
+		    messageBox.setMessage("Make was found.");
+		} else {
+		    messageBox.setText("Warning");
+		    messageBox.setMessage("Make is still missing.");
+		}
+		messageBox.open();
+		testStatus();
+	    }
+
+	    @Override
+	    public void widgetDefaultSelected(SelectionEvent e) {
+		// Needs to be implemented but I don't use it
+	    }
+	});
+
+	redColor = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
+	greenColor = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
+    }
+
+    private boolean isIDESupported() {
+	String ignoreString = "";
+	return isIDESupported(ignoreString);
+    }
+
+    /**
+     * validates the version number of the arduino IDE and if the version number requires some extra info the info message contains that info
+     * 
+     * @param infoMessage
+     *            extra information about the compatibility
+     * @return
+     */
+    private boolean isIDESupported(String infoMessage) {
+	final String makeMissing = "\n!!!You need to install make!!!";
+	infoMessage = "";
+	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
+	    infoMessage = "This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.";
+	    return false;
+	}
+	switch (mArduinoIdeVersion.getStringValue()) {
+	case "1.5.0":
+	case "1.5.1":
+	case "1.5.2":
+	case "1.5.3":
+	case "1.5.4":
+	case "1.5.5":
+	case "1.5.6":
+	case "1.5.6-r2":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
+	    return false;
+	case "1.5.7":
+	case "1.5.8":
+	case "1.6.0":
+	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " Has serious issues on windows. THIS IS NOT SUPPORTED!!!!";
+		if (!myIsMakeInstalled) {
+		    infoMessage += makeMissing;
+		}
+		return false;
+	    } else {
+		return true;
+	    }
+	case "1.6.1":
+	    return true;
+	case "1.6.2":
+	case "1.6.3":
+	case "1.6.4":
+	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
+	    if (!myIsMakeInstalled) {
+		infoMessage += makeMissing;
+		return false;
+	    }
+	    return true;
+	case "1.6.5":
+	case "1.6.5-r1":
+	case "1.6.5-r2":
+	case "1.6.5-r3":
+	case "1.6.5-r4":
+	case "1.6.5-r5":
+
+	    return true;
+	default:
+	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
+	    infoMessage += "\nIf it is a newer released version please feed back usage results to Jantje.";
+	    if (!myIsMakeInstalled) {
+		infoMessage += makeMissing;
+	    }
+	    return false;
+	}
     }
 
     /**
@@ -383,10 +496,24 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		mPrefBoardFile = BoardFile;
 		mArduinoIdeVersion.setStringValue(ArduinoHelpers.GetIDEVersion(BoardFile));
 	    }
+	    if (isIDESupported()) {
+		myArduinoVersionOKText.setForeground(greenColor);
+		myArduinoVersionOKText.setText("ide is supported. Advised Arduino IDE version : " + myAdvisedArduinIDEVersion);
+
+	    } else {
+		myArduinoVersionOKText.setForeground(redColor);
+		myArduinoVersionOKText.setText("ide not supported. Advised Arduino IDE version : " + myAdvisedArduinIDEVersion);
+
+	    }
+
 	} else {
 	    ErrorMessage += Seperator + "Arduino folder is not correct!";
 	    Seperator = "/n";
+	    myArduinoVersionOKText.setText("Arduino folder is not correct! Advised Arduino IDE version : " + myAdvisedArduinIDEVersion);
+	    myArduinoVersionOKText.setForeground(redColor);
 	}
+	myMakeOKText.setForeground(myIsMakeInstalled ? greenColor : redColor);
+	myMakeOKText.setText(myIsMakeInstalled ? "Make is found on your system." : "Make is not found on your system");
 
 	// Validate the private lib path
 	Path PrivateLibFolder = new Path(mArduinoPrivateLibPath.getStringValue());
@@ -411,6 +538,29 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void performApply() {
 	mIsDirty = true;
 	super.performApply();
+    }
+
+    private static void createLine(Composite parent, int ncol) {
+	Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
+	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+	gridData.horizontalSpan = ncol;
+	line.setLayoutData(gridData);
+    }
+
+    private boolean test_make_exe() {
+	String command = "make -v";
+	ExternalCommandLauncher commandLauncher = new ExternalCommandLauncher(command);
+	try {
+
+	    if (commandLauncher.launch(null) != 0) {
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Make not found.\n" + command, null));
+		return false;
+	    }
+	} catch (IOException e) {
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to run make\n" + command, e));
+	    return false;
+	}
+	return true;
     }
 
 }
