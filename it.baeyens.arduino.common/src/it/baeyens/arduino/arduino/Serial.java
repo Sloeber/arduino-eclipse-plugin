@@ -178,7 +178,7 @@ public class Serial implements SerialPortEventListener {
 				    + " already in use. Try quiting any programs that may be using it", e));
 			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
 			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + PortName
-				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", null));
+				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", e));
 			} else {
 			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
 			}
