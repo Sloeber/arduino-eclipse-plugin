@@ -61,7 +61,8 @@
           <section ng-show="tab.c" marked ng-include="'fragments/install_advice/V2.md'"></section>
           <section ng-show="tab.d" marked ng-include="'fragments/install_advice/all_os.md'"></section>
           <section ng-show="tab.e" marked ng-include="'fragments/install_advice/linux.md'"></section>
-          <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac.md'  ng-include="'fragments/install_advice/mac_make.md'""></section>
+          <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac.md'"></section>
+          <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac_make.md'"></section>
           <section ng-show="tab.g" marked ng-include="'fragments/install_advice/windows.md'"></section>
           <section ng-show="tab.h" marked ng-include="'fragments/install_advice/library_madness.md'"></section>
         </div>
