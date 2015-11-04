@@ -29,7 +29,11 @@
 
 
       <p>This page tells you about make on Mac.</p>
-<?php include 'fragments/install_advice/mac_make.md';?>
+    <?php  include('fragments/Parsedown.php');
+$contents = file_get_contents('fragments/install_advice/mac_make.md');
+$Parsedown = new Parsedown();
+echo $Parsedown->text($contents);?>
+
 
   </body>
 </html>

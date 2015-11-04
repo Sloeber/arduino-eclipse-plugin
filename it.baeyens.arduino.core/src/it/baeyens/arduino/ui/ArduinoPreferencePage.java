@@ -8,19 +8,12 @@ import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ExternalCommandLauncher;
 import it.baeyens.arduino.tools.MyDirectoryFieldEditor;
 
-import java.awt.Color;
-import java.awt.Desktop;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IPathVariableManager;
@@ -28,7 +21,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -44,11 +36,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbench;
@@ -78,7 +68,8 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private Label myArduinoVersionOKText;
     private Label myMakeOKText;
     private String myAdvisedArduinIDEVersion = "1.6.5";
-    private boolean myIsMakeInstalled;
+    boolean myIsMakeInstalled;
+    private String myInfoMessage = "";
 
     /**
      * PropertyChange set the flag mIsDirty to false. <br/>
@@ -109,38 +100,14 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	return testStatus();
     }
 
-    private boolean showError(String dialogMessage) {
-	String FullDialogMessage = dialogMessage + "\nPlease see <http://eclipse.baeyens.it/installAdvice.shtml> for more info.\n";
-	FullDialogMessage = FullDialogMessage
-		+ "\n\nYes:    continue and ignore the warning\nNo:     do not continue and open install advice in browser\ncancel: do not continue";
-	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.CANCEL | SWT.NO);
-	dialog.setText("Considerations about Arduino IDE compatibility");
+    private boolean showError() {
+	String FullDialogMessage = myInfoMessage + "\nAre you sure about this setup";
+	FullDialogMessage = FullDialogMessage + "\n\nYes:    continue and ignore the warning\nNo: do not continue";
+	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+	dialog.setText("Warnings about your setup");
 	dialog.setMessage(FullDialogMessage);
 	int ret = dialog.open();
-	if (ret == SWT.CANCEL)
-	    return false;
 	if (ret == SWT.NO) {
-	    boolean openedDialog = false;
-	    try {
-		URI uri = new URI("http://eclipse.baeyens.it/installAdvice.shtml");
-
-		Desktop desktop = null;
-		if (Desktop.isDesktopSupported()) {
-		    desktop = Desktop.getDesktop();
-		    desktop.browse(uri);
-		    openedDialog = true;
-		}
-	    } catch (URISyntaxException e) {
-		e.printStackTrace();
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
-	    if (!openedDialog) {
-		dialog = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		dialog.setText("A error occured!");
-		dialog.setMessage("Failed to open browser!");
-		dialog.open();
-	    }
 	    return false;
 	}
 	return true;
@@ -165,11 +132,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	if (!testStatus()) {
 	    return false;
 	}
-	String infoMessage = "";
-	isIDESupported(infoMessage);
 
-	if (infoMessage.length() > 1) {
-	    if (!showError(infoMessage)) {
+	isIDESupported();
+
+	if (myInfoMessage.length() > 1) {
+	    if (!showError()) {
 		return false;
 	    }
 	}
@@ -289,7 +256,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
     @Override
     public void init(IWorkbench workbench) {
-	myIsMakeInstalled = test_make_exe();
+	test_make_exe();
 	// nothing to do
     }
 
@@ -355,7 +322,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    public void widgetSelected(SelectionEvent e) {
 		switch (Platform.getOS()) {
 		case Platform.OS_MACOSX:
-		    Program.launch("http://eclipse.baeyens.it/make_mac.shtml");
+		    Program.launch("http://eclipse.baeyens.it/make_mac.php");
 		    break;
 		case Platform.OS_WIN32:
 		    Program.launch("https://www.youtube.com/watch?v=cspLbTqBi7k&feature=youtu.be");
@@ -378,7 +345,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		myIsMakeInstalled = test_make_exe();
+		test_make_exe();
 		MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 
 		if (myIsMakeInstalled) {
@@ -402,11 +369,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	greenColor = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
     }
 
-    private boolean isIDESupported() {
-	String ignoreString = "";
-	return isIDESupported(ignoreString);
-    }
-
     /**
      * validates the version number of the arduino IDE and if the version number requires some extra info the info message contains that info
      * 
@@ -414,11 +376,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      *            extra information about the compatibility
      * @return
      */
-    private boolean isIDESupported(String infoMessage) {
+    private boolean isIDESupported() {
 	final String makeMissing = "\n!!!You need to install make!!!";
-	infoMessage = "";
+	myInfoMessage = "";
 	if (mArduinoIdeVersion.getStringValue().compareTo("1.5.0") < 0) {
-	    infoMessage = "This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.";
+	    myInfoMessage = "This plugin is for Arduino IDE 1.5.x. \nPlease use V1 of the plugin for earlier versions.";
 	    return false;
 	}
 	switch (mArduinoIdeVersion.getStringValue()) {
@@ -430,15 +392,15 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	case "1.5.5":
 	case "1.5.6":
 	case "1.5.6-r2":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
+	    myInfoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " is not supported.";
 	    return false;
 	case "1.5.7":
 	case "1.5.8":
 	case "1.6.0":
 	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " Has serious issues on windows. THIS IS NOT SUPPORTED!!!!";
+		myInfoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " Has serious issues on windows. THIS IS NOT SUPPORTED!!!!";
 		if (!myIsMakeInstalled) {
-		    infoMessage += makeMissing;
+		    myInfoMessage += makeMissing;
 		}
 		return false;
 	    } else {
@@ -449,9 +411,9 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	case "1.6.2":
 	case "1.6.3":
 	case "1.6.4":
-	    infoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
+	    myInfoMessage = "Arduino IDE " + mArduinoIdeVersion.getStringValue() + " only works with Teensy.";
 	    if (!myIsMakeInstalled) {
-		infoMessage += makeMissing;
+		myInfoMessage += makeMissing;
 		return false;
 	    }
 	    return true;
@@ -464,10 +426,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
 	    return true;
 	default:
-	    infoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
-	    infoMessage += "\nIf it is a newer released version please feed back usage results to Jantje.";
+	    myInfoMessage = "You are using a version of the Arduino IDE that is unknow or newer than available at the release of this plugin.";
+	    myInfoMessage += "\nIf it is a newer released version please feed back usage results to Jantje.";
 	    if (!myIsMakeInstalled) {
-		infoMessage += makeMissing;
+		myInfoMessage += makeMissing;
 	    }
 	    return false;
 	}
@@ -482,7 +444,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      * @author Jan Baeyens
      * 
      */
-    private boolean testStatus() {
+    boolean testStatus() {
 	String ErrorMessage = "";
 	String Seperator = "";
 
@@ -547,20 +509,21 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	line.setLayoutData(gridData);
     }
 
-    private boolean test_make_exe() {
+    void test_make_exe() {
 	String command = "make -v";
+	myIsMakeInstalled = false;
 	ExternalCommandLauncher commandLauncher = new ExternalCommandLauncher(command);
 	try {
 
 	    if (commandLauncher.launch(null) != 0) {
 		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Make not found.\n" + command, null));
-		return false;
+		return;
 	    }
 	} catch (IOException e) {
 	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to run make\n" + command, e));
-	    return false;
+	    return;
 	}
-	return true;
+	myIsMakeInstalled = true;
     }
 
 }
