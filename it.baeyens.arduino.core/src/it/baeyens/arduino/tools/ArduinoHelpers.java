@@ -652,8 +652,8 @@ public class ArduinoHelpers extends Common {
 	if (boardSectionMap == null) {
 	    if (warn) {
 		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "The project "
-			+ confDesc.getProjectDescription().getProject().getName() + " Has an invalid arduino board configuration."));
-
+			+ confDesc.getProjectDescription().getProject().getName() + " has an invalid arduino board configuration.\nConfiguration:"
+			+ confDesc.getName() + "\nBoardsfile:" + boardsFile.getBoardsTxtName() + "\nBoardID:" + boardID));
 	    }
 	    return;
 	}
@@ -795,7 +795,7 @@ public class ArduinoHelpers extends Common {
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, localPlatformFilename);
 
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPreProcessingPlatformTxt);
-	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, boardID, true);
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, boardID, false);
 
 	// Do some magic for the arduino:arduino stuff
 	setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsFile, boardID, architecture.toLowerCase());// TOFIX again some
@@ -820,7 +820,7 @@ public class ArduinoHelpers extends Common {
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
-	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, boardID, true);
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, boardID, false);
 
 	// Do some coded post processing
 	setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
