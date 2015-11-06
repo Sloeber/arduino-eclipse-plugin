@@ -182,6 +182,7 @@ public class Serial implements SerialPortEventListener {
 			} else {
 			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + PortName, e));
 			}
+			return;
 		    } else {
 			try {
 			    Thread.sleep(200);
