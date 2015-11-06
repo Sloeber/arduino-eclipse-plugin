@@ -366,7 +366,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	});
 
 	redColor = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
-	greenColor = parent.getDisplay().getSystemColor(SWT.COLOR_GREEN);
+	greenColor = parent.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
     /**
