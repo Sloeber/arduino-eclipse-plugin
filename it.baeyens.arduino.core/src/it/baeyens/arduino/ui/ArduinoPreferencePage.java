@@ -67,7 +67,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private org.eclipse.swt.graphics.Color greenColor = null;
     private Label myArduinoVersionOKText;
     private Label myMakeOKText;
-    private String myAdvisedArduinIDEVersion = "1.6.5";
+    private String myAdvisedArduinIDEVersion = "1.6.5 -newer versions will not work-";
     boolean myIsMakeInstalled;
     private String myInfoMessage = "";
 
