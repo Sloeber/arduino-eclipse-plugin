@@ -306,7 +306,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static IPath getArduinoPath() {
-	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, ""));
+	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, "."));
     }
 
     public static IPath getArduinoIdeHardwarePath() {
