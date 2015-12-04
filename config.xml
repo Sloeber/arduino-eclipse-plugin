@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<maven2-moduleset plugin="maven-plugin@2.1">
+<maven2-moduleset plugin="maven-plugin@2.5">
   <actions/>
   <description></description>
   <logRotator class="hudson.tasks.LogRotator">
@@ -31,7 +31,7 @@
     <extensions/>
   </scm>
   <canRoam>true</canRoam>
-  <disabled>false</disabled>
+  <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
@@ -49,6 +49,8 @@
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
   <archivingDisabled>true</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
   <resolveDependencies>false</resolveDependencies>
   <processPlugins>true</processPlugins>
   <mavenValidationLevel>-1</mavenValidationLevel>
@@ -67,16 +69,15 @@ changelog=${WORKSPACE}/../builds/${BUILD_ID}/changelog.xml
 content=`head -1 &quot;${changelog}&quot;`
 echo ${content}
 if [ &quot;${content}&quot; == &quot;&lt;log/&gt;&quot; ]; then
-  echo No change
-  exit 1
+echo No change
+exit 1
 fi
 if [ &quot;${content}&quot; == &quot;&quot; ]; then
-  echo No change
-  exit 2
+echo No change
+exit 2
 fi
 echo change
-exit 0
-</command>
+exit 0</command>
           </condition>
           <publisher class="jenkins.plugins.publish_over_ftp.BapFtpPublisherPlugin" plugin="publish-over-ftp@1.10">
             <consolePrefix>FTP: </consolePrefix>
@@ -88,7 +89,7 @@ exit 0
                   <transfers>
                     <jenkins.plugins.publish__over__ftp.BapFtpTransfer>
                       <remoteDirectory></remoteDirectory>
-                      <sourceFiles>Eclipse*/WebContent/*</sourceFiles>
+                      <sourceFiles>Eclipse*/WebContent/**</sourceFiles>
                       <excludes></excludes>
                       <removePrefix>Eclipse update site/WebContent</removePrefix>
                       <remoteDirectorySDF>false</remoteDirectorySDF>
@@ -119,7 +120,7 @@ exit 0
                       <removePrefix>it.baeyens.arduino.updatesite/target/repository</removePrefix>
                       <remoteDirectorySDF>false</remoteDirectorySDF>
                       <flatten>false</flatten>
-                      <cleanRemote>false</cleanRemote>
+                      <cleanRemote>true</cleanRemote>
                       <noDefaultExcludes>false</noDefaultExcludes>
                       <makeEmptyDirs>false</makeEmptyDirs>
                       <patternSeparator>[, ]+</patternSeparator>
@@ -140,15 +141,6 @@ exit 0
         </org.jenkins__ci.plugins.flexible__publish.ConditionalPublisher>
       </publishers>
     </org.jenkins__ci.plugins.flexible__publish.FlexiblePublisher>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>rlogiacco web publish</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-        <completeBuild>true</completeBuild>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
   </publishers>
   <buildWrappers/>
   <prebuilders>
