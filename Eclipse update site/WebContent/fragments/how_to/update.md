@@ -3,7 +3,8 @@ How to update your plugin
 
 This update procedure works for all versions of the product.  
 
-When you are in Eclipse select `Help` -> `Check for updates`: the procedure will check for any available update for your Eclipse installation, including eclipse, egit, CDT, the Arduino Eclipse plugin and many more.
+When you are in Eclipse select `Help` -> `Check for updates`: the procedure will check for any available update for your Eclipse installation, including eclipse, egit, CDT, the Arduino Eclipse plugin and many more. 
+After that is done do the after update actions as described below. 
 
 Please **do not** download the new product version but use the update process via the update sites.
 
@@ -13,7 +14,7 @@ Product users note that with recent versions you will update to the nightly buil
 
 After this do the **after update actions**
 
- How to the arduino version  
+ How to update the arduino ide version  
 ========================= 
 Install the arduino IDE as you would do usually.  
 After this do the **after update actions**

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/it.baeyens.arduino.feature_2.4.0.qualifier.jar" id="it.baeyens.arduino.feature" version="2.4.0.qualifier"/>
+</site>
