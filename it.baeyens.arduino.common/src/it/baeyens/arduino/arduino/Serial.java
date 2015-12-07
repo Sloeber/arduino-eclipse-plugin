@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -68,7 +69,14 @@ public class Serial implements SerialPortEventListener {
      */
     public static Vector<String> list() {
 	try {
-	    String[] portNames = SerialPortList.getPortNames();
+	    String[] portNames;
+		String OS = System.getProperty("os.name").toLowerCase();
+		if (OS.indexOf("mac") >= 0) {
+			portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("tty.*"));
+		}
+		else {
+			portNames = SerialPortList.getPortNames();
+		}
 	    return new Vector<String>(Arrays.asList(portNames));
 	} catch (Error e) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
