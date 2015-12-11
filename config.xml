@@ -47,7 +47,7 @@
     <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
     <artifactId>root</artifactId>
   </rootModule>
-  <goals>clean verify -Pall,luna</goals>
+  <goals>clean verify -Pall,mars</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
