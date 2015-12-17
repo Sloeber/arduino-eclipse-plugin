@@ -1,10 +1,6 @@
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-
 import java.io.File;
-import java.net.URI;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,7 +8,6 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
@@ -21,6 +16,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 
 public class ArduinoLibraries {
     /**
@@ -34,7 +32,7 @@ public class ArduinoLibraries {
 	File LibRoot = ipath.toFile();
 	File LibFolder;
 	String[] children = LibRoot.list();
-	Set<String> ret = new TreeSet<String>();
+	Set<String> ret = new TreeSet<>();
 	if (children == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
@@ -59,43 +57,49 @@ public class ArduinoLibraries {
     public static Set<String> findAllHarwareLibraries(IProject project) {
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
-	URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
-	return findAllSubFolders(URIUtil.toPath(HardwareLibrarURI));
+	// TODO FIX URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
+	// return findAllSubFolders(URIUtil.toPath(HardwareLibrarURI));
+	return null;
 
     }
 
     public static Set<String> findAllUserLibraries(IProject project) {
 	IPathVariableManager pathMan = project.getPathVariableManager();
-	URI PrivateLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB));
-	return findAllSubFolders(URIUtil.toPath(PrivateLibraryURI));
+	// TODO FIX URI PrivateLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB));
+	// return findAllSubFolders(URIUtil.toPath(PrivateLibraryURI));
+	return null;
 
     }
 
     public static Set<String> findAllArduinoLibraries(IProject project) {
 	IPathVariableManager pathMan = project.getPathVariableManager();
 
-	URI ArduinoLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB));
-	return findAllSubFolders(URIUtil.toPath(ArduinoLibraryURI));
+	// TODO FIX URI ArduinoLibraryURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB));
+	// return findAllSubFolders(URIUtil.toPath(ArduinoLibraryURI));
+	return null;
 
     }
-    
+
     /**
      * Removes a set of libraries from a project
      * 
-     * @param project	the project from which to remove libraries
-     * @param confdesc	the configuration from which to remove libraries
-     * @param libraries set of libraries to remove
+     * @param project
+     *            the project from which to remove libraries
+     * @param confdesc
+     *            the configuration from which to remove libraries
+     * @param libraries
+     *            set of libraries to remove
      */
     public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
-    	for (String CurItem : libraries) {
-    	    try {
-    			final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
-    			folderHandle.delete(true, null);
-    		    } catch (CoreException e) {
-    			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to remove library ", e));
-    		    }
-    		}
-    	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
+	for (String CurItem : libraries) {
+	    try {
+		final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
+		folderHandle.delete(true, null);
+	    } catch (CoreException e) {
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to remove library ", e));
+	    }
+	}
+	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
     }
 
     public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
@@ -108,25 +112,25 @@ public class ArduinoLibraries {
 	// ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
 
 	for (String CurItem : libraries) {
-	    try {
-		if (hardwareLibraries.contains(CurItem))
-		    ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, CurItem,
-			    ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
-		else if (userLibraries.contains(CurItem)) {
-		    ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, CurItem,
-			    ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
-		} else if (arduinoLibraries.contains(CurItem)) {
-		    ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB, CurItem,
-			    ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
-		} else {
-		    // TODO add check whether this is actually a library
-		    // in case of code added via samples the plugin thinks a library needs to be added. However this is not a library but just a
-		    // folder
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The library " + CurItem + " is not valid for this board."));
-		}
-	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+	    // try {
+	    if (hardwareLibraries.contains(CurItem)) {
+		// TODO FIX ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB, CurItem,
+		// ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
+		// else if (userLibraries.contains(CurItem)) {
+		// ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, CurItem,
+		// ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
+		// } else if (arduinoLibraries.contains(CurItem)) {
+		// ArduinoHelpers.addCodeFolder(project, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB, CurItem,
+		// ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem, confdesc);
+	    } else {
+		// TODO add check whether this is actually a library
+		// in case of code added via samples the plugin thinks a library needs to be added. However this is not a library but just a
+		// folder
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The library " + CurItem + " is not valid for this board."));
 	    }
+	    // } catch (CoreException e) {
+	    // Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+	    // }
 	}
 	// try {
 	// mngr.setProjectDescription(project, confdesc, true, null);
@@ -141,7 +145,7 @@ public class ArduinoLibraries {
 
     public static Set<String> getAllLibrariesFromProject(IProject project) {
 	IFolder link = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER);
-	Set<String> ret = new TreeSet<String>();
+	Set<String> ret = new TreeSet<>();
 	try {
 	    if (link.exists()) {
 		for (IResource curResource : link.members()) {
@@ -194,8 +198,10 @@ public class ArduinoLibraries {
     /**
      * Removes a set of libraries from a project in each project configuration
      * 
-     * @param project	the project from which to remove libraries
-     * @param libraries set of libraries to remove
+     * @param project
+     *            the project from which to remove libraries
+     * @param libraries
+     *            set of libraries to remove
      */
     public static void removeLibrariesFromProject(IProject project, Set<String> selectedLibraries) {
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();

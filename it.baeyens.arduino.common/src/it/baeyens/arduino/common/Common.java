@@ -1,7 +1,5 @@
 package it.baeyens.arduino.common;
 
-import it.baeyens.arduino.arduino.Serial;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +38,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.statushandlers.StatusManager;
+
+import it.baeyens.arduino.arduino.Serial;
 
 public class Common extends ArduinoInstancePreferences {
 
@@ -546,38 +546,6 @@ public class Common extends ArduinoInstancePreferences {
 	return defaultvalue;
     }
 
-    static private String[] getArduinoIdeSuffix() {
-	if (Platform.getOS().equals(Platform.OS_WIN32))
-	    return ArduinoIdeSuffix_WIN;
-	if (Platform.getOS().equals(Platform.OS_LINUX))
-	    return ArduinoIdeSuffix_LINUX;
-	if (Platform.getOS().equals(Platform.OS_MACOSX))
-	    return ArduinoIdeSuffix_MAC;
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
-	return ArduinoIdeSuffix_WIN;
-    }
-
-    /**
-     * Method only needed for MAC for now as there seems to be a wierd subfolder Implemented for all supported os's for compatibility reasons
-     * 
-     * As in mac the folder changed I do I have a list of possible options per OS and I select the first folder that exist.
-     * 
-     * @param SelectedFolder
-     *            the folder the user thinks is the root
-     * 
-     * @return the root of arduino which is the same for all os's
-     */
-    static public IPath getArduinoIDEPathFromUserSelection(String SelectedFolder) {
-	String[] suffixes = getArduinoIdeSuffix();
-	Path root = new Path(SelectedFolder);
-	for (String suffix : suffixes) {
-	    if (root.append(suffix).toFile().exists()) {
-		return root.append(suffix);
-	    }
-	}
-	return root.append(suffixes[0]);
-    }
-
     /**
      * Arduino has the default libraries in the user home directory in subfolder Arduino/libraries. As the home directory is platform dependent
      * getting the value is resolved by this method
@@ -615,24 +583,14 @@ public class Common extends ArduinoInstancePreferences {
 
     }
 
-    public static File getArduinoIdeDumpName(String packageName, String architecture, String boardID) {
-	return getPluginWritePath(ARDUINO_IDE_DUMP__FILE_NAME_PREFIX + packageName + "_" + architecture + "_" + boardID + "_"
-		+ ARDUINO_IDE_DUMP__FILE_NAME_TRAILER);
-    }
-
-    private static File getPluginWritePath(String name) {
-	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-	File ret = myWorkspaceRoot.getLocation().append(name).toFile();
-	return ret;
-    }
-
     public static File getWorkspaceRoot() {
 	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 	File ret = myWorkspaceRoot.getLocation().toFile();
 	return ret;
     }
 
-    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv, ICConfigurationDescription confdesc, String key, String value) {
+    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv, ICConfigurationDescription confdesc, String key,
+	    String value) {
 	IEnvironmentVariable var = new EnvironmentVariable(key, value);
 	contribEnv.addVariable(var, confdesc);
 

@@ -1,9 +1,5 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ArduinoHelpers;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -13,6 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -23,6 +20,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoHelpers;
 
 public class ArduinoSampleSelector extends Composite {
     protected Tree myTreeSelector;
@@ -86,30 +87,31 @@ public class ArduinoSampleSelector extends Composite {
      *            The folder with the hardware libraries
      * @param mPlatformPathPath
      */
-    public void AddAllExamples(IPath arduinoExample, IPath arduinoLibPath, IPath privateLibrary, IPath hardwareLibrary) {
-	removeExamples();
 
-	if (arduinoExample.toFile().exists()) {
-	    // Create Arduino Item
-	    // TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
-	    // myArduinoExampleItem.setText("Arduino examples");
-	    // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	    // // Add the Arduino Libs
-	    // addExamples(myArduinoExampleItem, arduinoExample);
-	    addExamplesFolder(arduinoExample);
-	}
-
-	if (arduinoLibPath.toFile().exists()) {
-	    addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	}
-
-	if (hardwareLibrary.toFile().exists()) {
-	    addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
-	}
-
-	if (privateLibrary.toFile().exists()) {
-	    addLibExamples(privateLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
-	}
+    public void AddAllExamples(String exampleLocations[], String libLocations[], String mplatformLocations[]) {
+	// removeExamples();
+	//
+	// if (arduinoExample.toFile().exists()) {
+	// // Create Arduino Item
+	// // TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
+	// // myArduinoExampleItem.setText("Arduino examples");
+	// // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	// // // Add the Arduino Libs
+	// // addExamples(myArduinoExampleItem, arduinoExample);
+	// addExamplesFolder(arduinoExample);
+	// }
+	//
+	// if (arduinoLibPath.toFile().exists()) {
+	// addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
+	// }
+	//
+	// if (hardwareLibrary.toFile().exists()) {
+	// addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
+	// }
+	//
+	// if (privateLibrary.toFile().exists()) {
+	// addLibExamples(privateLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
+	// }
     }
 
     /**
@@ -229,7 +231,7 @@ public class ArduinoSampleSelector extends Composite {
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
 		try {
-		    ArduinoHelpers.addCodeFolder(project, PathVarName, LibName, ArduinoConst.WORKSPACE_LIB_FOLDER + LibName,
+		    ArduinoHelpers.addCodeFolder(project, (Path) new Path(PathVarName).append(LibName), ArduinoConst.WORKSPACE_LIB_FOLDER + LibName,
 			    configurationDescriptions);
 		} catch (CoreException e) {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));

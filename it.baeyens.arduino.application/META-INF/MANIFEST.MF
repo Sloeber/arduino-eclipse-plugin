@@ -8,4 +8,4 @@ Require-Bundle: org.eclipse.core.runtime,
  it.baeyens.arduino.monitor,
  org.eclipse.ui.intro,
  it.baeyens.cdt.refactor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

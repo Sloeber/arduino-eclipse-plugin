@@ -1,15 +1,15 @@
 package it.baeyens.arduino.listeners;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ArduinoHelpers;
-import it.baeyens.arduino.tools.ArduinoLibraries;
-
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ArduinoLibraries;
 
 public class ConfigurationChangeListener implements ICProjectDescriptionListener {
 
@@ -28,7 +28,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 	if (projDesc.getActiveConfiguration() != null) {
 
 	    ArduinoHelpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(), false);
-	    ArduinoHelpers.setProjectPathVariables(projDesc.getActiveConfiguration());
+	    // ArduinoHelpers.setProjectPathVariables(projDesc.getActiveConfiguration());
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(projDesc.getProject(), projDesc.getActiveConfiguration());
 	    } catch (Exception e) {

@@ -7,6 +7,12 @@ package it.baeyens.arduino.common;
  * 
  */
 public class ArduinoConst {
+    // java stuff
+    public static final String EMPTY_STRING = "";// so I do not have to add //$NON-NLS-1$ al the time
+    public static final String DOT = ".";// so I do not have to add //$NON-NLS-1$ al the time
+    public static final String SLACH = "/";// so I do not have to add //$NON-NLS-1$ al the time
+    public static final String COLON = ":";// so I do not have to add //$NON-NLS-1$ al the time
+
     // General stuff
     public static final String PluginStart = "it.baeyens."; //$NON-NLS-1$
     public static final String CORE_PLUGIN_ID = PluginStart + "arduino.core"; //$NON-NLS-1$
@@ -27,11 +33,11 @@ public class ArduinoConst {
     public static final String NODE_ARDUINO = PluginStart + "arduino";//$NON-NLS-1$
 
     // preference keys
-    public static final String KEY_ARDUINO_IDE_VERSION = "Arduino IDE Version";//$NON-NLS-1$
-    public static final String KEY_ARDUINOPATH = "Arduino Path";//$NON-NLS-1$
+    // public static final String KEY_ARDUINO_IDE_VERSION = "Arduino IDE Version";//$NON-NLS-1$
+    // public static final String KEY_ARDUINOPATH = "Arduino Path";//$NON-NLS-1$
     public static final String KEY_PRIVATE_LIBRARY_PATH = "Private Library Path";//$NON-NLS-1$
     public static final String KEY_PRIVATE_HARDWARE_PATH = "Private hardware Path";//$NON-NLS-1$
-    public static final String KEY_PREFERENCE_MODIFICATION_STAMP = "Arduino IDE preference.txt time stamp";//$NON-NLS-1$
+    // public static final String KEY_PREFERENCE_MODIFICATION_STAMP = "Arduino IDE preference.txt time stamp";//$NON-NLS-1$
 
     // properties keys
     public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";//$NON-NLS-1$
@@ -53,15 +59,15 @@ public class ArduinoConst {
     public static final String DEFAULT = "Default";//$NON-NLS-1$
     public static final String BOARDS_FILE_NAME = "boards.txt";//$NON-NLS-1$
     public static final String PLATFORM_FILE_NAME = "platform.txt";//$NON-NLS-1$
-    public static final String LIB_VERSION_FILE = "lib/version.txt";//$NON-NLS-1$
+    // public static final String LIB_VERSION_FILE = "lib/version.txt";//$NON-NLS-1$
     public static final String ARDUINO_VARIANTS_FOLDER_NAME = "variants";//$NON-NLS-1$
 
-    public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB = "ArduinoLibPath";//$NON-NLS-1$
-    public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO = "ArduinoPath";//$NON-NLS-1$
-    public static final String WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB = "ArduinoPrivateLibPath";//$NON-NLS-1$
-    public static final String WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB = "ArduinoHardwareLibPath";//$NON-NLS-1$
-    public static final String PATH_VARIABLE_NAME_ARDUINO_PINS = "ArduinoPinPath";//$NON-NLS-1$
-    public static final String PATH_VARIABLE_NAME_ARDUINO_PLATFORM = "ArduinoPlatformPath";//$NON-NLS-1$
+    // public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB = "ArduinoLibPath";//$NON-NLS-1$
+    // public static final String WORKSPACE_PATH_VARIABLE_NAME_ARDUINO = "ArduinoPath";//$NON-NLS-1$
+    // public static final String WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB = "ArduinoPrivateLibPath";//$NON-NLS-1$
+    // public static final String WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB = "ArduinoHardwareLibPath";//$NON-NLS-1$
+    // public static final String PATH_VARIABLE_NAME_ARDUINO_PINS = "ArduinoPinPath";//$NON-NLS-1$
+    // public static final String PATH_VARIABLE_NAME_ARDUINO_PLATFORM = "ArduinoPlatformPath";//$NON-NLS-1$
 
     // tags to interpret the arduino input files
     public static final String BoardNameKeyTAG = "name";//$NON-NLS-1$
@@ -71,17 +77,19 @@ public class ArduinoConst {
     public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";//$NON-NLS-1$
 
     public static final String ENV_KEY_ARDUINO_START = "A.";//$NON-NLS-1$
-    public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";//$NON-NLS-1$
+    // public static final String ENV_KEY_ARDUINO_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.PATH";//$NON-NLS-1$
     public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
     public static final String WORKSPACE_LIB_FOLDER = "Libraries/";//$NON-NLS-1$
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";//$NON-NLS-1$
+    public static final String ENV_KEY_NAME = ENV_KEY_ARDUINO_START + "NAME";//$NON-NLS-1$
+    public static final String ENV_KEY_VERSION = ENV_KEY_ARDUINO_START + "VERSION";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.O.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_cpp_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.CPP.O.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_S_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.S.O.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_objcopy_hex_pattern = ENV_KEY_ARDUINO_START + "RECIPE.OBJCOPY.HEX.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_objcopy_eep_pattern = ENV_KEY_ARDUINO_START + "RECIPE.OBJCOPY.EEP.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_size_pattern = ENV_KEY_ARDUINO_START + "RECIPE.SIZE.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_AR_pattern = ENV_KEY_ARDUINO_START + "RECIPE.AR.PATTERN";//$NON-NLS-1$//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_AR_pattern = ENV_KEY_ARDUINO_START + "RECIPE.AR.PATTERN";//$NON-NLS-1$
     public static final String ENV_KEY_recipe_c_combine_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.COMBINE.PATTERN";
 
     public static final String ENV_KEY_build_variant = ENV_KEY_ARDUINO_START + "BUILD.VARIANT";//$NON-NLS-1$
@@ -94,11 +102,11 @@ public class ArduinoConst {
     public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.HARDWARE.PATH";//$NON-NLS-1$
     public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.PLATFORM.PATH";//$NON-NLS-1$
 
-    public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";//$NON-NLS-1$
+    // public static final String ENV_KEY_runtime_ide_version = ENV_KEY_ARDUINO_START + "RUNTIME.IDE.VERSION";//$NON-NLS-1$
     public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";//$NON-NLS-1$
     public static final String ENV_KEY_build_project_name = ENV_KEY_ARDUINO_START + "BUILD.PROJECT_NAME";//$NON-NLS-1$
     public static final String ENV_KEY_build_variant_path = ENV_KEY_ARDUINO_START + "BUILD.VARIANT.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_archive_file = ENV_KEY_ARDUINO_START + "ARCHIVE_FILE";//$NON-NLS-1$
+    // public static final String ENV_KEY_archive_file = ENV_KEY_ARDUINO_START + "ARCHIVE_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_upload_use_1200bps_touch = ENV_KEY_ARDUINO_START + "UPLOAD.USE_1200BPS_TOUCH";//$NON-NLS-1$
     public static final String ENV_KEY_upload_disable_flushing = ENV_KEY_ARDUINO_START + "UPLOAD.DISABLE_FLUSHING";//$NON-NLS-1$
     public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";//$NON-NLS-1$
@@ -110,9 +118,9 @@ public class ArduinoConst {
     public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_ARDUINO_START + "SERIAL.PORT";//$NON-NLS-1$
     public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_ARDUINO_START + "SERIAL.PORT.FILE";//$NON-NLS-1$
 
-    public static final String ArduinoIdeSuffix_WIN[] = { "" };//$NON-NLS-1$
-    public static final String ArduinoIdeSuffix_LINUX[] = { "" };//$NON-NLS-1$
-    public static final String ArduinoIdeSuffix_MAC[] = { "Contents/Resources/Java", "Contents/Java" };//$NON-NLS-1$
+    // public static final String ArduinoIdeSuffix_WIN[] = { "" };//$NON-NLS-1$
+    // public static final String ArduinoIdeSuffix_LINUX[] = { "" };//$NON-NLS-1$
+    // public static final String ArduinoIdeSuffix_MAC[] = { "Contents/Resources/Java", "Contents/Java" };//$NON-NLS-1$
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";//$NON-NLS-1$
@@ -140,7 +148,8 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
 
-    public static final String JANTJE_SIZE_COMMAND = "\"${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}\" --format=avr --mcu=${A.BUILD.MCU} \"${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf\"";//$NON-NLS-1$
+    // public static final String JANTJE_SIZE_COMMAND = "\"${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}\" --format=avr --mcu=${A.BUILD.MCU}
+    // \"${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf\"";//$NON-NLS-1$
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";//$NON-NLS-1$
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";//$NON-NLS-1$
@@ -152,8 +161,8 @@ public class ArduinoConst {
     // least significant first 0xCDAB;
     public static final String ARDUINO_EXAMPLE_FOLDER_NAME = "examples";//$NON-NLS-1$
 
-    public static final String ARDUINO_IDE_DUMP__FILE_NAME_TRAILER = "ArduinoIDE.tmp";
-    public static final String ARDUINO_IDE_DUMP__FILE_NAME_PREFIX = "DUMP_";
+    // public static final String ARDUINO_IDE_DUMP__FILE_NAME_TRAILER = "ArduinoIDE.tmp";
+    // public static final String ARDUINO_IDE_DUMP__FILE_NAME_PREFIX = "DUMP_";
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
     public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt";
     public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";

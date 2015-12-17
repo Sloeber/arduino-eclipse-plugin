@@ -10,8 +10,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console,
  org.eclipse.cdt;bundle-version="8.5.0",
  org.eclipse.osgi,
- org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ org.junit,
+ org.eclipse.equinox.preferences
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
  it.baeyens.arduino.common

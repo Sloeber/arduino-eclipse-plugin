@@ -151,11 +151,26 @@
 ####################################################################################### 
 -->
 	<extension point="org.eclipse.ui.preferencePages">
-		<page name="%page.name"
-			class="it.baeyens.arduino.ui.ArduinoPreferencePage"
-			id="it.baeyens.arduino.eclipse.ArduinoPreferencePage">
+		<page
+        category="it.baeyens.arduino.core"
+        class="it.baeyens.arduino.ui.ArduinoPreferencePage"
+        id="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+        name="%page.name">
 		</page>
-	</extension>   
+
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.managers.ui.ArduinoBoardsPreferencePage"
+            id="it.baeyens.arduino.eclipse.loation_page"
+            name="Boards">
+      </page>
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.managers.ui.ArduinoPreferencePage"
+            id="it.baeyens.arduino.eclipse.boards"
+            name="Locations">
+      </page>
+   </extension>
 
 <!--
 ####################################################################################### 
@@ -282,7 +297,7 @@
                 commandId="it.baeyens.arduino.actions.UploadprojectAction"
                 disabledIcon="icons/arrow_disabled.png"
                 icon="icons/arrow.png"
-                label="%command.label.0"
+                label="%command.name"
                 style="push">
                 <visibleWhen>
                     <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>

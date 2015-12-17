@@ -1,8 +1,5 @@
 package it.baeyens.arduino.ui;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -95,8 +92,6 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 		final Shell shell = new Shell();
 		DirectoryDialog theDialog = new DirectoryDialog(shell);
 		if ((controlLibraryPath.getText() == null) || (controlLibraryPath.getText() == "")) {
-		    theDialog.setFilterPath(ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
-		} else {
 		    theDialog.setFilterPath(controlLibraryPath.getText());
 		}
 

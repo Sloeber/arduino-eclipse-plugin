@@ -15,10 +15,6 @@
  *******************************************************************************/
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.common.Common;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +34,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 
 /**
  * Launch external programs.
@@ -209,7 +208,6 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
-    @SuppressWarnings("resource")
     public int launch(IProgressMonitor inMonitor) throws IOException {
 	IProgressMonitor monitor = inMonitor;
 	if (monitor == null) {
@@ -276,7 +274,7 @@ public class ExternalCommandLauncher {
 	    fStdOut = new ArrayList<String>();
 	    fStdErr = new ArrayList<String>();
 
-	    fProcessBuilder.directory(ArduinoInstancePreferences.getArduinoPath().toFile());
+	    fProcessBuilder.directory(Common.getWorkspaceRoot().toPath().toFile());
 	    process = fProcessBuilder.start();
 
 	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), fStdOut, stdoutConsoleStream));
