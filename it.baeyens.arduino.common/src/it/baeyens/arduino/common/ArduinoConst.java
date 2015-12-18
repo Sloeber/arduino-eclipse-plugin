@@ -124,7 +124,7 @@ public class ArduinoConst {
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_JANTJE_START + "SIZE_COMMAND";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_ARDUINO_START + "ALT_SIZE_COMMAND";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
@@ -141,6 +141,8 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_PLATFORM_NAME = ENV_KEY_JANTJE_START + "PLATFORM.NAME";//$NON-NLS-1$
 
     //
     // template Sketch information

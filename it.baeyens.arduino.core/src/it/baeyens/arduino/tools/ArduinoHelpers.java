@@ -513,8 +513,10 @@ public class ArduinoHelpers extends Common {
 	// Set some default values because the platform.txt does not contain them
 	Path platformPath = new Path(platformFile.getAbsolutePath());
 	String architecture = platformPath.removeLastSegments(1).lastSegment();
+	String packagename = platformPath.removeLastSegments(3).lastSegment();
 	if (architecture.contains(DOT)) { // in case there is a version in the path ignore the version
 	    architecture = platformPath.removeLastSegments(2).lastSegment();
+	    packagename = platformPath.removeLastSegments(4).lastSegment();
 	}
 	// String buildVariantPath = makeEnvironmentVar(ENV_KEY_PLATFORM_PATH) + "/variants/";
 
@@ -551,15 +553,21 @@ public class ArduinoHelpers extends Common {
 
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_project_name, makeEnvironmentVar("ProjName"));
 
-	// if (firstTime) {
-	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, EMPTY_STRING).isEmpty()) {
+	// if (firstTime)
+	String sizeSwitch = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, EMPTY_STRING, false);
+	if (sizeSwitch.isEmpty()) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
+	} else {
+	    sizeSwitch.toString();
 	}
 
 	// Set the warning level default off like arduino does
 	if (getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_WARNING_LEVEL, EMPTY_STRING).isEmpty()) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_OFF);
 	}
+
+	// Save some info so we can find the tool paths
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PACKAGE_NAME, packagename);
 
     }
 
@@ -776,6 +784,11 @@ public class ArduinoHelpers extends Common {
 	if (localPlatformFilename.exists()) {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, localPlatformFilename);
 	}
+	// we need to know the name of attribute of the platform.txt file but that will be overwritten when the boards file is processed
+	// so we save it in another variable
+	String PlatformName = getBuildEnvironmentVariable(confDesc, ENV_KEY_NAME, EMPTY_STRING);
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PLATFORM_NAME, PlatformName);
+
 	// now process the boards file
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
@@ -828,14 +841,14 @@ public class ArduinoHelpers extends Common {
 		if (coreReference == null) {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to find core reference: " + core));
 		} else {
-		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core_path,
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core_path,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());
-		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE,
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE,
 			    coreReference.append(PLATFORM_FILE_NAME).toString());
 		}
 	    } else {
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_CORE, core);
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, EMPTY_STRING);
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_CORE, core);
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, EMPTY_STRING);
 	    }
 	}
 	if (variant != null) {
@@ -947,8 +960,8 @@ public class ArduinoHelpers extends Common {
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant, makeEnvironmentVar(ENV_KEY_JANTJE_BUILD_VARIANT));
 
 	// find the paths to the dependent tools
-	String packagename = getBuildEnvironmentVariable(confDesc, "A.PACKAGE.NAME", EMPTY_STRING, false);
-	String PlatformName = getBuildEnvironmentVariable(confDesc, "A.PLATFORM.NAME", EMPTY_STRING, false);
+	String packagename = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_PACKAGE_NAME, EMPTY_STRING);
+	String PlatformName = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_PLATFORM_NAME, EMPTY_STRING);
 	String version = getBuildEnvironmentVariable(confDesc, ENV_KEY_VERSION, EMPTY_STRING, false);
 	ArduinoPackage selectedPackage = ArduinoManager.getPackage(packagename);
 	if (selectedPackage != null) {
