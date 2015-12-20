@@ -26,31 +26,31 @@ public class ArduinoToolSystem {
     }
 
     public String getHost() {
-	return host;
+	return this.host;
     }
 
     public String getArchiveFileName() {
-	return archiveFileName;
+	return this.archiveFileName;
     }
 
     public String getUrl() {
-	return url;
+	return this.url;
     }
 
     public String getChecksum() {
-	return checksum;
+	return this.checksum;
     }
 
     public String getSize() {
-	return size;
+	return this.size;
     }
 
     public boolean isApplicable() {
 	switch (Platform.getOS()) {
 	case Platform.OS_WIN32:
-	    return "i686-mingw32".equals(host); //$NON-NLS-1$
+	    return "i686-mingw32".equals(this.host); //$NON-NLS-1$
 	case Platform.OS_MACOSX:
-	    switch (host) {
+	    switch (this.host) {
 	    case "i386-apple-darwin11": //$NON-NLS-1$
 	    case "x86_64-apple-darwin": //$NON-NLS-1$
 		return true;
@@ -60,9 +60,9 @@ public class ArduinoToolSystem {
 	case Platform.OS_LINUX:
 	    switch (Platform.getOSArch()) {
 	    case Platform.ARCH_X86_64:
-		return "x86_64-linux-gnu".equals(host); //$NON-NLS-1$
+		return "x86_64-linux-gnu".equals(this.host) || "x86_64-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
 	    case Platform.ARCH_X86:
-		return "i686-linux-gnu".equals(host); //$NON-NLS-1$
+		return "i686-linux-gnu".equals(this.host) || "i686-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
 	    default:
 		return false;
 	    }
@@ -72,7 +72,7 @@ public class ArduinoToolSystem {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-	return ArduinoManager.downloadAndInstall(url, archiveFileName, tool.getInstallPath(), monitor);
+	return ArduinoManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
     }
 
 }

@@ -28,9 +28,9 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     public static boolean getBuildBeforeUploadOption() {
 
 	switch (getGlobalString(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) { //$NON-NLS-1$
-	case "YES":
+	case "YES": //$NON-NLS-1$
 	    return true;
-	case "NO":
+	case "NO": //$NON-NLS-1$
 	    return false;
 	default:
 	    break;
@@ -84,29 +84,6 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      */
     public static String getLastUsedUploadPort() {
 	return getGlobalString(KEY_LAST_USED_COM_PORT, ""); //$NON-NLS-1$
-    }
-
-    /**
-     * This method reads the arduino upload programmer from the configuration memory
-     * 
-     * @return the upload port
-     * @author Jan Baeyens
-     */
-    public static String getLastUsedUploadProgrammer() {
-	return getGlobalString(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
-    }
-
-    /**
-     * saves the last used arduino upload port
-     * 
-     * @param UploadPort
-     *            The port to use to upload to save
-     * 
-     * @author Jan Baeyens
-     */
-    public static void SetLastUsedUploadProgrammer(String UploadProgrammer) {
-	setGlobalValue(KEY_LAST_USED_PROGRAMMER, UploadProgrammer);
-
     }
 
     /**
@@ -301,19 +278,19 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATH, Common.getDefaultPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
-	setGlobalValue(KEY_PRIVATE_LIBRARY_PATH, String.join("\n", folderName)); //$NON-NLS-1$
+	setGlobalValue(KEY_PRIVATE_LIBRARY_PATHS, String.join("\n", folderName)); //$NON-NLS-1$
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATH, "").split("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, "").split("\n"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {
-	setGlobalValue(KEY_PRIVATE_HARDWARE_PATH, String.join("\n", folderName)); //$NON-NLS-1$
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join("\n", folderName)); //$NON-NLS-1$
     }
 
     /**
@@ -322,7 +299,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @return a list of all the folder locations that can contain hardware
      */
     public static String[] getHardwarePaths() {
-	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATH, "") + "\n" + ConfigurationPreferences.getInstallationPath()).split("\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, "") + "\n" + ConfigurationPreferences.getInstallationPath()).split("\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
 }

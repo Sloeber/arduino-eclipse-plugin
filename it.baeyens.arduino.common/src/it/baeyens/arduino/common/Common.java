@@ -88,9 +88,13 @@ public class Common extends ArduinoInstancePreferences {
      * @return a name safe to create files or folders
      */
     public static String MakeNameCompileSafe(String Name) {
-	return Name.trim().replace(" ", "_").replace("/", "_").replace("\\", "_").replace("(", "_").replace(")", "_").replace("*", "_")
-		.replace("?", "_").replace("%", "_").replace(".", "_").replace(":", "_").replace("|", "_").replace("<", "_").replace(">", "_")
-		.replace(",", "_").replace("\"", "_").replace("-", "_");
+	char badChars[] = { ' ', '/', '.', SLACH, ':', ' ', UNDERSCORE, BACK_SLACH, '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
+
+	String ret = Name.trim();
+	for (char curchar : badChars) {
+	    ret = ret.replace(curchar, UNDERSCORE);
+	}
+	return ret;
     }
 
     /**
@@ -107,17 +111,17 @@ public class Common extends ArduinoInstancePreferences {
 	try {
 	    String sret = project.getPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, Tag));
 	    if (sret == null) {
-		sret = project.getPersistentProperty(new QualifiedName("", Tag)); // for
-										  // downwards
-										  // compatibility
+		sret = project.getPersistentProperty(new QualifiedName(EMPTY_STRING, Tag)); // for
+		// downwards
+		// compatibility
 		if (sret == null)
-		    sret = "";
+		    sret = EMPTY_STRING;
 	    }
 	    return sret;
 	} catch (CoreException e) {
 	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
 	    // e.printStackTrace();
-	    return "";
+	    return EMPTY_STRING;
 	}
     }
 
@@ -148,9 +152,9 @@ public class Common extends ArduinoInstancePreferences {
     public static void setPersistentProperty(IProject project, String Tag, String Value) {
 	try {
 	    project.setPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, Tag), Value);
-	    project.setPersistentProperty(new QualifiedName("", Tag), Value); // for
-									      // downwards
-									      // compatibility
+	    project.setPersistentProperty(new QualifiedName(EMPTY_STRING, Tag), Value); // for
+	    // downwards
+	    // compatibility
 	} catch (CoreException e) {
 	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
 	    Common.log(status);
@@ -193,7 +197,7 @@ public class Common extends ArduinoInstancePreferences {
 	    return UploadPortPrefix_LINUX;
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return UploadPortPrefix_MAC;
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null));
+	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null)); //$NON-NLS-1$
 	return UploadPortPrefix_WIN;
     }
 
@@ -208,7 +212,7 @@ public class Common extends ArduinoInstancePreferences {
     public static int ToInt(String Number) {
 	if (Number == null)
 	    return 0;
-	if (Number.equals(""))
+	if (Number.isEmpty())
 	    return 0;
 	return Integer.parseInt(Number.trim());
     }
@@ -244,20 +248,20 @@ public class Common extends ArduinoInstancePreferences {
 	private IProject fProject;
 
 	ImaginarySelection(IProject project) {
-	    fProject = project;
+	    this.fProject = project;
 	}
 
 	@Override
 	public boolean isEmpty() {
-	    return fProject == null;
+	    return this.fProject == null;
 	}
 
 	IProject getProject() {
-	    return fProject;
+	    return this.fProject;
 	}
     }
 
-    static HashSet<IProject> fProjects = new HashSet<IProject>();
+    static HashSet<IProject> fProjects = new HashSet<>();
 
     static public IProject[] getSelectedProjects() {
 	fProjects.clear();
@@ -330,7 +334,7 @@ public class Common extends ArduinoInstancePreferences {
 			IWorkbenchPart part = page.getActivePart();
 			if (part instanceof IEditorPart) {
 			    IEditorPart epart = (IEditorPart) part;
-			    IResource resource = (IResource) epart.getEditorInput().getAdapter(IResource.class);
+			    IResource resource = epart.getEditorInput().getAdapter(IResource.class);
 			    if (resource != null) {
 				IProject project = resource.getProject();
 				badObject = !(project != null && CoreModel.getDefault().isNewStyleProject(project));
@@ -458,12 +462,12 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     public static String[] listBaudRates() {
-	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", "1200", "300" };
+	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", "1200", "300" }; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
 	return outgoing;
     }
 
     public static String[] listLineEndings() {
-	String outgoing[] = { "none", "CR", "NL", "CR/NL" };
+	String outgoing[] = { "none", "CR", "NL", "CR/NL" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	return outgoing;
     }
 
@@ -471,13 +475,13 @@ public class Common extends ArduinoInstancePreferences {
 	switch (selectionIndex) {
 	default:
 	case 0:
-	    return "";
+	    return EMPTY_STRING;
 	case 1:
-	    return "\r";
+	    return "\r"; //$NON-NLS-1$
 	case 2:
-	    return "\n";
+	    return "\n"; //$NON-NLS-1$
 	case 3:
-	    return "\r\n";
+	    return "\r\n"; //$NON-NLS-1$
 	}
     }
 
@@ -553,34 +557,8 @@ public class Common extends ArduinoInstancePreferences {
      * @return the folder where Arduino puts the libraries by default.
      */
     public static String getDefaultPrivateLibraryPath() {
-	IPath homPath = new Path(System.getProperty("user.home"));
-	return homPath.append("Arduino").append("libraries").toString();
-    }
-
-    /**
-     * The file aduino IDE stores it's preferences in
-     * 
-     * @return
-     */
-    public static File getPreferenceFile() {
-	IPath homPath = new Path(System.getProperty("user.home"));
-	return homPath.append(".arduino").append("preferences.txt").toFile();
-    }
-
-    /**
-     * same as getDefaultLibPath but for the hardware folder
-     * 
-     * @return
-     */
-    public static String getDefaultPrivateHardwarePath() {
-	if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	    IPath homPath = new Path(System.getProperty("user.dir"));
-	    return homPath.append("Arduino").append("hardware").toString();
-	}
-
-	IPath homPath = new Path(System.getProperty("user.home"));
-	return homPath.append("Arduino").append("hardware").toString();
-
+	IPath homPath = new Path(System.getProperty("user.home")); //$NON-NLS-1$
+	return homPath.append("Arduino").append("libraries").toString(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static File getWorkspaceRoot() {

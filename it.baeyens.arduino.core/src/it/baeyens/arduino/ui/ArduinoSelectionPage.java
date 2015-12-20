@@ -53,7 +53,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
     protected Combo mControlBoardsTxtFile;
     protected Combo mcontrolBoardName;
     protected LabelCombo mControlUploadPort;
-    protected LabelCombo mControlUploadProtocol;
     protected LabelCombo[] mBoardOptionCombos = null;
     private final int ncol = 2;
     protected Listener mBoardSelectionChangedListener = null;
@@ -232,12 +231,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	this.mcontrolBoardName.setEnabled(false);
 
 	// ----
-
-	this.mControlUploadProtocol = new LabelCombo(composite, "Uploading Protocol: ", this.ncol - 1, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, false);
-
-	this.mControlUploadProtocol.add(ArduinoConst.DEFAULT);
-
-	// -----
 	this.mControlUploadPort = new LabelCombo(composite, "Port: ", this.ncol - 1, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, false);
 
 	this.mControlUploadPort.setItems(ArrayUtil.addAll(Activator.bonjourDiscovery.getList(), Common.listComPorts()));
@@ -271,9 +264,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	childFieldListener controlUploadPortlistener = new childFieldListener();
 	controlUploadPortlistener.setInfo(this.mControlUploadPort);
 	this.mControlUploadPort.addListener(controlUploadPortlistener);
-	childFieldListener controlUploadProtocollistener = new childFieldListener();
-	controlUploadProtocollistener.setInfo(this.mControlUploadProtocol);
-	this.mControlUploadProtocol.addListener(controlUploadProtocollistener);
+
 	this.mcontrolBoardName.addListener(SWT.Modify, this.BoardModifyListener);
 	this.mControlBoardsTxtFile.addListener(SWT.Modify, this.boardFileModifyListener);
 
@@ -302,7 +293,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    MenuOpionsValidAndComplete = MenuOpionsValidAndComplete && curLabelCombo.isValid();
 	}
 
-	ret = !this.mcontrolBoardName.getText().trim().isEmpty() && this.mControlUploadProtocol.isValid() && MenuOpionsValidAndComplete;
+	ret = !this.mcontrolBoardName.getText().trim().isEmpty() && MenuOpionsValidAndComplete;
 	if (!this.mFeedbackControl.getText().equals(ret ? "true" : "false")) { //$NON-NLS-1$ //$NON-NLS-2$
 	    this.mFeedbackControl.setText(ret ? "true" : "false"); //$NON-NLS-1$//$NON-NLS-2$
 	}
@@ -318,7 +309,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
     protected void EnableControls() {
 	this.mcontrolBoardName.setEnabled(true);
 	this.mControlUploadPort.setEnabled(true);
-	this.mControlUploadProtocol.setEnabled(true);
 	this.mControlBoardsTxtFile.setEnabled((this.mAllBoardsFileNames.length > 1));
 	this.mControlBoardsTxtFile.setVisible(this.mAllBoardsFileNames.length > 1);
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
@@ -353,11 +343,9 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
-	String uploadProg = this.mControlUploadProtocol.getValue();
 	ArduinoInstancePreferences.setLastUsedBoardsFile(boardFile);
 	ArduinoInstancePreferences.SetLastUsedArduinoBoard(boardName);
 	ArduinoInstancePreferences.SetLastUsedUploadPort(uploadPort);
-	ArduinoInstancePreferences.SetLastUsedUploadProgrammer(uploadProg);
 	ArduinoInstancePreferences.setLastUsedMenuOption(""); // TOFIX implement
 							      // the options
     }
@@ -366,7 +354,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
-	String uploadProg = this.mControlUploadProtocol.getValue();
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
@@ -376,7 +363,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
-	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProg);
 
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, ArduinoConst.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
@@ -385,6 +371,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 	    curLabelCombo.StoreValue(confdesc);
 	}
+	saveAllLastUseds();
 
     }
 
@@ -392,12 +379,10 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	String boardFile = ArduinoInstancePreferences.getLastUsedBoardsFile();
 	String boardName = ArduinoInstancePreferences.getLastUsedArduinoBoardName();
 	String uploadPort = ArduinoInstancePreferences.getLastUsedUploadPort();
-	String uploadProtocol = ArduinoInstancePreferences.getLastUsedUploadProgrammer();
 	if (confdesc != null) {
 	    boardFile = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
 	    boardName = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
-	    uploadProtocol = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PROG, uploadProtocol);
 	}
 	this.mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first
@@ -409,7 +394,6 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	this.mcontrolBoardName.setText(boardName);
 	// BoardModifyListener.handleEvent(null);
 	this.mControlUploadPort.setValue(uploadPort);
-	this.mControlUploadProtocol.setValue(uploadProtocol);
 
 	// set the options in the combo boxes before setting the value
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {

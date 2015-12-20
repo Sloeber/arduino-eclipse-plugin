@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import it.baeyens.arduino.common.ArduinoConst;
@@ -55,12 +56,9 @@ public class ArduinoLibraries {
      * @return all the library folder names. May contain empty values. This method does not return the full path only the leaves.
      */
     public static Set<String> findAllHarwareLibraries(IProject project) {
-	IPathVariableManager pathMan = project.getPathVariableManager();
-
-	// TODO FIX URI HardwareLibrarURI = pathMan.resolveURI(pathMan.getURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB));
-	// return findAllSubFolders(URIUtil.toPath(HardwareLibrarURI));
-	return null;
-
+	Path platformFile = new Path(
+		Common.getBuildEnvironmentVariable(project, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ArduinoConst.EMPTY_STRING));
+	return findAllSubFolders(platformFile.removeLastSegments(1).append(ArduinoConst.LIBRARY_PATH_SUFFIX));
     }
 
     public static Set<String> findAllUserLibraries(IProject project) {

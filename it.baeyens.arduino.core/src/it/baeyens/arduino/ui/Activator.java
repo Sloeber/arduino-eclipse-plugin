@@ -7,11 +7,17 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeManager;
+import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -21,6 +27,7 @@ import org.osgi.framework.BundleContext;
 import cc.arduino.packages.discoverers.NetworkDiscovery;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 import it.baeyens.arduino.managers.ArduinoManager;
@@ -35,7 +42,7 @@ public class Activator implements BundleActivator {
     public static NetworkDiscovery bonjourDiscovery;
     public URL pluginStartInitiator = null; // Initiator to start the plugin
     public Object mstatus; // status of the plugin
-    protected String flagStart = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
+    protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + ArduinoConst.EMPTY_STRING;
     protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/', 'e', 'c', 'l', 'i', 'p', 's',
 	    'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',
 	    '?', 's', '=' };
@@ -49,7 +56,7 @@ public class Activator implements BundleActivator {
 	LibPaths = ArduinoInstancePreferences.getPrivateHardwarePaths();
 	ArduinoInstancePreferences.setPrivateHardwarePaths(LibPaths);
 
-	Job job = new Job("pluginCoreStartInitiator") {
+	Job job = new Job("pluginCoreStartInitiator") { //$NON-NLS-1$
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
@@ -70,12 +77,13 @@ public class Activator implements BundleActivator {
 	job.setPriority(Job.DECORATE);
 	job.schedule();
 
-	Job installJob = new Job("Arduino installer job") {
+	Job installJob = new Job("Arduino installer job") { //$NON-NLS-1$
 
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		makeOurOwnCustomBoards_txt();
+		addFileAssociations();
 		ArduinoManager.startup_Pluging();
 		bonjourDiscovery = new NetworkDiscovery();
 		bonjourDiscovery.start();
@@ -104,13 +112,22 @@ public class Activator implements BundleActivator {
 
     public static final String PLUGIN_ID = "it.baeyens.arduino.core"; //$NON-NLS-1$
 
+    /**
+     * This is a wrapper method to quickly make the dough code that is the basis of the it.baeyens.arduino.managers and it.baeyens.arduino.managers.ui
+     * to work.
+     * 
+     * @param e
+     */
     public static void log(Exception e) {
-	// TODO Auto-generated method stub
+	Common.log(new Status(IStatus.WARNING, getId(), "Arduino Manager problem", e)); //$NON-NLS-1$
 
     }
 
+    /**
+     * This is a wrapper method to quickly make the dough code that is the basis of the it.baeyens.arduino.managers and it.baeyens.arduino.managers.ui
+     * to work.
+     */
     public static String getId() {
-	// TODO Auto-generated method stub
 	return PLUGIN_ID;
     }
 
@@ -142,6 +159,7 @@ public class Activator implements BundleActivator {
 	if (outFile.exists() && !forceOverwrite) {
 	    return;
 	}
+	outFile.getParentFile().mkdirs();
 	// String VersionSpecificFile = inRegEx.replaceFirst("-", mArduinoIdeVersion.getStringValue());
 	String DefaultFile = inRegEx.replaceFirst("-", "default"); //$NON-NLS-1$ //$NON-NLS-2$
 	/*
@@ -153,34 +171,37 @@ public class Activator implements BundleActivator {
 
 	try (FileOutputStream to = new FileOutputStream(outFile.toString());) {
 	    try {
-		// URL specificUrl = new URL("platform:/plugin/it.baeyens.arduino.core/" + VersionSpecificFile);
 		URL defaultUrl = new URL("platform:/plugin/it.baeyens.arduino.core/" + DefaultFile); //$NON-NLS-1$
-
-		// try (InputStream inputStreamSpecific = specificUrl.openConnection().getInputStream();) {
-		// while ((bytes_read = inputStreamSpecific.read(buffer)) != -1) {
-		// to.write(buffer, 0, bytes_read); // write
-		// }
-		// } catch (IOException e) {
 		try (InputStream inputStreamDefault = defaultUrl.openConnection().getInputStream();) {
 		    while ((bytes_read = inputStreamDefault.read(buffer)) != -1) {
 			to.write(buffer, 0, bytes_read); // write
 		    }
 		} catch (IOException e1) {
-		    // TODO Auto-generated catch block
 		    e1.printStackTrace();
 		    return;
 		}
-		// return;
-		// }
 	    } catch (MalformedURLException e1) {
-		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	    }
 	} catch (IOException e2) {
-	    // TODO Auto-generated catch block
 	    e2.printStackTrace();
 	} // Create output stream
-
     }
 
+    /**
+     * Add the .ino and .pde as file extensions to the cdt environment
+     */
+    private static void addFileAssociations() {
+
+	// add the extension to the content type manager as a binary
+	final IContentTypeManager ctm = Platform.getContentTypeManager();
+	final IContentType ctbin = ctm.getContentType(CCorePlugin.CONTENT_TYPE_CXXSOURCE);
+	try {
+	    ctbin.addFileSpec("ino", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
+	    ctbin.addFileSpec("pde", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
+	} catch (CoreException e) {
+	    Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to add *.ino and *.pde as file extensions.", e)); //$NON-NLS-1$
+	}
+
+    }
 }

@@ -7,16 +7,20 @@
  *
  * Contributors:
  *     QNX Software Systems - Initial API and implementation
+ *     Jan Baeyens integrated in and extended for the arduino eclipse plugin
  *******************************************************************************/
 package it.baeyens.arduino.managers;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Files;
@@ -26,17 +30,20 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -57,18 +64,13 @@ import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoManager {
 
-    // Build tool ids
-    // public static final String BOARD_OPTION_ID = "org.eclipse.cdt.arduino.option.board"; //$NON-NLS-1$
-    // public static final String PLATFORM_OPTION_ID = "org.eclipse.cdt.arduino.option.platform"; //$NON-NLS-1$
-    // public static final String PACKAGE_OPTION_ID = "org.eclipse.cdt.arduino.option.package"; //$NON-NLS-1$
-    // public static final String AVR_TOOLCHAIN_ID = "org.eclipse.cdt.arduino.toolChain.avr"; //$NON-NLS-1$
-
     public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
     static private List<PackageIndex> packageIndices;
     static private LibraryIndex libraryIndex;
+    static private String stringSplitter = "\n";//$NON-NLS-1$
 
     private static void internalLoadIndices() {
-	String[] boardUrls = ArduinoPreferences.getBoardUrls().split("\n"); //$NON-NLS-1$
+	String[] boardUrls = ArduinoPreferences.getBoardUrls().split(stringSplitter);
 	packageIndices = new ArrayList<>(boardUrls.length);
 	for (String boardUrl : boardUrls) {
 	    loadPackageIndex(boardUrl, false);
@@ -83,47 +85,101 @@ public class ArduinoManager {
     static public void startup_Pluging() {
 	loadIndices(true);
 	try {
-	    List<ArduinoBoard> allBoards = getBoards();
+	    List<ArduinoBoard> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) {
-
 		String platformName = "Arduino AVR Boards"; //$NON-NLS-1$
-		String packageName = "arduino"; //$NON-NLS-1$
-		String boardName = "Arduino/Genuino Uno"; //$NON-NLS-1$
-
-		for (PackageIndex index : packageIndices) {
-		    ArduinoPackage pkg = index.getPackage(packageName);
-		    if (pkg != null) {
-			ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
-			if (platform != null) {
-			    ArduinoBoard board = platform.getBoard(boardName);
-
-			    if (board != null) {
-				downloadAndInstall(board);
-			    }
-			}
+		ArduinoPackage pkg = packageIndices.get(0).getPackages().get(0);
+		if (pkg != null) {
+		    ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
+		    if (platform == null) {
+			ArduinoPlatform platformList[] = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
+			pkg.getLatestPlatforms().toArray(platformList);
+			platform = platformList[0];
+		    }
+		    if (platform != null) {
+			downloadAndInstall(platform, false, null);
 		    }
 		}
-
 	    }
 	} catch (CoreException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 	ArduinoInstancePreferences.setConfigured();
 
     }
 
-    static public void downloadAndInstall(ArduinoBoard board) {
+    /**
+     * Given a platform description in a json file download and install all needed stuff. All stuff is including all tools and core files and hardware
+     * specific libraries. That is (on windows) inclusive the make.exe
+     * 
+     * @param platform
+     * @param monitor
+     * @return
+     */
+    @SuppressWarnings("resource")
+    static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload, IProgressMonitor monitor) {
 
-	ArduinoPlatform platform = board.getPlatform();
-	ArduinoPackage pkg = platform.getPackage();
-	Path installPath = ArduinoPreferences.getArduinoHome()
-		.resolve(Paths.get("packages", pkg.getName(), "hardware", platform.getArchitecture(), platform.getVersion())); //$NON-NLS-1$ //$NON-NLS-2$
-	downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(), installPath, null);
-	List<ToolDependency> tools = platform.getToolsDependencies();
-	for (ToolDependency tool : tools) {
-	    tool.install(null);
+	IStatus status = downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(), platform.getInstallPath(), forceDownload, monitor);
+	if (!status.isOK()) {
+	    return status;
 	}
+	MultiStatus mstatus = new MultiStatus(status.getPlugin(), status.getCode(), status.getMessage(), status.getException());
+
+	List<ToolDependency> tools = platform.getToolsDependencies();
+	// make a platform_plugin.txt file to store the tool paths
+	File pluginFile = platform.getPluginFile();
+	PrintWriter writer = null;
+
+	try {
+	    writer = new PrintWriter(pluginFile, "UTF-8");//$NON-NLS-1$
+	    writer.println("#This is a automatically generated file by the Arduino eclipse plugin"); //$NON-NLS-1$
+	    writer.println("#only edit if you know what you are doing"); //$NON-NLS-1$
+	    writer.println("#Have fun"); //$NON-NLS-1$
+	    writer.println("#Jantje"); //$NON-NLS-1$
+	    writer.println();
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+	    mstatus.add(new Status(IStatus.WARNING, Activator.getId(),
+		    "Unable to create file :" + pluginFile + '\n' + platform.getName() + " will not work", e)); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	for (ToolDependency tool : tools) {
+
+	    status = tool.install(monitor);
+	    if (!status.isOK()) {
+		mstatus.add(status);
+	    }
+	    if (writer != null) {
+		try {
+		    writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
+		    writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
+		} catch (CoreException e) {
+		    mstatus.add(new Status(IStatus.WARNING, Activator.getId(),
+			    "Unable to write tofile file :" + pluginFile + '\n' + tool.getName() + " will not work", e)); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	    }
+	}
+	if (writer != null) {
+	    writer.close();
+	}
+
+	// On Windows install make from equations.org
+	if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    try {
+		Path makePath = ArduinoPreferences.getArduinoHome().resolve("tools/make/make.exe"); //$NON-NLS-1$
+		if (!makePath.toFile().exists()) {
+		    Files.createDirectories(makePath.getParent());
+		    URL makeUrl = new URL("ftp://ftp.equation.com/make/32/make.exe"); //$NON-NLS-1$
+		    Files.copy(makeUrl.openStream(), makePath);
+		    makePath.toFile().setExecutable(true, false);
+		}
+
+	    } catch (IOException e) {
+		mstatus.add(new Status(IStatus.ERROR, Activator.getId(), "downloading make.exe", e));
+	    }
+	}
+
+	return mstatus.getChildren().length == 0 ? Status.OK_STATUS : mstatus;
+
     }
 
     static public void loadIndices(boolean immediatly) {
@@ -131,7 +187,7 @@ public class ArduinoManager {
 	    internalLoadIndices();
 	    return;
 	}
-	new Job("Fetching package index") {
+	new Job("Fetching package index") { //$NON-NLS-1$
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
@@ -164,7 +220,7 @@ public class ArduinoManager {
 
     static public List<PackageIndex> getPackageIndices() {
 	if (packageIndices == null) {
-	    String[] boardUrls = ArduinoPreferences.getBoardUrls().split("\n"); //$NON-NLS-1$
+	    String[] boardUrls = ArduinoPreferences.getBoardUrls().split(stringSplitter);
 	    packageIndices = new ArrayList<>(boardUrls.length);
 	    for (String boardUrl : boardUrls) {
 		loadPackageIndex(boardUrl, false);
@@ -268,10 +324,11 @@ public class ArduinoManager {
 	return new ProjectScope(project).getNode(Activator.getId());
     }
 
-    public static Collection<ArduinoLibrary> getLibraries(IProject project) throws CoreException {
+    public static Collection<ArduinoLibrary> getLibraries(IProject project) {
 	IEclipsePreferences settings = getSettings(project);
 	String librarySetting = settings.get(LIBRARIES, "[]"); //$NON-NLS-1$
 	Type stringSet = new TypeToken<Set<String>>() {
+	    // don'taskme why this is empty
 	}.getType();
 	Set<String> libraryNames = new Gson().fromJson(librarySetting, stringSet);
 	LibraryIndex index = getLibraryIndex();
@@ -282,7 +339,7 @@ public class ArduinoManager {
 	return libraries;
     }
 
-    public static void setLibraries(final IProject project, final Collection<ArduinoLibrary> libraries) throws CoreException {
+    public static void setLibraries(final IProject project, final Collection<ArduinoLibrary> libraries) {
 	List<String> libraryNames = new ArrayList<>(libraries.size());
 	for (ArduinoLibrary library : libraries) {
 	    libraryNames.add(library.getName());
@@ -295,10 +352,10 @@ public class ArduinoManager {
 	    Activator.log(e);
 	}
 
-	new Job("Install libraries") {
+	new Job("Install libraries") { //$NON-NLS-1$
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-		MultiStatus mstatus = new MultiStatus(Activator.getId(), 0, "Installing libraries", null);
+		MultiStatus mstatus = new MultiStatus(Activator.getId(), 0, "Installing libraries", null); //$NON-NLS-1$
 		for (ArduinoLibrary library : libraries) {
 		    IStatus status = library.install(monitor);
 		    if (!status.isOK()) {
@@ -321,83 +378,267 @@ public class ArduinoManager {
 	}.schedule();
     }
 
-    public static IStatus downloadAndInstall(String url, String archiveFileName, Path installPath, IProgressMonitor monitor) {
+    public static IStatus downloadAndInstall(String url, String archiveFileName, Path installPath, boolean forceDownload, IProgressMonitor monitor) {
+	Path dlDir = ArduinoPreferences.getArduinoHome().resolve("downloads"); //$NON-NLS-1$
+	Path archivePath = dlDir.resolve(archiveFileName);
+	String archiveFullFileName = archivePath.toString();
 	try {
 	    URL dl = new URL(url);
-	    Path dlDir = ArduinoPreferences.getArduinoHome().resolve("downloads"); //$NON-NLS-1$
 	    Files.createDirectories(dlDir);
-	    Path archivePath = dlDir.resolve(archiveFileName);
-	    Files.copy(dl.openStream(), archivePath, StandardCopyOption.REPLACE_EXISTING);
+	    if (!archivePath.toFile().exists() || forceDownload) {
+		Files.copy(dl.openStream(), archivePath, StandardCopyOption.REPLACE_EXISTING);
+	    }
+	} catch (IOException e) {
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to download. " + url, e);//$NON-NLS-1$
+	}
 
-	    boolean isWin = Platform.getOS().equals(Platform.OS_WIN32);
+	// Create an ArchiveInputStream with the correct archiving algorithm
+	if (archiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
+	    try (ArchiveInputStream inStream = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(archiveFullFileName)))) {
+		return extract(inStream, installPath.toFile(), 1, forceDownload);
+	    } catch (IOException | InterruptedException e) {
+		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar.bz2. " + archiveFullFileName, e);//$NON-NLS-1$
+	    }
+	} else if (archiveFileName.endsWith("zip")) { //$NON-NLS-1$
+	    try (ArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(archiveFullFileName))) {
+		return extract(in, installPath.toFile(), 1, forceDownload);
+	    } catch (IOException | InterruptedException e) {
+		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract zip. " + archiveFullFileName, e);//$NON-NLS-1$
+	    }
+	} else if (archiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
+	    try (ArchiveInputStream in = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(archiveFullFileName)))) {
+		return extract(in, installPath.toFile(), 1, forceDownload);
+	    } catch (IOException | InterruptedException e) {
+		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar.gz. " + archiveFullFileName, e);//$NON-NLS-1$
+	    }
+	} else if (archiveFileName.endsWith("tar")) { //$NON-NLS-1$
+	    try (ArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(archiveFullFileName))) {
+		return extract(in, installPath.toFile(), 1, forceDownload);
+	    } catch (IOException | InterruptedException e) {
+		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar. " + archiveFullFileName, e);//$NON-NLS-1$
+	    }
+	}
 
-	    // extract
-	    ArchiveInputStream archiveIn = null;
-	    try {
-		String compressor = null;
-		String archiver = null;
-		if (archiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
-		    compressor = CompressorStreamFactory.BZIP2;
-		    archiver = ArchiveStreamFactory.TAR;
-		} else if (archiveFileName.endsWith(".tar.gz") || archiveFileName.endsWith(".tgz")) { //$NON-NLS-1$ //$NON-NLS-2$
-		    compressor = CompressorStreamFactory.GZIP;
-		    archiver = ArchiveStreamFactory.TAR;
-		} else if (archiveFileName.endsWith(".tar.xz")) { //$NON-NLS-1$
-		    compressor = CompressorStreamFactory.XZ;
-		    archiver = ArchiveStreamFactory.TAR;
-		} else if (archiveFileName.endsWith(".zip")) { //$NON-NLS-1$
-		    archiver = ArchiveStreamFactory.ZIP;
-		}
+	return new Status(IStatus.ERROR, Activator.getId(), "Archive format not supported.");//$NON-NLS-1$
 
-		InputStream in = new BufferedInputStream(new FileInputStream(archivePath.toFile()));
-		if (compressor != null) {
-		    in = new CompressorStreamFactory().createCompressorInputStream(compressor, in);
-		}
-		archiveIn = new ArchiveStreamFactory().createArchiveInputStream(archiver, in);
+    }
 
-		for (ArchiveEntry entry = archiveIn.getNextEntry(); entry != null; entry = archiveIn.getNextEntry()) {
-		    if (entry.isDirectory()) {
+    public static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite) throws IOException, InterruptedException {
+
+	// Folders timestamps must be set at the end of archive extraction
+	// (because creating a file in a folder alters the folder's timestamp)
+	Map<File, Long> foldersTimestamps = new HashMap<>();
+
+	String pathPrefix = ""; //$NON-NLS-1$
+
+	Map<File, File> hardLinks = new HashMap<>();
+	Map<File, Integer> hardLinksMode = new HashMap<>();
+	Map<File, String> symLinks = new HashMap<>();
+	Map<File, Long> symLinksModifiedTimes = new HashMap<>();
+
+	// Cycle through all the archive entries
+	while (true) {
+	    ArchiveEntry entry = in.getNextEntry();
+	    if (entry == null) {
+		break;
+	    }
+
+	    // Extract entry info
+	    long size = entry.getSize();
+	    String name = entry.getName();
+	    boolean isDirectory = entry.isDirectory();
+	    boolean isLink = false;
+	    boolean isSymLink = false;
+	    String linkName = null;
+	    Integer mode = null;
+	    long modifiedTime = entry.getLastModifiedDate().getTime();
+
+	    {
+		// Skip MacOSX metadata
+		// http://superuser.com/questions/61185/why-do-i-get-files-like-foo-in-my-tarball-on-os-x
+		int slash = name.lastIndexOf('/');
+		if (slash == -1) {
+		    if (name.startsWith("._")) { //$NON-NLS-1$
 			continue;
 		    }
-
-		    Path entryPath = installPath.resolve(entry.getName());
-		    Files.createDirectories(entryPath.getParent());
-
-		    if (entry instanceof TarArchiveEntry) {
-			TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
-			if (tarEntry.isLink()) {
-			    Path linkPath = installPath.resolve(tarEntry.getLinkName());
-			    Files.createSymbolicLink(entryPath, entryPath.getParent().relativize(linkPath));
-			} else {
-			    Files.copy(archiveIn, entryPath, StandardCopyOption.REPLACE_EXISTING);
-			}
-			if (!isWin) {
-			    int mode = tarEntry.getMode();
-			    Files.setPosixFilePermissions(entryPath, toPerms(mode));
-			}
-		    } else {
-			Files.copy(archiveIn, entryPath, StandardCopyOption.REPLACE_EXISTING);
+		} else {
+		    if (name.substring(slash + 1).startsWith("._")) { //$NON-NLS-1$
+			continue;
 		    }
 		}
-	    } finally {
-		if (archiveIn != null) {
-		    archiveIn.close();
+	    }
+
+	    // Skip git metadata
+	    // http://www.unix.com/unix-for-dummies-questions-and-answers/124958-file-pax_global_header-means-what.html
+	    if (name.contains("pax_global_header")) { //$NON-NLS-1$
+		continue;
+	    }
+
+	    if (entry instanceof TarArchiveEntry) {
+		TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
+		mode = tarEntry.getMode();
+		isLink = tarEntry.isLink();
+		isSymLink = tarEntry.isSymbolicLink();
+		linkName = tarEntry.getLinkName();
+	    }
+
+	    // On the first archive entry, if requested, detect the common path
+	    // prefix to be stripped from filenames
+	    if (stripPath > 0 && pathPrefix.isEmpty()) {
+		int slash = 0;
+		while (stripPath > 0) {
+		    slash = name.indexOf("/", slash); //$NON-NLS-1$
+		    if (slash == -1) {
+			throw new IOException("Invalid archive: it must contain a single root folder");
+		    }
+		    slash++;
+		    stripPath--;
+		}
+		pathPrefix = name.substring(0, slash);
+	    }
+
+	    // Strip the common path prefix when requested
+	    if (!name.startsWith(pathPrefix)) {
+		throw new IOException("Invalid archive: it must contain a single root folder while file " + name + " is outside " + pathPrefix);
+	    }
+	    name = name.substring(pathPrefix.length());
+	    if (name.isEmpty()) {
+		continue;
+	    }
+	    File outputFile = new File(destFolder, name);
+
+	    File outputLinkedFile = null;
+	    if (isLink) {
+		if (!linkName.startsWith(pathPrefix)) {
+		    throw new IOException(
+			    "Invalid archive: it must contain a single root folder while file " + linkName + " is outside " + pathPrefix);
+		}
+		linkName = linkName.substring(pathPrefix.length());
+		outputLinkedFile = new File(destFolder, linkName);
+	    }
+	    if (isSymLink) {
+		// Symbolic links are referenced with relative paths
+		outputLinkedFile = new File(linkName);
+		if (outputLinkedFile.isAbsolute()) {
+		    System.err.println("Warning: file " + outputFile + " links to an absolute path " + outputLinkedFile);
+		    System.err.println();
 		}
 	    }
 
-	    // Fix up directory
-	    File[] children = installPath.toFile().listFiles();
-	    if (children.length == 1 && children[0].isDirectory()) {
-		// make that directory the install path
-		Path childPath = children[0].toPath();
-		Path tmpPath = installPath.getParent().resolve("_t"); //$NON-NLS-1$
-		Files.move(childPath, tmpPath);
-		Files.delete(installPath);
-		Files.move(tmpPath, installPath);
+	    // Safety check
+	    if (isDirectory) {
+		if (outputFile.isFile() && !overwrite) {
+		    throw new IOException("Can't create folder " + outputFile + ", a file with the same name exists!");
+		}
+	    } else {
+		// - isLink
+		// - isSymLink
+		// - anything else
+		if (outputFile.exists() && !overwrite) {
+		    throw new IOException("Can't extract file " + outputFile + ", file already exists!");
+		}
 	    }
-	    return Status.OK_STATUS;
-	} catch (IOException | CompressorException | ArchiveException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), "Installing Platform", e);
+
+	    // Extract the entry
+	    if (isDirectory) {
+		if (!outputFile.exists() && !outputFile.mkdirs()) {
+		    throw new IOException("Could not create folder: " + outputFile);
+		}
+		foldersTimestamps.put(outputFile, modifiedTime);
+	    } else if (isLink) {
+		hardLinks.put(outputFile, outputLinkedFile);
+		hardLinksMode.put(outputFile, mode);
+	    } else if (isSymLink) {
+		symLinks.put(outputFile, linkName);
+		symLinksModifiedTimes.put(outputFile, modifiedTime);
+	    } else {
+		// Create the containing folder if not exists
+		if (!outputFile.getParentFile().isDirectory()) {
+		    outputFile.getParentFile().mkdirs();
+		}
+		copyStreamToFile(in, size, outputFile);
+		outputFile.setLastModified(modifiedTime);
+	    }
+
+	    // Set file/folder permission
+	    if (mode != null && !isSymLink && outputFile.exists()) {
+		chmod(outputFile, mode);
+	    }
+	}
+
+	for (Map.Entry<File, File> entry : hardLinks.entrySet()) {
+	    if (entry.getKey().exists() && overwrite) {
+		entry.getKey().delete();
+	    }
+	    link(entry.getValue(), entry.getKey());
+	    Integer mode = hardLinksMode.get(entry.getKey());
+	    if (mode != null) {
+		chmod(entry.getKey(), mode);
+	    }
+	}
+
+	for (Map.Entry<File, String> entry : symLinks.entrySet()) {
+	    if (entry.getKey().exists() && overwrite) {
+		entry.getKey().delete();
+	    }
+	    symlink(entry.getValue(), entry.getKey());
+	    entry.getKey().setLastModified(symLinksModifiedTimes.get(entry.getKey()));
+	}
+
+	// Set folders timestamps
+	for (
+
+	File folder : foldersTimestamps.keySet())
+
+	{
+	    folder.setLastModified(foldersTimestamps.get(folder));
+	}
+	return Status.OK_STATUS;
+
+    }
+
+    private static void symlink(String something, File somewhere) throws IOException, InterruptedException {
+	Process process = Runtime.getRuntime().exec(new String[] { "ln", "-s", something, somewhere.getAbsolutePath() }, null, //$NON-NLS-1$ //$NON-NLS-2$
+		somewhere.getParentFile());
+	process.waitFor();
+    }
+
+    private static void link(File something, File somewhere) throws IOException, InterruptedException {
+	Process process = Runtime.getRuntime().exec(new String[] { "ln", something.getAbsolutePath(), somewhere.getAbsolutePath() }, null, null); //$NON-NLS-1$
+	process.waitFor();
+    }
+
+    private static void chmod(File file, int mode) throws IOException, InterruptedException {
+	Process process = Runtime.getRuntime().exec(new String[] { "chmod", Integer.toOctalString(mode), file.getAbsolutePath() }, null, null); //$NON-NLS-1$
+	process.waitFor();
+    }
+
+    private static void copyStreamToFile(InputStream in, long size, File outputFile) throws IOException {
+	FileOutputStream fos = null;
+	try {
+	    fos = new FileOutputStream(outputFile);
+	    // if size is not available, copy until EOF...
+	    if (size == -1) {
+		byte buffer[] = new byte[4096];
+		int length;
+		while ((length = in.read(buffer)) != -1) {
+		    fos.write(buffer, 0, length);
+		}
+		return;
+	    }
+
+	    // ...else copy just the needed amount of bytes
+	    byte buffer[] = new byte[4096];
+	    while (size > 0) {
+		int length = in.read(buffer);
+		if (length <= 0) {
+		    throw new IOException("Error while extracting file " + outputFile.getAbsolutePath());
+		}
+		fos.write(buffer, 0, length);
+		size -= length;
+	    }
+	} finally {
+	    IOUtils.closeQuietly(fos);
 	}
     }
 

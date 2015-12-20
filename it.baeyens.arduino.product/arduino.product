@@ -23,15 +23,11 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>-perspective 
-it.baeyens.arduino.application.perspective
---launcher.defaultAction openFile
---launcher.XXMaxPermSize 256M
---launcher.XXMaxPermSize 256m
+      <programArgs>-perspective it.baeyens.arduino.application.perspective
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.7
+      <vmArgs>-Dosgi.requiredJavaVersion=1.8
 -Xms40m
 -Xmx512m
       </vmArgs>

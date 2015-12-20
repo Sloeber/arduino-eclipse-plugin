@@ -1,22 +1,52 @@
 package it.baeyens.arduino.common;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.osgi.service.prefs.BackingStoreException;
 
 public class ConfigurationPreferences {
-    private static final String ARDUINO_HOME = "arduinoHome"; //$NON-NLS-1$
-    private static final String defaultHome = new Path(System.getProperty("user.home")).append("arduinoPlugin").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+
+    // private static final String defaulDownloadLocation = new Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
+    // //$NON-NLS-1$ //$NON-NLS-2$
 
     private static String getGlobalString(String key, String defaultValue) {
 	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
 	return myScope.get(key, defaultValue);
     }
 
+    private static void setGlobalString(String key, String value) {
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+	myScope.put(key, value);
+	try {
+	    myScope.flush();
+	} catch (BackingStoreException e) {
+	    e.printStackTrace();
+	}
+    }
+
     public static Path getInstallationPath() {
-	return new Path(getGlobalString(ARDUINO_HOME, defaultHome));
+	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, ArduinoConst.EMPTY_STRING);
+	if (storedValue.isEmpty()) {
+	    URI uri;
+	    try {
+		uri = Platform.getInstallLocation().getURL().toURI();
+		String defaulDownloadLocation = Paths.get(uri).resolve("arduinoPlugin").toString(); //$NON-NLS-1$
+		return new Path(defaulDownloadLocation);
+	    } catch (URISyntaxException e) {
+		// this should not happen
+		e.printStackTrace();
+	    }
+
+	}
+	return new Path(storedValue);
+
     }
 
     /**
@@ -43,6 +73,14 @@ public class ConfigurationPreferences {
 
     public static File getPostProcessingBoardsFile() {
 	return getInstallationPath().append(ArduinoConst.POST_PROCESSING_BOARDS_TXT).toFile();
+    }
+
+    public static String getBoardURLs() {
+	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
+    }
+
+    public static void setBoardURLs(String urls) {
+	setGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, urls);
     }
 
 }

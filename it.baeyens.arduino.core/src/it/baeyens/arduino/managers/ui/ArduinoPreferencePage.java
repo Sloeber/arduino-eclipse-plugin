@@ -20,49 +20,51 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.managers.ArduinoManager;
 import it.baeyens.arduino.managers.ArduinoPreferences;
 
 public class ArduinoPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	private Text urlsText;
+    private Text urlsText;
 
-	@Override
-	public void init(IWorkbench workbench) {
-	}
+    @Override
+    public void init(IWorkbench workbench) {
+	// no code needed
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite control = new Composite(parent, SWT.NONE);
-		control.setLayout(new GridLayout());
+    @Override
+    protected Control createContents(Composite parent) {
+	Composite control = new Composite(parent, SWT.NONE);
+	control.setLayout(new GridLayout());
 
-		Text desc = new Text(control, SWT.READ_ONLY | SWT.WRAP);
-		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		layoutData.widthHint = 500;
-		desc.setLayoutData(layoutData);
-		desc.setBackground(parent.getBackground());
-		desc.setText("Enter URLs for package_index.json files one per line.");
+	Text desc = new Text(control, SWT.READ_ONLY | SWT.WRAP);
+	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
+	layoutData.widthHint = 500;
+	desc.setLayoutData(layoutData);
+	desc.setBackground(parent.getBackground());
+	desc.setText("Enter URLs for package_index.json files one per line.");
 
-		urlsText = new Text(control, SWT.BORDER|SWT.MULTI);
-		urlsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		urlsText.setText(ArduinoPreferences.getBoardUrls());
+	this.urlsText = new Text(control, SWT.BORDER | SWT.MULTI);
+	this.urlsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	this.urlsText.setText(ArduinoPreferences.getBoardUrls());
 
-		return control;
-	}
+	return control;
+    }
 
-	@Override
-	public boolean performOk() {
-		ArduinoPreferences.setBoardUrls(urlsText.getText());
-		ArduinoManager.loadIndices(true);
-		return true;
-	}
+    @Override
+    public boolean performOk() {
+	ArduinoPreferences.setBoardUrls(this.urlsText.getText());
+	ArduinoManager.loadIndices(true);
+	return true;
+    }
 
-	@Override
-	protected void performDefaults() {
-		String defaultBoardUrl = ArduinoPreferences.getDefaultBoardUrls();
-		urlsText.setText(defaultBoardUrl);
-		ArduinoPreferences.setBoardUrls(defaultBoardUrl);
-		super.performDefaults();
-	}
+    @Override
+    protected void performDefaults() {
+	String defaultBoardUrl = ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS;
+	this.urlsText.setText(defaultBoardUrl);
+	ArduinoPreferences.setBoardUrls(defaultBoardUrl);
+	super.performDefaults();
+    }
 
 }

@@ -152,7 +152,6 @@
 -->
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-        category="it.baeyens.arduino.core"
         class="it.baeyens.arduino.ui.ArduinoPreferencePage"
         id="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
         name="%page.name">

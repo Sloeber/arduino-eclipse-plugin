@@ -25,7 +25,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ExternalCommandLauncher;
 
@@ -48,7 +47,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private org.eclipse.swt.graphics.Color greenColor = null;
     private Label myMakeOKText;
     boolean myIsMakeInstalled;
-    private String myInfoMessage = ""; //$NON-NLS-1$
 
     /**
      * PropertyChange set the flag mIsDirty to false. <br/>
@@ -79,19 +77,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	return testStatus();
     }
 
-    private boolean showError() {
-	String FullDialogMessage = this.myInfoMessage + "\nAre you sure about this setup";
-	FullDialogMessage = FullDialogMessage + "\n\nYes:    continue and ignore the warning\nNo: do not continue";
-	MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-	dialog.setText("Warnings about your setup");
-	dialog.setMessage(FullDialogMessage);
-	int ret = dialog.open();
-	if (ret == SWT.NO) {
-	    return false;
-	}
-	return true;
-    }
-
     /**
      * PerformOK is done when the end users presses OK on a preference page. The order of the execution of the performOK is undefined. This method
      * saves the path variables based on the settings and removes the last used setting.<br/>
@@ -112,45 +97,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	    return false;
 	}
 
-	if (this.myInfoMessage.length() > 1) {
-	    if (!showError()) {
-		return false;
-	    }
-	}
-
 	super.performOk();
 
-	// reset the previous selected values
-	String empty = "";//$NON-NLS-1$
-	ArduinoInstancePreferences.SetLastUsedArduinoBoard(empty);
-	ArduinoInstancePreferences.SetLastUsedUploadPort(empty);
-	ArduinoInstancePreferences.setLastUsedBoardsFile(empty);
-	ArduinoInstancePreferences.setLastUsedMenuOption(empty);
 	return true;
     }
-
-    // /**
-    // * This method sets the eclipse path variables to contain the important Arduino folders (code wise that is)
-    // *
-    // *
-    // * The arduino library location in the root folder (used when importing arduino libraries) The Private library path (used when importing private
-    // * libraries) The Arduino IDE root folder
-    // *
-    // *
-    // */
-    // private void setWorkSpacePathVariables() {
-    //
-    // IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    // IPathVariableManager pathMan = workspace.getPathVariableManager();
-    //
-    // try {
-    // pathMan.setURIValue(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB, URIUtil.toURI(mArduinoPrivateLibPath.getStringValue()));
-    // } catch (CoreException e) {
-    // Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-    // "Failed to create the workspace path variables. The setup will not work properly", e));
-    // e.printStackTrace();
-    // }
-    // }
 
     @Override
     public void init(IWorkbench workbench) {
@@ -167,11 +117,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATH, "Private Library path",
+	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATHS, "Private Library path",
 		"Select a folder containing libraries", parent);
 	addField(this.arduinoPrivateLibPath);
 
-	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATH, "Private hardware path",
+	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATHS, "Private hardware path",
 		"Select a folder containing hardware", parent);
 	addField(this.arduinoPrivateHardwarePath);
 
@@ -254,25 +204,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      * 
      */
     boolean testStatus() {
-	String ErrorMessage = "";
-	String Seperator = "";
 
 	this.myMakeOKText.setForeground(this.myIsMakeInstalled ? this.greenColor : this.redColor);
 	this.myMakeOKText.setText(this.myIsMakeInstalled ? "Make is found on your system." : "Make is not found on your system");
 
-	// Validate the private lib path
-	// Path folder = new Path(mArduinoPrivateLibPath.getStringValue());
-	// if (!folder.toFile().canRead()) {
-	// ErrorMessage += Seperator + "Private library folder is not correct!";
-	// Seperator = "/n";
-	// }
-	// folder = new Path(mArduinoPrivateHardwarePath.getStringValue());
-	// if (!folder.toFile().canRead()) {
-	// ErrorMessage += Seperator + "Hardware library folder is not correct!";
-	// Seperator = "/n";
-	// }
-
-	setErrorMessage(ErrorMessage);
+	setErrorMessage(null);
 	setValid(true);
 	return true;
     }

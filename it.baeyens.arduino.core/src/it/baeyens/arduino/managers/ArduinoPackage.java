@@ -19,7 +19,6 @@ public class ArduinoPackage {
     private String maintainer;
     private String websiteURL;
     private String email;
-    private ArduinoHelp help;
     private List<ArduinoPlatform> platforms;
     private List<ArduinoTool> tools;
 
@@ -53,10 +52,6 @@ public class ArduinoPackage {
 
     public String getEmail() {
 	return this.email;
-    }
-
-    public ArduinoHelp getHelp() {
-	return this.help;
     }
 
     public Collection<ArduinoPlatform> getPlatforms() {
