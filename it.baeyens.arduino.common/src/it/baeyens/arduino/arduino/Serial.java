@@ -72,7 +72,7 @@ public class Serial implements SerialPortEventListener {
 	    String[] portNames;
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (OS.indexOf("mac") >= 0) {
-			portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("tty.*"));
+			portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(serial|usb).*"));
 		}
 		else {
 			portNames = SerialPortList.getPortNames();
