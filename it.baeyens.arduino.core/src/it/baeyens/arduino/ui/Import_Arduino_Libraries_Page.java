@@ -1,9 +1,13 @@
 package it.baeyens.arduino.ui;
 
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -74,21 +78,22 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	theGriddata.horizontalSpan = 1;
 	this.myLibrarySelector.setLayoutData(theGriddata);
 
+	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.myProject);
+	prjDesc.getDefaultSettingConfiguration();
+
 	// find the items to add to the list
-	Set<String> allLibraries = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-	allLibraries.addAll(ArduinoLibraries.findAllHarwareLibraries(this.myProject));
-	// allLibraries.addAll(ArduinoLibraries.findAllUserLibraries(myProject));
-	// allLibraries.addAll(ArduinoLibraries.findAllArduinoLibraries(myProject));
+	Map<String, String> allLibraries = new HashMap<>();
+	allLibraries.putAll(ArduinoLibraries.findAllArduinoLibraries());
+	allLibraries.putAll(ArduinoLibraries.findAllPrivateLibraries());
+	allLibraries.putAll(ArduinoLibraries.findAllHarwareLibraries(prjDesc.getActiveConfiguration()));
 
 	// Get the data in the tree
 	Set<String> allLibrariesAlreadyUsed = ArduinoLibraries.getAllLibrariesFromProject(this.myProject);
 	this.myLibrarySelector.setRedraw(false);
-	Iterator<String> iterator = allLibraries.iterator();
-	while (iterator.hasNext()) {
+	for (Entry<String, String> curlib : allLibraries.entrySet()) {
 	    TreeItem child = new TreeItem(this.myLibrarySelector, SWT.NONE);
-	    String nextLibrary = iterator.next();
-	    child.setText(nextLibrary);
-	    if (allLibrariesAlreadyUsed.contains(nextLibrary))
+	    child.setText(curlib.getKey());
+	    if (allLibrariesAlreadyUsed.contains(curlib.getKey()))
 		child.setChecked(true);
 	}
 

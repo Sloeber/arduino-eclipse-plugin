@@ -5,3 +5,4 @@ ALT_SIZE_COMMAND="{COMPILER.PATH}{COMPILER.SIZE.CMD}" --format=avr --mcu={BUILD.
 BUILD.VARIANT.PATH={RUNTIME.PLATFORM.PATH}/variants/{BUILD.VARIANT}
 BUILD.CORE.PATH={RUNTIME.PLATFORM.PATH}/cores/{BUILD.CORE}
 archive_file_path={build.path}/{archive_file}
+runtime.IDE.version=10606

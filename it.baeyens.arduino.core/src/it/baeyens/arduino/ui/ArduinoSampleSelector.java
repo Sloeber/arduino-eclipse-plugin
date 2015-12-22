@@ -2,6 +2,8 @@ package it.baeyens.arduino.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -26,8 +28,10 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
 public class ArduinoSampleSelector extends Composite {
-    protected Tree myTreeSelector;
+    protected Tree sampleTree;
     protected Label myLabel;
+    TreeMap<String, String> examples = new TreeMap<>(); // contains the items in a hashmap so we can sort and all that things before we make the
+							// listtree
 
     public ArduinoSampleSelector(Composite parent, int style, String label) {
 	super(parent, style);
@@ -41,18 +45,20 @@ public class ArduinoSampleSelector extends Composite {
 	composite.setLayoutData(theGriddata);
 	composite.setFont(parent.getFont());
 
-	myLabel = new Label(composite, SWT.NONE);
-	myLabel.setText(label);
+	this.myLabel = new Label(composite, SWT.NONE);
+	this.myLabel.setText(label);
 	theGriddata = new GridData(SWT.LEFT, SWT.TOP, false, false);
 	theGriddata.horizontalSpan = 1;
-	myLabel.setLayoutData(theGriddata);
+	this.myLabel.setLayoutData(theGriddata);
 
-	myTreeSelector = new Tree(composite, SWT.CHECK | SWT.BORDER);
-	myTreeSelector.setLayoutData(theGriddata);
+	theGriddata = new GridData(SWT.LEFT, SWT.TOP, false, false);
+	theGriddata.horizontalSpan = 2;
+	this.sampleTree = new Tree(composite, SWT.CHECK | SWT.BORDER);
+	this.sampleTree.setLayoutData(theGriddata);
 	// Get the data in the tree
-	myTreeSelector.setRedraw(false);
+	this.sampleTree.setRedraw(false);
 
-	myTreeSelector.addListener(SWT.Selection, new Listener() {
+	this.sampleTree.addListener(SWT.Selection, new Listener() {
 	    @Override
 	    public void handleEvent(Event event) {
 
@@ -71,8 +77,8 @@ public class ArduinoSampleSelector extends Composite {
 	// Turn drawing back on!
 	theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 1;
-	myTreeSelector.setLayoutData(theGriddata);
-	myTreeSelector.setRedraw(true);
+	this.sampleTree.setLayoutData(theGriddata);
+	this.sampleTree.setRedraw(true);
 
     }
 
@@ -88,8 +94,9 @@ public class ArduinoSampleSelector extends Composite {
      * @param mPlatformPathPath
      */
 
-    public void AddAllExamples(String exampleLocations[], String libLocations[], String mplatformLocations[]) {
-	// removeExamples();
+    public void AddAllExamples(String exampleLocations[], String libLocations[], String selectedPlatformLocation) {
+
+	//
 	//
 	// if (arduinoExample.toFile().exists()) {
 	// // Create Arduino Item
@@ -101,17 +108,49 @@ public class ArduinoSampleSelector extends Composite {
 	// addExamplesFolder(arduinoExample);
 	// }
 	//
-	// if (arduinoLibPath.toFile().exists()) {
-	// addLibExamples(arduinoLibPath, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	// }
-	//
-	// if (hardwareLibrary.toFile().exists()) {
-	// addLibExamples(hardwareLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_HARDWARE_LIB);
-	// }
-	//
-	// if (privateLibrary.toFile().exists()) {
-	// addLibExamples(privateLibrary, ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_PRIVATE_LIB);
-	// }
+	if (libLocations != null) {
+	    for (String curLibLocation : libLocations) {
+		if (new File(curLibLocation).exists()) {
+		    getLibExampleFolders(curLibLocation);
+		}
+	    }
+	}
+	if (exampleLocations != null) {
+	    for (String curExampleLocation : exampleLocations) {
+		if (new File(curExampleLocation).exists()) {
+		    getExampleFolders(curExampleLocation);
+		}
+	    }
+	}
+
+	// This one should be the last as hasmap overwrites doubles. This way hardware libraries are preferred to others
+	if (selectedPlatformLocation != null) {
+	    if (new File(selectedPlatformLocation).exists()) {
+		getLibExampleFolders(new Path(selectedPlatformLocation).append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
+	    }
+	}
+
+	this.sampleTree.removeAll();
+	String curLibName = null;
+	TreeItem curlib = null;
+	for (Map.Entry<String, String> entry : this.examples.entrySet()) {
+	    String keys[] = entry.getKey().split("-"); //$NON-NLS-1$
+	    if (!keys[0].equals(curLibName)) {
+		curlib = new TreeItem(this.sampleTree, SWT.NONE);
+		curLibName = keys[0];
+		curlib.setText(keys[0]);
+	    }
+	    TreeItem curExample = new TreeItem(curlib, SWT.NONE);
+	    curExample.setText(keys[1]);
+	    curExample.setData("examplePath", entry.getValue()); //$NON-NLS-1$
+	    curExample.setData("libName", keys[0]); //$NON-NLS-1$
+	    IPath libPath = new Path(entry.getValue()).removeLastSegments(1);
+	    if (libPath.lastSegment().equalsIgnoreCase("examples")) //$NON-NLS-1$
+	    {
+		curExample.setData("libPath", libPath.removeLastSegments(1).toString()); //$NON-NLS-1$
+	    }
+	}
+
     }
 
     /**
@@ -121,7 +160,8 @@ public class ArduinoSampleSelector extends Composite {
      * @param iPath
      * @param pathVarName
      */
-    private void addExamplesFolder(IPath iPath) {
+    private void getExampleFolders(String location) {
+	IPath iPath = new Path(location);
 	File LibRoot = iPath.toFile();
 	IPath LibFolder;
 	String[] children = LibRoot.list();
@@ -132,87 +172,46 @@ public class ArduinoSampleSelector extends Composite {
 	    for (int i = 0; i < children.length; i++) {
 		LibFolder = iPath.append(children[i]);
 		if (LibFolder.toFile().isDirectory()) {
-		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
-		    libItem.setText(children[i]);
-		    addExamples(libItem, LibFolder);
+		    this.examples.put(iPath.removeLastSegments(1).lastSegment() + '-' + children[i], LibFolder.toString());
 		}
 	    }
 	}
     }
 
-    private void addLibExamples(IPath iPath, String pathVarName) {
+    private void getLibExampleFolders(String location) {
+	IPath iPath = new Path(location);
 	File LibRoot = iPath.toFile();
-	IPath LibFolder;
+	File LibFolder;
 	String[] children = LibRoot.list();
 	if (children == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
 	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
 	    for (int i = 0; i < children.length; i++) {
-		if ((LibFolder = iPath.append(children[i]).append("examples")).toFile().isDirectory()) {
-		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
-		    libItem.setText(children[i]);
-		    libItem.setData(pathVarName);
-		    addExamples(libItem, LibFolder);
-		} else if ((LibFolder = iPath.append(children[i]).append("Examples")).toFile().isDirectory()) {
-		    TreeItem libItem = new TreeItem(myTreeSelector, SWT.NONE);
-		    libItem.setText(children[i]);
-		    libItem.setData(pathVarName);
-		    addExamples(libItem, LibFolder);
+		if ((LibFolder = iPath.append(children[i]).append("examples").toFile()).isDirectory()) { //$NON-NLS-1$
+		    getExampleFolders(LibFolder.getAbsolutePath());
+		} else if ((LibFolder = iPath.append(children[i]).append("Examples").toFile()).isDirectory()) { //$NON-NLS-1$
+		    getExampleFolders(LibFolder.getAbsolutePath());
 		}
 	    }
 	}
-    }
-
-    /**
-     * This method does the actual adding of the examples to the listbox.
-     * 
-     * This method is recursive so we can go deeper in the folder structure on disk. It stops when a .ino file is found
-     * 
-     * @param LibItem
-     *            the parent to add the new examples to
-     * @param iPath
-     *            The path where the examples are located.
-     */
-    private static void addExamples(TreeItem LibItem, IPath iPath) {
-	File LibRoot = iPath.toFile();
-	IPath LibFolder;
-	String[] children = LibRoot.list();
-	if (children == null) {
-	    // Either dir does not exist or is not a directory
-	} else {
-	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
-	    for (int i = 0; i < children.length; i++) {
-		// Get filename of file or directory
-		LibFolder = iPath.append(children[i]);
-		if (LibFolder.toFile().isDirectory()) {
-		    TreeItem child = new TreeItem(LibItem, SWT.NONE);
-		    child.setText(children[i]);
-		    child.setData(LibFolder);
-		    addExamples(child, LibFolder);
-		}
-	    }
-	}
-    }
-
-    public void removeExamples() {
-	myTreeSelector.removeAll();
-
     }
 
     @Override
     public void setEnabled(boolean enable) {
-	myTreeSelector.setEnabled(enable);
-	myLabel.setEnabled(enable);
+	this.sampleTree.setEnabled(enable);
+	this.myLabel.setEnabled(enable);
     }
 
     private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link) throws IOException {
 	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
-	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("examplePath") != null)) { //$NON-NLS-1$
+		String location = (String) curchildTreeItem.getData("examplePath"); //$NON-NLS-1$
+		Path locationPath = new Path(location);
 		if (link) {
-		    ArduinoHelpers.linkDirectory(project, (IPath) curchildTreeItem.getData(), target);
+		    ArduinoHelpers.linkDirectory(project, locationPath, target);
 		} else {
-		    FileUtils.copyDirectory(((IPath) curchildTreeItem.getData()).toFile(), project.getLocation().toFile());
+		    FileUtils.copyDirectory(locationPath.toFile(), project.getLocation().toFile());
 		}
 	    }
 	    recursiveCopySelectedExamples(project, target, curchildTreeItem, link);
@@ -220,36 +219,34 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     public void CopySelectedExamples(IProject project, IPath target, boolean link) throws IOException {
-	myTreeSelector.getItems();
-	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
+	this.sampleTree.getItems();
+	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
 	    recursiveCopySelectedExamples(project, target, curTreeItem, link);
 	}
     }
 
-    private void recursiveImportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], String PathVarName,
-	    TreeItem curTreeItem, String LibName) {
+    private void recursiveImportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], TreeItem curTreeItem) {
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
-	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData() != null)) {
+	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("libPath") != null)) { //$NON-NLS-1$
+		String location = (String) curchildTreeItem.getData("libPath"); //$NON-NLS-1$
+		String LibName = (String) curchildTreeItem.getData("libName"); //$NON-NLS-1$
+
 		try {
-		    ArduinoHelpers.addCodeFolder(project, (Path) new Path(PathVarName).append(LibName), ArduinoConst.WORKSPACE_LIB_FOLDER + LibName,
-			    configurationDescriptions);
+		    ArduinoHelpers.addCodeFolder(project, new Path(location), ArduinoConst.WORKSPACE_LIB_FOLDER + LibName, configurationDescriptions);
 		} catch (CoreException e) {
 		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
 		}
 		break;
 	    }
-	    recursiveImportSelectedLibraries(project, configurationDescriptions, PathVarName, curchildTreeItem, LibName);
+	    recursiveImportSelectedLibraries(project, configurationDescriptions, curchildTreeItem);
 	}
 
     }
 
     public void importSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[]) {
-	myTreeSelector.getItems();
-	for (TreeItem curTreeItem : myTreeSelector.getItems()) {
-	    String PathVarName = (String) curTreeItem.getData();
-	    if (PathVarName != null) {
-		recursiveImportSelectedLibraries(project, configurationDescriptions, PathVarName, curTreeItem, curTreeItem.getText());
-	    }
+	this.sampleTree.getItems();
+	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
+	    recursiveImportSelectedLibraries(project, configurationDescriptions, curTreeItem);
 	}
 
     }

@@ -42,9 +42,12 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
     protected ArduinoSampleSelector mExampleEditor = null;
     protected Button mCheckBoxUseCurrentSettingsAsDefault; // checkbox whether to use the current settings as default
     protected Button mCheckBoxUseCurrentLinkSample;
-    private String mExampleLocations[] = null;
-    private String mLibLocations[] = null;
-    private String mPlatformLocations[] = null;
+    private String platformPath = null;
+
+    public void setPlatformPath(String newPlatformPath) {
+	this.platformPath = newPlatformPath;
+	AddAllExamples();
+    }
 
     public NewArduinoSketchWizardCodeSelectionPage(String pageName) {
 	super(pageName);
@@ -118,13 +121,11 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
 	restoreAllSelections();// load the default settings
 	SetControls();// set the controls according to the setting
-	if (this.mExampleLocations != null) {
-	    this.mExampleEditor.AddAllExamples(this.mExampleLocations, this.mLibLocations, this.mPlatformLocations);
-	}
 
 	validatePage();// validate the page
 
 	setControl(composite);
+
     }
 
     /**
@@ -243,20 +244,9 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	}
     }
 
-    public void removeExamples() {
-	if (this.mExampleEditor != null)
-	    this.mExampleEditor.removeExamples();
-
-    }
-
-    public void AddAllExamples(String Examples[], String libs[], String platforms[]) {
+    public void AddAllExamples() {
 	if (this.mExampleEditor != null) {
-	    this.mExampleEditor.AddAllExamples(Examples, libs, platforms);
-	} else {
-	    this.mExampleLocations = Examples;
-	    this.mLibLocations = libs;
-	    this.mPlatformLocations = platforms;
-
+	    this.mExampleEditor.AddAllExamples(null, ArduinoInstancePreferences.getPrivateLibraryPaths(), this.platformPath);
 	}
 
     }

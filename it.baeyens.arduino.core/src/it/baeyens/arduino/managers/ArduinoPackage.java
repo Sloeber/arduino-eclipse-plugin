@@ -54,8 +54,8 @@ public class ArduinoPackage {
 	return this.email;
     }
 
-    public Collection<ArduinoPlatform> getPlatforms() {
-	return Collections.unmodifiableCollection(this.platforms);
+    public List<ArduinoPlatform> getPlatforms() {
+	return this.platforms;
     }
 
     /**

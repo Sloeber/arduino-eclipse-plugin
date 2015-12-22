@@ -283,6 +283,16 @@ public class ArduinoManager {
 	return boards;
     }
 
+    public static List<ArduinoPlatform> getPlatforms() {
+	List<ArduinoPlatform> platforms = new ArrayList<>();
+	for (PackageIndex index : packageIndices) {
+	    for (ArduinoPackage pkg : index.getPackages()) {
+		platforms.addAll(pkg.getPlatforms());
+	    }
+	}
+	return platforms;
+    }
+
     static public List<ArduinoBoard> getInstalledBoards() throws CoreException {
 	List<ArduinoBoard> boards = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
@@ -293,6 +303,14 @@ public class ArduinoManager {
 	    }
 	}
 	return boards;
+    }
+
+    static public List<ArduinoPackage> getPackages() {
+	List<ArduinoPackage> packages = new ArrayList<>();
+	for (PackageIndex index : packageIndices) {
+	    packages.addAll(index.getPackages());
+	}
+	return packages;
     }
 
     static public ArduinoPackage getPackage(String packageName) {

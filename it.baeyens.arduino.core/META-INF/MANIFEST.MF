@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.equinox.security;bundle-version="1.1.100",
  org.eclipse.ui.navigator,
  com.google.gson,
- org.apache.commons.compress
+ org.apache.commons.compress,
+ org.eclipse.equinox.preferences
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.tools,

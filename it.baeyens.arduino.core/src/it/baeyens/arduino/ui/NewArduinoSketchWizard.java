@@ -34,9 +34,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -47,7 +46,6 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
@@ -60,6 +58,16 @@ import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
  * 
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
+
+    @Override
+    public IWizardPage getNextPage(IWizardPage page) {
+	// TODO Auto-generated method stub
+	if (page.equals(this.mNewArduinoSketchWizardCodeSelectionPage)) {
+	    String PlatformPath = NewArduinoSketchWizard.this.mArduinoPage.getPlatformFolder().toString();
+	    NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(PlatformPath);
+	}
+	return super.getNextPage(page);
+    }
 
     private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
     protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add the folder for the templates
@@ -110,25 +118,6 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	addPage(this.mArduinoPage);
 	addPage(this.mNewArduinoSketchWizardCodeSelectionPage);
 	addPage(this.mBuildCfgPage);
-
-	this.mArduinoPage.setListener(new Listener() {
-
-	    @Override
-	    public void handleEvent(Event event) {
-		if (event == null) {
-		    NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.removeExamples();
-		} else {
-		    String PlatformPaths[] = null; // TODO add platfoirm paths
-						   // mArduinoPage.getPlatformFolder().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
-		    String arduinoExample[] = null; // TODO add examples
-						    // ArduinoInstancePreferences.getArduinoPath().append(ArduinoConst.ARDUINO_EXAMPLE_FOLDER_NAME);
-		    String libraryPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
-
-		    NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.AddAllExamples(arduinoExample, PlatformPaths, libraryPaths);
-		}
-
-	    }
-	});
 
     }
 
@@ -276,8 +265,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[2];
-		exclusionPath[0] = new Path("Libraries/*/?xamples");
-		exclusionPath[1] = new Path("Libraries/*/?xtras");
+		exclusionPath[0] = new Path("Libraries/*/?xamples"); //$NON-NLS-1$
+		exclusionPath[1] = new Path("Libraries/*/?xtras"); //$NON-NLS-1$
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
 		ICSourceEntry[] out = null;

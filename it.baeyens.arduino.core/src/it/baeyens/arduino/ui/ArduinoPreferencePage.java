@@ -10,7 +10,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.PathEditor;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -42,24 +41,10 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     private PathEditor arduinoPrivateLibPath;
     private PathEditor arduinoPrivateHardwarePath;
     private ComboFieldEditor mArduinoBuildBeforeUploadOption;
-    private boolean mIsDirty = false;
     private org.eclipse.swt.graphics.Color redColor = null;
     private org.eclipse.swt.graphics.Color greenColor = null;
     private Label myMakeOKText;
     boolean myIsMakeInstalled;
-
-    /**
-     * PropertyChange set the flag mIsDirty to false. <br/>
-     * This is needed because the default PerformOK saves all fields in the object store. Therefore I set the mIsDirty flag to true as soon as a field
-     * gets change. Then I use this flag in the PerformOK to decide to call the super performOK or not.
-     * 
-     * @author Jan Baeyens
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-	this.mIsDirty = true;
-	testStatus();
-    }
 
     public ArduinoPreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -90,9 +75,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
      */
     @Override
     public boolean performOk() {
-	if (!this.mIsDirty) {
-	    return true;
-	}
 	if (!testStatus()) {
 	    return false;
 	}
@@ -120,10 +102,12 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATHS, "Private Library path",
 		"Select a folder containing libraries", parent);
 	addField(this.arduinoPrivateLibPath);
+	arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
 
 	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATHS, "Private hardware path",
 		"Select a folder containing hardware", parent);
 	addField(this.arduinoPrivateHardwarePath);
+	arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
 
 	Dialog.applyDialogFont(parent);
 
@@ -215,7 +199,6 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
     @Override
     protected void performApply() {
-	this.mIsDirty = true;
 	super.performApply();
     }
 

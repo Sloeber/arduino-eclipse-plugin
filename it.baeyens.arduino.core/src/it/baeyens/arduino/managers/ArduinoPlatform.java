@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -183,6 +184,21 @@ public class ArduinoPlatform {
 	Path installPath = getInstallPath();
 	return Arrays.asList(installPath.resolve("cores/{build.core}"), //$NON-NLS-1$
 		installPath.resolve("variants/{build.variant}")); //$NON-NLS-1$
+    }
+
+    public IStatus remove(IProgressMonitor monitor) {
+	// Check if we're installed
+	if (!isInstalled()) {
+	    return Status.OK_STATUS;
+	}
+
+	try {
+	    FileUtils.deleteDirectory(getInstallPath().toFile());
+	} catch (IOException e) {
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), e); //$NON-NLS-1$
+	}
+
+	return Status.OK_STATUS;
     }
 
     public IStatus install(IProgressMonitor monitor) {

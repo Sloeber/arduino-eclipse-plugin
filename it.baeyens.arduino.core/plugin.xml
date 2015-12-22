@@ -159,9 +159,9 @@
 
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.managers.ui.ArduinoBoardsPreferencePage"
+            class="it.baeyens.arduino.managers.ui.ArduinoPlatformPreferencePage"
             id="it.baeyens.arduino.eclipse.loation_page"
-            name="Boards">
+            name="Platforms and Boards">
       </page>
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"

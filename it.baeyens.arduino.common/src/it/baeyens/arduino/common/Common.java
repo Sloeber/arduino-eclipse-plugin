@@ -558,7 +558,7 @@ public class Common extends ArduinoInstancePreferences {
      */
     public static String getDefaultPrivateLibraryPath() {
 	IPath homPath = new Path(System.getProperty("user.home")); //$NON-NLS-1$
-	return homPath.append("Arduino").append("libraries").toString(); //$NON-NLS-1$ //$NON-NLS-2$
+	return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString(); //$NON-NLS-1$
     }
 
     public static File getWorkspaceRoot() {

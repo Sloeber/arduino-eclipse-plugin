@@ -53,9 +53,6 @@ public class Activator implements BundleActivator {
 	String LibPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
 	ArduinoInstancePreferences.setPrivateLibraryPaths(LibPaths);
 
-	LibPaths = ArduinoInstancePreferences.getPrivateHardwarePaths();
-	ArduinoInstancePreferences.setPrivateHardwarePaths(LibPaths);
-
 	Job job = new Job("pluginCoreStartInitiator") { //$NON-NLS-1$
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
@@ -140,10 +137,10 @@ public class Activator implements BundleActivator {
      * 
      */
     private static void makeOurOwnCustomBoards_txt() {
-	makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt", ConfigurationPreferences.getPreProcessingBoardsFile(), false); //$NON-NLS-1$
-	makeOurOwnCustomBoard_txt("config/post_processing_boards_-.txt", ConfigurationPreferences.getPostProcessingBoardsFile(), false); //$NON-NLS-1$
-	makeOurOwnCustomBoard_txt("config/pre_processing_platform_-.txt", ConfigurationPreferences.getPreProcessingPlatformFile(), false); //$NON-NLS-1$
-	makeOurOwnCustomBoard_txt("config/post_processing_platform_-.txt", ConfigurationPreferences.getPostProcessingPlatformFile(), false); //$NON-NLS-1$
+	makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt", ConfigurationPreferences.getPreProcessingBoardsFile(), true); //$NON-NLS-1$
+	makeOurOwnCustomBoard_txt("config/post_processing_boards_-.txt", ConfigurationPreferences.getPostProcessingBoardsFile(), true); //$NON-NLS-1$
+	makeOurOwnCustomBoard_txt("config/pre_processing_platform_-.txt", ConfigurationPreferences.getPreProcessingPlatformFile(), true); //$NON-NLS-1$
+	makeOurOwnCustomBoard_txt("config/post_processing_platform_-.txt", ConfigurationPreferences.getPostProcessingPlatformFile(), true); //$NON-NLS-1$
     }
 
     /**
