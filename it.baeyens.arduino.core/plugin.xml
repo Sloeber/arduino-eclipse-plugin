@@ -159,15 +159,21 @@
 
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.managers.ui.ArduinoPlatformPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoPlatformPreferencePage"
             id="it.baeyens.arduino.eclipse.loation_page"
             name="Platforms and Boards">
       </page>
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.managers.ui.ArduinoPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoLinkPreferencePage"
             id="it.baeyens.arduino.eclipse.boards"
             name="Locations">
+      </page>
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoLibraryPreferencePage"
+            id="it.baeyens.arduino.eclipse.libraries"
+            name="Library Manager">
       </page>
    </extension>
 

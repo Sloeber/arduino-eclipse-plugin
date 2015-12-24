@@ -240,6 +240,7 @@ public class ArduinoManager {
 	    if (librariesFile.exists()) {
 		try (Reader reader = new FileReader(librariesFile)) {
 		    libraryIndex = new Gson().fromJson(reader, LibraryIndex.class);
+		    libraryIndex.resolve();
 		}
 	    }
 	} catch (IOException e) {

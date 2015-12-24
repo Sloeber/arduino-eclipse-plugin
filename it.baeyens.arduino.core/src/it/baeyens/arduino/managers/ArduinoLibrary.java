@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -13,7 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-public class ArduinoLibrary {
+public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
 
     private String name;
     private String version;
@@ -198,6 +199,16 @@ public class ArduinoLibrary {
 	    }
 	}
 	return sources;
+    }
+
+    @Override
+    public int compare(ArduinoLibrary o1, ArduinoLibrary o2) {
+	return o1.getName().compareTo(o2.getName());
+    }
+
+    public IStatus remove(IProgressMonitor monitor) {
+	// TODO Auto-generated method stub
+	return null;
     }
 
 }

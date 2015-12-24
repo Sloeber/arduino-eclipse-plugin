@@ -1,5 +1,5 @@
 
-package it.baeyens.arduino.managers.ui;
+package it.baeyens.arduino.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +27,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import it.baeyens.arduino.managers.ArduinoManager;
 import it.baeyens.arduino.managers.ArduinoPackage;
 import it.baeyens.arduino.managers.ArduinoPlatform;
-import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoPlatformPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     QNX Software Systems - Initial API and implementation
  *******************************************************************************/
-package it.baeyens.arduino.managers.ui;
+package it.baeyens.arduino.ui;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -24,7 +24,7 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.managers.ArduinoManager;
 import it.baeyens.arduino.managers.ArduinoPreferences;
 
-public class ArduinoPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     private Text urlsText;
 
