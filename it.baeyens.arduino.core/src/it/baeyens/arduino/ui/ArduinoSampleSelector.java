@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
 public class ArduinoSampleSelector extends Composite {
@@ -96,37 +97,36 @@ public class ArduinoSampleSelector extends Composite {
 
     public void AddAllExamples(String exampleLocations[], String libLocations[], String selectedPlatformLocation) {
 
-	//
-	//
-	// if (arduinoExample.toFile().exists()) {
-	// // Create Arduino Item
-	// // TreeItem myArduinoExampleItem = new TreeItem(myTreeSelector, SWT.NONE);
-	// // myArduinoExampleItem.setText("Arduino examples");
-	// // myArduinoExampleItem.setData(ArduinoConst.WORKSPACE_PATH_VARIABLE_NAME_ARDUINO_LIB);
-	// // // Add the Arduino Libs
-	// // addExamples(myArduinoExampleItem, arduinoExample);
-	// addExamplesFolder(arduinoExample);
-	// }
-	//
+	// Get the examples of the library manager installed libraries
+	IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
+	if (CommonLibLocation.toFile().exists()) {
+	    getLibExampleFolders(CommonLibLocation);
+	}
+
+	// get the examples from the user provide library locations
 	if (libLocations != null) {
 	    for (String curLibLocation : libLocations) {
 		if (new File(curLibLocation).exists()) {
-		    getLibExampleFolders(curLibLocation);
-		}
-	    }
-	}
-	if (exampleLocations != null) {
-	    for (String curExampleLocation : exampleLocations) {
-		if (new File(curExampleLocation).exists()) {
-		    getExampleFolders(curExampleLocation);
+		    getLibExampleFolders(new Path(curLibLocation));
 		}
 	    }
 	}
 
+	// Get the examples from the example locations
+	if (exampleLocations != null) {
+	    for (String curExampleLocation : exampleLocations) {
+		Path Folder = new Path(curExampleLocation);
+		if (Folder.toFile().exists()) {
+		    getExampleFolders(new File(curExampleLocation).getName(), Folder);
+		}
+	    }
+	}
+
+	// Get the examples of the libraries from the selected hardware
 	// This one should be the last as hasmap overwrites doubles. This way hardware libraries are preferred to others
 	if (selectedPlatformLocation != null) {
 	    if (new File(selectedPlatformLocation).exists()) {
-		getLibExampleFolders(new Path(selectedPlatformLocation).append(ArduinoConst.LIBRARY_PATH_SUFFIX).toString());
+		getLibExampleFolders(new Path(selectedPlatformLocation).append(ArduinoConst.LIBRARY_PATH_SUFFIX));
 	    }
 	}
 
@@ -160,38 +160,55 @@ public class ArduinoSampleSelector extends Composite {
      * @param iPath
      * @param pathVarName
      */
-    private void getExampleFolders(String location) {
-	IPath iPath = new Path(location);
-	File LibRoot = iPath.toFile();
-	IPath LibFolder;
-	String[] children = LibRoot.list();
+    private void getExampleFolders(String libname, IPath location) {
+	String[] children = location.toFile().list();
 	if (children == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
 	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
-	    for (int i = 0; i < children.length; i++) {
-		LibFolder = iPath.append(children[i]);
+	    for (String curFolder : children) {
+		IPath LibFolder = location.append(curFolder);
 		if (LibFolder.toFile().isDirectory()) {
-		    this.examples.put(iPath.removeLastSegments(1).lastSegment() + '-' + children[i], LibFolder.toString());
+		    this.examples.put(libname + '-' + curFolder, LibFolder.toString());
 		}
 	    }
 	}
     }
 
-    private void getLibExampleFolders(String location) {
-	IPath iPath = new Path(location);
-	File LibRoot = iPath.toFile();
-	File LibFolder;
-	String[] children = LibRoot.list();
-	if (children == null) {
+    /***
+     * finds all the example folders for both the version including and without version libraries
+     * 
+     * @param location
+     *            The parent folder of the libraries
+     */
+    private void getLibExampleFolders(IPath LibRoot) {
+
+	String[] Libs = LibRoot.toFile().list();
+	if (Libs == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
-	    java.util.Arrays.sort(children, String.CASE_INSENSITIVE_ORDER);
-	    for (int i = 0; i < children.length; i++) {
-		if ((LibFolder = iPath.append(children[i]).append("examples").toFile()).isDirectory()) { //$NON-NLS-1$
-		    getExampleFolders(LibFolder.getAbsolutePath());
-		} else if ((LibFolder = iPath.append(children[i]).append("Examples").toFile()).isDirectory()) { //$NON-NLS-1$
-		    getExampleFolders(LibFolder.getAbsolutePath());
+	    java.util.Arrays.sort(Libs, String.CASE_INSENSITIVE_ORDER);
+	    for (String curLib : Libs) {
+		IPath Lib_examples = LibRoot.append(curLib).append("examples");//$NON-NLS-1$
+		IPath Lib_Examples = LibRoot.append(curLib).append("Examples");//$NON-NLS-1$
+		if (Lib_examples.toFile().isDirectory()) {
+		    getExampleFolders(curLib, Lib_examples);
+		} else if (Lib_Examples.toFile().isDirectory()) {
+		    getExampleFolders(curLib, Lib_Examples);
+		} else // nothing found directly so maybe this is a version based lib
+		{
+		    String[] versions = LibRoot.append(curLib).toFile().list();
+		    if (versions != null) {
+			if (versions.length == 1) {// There can only be 1 version of a lib
+			    Lib_examples = LibRoot.append(curLib).append(versions[0]).append("examples");//$NON-NLS-1$
+			    Lib_Examples = LibRoot.append(curLib).append(versions[0]).append("Examples");//$NON-NLS-1$
+			    if (Lib_examples.toFile().isDirectory()) {
+				getExampleFolders(curLib, Lib_examples);
+			    } else if (Lib_Examples.toFile().isDirectory()) {
+				getExampleFolders(curLib, Lib_Examples);
+			    }
+			}
+		    }
 		}
 	    }
 	}

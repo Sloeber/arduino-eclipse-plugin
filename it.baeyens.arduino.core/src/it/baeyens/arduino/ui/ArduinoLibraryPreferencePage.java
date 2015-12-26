@@ -3,7 +3,9 @@ package it.baeyens.arduino.ui;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,6 +18,8 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -33,9 +37,19 @@ import it.baeyens.arduino.managers.LibraryIndex;
 
 public class ArduinoLibraryPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-    protected List<ArduinoLibrary> removeLibraries = null;
-    protected List<ArduinoLibrary> addLibraries = null;
+    protected HashMap<String, String> ModdedLibraries = null;
     private Table table;
+    ModifyListener tt = new ModifyListener() {
+
+	@Override
+	public void modifyText(ModifyEvent e) {
+	    // TODO Auto-generated method stub
+	    CCombo theCombo = (CCombo) e.getSource();
+	    String libname = (String) theCombo.getData();
+	    String version = theCombo.getText();
+	    ArduinoLibraryPreferencePage.this.ModdedLibraries.put(libname, version);
+	}
+    };
 
     @Override
     public void init(IWorkbench workbench) {
@@ -87,13 +101,12 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 	    return;
 	}
 
+	this.ModdedLibraries = new HashMap<>();
 	this.table.removeAll();
 	LibraryIndex libraryIndex = ArduinoManager.getLibraryIndex();
 	Set<String> categories = libraryIndex.getCategories();
 
 	for (String curCategory : categories) {
-	    // TreeItem packageItem = new TreeItem(this.platformTree, SWT.NONE);
-	    // packageItem.setText(curCategory);
 	    Collection<ArduinoLibrary> libraries = libraryIndex.getLibraries(curCategory);
 	    List<ArduinoLibrary> librarylist = new ArrayList<>(libraries);
 	    Collections.sort(librarylist, new ArduinoLibrary());
@@ -107,17 +120,18 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 		if (!curLibrary.getName().equals(prefLibraryName)) {
 		    libraryItem = new TableItem(this.table, SWT.NONE);
 		    prefLibraryName = curLibrary.getName();
-		    libraryItem.setData(curLibrary);
 		    libraryItem.setText(0, curCategory);
 		    libraryItem.setText(1, curLibrary.getName());
 
 		    TableEditor editor = new TableEditor(this.table);
+		    if (combo != null) {
+			combo.addModifyListener(this.tt);
+		    }
 		    combo = new CCombo(this.table, SWT.BORDER | SWT.READ_ONLY);
 		    combo.add("remove");
-		    combo.add("");
-		    combo.add(curLibrary.getVersion());
 		    editor.grabHorizontal = true;
 		    editor.setEditor(combo, libraryItem, 2);
+		    combo.setData(curLibrary.getName());
 
 		}
 		if ((libraryItem != null) && (combo != null)) {
@@ -129,40 +143,42 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 		    }
 		}
 	    }
-	}
-    }
-
-    protected IStatus updateInstallation(IProgressMonitor monitor) {
-	MultiStatus status = new MultiStatus(Activator.getId(), 0, "Installing Arduino Board Platforms", null);
-
-	for (ArduinoLibrary curLibrary : this.removeLibraries) {
-	    status.add(curLibrary.remove(monitor));
-	}
-	for (ArduinoLibrary curLibrary : this.addLibraries) {
-	    status.add(curLibrary.install(monitor));
-	}
-
-	return status;
-    }
-
-    private void markInstallationChanges() {
-	this.removeLibraries = new ArrayList<>();
-	this.addLibraries = new ArrayList<>();
-
-	for (TableItem curTableItem : this.table.getItems()) {
-	    ArduinoLibrary curLib = (ArduinoLibrary) curTableItem.getData();
-	    String Version = curTableItem.getText(3);
-	    if (curLib.isInstalled() && !(curLib.getVersion().equals(Version))) {
-		this.removeLibraries.add(curLib);
-	    } else if (!curLib.isInstalled() && (curLib.getVersion().equals(Version))) {
-		this.addLibraries.add(curLib);
+	    if (combo != null) {
+		combo.addModifyListener(this.tt);
 	    }
 	}
     }
 
+    protected IStatus updateInstallation(IProgressMonitor monitor) {
+	MultiStatus status = new MultiStatus(Activator.getId(), 0, "Installing Arduino libraries", null);
+
+	if (this.ModdedLibraries != null) {
+	    if (this.ModdedLibraries.size() > 0) {
+
+		for (Entry<String, String> curTableItem : this.ModdedLibraries.entrySet()) {
+		    String Version = curTableItem.getValue();
+		    String libName = curTableItem.getKey();
+		    ArduinoLibrary removeLib = ArduinoManager.getLibraryIndex().getInstalledLibrary(libName);
+		    if (removeLib != null) {
+			if (!(removeLib.getVersion().equals(Version))) {
+			    status.add(removeLib.remove(monitor));
+			}
+
+		    }
+		    ArduinoLibrary curLib = ArduinoManager.getLibraryIndex().getLibrary(libName, Version);
+		    if (curLib != null) {
+			if (!curLib.isInstalled()) {
+			    status.add(curLib.install(monitor));
+			}
+		    }
+		}
+	    }
+	}
+	return status;
+    }
+
     @Override
     public boolean performOk() {
-	markInstallationChanges();
 	new Job("Adopting Arduino Board Platforms") {
 
 	    @Override

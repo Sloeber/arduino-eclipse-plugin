@@ -1,6 +1,7 @@
 package it.baeyens.arduino.managers;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,11 +9,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
+import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
 
@@ -157,7 +161,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
 	    return Status.OK_STATUS;
 	}
 
-	return ArduinoManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), true, monitor);
+	return ArduinoManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
     }
 
     public Collection<Path> getIncludePath() {
@@ -207,8 +211,17 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public IStatus remove(IProgressMonitor monitor) {
-	// TODO Auto-generated method stub
-	return null;
+	if (!isInstalled()) {
+	    return Status.OK_STATUS;
+	}
+
+	try {
+	    FileUtils.deleteDirectory(getInstallPath().toFile());
+	} catch (IOException e) {
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), e); //$NON-NLS-1$
+	}
+
+	return Status.OK_STATUS;
     }
 
 }

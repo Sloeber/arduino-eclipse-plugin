@@ -57,7 +57,9 @@ public class ArduinoConst {
     public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";//$NON-NLS-1$
     // Folder Information
     public static final String LIBRARY_PATH_SUFFIX = "libraries";//$NON-NLS-1$
+    public static final String DOWNLOADS_FOLDER = "downloads";//$NON-NLS-1$
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";//$NON-NLS-1$
+    public static final String ARDUINO_CODE_FOLDER_NAME = "arduino";//$NON-NLS-1$
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";//$NON-NLS-1$
     public static final String DEFAULT = "Default";//$NON-NLS-1$
     public static final String BOARDS_FILE_NAME = "boards.txt";//$NON-NLS-1$

@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -46,7 +47,14 @@ public class ConfigurationPreferences {
 
 	}
 	return new Path(storedValue);
+    }
 
+    public static IPath getInstallationPathLibraries() {
+	return getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
+    }
+
+    public static IPath getInstallationPathDownload() {
+	return getInstallationPath().append(ArduinoConst.DOWNLOADS_FOLDER);
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -82,15 +83,15 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	prjDesc.getDefaultSettingConfiguration();
 
 	// find the items to add to the list
-	Map<String, String> allLibraries = new HashMap<>();
-	allLibraries.putAll(ArduinoLibraries.findAllArduinoLibraries());
+	Map<String, IPath> allLibraries = new HashMap<>();
+	allLibraries.putAll(ArduinoLibraries.findAllArduinoManagerLibraries());
 	allLibraries.putAll(ArduinoLibraries.findAllPrivateLibraries());
 	allLibraries.putAll(ArduinoLibraries.findAllHarwareLibraries(prjDesc.getActiveConfiguration()));
 
 	// Get the data in the tree
 	Set<String> allLibrariesAlreadyUsed = ArduinoLibraries.getAllLibrariesFromProject(this.myProject);
 	this.myLibrarySelector.setRedraw(false);
-	for (Entry<String, String> curlib : allLibraries.entrySet()) {
+	for (Entry<String, IPath> curlib : allLibraries.entrySet()) {
 	    TreeItem child = new TreeItem(this.myLibrarySelector, SWT.NONE);
 	    child.setText(curlib.getKey());
 	    if (allLibrariesAlreadyUsed.contains(curlib.getKey()))

@@ -180,7 +180,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    return false;
 	} catch (InvocationTargetException e) {
 	    Throwable realException = e.getTargetException();
-	    MessageDialog.openError(getShell(), "Error", realException.getMessage());
+	    MessageDialog.openError(getShell(), "Error", realException.getMessage()); //$NON-NLS-1$
 	    return false;
 	}
 	//
@@ -232,7 +232,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ArduinoHelpers.addTheNatures(description);
 
 	    // Add the Arduino folder
-	    ArduinoHelpers.createNewFolder(project, "arduino", null);
+	    ArduinoHelpers.createNewFolder(project, ArduinoConst.ARDUINO_CODE_FOLDER_NAME, null);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
@@ -261,12 +261,14 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    //
 	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getConfigurations());
 
-	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true);
+	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true); //$NON-NLS-1$
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
-		Path exclusionPath[] = new Path[2];
-		exclusionPath[0] = new Path("Libraries/*/?xamples"); //$NON-NLS-1$
-		exclusionPath[1] = new Path("Libraries/*/?xtras"); //$NON-NLS-1$
+		Path exclusionPath[] = new Path[4];
+		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/?xamples"); //$NON-NLS-1$
+		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/?xtras"); //$NON-NLS-1$
+		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/test"); //$NON-NLS-1$
+		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/third-party"); //$NON-NLS-1$
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
 		ICSourceEntry[] out = null;

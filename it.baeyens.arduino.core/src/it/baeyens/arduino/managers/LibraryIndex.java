@@ -44,8 +44,26 @@ public class LibraryIndex {
 	}
     }
 
-    public ArduinoLibrary getLibrary(String name) {
+    public ArduinoLibrary getLatestLibrary(String name) {
 	return this.latestLibs.get(name);
+    }
+
+    public ArduinoLibrary getLibrary(String libName, String version) {
+	for (ArduinoLibrary library : this.libraries) {
+	    if (library.getName().equals(libName) && (library.getVersion().equals(version))) {
+		return library;
+	    }
+	}
+	return null;
+    }
+
+    public ArduinoLibrary getInstalledLibrary(String libName) {
+	for (ArduinoLibrary library : this.libraries) {
+	    if (library.getName().equals(libName) && library.isInstalled()) {
+		return library;
+	    }
+	}
+	return null;
     }
 
     public Set<String> getCategories() {
