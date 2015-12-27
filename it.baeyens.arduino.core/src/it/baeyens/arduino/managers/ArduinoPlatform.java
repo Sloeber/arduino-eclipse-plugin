@@ -98,7 +98,7 @@ public class ArduinoPlatform {
 	    try (Reader reader = new FileReader(getBoardsFile())) {
 		boardProps.load(reader);
 	    } catch (IOException e) {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), "Loading boards.txt", e));
+		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_boards, e));
 	    }
 
 	    this.boardsFile = new HierarchicalProperties(boardProps);
@@ -128,7 +128,7 @@ public class ArduinoPlatform {
 	return this.toolsDependencies;
     }
 
-    public ArduinoTool getTool(String toolName) throws CoreException {
+    public ArduinoTool getTool(String toolName) {
 	for (ToolDependency toolDep : this.toolsDependencies) {
 	    if (toolDep.getName().equals(toolName)) {
 		return toolDep.getTool();
@@ -151,7 +151,7 @@ public class ArduinoPlatform {
 		    this.platformProperties.load(reader1);
 		}
 	    } catch (IOException e) {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), "Loading platform.txt", e));
+		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_platform, e));
 	    }
 	}
 	return this.platformProperties;

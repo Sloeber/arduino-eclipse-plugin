@@ -68,7 +68,7 @@ public class ArduinoTool {
 	}
 
 	// No valid system
-	return new Status(IStatus.ERROR, Activator.getId(), "No valid system found for " + this.name);
+	return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoTool_no_valid_system + this.name);
     }
 
     // public Properties getToolProperties() {

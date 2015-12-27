@@ -72,7 +72,7 @@
   <extension
            point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
-           class="it.baeyens.arduino.ui.ArduinoSelectionPage"
+           class="it.baeyens.arduino.ui.ArduinoBoardSelectionPage"
            icon="icons/arduino.png"
            name="Arduino board selection"
            weight="050"

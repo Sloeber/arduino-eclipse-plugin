@@ -9,79 +9,78 @@ package it.baeyens.arduino.managers;
 
 import java.util.Properties;
 
-
 public class ArduinoBoard {
 
-	private String name;
+    private String name;
 
-	private String id;
+    private String id;
 
-	private ArduinoPlatform platform;
-	private HierarchicalProperties properties;
+    private ArduinoPlatform platform;
+    private HierarchicalProperties properties;
 
-	public ArduinoBoard() {
-	}
+    public ArduinoBoard() {
+    }
 
-	public ArduinoBoard(String id, HierarchicalProperties properties) {
-		this.properties = properties;
-		this.id = id;
-		this.name = this.properties.getChild("name").getValue(); //$NON-NLS-1$
-	}
+    public ArduinoBoard(String id, HierarchicalProperties properties) {
+	this.properties = properties;
+	this.id = id;
+	this.name = this.properties.getChild("name").getValue(); //$NON-NLS-1$
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return this.name;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+	return this.id;
+    }
 
-	public ArduinoPlatform getPlatform() {
-		return platform;
-	}
+    public ArduinoPlatform getPlatform() {
+	return this.platform;
+    }
 
-	ArduinoBoard setOwners(ArduinoPlatform platform) {
-		this.platform = platform;
-		return this;
-	}
+    ArduinoBoard setOwners(ArduinoPlatform platform) {
+	this.platform = platform;
+	return this;
+    }
 
-	public String getProperty(String key) {
-		return properties.getProperty(key);
-	}
+    public String getProperty(String key) {
+	return this.properties.getProperty(key);
+    }
 
-	public Properties getBoardProperties() {
-		return properties.flatten();
-	}
+    public Properties getBoardProperties() {
+	return this.properties.flatten();
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((platform == null) ? 0 : platform.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+	result = prime * result + ((this.platform == null) ? 0 : this.platform.hashCode());
+	return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ArduinoBoard other = (ArduinoBoard) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (platform == null) {
-			if (other.platform != null)
-				return false;
-		} else if (!platform.equals(other.platform))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	ArduinoBoard other = (ArduinoBoard) obj;
+	if (this.name == null) {
+	    if (other.name != null)
+		return false;
+	} else if (!this.name.equals(other.name))
+	    return false;
+	if (this.platform == null) {
+	    if (other.platform != null)
+		return false;
+	} else if (!this.platform.equals(other.platform))
+	    return false;
+	return true;
+    }
 
 }

@@ -51,13 +51,13 @@ public class SCP extends SSH {
 
     public void open() throws IOException {
 	try {
-	    channel = session.openChannel("exec");
-	    ((ChannelExec) channel).setCommand("scp -t -r -d /");
+	    this.channel = this.session.openChannel("exec"); //$NON-NLS-1$
+	    ((ChannelExec) this.channel).setCommand("scp -t -r -d /"); //$NON-NLS-1$
 
-	    out = channel.getOutputStream();
-	    in = channel.getInputStream();
+	    this.out = this.channel.getOutputStream();
+	    this.in = this.channel.getInputStream();
 
-	    channel.connect();
+	    this.channel.connect();
 	    ensureAcknowledged();
 	} catch (Exception e) {
 	    close();
@@ -65,21 +65,21 @@ public class SCP extends SSH {
     }
 
     public void close() throws IOException {
-	if (out != null) {
-	    out.close();
+	if (this.out != null) {
+	    this.out.close();
 	}
-	if (in != null) {
-	    in.close();
+	if (this.in != null) {
+	    this.in.close();
 	}
-	if (channel != null) {
-	    channel.disconnect();
+	if (this.channel != null) {
+	    this.channel.disconnect();
 	}
     }
 
     protected void ensureAcknowledged() throws IOException {
-	out.flush();
+	this.out.flush();
 
-	int b = in.read();
+	int b = this.in.read();
 
 	if (b == 0)
 	    return;
@@ -88,18 +88,18 @@ public class SCP extends SSH {
 
 	if (b == 1 || b == 2) {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("SCP error: ");
+	    sb.append("SCP error: "); //$NON-NLS-1$
 
 	    int c;
 	    do {
-		c = in.read();
+		c = this.in.read();
 		sb.append((char) c);
 	    } while (c != '\n');
 
 	    throw new IOException(sb.toString());
 	}
 
-	throw new IOException("Uknown SCP error: " + b);
+	throw new IOException("Uknown SCP error: " + b); //$NON-NLS-1$
     }
 
     public void sendFile(File localFile) throws IOException {
@@ -107,7 +107,7 @@ public class SCP extends SSH {
     }
 
     public void sendFile(File localFile, String remoteFile) throws IOException {
-	out.write(("C0644 " + localFile.length() + " " + remoteFile + "\n").getBytes());
+	this.out.write(("C0644 " + localFile.length() + " " + remoteFile + "\n").getBytes()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	ensureAcknowledged();
 
 	try (FileInputStream fis = new FileInputStream(localFile);) {
@@ -117,24 +117,24 @@ public class SCP extends SSH {
 		int len = fis.read(buf, 0, buf.length);
 		if (len <= 0)
 		    break;
-		out.write(buf, 0, len);
+		this.out.write(buf, 0, len);
 	    }
 
 	    // \0 terminates file
 	    buf[0] = 0;
-	    out.write(buf, 0, 1);
+	    this.out.write(buf, 0, 1);
 	}
 
 	ensureAcknowledged();
     }
 
     public void startFolder(String folder) throws IOException {
-	out.write(("D0755 0 " + folder + "\n").getBytes());
+	this.out.write(("D0755 0 " + folder + "\n").getBytes()); //$NON-NLS-1$ //$NON-NLS-2$
 	ensureAcknowledged();
     }
 
     public void endFolder() throws IOException {
-	out.write("E\n".getBytes());
+	this.out.write("E\n".getBytes()); //$NON-NLS-1$
 	ensureAcknowledged();
     }
 

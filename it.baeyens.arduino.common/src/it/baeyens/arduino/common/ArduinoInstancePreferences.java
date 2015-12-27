@@ -46,8 +46,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    public void run() {
 		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		dialog.setText("Build before upload?");
-		dialog.setMessage("Do you want to build before upload?\nUse preferences->arduino to set/change your default answer.");
+		dialog.setText(Messages.ArduinoInstancePreferences_Build_before_upload);
+		dialog.setMessage(Messages.ArduinoInstancePreferences_do_you_want_to_build_before_upload);
 		switch (dialog.open()) {
 		case SWT.NO:
 		    this.ret = false;
@@ -239,7 +239,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    // If not then we bail out with an error.
 	    // And no pages are presented (with no option to FINISH).
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "Please wait for the 'arduino installer job' to finish. Look at right bottom of the eclipse window.", null));
+		    Messages.ArduinoInstancePreferences_Plerase_wait_for_installer_job, null));
 	}
 	return false;
     }

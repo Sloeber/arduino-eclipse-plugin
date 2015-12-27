@@ -77,13 +77,13 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 	this.table.setLinesVisible(true);
 
 	TableColumn categoryColumn = new TableColumn(this.table, SWT.LEAD);
-	categoryColumn.setText("category");
+	categoryColumn.setText(Messages.ui_category);
 
 	TableColumn LibNameColumn = new TableColumn(this.table, SWT.LEAD);
-	LibNameColumn.setText("name");
+	LibNameColumn.setText(Messages.ui_name);
 
 	TableColumn VersionsColumn = new TableColumn(this.table, SWT.LEAD);
-	VersionsColumn.setText("version");
+	VersionsColumn.setText(Messages.ui_version);
 
 	TableColumnLayout tableLayout = new TableColumnLayout();
 	tableLayout.setColumnData(categoryColumn, new ColumnWeightData(5, 150, true));
@@ -128,7 +128,7 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 			combo.addModifyListener(this.tt);
 		    }
 		    combo = new CCombo(this.table, SWT.BORDER | SWT.READ_ONLY);
-		    combo.add("remove");
+		    combo.add(Messages.ui_remove);
 		    editor.grabHorizontal = true;
 		    editor.setEditor(combo, libraryItem, 2);
 		    combo.setData(curLibrary.getName());
@@ -150,7 +150,7 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
     }
 
     protected IStatus updateInstallation(IProgressMonitor monitor) {
-	MultiStatus status = new MultiStatus(Activator.getId(), 0, "Installing Arduino libraries", null);
+	MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries, null);
 
 	if (this.ModdedLibraries != null) {
 	    if (this.ModdedLibraries.size() > 0) {
@@ -179,7 +179,7 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 
     @Override
     public boolean performOk() {
-	new Job("Adopting Arduino Board Platforms") {
+	new Job(Messages.ui_Adopting_arduino_libraries) {
 
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {

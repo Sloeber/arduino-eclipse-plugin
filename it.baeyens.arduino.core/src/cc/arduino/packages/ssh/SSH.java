@@ -54,7 +54,7 @@ public class SSH {
 
 	Channel channel = null;
 	try {
-	    channel = session.openChannel("exec");
+	    channel = this.session.openChannel("exec"); //$NON-NLS-1$
 	    ((ChannelExec) channel).setCommand(command);
 
 	    channel.setInputStream(null);

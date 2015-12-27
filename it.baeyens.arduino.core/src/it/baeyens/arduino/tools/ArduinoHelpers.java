@@ -181,8 +181,8 @@ public class ArduinoHelpers extends Common {
 	try {
 	    mngr.setProjectDescription(project, projectDescription, true, null);
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "Could not add folder " + IncludePath.toOSString() + " to include path in project" + project.getName(), e)); //$NON-NLS-1$ //$NON-NLS-2$
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Could_not_add_folder + IncludePath.toOSString()
+		    + Messages.ArduinoHelpers_To_include_path + project.getName(), e));
 	}
 
     }
@@ -222,7 +222,7 @@ public class ArduinoHelpers extends Common {
 	try {
 	    createNewFolder(project, target.toString(), URIUtil.toURI(source));
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Could not create folder " + target, e));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Create_folder_failed + target, e));
 	}
     }
 
@@ -388,7 +388,8 @@ public class ArduinoHelpers extends Common {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "The folder " + folder + " does not contain any files.", null)); //$NON-NLS-1$ //$NON-NLS-2$
+		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID,
+			Messages.ArduinoHelpers_The_folder + folder + Messages.ArduinoHelpers_is_empty, null));
 		return;
 	    }
 	    for (File f : a) {
@@ -437,7 +438,8 @@ public class ArduinoHelpers extends Common {
 	    String sections[] = buildCoreFolder.split(COLON);
 	    if (sections.length != 2) {
 		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-			"the value for key " + ENV_KEY_build_core + " in boards.txt is invalid:" + buildCoreFolder, null));
+			Messages.ArduinoHelpers_Value_for_key + ENV_KEY_build_core + Messages.ArduinoHelpers__in_boards_invalid + buildCoreFolder,
+			null));
 	    } else {
 		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE, EMPTY_STRING);
 		addCodeFolder(project, new Path(ARDUINO_HARDWARE_FOLDER_NAME + SLACH + sections[1] + SLACH + architecture + SLACH
@@ -599,10 +601,11 @@ public class ArduinoHelpers extends Common {
 		}
 	    }
 	} catch (FileNotFoundException e) {
-	    Common.log(
-		    new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + envVarFile.toString() + " file does not exist. ", e));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    Messages.ArduinoHelpers_Error_parsing + envVarFile.toString() + Messages.ArduinoHelpers_File_does_not_exists, e));
 	} catch (IOException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error parsing " + envVarFile.toString() + " I/O exception. ", e));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    Messages.ArduinoHelpers_Error_parsing + envVarFile.toString() + Messages.ArduinoHelpers_IO_exception, e));
 	}
     }
 
@@ -624,15 +627,15 @@ public class ArduinoHelpers extends Common {
 	if (boardSectionMap == null) {
 	    if (warn) {
 		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID,
-			"The project " + confDesc.getProjectDescription().getProject().getName()
-				+ " has an invalid arduino board configuration.\nConfiguration:" + confDesc.getName() + "\nBoardsfile:"
-				+ boardsFile.getBoardsTxtName() + "\nBoardID:" + boardID));
+			Messages.ArduinoHelpers_The_project + confDesc.getProjectDescription().getProject().getName()
+				+ Messages.ArduinoHelpers_Invalid_boards_config + confDesc.getName() + Messages.ArduinoHelpers_boards_file
+				+ boardsFile.getBoardsTxtName() + Messages.ArduinoHelpers_Boards_id + boardID));
 	    }
 	    return;
 	}
 	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 	    // if it is not a menu item add it
-	    if (!currentPair.getKey().startsWith("menu.")) {
+	    if (!currentPair.getKey().startsWith(Messages.ArduinoHelpers_menu)) {
 		String keyString = MakeKeyString(currentPair.getKey());
 		String valueString = MakeEnvironmentString(currentPair.getValue(), ArduinoConst.ENV_KEY_ARDUINO_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
@@ -653,7 +656,7 @@ public class ArduinoHelpers extends Common {
 	    }
 	}
 
-	Map<String, String> menuSectionMap = boardsFile.getSection("menu");
+	Map<String, String> menuSectionMap = boardsFile.getSection("menu"); //$NON-NLS-1$
 	String[] optionNames = boardsFile.getMenuNames();
 	for (int currentOption = 0; currentOption < optionNames.length; currentOption++) {
 	    String optionName = optionNames[currentOption];
@@ -785,7 +788,7 @@ public class ArduinoHelpers extends Common {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPlatformFilename);
 	} else {
 	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
-		    "Your setup is corrupt following file is missing " + pluginPlatformFilename.getAbsolutePath()));
+		    Messages.ArduinoHelpers_File_missing + pluginPlatformFilename.getAbsolutePath()));
 	}
 
 	// now process the boards file
@@ -838,7 +841,7 @@ public class ArduinoHelpers extends Common {
 		IPath coreReference = findReferencedFolder(vendor, architecture.toLowerCase());// TODO fix this quickfix to lower which is really
 											       // dirty
 		if (coreReference == null) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to find core reference: " + core));
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Core_refference_missing + core));
 		} else {
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core_path,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());
@@ -857,7 +860,7 @@ public class ArduinoHelpers extends Common {
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variantSplit[1]);
 		IPath variantReference = findReferencedFolder(vendor, architecture);
 		if (variantReference == null) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to find variant reference: " + variant));
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Variant_reference_missing + variant));
 		} else {
 		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant_path,
 			    variantReference.append(ARDUINO_VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
@@ -922,19 +925,19 @@ public class ArduinoHelpers extends Common {
 	    String recipeParts[] = recipe.split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3); //$NON-NLS-1$
 	    switch (recipeParts.length) {
 	    case 0:
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".1", "echo no command for " + recipeKey); //$NON-NLS-1$ //$NON-NLS-2$
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', Messages.ArduinoHelpers_No_command_for + recipeKey);
 		break;
 	    case 1:
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".1", recipeParts[0]); //$NON-NLS-1$
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
 		break;
 	    case 2:
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".1", recipeParts[0]); //$NON-NLS-1$
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".2", recipeParts[1]); //$NON-NLS-1$
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
 		break;
 	    case 3:
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".1", recipeParts[0]); //$NON-NLS-1$
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".2", recipeParts[1]); //$NON-NLS-1$
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + ".3", recipeParts[2]); //$NON-NLS-1$
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
 		break;
 	    default:
 		// this should never happen as the split is limited to 3
@@ -1008,9 +1011,9 @@ public class ArduinoHelpers extends Common {
 	// "").replaceAll("\"\\{object_file}\"",
 	// "").replaceAll("\"\\{source_file}\"", "")
 	// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
-	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + keyPrefix);
+	String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + keyPrefix); //$NON-NLS-1$ //$NON-NLS-2$
 	StringBuilder sb = new StringBuilder(ret);
-	String regex = "\\{[^}]*\\}";
+	String regex = "\\{[^}]*\\}"; //$NON-NLS-1$
 	Pattern p = Pattern.compile(regex); // Create the pattern.
 	Matcher matcher = p.matcher(sb); // Create the matcher.
 	while (matcher.find()) {
@@ -1061,13 +1064,14 @@ public class ArduinoHelpers extends Common {
 	    try {
 		buildFolder.delete(true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to delete the folder " + cfgDescription.getName(), e));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			Messages.ArduinoHelpers_delete_folder_failed + cfgDescription.getName(), e));
 	    }
 	}
 
 	List<ILanguageSettingsProvider> providers;
 	if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-	    providers = new ArrayList<ILanguageSettingsProvider>(((ILanguageSettingsProvidersKeeper) cfgDescription).getLanguageSettingProviders());
+	    providers = new ArrayList<>(((ILanguageSettingsProvidersKeeper) cfgDescription).getLanguageSettingProviders());
 	    for (ILanguageSettingsProvider provider : providers) {
 		if ((provider instanceof AbstractBuiltinSpecsDetector)) { // basically
 									  // check
@@ -1092,8 +1096,8 @@ public class ArduinoHelpers extends Common {
      */
     public static IPath GetOutputName(IPath Source) {
 	IPath outputName;
-	if (Source.toString().startsWith("arduino")) { //$NON-NLS-1$
-	    outputName = new Path("arduino").append(Source.lastSegment()); //$NON-NLS-1$
+	if (Source.toString().startsWith(ArduinoConst.ARDUINO_CODE_FOLDER_NAME)) {
+	    outputName = new Path(ArduinoConst.ARDUINO_CODE_FOLDER_NAME).append(Source.lastSegment());
 	} else {
 	    outputName = Source;
 	}
@@ -1108,13 +1112,13 @@ public class ArduinoHelpers extends Common {
     public static String[] getBoardsFiles() {
 	String hardwareFolders[] = getHardwarePaths();
 
-	HashSet<String> boardFiles = new HashSet<String>();
+	HashSet<String> boardFiles = new HashSet<>();
 	for (String CurFolder : hardwareFolders) {
 	    searchFiles(new File(CurFolder), boardFiles, ArduinoConst.BOARDS_FILE_NAME, 6);
 	}
 	if (boardFiles.size() == 0) {
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "No boards.txt files found in the arduino hardware folders. I looked in:\n" + String.join("\n", hardwareFolders), null));
+		    Messages.ArduinoHelpers_No_boards_txt_found + String.join("\n", hardwareFolders), null)); //$NON-NLS-1$
 	    return null;
 	}
 	return boardFiles.toArray(new String[boardFiles.size()]);
@@ -1122,7 +1126,7 @@ public class ArduinoHelpers extends Common {
     }
 
     private static String makeEnvironmentVar(String string) {
-	return "${" + string + "}";
+	return "${" + string + '}'; //$NON-NLS-1$
     }
 
     /**
@@ -1133,7 +1137,7 @@ public class ArduinoHelpers extends Common {
      * @return
      */
     public static String getHostFromComPort(String mComPort) {
-	String host = mComPort.split(" ")[0];
+	String host = mComPort.split(ArduinoConst.SPACE)[0];
 	if (host.equals(mComPort))
 	    return null;
 	return host;
@@ -1152,7 +1156,7 @@ public class ArduinoHelpers extends Common {
 	File[] a = source.toFile().listFiles();
 	if (a == null) {
 	    Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID,
-		    "The folder you want to link to '" + source + "' does not contain any files.", null)); //$NON-NLS-1$ //$NON-NLS-2$
+		    Messages.ArduinoHelpers_link_folder + source + Messages.ArduinoHelpers_is_empty, null));
 	    return;
 	}
 	for (File f : a) {

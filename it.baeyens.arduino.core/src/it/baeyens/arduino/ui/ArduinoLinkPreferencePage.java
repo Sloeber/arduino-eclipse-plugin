@@ -43,7 +43,7 @@ public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbe
 	layoutData.widthHint = 500;
 	desc.setLayoutData(layoutData);
 	desc.setBackground(parent.getBackground());
-	desc.setText("Enter URLs for package_index.json files one per line.");
+	desc.setText(Messages.ui_url_for_package_index_file);
 
 	this.urlsText = new Text(control, SWT.BORDER | SWT.MULTI);
 	this.urlsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

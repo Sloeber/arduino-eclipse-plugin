@@ -130,7 +130,8 @@ public class ArduinoManager {
 	    writer.println();
 	} catch (FileNotFoundException | UnsupportedEncodingException e) {
 	    mstatus.add(new Status(IStatus.WARNING, Activator.getId(),
-		    "Unable to create file :" + pluginFile + '\n' + platform.getName() + " will not work", e)); //$NON-NLS-1$ //$NON-NLS-2$
+		    Messages.ArduinoManager_unable_to_create_file + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work,
+		    e));
 	}
 
 	for (ToolDependency tool : tools) {
@@ -140,13 +141,8 @@ public class ArduinoManager {
 		mstatus.add(status);
 	    }
 	    if (writer != null) {
-		try {
-		    writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
-		    writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
-		} catch (CoreException e) {
-		    mstatus.add(new Status(IStatus.WARNING, Activator.getId(),
-			    "Unable to write tofile file :" + pluginFile + '\n' + tool.getName() + " will not work", e)); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
+		writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
 	    }
 	}
 	if (writer != null) {
@@ -165,7 +161,7 @@ public class ArduinoManager {
 		}
 
 	    } catch (IOException e) {
-		mstatus.add(new Status(IStatus.ERROR, Activator.getId(), "downloading make.exe", e)); //$NON-NLS-1$
+		mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Downloading_make_exe, e));
 	    }
 	}
 
@@ -339,7 +335,7 @@ public class ArduinoManager {
 		Files.copy(dl.openStream(), Paths.get(archivePath.toString()), StandardCopyOption.REPLACE_EXISTING);
 	    }
 	} catch (IOException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to download. " + url, e);//$NON-NLS-1$
+	    return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_download + url, e);
 	}
 
 	// Create an ArchiveInputStream with the correct archiving algorithm
@@ -347,29 +343,29 @@ public class ArduinoManager {
 	    try (ArchiveInputStream inStream = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(archiveFullFileName)))) {
 		return extract(inStream, installPath.toFile(), 1, forceDownload);
 	    } catch (IOException | InterruptedException e) {
-		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar.bz2. " + archiveFullFileName, e);//$NON-NLS-1$
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_extract + archiveFullFileName, e);
 	    }
 	} else if (archiveFileName.endsWith("zip")) { //$NON-NLS-1$
 	    try (ArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(archiveFullFileName))) {
 		return extract(in, installPath.toFile(), 1, forceDownload);
 	    } catch (IOException | InterruptedException e) {
-		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract zip. " + archiveFullFileName, e);//$NON-NLS-1$
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_extract + archiveFullFileName, e);
 	    }
 	} else if (archiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
 	    try (ArchiveInputStream in = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(archiveFullFileName)))) {
 		return extract(in, installPath.toFile(), 1, forceDownload);
 	    } catch (IOException | InterruptedException e) {
-		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar.gz. " + archiveFullFileName, e);//$NON-NLS-1$
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_extract + archiveFullFileName, e);
 	    }
 	} else if (archiveFileName.endsWith("tar")) { //$NON-NLS-1$
 	    try (ArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(archiveFullFileName))) {
 		return extract(in, installPath.toFile(), 1, forceDownload);
 	    } catch (IOException | InterruptedException e) {
-		return new Status(IStatus.ERROR, Activator.getId(), "Failed to extract tar. " + archiveFullFileName, e);//$NON-NLS-1$
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_extract + archiveFullFileName, e);
 	    }
 	}
 
-	return new Status(IStatus.ERROR, Activator.getId(), "Archive format not supported.");//$NON-NLS-1$
+	return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Format_not_supported);
 
     }
 
@@ -440,7 +436,7 @@ public class ArduinoManager {
 		while (localstripPath > 0) {
 		    slash = name.indexOf("/", slash); //$NON-NLS-1$
 		    if (slash == -1) {
-			throw new IOException("Invalid archive: it must contain a single root folder"); //$NON-NLS-1$
+			throw new IOException(Messages.ArduinoManager_no_single_root_folder);
 		    }
 		    slash++;
 		    localstripPath--;
@@ -450,7 +446,8 @@ public class ArduinoManager {
 
 	    // Strip the common path prefix when requested
 	    if (!name.startsWith(pathPrefix)) {
-		throw new IOException("Invalid archive: it must contain a single root folder while file " + name + " is outside " + pathPrefix);
+		throw new IOException(
+			Messages.ArduinoManager_no_single_root_folder_while_file + name + Messages.ArduinoManager_is_outside + pathPrefix);
 	    }
 	    name = name.substring(pathPrefix.length());
 	    if (name.isEmpty()) {
@@ -459,10 +456,10 @@ public class ArduinoManager {
 	    File outputFile = new File(destFolder, name);
 
 	    File outputLinkedFile = null;
-	    if (isLink) {
+	    if (isLink && linkName != null) {
 		if (!linkName.startsWith(pathPrefix)) {
 		    throw new IOException(
-			    "Invalid archive: it must contain a single root folder while file " + linkName + " is outside " + pathPrefix);
+			    Messages.ArduinoManager_no_single_root_folder_while_file + linkName + Messages.ArduinoManager_is_outside + pathPrefix);
 		}
 		linkName = linkName.substring(pathPrefix.length());
 		outputLinkedFile = new File(destFolder, linkName);
@@ -471,7 +468,8 @@ public class ArduinoManager {
 		// Symbolic links are referenced with relative paths
 		outputLinkedFile = new File(linkName);
 		if (outputLinkedFile.isAbsolute()) {
-		    System.err.println("Warning: file " + outputFile + " links to an absolute path " + outputLinkedFile);
+		    System.err.println(
+			    Messages.ArduinoManager_Warning_file + outputFile + Messages.ArduinoManager_links_to_absolute_path + outputLinkedFile);
 		    System.err.println();
 		}
 	    }
@@ -479,21 +477,21 @@ public class ArduinoManager {
 	    // Safety check
 	    if (isDirectory) {
 		if (outputFile.isFile() && !overwrite) {
-		    throw new IOException("Can't create folder " + outputFile + ", a file with the same name exists!");
+		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile + Messages.ArduinoManager_File_exists);
 		}
 	    } else {
 		// - isLink
 		// - isSymLink
 		// - anything else
 		if (outputFile.exists() && !overwrite) {
-		    throw new IOException("Can't extract file " + outputFile + ", file already exists!");
+		    throw new IOException(Messages.ArduinoManager_Cant_extract_file + outputFile + Messages.ArduinoManager_File_already_exists);
 		}
 	    }
 
 	    // Extract the entry
 	    if (isDirectory) {
 		if (!outputFile.exists() && !outputFile.mkdirs()) {
-		    throw new IOException("Could not create folder: " + outputFile);
+		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile);
 		}
 		foldersTimestamps.put(outputFile, modifiedTime);
 	    } else if (isLink) {
@@ -508,7 +506,7 @@ public class ArduinoManager {
 		    outputFile.getParentFile().mkdirs();
 		}
 		copyStreamToFile(in, size, outputFile);
-		outputFile.setLastModified(modifiedTime);
+		outputFile.setLastModified(modifiedTime.longValue());
 	    }
 
 	    // Set file/folder permission
@@ -583,7 +581,7 @@ public class ArduinoManager {
 	    while (leftToWrite > 0) {
 		int length = in.read(buffer);
 		if (length <= 0) {
-		    throw new IOException("Error while extracting file " + outputFile.getAbsolutePath()); //$NON-NLS-1$
+		    throw new IOException(Messages.ArduinoManager_Failed_to_extract + outputFile.getAbsolutePath());
 		}
 		fos.write(buffer, 0, length);
 		leftToWrite -= length;

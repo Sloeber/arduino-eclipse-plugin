@@ -19,7 +19,7 @@ public class ReattachLibraries extends AbstractHandler {
 	IProject SelectedProjects[] = Common.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to reattach liraries"));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ReattachLibraries_no_project_found));
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);

@@ -90,27 +90,27 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	// create each page and fill in the title and description
 	// first page to fill in the project name
 	//
-	this.mWizardPage = new WizardNewProjectCreationPage("New Arduino sketch");
-	this.mWizardPage.setDescription("Create a new Arduino sketch.");
-	this.mWizardPage.setTitle("New Arduino sketch");
+	this.mWizardPage = new WizardNewProjectCreationPage(Messages.ui_new_sketch_title);
+	this.mWizardPage.setDescription(Messages.ui_new_sketch_title_help);
+	this.mWizardPage.setTitle(Messages.ui_new_sketch_title); // $NON-NLS-1$
 	//
 	// settings for Arduino board etc
 	//
-	this.mArduinoPage = new NewArduinoSketchWizardBoardPage("Arduino information");
-	this.mArduinoPage.setTitle("Provide the Arduino information.");
-	this.mArduinoPage.setDescription("These settings can be changed later.");
+	this.mArduinoPage = new NewArduinoSketchWizardBoardPage(Messages.ui_new_sketch_arduino_information);
+	this.mArduinoPage.setTitle(Messages.ui_new_sketch_arduino_information_help);
+	this.mArduinoPage.setDescription(Messages.ui_new_sketch_these_settings_cn_be_changed_later);
 	//
 	// settings for template file location
 	//
-	this.mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage("Sketch Template location");
-	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle("Provide the sketch template folder");
-	this.mNewArduinoSketchWizardCodeSelectionPage.setDescription("The folder must contain a sketch.cpp and sketch.h");
+	this.mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage(Messages.ui_new_sketch_sketch_template_location);
+	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
+	this.mNewArduinoSketchWizardCodeSelectionPage.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
 	//
 	// configuration page but I haven't seen it
 	//
-	this.mBuildCfgPage = new BuildConfigurationsPage("Build configurations");
-	this.mBuildCfgPage.setTitle("Select additional build configurations for this project.");
-	this.mBuildCfgPage.setDescription("If you are using additional tools you may want one or more of these extra configurations.");
+	this.mBuildCfgPage = new BuildConfigurationsPage(Messages.ui_new_sketch_build_configurations);
+	this.mBuildCfgPage.setTitle(Messages.ui_new_sketch_Select_additional_configurations);
+	this.mBuildCfgPage.setDescription(Messages.ui_new_sketch_Select_additional_configurations_help);
 	//
 	// actually add the pages to the wizard
 	//
@@ -180,7 +180,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    return false;
 	} catch (InvocationTargetException e) {
 	    Throwable realException = e.getTargetException();
-	    MessageDialog.openError(getShell(), "Error", realException.getMessage()); //$NON-NLS-1$
+	    MessageDialog.openError(getShell(), Messages.error, realException.getMessage()); // $NON-NLS-1$
 	    return false;
 	}
 	//
@@ -212,7 +212,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
      */
     void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor) throws OperationCanceledException {
 
-	monitor.beginTask("", 2000); //$NON-NLS-1$
+	monitor.beginTask(ArduinoConst.EMPTY_STRING, 2000);
 	try {
 	    project.create(description, new SubProgressMonitor(monitor, 1000));
 
@@ -261,7 +261,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    //
 	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getConfigurations());
 
-	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(""), true); //$NON-NLS-1$
+	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(ArduinoConst.EMPTY_STRING), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[4];
@@ -297,7 +297,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    monitor.done();
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to create project " + project.getName(), e));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    Messages.ui_new_sketch_error_failed_to_create_project + project.getName(), e));
 	    throw new OperationCanceledException();
 	}
 

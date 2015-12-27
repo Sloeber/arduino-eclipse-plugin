@@ -11,25 +11,25 @@ import java.util.List;
 
 public class PackageIndex {
 
-	private List<ArduinoPackage> packages;
+    private List<ArduinoPackage> packages;
 
-	public List<ArduinoPackage> getPackages() {
-		return packages;
-	}
+    public List<ArduinoPackage> getPackages() {
+	return this.packages;
+    }
 
-	public ArduinoPackage getPackage(String packageName) {
-		for (ArduinoPackage pkg : packages) {
-			if (pkg.getName().equals(packageName)) {
-				return pkg;
-			}
-		}
-		return null;
+    public ArduinoPackage getPackage(String packageName) {
+	for (ArduinoPackage pkg : this.packages) {
+	    if (pkg.getName().equals(packageName)) {
+		return pkg;
+	    }
 	}
+	return null;
+    }
 
-	void setOwners(ArduinoManager manager) {
-		for (ArduinoPackage pkg : packages) {
-			pkg.setOwner(manager);
-		}
+    void setOwners(ArduinoManager manager) {
+	for (ArduinoPackage pkg : this.packages) {
+	    pkg.setOwner(manager);
 	}
+    }
 
 }

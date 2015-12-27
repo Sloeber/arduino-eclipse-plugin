@@ -12,7 +12,7 @@ public class NoInteractionUserInfo implements UserInfo {
 
     @Override
     public String getPassword() {
-	return password;
+	return this.password;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class NoInteractionUserInfo implements UserInfo {
 
     @Override
     public String getPassphrase() {
-	return password;
+	return this.password;
     }
 
     @Override

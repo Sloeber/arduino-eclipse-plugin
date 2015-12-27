@@ -114,7 +114,7 @@ public class ArduinoLibraries {
 		final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
 		folderHandle.delete(true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to remove library ", e));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
 	    }
 	}
 	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
@@ -134,11 +134,11 @@ public class ArduinoLibraries {
 		    // TODO add check whether this is actually a library
 		    // in case of code added via samples the plugin thinks a library needs to be added. However this is not a library but just a
 		    // folder
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "The library " + CurItem + " is not valid for the project "
-			    + project.getName() + " and configuration " + confdesc.getName()));
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.The_lib + CurItem + Messages.Is_Not_valid_for_project
+			    + project.getName() + Messages.And_Configuration + confdesc.getName()));
 		}
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to import library ", e));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 	    }
 	}
     }

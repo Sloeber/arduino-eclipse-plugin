@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 import it.baeyens.arduino.tools.Stream;
@@ -29,7 +30,8 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
     final Shell shell = new Shell();
     private final int ncol = 4;
-    String[] codeOptions = { "Default ino file", "Default cpp file", "Custom template", "Sample sketch" };
+    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp, Messages.ui_new_sketch_custom_template,
+	    Messages.ui_new_sketch_sample_sketch };
     private static final int defaultIno = 0;
     private static final int defaultCPP = 1;
     private static final int CustomTemplate = 2;
@@ -85,13 +87,13 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
 	    }
 	};
-	this.mCodeSourceOptionsCombo = new LabelCombo(composite, "select code", this.ncol, "", true);
+	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, this.ncol, ArduinoConst.EMPTY_STRING, true);
 	this.mCodeSourceOptionsCombo.addListener(comboListener);
 
 	this.mCodeSourceOptionsCombo.setItems(this.codeOptions);
 
-	this.mTemplateFolderEditor = new DirectoryFieldEditor("temp1", "Custom Template Location:", composite);
-	this.mExampleEditor = new ArduinoSampleSelector(composite, SWT.NONE, "Select Example code.");
+	this.mTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, composite); //$NON-NLS-1$
+	this.mExampleEditor = new ArduinoSampleSelector(composite, SWT.NONE, Messages.ui_new_sketch_select_example_code);
 	// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 	// gd.horizontalSpan = ncol;
 	// mExampleEditor.setLayoutData(gd);
@@ -100,14 +102,14 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	// mSampleFolderEditor.getTextControl(composite).addListener(SWT.Modify, comboListener);
 
 	this.mCheckBoxUseCurrentSettingsAsDefault = new Button(composite, SWT.CHECK);
-	this.mCheckBoxUseCurrentSettingsAsDefault.setText("Use current settings as default");
+	this.mCheckBoxUseCurrentSettingsAsDefault.setText(Messages.ui_new_sketch_use_current_settings_as_default);
 	theGriddata = new GridData();
 	theGriddata.horizontalSpan = this.ncol;
 	theGriddata.horizontalAlignment = SWT.LEAD;
 	theGriddata.grabExcessHorizontalSpace = false;
 	this.mCheckBoxUseCurrentSettingsAsDefault.setLayoutData(theGriddata);
 	this.mCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
-	this.mCheckBoxUseCurrentLinkSample.setText("Link to sample code.");
+	this.mCheckBoxUseCurrentLinkSample.setText(Messages.ui_new_sketch_link_to_sample_code);
 	theGriddata = new GridData();
 	theGriddata.horizontalSpan = this.ncol;
 	theGriddata.horizontalAlignment = SWT.LEAD;

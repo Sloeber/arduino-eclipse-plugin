@@ -1,8 +1,5 @@
 package it.baeyens.arduino.tools.uploaders;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.communication.ArduinoSerial;
-
 import java.io.IOException;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -19,6 +16,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.ui.console.MessageConsole;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.communication.ArduinoSerial;
+
 public class arduinoUploader implements IRealUpload {
 
     private IProject myProject;
@@ -27,21 +27,21 @@ public class arduinoUploader implements IRealUpload {
     private MessageConsole myConsole;
 
     arduinoUploader(IProject Project, String cConf, String UploadTool, MessageConsole Console) {
-	myProject = Project;
-	mycConf = cConf;
-	myUploadTool = UploadTool;
-	myConsole = Console;
+	this.myProject = Project;
+	this.mycConf = cConf;
+	this.myUploadTool = UploadTool;
+	this.myConsole = Console;
     }
 
     @Override
     public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
-	String MComPort = "";
-	String boardName = "";
+	String MComPort = ArduinoConst.EMPTY_STRING;
+	String boardName = ArduinoConst.EMPTY_STRING;
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(mycConf);
+	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
 
 	try {
 	    MComPort = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PORT, configurationDescription, true).getValue();
@@ -51,27 +51,28 @@ public class arduinoUploader implements IRealUpload {
 	    boardName = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true).getValue();
 	} catch (Exception e) {// ignore all errors
 	}
-	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(myConsole.newMessageStream(), myProject, mycConf, MComPort);
+	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject, this.mycConf, MComPort);
 
 	IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SERIAL_PORT, NewSerialPort);
 	contribEnv.addVariable(var, configurationDescription);
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SERIAL_PORT_FILE, NewSerialPort.replace("/dev/", ""));
+	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SERIAL_PORT_FILE, NewSerialPort.replace("/dev/", ArduinoConst.EMPTY_STRING)); //$NON-NLS-1$
 	contribEnv.addVariable(var, configurationDescription);
 
-	String command = "";
+	String command = ArduinoConst.EMPTY_STRING;
 	try {
-	    command = envManager.getVariable("A.TOOLS." + myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", configurationDescription, true).getValue();
+	    command = envManager.getVariable("A.TOOLS." + this.myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", configurationDescription, true) //$NON-NLS-1$//$NON-NLS-2$
+		    .getValue();
 	} catch (Exception e) {// ignore all errors
 	}
 
 	try {
-	    GenericLocalUploader.RunConsoledCommand(myConsole, command, new SubProgressMonitor(monitor, 1));
+	    GenericLocalUploader.RunConsoledCommand(this.myConsole, command, new SubProgressMonitor(monitor, 1));
 	} catch (IOException e1) {
 	    e1.printStackTrace();
 
 	    return false;
 	}
-	if (boardName.startsWith("Arduino Due ")) {
+	if (boardName.startsWith("Arduino Due ")) { //$NON-NLS-1$
 	    ArduinoSerial.reset_Arduino_by_baud_rate(MComPort, 115200, 100);
 	}
 

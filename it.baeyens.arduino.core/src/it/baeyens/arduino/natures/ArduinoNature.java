@@ -19,12 +19,12 @@ public class ArduinoNature implements IProjectNature {
 
     @Override
     public IProject getProject() {
-	return myProject;
+	return this.myProject;
     }
 
     @Override
     public void setProject(IProject Project) {
-	myProject = Project;
+	this.myProject = Project;
 
     }
 

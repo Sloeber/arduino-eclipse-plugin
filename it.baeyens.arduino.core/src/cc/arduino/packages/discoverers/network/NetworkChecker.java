@@ -29,47 +29,52 @@
 
 package cc.arduino.packages.discoverers.network;
 
-import javax.jmdns.NetworkTopologyDiscovery;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.jmdns.NetworkTopologyDiscovery;
 
 public class NetworkChecker extends TimerTask {
 
-  private final NetworkTopologyListener topologyListener;
-  private final NetworkTopologyDiscovery topology;
+    private final NetworkTopologyListener topologyListener;
+    private final NetworkTopologyDiscovery topology;
 
-  private Set<InetAddress> knownAddresses;
+    private Set<InetAddress> knownAddresses;
 
-  public NetworkChecker(NetworkTopologyListener topologyListener, NetworkTopologyDiscovery topology) {
-    super();
-    this.topologyListener = topologyListener;
-    this.topology = topology;
-    this.knownAddresses = Collections.synchronizedSet(new HashSet<InetAddress>());
-  }
-
-  public void start(Timer timer) {
-    timer.schedule(this, 0, 3000);
-  }
-
-  @Override
-  public void run() {
-    try {
-      InetAddress[] curentAddresses = topology.getInetAddresses();
-      Set<InetAddress> current = new HashSet<InetAddress>(curentAddresses.length);
-      for (InetAddress address : curentAddresses) {
-        current.add(address);
-        if (!knownAddresses.contains(address)) {
-          topologyListener.inetAddressAdded(address);
-        }
-      }
-      for (InetAddress address : knownAddresses) {
-        if (!current.contains(address)) {
-          topologyListener.inetAddressRemoved(address);
-        }
-      }
-      knownAddresses = current;
-    } catch (Exception e) {
-      e.printStackTrace();
+    public NetworkChecker(NetworkTopologyListener topologyListener, NetworkTopologyDiscovery topology) {
+	super();
+	this.topologyListener = topologyListener;
+	this.topology = topology;
+	this.knownAddresses = Collections.synchronizedSet(new HashSet<InetAddress>());
     }
-  }
+
+    public void start(Timer timer) {
+	timer.schedule(this, 0, 3000);
+    }
+
+    @Override
+    public void run() {
+	try {
+	    InetAddress[] curentAddresses = this.topology.getInetAddresses();
+	    Set<InetAddress> current = new HashSet<>(curentAddresses.length);
+	    for (InetAddress address : curentAddresses) {
+		current.add(address);
+		if (!this.knownAddresses.contains(address)) {
+		    this.topologyListener.inetAddressAdded(address);
+		}
+	    }
+	    for (InetAddress address : this.knownAddresses) {
+		if (!current.contains(address)) {
+		    this.topologyListener.inetAddressRemoved(address);
+		}
+	    }
+	    this.knownAddresses = current;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
 }

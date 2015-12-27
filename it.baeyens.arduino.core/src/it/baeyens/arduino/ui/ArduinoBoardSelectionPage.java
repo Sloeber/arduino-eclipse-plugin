@@ -45,7 +45,7 @@ import it.baeyens.arduino.tools.ArduinoHelpers;
  * @see ArduinoProperties ArduinoSettingsPage
  * 
  */
-public class ArduinoSelectionPage extends AbstractCPropertyTab {
+public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
     // global stuff to allow to communicate outside this class
     public Text mFeedbackControl;
 
@@ -107,8 +107,8 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 	    ICConfigurationDescription confdesc = getConfdesc();
 
-	    int selectedBoardFile = ArduinoSelectionPage.this.mControlBoardsTxtFile.getSelectionIndex();
-	    String boardFile = ArduinoSelectionPage.this.mControlBoardsTxtFile.getText().trim();
+	    int selectedBoardFile = ArduinoBoardSelectionPage.this.mControlBoardsTxtFile.getSelectionIndex();
+	    String boardFile = ArduinoBoardSelectionPage.this.mControlBoardsTxtFile.getText().trim();
 	    if (confdesc != null) {
 		IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
 		contribEnv.addVariable(var, confdesc);
@@ -120,12 +120,13 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    /*
 	     * Change the list of available boards
 	     */
-	    String CurrentBoard = ArduinoSelectionPage.this.mcontrolBoardName.getText();
-	    ArduinoSelectionPage.this.mcontrolBoardName.removeAll();
-	    ArduinoSelectionPage.this.mcontrolBoardName.setItems(ArduinoSelectionPage.this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
-	    ArduinoSelectionPage.this.mcontrolBoardName.setText(CurrentBoard);
+	    String CurrentBoard = ArduinoBoardSelectionPage.this.mcontrolBoardName.getText();
+	    ArduinoBoardSelectionPage.this.mcontrolBoardName.removeAll();
+	    ArduinoBoardSelectionPage.this.mcontrolBoardName
+		    .setItems(ArduinoBoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
+	    ArduinoBoardSelectionPage.this.mcontrolBoardName.setText(CurrentBoard);
 
-	    ArduinoSelectionPage.this.BoardModifyListener.handleEvent(null);
+	    ArduinoBoardSelectionPage.this.BoardModifyListener.handleEvent(null);
 	}
     };
 
@@ -133,12 +134,12 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	@Override
 	public void handleEvent(Event e) {
 
-	    int selectedBoardFile = ArduinoSelectionPage.this.mControlBoardsTxtFile.getSelectionIndex();
-	    String boardName = ArduinoSelectionPage.this.mcontrolBoardName.getText();
+	    int selectedBoardFile = ArduinoBoardSelectionPage.this.mControlBoardsTxtFile.getSelectionIndex();
+	    String boardName = ArduinoBoardSelectionPage.this.mcontrolBoardName.getText();
 
-	    for (LabelCombo curLabelCombo : ArduinoSelectionPage.this.mBoardOptionCombos) {
+	    for (LabelCombo curLabelCombo : ArduinoBoardSelectionPage.this.mBoardOptionCombos) {
 		curLabelCombo.setItems(
-			ArduinoSelectionPage.this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
+			ArduinoBoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
 	    }
 
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
@@ -196,7 +197,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 
 	switch (this.mAllBoardsFileNames.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No platform files found: This should never happen ", null));
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_no_platform_files_found, null));
 	    break;
 	case 1: {
 	    break;
@@ -231,7 +232,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	this.mcontrolBoardName.setEnabled(false);
 
 	// ----
-	this.mControlUploadPort = new LabelCombo(composite, "Port: ", this.ncol - 1, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, false);
+	this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, this.ncol - 1, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, false);
 
 	this.mControlUploadPort.setItems(ArrayUtil.addAll(Activator.bonjourDiscovery.getList(), Common.listComPorts()));
 
@@ -346,8 +347,8 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	ArduinoInstancePreferences.setLastUsedBoardsFile(boardFile);
 	ArduinoInstancePreferences.SetLastUsedArduinoBoard(boardName);
 	ArduinoInstancePreferences.SetLastUsedUploadPort(uploadPort);
-	ArduinoInstancePreferences.setLastUsedMenuOption(""); // TOFIX implement
-							      // the options
+	ArduinoInstancePreferences.setLastUsedMenuOption(ArduinoConst.EMPTY_STRING); // TOFIX implement
+	// the options
     }
 
     public void saveAllSelections(ICConfigurationDescription confdesc) {
@@ -435,7 +436,7 @@ public class ArduinoSelectionPage extends AbstractCPropertyTab {
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
 	    } catch (CoreException e1) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error adding the arduino code", e1));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_adding_arduino_code, e1));
 	    }
 	    ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
 	    ArduinoHelpers.setDirtyFlag(project, confdesc);

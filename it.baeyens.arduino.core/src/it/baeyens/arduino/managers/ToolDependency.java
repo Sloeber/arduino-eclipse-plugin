@@ -7,8 +7,6 @@
  *******************************************************************************/
 package it.baeyens.arduino.managers;
 
-
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -17,48 +15,43 @@ import it.baeyens.arduino.ui.Activator;
 
 public class ToolDependency {
 
-	private String packager;
-	private String name;
-	private String version;
+    private String packager;
+    private String name;
+    private String version;
 
-	private transient ArduinoPlatform platform;
+    private transient ArduinoPlatform platform;
 
-	public void setOwner(ArduinoPlatform platform) {
-		this.platform = platform;
+    public void setOwner(ArduinoPlatform platform) {
+	this.platform = platform;
+    }
+
+    public String getPackager() {
+	return this.packager;
+    }
+
+    public String getName() {
+	return this.name;
+    }
+
+    public String getVersion() {
+	return this.version;
+    }
+
+    public ArduinoTool getTool() {
+	ArduinoPackage pkg = this.platform.getPackage();
+	if (!pkg.getName().equals(this.packager)) {
+	    pkg = ArduinoManager.getPackage(this.packager);
 	}
 
-	public String getPackager() {
-		return packager;
-	}
+	return pkg.getTool(this.name, this.version);
+    }
 
-	public String getName() {
-		return name;
+    public IStatus install(IProgressMonitor monitor) {
+	ArduinoTool tool = getTool();
+	if (tool == null) {
+	    return new Status(IStatus.ERROR, Activator.getId(), String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
 	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public ArduinoTool getTool() throws CoreException {
-		ArduinoPackage pkg = platform.getPackage();
-		if (!pkg.getName().equals(packager)) {
-			pkg = ArduinoManager.getPackage(packager);
-		}
-
-		return pkg.getTool(name, version);
-	}
-
-	public IStatus install(IProgressMonitor monitor) {
-		try {
-			ArduinoTool tool = getTool();
-			if (tool == null) {
-				return new Status(IStatus.ERROR, Activator.getId(),
-						String.format("Tool not found %s %s", name, version));
-			}
-			return getTool().install(monitor);
-		} catch (CoreException e) {
-			return e.getStatus();
-		}
-	}
+	return getTool().install(monitor);
+    }
 
 }

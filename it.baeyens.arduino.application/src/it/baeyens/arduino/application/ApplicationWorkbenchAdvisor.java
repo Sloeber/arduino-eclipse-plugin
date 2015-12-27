@@ -10,13 +10,13 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
     @Override
     public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
-	System.out.println("Jaba Was here");
+	System.out.println("Jaba Was here"); //$NON-NLS-1$
 	return new ApplicationWorkbenchWindowAdvisor(configurer);
     }
 
     @Override
     public String getInitialWindowPerspectiveId() {
-	System.out.println("Jaba Was here");
+	System.out.println("Jaba Was here"); //$NON-NLS-1$
 	return PERSPECTIVE_ID;
     }
 }

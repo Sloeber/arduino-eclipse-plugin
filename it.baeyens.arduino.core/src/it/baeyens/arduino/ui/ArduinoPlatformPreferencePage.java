@@ -36,6 +36,7 @@ public class ArduinoPlatformPreferencePage extends PreferencePage implements IWo
 
     @Override
     public void init(IWorkbench workbench) {
+	// not needed
     }
 
     @Override
@@ -117,7 +118,7 @@ public class ArduinoPlatformPreferencePage extends PreferencePage implements IWo
     }
 
     protected IStatus updateInstallation(IProgressMonitor monitor) {
-	MultiStatus status = new MultiStatus(Activator.getId(), 0, "Installing Arduino Board Platforms", null);
+	MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_platforms, null);
 
 	for (ArduinoPlatform curPlatform : this.removePlatforms) {
 	    status.add(curPlatform.remove(monitor));
@@ -153,7 +154,7 @@ public class ArduinoPlatformPreferencePage extends PreferencePage implements IWo
     @Override
     public boolean performOk() {
 	markInstallationChanges();
-	new Job("Adopting Arduino Board Platforms") {
+	new Job(Messages.ui_adopting_platforms) {
 
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {

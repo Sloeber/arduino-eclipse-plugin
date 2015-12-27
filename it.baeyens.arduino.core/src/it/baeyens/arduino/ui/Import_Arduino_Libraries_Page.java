@@ -31,13 +31,13 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
     protected Import_Arduino_Libraries_Page(IProject project, String name, IStructuredSelection selection) {
 
 	super(name, selection);
-	setTitle("Import Arduino libraries");
+	setTitle(Messages.ui_import_arduino_libraries_in_project);
 	if (project != null) {
 	    this.myProject = project;
 	    setContainerFieldValue(project.getName());
-	    setDescription("Use this page to select the libraries to import to project: " + this.myProject.getName());
+	    setDescription(Messages.ui_import_arduino_libraries_in_project_help + this.myProject.getName());
 	} else {
-	    setDescription("As no project is selected it is not possible to import libraries");
+	    setDescription(Messages.ui_error_select_arduino_project);
 	}
 
     }

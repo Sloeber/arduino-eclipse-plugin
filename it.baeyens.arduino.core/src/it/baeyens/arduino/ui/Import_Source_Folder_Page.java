@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+import it.baeyens.arduino.common.ArduinoConst;
+
 //TODO: Should this be called Wizard_Source_Folder_Page to make consistent with the library import.....
 //TODO: Or Arduino_Source_Folder_Import_Page
 
@@ -36,12 +38,12 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	super(name, selection);
 
 	setImportProject(project);
-	if (mProject == null) {
-	    setTitle("Error no project selected to import to");
-	    setDescription("As no project is selected it is not possible to import a source folder");
+	if (this.mProject == null) {
+	    setTitle(Messages.error_no_Arduino_project_selected);
+	    setDescription(Messages.ui_import_no_arduino_project_help);
 	} else {
-	    setTitle("Import Source Folder");
-	    setDescription("Use this page to select a source folder to import to project" + mProject.getName());
+	    setTitle(Messages.ui_import_source_folder);
+	    setDescription(Messages.ui_import_source_folder_help + ' ' + this.mProject.getName());
 	}
 
     }
@@ -58,7 +60,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	composite.setFont(parent.getFont());
 
 	Label line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD);
-	line.setText("Arduino source folder to import");
+	line.setText(Messages.ui_select_folder);
 	theGriddata = new GridData(SWT.FILL, SWT.CENTER, true, false);
 	theGriddata.horizontalSpan = 3;
 	line.setLayoutData(theGriddata);
@@ -71,40 +73,41 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	theGriddata.grabExcessHorizontalSpace = false;
 	TheLabel.setLayoutData(theGriddata);
 
-	controlLibraryPath = new Text(composite, SWT.SINGLE | SWT.BORDER);
+	this.controlLibraryPath = new Text(composite, SWT.SINGLE | SWT.BORDER);
 	theGriddata = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
 	theGriddata.widthHint = SIZING_TEXT_FIELD_WIDTH;
 	// theGriddata.horizontalSpan = 1;
-	controlLibraryPath.setLayoutData(theGriddata);
+	this.controlLibraryPath.setLayoutData(theGriddata);
 
-	controlBrowseButton = new Button(composite, SWT.NONE);
-	controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
+	this.controlBrowseButton = new Button(composite, SWT.NONE);
+	this.controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
 	theGriddata = new GridData();
 	theGriddata.horizontalSpan = 1;
 	theGriddata.horizontalAlignment = SWT.LEAD;
 	theGriddata.grabExcessHorizontalSpace = false;
-	controlBrowseButton.setLayoutData(theGriddata);
+	this.controlBrowseButton.setLayoutData(theGriddata);
 
-	controlBrowseButton.addSelectionListener(new SelectionAdapter() {
+	this.controlBrowseButton.addSelectionListener(new SelectionAdapter() {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void widgetSelected(SelectionEvent event) {
 		final Shell shell = new Shell();
 		DirectoryDialog theDialog = new DirectoryDialog(shell);
-		if ((controlLibraryPath.getText() == null) || (controlLibraryPath.getText() == "")) {
-		    theDialog.setFilterPath(controlLibraryPath.getText());
+		if ((Import_Source_Folder_Page.this.controlLibraryPath.getText() == null)
+			|| (Import_Source_Folder_Page.this.controlLibraryPath.getText() == ArduinoConst.EMPTY_STRING)) {
+		    theDialog.setFilterPath(Import_Source_Folder_Page.this.controlLibraryPath.getText());
 		}
 
 		String Path = theDialog.open();
 		if (Path != null) {
-		    controlLibraryPath.setText(Path);
+		    Import_Source_Folder_Page.this.controlLibraryPath.setText(Path);
 		    updateWidgetEnablements();
 		}
 	    }
 	});
 
 	line = new Label(composite, SWT.HORIZONTAL | SWT.BOLD);
-	line.setText("Subfolder to import to");
+	line.setText(Messages.ui_import_subfolder_to_import_to);
 	theGriddata = new GridData(SWT.FILL, SWT.CENTER, true, false);
 	theGriddata.horizontalSpan = 3;
 	line.setLayoutData(theGriddata);
@@ -122,16 +125,16 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public boolean canFinish() {
-	return !((controlLibraryPath.getText().equals("")) || (getContainerFullPath() == null));
+	return !((this.controlLibraryPath.getText().equals(ArduinoConst.EMPTY_STRING)) || (getContainerFullPath() == null));
     }
 
     public String GetLibraryFolder() {
-	return controlLibraryPath.getText() == null ? "" : controlLibraryPath.getText().trim();
+	return this.controlLibraryPath.getText() == null ? ArduinoConst.EMPTY_STRING : this.controlLibraryPath.getText().trim();
     }
 
     public void setImportProject(IProject project) {
 	if (project != null) {
-	    mProject = project;
+	    this.mProject = project;
 	    setContainerFieldValue(project.getName());
 	}
     }

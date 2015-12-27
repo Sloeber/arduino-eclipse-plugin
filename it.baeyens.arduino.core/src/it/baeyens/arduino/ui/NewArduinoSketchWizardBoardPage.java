@@ -20,7 +20,7 @@ public class NewArduinoSketchWizardBoardPage extends WizardPage {
 
     final Shell shell = new Shell();
 
-    protected ArduinoSelectionPage mPageLayout = new ArduinoSelectionPage();
+    protected ArduinoBoardSelectionPage mPageLayout = new ArduinoBoardSelectionPage();
 
     public void setListener(Listener BoardSelectionChangedListener) {
 	this.mPageLayout.setListener(BoardSelectionChangedListener);

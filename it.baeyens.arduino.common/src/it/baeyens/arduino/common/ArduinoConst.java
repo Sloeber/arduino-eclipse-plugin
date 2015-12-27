@@ -8,13 +8,16 @@ package it.baeyens.arduino.common;
  */
 public class ArduinoConst {
     // java stuff
-    public static final String EMPTY_STRING = "";// so I do not have to add //$NON-NLS-1$ al the time
-    public static final String DOT = ".";// so I do not have to add //$NON-NLS-1$ al the time
-    public static final char SLACH = '/';// so I do not have to add //$NON-NLS-1$ al the time
-    public static final String COLON = ":";// so I do not have to add //$NON-NLS-1$ al the time
-    public static final String SPACE = " "; // so I do not have to add //$NON-NLS-1$ al the time
-    public static final char UNDERSCORE = '_';// so I do not have to add //$NON-NLS-1$ al the time
-    public static final char BACK_SLACH = '\\';// so I do not have to add //$NON-NLS-1$ al the time
+    public static final String EMPTY_STRING = "";// so I do not have to add //$NON-NLS-1$ all the time
+    public static final String DOT = ".";// so I do not have to add //$NON-NLS-1$ all the time
+    public static final char SLACH = '/';// so I do not have to add $NON-NLS-1$ all the time
+    public static final String COLON = ":";// so I do not have to add //$NON-NLS-1$ all the time
+    public static final String SPACE = " "; // so I do not have to add //$NON-NLS-1$ all the time
+    public static final char UNDERSCORE = '_';// so I do not have to add $NON-NLS-1$ all the time
+    public static final char BACK_SLACH = '\\';// so I do not have to add $NON-NLS-1$ all the time
+    public static final String FALSE = "false";// so I do not have to add //$NON-NLS-1$ all the time
+    public static final String TRUE = "true";// so I do not have to add //$NON-NLS-1$ all the time
+    public static final String NEWLINE = "\n";// so I do not have to add //$NON-NLS-1$ all the time
 
     // General stuff
     public static final String PluginStart = "it.baeyens."; //$NON-NLS-1$

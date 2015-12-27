@@ -13,8 +13,8 @@ public class ArduinoDNSTaskStarter implements DNSTaskStarter.Factory.ClassDelega
     @Override
     public DNSTaskStarter newDNSTaskStarter(final JmDNSImpl jmDNSImpl) {
 	final DNSTaskStarter.DNSTaskStarterImpl delegate = new DNSTaskStarter.DNSTaskStarterImpl(jmDNSImpl);
-	final DNSTaskStarter.DNSTaskStarterImpl.StarterTimer timer = new DNSTaskStarter.DNSTaskStarterImpl.StarterTimer("JmDNS("
-		+ jmDNSImpl.getName() + ").Timer", true);
+	final DNSTaskStarter.DNSTaskStarterImpl.StarterTimer timer = new DNSTaskStarter.DNSTaskStarterImpl.StarterTimer("JmDNS(" //$NON-NLS-1$
+		+ jmDNSImpl.getName() + ").Timer", true); //$NON-NLS-1$
 
 	return new DNSTaskStarter() {
 

@@ -48,7 +48,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 
     public ArduinoPreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
-	setDescription("Arduino Settings for this workspace");
+	setDescription(Messages.ui_workspace_settings);
 	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, ArduinoConst.NODE_ARDUINO));
     }
 
@@ -99,32 +99,32 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATHS, "Private Library path",
-		"Select a folder containing libraries", parent);
+	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
+		Messages.ui_private_lib_path_help, parent);
 	addField(this.arduinoPrivateLibPath);
-	arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
+	this.arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
 
-	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATHS, "Private hardware path",
-		"Select a folder containing hardware", parent);
+	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATHS, Messages.ui_private_hardware_path,
+		Messages.ui_private_hardware_path_help, parent);
 	addField(this.arduinoPrivateHardwarePath);
-	arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
+	this.arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
 
 	Dialog.applyDialogFont(parent);
 
-	String[][] buildBeforeUploadOptions = new String[][] { { "Ask every upload", "ASK" }, { "Yes", "YES" }, { "No", "NO" } }; //$NON-NLS-2$ //$NON-NLS-4$ //$NON-NLS-6$
-	this.mArduinoBuildBeforeUploadOption = new ComboFieldEditor(ArduinoConst.KEY_BUILD_BEFORE_UPLOAD_OPTION, "Build before upload?",
+	String[][] buildBeforeUploadOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, { "Yes", "YES" }, { "No", "NO" } }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	this.mArduinoBuildBeforeUploadOption = new ComboFieldEditor(ArduinoConst.KEY_BUILD_BEFORE_UPLOAD_OPTION, Messages.ui_build_before_upload,
 		buildBeforeUploadOptions, parent);
 	addField(this.mArduinoBuildBeforeUploadOption);
 	createLine(parent, 4);
 
 	this.myMakeOKText = new Label(parent, SWT.LEFT);
-	this.myMakeOKText.setText("Looking for make");
+	this.myMakeOKText.setText(Messages.ui_looking_for_make);
 	this.myMakeOKText.setEnabled(true);
 	this.myMakeOKText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 4, 1));
 
 	// myHelpMakeButton=new;
 	Button myHelpMakeButton = new Button(parent, SWT.BUTTON1);
-	myHelpMakeButton.setText("What is this make thing?");
+	myHelpMakeButton.setText(Messages.ui_make_what);
 	myHelpMakeButton.addSelectionListener(new SelectionListener() {
 
 	    @Override
@@ -149,7 +149,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	});
 
 	Button myTestMakeButton = new Button(parent, SWT.BUTTON1);
-	myTestMakeButton.setText("test if make can be found");
+	myTestMakeButton.setText(Messages.ui_make_test);
 	myTestMakeButton.addSelectionListener(new SelectionListener() {
 
 	    @Override
@@ -158,11 +158,11 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 		MessageBox messageBox = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 
 		if (ArduinoPreferencePage.this.myIsMakeInstalled) {
-		    messageBox.setText("Success");
-		    messageBox.setMessage("Make was found.");
+		    messageBox.setText(Messages.ui_success);
+		    messageBox.setMessage(Messages.ui_make_is_found);
 		} else {
-		    messageBox.setText("Warning");
-		    messageBox.setMessage("Make is still missing.");
+		    messageBox.setText(Messages.ui_warning);
+		    messageBox.setMessage(Messages.error_make_is_not_found);
 		}
 		messageBox.open();
 		testStatus();
@@ -190,7 +190,7 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     boolean testStatus() {
 
 	this.myMakeOKText.setForeground(this.myIsMakeInstalled ? this.greenColor : this.redColor);
-	this.myMakeOKText.setText(this.myIsMakeInstalled ? "Make is found on your system." : "Make is not found on your system");
+	this.myMakeOKText.setText(this.myIsMakeInstalled ? Messages.ui_make_is_found : Messages.error_make_is_not_found);
 
 	setErrorMessage(null);
 	setValid(true);
@@ -216,11 +216,12 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
 	try {
 
 	    if (commandLauncher.launch(null) != 0) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Make not found.\n" + command, null));
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.error_make_is_not_found + ArduinoConst.NEWLINE + command,
+			null));
 		return;
 	    }
 	} catch (IOException e) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to run make\n" + command, e));
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.error_make_finder_failed + ArduinoConst.NEWLINE + command, e));
 	    return;
 	}
 	this.myIsMakeInstalled = true;

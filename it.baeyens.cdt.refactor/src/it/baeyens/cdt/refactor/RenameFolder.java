@@ -23,7 +23,7 @@ public class RenameFolder extends RenameParticipant {
      */
     static public boolean isCDTProject(IProject project) {
 	try {
-	    if (project.getNature("org.eclipse.cdt.core.cnature") != null) {
+	    if (project.getNature("org.eclipse.cdt.core.cnature") != null) { //$NON-NLS-1$
 		return true;// this is a cdt project
 	    }
 	} catch (CoreException e) {
@@ -40,20 +40,20 @@ public class RenameFolder extends RenameParticipant {
     protected boolean initialize(Object element) {
 	if (element instanceof IFolder) { // it is a folder rename
 	    IFolder theFolder = (IFolder) element;
-	    myProject = theFolder.getProject();
-	    orgName = theFolder.getFullPath().toString();
-	    return isCDTProject(myProject);
+	    this.myProject = theFolder.getProject();
+	    this.orgName = theFolder.getFullPath().toString();
+	    return isCDTProject(this.myProject);
 	} else if (element instanceof IProject) {
-	    myProject = (IProject) element;
-	    orgName = "/" + myProject.getName();
-	    return isCDTProject(myProject);
+	    this.myProject = (IProject) element;
+	    this.orgName = "/" + this.myProject.getName(); //$NON-NLS-1$
+	    return isCDTProject(this.myProject);
 	}
 	return false;
     }
 
     @Override
     public String getName() {
-	return "Arduino environment adaptor";
+	return "Arduino environment adaptor"; //$NON-NLS-1$
     }
 
     @Override
@@ -65,6 +65,6 @@ public class RenameFolder extends RenameParticipant {
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
 	RenameArguments args = getArguments();
-	return new RenameFolderChangeHandler(orgName, args.getNewName());
+	return new RenameFolderChangeHandler(this.orgName, args.getNewName());
     }
 }

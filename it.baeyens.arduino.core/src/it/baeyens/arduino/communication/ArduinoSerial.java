@@ -1,5 +1,13 @@
 package it.baeyens.arduino.communication;
 
+import java.util.Vector;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.console.MessageConsoleStream;
+
 /**
  * This file contains serial communication at the arduino level.
  * Lower level methods are in the common package
@@ -9,17 +17,9 @@ import it.baeyens.arduino.arduino.Serial;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
 
-import java.util.Vector;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.console.MessageConsoleStream;
-
 public class ArduinoSerial {
     /**
-     * This method resets arduino based on setting the baud rate. Used for due, leonardo and others
+     * This method resets arduino based on setting the baud rate. Used for due, Leonardo and others
      * 
      * @param ComPort
      *            The port to set the baud rate
@@ -33,7 +33,7 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, e));
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
 	    return false;
 	}
 	if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
@@ -65,42 +65,42 @@ public class ArduinoSerial {
 	int NumTries = 0;
 	int MaxTries = 40; // wait for max 10 seconds as arduino does
 	int delayMs = 250;
-	int PrefNewPortsCopySize=-10;
+	int PrefNewPortsCopySize = -10;
 	do {
 
 	    NewPorts = Serial.list();
 
-	    NewPortsCopy = new Vector<String>(NewPorts);
+	    NewPortsCopy = new Vector<>(NewPorts);
 	    for (int i = 0; i < OriginalPorts.size(); i++) {
 		NewPortsCopy.remove(OriginalPorts.get(i));
 	    }
 
 	    /* dump the serial ports to the console */
-	    console.print("PORTS {");
+	    console.print("PORTS {"); //$NON-NLS-1$
 	    for (int i = 0; i < OriginalPorts.size(); i++) {
-		console.print(" " + OriginalPorts.get(i) + ",");
+		console.print(' ' + OriginalPorts.get(i) + ',');
 	    }
-	    console.print("} / {");
+	    console.print("} / {"); //$NON-NLS-1$
 	    for (int i = 0; i < NewPorts.size(); i++) {
-		console.print(" " + NewPorts.get(i) + ",");
+		console.print(' ' + NewPorts.get(i) + ',');
 	    }
-	    console.print("} => {");
+	    console.print("} => {"); //$NON-NLS-1$
 	    for (int i = 0; i < NewPortsCopy.size(); i++) {
-		console.print(" " + NewPortsCopy.get(i) + ",");
+		console.print(' ' + NewPortsCopy.get(i) + ',');
 	    }
-	    console.println("}");
+	    console.println("}"); //$NON-NLS-1$
 	    /* end of dump to the console */
 
 	    // code to capture the case: the com port reappears with a name that was in the original list
 	    int NewPortsCopySize = NewPorts.size();
 	    if ((NewPortsCopy.size() == 0) && (NewPortsCopySize == PrefNewPortsCopySize + 1)) {
-		console.println("Comport appeared and disappeared with same name");
+		console.println(Messages.ArduinoSerial_Comport_Appeared_and_disappeared);
 		return defaultComPort;
 	    }
 	    PrefNewPortsCopySize = NewPortsCopySize;
 
 	    if (NumTries++ > MaxTries) {
-		console.println("Comport is not behaving as expected");
+		console.println(Messages.ArduinoSerial_Comport_is_not_behaving_as_expected);
 		return defaultComPort;
 	    }
 	    if (NewPortsCopy.size() == 0) // wait a while before we do the next try
@@ -113,7 +113,7 @@ public class ArduinoSerial {
 	    }
 	} while (NewPortsCopy.size() == 0);
 
-	console.println("Comport reset took " + (NumTries * delayMs) + "ms");
+	console.println(Messages.ArduinoSerial_Comport_reset_took + (NumTries * delayMs) + Messages.ArduinoSerial_miliseconds);
 	return NewPortsCopy.get(0);
     }
 
@@ -121,7 +121,7 @@ public class ArduinoSerial {
      * Toggle DTR this is a way to reset an arduino board
      * 
      * @param Port
-     *            the port to togle
+     *            the port to toggle
      * @param delay
      *            the time to wait between the 2 toggle commands
      * @return true is successful otherwise false
@@ -167,7 +167,7 @@ public class ArduinoSerial {
      * reset the arduino
      * 
      * This method takes into account all the setting to be able to reset all different types of arduino If RXTXDisabled is set the method only return
-     * the param Comport
+     * the parameter Comport
      * 
      * @param project
      *            The project related to the com port to reset
@@ -177,29 +177,33 @@ public class ArduinoSerial {
      */
     public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName, String ComPort) {
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
-	boolean use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, "false")
-		.equalsIgnoreCase("true");
-	boolean bDisableFlushing = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, "false")
-		.equalsIgnoreCase("true");
-	boolean bwait_for_upload_port = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, "false")
-		.equalsIgnoreCase("true");
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, "");
-	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_UPLOAD_PROTOCOL, "");
-	/* Teensy uses halfkay protocol and doesn not require a reset */
-	if (upload_protocol.equalsIgnoreCase("halfkay")) {
+	boolean use_1200bps_touch = Common
+		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, ArduinoConst.FALSE)
+		.equalsIgnoreCase(ArduinoConst.TRUE);
+	boolean bDisableFlushing = Common
+		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, ArduinoConst.FALSE)
+		.equalsIgnoreCase(ArduinoConst.TRUE);
+	boolean bwait_for_upload_port = Common
+		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, ArduinoConst.FALSE)
+		.equalsIgnoreCase(ArduinoConst.TRUE);
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, ArduinoConst.EMPTY_STRING);
+	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_UPLOAD_PROTOCOL,
+		ArduinoConst.EMPTY_STRING);
+	/* Teensy uses halfkay protocol and does not require a reset */
+	if (upload_protocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
 	    return ComPort;
 	}
 	/* end of Teensy and halfkay */
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
-	    console.println("Starting reset using 1200bps touch process");
+	    console.println(Messages.ArduinoSerial_Using_12000bps_touch);
 	    Vector<String> OriginalPorts = Serial.list();
 
 	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 300) /* || */) {
-		console.println("reset using 1200bps touch failed");
+		console.println(Messages.ArduinoSerial_reset_failed);
 
 	    } else {
-		if (boardName.startsWith("Digistump DigiX")) {
+		if (boardName.startsWith("Digistump DigiX")) { //$NON-NLS-1$
 		    // Give the DUE/DigiX Atmel SAM-BA bootloader time to switch-in after the reset
 		    try {
 			Thread.sleep(2000);
@@ -209,52 +213,53 @@ public class ArduinoSerial {
 		}
 		if (bwait_for_upload_port) {
 		    String NewComport = wait_for_com_Port_to_appear(console, OriginalPorts, ComPort);
-		    console.println("Using comport " + NewComport + " from now onwards");
-		    console.println("Ending reset using 1200bps touch process");
+		    console.println(Messages.ArduinoSerial_Using_comport + NewComport + Messages.ArduinoSerial_From_Now_Onwards);
+		    console.println(Messages.ArduinoSerial_Ending_reset);
 		    return NewComport;
 		}
 	    }
-	    console.println("Continuing to use " + ComPort);
-	    console.println("Ending reset using 1200bps touch process");
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	    console.println(Messages.ArduinoSerial_Ending_reset);
 	    return ComPort;
 	}
 
 	// connect to the serial port
-	console.println("Starting reset using DTR toggle process");
+	console.println(Messages.ArduinoSerial_reset_dtr_toggle);
 	Serial serialPort;
 	try {
 	    serialPort = new Serial(ComPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Exception while opening Serial port " + ComPort, e));
-	    console.println("Exception while opening Serial port " + ComPort);
-	    console.println("Continuing to use " + ComPort);
-	    console.println("Ending reset using DTR toggle process");
+	    Common.log(
+		    new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort, e));
+	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	    console.println(Messages.ArduinoSerial_Ending_reset);
 	    return ComPort;
 	    // throw new RunnerException(e.getMessage());
 	}
 	if (!serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unable to open Serial port " + ComPort, null));
-	    console.println("Unable to open Serial port " + ComPort);
-	    console.println("Continuing to use " + ComPort);
-	    console.println("Ending reset using DTR toggle process");
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_unable_to_open_serial_port + ComPort, null));
+	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	    console.println(Messages.ArduinoSerial_Ending_reset);
 	    return ComPort;
 	}
 
 	if (!bDisableFlushing) {
 	    // Cleanup the serial buffer
-	    console.println("Flushing buffer");
+	    console.println(Messages.ArduinoSerial_Flushing_buffer);
 	    flushSerialBuffer(serialPort);// I wonder is this code on the right
 					  // place (I mean before the reset?;
 					  // shouldn't it be after?)
 	}
 	// reset arduino
-	console.println("Toggling DTR");
+	console.println(Messages.ArduinoSerial_23);
 	ToggleDTR(serialPort, 100);
 
 	serialPort.dispose();
-	console.println("Continuing to use " + ComPort);
-	console.println("Ending reset using DTR toggle process");
+	console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	console.println(Messages.ArduinoSerial_Ending_reset);
 	return ComPort;
 
     }

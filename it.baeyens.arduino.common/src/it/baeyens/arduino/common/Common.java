@@ -119,7 +119,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return sret;
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
+	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
 	    // e.printStackTrace();
 	    return EMPTY_STRING;
 	}
@@ -133,7 +133,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return Integer.parseInt(sret);
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e));
+	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
 	    // e.printStackTrace();
 	    return defaultValue;
 	}
@@ -156,7 +156,7 @@ public class Common extends ArduinoInstancePreferences {
 	    // downwards
 	    // compatibility
 	} catch (CoreException e) {
-	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e);
+	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e); //$NON-NLS-1$
 	    Common.log(status);
 
 	}
@@ -334,6 +334,7 @@ public class Common extends ArduinoInstancePreferences {
 			IWorkbenchPart part = page.getActivePart();
 			if (part instanceof IEditorPart) {
 			    IEditorPart epart = (IEditorPart) part;
+			    @SuppressWarnings("cast") // cast is needed to build with oracle jdk 8
 			    IResource resource = (IResource) epart.getEditorInput().getAdapter(IResource.class);
 			    if (resource != null) {
 				IProject project = resource.getProject();

@@ -14,14 +14,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     @Override
     protected void makeActions(IWorkbenchWindow window) {
 	super.makeActions(window);
-	System.out.println("Jaba Was here");
+	System.out.println("Jaba Was here"); //$NON-NLS-1$
 	// Not sure whether something is needed here JABA
     }
 
     @Override
     protected void fillMenuBar(IMenuManager menuBar) {
 	super.fillMenuBar(menuBar);
-	System.out.println("Jaba Was here");
+	System.out.println("Jaba Was here"); //$NON-NLS-1$
 	// Not sure whether something is needed here JABA
     }
 

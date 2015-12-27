@@ -1,5 +1,12 @@
 package it.baeyens.arduino.monitor.views;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
+
 /**
  * This class is a class used to listen to the serial port and send data to the scope.
  * The data from the serial port must be from the format 
@@ -11,15 +18,7 @@ package it.baeyens.arduino.monitor.views;
 import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import multichannel.Oscilloscope;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.widgets.Display;
 
 public class ScopeListener implements MessageConsumer {
 
@@ -39,8 +38,8 @@ public class ScopeListener implements MessageConsumer {
     private int myEndPosition = 0;
 
     public ScopeListener(Oscilloscope oscilloscope) {
-	myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
-	myScope = oscilloscope;
+	this.myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
+	this.myScope = oscilloscope;
     }
 
     /**
@@ -51,15 +50,15 @@ public class ScopeListener implements MessageConsumer {
      */
     @Override
     public synchronized void message(byte[] newData) {
-	if (myScope.isDisposed())
+	if (this.myScope.isDisposed())
 	    return;
-	if (myEndPosition + newData.length >= myReceivedScopeData.capacity()) {
-	    myEndPosition = 0;
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Scope: skipping scope info to avoid buffer overflow"));
+	if (this.myEndPosition + newData.length >= this.myReceivedScopeData.capacity()) {
+	    this.myEndPosition = 0;
+	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
 	} else {
-	    myReceivedScopeData.position(myEndPosition);
-	    myReceivedScopeData.put(newData, 0, newData.length);
-	    myEndPosition = myReceivedScopeData.position();
+	    this.myReceivedScopeData.position(this.myEndPosition);
+	    this.myReceivedScopeData.put(newData, 0, newData.length);
+	    this.myEndPosition = this.myReceivedScopeData.position();
 	    internalExtractAndProcessScopeData();
 	}
 
@@ -68,23 +67,23 @@ public class ScopeListener implements MessageConsumer {
     @Override
     public void dispose() {
 	// myScope.removeStackListener(0, stackAdapter);
-	myScope = null;
-	myReceivedScopeData = null;
+	this.myScope = null;
+	this.myReceivedScopeData = null;
     }
 
     /**
      * AddValuesToOsciloscope This method makes the scope to draw the values that have been delivered to the scope
      */
     public void AddValuesToOsciloscope() {
-	if (myScope.isDisposed())
+	if (this.myScope.isDisposed())
 	    return;
 	// run on the gui thread only
 	Display.getDefault().asyncExec(new Runnable() {
 	    @Override
 	    public void run() {
 		try {
-		    myScope.getDispatcher(0).hookPulse(myScope, 1);
-		    myScope.redraw();
+		    ScopeListener.this.myScope.getDispatcher(0).hookPulse(ScopeListener.this.myScope, 1);
+		    ScopeListener.this.myScope.redraw();
 		} catch (Exception e) {
 		    // ignore as we get errors when closing down
 		}
@@ -98,24 +97,24 @@ public class ScopeListener implements MessageConsumer {
      * scanned is removed from myReceivedScopeData
      */
     private void internalExtractAndProcessScopeData() {
-	int lastFoundData = myEndPosition - 6;
+	int lastFoundData = this.myEndPosition - 6;
 	// Scan for scope data
-	for (int scannnedDataPointer = 0; scannnedDataPointer < myEndPosition - 6; scannnedDataPointer++) {
-	    if (myReceivedScopeData.getShort(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA) {
+	for (int scannnedDataPointer = 0; scannnedDataPointer < this.myEndPosition - 6; scannnedDataPointer++) {
+	    if (this.myReceivedScopeData.getShort(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA) {
 		// we have a hit.
 		lastFoundData = scannnedDataPointer;
 		scannnedDataPointer = scannnedDataPointer + 2;
-		int bytestoRead = myReceivedScopeData.getShort(scannnedDataPointer);
+		int bytestoRead = this.myReceivedScopeData.getShort(scannnedDataPointer);
 		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "There are supposedly " + bytestoRead / 2
-			    + "channels to read"));
+		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+			    Messages.SerialListener_error_input_part_1 + bytestoRead / 2 + Messages.SerialListener_error_input_part_2));
 		} else {
-		    if (bytestoRead + 2 + scannnedDataPointer < myEndPosition) {
+		    if (bytestoRead + 2 + scannnedDataPointer < this.myEndPosition) {
 			// all data is available
-			int myNumDataSetsToReceive = myReceivedScopeData.getShort(scannnedDataPointer) / 2 + 0;
+			int myNumDataSetsToReceive = this.myReceivedScopeData.getShort(scannnedDataPointer) / 2 + 0;
 			for (int CurData = 0; CurData < myNumDataSetsToReceive; CurData++) {
-			    int data = myReceivedScopeData.getShort(scannnedDataPointer + 2 + CurData * 2);
-			    myScope.setValue(CurData, data);
+			    int data = this.myReceivedScopeData.getShort(scannnedDataPointer + 2 + CurData * 2);
+			    this.myScope.setValue(CurData, data);
 			}
 			AddValuesToOsciloscope();
 			scannnedDataPointer = scannnedDataPointer + 2 + myNumDataSetsToReceive * 2;
@@ -126,15 +125,15 @@ public class ScopeListener implements MessageConsumer {
 	    }
 	}
 	// remove all the scanned data
-	for (int curByte = 0; curByte <= myEndPosition - lastFoundData; curByte++) {
+	for (int curByte = 0; curByte <= this.myEndPosition - lastFoundData; curByte++) {
 	    try {
-		myReceivedScopeData.put(curByte, myReceivedScopeData.get(curByte + lastFoundData));
+		this.myReceivedScopeData.put(curByte, this.myReceivedScopeData.get(curByte + lastFoundData));
 	    } catch (IndexOutOfBoundsException e) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "buffer overflow in ScopeListener ", e));
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ScopeListener_buffer_overflow, e));
 	    }
 
 	}
-	myEndPosition -= lastFoundData;
+	this.myEndPosition -= lastFoundData;
 
     }
 
