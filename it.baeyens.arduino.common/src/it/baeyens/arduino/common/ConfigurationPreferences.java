@@ -33,6 +33,14 @@ public class ConfigurationPreferences {
     }
 
     public static Path getInstallationPath() {
+	final String ArgStart = "-manager_path:"; //$NON-NLS-1$
+	String args[] = Platform.getApplicationArgs();
+	for (String arg : args) {
+	    if (arg.startsWith(ArgStart)) {
+		String pathName = arg.substring(ArgStart.length());
+		return new Path(pathName);
+	    }
+	}
 	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, ArduinoConst.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    URI uri;
