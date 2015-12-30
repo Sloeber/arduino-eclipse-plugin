@@ -36,18 +36,12 @@ public class ProjectExplorerListener implements ISelectionListener {
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection newSelection) {
 	if (newSelection instanceof IStructuredSelection) {
-	    // Object element = ((IStructuredSelection) newSelection).getFirstElement();
-	    // if (element instanceof IAdaptable) {
-	    // IResource resource = ((IAdaptable) element).getAdapter(IResource.class);
-	    // project = resource.getProject();
-	    //
-	    // // do your action here!!
-	    // }
 
 	    List<IProject> allSelectedprojects = new ArrayList<>();
 	    for (Object element : ((IStructuredSelection) newSelection).toList()) {
 		if (element instanceof IAdaptable) {
-		    IResource resource = ((IAdaptable) element).getAdapter(IResource.class);
+		    @SuppressWarnings("cast") // this is needed for the oracle sdk
+		    IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
 		    allSelectedprojects.add(resource.getProject());
 
 		}
