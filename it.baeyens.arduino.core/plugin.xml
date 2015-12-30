@@ -189,6 +189,7 @@
 			id="it.baeyens.arduino.commands"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
         description="%command.UploadprojectAction.description"
         id="it.baeyens.arduino.actions.UploadprojectAction"
         name="%command.UploadprojectAction.name"/>
@@ -200,6 +201,7 @@
         name="%command.NewSketchAction.name"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.BuildHandler"
         description="%command.ArduinoBuildAction.description"
         id="it.baeyens.arduino.actions.ArduinoBuildAction"
         name="%command.ArduinoBuildAction.name"/>
@@ -210,17 +212,19 @@
         id="it.baeyens.arduino.actions.OpenSerialMonitorAction"
         name="%command.OpenSerialMonitorAction.name"/>
         <command
-        categoryId="it.baeyens.arduino.commands"
-        description="%command.AddLibraryAction.description"
-        id="it.baeyens.arduino.actions.AddLibraryAction"
-        name="%command.AddLibraryAction.name">
+              categoryId="it.baeyens.arduino.commands"
+              defaultHandler="it.baeyens.arduino.actions.AddLibraryAction"
+              description="%command.AddLibraryAction.description"
+              id="it.baeyens.arduino.actions.AddLibraryAction"
+              name="%command.AddLibraryAction.name">
         </command>
         
         <command
-        categoryId="it.baeyens.arduino.commands"
-        description="%command.AddSourceFolder.description"
-        id="it.baeyens.arduino.actions.AddSourceFolderAction"
-        name="%command.AddSourceFolder.name">
+              categoryId="it.baeyens.arduino.commands"
+              defaultHandler="it.baeyens.arduino.actions.AddSourceFolderAction"
+              description="%command.AddSourceFolder.description"
+              id="it.baeyens.arduino.actions.AddSourceFolderAction"
+              name="%command.AddSourceFolder.name">
         </command>
 
       <command
@@ -232,6 +236,7 @@
       </command>
       <command
             categoryId="it.baeyens.arduino.commands"
+            defaultHandler="it.baeyens.arduino.actions.ReattachLibraries"
             description="%command.ReattachLibraries.description"
             id="it.baeyens.arduino.actions.ReattachLibraries"
             name="%command.ReattachLibraries.name">
@@ -294,9 +299,6 @@
                 icon="icons/check.png"
                 label="%command.label"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.UploadprojectAction"
@@ -304,9 +306,6 @@
                 icon="icons/arrow.png"
                 label="%command.name"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.NewSketchAction"
@@ -314,18 +313,12 @@
                 icon="icons/new.png"
                 label="%command.label.1"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="org.eclipse.ui.file.save"
                 disabledIcon="icons/save_disabled.png"
                 icon="icons/save.png"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"
@@ -333,18 +326,12 @@
                 icon="icons/ser_mon.png"
                 label="%command.label.2"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenScopeAction"
                 icon="icons/scope.png"
                 label="%command.label.5"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
        </toolbar>
     </menuContribution>

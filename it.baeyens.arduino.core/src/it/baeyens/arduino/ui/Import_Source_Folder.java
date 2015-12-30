@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbench;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.tools.ArduinoHelpers;
 
 /**
@@ -50,7 +51,7 @@ public class Import_Source_Folder implements IImportWizard {
 	// Always create the pages like this at the last minute
 
 	IProject theProject = null;
-	IProject SelectedProjects[] = Common.getSelectedProjects();
+	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 
 	if (SelectedProjects.length > 0) {
 	    theProject = SelectedProjects[0];

@@ -30,6 +30,7 @@ import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
+import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.managers.ArduinoManager;
 
 /**
@@ -91,6 +92,7 @@ public class Activator implements BundleActivator {
 	};
 	installJob.setPriority(Job.BUILD);
 	installJob.schedule();
+	ProjectExplorerListener.registerListener();
 
 	return;
 

@@ -16,6 +16,7 @@ import org.eclipse.ui.wizards.IWizardDescriptor;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.listeners.ProjectExplorerListener;
 
 //Brody added this to be symmetrical with AddLibrary
 
@@ -25,7 +26,7 @@ public class AddSourceFolderAction extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
 	if (!ArduinoInstancePreferences.isConfigured(true))
 	    return null;
-	IProject SelectedProjects[] = Common.getSelectedProjects();
+	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build")); //$NON-NLS-1$

@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbench;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.listeners.ProjectExplorerListener;
 
 /**
  * Import_Arduino_Libraries class is the class linked to the GUI related to the Arduino library import. It creates one page. There is an important
@@ -46,7 +47,7 @@ public class Import_Arduino_Libraries implements IImportWizard {
 	// Always create the pages like this at the last minute
 
 	IProject theProject = null;
-	IProject SelectedProjects[] = Common.getSelectedProjects();
+	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 
 	if (SelectedProjects.length > 0) {
 	    theProject = SelectedProjects[0];

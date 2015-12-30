@@ -18,6 +18,7 @@ import org.eclipse.ui.PlatformUI;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.tools.PdePreprocessor;
 
 /**
@@ -59,7 +60,7 @@ public class BuildHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-	IProject SelectedProjects[] = Common.getSelectedProjects();
+	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
 	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.BuildHandler_No_Project_found));
