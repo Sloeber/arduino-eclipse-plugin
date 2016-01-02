@@ -106,7 +106,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	return null;
     }
 
-    @SuppressWarnings("hiding")
+
     @Override
     public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker) throws CoreException {
 	super.startup(cfgDescription, cwdTracker);

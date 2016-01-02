@@ -188,6 +188,10 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 
 	GridData theGriddata;
 	this.mAllBoardsFileNames = ArduinoHelpers.getBoardsFiles();
+	if(this.mAllBoardsFileNames==null)
+	{
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed."));
+	}
 	Arrays.sort(this.mAllBoardsFileNames);
 	this.mAllBoardsFiles = new ArduinoBoards[this.mAllBoardsFileNames.length];
 	for (int currentBoardFile = 0; currentBoardFile < this.mAllBoardsFileNames.length; currentBoardFile++) {

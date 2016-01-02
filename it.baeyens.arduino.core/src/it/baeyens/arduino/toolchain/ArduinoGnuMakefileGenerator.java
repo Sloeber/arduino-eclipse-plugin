@@ -108,7 +108,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 	private final ArduinoGnuMakefileGenerator generator;
 	// private IManagedBuildInfo info;
-	@SuppressWarnings("hiding")
 	private final IConfiguration config;
 
 	/**
@@ -129,7 +128,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 * 
 	 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse .core.resources.IResourceDelta)
 	 */
-	@SuppressWarnings("incomplete-switch")
+
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 	    // Should the visitor keep iterating in current directory
@@ -205,7 +204,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      */
     protected class ResourceProxyVisitor implements IResourceProxyVisitor {
 	private final ArduinoGnuMakefileGenerator generator;
-	@SuppressWarnings("hiding")
 	private final IConfiguration config;
 
 	// private IManagedBuildInfo info;
@@ -385,7 +383,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * IManagedBuilderMakefileGenerator M E T H O D S
      ************************************************************************/
 
-    @SuppressWarnings("hiding")
     /*
      * (non-Javadoc)
      * 
@@ -2381,7 +2378,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * @param enumeratedOutputs
      *            vector of the filenames that are the output of this rule
      */
-    @SuppressWarnings("null")
     protected void addRuleForSource(String relativePath, StringBuffer buffer, IResource resource, IPath sourceLocation, IResourceInfo rcInfo,
 	    boolean generatedSource, Vector<IPath> generatedDepFiles, Vector<IPath> enumeratedOutputs) {
 
@@ -3602,9 +3598,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    return false;
 
 	// Get the contents of the dependency file
-	@SuppressWarnings("resource")
 	InputStream contentStream = makefile.getContents(false);
-	@SuppressWarnings("resource")
 	Reader in = new InputStreamReader(contentStream);
 	StringBuffer inBuffer = null;
 	int chunkSize = contentStream.available();
@@ -4654,7 +4648,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
-    @SuppressWarnings("hiding")
     @Override
     public void initialize(int buildKind, IConfiguration cfg, IBuilder _builder, IProgressMonitor monitor) {
 	IBuilder builder = _builder;

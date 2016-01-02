@@ -414,6 +414,7 @@
         buildfileGenerator="it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
         command="make"
+        commandLauncher="it.baeyens.arduino.toolchain.ArduinoCommandLauncher"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
         id="it.baeyens.arduino.gnu.builder"
         ignoreErrCmd="-k"

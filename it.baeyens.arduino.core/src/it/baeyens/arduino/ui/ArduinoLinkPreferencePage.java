@@ -21,8 +21,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.managers.ArduinoManager;
-import it.baeyens.arduino.managers.ArduinoPreferences;
+
 
 public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -47,14 +48,14 @@ public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbe
 
 	this.urlsText = new Text(control, SWT.BORDER | SWT.MULTI);
 	this.urlsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	this.urlsText.setText(ArduinoPreferences.getBoardUrls());
+	this.urlsText.setText(ConfigurationPreferences.getBoardURLs());
 
 	return control;
     }
 
     @Override
     public boolean performOk() {
-	ArduinoPreferences.setBoardUrls(this.urlsText.getText());
+	ConfigurationPreferences.setBoardURLs(this.urlsText.getText());
 	ArduinoManager.loadIndices(true);
 	return true;
     }
@@ -63,7 +64,7 @@ public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbe
     protected void performDefaults() {
 	String defaultBoardUrl = ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS;
 	this.urlsText.setText(defaultBoardUrl);
-	ArduinoPreferences.setBoardUrls(defaultBoardUrl);
+	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
 	super.performDefaults();
     }
 

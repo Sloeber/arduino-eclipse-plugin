@@ -65,7 +65,6 @@ import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
-import it.baeyens.arduino.managers.ArduinoPreferences;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -885,7 +884,7 @@ public class ArduinoHelpers extends Common {
 
 	// TODO look in all hardware paths
 	Path privateHardwareFolder = new Path(getPrivateHardwarePaths()[0]);
-	IPath boardsManagerPackagesFolder = new Path(ArduinoPreferences.getArduinoHome().toString());
+	IPath boardsManagerPackagesFolder = ConfigurationPreferences.getInstallationPath();
 	if (privateHardwareFolder.append(vendor).append(architecture).toFile().exists()) {
 	    return privateHardwareFolder.append(vendor).append(architecture);
 	}
