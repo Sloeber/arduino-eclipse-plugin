@@ -8,12 +8,14 @@
 package it.baeyens.arduino.managers;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoTool {
@@ -48,8 +50,8 @@ public class ArduinoTool {
     }
 
     public Path getInstallPath() {
-	return ArduinoPreferences.getArduinoHome().resolve("tools").resolve(this.pkg.getName()).resolve(this.name) //$NON-NLS-1$
-		.resolve(this.version);
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()).append(this.name) //$NON-NLS-1$
+		.append(this.version).toString());
     }
 
     public boolean isInstalled() {

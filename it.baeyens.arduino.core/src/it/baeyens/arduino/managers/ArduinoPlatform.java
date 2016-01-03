@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoPlatform {
@@ -174,10 +176,10 @@ public class ArduinoPlatform {
     }
 
     public Path getInstallPath() {
-	Path thePath = ArduinoPreferences.getArduinoHome().resolve(ArduinoConst.PACKAGES_FOLDER_NAME).resolve(this.pkg.getName())
-		.resolve(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
-		.resolve(this.architecture).resolve(this.version);
-	return thePath;
+	String stPath= ConfigurationPreferences.getInstallationPath().append(ArduinoConst.PACKAGES_FOLDER_NAME).append(this.pkg.getName())
+		.append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
+		.append(this.architecture).append(this.version).toString();
+	return Paths.get(stPath);
     }
 
     public List<Path> getIncludePath() {

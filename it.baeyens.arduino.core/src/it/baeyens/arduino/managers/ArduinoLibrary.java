@@ -3,6 +3,7 @@ package it.baeyens.arduino.managers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +17,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
@@ -148,8 +151,8 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public Path getInstallPath() {
-	return ArduinoPreferences.getArduinoHome().resolve("libraries").resolve(this.name.replace(' ', '_')) //$NON-NLS-1$
-		.resolve(this.version);
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_')) //$NON-NLS-1$
+		.append(this.version).toString());
     }
 
     public boolean isInstalled() {

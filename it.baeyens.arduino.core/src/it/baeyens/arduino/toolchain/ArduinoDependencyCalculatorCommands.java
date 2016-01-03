@@ -10,7 +10,6 @@ import org.eclipse.cdt.managedbuilder.makegen.gnu.DefaultGCCDependencyCalculator
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-@SuppressWarnings("unused")
 public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands implements IManagedDependencyInfo {
 
     public ArduinoDependencyCalculatorCommands(IPath source, IBuildObject buildContext, ITool tool, IPath topBuildDirectory) {

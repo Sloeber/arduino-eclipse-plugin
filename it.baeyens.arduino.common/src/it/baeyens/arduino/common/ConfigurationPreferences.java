@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+
 public class ConfigurationPreferences {
 
     // private static final String defaulDownloadLocation = new Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
@@ -97,6 +98,11 @@ public class ConfigurationPreferences {
 
     public static void setBoardURLs(String urls) {
 	setGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, urls);
+    }
+
+    public static Path getPathExtensionPath() {
+	return new Path(getInstallationPath().append("tools/make").toString());
+
     }
 
 }

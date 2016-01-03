@@ -163,10 +163,6 @@ public class ExternalCommandLauncher {
     public ExternalCommandLauncher(List<String> command) {
 	Assert.isNotNull(command);
 	this.fRunLock = this;
-	// "-C/home/jan/programs/arduino-1.5.2/hardware/tools/avrdude.conf"
-	// -patmega2560 -cwiring -P -b115200 -D
-	// "-Uflash:w:/home/jan/workspaces/runtime-eclipse/tst_avr_mega_41/release/tst_avr_mega_41.hex:i"
-
 	this.fProcessBuilder = new ProcessBuilder(command);
     }
 
@@ -208,7 +204,6 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
-    @SuppressWarnings("resource")
     public int launch(IProgressMonitor inMonitor) throws IOException {
 	IProgressMonitor monitor = inMonitor;
 	if (monitor == null) {
