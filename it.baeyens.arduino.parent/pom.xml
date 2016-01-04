@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>0.22.0</tycho.version>
+		<tycho.version>0.24.0</tycho.version>
         <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
@@ -67,8 +67,8 @@
 				<configuration>
 					<debug>true</debug>
 					<encoding>UTF-8</encoding>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 
