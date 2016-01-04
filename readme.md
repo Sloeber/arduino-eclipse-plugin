@@ -22,7 +22,7 @@ Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.ap
 ```bash
 git clone https://github.com/jantje/arduino-eclipse-plugin
 cd arduino-eclipse-plugin
-mvn verify
+mvn clean verify
 ```
 
 Then the runnable application executable can be started, i.e. on a 64-bit mac, with:
@@ -60,7 +60,6 @@ You can control the maven build with the following profiles:
 * win64 
 * linux32
 * linux64
-* mac32
 * mac64
 
 ##### Examples:
@@ -70,10 +69,10 @@ mvn verify -Plinux32 (builds for luna and linux 32 bits)
 mvn verify -Pwin32,mars,linux32
 ```
 
-To build for luna and the platform you are running on:
+To build for mars and the platform you are running on:
 
 ```bash
-mvn verify 
+mvn clean verify 
 ```
 
 ### Setting up a repository
@@ -87,13 +86,13 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
  * Make changes
- * Run ```mvn verify``` to build 
- * Open the self-contained IDE and verify
+ * Run ```mvn clean verify``` to build 
+ * Open the self-contained IDE and verify your fix
  * (Anything special about Travis CI & builds?)
 
-You should already have a supported Eclipse version installed (the CDT package makes a good start point). Let's add:
-
 #### Adding Eclipse PDE (Plugin Development Environment)
+
+You should already have a supported Eclipse version installed (the CDT package makes a good start point). Let's add:
 
 > Help → Install New Software → Work with: → All Available Sites
 
