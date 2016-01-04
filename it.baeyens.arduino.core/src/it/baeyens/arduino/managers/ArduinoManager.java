@@ -50,7 +50,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import com.google.gson.Gson;
 
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
@@ -160,7 +159,7 @@ public class ArduinoManager {
         // On Windows install make from equations.org
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
             try {
-                Path makePath = (Path) ConfigurationPreferences.getPathExtensionPath().append("make.exe");
+                Path makePath = Paths.get(ConfigurationPreferences.getPathExtensionPath().append("make.exe").toString());
                 if (!makePath.toFile().exists()) {
                     Files.createDirectories(makePath.getParent());
                     URL makeUrl = new URL("ftp://ftp.equation.com/make/32/make.exe"); //$NON-NLS-1$
