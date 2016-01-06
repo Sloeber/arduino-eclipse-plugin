@@ -413,8 +413,7 @@
         autoBuildTarget="all"
         buildfileGenerator="it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
-        command="make"
-        commandLauncher="it.baeyens.arduino.toolchain.ArduinoCommandLauncher"
+        command="${JANTJE.MAKE_LOCATION}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
         id="it.baeyens.arduino.gnu.builder"
         ignoreErrCmd="-k"
@@ -764,56 +763,6 @@
 			name="%content-type.name.0">
 		</content-type>
 	</extension>
- <extension
-       point="org.eclipse.ui.handlers">
-    <handler
-          class="it.baeyens.arduino.actions.BuildHandler"
-          commandId="it.baeyens.arduino.actions.ArduinoBuildAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    <handler
-          class="it.baeyens.arduino.actions.AddLibraryAction"
-          commandId="it.baeyens.arduino.actions.AddLibraryAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    
-    <handler
-          class="it.baeyens.arduino.actions.AddSourceFolderAction"
-          commandId="it.baeyens.arduino.actions.AddSourceFolderAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    <handler
-          class="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
-          commandId="it.baeyens.arduino.actions.UploadprojectAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-        <handler
-          class="it.baeyens.arduino.actions.ReattachLibraries"
-          commandId="it.baeyens.arduino.actions.ReattachLibraries">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    
- </extension>
  <extension
        point="org.eclipse.ui.perspectiveExtensions">
     <perspectiveExtension
