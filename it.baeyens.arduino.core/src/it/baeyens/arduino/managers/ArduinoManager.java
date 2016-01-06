@@ -131,7 +131,7 @@ public class ArduinoManager {
 		    toInstalLib.install(monitor);
 		}
 
-		// TODO add sample programs here
+		// TODO add sample programs here please
 
 		// now add the boards
 		String platformName = ARDUINO_AVR_BOARDS;
