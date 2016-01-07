@@ -8,8 +8,12 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
@@ -20,6 +24,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.tools.ArduinoLibraries;
 
 public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
@@ -113,6 +119,23 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
     }
 
     public boolean PerformFinish() {
+	// check if there is a incompatibility in the library folder name
+	// windows only
+	if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    IFolder folder = this.myProject.getFolder(ArduinoConst.LIBRARY_PATH_SUFFIX);
+	    if (!folder.exists()) {
+		try {
+		    folder.create(false, true, null);
+		} catch (CoreException e) {
+		    // TODO Auto-generated catch block
+		    Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble",
+			    e));
+		    return true;
+		}
+
+	    }
+	}
 	TreeItem selectedTreeItems[] = this.myLibrarySelector.getItems();
 	Set<String> selectedLibraries = new TreeSet<>();
 	Set<String> unselectedLibraries = new TreeSet<>();
