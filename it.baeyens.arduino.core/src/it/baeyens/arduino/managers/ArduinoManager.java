@@ -79,7 +79,6 @@ public class ArduinoManager {
      * @param monitor
      */
     public static void startup_Pluging(IProgressMonitor monitor) {
-	monitor.subTask("Loading indices");
 	loadIndices(true);
 	try {
 	    List<ArduinoBoard> allBoards = getInstalledBoards();
@@ -114,6 +113,7 @@ public class ArduinoManager {
 		if (toInstalLib != null) {
 		    toInstalLib.install(monitor);
 		}
+		
 		toInstalLib = libindex.getLatestLibrary("Servo");
 		if (toInstalLib != null) {
 		    toInstalLib.install(monitor);
@@ -134,10 +134,11 @@ public class ArduinoManager {
 		// TODO add sample programs here please
 
 		// now add the boards
+		monitor.setTaskName(InstallProgress.getRandomMessage());
+
 		String platformName = ARDUINO_AVR_BOARDS;
 		ArduinoPackage pkg = packageIndices.get(0).getPackages().get(0);
 		if (pkg != null) {
-		    monitor.subTask("Getting installed boards");
 		    ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
 		    if (platform == null) {
 			ArduinoPlatform platformList[] = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
@@ -199,7 +200,7 @@ public class ArduinoManager {
 	}
 
 	for (ToolDependency tool : tools) {
-
+	    monitor.setTaskName(InstallProgress.getRandomMessage());
 	    status = tool.install(monitor);
 	    if (!status.isOK()) {
 		mstatus.add(status);
@@ -406,7 +407,7 @@ public class ArduinoManager {
 	    URL dl = new URL(pURL);
 	    dlDir.toFile().mkdir();
 	    if (!archivePath.toFile().exists() || pForceDownload) {
-		pMonitor.subTask("Downloading ..");
+		pMonitor.subTask("Downloading " + pArchiveFileName + " ..");
 		Files.copy(dl.openStream(), Paths.get(archivePath.toString()), StandardCopyOption.REPLACE_EXISTING);
 	    }
 	} catch (IOException e) {

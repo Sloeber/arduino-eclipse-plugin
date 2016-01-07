@@ -32,6 +32,7 @@ import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.managers.ArduinoManager;
+import it.baeyens.arduino.managers.InstallProgress;
 
 /**
  * generated code
@@ -88,18 +89,17 @@ public class Activator implements BundleActivator {
     }
 
     private void runInstallJob() {
-	Job installJob = new Job("Arduino installer job") { //$NON-NLS-1$
+	Job installJob = new Job("Finishing the installation ..") { //$NON-NLS-1$
 
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-		monitor.beginTask("Installing Arduino IDE", IProgressMonitor.UNKNOWN);
-		monitor.subTask("Making our own custom boards");
+	    InstallProgress.showIntroduction();
+		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 		makeOurOwnCustomBoards_txt();
-		monitor.subTask("Adding file associations");
 		addFileAssociations();
 		ArduinoManager.startup_Pluging(monitor);
-		monitor.subTask("Installing discovery");
+		monitor.setTaskName("Done!");
 		bonjourDiscovery = new NetworkDiscovery();
 		bonjourDiscovery.start();
 		return Status.OK_STATUS;
