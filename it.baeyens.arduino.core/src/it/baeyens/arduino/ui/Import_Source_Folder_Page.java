@@ -4,6 +4,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -22,7 +24,8 @@ import it.baeyens.arduino.common.ArduinoConst;
 //TODO: Or Arduino_Source_Folder_Import_Page
 
 /**
- * Import_Source_Folder_Page is the one and only page in the source folder import wizard. It controls a text field and a browse button.
+ * Import_Source_Folder_Page is the one and only page in the source folder
+ * import wizard. It controls a text field and a browse button.
  * 
  * @author Jan Baeyens
  * 
@@ -78,6 +81,19 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	theGriddata.widthHint = SIZING_TEXT_FIELD_WIDTH;
 	// theGriddata.horizontalSpan = 1;
 	this.controlLibraryPath.setLayoutData(theGriddata);
+	this.controlLibraryPath.addKeyListener(new KeyListener() {
+
+	    @Override
+	    public void keyReleased(KeyEvent e) {
+		updateWidgetEnablements();
+	    }
+
+	    @Override
+	    public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	    }
+	});
 
 	this.controlBrowseButton = new Button(composite, SWT.NONE);
 	this.controlBrowseButton.setText("Browse..."); //$NON-NLS-1$
@@ -125,11 +141,13 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public boolean canFinish() {
-	return !((this.controlLibraryPath.getText().equals(ArduinoConst.EMPTY_STRING)) || (getContainerFullPath() == null));
+	return !((this.controlLibraryPath.getText().equals(ArduinoConst.EMPTY_STRING))
+		|| (getContainerFullPath() == null));
     }
 
     public String GetLibraryFolder() {
-	return this.controlLibraryPath.getText() == null ? ArduinoConst.EMPTY_STRING : this.controlLibraryPath.getText().trim();
+	return this.controlLibraryPath.getText() == null ? ArduinoConst.EMPTY_STRING
+		: this.controlLibraryPath.getText().trim();
     }
 
     public void setImportProject(IProject project) {
