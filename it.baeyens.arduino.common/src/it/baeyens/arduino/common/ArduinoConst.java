@@ -90,7 +90,7 @@ public class ArduinoConst {
 
     public static final String ENV_KEY_ARDUINO_START = "A.";//$NON-NLS-1$
     public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
-    public static final String WORKSPACE_LIB_FOLDER = "Libraries/";//$NON-NLS-1$
+    public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";//$NON-NLS-1$
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";//$NON-NLS-1$
     public static final String ENV_KEY_NAME = ENV_KEY_ARDUINO_START + "NAME";//$NON-NLS-1$
     public static final String ENV_KEY_VERSION = ENV_KEY_ARDUINO_START + "VERSION";//$NON-NLS-1$
@@ -151,13 +151,21 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";//$NON-NLS-1$ place
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ where
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ make
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ is
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ located
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ only
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ used
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ in
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ windows
     // public static final String ENV_KEY_JANTJE_PLATFORM_NAME =
     // ENV_KEY_JANTJE_START + "PLATFORM.NAME";//$NON-NLS-1$
