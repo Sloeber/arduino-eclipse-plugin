@@ -43,11 +43,9 @@ import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -319,18 +317,8 @@ public class ArduinoHelpers extends Common {
     public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription)
 	    throws CoreException {
 
-	// create a link to the path
 	String NiceName = Path.lastSegment();
-	String PathName = project.getName() + NiceName;
-	URI ShortPath = URIUtil.toURI(Path.removeTrailingSeparator().removeLastSegments(1));
-
-	IWorkspace workspace = project.getWorkspace();
-	IPathVariableManager pathMan = workspace.getPathVariableManager();
-
-	pathMan.setURIValue(PathName, ShortPath);
-
 	addCodeFolder(project, Path, NiceName, configurationDescription);
-
     }
 
     /**
