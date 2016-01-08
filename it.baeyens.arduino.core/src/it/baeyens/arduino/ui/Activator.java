@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.content.IContentTypeSettings;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -53,8 +54,25 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
 	initializeImportantVariables();
 	runPluginCoreStartInstantiatorJob();
+	runGUIRegistration();
 	runInstallJob();
-	ProjectExplorerListener.registerListener();
+
+    }
+
+    private void runGUIRegistration() {
+	// TODO Auto-generated method stub
+	UIJob installJob = new UIJob("Arduino installer job") { //$NON-NLS-1$
+
+	    @Override
+	    public IStatus runInUIThread(IProgressMonitor monitor) {
+		ProjectExplorerListener.registerListener();
+		return Status.OK_STATUS;
+	    }
+
+	};
+	installJob.setPriority(Job.SHORT);
+	installJob.setUser(true);
+	installJob.schedule();
     }
 
     private void initializeImportantVariables() {
@@ -94,8 +112,14 @@ public class Activator implements BundleActivator {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
+<<<<<<< Upstream, based on branch 'bigChange' of https://jantje@github.com/jantje/arduino-eclipse-plugin.git
 	    InstallProgress.showIntroduction();
 		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
+=======
+		monitor.beginTask("Installing Arduino IDE", IProgressMonitor.UNKNOWN);
+
+		monitor.subTask("Making our own custom boards");
+>>>>>>> 2b35c34 gettinng examples to work
 		makeOurOwnCustomBoards_txt();
 		addFileAssociations();
 		ArduinoManager.startup_Pluging(monitor);
