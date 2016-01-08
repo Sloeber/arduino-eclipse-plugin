@@ -112,14 +112,9 @@ public class Activator implements BundleActivator {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-<<<<<<< Upstream, based on branch 'bigChange' of https://jantje@github.com/jantje/arduino-eclipse-plugin.git
 	    InstallProgress.showIntroduction();
 		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
-=======
-		monitor.beginTask("Installing Arduino IDE", IProgressMonitor.UNKNOWN);
 
-		monitor.subTask("Making our own custom boards");
->>>>>>> 2b35c34 gettinng examples to work
 		makeOurOwnCustomBoards_txt();
 		addFileAssociations();
 		ArduinoManager.startup_Pluging(monitor);
