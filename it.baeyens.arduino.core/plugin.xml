@@ -230,9 +230,9 @@
       <command
             categoryId="it.baeyens.arduino.commands"
             defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
-            description="%command.openOscilloscope.description"
+            description="%OpenScope.description"
             id="it.baeyens.arduino.actions.OpenScopeAction"
-            name="%command.openOscilloscope.name">
+            name="%OpenScope.label">
       </command>
       <command
             categoryId="it.baeyens.arduino.commands"
@@ -286,11 +286,11 @@
 <!-- Menu -->  	
  <extension point="org.eclipse.ui.menus">
     <menuContribution
-          allPopups="true"
           locationURI="toolbar:org.eclipse.ui.main.toolbar">
        <toolbar
              id="it.baeyens.arduino.toolbar.main" label="Arduino">
-                <visibleWhen>
+                <visibleWhen
+                      checkEnabled="false">
                     <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
                 </visibleWhen>
           <command
@@ -330,14 +330,15 @@
           <command
                 commandId="it.baeyens.arduino.actions.OpenScopeAction"
                 icon="icons/scope.png"
-                label="%command.label.5"
+                label="%OpenScope.label"
                 style="push">
           </command>
        </toolbar>
     </menuContribution>
 		<menuContribution locationURI="menu:org.eclipse.ui.main.menu??after=Run">
 		    <menu label="%menu.label" >
-                <visibleWhen>
+                <visibleWhen
+                      checkEnabled="false">
                     <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
                 </visibleWhen>
 		    <command

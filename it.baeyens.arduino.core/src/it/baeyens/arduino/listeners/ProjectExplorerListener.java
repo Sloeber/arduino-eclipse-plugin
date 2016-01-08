@@ -11,7 +11,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class ProjectExplorerListener implements ISelectionListener {
@@ -26,7 +28,9 @@ public class ProjectExplorerListener implements ISelectionListener {
     }
 
     public static void registerListener() {
-	ISelectionService ss = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService();
+	IWorkbench wb = PlatformUI.getWorkbench();
+	IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
+	ISelectionService ss = awbw.getSelectionService();
 
 	ProjectExplorerListener selectionListener = new ProjectExplorerListener();
 	ss.addPostSelectionListener(IPageLayout.ID_PROJECT_EXPLORER, selectionListener);
@@ -40,7 +44,8 @@ public class ProjectExplorerListener implements ISelectionListener {
 	    List<IProject> allSelectedprojects = new ArrayList<>();
 	    for (Object element : ((IStructuredSelection) newSelection).toList()) {
 		if (element instanceof IAdaptable) {
-		    @SuppressWarnings("cast") // this is needed for the oracle sdk
+		    @SuppressWarnings("cast") // this is needed for the oracle
+					      // sdk
 		    IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
 		    allSelectedprojects.add(resource.getProject());
 

@@ -12,10 +12,10 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
-
 public class ConfigurationPreferences {
 
-    // private static final String defaulDownloadLocation = new Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
+    // private static final String defaulDownloadLocation = new
+    // Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
     // //$NON-NLS-1$ //$NON-NLS-2$
 
     private static String getGlobalString(String key, String defaultValue) {
@@ -42,7 +42,8 @@ public class ConfigurationPreferences {
 		return new Path(pathName);
 	    }
 	}
-	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, ArduinoConst.EMPTY_STRING);
+	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION,
+		ArduinoConst.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    URI uri;
 	    try {
@@ -60,6 +61,10 @@ public class ConfigurationPreferences {
 
     public static IPath getInstallationPathLibraries() {
 	return getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
+    }
+
+    public static IPath getInstallationPathExamples() {
+	return getInstallationPath().append(ArduinoConst.ARDUINO_EXAMPLE_FOLDER_NAME);
     }
 
     public static IPath getInstallationPathDownload() {
@@ -93,7 +98,8 @@ public class ConfigurationPreferences {
     }
 
     public static String getBoardURLs() {
-	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
+	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS,
+		ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
     }
 
     public static void setBoardURLs(String urls) {
