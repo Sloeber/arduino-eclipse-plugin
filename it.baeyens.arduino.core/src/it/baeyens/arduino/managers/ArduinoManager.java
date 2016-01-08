@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import com.google.gson.Gson;
 
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
@@ -58,6 +57,8 @@ public class ArduinoManager {
     private static final String ARDUINO_AVR_BOARDS = "Arduino AVR Boards"; //$NON-NLS-1$
 
     public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+    public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip";
+    public static final String EXAMPLES_URL = "http://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE; //$NON-NLS-1$
     static private List<PackageIndex> packageIndices;
     static private LibraryIndex libraryIndex;
     static private String stringSplitter = "\n";//$NON-NLS-1$
@@ -83,6 +84,7 @@ public class ArduinoManager {
 	try {
 	    List<ArduinoBoard> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) { // we test for boards
+		InstallProgress.showIntroduction();
 		// so first do the libraries
 		LibraryIndex libindex = getLibraryIndex();
 		ArduinoLibrary toInstalLib = libindex.getLatestLibrary("Ethernet");
@@ -113,7 +115,7 @@ public class ArduinoManager {
 		if (toInstalLib != null) {
 		    toInstalLib.install(monitor);
 		}
-		
+
 		toInstalLib = libindex.getLatestLibrary("Servo");
 		if (toInstalLib != null) {
 		    toInstalLib.install(monitor);
@@ -132,6 +134,8 @@ public class ArduinoManager {
 		}
 
 		// TODO add sample programs here please
+		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE,
+			Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
 
 		// now add the boards
 		monitor.setTaskName(InstallProgress.getRandomMessage());
@@ -153,8 +157,6 @@ public class ArduinoManager {
 	} catch (CoreException e) {
 	    e.printStackTrace();
 	}
-
-	ArduinoInstancePreferences.setConfigured();
 
     }
 
@@ -398,6 +400,24 @@ public class ArduinoManager {
 	return null;
     }
 
+    /**
+     * downloads an archive file from the internet and saves it in the download
+     * folder under the name "pArchiveFileName" then extrats the file to
+     * pInstallPath if pForceDownload is true the file will be downloaded even
+     * if the download file already exists if pForceDownload is false the file
+     * will only be downloaded if the download file does not exists The
+     * extraction is done with processArchive so only files types supported by
+     * this method will be properly extracted
+     * 
+     * @param pURL
+     *            the url of the file to download
+     * @param pArchiveFileName
+     *            the name of the file in the download folder
+     * @param pInstallPath
+     * @param pForceDownload
+     * @param pMonitor
+     * @return
+     */
     public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, Path pInstallPath,
 	    boolean pForceDownload, IProgressMonitor pMonitor) {
 	IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
@@ -625,6 +645,7 @@ public class ArduinoManager {
 	for (File folder : foldersTimestamps.keySet()) {
 	    folder.setLastModified(foldersTimestamps.get(folder).longValue());
 	}
+
 	return Status.OK_STATUS;
 
     }

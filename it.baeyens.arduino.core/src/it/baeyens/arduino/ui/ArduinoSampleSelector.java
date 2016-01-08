@@ -32,12 +32,7 @@ import it.baeyens.arduino.tools.ArduinoHelpers;
 public class ArduinoSampleSelector extends Composite {
     protected Tree sampleTree;
     protected Label myLabel;
-    TreeMap<String, String> examples = new TreeMap<>(); // contains the items in
-							// a hashmap so we can
-							// sort and all that
-							// things before we make
-							// the
-							// listtree
+    TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public ArduinoSampleSelector(Composite parent, int style, String label) {
 	super(parent, style);
@@ -70,7 +65,7 @@ public class ArduinoSampleSelector extends Composite {
 
 		if (event.detail == SWT.CHECK) {
 		    TreeItem thechangeItem = (TreeItem) event.item;
-		    if ((thechangeItem.getParentItem() == null)) {
+		    if (thechangeItem.getItemCount() > 0) {
 			event.detail = SWT.NONE;
 			event.type = SWT.None;
 			event.doit = false;
@@ -137,6 +132,7 @@ public class ArduinoSampleSelector extends Composite {
 	}
 
 	this.sampleTree.removeAll();
+
 	// String prefKeys[] = null;
 	// TreeItem curlib = null;
 	TreeItem level[] = { null, null, null, null };

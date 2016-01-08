@@ -33,7 +33,6 @@ import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.managers.ArduinoManager;
-import it.baeyens.arduino.managers.InstallProgress;
 
 /**
  * generated code
@@ -112,7 +111,7 @@ public class Activator implements BundleActivator {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-	    InstallProgress.showIntroduction();
+
 		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 
 		makeOurOwnCustomBoards_txt();
@@ -121,6 +120,7 @@ public class Activator implements BundleActivator {
 		monitor.setTaskName("Done!");
 		bonjourDiscovery = new NetworkDiscovery();
 		bonjourDiscovery.start();
+		ArduinoInstancePreferences.setConfigured();
 		return Status.OK_STATUS;
 	    }
 
