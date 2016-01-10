@@ -29,8 +29,17 @@
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <!--#include virtual="fragments/navbar.html" --> 
     </nav>
+    
+    
+    Put your stuff here
+    
+    
+    
+        <div id="footer">
+      <!--#include virtual="fragments/footer.html" --> 
+    </div>
     
       </body>
 
