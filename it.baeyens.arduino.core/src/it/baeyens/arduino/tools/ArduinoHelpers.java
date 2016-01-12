@@ -1045,8 +1045,9 @@ public class ArduinoHelpers extends Common {
 	for (String recipeKey : recipes) {
 	    String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, EMPTY_STRING, false);
 
-	    String recipeParts[] = recipe
-		    .split("(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")", 3); //$NON-NLS-1$
+	    String recipeParts[] = recipe.split(
+		    "(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")", //$NON-NLS-1$
+		    3);
 	    switch (recipeParts.length) {
 	    case 0:
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1',

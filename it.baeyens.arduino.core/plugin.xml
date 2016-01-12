@@ -605,7 +605,7 @@
            <tool
                  announcement="%tool.Arduino.archiver.announcement"
                  command="${A.RECIPE.AR.PATTERN}"
-                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
+                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="it.baeyens.arduino.tool.ar"
                  name="%tool.name.1">
