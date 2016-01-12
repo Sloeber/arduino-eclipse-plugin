@@ -57,11 +57,11 @@ public class ArduinoConst {
 	    + "\nhttp://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
 
     // properties keys
-    public static final String KEY_LAST_USED_ARDUINOBOARD = "Arduino Board";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_COM_PORT = "Arduino Port";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_ARDUINO_BOARDS_FILE = "Arduino boards file";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_ARDUINO_MENU_OPTIONS = "Arduino Custom Option Selections";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Arduino scope filter on off";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARD = "Board";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_COM_PORT = "upload Port";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARDS_FILE = "boards file";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";//$NON-NLS-1$
 
     // Serial monitor keys
     public static final String KEY_SERIAlRATE = "Serial monitor last selected rate";//$NON-NLS-1$
@@ -88,50 +88,48 @@ public class ArduinoConst {
 
     public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";//$NON-NLS-1$
 
-    public static final String ENV_KEY_ARDUINO_START = "A.";//$NON-NLS-1$
-    public static final String ENV_KEY_ARDUINO_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
+    public static final String ENV_KEY_BOARD_START = "A.";//$NON-NLS-1$
+    public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";//$NON-NLS-1$
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";//$NON-NLS-1$
-    public static final String ENV_KEY_NAME = ENV_KEY_ARDUINO_START + "NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_VERSION = ENV_KEY_ARDUINO_START + "VERSION";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_cpp_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.CPP.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_S_o_pattern = ENV_KEY_ARDUINO_START + "RECIPE.S.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_objcopy_hex_pattern = ENV_KEY_ARDUINO_START
-	    + "RECIPE.OBJCOPY.HEX.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_objcopy_eep_pattern = ENV_KEY_ARDUINO_START
-	    + "RECIPE.OBJCOPY.EEP.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_size_pattern = ENV_KEY_ARDUINO_START + "RECIPE.SIZE.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_AR_pattern = ENV_KEY_ARDUINO_START + "RECIPE.AR.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_recipe_c_combine_pattern = ENV_KEY_ARDUINO_START + "RECIPE.C.COMBINE.PATTERN"; //$NON-NLS-1$
+    public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";//$NON-NLS-1$
+    public static final String ENV_KEY_VERSION = ENV_KEY_BOARD_START + "VERSION";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_c_o_pattern = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_cpp_o_pattern = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_S_o_pattern = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_objcopy_hex_pattern = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_objcopy_eep_pattern = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_size_pattern = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_AR_pattern = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";//$NON-NLS-1$
+    public static final String ENV_KEY_recipe_c_combine_pattern = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN"; //$NON-NLS-1$
 
-    public static final String ENV_KEY_build_variant = ENV_KEY_ARDUINO_START + "BUILD.VARIANT";//$NON-NLS-1$
-    public static final String ENV_KEY_compiler_path = ENV_KEY_ARDUINO_START + "COMPILER.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_build_system_path = ENV_KEY_ARDUINO_START + "BUILD.SYSTEM.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_build_generic_path = ENV_KEY_ARDUINO_START + "BUILD.GENERIC.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_SOFTWARE = ENV_KEY_ARDUINO_START + "SOFTWARE";//$NON-NLS-1$
-    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_ARDUINO_START + "ARCHITECTURE";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_ARDUINO_START + "BUILD.ARCH";//$NON-NLS-1$
-    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.HARDWARE.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_ARDUINO_START + "RUNTIME.PLATFORM.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_build_variant = ENV_KEY_BOARD_START + "BUILD.VARIANT";//$NON-NLS-1$
+    public static final String ENV_KEY_compiler_path = ENV_KEY_BOARD_START + "COMPILER.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_build_system_path = ENV_KEY_BOARD_START + "BUILD.SYSTEM.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_build_generic_path = ENV_KEY_BOARD_START + "BUILD.GENERIC.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_SOFTWARE = ENV_KEY_BOARD_START + "SOFTWARE";//$NON-NLS-1$
+    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_BOARD_START + "ARCHITECTURE";//$NON-NLS-1$
+    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_BOARD_START + "BUILD.ARCH";//$NON-NLS-1$
+    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_BOARD_START + "RUNTIME.HARDWARE.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_BOARD_START + "RUNTIME.PLATFORM.PATH";//$NON-NLS-1$
 
-    public static final String ENV_KEY_build_path = ENV_KEY_ARDUINO_START + "BUILD.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_build_project_name = ENV_KEY_ARDUINO_START + "BUILD.PROJECT_NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_build_variant_path = ENV_KEY_ARDUINO_START + "BUILD.VARIANT.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_upload_use_1200bps_touch = ENV_KEY_ARDUINO_START + "UPLOAD.USE_1200BPS_TOUCH";//$NON-NLS-1$
-    public static final String ENV_KEY_upload_disable_flushing = ENV_KEY_ARDUINO_START + "UPLOAD.DISABLE_FLUSHING";//$NON-NLS-1$
-    public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_ARDUINO_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";//$NON-NLS-1$
-    public static final String ENV_KEY_upload_tool = ENV_KEY_ARDUINO_START + "UPLOAD.TOOL";//$NON-NLS-1$
-    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_ARDUINO_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
-    public static final String ENV_KEY_build_core = ENV_KEY_ARDUINO_START + "BUILD.CORE";//$NON-NLS-1$
-    public static final String ENV_KEY_build_core_path = ENV_KEY_ARDUINO_START + "BUILD.CORE.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_use_archiver = ENV_KEY_ARDUINO_START + "BUILD.USE_ARCHIVER";//$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_ARDUINO_START + "SERIAL.PORT";//$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_ARDUINO_START + "SERIAL.PORT.FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_build_path = ENV_KEY_BOARD_START + "BUILD.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_build_project_name = ENV_KEY_BOARD_START + "BUILD.PROJECT_NAME";//$NON-NLS-1$
+    public static final String ENV_KEY_build_variant_path = ENV_KEY_BOARD_START + "BUILD.VARIANT.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_upload_use_1200bps_touch = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";//$NON-NLS-1$
+    public static final String ENV_KEY_upload_disable_flushing = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";//$NON-NLS-1$
+    public static final String ENV_KEY_wait_for_upload_port = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";//$NON-NLS-1$
+    public static final String ENV_KEY_upload_tool = ENV_KEY_BOARD_START + "UPLOAD.TOOL";//$NON-NLS-1$
+    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
+    public static final String ENV_KEY_build_core = ENV_KEY_BOARD_START + "BUILD.CORE";//$NON-NLS-1$
+    public static final String ENV_KEY_build_core_path = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_use_archiver = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";//$NON-NLS-1$
+    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_BOARD_START + "SERIAL.PORT";//$NON-NLS-1$
+    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_BOARD_START + "SERIAL.PORT.FILE";//$NON-NLS-1$
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_ARDUINO_START + "ALT_SIZE_COMMAND";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_BOARD_START + "ALT_SIZE_COMMAND";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
@@ -152,19 +150,51 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";//$NON-NLS-1$ place
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ where
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     //$NON-NLS-1$ make
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ is
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     //$NON-NLS-1$ located
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ only
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     //$NON-NLS-1$ used
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ in
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     //$NON-NLS-1$ windows
     // public static final String ENV_KEY_JANTJE_PLATFORM_NAME =
@@ -189,7 +219,7 @@ public class ArduinoConst {
 								// scope data is
 								// following
     // least significant first 0xCDAB;
-    public static final String ARDUINO_EXAMPLE_FOLDER_NAME = "examples";//$NON-NLS-1$
+    public static final String EXAMPLE_FOLDER_NAME = "examples";//$NON-NLS-1$
 
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
     public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$

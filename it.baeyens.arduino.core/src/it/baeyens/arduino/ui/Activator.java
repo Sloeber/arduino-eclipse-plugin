@@ -78,6 +78,8 @@ public class Activator implements BundleActivator {
 	// Make sure some important variables are being initialized
 	String LibPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
 	ArduinoInstancePreferences.setPrivateLibraryPaths(LibPaths);
+	String HardwarePaths[] = ArduinoInstancePreferences.getPrivateHardwarePaths();
+	ArduinoInstancePreferences.setPrivateHardwarePaths(HardwarePaths);
     }
 
     private void runPluginCoreStartInstantiatorJob() {

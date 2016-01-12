@@ -100,7 +100,8 @@ public class ArduinoPlatform {
 	    try (Reader reader = new FileReader(getBoardsFile())) {
 		boardProps.load(reader);
 	    } catch (IOException e) {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_boards, e));
+		throw new CoreException(
+			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_boards, e));
 	    }
 
 	    this.boardsFile = new HierarchicalProperties(boardProps);
@@ -153,7 +154,8 @@ public class ArduinoPlatform {
 		    this.platformProperties.load(reader1);
 		}
 	    } catch (IOException e) {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_platform, e));
+		throw new CoreException(
+			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_platform, e));
 	    }
 	}
 	return this.platformProperties;
@@ -171,13 +173,9 @@ public class ArduinoPlatform {
 	return getInstallPath().resolve(ArduinoConst.PLATFORM_FILE_NAME).toFile();
     }
 
-    public File getPluginFile() {
-	return getInstallPath().resolve(ArduinoConst.PLATFORM_PLUGIN_FILE_NAME).toFile();
-    }
-
     public Path getInstallPath() {
-	String stPath= ConfigurationPreferences.getInstallationPath().append(ArduinoConst.PACKAGES_FOLDER_NAME).append(this.pkg.getName())
-		.append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
+	String stPath = ConfigurationPreferences.getInstallationPath().append(ArduinoConst.PACKAGES_FOLDER_NAME)
+		.append(this.pkg.getName()).append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
 		.append(this.architecture).append(this.version).toString();
 	return Paths.get(stPath);
     }
@@ -197,7 +195,8 @@ public class ArduinoPlatform {
 	try {
 	    FileUtils.deleteDirectory(getInstallPath().toFile());
 	} catch (IOException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), e); //$NON-NLS-1$
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
+		    e);
 	}
 
 	return Status.OK_STATUS;

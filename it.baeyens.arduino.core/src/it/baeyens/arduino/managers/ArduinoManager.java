@@ -144,7 +144,7 @@ public class ArduinoManager {
 
 	List<ToolDependency> tools = platform.getToolsDependencies();
 	// make a platform_plugin.txt file to store the tool paths
-	File pluginFile = platform.getPluginFile();
+	File pluginFile = ConfigurationPreferences.getPlugin_Platform_File();
 	PrintWriter writer = null;
 
 	try {

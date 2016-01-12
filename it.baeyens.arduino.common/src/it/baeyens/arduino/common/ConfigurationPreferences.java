@@ -64,7 +64,7 @@ public class ConfigurationPreferences {
     }
 
     public static IPath getInstallationPathExamples() {
-	return getInstallationPath().append(ArduinoConst.ARDUINO_EXAMPLE_FOLDER_NAME);
+	return getInstallationPath().append(ArduinoConst.EXAMPLE_FOLDER_NAME);
     }
 
     public static IPath getInstallationPathDownload() {
@@ -109,6 +109,10 @@ public class ConfigurationPreferences {
     public static Path getPathExtensionPath() {
 	return new Path(getInstallationPath().append("tools/make").toString());
 
+    }
+
+    public static File getPlugin_Platform_File() {
+	return getInstallationPath().append(ArduinoConst.PLATFORM_PLUGIN_FILE_NAME).toFile();
     }
 
 }

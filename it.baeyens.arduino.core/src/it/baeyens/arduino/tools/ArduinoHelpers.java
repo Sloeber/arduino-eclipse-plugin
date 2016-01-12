@@ -489,12 +489,13 @@ public class ArduinoHelpers extends Common {
 			"arduino/core", configurationDescription); //$NON-NLS-1$
 	    }
 	} else {
-	    addCodeFolder(project, rootPath.append("cores").append(buildCoreFolder), "arduino/core", //$NON-NLS-1$ //$NON-NLS-2$
+	    addCodeFolder(project, rootPath.append("cores").append(buildCoreFolder), ARDUINO_CODE_FOLDER_NAME + "/core", //$NON-NLS-1$ //$NON-NLS-2$
 		    configurationDescription);
 	    // //$NON-NLS-3$
 	}
 	if (!boardVariant.isEmpty()) {
-	    ArduinoHelpers.addCodeFolder(project, rootPath.append("variants").append(boardVariant), "arduino/variant", //$NON-NLS-1$ //$NON-NLS-2$
+	    ArduinoHelpers.addCodeFolder(project, rootPath.append("variants").append(boardVariant), //$NON-NLS-1$
+		    ARDUINO_CODE_FOLDER_NAME + "/variant", //$NON-NLS-1$
 		    configurationDescription);
 	}
 
@@ -537,7 +538,7 @@ public class ArduinoHelpers extends Common {
 
 	IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
 	for (int i = (CurVariables.length - 1); i > 0; i--) {
-	    if (CurVariables[i].getName().startsWith(ArduinoConst.ENV_KEY_ARDUINO_START)) {
+	    if (CurVariables[i].getName().startsWith(ArduinoConst.ENV_KEY_BOARD_START)) {
 		contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
 	    }
 	}
@@ -562,8 +563,10 @@ public class ArduinoHelpers extends Common {
 	Path platformPath = new Path(platformFile.getAbsolutePath());
 	String architecture = platformPath.removeLastSegments(1).lastSegment();
 	String packagename = platformPath.removeLastSegments(3).lastSegment();
+	int numSegmentsToSubtractForHardwarePath = 2;
 	if (architecture.contains(DOT)) { // in case there is a version in the
 					  // path ignore the version
+	    numSegmentsToSubtractForHardwarePath += 1;
 	    architecture = platformPath.removeLastSegments(2).lastSegment();
 	    packagename = platformPath.removeLastSegments(4).lastSegment();
 	}
@@ -573,7 +576,7 @@ public class ArduinoHelpers extends Common {
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, architecture.toUpperCase());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
-		platformPath.removeLastSegments(3).toString());
+		platformPath.removeLastSegments(numSegmentsToSubtractForHardwarePath).toString());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH,
 		platformPath.removeLastSegments(1).toString());
 
@@ -666,7 +669,7 @@ public class ArduinoHelpers extends Common {
 			    value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 			}
 			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]),
-				MakeEnvironmentString(value, ArduinoConst.ENV_KEY_ARDUINO_START));
+				MakeEnvironmentString(value, ArduinoConst.ENV_KEY_BOARD_START));
 			contribEnv.addVariable(envVar, confDesc);
 		    }
 		}
@@ -713,7 +716,7 @@ public class ArduinoHelpers extends Common {
 	    // if it is not a menu item add it
 	    if (!currentPair.getKey().startsWith(Messages.ArduinoHelpers_menu)) {
 		String keyString = MakeKeyString(currentPair.getKey());
-		String valueString = MakeEnvironmentString(currentPair.getValue(), ArduinoConst.ENV_KEY_ARDUINO_START);
+		String valueString = MakeEnvironmentString(currentPair.getValue(), ArduinoConst.ENV_KEY_BOARD_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 	    } else {
 
@@ -726,7 +729,7 @@ public class ArduinoHelpers extends Common {
 		    if (currentPair.getKey().startsWith(StartValue)) {
 			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
 			String valueString = MakeEnvironmentString(currentPair.getValue(),
-				ArduinoConst.ENV_KEY_ARDUINO_START);
+				ArduinoConst.ENV_KEY_BOARD_START);
 			contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 		    }
 		}
@@ -769,10 +772,8 @@ public class ArduinoHelpers extends Common {
 		    for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getKey().startsWith(keyStartsWithValue)) {
 			    String key = curOption.getKey().substring(keyStartsWithValue.length());
-			    contribEnv
-				    .addVariable(
-					    new EnvironmentVariable(MakeKeyString(key), MakeEnvironmentString(
-						    curOption.getValue(), ArduinoConst.ENV_KEY_ARDUINO_START)),
+			    contribEnv.addVariable(new EnvironmentVariable(MakeKeyString(key),
+				    MakeEnvironmentString(curOption.getValue(), ArduinoConst.ENV_KEY_BOARD_START)),
 				    confDesc);
 			}
 		    }
@@ -834,8 +835,7 @@ public class ArduinoHelpers extends Common {
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
-	File pluginPlatformFilename = localPlatformFilename.toPath().getParent()
-		.resolve(ArduinoConst.PLATFORM_PLUGIN_FILE_NAME).toFile();
+	File pluginPlatformFilename = ConfigurationPreferences.getPlugin_Platform_File();
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_ID,
 		EMPTY_STRING);
@@ -1117,7 +1117,7 @@ public class ArduinoHelpers extends Common {
 	IEnvironmentVariable original = null;
 	IEnvironmentVariable replacement = null;
 
-	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.C.FLAGS", confDesc, true); //$NON-NLS-1$
+	original = envManager.getVariable(ENV_KEY_BOARD_START + "COMPILER.C.FLAGS", confDesc, true); //$NON-NLS-1$
 	if (original != null) {
 	    replacement = new EnvironmentVariable(original.getName(),
 		    original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
@@ -1125,7 +1125,7 @@ public class ArduinoHelpers extends Common {
 	    contribEnv.addVariable(replacement, confDesc);
 	}
 
-	original = envManager.getVariable(ENV_KEY_ARDUINO_START + "COMPILER.CPP.FLAGS", confDesc, true); //$NON-NLS-1$
+	original = envManager.getVariable(ENV_KEY_BOARD_START + "COMPILER.CPP.FLAGS", confDesc, true); //$NON-NLS-1$
 	if (original != null) {
 	    replacement = new EnvironmentVariable(original.getName(),
 		    original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
@@ -1181,7 +1181,7 @@ public class ArduinoHelpers extends Common {
 		osString = "\\.\\."; //$NON-NLS-1$
 	    }
 	}
-	return ENV_KEY_ARDUINO_START + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
+	return ENV_KEY_BOARD_START + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
     }
 
     /**

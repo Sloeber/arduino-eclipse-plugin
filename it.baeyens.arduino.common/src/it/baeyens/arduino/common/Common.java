@@ -38,8 +38,10 @@ public class Common extends ArduinoInstancePreferences {
 					       // when we need the serial port
 
     /**
-     * This method is used to register a serial user. A serial user is alerted when the serial port will be disconnected (for instance for a upload)
-     * The serial user is requested to act appropriately Only 1 serial user can be registered at a given time. No check is done.
+     * This method is used to register a serial user. A serial user is alerted
+     * when the serial port will be disconnected (for instance for a upload) The
+     * serial user is requested to act appropriately Only 1 serial user can be
+     * registered at a given time. No check is done.
      * 
      * @param SerialUser
      */
@@ -55,28 +57,41 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     /**
-     * This method makes sure that a string can be used as a file or folder name<br/>
+     * This method makes sure that a string can be used as a file or folder name
+     * <br/>
      * To do this it replaces all unacceptable characters with underscores.<br/>
-     * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) / slash used as a path name component separator in Unix-like, Windows,
-     * and Amiga systems. (The MS-DOS command.com shell would consume it as a switch character, but Windows itself always accepts it as a
-     * separator.[6][vague]) \ backslash Also used as a path name component separator in MS-DOS, OS/2 and Windows (where there are few differences
-     * between slash and backslash); allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in Unix, Windows and AmigaOS; marks a
-     * single character. Allowed in Unix filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single character. asterisk or star used
-     * as a wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of characters (Unix, Windows, later versions of MS-DOS) or any
-     * sequence of characters in either the basename or extension (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
-     * filenames, see note 1 : colon used to determine the mount point / drive on Windows; used to determine the virtual device or physical device
-     * such as a drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac OS. Doubled after a name on VMS, indicates the DECnet
-     * nodename (equivalent to a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or pipe designates software pipelining in
-     * Unix and Windows; allowed in Unix filenames, see Note 1 " quote used to mark beginning and end of filenames containing spaces in Windows, see
-     * Note 1 < less than used to redirect input, allowed in Unix filenames, see Note 1 > greater than used to redirect output, allowed in Unix
-     * filenames, see Note 1 . period or dot
+     * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) /
+     * slash used as a path name component separator in Unix-like, Windows, and
+     * Amiga systems. (The MS-DOS command.com shell would consume it as a switch
+     * character, but Windows itself always accepts it as a
+     * separator.[6][vague]) \ backslash Also used as a path name component
+     * separator in MS-DOS, OS/2 and Windows (where there are few differences
+     * between slash and backslash); allowed in Unix filenames, see Note 1 ?
+     * question mark used as a wildcard in Unix, Windows and AmigaOS; marks a
+     * single character. Allowed in Unix filenames, see Note 1 % percent used as
+     * a wildcard in RT-11; marks a single character. asterisk or star used as a
+     * wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of
+     * characters (Unix, Windows, later versions of MS-DOS) or any sequence of
+     * characters in either the basename or extension (thus "*.*" in early
+     * versions of MS-DOS means "all files". Allowed in Unix filenames, see note
+     * 1 : colon used to determine the mount point / drive on Windows; used to
+     * determine the virtual device or physical device such as a drive on
+     * AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac OS.
+     * Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+     * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar
+     * or pipe designates software pipelining in Unix and Windows; allowed in
+     * Unix filenames, see Note 1 " quote used to mark beginning and end of
+     * filenames containing spaces in Windows, see Note 1 < less than used to
+     * redirect input, allowed in Unix filenames, see Note 1 > greater than used
+     * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
      * 
      * @param Name
      *            the string that needs to be checked
      * @return a name safe to create files or folders
      */
     public static String MakeNameCompileSafe(String Name) {
-	char badChars[] = { ' ', '/', '.', SLACH, ':', ' ', UNDERSCORE, BACK_SLACH, '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
+	char badChars[] = { ' ', '/', '.', SLACH, ':', ' ', UNDERSCORE, BACK_SLACH, '(', ')', '*', '?', '%', '|', '<',
+		'>', ',', '-' };
 
 	String ret = Name.trim();
 	for (char curchar : badChars) {
@@ -93,7 +108,8 @@ public class Common extends ArduinoInstancePreferences {
      * 
      * @param Tag
      *            The tag identifying the property to read
-     * @return returns the property when found. When not found returns an empty string
+     * @return returns the property when found. When not found returns an empty
+     *         string
      */
     public static String getPersistentProperty(IProject project, String Tag) {
 	try {
@@ -135,7 +151,8 @@ public class Common extends ArduinoInstancePreferences {
      * 
      * @param Tag
      *            The tag identifying the property to read
-     * @return returns the property when found. When not found returns an empty string
+     * @return returns the property when found. When not found returns an empty
+     *         string
      */
     public static void setPersistentProperty(IProject project, String Tag, String Value) {
 	try {
@@ -144,7 +161,8 @@ public class Common extends ArduinoInstancePreferences {
 	    // downwards
 	    // compatibility
 	} catch (CoreException e) {
-	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to write arduino properties", e); //$NON-NLS-1$
+	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "Failed to write arduino properties", e); //$NON-NLS-1$
 	    Common.log(status);
 
 	}
@@ -174,7 +192,8 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     /**
-     * This method returns the avrdude upload port prefix which is dependent on the platform
+     * This method returns the avrdude upload port prefix which is dependent on
+     * the platform
      * 
      * @return avrdude upload port prefix
      */
@@ -193,9 +212,12 @@ public class Common extends ArduinoInstancePreferences {
      * ToInt converts a string to a integer in a save way
      * 
      * @param Number
-     *            is a String that will be converted to an integer. Number can be null or empty and can contain leading and trailing white space
+     *            is a String that will be converted to an integer. Number can
+     *            be null or empty and can contain leading and trailing white
+     *            space
      * @return The integer value represented in the string based on parseInt
-     * @see parseInt. After error checking and modifications parseInt is used for the conversion
+     * @see parseInt. After error checking and modifications parseInt is used
+     *      for the conversion
      **/
     public static int ToInt(String Number) {
 	if (Number == null)
@@ -241,7 +263,8 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     public static String[] listBaudRates() {
-	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", "1200", "300" }; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
+	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+		"1200", "300" }; //$NON-NLS-1$ //$NON-NLS-2$
 	return outgoing;
     }
 
@@ -266,7 +289,8 @@ public class Common extends ArduinoInstancePreferences {
 
     /**
      * 
-     * Provides the build environment variable based on project and string This method does not add any knowledge.(like adding A.)
+     * Provides the build environment variable based on project and string This
+     * method does not add any knowledge.(like adding A.)
      * 
      * @param project
      *            the project that contains the environment variable
@@ -278,14 +302,16 @@ public class Common extends ArduinoInstancePreferences {
      *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
-    static public String getBuildEnvironmentVariable(IProject project, String configName, String EnvName, String defaultvalue) {
+    static public String getBuildEnvironmentVariable(IProject project, String configName, String EnvName,
+	    String defaultvalue) {
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
 	return getBuildEnvironmentVariable(prjDesc.getConfigurationByName(configName), EnvName, defaultvalue);
     }
 
     /**
      * 
-     * Provides the build environment variable based on project and string This method does not add any knowledge.(like adding A.)
+     * Provides the build environment variable based on project and string This
+     * method does not add any knowledge.(like adding A.)
      * 
      * @param project
      *            the project that contains the environment variable
@@ -303,7 +329,8 @@ public class Common extends ArduinoInstancePreferences {
 
     /**
      * 
-     * Provides the build environment variable based on project and string This method does not add any knowledge.(like adding A.)
+     * Provides the build environment variable based on project and string This
+     * method does not add any knowledge.(like adding A.)
      * 
      * @param project
      *            the project that contains the environment variable
@@ -313,13 +340,14 @@ public class Common extends ArduinoInstancePreferences {
      *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
-    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription, String EnvName, String defaultvalue) {
+    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
+	    String EnvName, String defaultvalue) {
 
 	return getBuildEnvironmentVariable(configurationDescription, EnvName, defaultvalue, true);
     }
 
-    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription, String EnvName, String defaultvalue,
-	    boolean expanded) {
+    static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
+	    String EnvName, String defaultvalue, boolean expanded) {
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	try {
@@ -330,8 +358,9 @@ public class Common extends ArduinoInstancePreferences {
     }
 
     /**
-     * Arduino has the default libraries in the user home directory in subfolder Arduino/libraries. As the home directory is platform dependent
-     * getting the value is resolved by this method
+     * Arduino has the default libraries in the user home directory in subfolder
+     * Arduino/libraries. As the home directory is platform dependent getting
+     * the value is resolved by this method
      * 
      * @return the folder where Arduino puts the libraries by default.
      */
@@ -340,14 +369,19 @@ public class Common extends ArduinoInstancePreferences {
 	return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString(); //$NON-NLS-1$
     }
 
+    public static String getDefaultPrivateHardwarePath() {
+	IPath homPath = new Path(System.getProperty("user.home")); //$NON-NLS-1$
+	return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toString(); //$NON-NLS-1$ }
+    }
+
     public static File getWorkspaceRoot() {
 	IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 	File ret = myWorkspaceRoot.getLocation().toFile();
 	return ret;
     }
 
-    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv, ICConfigurationDescription confdesc, String key,
-	    String value) {
+    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
+	    ICConfigurationDescription confdesc, String key, String value) {
 	IEnvironmentVariable var = new EnvironmentVariable(key, value);
 	contribEnv.addVariable(var, confdesc);
 
