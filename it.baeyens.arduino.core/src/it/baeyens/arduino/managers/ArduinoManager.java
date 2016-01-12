@@ -74,8 +74,7 @@ public class ArduinoManager {
     }
 
     /**
-     * Loads all stuff needed and if this is the first time downloads the avr
-     * boards and needed tools
+     * Loads all stuff needed and if this is the first time downloads the avr boards and needed tools
      * 
      * @param monitor
      */
@@ -84,62 +83,16 @@ public class ArduinoManager {
 	try {
 	    List<ArduinoBoard> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) { // we test for boards
-		InstallProgress.showIntroduction();
+		// InformUserOfInstallationStart(monitor);
 		// so first do the libraries
-		LibraryIndex libindex = getLibraryIndex();
-		ArduinoLibrary toInstalLib = libindex.getLatestLibrary("Ethernet");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("Firmata");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("GSM");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("Keyboard");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("LiquidCrystal");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("Mouse");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("SD");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
 
-		toInstalLib = libindex.getLatestLibrary("Servo");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("Stepper");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("TFT");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
-		toInstalLib = libindex.getLatestLibrary("WiFi");
-		if (toInstalLib != null) {
-		    toInstalLib.install(monitor);
-		}
+		InstallLibraries(monitor);
 
 		// TODO add sample programs here please
-		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE,
-			Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
+		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE, Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false,
+			monitor);
 
 		// now add the boards
-		monitor.setTaskName(InstallProgress.getRandomMessage());
-
 		String platformName = ARDUINO_AVR_BOARDS;
 		ArduinoPackage pkg = packageIndices.get(0).getPackages().get(0);
 		if (pkg != null) {
@@ -160,26 +113,34 @@ public class ArduinoManager {
 
     }
 
+    private static void InstallLibraries(IProgressMonitor monitor) {
+	LibraryIndex libindex = getLibraryIndex();
+	String[] libraries = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard", "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT",
+		"WiFi" };
+	for (String library : libraries) {
+	    ArduinoLibrary toInstalLib = libindex.getLatestLibrary(library);
+	    if (toInstalLib != null) {
+		toInstalLib.install(monitor);
+	    }
+	}
+    }
+
     /**
-     * Given a platform description in a json file download and install all
-     * needed stuff. All stuff is including all tools and core files and
-     * hardware specific libraries. That is (on windows) inclusive the make.exe
+     * Given a platform description in a json file download and install all needed stuff. All stuff is including all tools and core files and hardware
+     * specific libraries. That is (on windows) inclusive the make.exe
      * 
      * @param platform
      * @param monitor
      * @param object
      * @return
      */
-    static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
-	    IProgressMonitor monitor) {
+    static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload, IProgressMonitor monitor) {
 
-	IStatus status = downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(), platform.getInstallPath(),
-		forceDownload, monitor);
+	IStatus status = downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(), platform.getInstallPath(), forceDownload, monitor);
 	if (!status.isOK()) {
 	    return status;
 	}
-	MultiStatus mstatus = new MultiStatus(status.getPlugin(), status.getCode(), status.getMessage(),
-		status.getException());
+	MultiStatus mstatus = new MultiStatus(status.getPlugin(), status.getCode(), status.getMessage(), status.getException());
 
 	List<ToolDependency> tools = platform.getToolsDependencies();
 	// make a platform_plugin.txt file to store the tool paths
@@ -194,10 +155,8 @@ public class ArduinoManager {
 	    writer.println("#Jantje"); //$NON-NLS-1$
 	    writer.println();
 	} catch (FileNotFoundException | UnsupportedEncodingException e) {
-	    mstatus.add(
-		    new Status(
-			    IStatus.WARNING, Activator.getId(), Messages.ArduinoManager_unable_to_create_file
-				    + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work,
+	    mstatus.add(new Status(IStatus.WARNING, Activator.getId(),
+		    Messages.ArduinoManager_unable_to_create_file + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work,
 		    e));
 	}
 
@@ -220,8 +179,7 @@ public class ArduinoManager {
 	// On Windows install make from equations.org
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    try {
-		Path makePath = Paths
-			.get(ConfigurationPreferences.getPathExtensionPath().append("make.exe").toString());
+		Path makePath = Paths.get(ConfigurationPreferences.getPathExtensionPath().append("make.exe").toString());
 		if (!makePath.toFile().exists()) {
 		    Files.createDirectories(makePath.getParent());
 		    URL makeUrl = new URL("ftp://ftp.equation.com/make/32/make.exe"); //$NON-NLS-1$
@@ -230,8 +188,7 @@ public class ArduinoManager {
 		}
 
 	    } catch (IOException e) {
-		mstatus.add(
-			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Downloading_make_exe, e));
+		mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Downloading_make_exe, e));
 	    }
 	}
 
@@ -258,8 +215,7 @@ public class ArduinoManager {
 	try {
 	    URL packageUrl = new URL(url.trim());
 	    String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
-	    Path packagePath = Paths
-		    .get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+	    Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
 	    File packageFile = packagePath.toFile();
 	    if (!packageFile.exists() || download) {
 		packagePath.getParent().toFile().mkdirs();
@@ -292,8 +248,7 @@ public class ArduinoManager {
 	try {
 	    URL librariesUrl = new URL(LIBRARIES_URL);
 	    String localFileName = Paths.get(librariesUrl.getPath()).getFileName().toString();
-	    Path librariesPath = Paths
-		    .get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+	    Path librariesPath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
 	    File librariesFile = librariesPath.toFile();
 	    if (!librariesFile.exists() || download) {
 		librariesPath.getParent().toFile().mkdirs();
@@ -318,8 +273,7 @@ public class ArduinoManager {
 	return libraryIndex;
     }
 
-    static public ArduinoBoard getBoard(String boardName, String platformName, String packageName)
-	    throws CoreException {
+    static public ArduinoBoard getBoard(String boardName, String platformName, String packageName) throws CoreException {
 	for (PackageIndex index : packageIndices) {
 	    ArduinoPackage pkg = index.getPackage(packageName);
 	    if (pkg != null) {
@@ -401,13 +355,10 @@ public class ArduinoManager {
     }
 
     /**
-     * downloads an archive file from the internet and saves it in the download
-     * folder under the name "pArchiveFileName" then extrats the file to
-     * pInstallPath if pForceDownload is true the file will be downloaded even
-     * if the download file already exists if pForceDownload is false the file
-     * will only be downloaded if the download file does not exists The
-     * extraction is done with processArchive so only files types supported by
-     * this method will be properly extracted
+     * downloads an archive file from the internet and saves it in the download folder under the name "pArchiveFileName" then extrats the file to
+     * pInstallPath if pForceDownload is true the file will be downloaded even if the download file already exists if pForceDownload is false the file
+     * will only be downloaded if the download file does not exists The extraction is done with processArchive so only files types supported by this
+     * method will be properly extracted
      * 
      * @param pURL
      *            the url of the file to download
@@ -418,8 +369,8 @@ public class ArduinoManager {
      * @param pMonitor
      * @return
      */
-    public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, Path pInstallPath,
-	    boolean pForceDownload, IProgressMonitor pMonitor) {
+    public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, Path pInstallPath, boolean pForceDownload,
+	    IProgressMonitor pMonitor) {
 	IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
 	IPath archivePath = dlDir.append(pArchiveFileName);
 	String archiveFullFileName = archivePath.toString();
@@ -436,13 +387,12 @@ public class ArduinoManager {
 	return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archiveFullFileName, pMonitor);
     }
 
-    private static IStatus processArchive(String pArchiveFileName, Path pInstallPath, boolean pForceDownload,
-	    String pArchiveFullFileName, IProgressMonitor pMonitor) {
+    private static IStatus processArchive(String pArchiveFileName, Path pInstallPath, boolean pForceDownload, String pArchiveFullFileName,
+	    IProgressMonitor pMonitor) {
 	// Create an ArchiveInputStream with the correct archiving algorithm
 	String faileToExtractMessage = Messages.ArduinoManager_Failed_to_extract + pArchiveFullFileName;
 	if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
-	    try (ArchiveInputStream inStream = new TarArchiveInputStream(
-		    new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
+	    try (ArchiveInputStream inStream = new TarArchiveInputStream(new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
 		return extract(inStream, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
 	    } catch (IOException | InterruptedException e) {
 		return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
@@ -454,8 +404,7 @@ public class ArduinoManager {
 		return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
 	    }
 	} else if (pArchiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
-	    try (ArchiveInputStream in = new TarArchiveInputStream(
-		    new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
+	    try (ArchiveInputStream in = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
 		return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
 	    } catch (IOException | InterruptedException e) {
 		return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
@@ -471,8 +420,8 @@ public class ArduinoManager {
 	}
     }
 
-    public static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite,
-	    IProgressMonitor pMonitor) throws IOException, InterruptedException {
+    public static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite, IProgressMonitor pMonitor)
+	    throws IOException, InterruptedException {
 
 	// Folders timestamps must be set at the end of archive extraction
 	// (because creating a file in a folder alters the folder's timestamp)
@@ -551,8 +500,8 @@ public class ArduinoManager {
 
 	    // Strip the common path prefix when requested
 	    if (!name.startsWith(pathPrefix)) {
-		throw new IOException(Messages.ArduinoManager_no_single_root_folder_while_file + name
-			+ Messages.ArduinoManager_is_outside + pathPrefix);
+		throw new IOException(
+			Messages.ArduinoManager_no_single_root_folder_while_file + name + Messages.ArduinoManager_is_outside + pathPrefix);
 	    }
 	    name = name.substring(pathPrefix.length());
 	    if (name.isEmpty()) {
@@ -563,8 +512,8 @@ public class ArduinoManager {
 	    File outputLinkedFile = null;
 	    if (isLink && linkName != null) {
 		if (!linkName.startsWith(pathPrefix)) {
-		    throw new IOException(Messages.ArduinoManager_no_single_root_folder_while_file + linkName
-			    + Messages.ArduinoManager_is_outside + pathPrefix);
+		    throw new IOException(
+			    Messages.ArduinoManager_no_single_root_folder_while_file + linkName + Messages.ArduinoManager_is_outside + pathPrefix);
 		}
 		linkName = linkName.substring(pathPrefix.length());
 		outputLinkedFile = new File(destFolder, linkName);
@@ -573,8 +522,8 @@ public class ArduinoManager {
 		// Symbolic links are referenced with relative paths
 		outputLinkedFile = new File(linkName);
 		if (outputLinkedFile.isAbsolute()) {
-		    System.err.println(Messages.ArduinoManager_Warning_file + outputFile
-			    + Messages.ArduinoManager_links_to_absolute_path + outputLinkedFile);
+		    System.err.println(
+			    Messages.ArduinoManager_Warning_file + outputFile + Messages.ArduinoManager_links_to_absolute_path + outputLinkedFile);
 		    System.err.println();
 		}
 	    }
@@ -582,16 +531,14 @@ public class ArduinoManager {
 	    // Safety check
 	    if (isDirectory) {
 		if (outputFile.isFile() && !overwrite) {
-		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile
-			    + Messages.ArduinoManager_File_exists);
+		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile + Messages.ArduinoManager_File_exists);
 		}
 	    } else {
 		// - isLink
 		// - isSymLink
 		// - anything else
 		if (outputFile.exists() && !overwrite) {
-		    throw new IOException(Messages.ArduinoManager_Cant_extract_file + outputFile
-			    + Messages.ArduinoManager_File_already_exists);
+		    throw new IOException(Messages.ArduinoManager_Cant_extract_file + outputFile + Messages.ArduinoManager_File_already_exists);
 		}
 	    }
 
@@ -657,8 +604,7 @@ public class ArduinoManager {
     }
 
     private static void link(File something, File somewhere) throws IOException, InterruptedException {
-	Process process = Runtime.getRuntime()
-		.exec(new String[] { "ln", something.getAbsolutePath(), somewhere.getAbsolutePath() }, null, null); //$NON-NLS-1$
+	Process process = Runtime.getRuntime().exec(new String[] { "ln", something.getAbsolutePath(), somewhere.getAbsolutePath() }, null, null); //$NON-NLS-1$
 	process.waitFor();
     }
 

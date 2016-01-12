@@ -13,9 +13,13 @@ import org.eclipse.ui.PlatformUI;
  */
 public class InstallProgress {
 
-	private static String getAction() {
+	private static int fVerb;
+	private static int fComponent;
+	private static int fAction;
 
-		switch (new Random().nextInt(10)) {
+	private static String getAction() {
+		fAction = getNewNumber(fAction, 10);
+		switch (fAction) {
 		case 0:
 			return "frequency";
 		case 1:
@@ -40,7 +44,10 @@ public class InstallProgress {
 	}
 
 	private static String getComponent() {
-		switch (new Random().nextInt(10)) {
+
+		fComponent = getNewNumber(fComponent, 10);
+
+		switch (fComponent) {
 		case 0:
 			return "transistor";
 		case 1:
@@ -65,7 +72,10 @@ public class InstallProgress {
 	}
 
 	private static String getVerb() {
-		switch (new Random().nextInt(10)) {
+
+		fVerb = getNewNumber(fVerb, 10);
+
+		switch (fVerb) {
 		case 0:
 			return "Soldering";
 		case 1:
@@ -89,6 +99,14 @@ public class InstallProgress {
 		}
 	}
 
+	private static int getNewNumber(int pNumber, int pMax) {
+		int result = new Random().nextInt(pMax);
+		while (result == pNumber) {
+			result = new Random().nextInt(pMax);
+		}
+		return result;
+	}
+
 	public static String getRandomMessage() {
 		return getVerb() + " " + getComponent() + " " + getAction() + "..";
 	}
@@ -103,7 +121,7 @@ public class InstallProgress {
 
 	private static String getMessage() {
 		StringBuilder message = new StringBuilder();
-		message.append("Hi ").append(System.getProperty("user.name")) .append(",\n\n");
+		message.append("Hi ").append(System.getProperty("user.name")).append(",\n\n");
 		message.append("Thank you for downloading the Arduino Eclipse ");
 		message.append("IDE. We need to install a few things to get you ");
 		message.append("up and running. Depending on your internet speed ");
@@ -111,7 +129,7 @@ public class InstallProgress {
 		message.append("Press Ok to continue.").append("\n\n");
 		return message.toString();
 	}
-	
+
 	public static void main(String[] args) {
 		InstallProgress.showIntroduction();
 	}
