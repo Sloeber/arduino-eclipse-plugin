@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="Arduino Eclipse Extensions"
-      version="2.5.0.qualifier"
+      version="3.0.0.qualifier"
       provider-name="Jan Baeyens">
 
    <description url="http://www.example.com/description">
@@ -142,42 +142,42 @@ If you do not agree with this policy, then please do not install this software.
          id="it.baeyens.arduino.common"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.core"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.monitor"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.core.nl1"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          fragment="true"/>
 
    <plugin
          id="it.baeyens.arduino.application"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.cdt.refactor"
          download-size="0"
          install-size="0"
-         version="2.5.0.qualifier"
+         version="3.0.0.qualifier"
          unpack="false"/>
 
 </feature>
