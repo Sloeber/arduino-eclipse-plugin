@@ -111,9 +111,7 @@ public class Activator implements BundleActivator {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-
 		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
-
 		makeOurOwnCustomBoards_txt();
 		addFileAssociations();
 		ArduinoManager.startup_Pluging(monitor);

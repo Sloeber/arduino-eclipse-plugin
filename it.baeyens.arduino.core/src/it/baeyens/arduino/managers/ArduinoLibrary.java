@@ -160,7 +160,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-    monitor.setTaskName(InstallProgress.getRandomMessage());
+    monitor.setTaskName("Downloading and installing " +  getName() + " library.");
 	if (isInstalled()) {
 	    return Status.OK_STATUS;
 	}
