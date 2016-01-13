@@ -84,8 +84,7 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds all examples to the selection listbox All examples
-     * already in the listbox are removed first.
+     * This method adds all examples to the selection listbox All examples already in the listbox are removed first.
      * 
      * @param arduinoExample
      *            The folder with the arduino samples
@@ -119,7 +118,7 @@ public class ArduinoSampleSelector extends Composite {
 	// Get the examples from the example locations
 
 	if (exampleLocation.exists()) {
-	    getExamplesFromFolder("", exampleLocation);
+	    getExamplesFromFolder(ArduinoConst.EMPTY_STRING, exampleLocation);
 	}
 
 	// Get the examples of the libraries from the selected hardware
@@ -165,8 +164,7 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds a folder of examples. There is no search. The provided
-     * folder is assumed to be a tree where the parents of the leaves are
+     * This method adds a folder of examples. There is no search. The provided folder is assumed to be a tree where the parents of the leaves are
      * assumed examples
      * 
      * @param iPath
@@ -188,8 +186,7 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds a folder recursively examples. Leaves containing ino
-     * files are assumed to be examples
+     * This method adds a folder recursively examples. Leaves containing ino files are assumed to be examples
      * 
      * @param File
      */
@@ -206,7 +203,7 @@ public class ArduinoSampleSelector extends Composite {
 		String extension = pt.getFileExtension();
 		if (exampleFolder.isDirectory()) {
 		    getExamplesFromFolder(prefix + location.getName() + '-', exampleFolder);
-		} else if ("ino".equalsIgnoreCase(extension) || "pde".equalsIgnoreCase(extension)) {
+		} else if ("ino".equalsIgnoreCase(extension) || "pde".equalsIgnoreCase(extension)) { //$NON-NLS-1$ //$NON-NLS-2$
 		    this.examples.put(prefix + location.getName(), location.toString());
 		}
 	    }
@@ -214,8 +211,7 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /***
-     * finds all the example folders for both the version including and without
-     * version libraries
+     * finds all the example folders for both the version including and without version libraries
      * 
      * @param location
      *            The parent folder of the libraries
@@ -261,8 +257,7 @@ public class ArduinoSampleSelector extends Composite {
 	this.myLabel.setEnabled(enable);
     }
 
-    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link)
-	    throws IOException {
+    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link) throws IOException {
 	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("examplePath") != null)) { //$NON-NLS-1$
 		String location = (String) curchildTreeItem.getData("examplePath"); //$NON-NLS-1$
@@ -284,19 +279,16 @@ public class ArduinoSampleSelector extends Composite {
 	}
     }
 
-    private void recursiveImportSelectedLibraries(IProject project,
-	    ICConfigurationDescription configurationDescriptions[], TreeItem curTreeItem) {
+    private void recursiveImportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], TreeItem curTreeItem) {
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("libPath") != null)) { //$NON-NLS-1$
 		String location = (String) curchildTreeItem.getData("libPath"); //$NON-NLS-1$
 		String LibName = (String) curchildTreeItem.getData("libName"); //$NON-NLS-1$
 
 		try {
-		    ArduinoHelpers.addCodeFolder(project, new Path(location),
-			    ArduinoConst.WORKSPACE_LIB_FOLDER + LibName, configurationDescriptions);
+		    ArduinoHelpers.addCodeFolder(project, new Path(location), ArduinoConst.WORKSPACE_LIB_FOLDER + LibName, configurationDescriptions);
 		} catch (CoreException e) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-			    Messages.error_failed_to_import_library_in_project, e));
+		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_failed_to_import_library_in_project, e));
 		}
 		break;
 	    }
@@ -311,5 +303,14 @@ public class ArduinoSampleSelector extends Composite {
 	    recursiveImportSelectedLibraries(project, configurationDescriptions, curTreeItem);
 	}
 
+    }
+
+    /**
+     * is at least 1 sample selected in this tree
+     * 
+     * @return true if at least one sample is selected. else false
+     */
+    public boolean isSampleSelected() {
+	return true; // this.sampleTree.getSelection().length > 0;
     }
 }

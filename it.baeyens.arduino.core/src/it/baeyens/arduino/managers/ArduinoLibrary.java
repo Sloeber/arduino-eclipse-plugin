@@ -151,7 +151,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_')) //$NON-NLS-1$
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_'))
 		.append(this.version).toString());
     }
 
@@ -160,7 +160,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-    monitor.setTaskName("Downloading and installing " +  getName() + " library.");
+	monitor.setTaskName("Downloading and installing " + getName() + " library."); //$NON-NLS-1$ //$NON-NLS-2$
 	if (isInstalled()) {
 	    return Status.OK_STATUS;
 	}

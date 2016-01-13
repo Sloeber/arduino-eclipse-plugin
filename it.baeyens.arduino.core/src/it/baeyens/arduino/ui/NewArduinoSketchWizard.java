@@ -58,6 +58,12 @@ import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
  * 
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
+    private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
+    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add the folder for the templates
+    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board and comp port
+    private BuildConfigurationsPage mBuildCfgPage; // build the configuration
+    private IConfigurationElement mConfig;
+    private IProject mProject;
 
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
@@ -68,13 +74,6 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	}
 	return super.getNextPage(page);
     }
-
-    private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
-    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add the folder for the templates
-    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board and comp port
-    private BuildConfigurationsPage mBuildCfgPage; // build the configuration
-    private IConfigurationElement mConfig;
-    private IProject mProject;
 
     public NewArduinoSketchWizard() {
 	super();
@@ -264,11 +263,13 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(ArduinoConst.EMPTY_STRING), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
-		Path exclusionPath[] = new Path[4];
-		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/?xamples"); //$NON-NLS-1$
-		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/?xtras"); //$NON-NLS-1$
-		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/test"); //$NON-NLS-1$
-		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/*/third-party"); //$NON-NLS-1$
+		Path exclusionPath[] = new Path[5];
+		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xamples"); //$NON-NLS-1$
+		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xtras"); //$NON-NLS-1$
+		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/test"); //$NON-NLS-1$
+		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/third-party"); //$NON-NLS-1$
+		exclusionPath[4] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
+
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
 		ICSourceEntry[] out = null;

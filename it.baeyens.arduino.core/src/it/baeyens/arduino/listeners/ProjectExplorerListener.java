@@ -47,7 +47,9 @@ public class ProjectExplorerListener implements ISelectionListener {
 		    @SuppressWarnings("cast") // this is needed for the oracle
 					      // sdk
 		    IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
-		    allSelectedprojects.add(resource.getProject());
+		    if (resource != null) {
+			allSelectedprojects.add(resource.getProject());
+		    }
 
 		}
 	    }

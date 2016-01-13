@@ -108,19 +108,19 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 	private final ArduinoGnuMakefileGenerator generator;
 	// private IManagedBuildInfo info;
-	private final IConfiguration config;
+	private final IConfiguration localConfig;
 
 	/**
 	 * The constructor
 	 */
 	public ResourceDeltaVisitor(ArduinoGnuMakefileGenerator generator, IManagedBuildInfo info) {
 	    this.generator = generator;
-	    this.config = info.getDefaultConfiguration();
+	    this.localConfig = info.getDefaultConfiguration();
 	}
 
 	public ResourceDeltaVisitor(ArduinoGnuMakefileGenerator generator, IConfiguration cfg) {
 	    this.generator = generator;
-	    this.config = cfg;
+	    this.localConfig = cfg;
 	}
 
 	/*
@@ -129,12 +129,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse .core.resources.IResourceDelta)
 	 */
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 	    // Should the visitor keep iterating in current directory
 	    boolean keepLooking = false;
 	    IResource resource = delta.getResource();
-	    IResourceInfo rcInfo = this.config.getResourceInfo(resource.getProjectRelativePath(), false);
+	    IResourceInfo rcInfo = this.localConfig.getResourceInfo(resource.getProjectRelativePath(), false);
 	    IFolderInfo fo = null;
 	    boolean isSource = isSource(resource.getProjectRelativePath());
 	    if (rcInfo instanceof IFolderInfo) {
@@ -204,7 +205,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      */
     protected class ResourceProxyVisitor implements IResourceProxyVisitor {
 	private final ArduinoGnuMakefileGenerator generator;
-	private final IConfiguration config;
+	private final IConfiguration myConfig;
 
 	// private IManagedBuildInfo info;
 
@@ -213,12 +214,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 */
 	public ResourceProxyVisitor(ArduinoGnuMakefileGenerator generator, IManagedBuildInfo info) {
 	    this.generator = generator;
-	    this.config = info.getDefaultConfiguration();
+	    this.myConfig = info.getDefaultConfiguration();
 	}
 
 	public ResourceProxyVisitor(ArduinoGnuMakefileGenerator generator, IConfiguration cfg) {
 	    this.generator = generator;
-	    this.config = cfg;
+	    this.myConfig = cfg;
 	}
 
 	/*
@@ -243,7 +244,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// if it has a file extension that one of the tools builds, add
 		// the sudirectory to the list
 		// boolean willBuild = false;
-		IResourceInfo rcInfo = this.config.getResourceInfo(resource.getProjectRelativePath(), false);
+		IResourceInfo rcInfo = this.myConfig.getResourceInfo(resource.getProjectRelativePath(), false);
 		if (isSource/* && !rcInfo.isExcluded() */) {
 		    boolean willBuild = false;
 		    if (rcInfo instanceof IFolderInfo) {
@@ -389,16 +390,16 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * @see org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator #initialize(IProject, IManagedBuildInfo, IProgressMonitor)
      */
     @Override
-    public void initialize(IProject project, IManagedBuildInfo info, IProgressMonitor monitor) {
+    public void initialize(IProject input_project1, IManagedBuildInfo info, IProgressMonitor new_monitor1) {
 	// Save the project so we can get path and member information
-	this.project = project;
+	this.project = input_project1;
 	try {
-	    this.projectResources = project.members();
+	    this.projectResources = input_project1.members();
 	} catch (CoreException e) {
 	    this.projectResources = null;
 	}
 	// Save the monitor reference for reporting back to the user
-	this.monitor = monitor;
+	this.monitor = new_monitor1;
 	// Get the build info for the project
 	// this.info = info;
 	// Get the name of the build target
@@ -432,7 +433,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	this.builder = this.config.getEditableBuilder();
 	initToolInfos();
 	// set the top build dir path
-	this.topBuildDir = project.getFolder(info.getConfigurationName()).getFullPath();
+	this.topBuildDir = input_project1.getFolder(info.getConfigurationName()).getFullPath();
     }
 
     /**

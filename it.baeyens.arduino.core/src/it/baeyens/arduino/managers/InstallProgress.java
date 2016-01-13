@@ -21,25 +21,25 @@ public class InstallProgress {
 	fAction = getNewNumber(fAction, 10);
 	switch (fAction) {
 	case 0:
-	    return "frequency";
+	    return "frequency"; //$NON-NLS-1$
 	case 1:
-	    return "base";
+	    return "base"; //$NON-NLS-1$
 	case 2:
-	    return "vibration";
+	    return "vibration"; //$NON-NLS-1$
 	case 3:
-	    return "leakage";
+	    return "leakage"; //$NON-NLS-1$
 	case 4:
-	    return "jitter";
+	    return "jitter"; //$NON-NLS-1$
 	case 5:
-	    return "collision";
+	    return "collision"; //$NON-NLS-1$
 	case 6:
-	    return "resistance";
+	    return "resistance"; //$NON-NLS-1$
 	case 7:
-	    return "speed";
+	    return "speed"; //$NON-NLS-1$
 	case 8:
-	    return "temperature";
+	    return "temperature"; //$NON-NLS-1$
 	default:
-	    return "connections";
+	    return "connections"; //$NON-NLS-1$
 	}
     }
 
@@ -49,25 +49,25 @@ public class InstallProgress {
 
 	switch (fComponent) {
 	case 0:
-	    return "transistor";
+	    return "transistor"; //$NON-NLS-1$
 	case 1:
-	    return "resistor";
+	    return "resistor"; //$NON-NLS-1$
 	case 2:
-	    return "capacitor";
+	    return "capacitor"; //$NON-NLS-1$
 	case 3:
-	    return "led";
+	    return "led"; //$NON-NLS-1$
 	case 4:
-	    return "pin";
+	    return "pin"; //$NON-NLS-1$
 	case 5:
-	    return "dipswitch";
+	    return "dipswitch"; //$NON-NLS-1$
 	case 6:
-	    return "diode";
+	    return "diode"; //$NON-NLS-1$
 	case 7:
-	    return "sensor";
+	    return "sensor"; //$NON-NLS-1$
 	case 8:
-	    return "cable";
+	    return "cable"; //$NON-NLS-1$
 	default:
-	    return "board";
+	    return "board"; //$NON-NLS-1$
 	}
     }
 
@@ -77,25 +77,25 @@ public class InstallProgress {
 
 	switch (fVerb) {
 	case 0:
-	    return "Soldering";
+	    return "Soldering"; //$NON-NLS-1$
 	case 1:
-	    return "Heating";
+	    return "Heating"; //$NON-NLS-1$
 	case 2:
-	    return "Shaking";
+	    return "Shaking"; //$NON-NLS-1$
 	case 3:
-	    return "Checking";
+	    return "Checking"; //$NON-NLS-1$
 	case 4:
-	    return "Examining";
+	    return "Examining"; //$NON-NLS-1$
 	case 5:
-	    return "Testing";
+	    return "Testing"; //$NON-NLS-1$
 	case 6:
-	    return "Optimizing";
+	    return "Optimizing"; //$NON-NLS-1$
 	case 7:
-	    return "Drilling";
+	    return "Drilling"; //$NON-NLS-1$
 	case 8:
-	    return "Improving";
+	    return "Improving"; //$NON-NLS-1$
 	default:
-	    return "Connecting";
+	    return "Connecting"; //$NON-NLS-1$
 	}
     }
 
@@ -108,25 +108,26 @@ public class InstallProgress {
     }
 
     public static String getRandomMessage() {
-	return getVerb() + " " + getComponent() + " " + getAction() + "..";
+	return getVerb() + " " + getComponent() + " " + getAction() + ".."; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public static void showIntroduction() {
 	PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+	    @Override
 	    public void run() {
-		MessageDialog.openInformation(null, "Finishing the installation", getMessage());
+		MessageDialog.openInformation(null, "Finishing the installation", getMessage()); //$NON-NLS-1$
 	    }
 	});
     }
 
-    private static String getMessage() {
+    protected static String getMessage() {
 	StringBuilder message = new StringBuilder();
-	message.append("Hi ").append(System.getProperty("user.name")).append(",\n\n");
-	message.append("Thank you for downloading the Arduino Eclipse ");
-	message.append("IDE. We need to install a few things to get you ");
-	message.append("up and running. Depending on your internet speed ");
-	message.append("it can take anywhere between 2 minutes and half an hour.").append("\n\n");
-	message.append("Press Ok to continue.").append("\n\n");
+	message.append("Hi ").append(System.getProperty("user.name")).append(",\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	message.append("Thank you for downloading the Arduino Eclipse "); //$NON-NLS-1$
+	message.append("IDE. We need to install a few things to get you "); //$NON-NLS-1$
+	message.append("up and running. Depending on your internet speed "); //$NON-NLS-1$
+	message.append("it can take anywhere between 2 minutes and half an hour.").append("\n\n"); //$NON-NLS-1$ //$NON-NLS-2$
+	message.append("Press Ok to continue.").append("\n\n"); //$NON-NLS-1$ //$NON-NLS-2$
 	return message.toString();
     }
 
