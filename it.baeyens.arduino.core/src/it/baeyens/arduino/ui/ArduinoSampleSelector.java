@@ -2,6 +2,8 @@ package it.baeyens.arduino.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,6 +35,8 @@ public class ArduinoSampleSelector extends Composite {
     protected Tree sampleTree;
     protected Label myLabel;
     TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    protected Listener mylistener;
+    protected int numSelected = 0;
 
     public ArduinoSampleSelector(Composite parent, int style, String label) {
 	super(parent, style);
@@ -70,6 +74,16 @@ public class ArduinoSampleSelector extends Composite {
 			event.type = SWT.None;
 			event.doit = false;
 			thechangeItem.setChecked(false);
+		    } else {
+			if (thechangeItem.getChecked()) {
+			    ArduinoSampleSelector.this.numSelected += 1;
+			} else {
+			    ArduinoSampleSelector.this.numSelected -= 1;
+			}
+			if (ArduinoSampleSelector.this.mylistener != null) {
+			    ArduinoSampleSelector.this.mylistener.handleEvent(null);
+			}
+
 		    }
 		}
 	    }
@@ -96,6 +110,7 @@ public class ArduinoSampleSelector extends Composite {
      */
 
     public void AddAllExamples(String selectedPlatformLocation) {
+	this.numSelected = 0;
 
 	// Get the examples of the library manager installed libraries
 	String libLocations[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
@@ -161,6 +176,7 @@ public class ArduinoSampleSelector extends Composite {
 		level[keys.length - 1].setData("libPath", libPath.removeLastSegments(1).toString()); //$NON-NLS-1$
 	    }
 	}
+	setLastUsedExamples();
     }
 
     /**
@@ -311,6 +327,59 @@ public class ArduinoSampleSelector extends Composite {
      * @return true if at least one sample is selected. else false
      */
     public boolean isSampleSelected() {
-	return true; // this.sampleTree.getSelection().length > 0;
+	return this.numSelected > 0;
+    }
+
+    /**
+     * you can only set 1 listener. The listener is triggered each time a item is selected or deselected
+     * 
+     * @param listener
+     */
+    public void addchangeListener(Listener listener) {
+	this.mylistener = listener;
+    }
+
+    public void setLastUsedExamples() {
+	String[] lastUsedExamples = ArduinoInstancePreferences.getLastUsedExamples();
+	for (TreeItem curItem : this.sampleTree.getItems()) {
+	    recursiveSetExamples(curItem, lastUsedExamples);
+	}
+    }
+
+    private void recursiveSetExamples(TreeItem TreeItem, String[] lastUsedExamples) {
+	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
+	    if (curchildTreeItem.getItems().length == 0) {
+		for (String curLastUsedExample : lastUsedExamples) {
+		    if (curLastUsedExample.equals(curchildTreeItem.getText())) {
+			curchildTreeItem.setChecked(true);
+			TreeItem.setExpanded(true);
+			this.numSelected += 1;
+		    }
+		}
+	    } else {
+		recursiveSetExamples(curchildTreeItem, lastUsedExamples);
+	    }
+	}
+    }
+
+    public void saveLastUsedExamples() {
+	List<String> currentUsedExamples = new ArrayList<>();
+	for (TreeItem curItem : this.sampleTree.getItems()) {
+	    currentUsedExamples.addAll(recursiveSetExamples(curItem));
+	}
+	ArduinoInstancePreferences.setLastUsedExamples(currentUsedExamples.toArray(new String[currentUsedExamples.size()]));
+    }
+
+    private List<String> recursiveSetExamples(TreeItem TreeItem) {
+	List<String> currentUsedExamples = new ArrayList<>();
+	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
+	    if (curchildTreeItem.getChecked()) {
+		currentUsedExamples.add(curchildTreeItem.getText());
+	    } else {
+		currentUsedExamples.addAll(recursiveSetExamples(curchildTreeItem));
+	    }
+
+	}
+	return currentUsedExamples;
     }
 }

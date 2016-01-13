@@ -42,8 +42,7 @@ public class ConfigurationPreferences {
 		return new Path(pathName);
 	    }
 	}
-	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION,
-		ArduinoConst.EMPTY_STRING);
+	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, ArduinoConst.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    URI uri;
 	    try {
@@ -98,8 +97,7 @@ public class ConfigurationPreferences {
     }
 
     public static String getBoardURLs() {
-	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS,
-		ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
+	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
     }
 
     public static void setBoardURLs(String urls) {
@@ -107,7 +105,7 @@ public class ConfigurationPreferences {
     }
 
     public static Path getPathExtensionPath() {
-	return new Path(getInstallationPath().append("tools/make").toString());
+	return new Path(getInstallationPath().append("tools/make").toString()); //$NON-NLS-1$
 
     }
 

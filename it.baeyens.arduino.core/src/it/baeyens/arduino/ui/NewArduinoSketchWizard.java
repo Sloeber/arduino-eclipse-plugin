@@ -68,10 +68,10 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     @Override
     public IWizardPage getNextPage(IWizardPage page) {
 	// TODO Auto-generated method stub
-	if (page.equals(this.mNewArduinoSketchWizardCodeSelectionPage)) {
-	    String PlatformPath = NewArduinoSketchWizard.this.mArduinoPage.getPlatformFolder().toString();
-	    NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(PlatformPath);
-	}
+	// if (page.equals(this.mNewArduinoSketchWizardCodeSelectionPage)) {
+	String PlatformPath = NewArduinoSketchWizard.this.mArduinoPage.getPlatformFolder().toString();
+	NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(PlatformPath);
+	// }
 	return super.getNextPage(page);
     }
 

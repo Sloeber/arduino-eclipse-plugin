@@ -2,6 +2,8 @@ package it.baeyens.arduino.ui;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -188,9 +190,9 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 
 	GridData theGriddata;
 	this.mAllBoardsFileNames = ArduinoHelpers.getBoardsFiles();
-	if(this.mAllBoardsFileNames==null)
-	{
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed."));
+	if (this.mAllBoardsFileNames == null) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    "ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed.")); //$NON-NLS-1$
 	}
 	Arrays.sort(this.mAllBoardsFileNames);
 	this.mAllBoardsFiles = new ArduinoBoards[this.mAllBoardsFileNames.length];
@@ -277,9 +279,6 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 	    childFieldListener comboboxModifyListener = new childFieldListener();
 	    comboboxModifyListener.setInfo(curLabelCombo);
 	    curLabelCombo.addListener(comboboxModifyListener);
-	    // ComboboxModifyListener comboboxModifyListener = new ComboboxModifyListener();
-	    // comboboxModifyListener.setLabelCombo(boardOptionCombos[curBoardsFile][currentOption]);
-	    // boardOptionCombos[curBoardsFile][currentOption].addListener(comboboxModifyListener);
 	}
 
 	EnableControls();
@@ -351,8 +350,13 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 	ArduinoInstancePreferences.setLastUsedBoardsFile(boardFile);
 	ArduinoInstancePreferences.SetLastUsedArduinoBoard(boardName);
 	ArduinoInstancePreferences.SetLastUsedUploadPort(uploadPort);
-	ArduinoInstancePreferences.setLastUsedMenuOption(ArduinoConst.EMPTY_STRING); // TOFIX implement
-	// the options
+
+	Map<String, String> options = new HashMap<>();
+	for (LabelCombo curLabelCombo : ArduinoBoardSelectionPage.this.mBoardOptionCombos) {
+
+	    options.put(curLabelCombo.getMenuName(), curLabelCombo.getValue());
+	}
+	ArduinoInstancePreferences.setLastUsedMenuOption(options);
     }
 
     public void saveAllSelections(ICConfigurationDescription confdesc) {
@@ -389,6 +393,7 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 	    boardName = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, uploadPort);
 	}
+	Map<String, String> options = ArduinoInstancePreferences.getLastUsedMenuOption();
 	this.mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first
 	if (this.mControlBoardsTxtFile.getText().isEmpty()) {
@@ -405,7 +410,11 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 	    curLabelCombo.setItems(this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
 	    if (confdesc != null) {
 		curLabelCombo.getStoredValue(confdesc);
-
+	    } else {
+		String value = options.get(curLabelCombo.getMenuName());
+		if (value != null) {
+		    curLabelCombo.setValue(value);
+		}
 	    }
 	}
 
@@ -435,7 +444,6 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
 	    IProject project = confdesc.getProjectDescription().getProject();
 
 	    ArduinoHelpers.setTheEnvironmentVariables(project, confdesc, false);
-	    // ArduinoHelpers.setProjectPathVariables(confdesc);
 
 	    try {
 		ArduinoHelpers.addArduinoCodeToProject(project, confdesc);
@@ -478,7 +486,6 @@ public class ArduinoBoardSelectionPage extends AbstractCPropertyTab {
     }
 
     public String getArchitecture() {
-	// TODO Auto-generated method stub
 	IPath platformFile = new Path(this.mControlBoardsTxtFile.getText().trim());
 	String architecture = platformFile.removeLastSegments(1).lastSegment();
 	if (architecture.contains(".")) { //$NON-NLS-1$

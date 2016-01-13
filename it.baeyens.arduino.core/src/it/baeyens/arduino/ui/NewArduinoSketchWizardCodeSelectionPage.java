@@ -43,10 +43,6 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 
     protected DirectoryFieldEditor mTemplateFolderEditor;
     protected ArduinoSampleSelector mExampleEditor = null;
-    protected Button mCheckBoxUseCurrentSettingsAsDefault; // checkbox whether
-							   // to use the current
-							   // settings as
-							   // default
     protected Button mCheckBoxUseCurrentLinkSample;
     private String platformPath = null;
 
@@ -55,6 +51,7 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	    return; // this is needed as setting the examples will remove the selection
 	this.platformPath = newPlatformPath;
 	AddAllExamples();
+	validatePage();
     }
 
     public NewArduinoSketchWizardCodeSelectionPage(String pageName) {
@@ -104,18 +101,18 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 	// gd.horizontalSpan = ncol;
 	// mExampleEditor.setLayoutData(gd);
+	this.mExampleEditor.addchangeListener(new Listener() {
+
+	    @Override
+	    public void handleEvent(Event event) {
+		validatePage();
+
+	    }
+
+	});
 
 	this.mTemplateFolderEditor.getTextControl(composite).addListener(SWT.Modify, comboListener);
-	// mSampleFolderEditor.getTextControl(composite).addListener(SWT.Modify,
-	// comboListener);
 
-	this.mCheckBoxUseCurrentSettingsAsDefault = new Button(composite, SWT.CHECK);
-	this.mCheckBoxUseCurrentSettingsAsDefault.setText(Messages.ui_new_sketch_use_current_settings_as_default);
-	theGriddata = new GridData();
-	theGriddata.horizontalSpan = this.ncol;
-	theGriddata.horizontalAlignment = SWT.LEAD;
-	theGriddata.grabExcessHorizontalSpace = false;
-	this.mCheckBoxUseCurrentSettingsAsDefault.setLayoutData(theGriddata);
 	this.mCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
 	this.mCheckBoxUseCurrentLinkSample.setText(Messages.ui_new_sketch_link_to_sample_code);
 	theGriddata = new GridData();
@@ -146,18 +143,22 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	case defaultIno:
 	    this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 	    this.mExampleEditor.setEnabled(false);
+	    this.mCheckBoxUseCurrentLinkSample.setEnabled(false);
 	    break;
 	case defaultCPP:
 	    this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 	    this.mExampleEditor.setEnabled(false);
+	    this.mCheckBoxUseCurrentLinkSample.setEnabled(false);
 	    break;
 	case CustomTemplate:
 	    this.mTemplateFolderEditor.setEnabled(true, this.mParentComposite);
 	    this.mExampleEditor.setEnabled(false);
+	    this.mCheckBoxUseCurrentLinkSample.setEnabled(false);
 	    break;
 	case sample:
 	    this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 	    this.mExampleEditor.setEnabled(true);
+	    this.mCheckBoxUseCurrentLinkSample.setEnabled(true);
 	    break;
 	default:
 	    break;
@@ -202,13 +203,14 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	//
 	this.mTemplateFolderEditor.setStringValue(ArduinoInstancePreferences.getLastTemplateFolderName());
 	this.mCodeSourceOptionsCombo.mCombo.select(ArduinoInstancePreferences.getLastUsedDefaultSketchSelection());
+	this.mExampleEditor.setLastUsedExamples();
     }
 
     public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
-	if (this.mCheckBoxUseCurrentSettingsAsDefault.getSelection()) {
-	    ArduinoInstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
-	    ArduinoInstancePreferences.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
-	}
+
+	ArduinoInstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
+	ArduinoInstancePreferences.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
+	this.mExampleEditor.saveLastUsedExamples();
 
 	String Include = "Arduino.h"; //$NON-NLS-1$
 
