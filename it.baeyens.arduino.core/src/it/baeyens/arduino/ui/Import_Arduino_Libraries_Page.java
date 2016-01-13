@@ -1,9 +1,9 @@
 package it.baeyens.arduino.ui;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -89,7 +89,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	prjDesc.getDefaultSettingConfiguration();
 
 	// find the items to add to the list
-	Map<String, IPath> allLibraries = new HashMap<>();
+	Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	allLibraries.putAll(ArduinoLibraries.findAllArduinoManagerLibraries());
 	allLibraries.putAll(ArduinoLibraries.findAllPrivateLibraries());
 	allLibraries.putAll(ArduinoLibraries.findAllHarwareLibraries(prjDesc.getActiveConfiguration()));
@@ -129,8 +129,7 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 		} catch (CoreException e) {
 		    // TODO Auto-generated catch block
 		    Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble",
-			    e));
+			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble", e));
 		    return true;
 		}
 
