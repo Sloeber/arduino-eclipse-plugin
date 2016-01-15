@@ -58,9 +58,16 @@ import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
  * 
  */
 public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
-    private WizardNewProjectCreationPage mWizardPage; // first page of the dialog
-    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add the folder for the templates
-    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board and comp port
+    private WizardNewProjectCreationPage mWizardPage; // first page of the
+						      // dialog
+    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add
+												// the
+												// folder
+												// for
+												// the
+												// templates
+    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board
+							    // and comp port
     private BuildConfigurationsPage mBuildCfgPage; // build the configuration
     private IConfigurationElement mConfig;
     private IProject mProject;
@@ -81,7 +88,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
     @Override
     /**
-     * adds pages to the wizard. We are using the standard project wizard of Eclipse
+     * adds pages to the wizard. We are using the standard project wizard of
+     * Eclipse
      */
     public void addPages() {
 	//
@@ -101,9 +109,11 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	//
 	// settings for template file location
 	//
-	this.mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage(Messages.ui_new_sketch_sketch_template_location);
+	this.mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage(
+		Messages.ui_new_sketch_sketch_template_location);
 	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
-	this.mNewArduinoSketchWizardCodeSelectionPage.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
+	this.mNewArduinoSketchWizardCodeSelectionPage
+		.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
 	//
 	// configuration page but I haven't seen it
 	//
@@ -141,7 +151,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	//
 	try {
 	    //
-	    // get the URL if it is filled in. This depends on the check box "use defaults" is checked
+	    // get the URL if it is filled in. This depends on the check box
+	    // "use defaults" is checked
 	    // or not
 	    //
 	    URI projectURI = (!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null;
@@ -159,7 +170,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    desc.setLocationURI(projectURI);
 
 	    /*
-	     * Just like the ExampleWizard, but this time with an operation object that modifies workspaces.
+	     * Just like the ExampleWizard, but this time with an operation
+	     * object that modifies workspaces.
 	     */
 	    WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 		@Override
@@ -172,7 +184,9 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    };
 
 	    /*
-	     * This isn't as robust as the code in the BasicNewProjectResourceWizard class. Consider beefing this up to improve error handling.
+	     * This isn't as robust as the code in the
+	     * BasicNewProjectResourceWizard class. Consider beefing this up to
+	     * improve error handling.
 	     */
 	    getContainer().run(false, true, op);
 	} catch (InterruptedException e) {
@@ -191,7 +205,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    return false;
 	}
 	//
-	// so now we set Eclipse to the right perspective and switch to our just created
+	// so now we set Eclipse to the right perspective and switch to our just
+	// created
 	// project
 	//
 	BasicNewProjectResourceWizard.updatePerspective(this.mConfig);
@@ -209,7 +224,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
      * @param monitor
      * @throws OperationCanceledException
      */
-    void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor) throws OperationCanceledException {
+    void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor)
+	    throws OperationCanceledException {
 
 	monitor.beginTask(ArduinoConst.EMPTY_STRING, 2000);
 	try {
@@ -221,11 +237,13 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 
 	    project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 
-	    // Get the Build Configurations (names and toolchain IDs) from the property page
+	    // Get the Build Configurations (names and toolchain IDs) from the
+	    // property page
 	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = this.mBuildCfgPage.getBuildConfigurationDescriptors();
 
 	    // Creates the .cproject file with the configurations
-	    ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true, monitor);
+	    ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true,
+		    monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
 	    ArduinoHelpers.addTheNatures(description);
@@ -234,21 +252,26 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    ArduinoHelpers.createNewFolder(project, ArduinoConst.ARDUINO_CODE_FOLDER_NAME, null);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
-		ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
+		ICConfigurationDescription configurationDescription = prjCDesc
+			.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
 		this.mArduinoPage.saveAllSelections(configurationDescription);
-		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
+		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription,
+			cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
 	    // Set the path variables
 	    // ArduinoHelpers.setProjectPathVariables(prjCDesc.getActiveConfiguration());
 
 	    // Intermediately save or the adding code will fail
-	    // Release is the active config (as that is the "IDE" Arduino type....)
-	    ICConfigurationDescription defaultConfigDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
+	    // Release is the active config (as that is the "IDE" Arduino
+	    // type....)
+	    ICConfigurationDescription defaultConfigDescription = prjCDesc
+		    .getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
 	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code
-	    // NOTE: Not duplicated for debug (the release reference is just to get at some environment variables)
+	    // NOTE: Not duplicated for debug (the release reference is just to
+	    // get at some environment variables)
 	    ArduinoHelpers.addArduinoCodeToProject(project, defaultConfigDescription);
 
 	    //
@@ -258,16 +281,17 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    //
 	    // add the libraries to the project if needed
 	    //
-	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getConfigurations());
+	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getActiveConfiguration());
 
-	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(ArduinoConst.EMPTY_STRING), true);
+	    ICResourceDescription cfgd = defaultConfigDescription
+		    .getResourceDescription(new Path(ArduinoConst.EMPTY_STRING), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[5];
-		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xamples"); //$NON-NLS-1$
-		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xtras"); //$NON-NLS-1$
-		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/test"); //$NON-NLS-1$
-		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/third-party"); //$NON-NLS-1$
+		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xamples/**"); //$NON-NLS-1$
+		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xtras/**"); //$NON-NLS-1$
+		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/test/**"); //$NON-NLS-1$
+		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/third-party/**"); //$NON-NLS-1$
 		exclusionPath[4] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
 
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
@@ -288,7 +312,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // set warning levels default on
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL, ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
+	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL,
+		    ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
 	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
 	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
@@ -311,7 +336,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     }
 
     @Override
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data)
+	    throws CoreException {
 	// snipped...
 	this.mConfig = config;
 

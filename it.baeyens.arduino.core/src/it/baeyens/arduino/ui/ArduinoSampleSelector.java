@@ -5,16 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,9 +26,9 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.ArduinoLibraries;
 
 public class ArduinoSampleSelector extends Composite {
     protected Tree sampleTree;
@@ -98,7 +97,8 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds all examples to the selection listbox All examples already in the listbox are removed first.
+     * This method adds all examples to the selection listbox All examples
+     * already in the listbox are removed first.
      * 
      * @param arduinoExample
      *            The folder with the arduino samples
@@ -180,7 +180,8 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds a folder of examples. There is no search. The provided folder is assumed to be a tree where the parents of the leaves are
+     * This method adds a folder of examples. There is no search. The provided
+     * folder is assumed to be a tree where the parents of the leaves are
      * assumed examples
      * 
      * @param iPath
@@ -202,7 +203,8 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * This method adds a folder recursively examples. Leaves containing ino files are assumed to be examples
+     * This method adds a folder recursively examples. Leaves containing ino
+     * files are assumed to be examples
      * 
      * @param File
      */
@@ -227,7 +229,8 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /***
-     * finds all the example folders for both the version including and without version libraries
+     * finds all the example folders for both the version including and without
+     * version libraries
      * 
      * @param location
      *            The parent folder of the libraries
@@ -273,7 +276,8 @@ public class ArduinoSampleSelector extends Composite {
 	this.myLabel.setEnabled(enable);
     }
 
-    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link) throws IOException {
+    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link)
+	    throws IOException {
 	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
 	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("examplePath") != null)) { //$NON-NLS-1$
 		String location = (String) curchildTreeItem.getData("examplePath"); //$NON-NLS-1$
@@ -295,29 +299,26 @@ public class ArduinoSampleSelector extends Composite {
 	}
     }
 
-    private void recursiveImportSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[], TreeItem curTreeItem) {
+    private Set<String> recursiveGetSelectedLibraries(TreeItem curTreeItem) {
+	Set<String> libs = new TreeSet<>();
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
-	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData("libPath") != null)) { //$NON-NLS-1$
-		String location = (String) curchildTreeItem.getData("libPath"); //$NON-NLS-1$
-		String LibName = (String) curchildTreeItem.getData("libName"); //$NON-NLS-1$
-
-		try {
-		    ArduinoHelpers.addCodeFolder(project, new Path(location), ArduinoConst.WORKSPACE_LIB_FOLDER + LibName, configurationDescriptions);
-		} catch (CoreException e) {
-		    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_failed_to_import_library_in_project, e));
-		}
-		break;
+	    if (curchildTreeItem.getChecked()) { // $NON-NLS-1$
+		libs.add(curchildTreeItem.getText());
+	    } else {
+		libs.addAll(recursiveGetSelectedLibraries(curchildTreeItem));
 	    }
-	    recursiveImportSelectedLibraries(project, configurationDescriptions, curchildTreeItem);
 	}
-
+	return libs;
     }
 
-    public void importSelectedLibraries(IProject project, ICConfigurationDescription configurationDescriptions[]) {
+    public void importSelectedLibraries(IProject project, ICConfigurationDescription configurationDescription) {
+
+	Set<String> libs = new TreeSet<>();
 	this.sampleTree.getItems();
 	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
-	    recursiveImportSelectedLibraries(project, configurationDescriptions, curTreeItem);
+	    libs.addAll(recursiveGetSelectedLibraries(curTreeItem));
 	}
+	ArduinoLibraries.addLibrariesToProject(project, configurationDescription, libs);
 
     }
 
@@ -331,7 +332,8 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     /**
-     * you can only set 1 listener. The listener is triggered each time a item is selected or deselected
+     * you can only set 1 listener. The listener is triggered each time a item
+     * is selected or deselected
      * 
      * @param listener
      */
@@ -367,7 +369,8 @@ public class ArduinoSampleSelector extends Composite {
 	for (TreeItem curItem : this.sampleTree.getItems()) {
 	    currentUsedExamples.addAll(recursiveSetExamples(curItem));
 	}
-	ArduinoInstancePreferences.setLastUsedExamples(currentUsedExamples.toArray(new String[currentUsedExamples.size()]));
+	ArduinoInstancePreferences
+		.setLastUsedExamples(currentUsedExamples.toArray(new String[currentUsedExamples.size()]));
     }
 
     private List<String> recursiveSetExamples(TreeItem TreeItem) {

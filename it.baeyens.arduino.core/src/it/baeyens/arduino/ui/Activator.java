@@ -6,10 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.index.IIndexChangeEvent;
+import org.eclipse.cdt.core.index.IIndexChangeListener;
+import org.eclipse.cdt.core.index.IIndexerStateEvent;
+import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,6 +40,7 @@ import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.managers.ArduinoManager;
+import it.baeyens.arduino.tools.ArduinoLibraries;
 
 /**
  * generated code
@@ -56,6 +64,35 @@ public class Activator implements BundleActivator {
 	runGUIRegistration();
 	runInstallJob();
 
+    }
+
+    class indexerListener implements IIndexChangeListener, IIndexerStateListener {
+	Set<IProject> ChangedProjects = new HashSet<>();
+
+	@Override
+	public void indexChanged(IIndexChangeEvent event) {
+	    ChangedProjects.add(event.getAffectedProject().getProject());
+
+	}
+
+	@Override
+	public void indexChanged(IIndexerStateEvent event) {
+
+	    if (event.indexerIsIdle()) {
+		for (IProject curProject : ChangedProjects) {
+		    ArduinoLibraries.checkLibraries(curProject);
+		}
+		ChangedProjects.clear();
+	    }
+	}
+
+    }
+
+    private void registerListeners() {
+	// TODO Auto-generated method stub
+	indexerListener myindexerListener = new indexerListener();
+	CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
+	CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
     }
 
     private void runGUIRegistration() {
@@ -121,6 +158,7 @@ public class Activator implements BundleActivator {
 		bonjourDiscovery = new NetworkDiscovery();
 		bonjourDiscovery.start();
 		ArduinoInstancePreferences.setConfigured();
+		registerListeners();
 		return Status.OK_STATUS;
 	    }
 
