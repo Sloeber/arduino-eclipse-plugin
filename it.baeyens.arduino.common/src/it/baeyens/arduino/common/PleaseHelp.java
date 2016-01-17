@@ -32,9 +32,9 @@ public class PleaseHelp extends Dialog {
 	parent.setLayout(gridLayout);
 
 	try {
-	    browser = new Browser(parent, SWT.NONE);
+	    this.browser = new Browser(parent, SWT.NONE);
 	} catch (SWTError e) {
-	    System.out.println("Could not instantiate Browser: " + e.getMessage());
+	    System.out.println("Could not instantiate Browser: " + e.getMessage()); //$NON-NLS-1$
 	}
 	GridData data = new GridData();
 	data.horizontalAlignment = GridData.FILL;
@@ -42,9 +42,9 @@ public class PleaseHelp extends Dialog {
 	data.horizontalSpan = 3;
 	data.grabExcessHorizontalSpace = true;
 	data.grabExcessVerticalSpace = true;
-	browser.setLayoutData(data);
+	this.browser.setLayoutData(data);
 
-	browser.addProgressListener(new ProgressListener() {
+	this.browser.addProgressListener(new ProgressListener() {
 	    // @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void changed(ProgressEvent event) {
@@ -54,14 +54,14 @@ public class PleaseHelp extends Dialog {
 
 	    @Override
 	    public void completed(ProgressEvent event) {
-		ph.setBlockOnOpen(false);
-		ph.open();
+		PleaseHelp.this.ph.setBlockOnOpen(false);
+		PleaseHelp.this.ph.open();
 	    }
 	});
 
-	buttonBar = createButtonBar(parent);
+	this.buttonBar = createButtonBar(parent);
 
-	browser.setUrl(myhelpLocation + "?os=" + Platform.getOS() + ";arch=" + Platform.getOSArch());
+	this.browser.setUrl(myhelpLocation + "?os=" + Platform.getOS() + ";arch=" + Platform.getOSArch()); //$NON-NLS-1$ //$NON-NLS-2$
 
 	return parent;
 
@@ -89,7 +89,7 @@ public class PleaseHelp extends Dialog {
 
     public PleaseHelp(Shell parent) {
 	super(parent);
-	ph = this;
+	this.ph = this;
 
     }
 

@@ -46,8 +46,8 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.DNSTaskStarter;
 
-import processing.app.zeroconf.jmdns.ArduinoDNSTaskStarter;
 import cc.arduino.packages.discoverers.network.NetworkChecker;
+import processing.app.zeroconf.jmdns.ArduinoDNSTaskStarter;
 
 public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.discoverers.network.NetworkTopologyListener {
 
@@ -61,15 +61,15 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	public String port;
 
 	public bonour() {
-	    address = "";
-	    name = "";
-	    board = "";
-	    distroversion = "";
-	    port = "";
+	    this.address = ""; //$NON-NLS-1$
+	    this.name = ""; //$NON-NLS-1$
+	    this.board = ""; //$NON-NLS-1$
+	    this.distroversion = ""; //$NON-NLS-1$
+	    this.port = ""; //$NON-NLS-1$
 	}
 
 	public String getLabel() {
-	    return name + " at " + address + " (" + board + ")" + distroversion + " " + port;
+	    return this.name + " at " + this.address + " (" + this.board + ")" + this.distroversion + " " + this.port; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
     }
@@ -80,14 +80,14 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 
     public NetworkDiscovery() {
 	DNSTaskStarter.Factory.setClassDelegate(new ArduinoDNSTaskStarter());
-	this.myComPorts = new HashSet<bonour>();
-	this.mappedJmDNSs = new Hashtable<InetAddress, JmDNS>();
+	this.myComPorts = new HashSet<>();
+	this.mappedJmDNSs = new Hashtable<>();
     }
 
     public String[] getList() {
-	String[] ret = new String[myComPorts.size()];
+	String[] ret = new String[this.myComPorts.size()];
 	int curPort = 0;
-	Iterator<bonour> iterator = myComPorts.iterator();
+	Iterator<bonour> iterator = this.myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    ret[curPort++] = board.getLabel();
@@ -119,12 +119,12 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
     // }
 
     public void start() {
-	this.timer = new Timer(this.getClass().getName() + " timer");
-	new NetworkChecker(this, NetworkTopologyDiscovery.Factory.getInstance()).start(timer);
+	this.timer = new Timer(this.getClass().getName() + " timer"); //$NON-NLS-1$
+	new NetworkChecker(this, NetworkTopologyDiscovery.Factory.getInstance()).start(this.timer);
     }
 
     public void stop() {
-	timer.purge();
+	this.timer.purge();
 	// we don't close each JmDNS instance as it's too slow
     }
 
@@ -133,12 +133,15 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	String type = serviceEvent.getType();
 	String name = serviceEvent.getName();
 
-	JmDNS dns = serviceEvent.getDNS();
-
-	dns.requestServiceInfo(type, name);
-	ServiceInfo serviceInfo = dns.getServiceInfo(type, name);
-	if (serviceInfo != null) {
+	try (JmDNS dns = serviceEvent.getDNS()) {
 	    dns.requestServiceInfo(type, name);
+	    ServiceInfo serviceInfo = dns.getServiceInfo(type, name);
+	    if (serviceInfo != null) {
+		dns.requestServiceInfo(type, name);
+	    }
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 
     }
@@ -159,24 +162,24 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 	    newItem.address = inetAddress.getHostAddress();
 	    newItem.name = serviceEvent.getName();
 	    if (info.hasData()) {
-		newItem.board = info.getPropertyString("board");
-		newItem.distroversion = info.getPropertyString("distro_version");
+		newItem.board = info.getPropertyString("board"); //$NON-NLS-1$
+		newItem.distroversion = info.getPropertyString("distro_version"); //$NON-NLS-1$
 		newItem.name = info.getServer();
 	    }
-	    while (newItem.name.endsWith(".")) {
+	    while (newItem.name.endsWith(".")) { //$NON-NLS-1$
 		newItem.name = newItem.name.substring(0, newItem.name.length() - 1);
 	    }
 	    newItem.port = Integer.toString(info.getPort());
 
 	    synchronized (this) {
 		removeBoardswithSameAdress(newItem);
-		myComPorts.add(newItem);
+		this.myComPorts.add(newItem);
 	    }
 	}
     }
 
     private void removeBoardswithSameAdress(bonour newBoard) {
-	Iterator<bonour> iterator = myComPorts.iterator();
+	Iterator<bonour> iterator = this.myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    if (newBoard.address.equals(board.address)) {
@@ -186,7 +189,7 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
     }
 
     private void removeBoardswithSameName(String name) {
-	Iterator<bonour> iterator = myComPorts.iterator();
+	Iterator<bonour> iterator = this.myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    if (name.equals(board.name)) {
@@ -197,13 +200,13 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 
     @Override
     public void inetAddressAdded(InetAddress address) {
-	if (mappedJmDNSs.containsKey(address)) {
+	if (this.mappedJmDNSs.containsKey(address)) {
 	    return;
 	}
-	try {
-	    JmDNS jmDNS = JmDNS.create(address);
-	    jmDNS.addServiceListener("_arduino._tcp.local.", this);
-	    mappedJmDNSs.put(address, jmDNS);
+	try (JmDNS jmDNS = JmDNS.create(address);) {
+
+	    jmDNS.addServiceListener("_arduino._tcp.local.", this); //$NON-NLS-1$
+	    this.mappedJmDNSs.put(address, jmDNS);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -211,13 +214,17 @@ public class NetworkDiscovery implements ServiceListener, cc.arduino.packages.di
 
     @Override
     public void inetAddressRemoved(InetAddress address) {
-	JmDNS jmDNS = mappedJmDNSs.remove(address);
-	if (jmDNS != null) {
-	    try {
-		jmDNS.close();
-	    } catch (IOException e) {
-		e.printStackTrace();
+	try (JmDNS jmDNS = this.mappedJmDNSs.remove(address)) {
+	    if (jmDNS != null) {
+		try {
+		    jmDNS.close();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
 	    }
+	} catch (IOException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
 	}
     }
 }

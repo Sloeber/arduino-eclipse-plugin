@@ -16,12 +16,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import it.baeyens.arduino.common.ArduinoConst;
+
 public class PasswordDialog extends Dialog {
     private Text txtUser;
     private Text txtPassword;
-    private String myUser = "";
-    private String myPassword = "";
-    private String myHost = "No host name provided";
+    private String myUser = ArduinoConst.EMPTY_STRING;
+    private String myPassword = ArduinoConst.EMPTY_STRING;
+    private String myHost = Messages.error_no_host_name;
 
     public PasswordDialog(Shell parentShell) {
 	super(parentShell);
@@ -29,7 +31,7 @@ public class PasswordDialog extends Dialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-	parent.getShell().setText("enter login and pasword for " + myHost);
+	parent.getShell().setText(Messages.ui_sec_login_and_password + this.myHost);
 	Composite container = (Composite) super.createDialogArea(parent);
 	GridLayout layout = new GridLayout(2, false);
 	layout.marginRight = 5;
@@ -37,21 +39,21 @@ public class PasswordDialog extends Dialog {
 	container.setLayout(layout);
 
 	Label lblUser = new Label(container, SWT.NONE);
-	lblUser.setText("User:");
+	lblUser.setText(Messages.ui_sec_login + ':');
 
-	txtUser = new Text(container, SWT.BORDER);
-	txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	txtUser.setText(myUser);
+	this.txtUser = new Text(container, SWT.BORDER);
+	this.txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+	this.txtUser.setText(this.myUser);
 
 	Label lblPassword = new Label(container, SWT.NONE);
 	GridData gd_lblNewLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 	gd_lblNewLabel.horizontalIndent = 1;
 	lblPassword.setLayoutData(gd_lblNewLabel);
-	lblPassword.setText("Password:");
+	lblPassword.setText(Messages.ui_sec_password + ':');
 
-	txtPassword = new Text(container, SWT.BORDER);
-	txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	txtPassword.setText(myPassword);
+	this.txtPassword = new Text(container, SWT.BORDER);
+	this.txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+	this.txtPassword.setText(this.myPassword);
 
 	return container;
     }
@@ -59,7 +61,7 @@ public class PasswordDialog extends Dialog {
     // override method to use "Login" as label for the OK button
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-	createButton(parent, IDialogConstants.OK_ID, "Login", true);
+	createButton(parent, IDialogConstants.OK_ID, Messages.ui_sec_login, true);
 	createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
@@ -73,13 +75,13 @@ public class PasswordDialog extends Dialog {
 	// Copy data from SWT widgets into fields on button press.
 	// Reading data from the widgets later will cause an SWT
 	// widget disposed exception.
-	myUser = txtUser.getText();
-	myPassword = txtPassword.getText();
+	this.myUser = this.txtUser.getText();
+	this.myPassword = this.txtPassword.getText();
 	super.okPressed();
     }
 
     public String getUser() {
-	return myUser;
+	return this.myUser;
     }
 
     public void setUser(String user) {
@@ -87,7 +89,7 @@ public class PasswordDialog extends Dialog {
     }
 
     public String getPassword() {
-	return myPassword;
+	return this.myPassword;
     }
 
     public void setPassword(String password) {

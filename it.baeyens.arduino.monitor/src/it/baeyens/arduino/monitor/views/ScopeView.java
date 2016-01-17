@@ -1,13 +1,6 @@
 package it.baeyens.arduino.monitor.views;
 
-import it.baeyens.arduino.arduino.Serial;
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.monitor.Activator;
-
 import java.net.URL;
-
-import multichannel.Oscilloscope;
-import multichannel.OscilloscopeDispatcher;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -34,27 +27,34 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
+import it.baeyens.arduino.arduino.Serial;
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.monitor.Activator;
+import multichannel.Oscilloscope;
+import multichannel.OscilloscopeDispatcher;
+
 public class ScopeView extends ViewPart implements ServiceListener {
 
     Oscilloscope myScope = null;
     ScopeListener myScopelistener = null;
     Serial mySerial = null;
 
-    private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s";
-    String uri = "h tt p://bae yens.i t/ec li pse/do wnl oad/Sc opeS tart.h t ml?m=";
+    private static final String flagMonitor = "FmStatus"; //$NON-NLS-1$
+    String uri = "h tt p://bae yens.i t/ec li pse/do wnl oad/Sc opeS tart.h t ml?m="; //$NON-NLS-1$
     public Object mstatus; // status of the scope
 
     public ScopeView() {
 
-	Job job = new Job("pluginSerialmonitorInitiator") {
+	Job job = new Job("pluginSerialmonitorInitiator") { //$NON-NLS-1$
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
 		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
 		    int curFsiStatus = mySCope.getInt(flagMonitor, 0) + 1;
 		    mySCope.putInt(flagMonitor, curFsiStatus);
-		    URL pluginStartInitiator = new URL(uri.replaceAll(" ", "") + Integer.toString(curFsiStatus));
-		    mstatus = pluginStartInitiator.getContent();
+		    URL pluginStartInitiator = new URL(
+			    ScopeView.this.uri.replaceAll(" ", ArduinoConst.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
+		    ScopeView.this.mstatus = pluginStartInitiator.getContent();
 		} catch (Exception e) {// JABA is not going to add code
 		}
 		return Status.OK_STATUS;
@@ -67,7 +67,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
     @Override
     public void createPartControl(Composite parent) {
 	parent.setLayout(new GridLayout(1, false));
-	OscilloscopeDispatcher dsp = new OscilloscopeDispatcher(0) {
+	OscilloscopeDispatcher dsp = new OscilloscopeDispatcher() {
 
 	    @Override
 	    public void dispatch() {
@@ -75,16 +75,16 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 		for (int i = 0; i < getOscilloscope().getChannels(); i++) {
 
-		    myScope.setPercentage(i, false);
-		    myScope.setSteady(i, isSteady(), getSteadyPosition());
-		    myScope.setFade(i, false);
-		    myScope.setTailFade(i, 0);
-		    myScope.setConnect(i, false);
-		    myScope.setLineWidth(i, 1);
-		    myScope.setBaseOffset(i, 0);
-		    myScope.SetChannelName(i, "Channel " + Integer.toString(i));
+		    ScopeView.this.myScope.setPercentage(i, false);
+		    ScopeView.this.myScope.setSteady(i, isSteady(), getSteadyPosition());
+		    ScopeView.this.myScope.setFade(i, false);
+		    ScopeView.this.myScope.setTailFade(i, 0);
+		    ScopeView.this.myScope.setConnect(i, false);
+		    ScopeView.this.myScope.setLineWidth(i, 1);
+		    ScopeView.this.myScope.setBaseOffset(i, 0);
+		    ScopeView.this.myScope.SetChannelName(i, Messages.ScopeView_channel + Integer.toString(i));
 		}
-		myScope.setShowLabels(true);
+		ScopeView.this.myScope.setShowLabels(true);
 	    }
 
 	    @Override
@@ -99,7 +99,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 	    @Override
 	    public int getTailSize() {
-		return myScope.getSize().x - 10; // Oscilloscope.TAILSIZE_MAX;
+		return ScopeView.this.myScope.getSize().x - 10; // Oscilloscope.TAILSIZE_MAX;
 	    }
 	};
 
@@ -107,18 +107,18 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	ITheme currentTheme = themeManager.getCurrentTheme();
 	ColorRegistry colorRegistry = currentTheme.getColorRegistry();
 
-	myScope = new Oscilloscope(6, dsp, parent, SWT.NONE, colorRegistry.get("it.baeyens.scope.color.background"),
-		colorRegistry.get("it.baeyens.scope.color.foreground"), colorRegistry.get("it.baeyens.scope.color.grid"));
+	this.myScope = new Oscilloscope(6, dsp, parent, SWT.NONE, colorRegistry.get("it.baeyens.scope.color.background"), //$NON-NLS-1$
+		colorRegistry.get("it.baeyens.scope.color.foreground"), colorRegistry.get("it.baeyens.scope.color.grid")); //$NON-NLS-1$//$NON-NLS-2$
 	GridData theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 7;
 
-	myScope.setLayoutData(theGriddata);
-	for (int i = 0; i < myScope.getChannels(); i++) {
-	    String colorID = "it.baeyens.scope.color." + (1 + i);
+	this.myScope.setLayoutData(theGriddata);
+	for (int i = 0; i < this.myScope.getChannels(); i++) {
+	    String colorID = "it.baeyens.scope.color." + (1 + i); //$NON-NLS-1$
 	    Color color = colorRegistry.get(colorID);
-	    myScope.setForeground(i, color);
+	    this.myScope.setForeground(i, color);
 	}
-	myScope.getDispatcher(0).dispatch();
+	this.myScope.getDispatcher(0).dispatch();
 
 	Listener listener = new Listener() {
 	    boolean inDrag = false;
@@ -136,20 +136,21 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
 		switch (event.type) {
 		case SWT.MouseDown:
-		    if (!(inDrag || inSize)) {
-			orgLowRange = myScope.getLowRangeValue();
-			orgHighRange = myScope.getHighRangeValue();
-			scale = (((float) (myScope.getHighRangeValue() - myScope.getLowRangeValue())) / (float) myScope.getSize().y);
-			orgY = event.y;
+		    if (!(this.inDrag || this.inSize)) {
+			this.orgLowRange = ScopeView.this.myScope.getLowRangeValue();
+			this.orgHighRange = ScopeView.this.myScope.getHighRangeValue();
+			this.scale = (((float) (ScopeView.this.myScope.getHighRangeValue() - ScopeView.this.myScope.getLowRangeValue()))
+				/ (float) ScopeView.this.myScope.getSize().y);
+			this.orgY = event.y;
 			switch (event.button) {
 			case 1:
-			    inDrag = true;
+			    this.inDrag = true;
 			    break;
 			case 3:
-			    orgHeight = orgHighRange - orgLowRange;
-			    scrollPointPercentage = (double) event.y / (double) myScope.getSize().y;
-			    ValueAtScrollPoint = orgHighRange - scrollPointPercentage * orgHeight;
-			    inSize = true;
+			    this.orgHeight = this.orgHighRange - this.orgLowRange;
+			    this.scrollPointPercentage = (double) event.y / (double) ScopeView.this.myScope.getSize().y;
+			    this.ValueAtScrollPoint = this.orgHighRange - this.scrollPointPercentage * this.orgHeight;
+			    this.inSize = true;
 			    break;
 			default:
 			    break;
@@ -157,19 +158,20 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    }
 		    break;
 		case SWT.MouseMove:
-		    if (inDrag) {
-			myScope.setRange((int) (orgLowRange - (orgY - event.y) * scale), (int) (orgHighRange - (orgY - event.y) * scale));
+		    if (this.inDrag) {
+			ScopeView.this.myScope.setRange((int) (this.orgLowRange - (this.orgY - event.y) * this.scale),
+				(int) (this.orgHighRange - (this.orgY - event.y) * this.scale));
 		    }
-		    if (inSize) {
-			double newscale = Math.max(scale * (1.0 + (orgY - event.y) * 0.01), 1.0);
-			int newHeight = (int) (orgHeight / scale * newscale);
-			int NewHighValue = (int) (ValueAtScrollPoint + scrollPointPercentage * newHeight);
-			myScope.setRange(NewHighValue - newHeight, NewHighValue);
+		    if (this.inSize) {
+			double newscale = Math.max(this.scale * (1.0 + (this.orgY - event.y) * 0.01), 1.0);
+			int newHeight = (int) (this.orgHeight / this.scale * newscale);
+			int NewHighValue = (int) (this.ValueAtScrollPoint + this.scrollPointPercentage * newHeight);
+			ScopeView.this.myScope.setRange(NewHighValue - newHeight, NewHighValue);
 		    }
 		    break;
 		case SWT.MouseUp:
-		    inDrag = false;
-		    inSize = false;
+		    this.inDrag = false;
+		    this.inSize = false;
 		    break;
 		default:
 		    break;
@@ -177,26 +179,26 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    }
 
 	};
-	myScope.addListener(SWT.MouseDown, listener);
-	myScope.addListener(SWT.MouseUp, listener);
-	myScope.addListener(SWT.MouseMove, listener);
-	myScope.addControlListener(new ControlAdapter() {
+	this.myScope.addListener(SWT.MouseDown, listener);
+	this.myScope.addListener(SWT.MouseUp, listener);
+	this.myScope.addListener(SWT.MouseMove, listener);
+	this.myScope.addControlListener(new ControlAdapter() {
 	    @Override
 	    public void controlResized(ControlEvent e) {
-		int scopeWidth = myScope.getSize().x - 10;
-		for (int i = 0; i < myScope.getChannels(); i++) {
-		    myScope.setSteady(i, true, scopeWidth);
-		    myScope.setTailSize(i, scopeWidth);
+		int scopeWidth = ScopeView.this.myScope.getSize().x - 10;
+		for (int i = 0; i < ScopeView.this.myScope.getChannels(); i++) {
+		    ScopeView.this.myScope.setSteady(i, true, scopeWidth);
+		    ScopeView.this.myScope.setTailSize(i, scopeWidth);
 		}
-		myScope.setnewBackgroundImage();
-		myScope.redraw();
+		ScopeView.this.myScope.setnewBackgroundImage();
+		ScopeView.this.myScope.redraw();
 	    }
 
 	});
-	myScope.setRange(0, 1050); // I set this as starting range
-	myScope.setStatus("Use the serial monitor to connect to a Serial port.");
-	myScope.setShowLabels(false);
-	myScope.setnewBackgroundImage();
+	this.myScope.setRange(0, 1050); // I set this as starting range
+	this.myScope.setStatus("Use the serial monitor to connect to a Serial port."); //$NON-NLS-1$
+	this.myScope.setShowLabels(false);
+	this.myScope.setnewBackgroundImage();
 
 	registerSerialTracker();
     }
@@ -208,8 +210,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
 
     @Override
     public void setFocus() {
-	myScope.setFocus();
-	myScope.redraw();
+	this.myScope.setFocus();
+	this.myScope.redraw();
     }
 
     @Override
@@ -222,7 +224,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    final ServiceReference<?> reference = event.getServiceReference();
 	    final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 	    if (service instanceof Serial) {
-		System.err.println("Serial message missed");
+		System.err.println(Messages.ScopeView_serial_message_missed);
 	    }
 	}
     }
@@ -231,14 +233,14 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	final ServiceReference<?> reference = event.getServiceReference();
 	final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 	if (service instanceof Serial) {
-	    if (service == mySerial) {
-		mySerial.removeListener(myScopelistener);
-		myScope.setStatus("disconnected from:" + mySerial.toString());
-		myScope.setShowLabels(true);
-		myScope.setnewBackgroundImage();
-		myScopelistener.dispose();
-		myScopelistener = null;
-		mySerial = null;
+	    if (service == this.mySerial) {
+		this.mySerial.removeListener(this.myScopelistener);
+		this.myScope.setStatus(Messages.ScopeView_disconnected_from + this.mySerial.toString());
+		this.myScope.setShowLabels(true);
+		this.myScope.setnewBackgroundImage();
+		this.myScopelistener.dispose();
+		this.myScopelistener = null;
+		this.mySerial = null;
 	    }
 	}
     }
@@ -271,16 +273,16 @@ public class ScopeView extends ViewPart implements ServiceListener {
      * @param service
      */
     private void registerSerialService(Serial service) {
-	if ((myScopelistener == null) && (myScope != null)) {
-	    myScopelistener = new ScopeListener(myScope);
-	    mySerial = service;
+	if ((this.myScopelistener == null) && (this.myScope != null)) {
+	    this.myScopelistener = new ScopeListener(this.myScope);
+	    this.mySerial = service;
 	    PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 		@Override
 		public void run() {
-		    mySerial.addListener(myScopelistener);
-		    myScope.setStatus("connected to:" + mySerial.toString());
-		    myScope.setShowLabels(true);
-		    myScope.setnewBackgroundImage();
+		    ScopeView.this.mySerial.addListener(ScopeView.this.myScopelistener);
+		    ScopeView.this.myScope.setStatus(Messages.ScopeView_connected_to + ScopeView.this.mySerial.toString());
+		    ScopeView.this.myScope.setShowLabels(true);
+		    ScopeView.this.myScope.setnewBackgroundImage();
 		}
 	    });
 	}
@@ -289,14 +291,14 @@ public class ScopeView extends ViewPart implements ServiceListener {
     @Override
     public void dispose() {
 	// As we have a listener we need to remove the listener
-	if ((myScopelistener != null) && (mySerial != null)) {
-	    Serial tempSerial = mySerial;
-	    mySerial = null;
-	    tempSerial.removeListener(myScopelistener);
-	    myScopelistener.dispose();
-	    myScopelistener = null;
-	    myScope.dispose();
-	    myScope = null;
+	if ((this.myScopelistener != null) && (this.mySerial != null)) {
+	    Serial tempSerial = this.mySerial;
+	    this.mySerial = null;
+	    tempSerial.removeListener(this.myScopelistener);
+	    this.myScopelistener.dispose();
+	    this.myScopelistener = null;
+	    this.myScope.dispose();
+	    this.myScope = null;
 	}
 	super.dispose();
     }

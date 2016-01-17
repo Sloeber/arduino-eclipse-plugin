@@ -1,10 +1,10 @@
 package it.baeyens.arduino.common;
 
-import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.runtime.IPath;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -31,10 +31,10 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      */
     public static boolean getBuildBeforeUploadOption() {
 
-	switch (getGlobalString(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) {
-	case "YES":
+	switch (getGlobalString(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) { //$NON-NLS-1$
+	case "YES": //$NON-NLS-1$
 	    return true;
-	case "NO":
+	case "NO": //$NON-NLS-1$
 	    return false;
 	default:
 	    break;
@@ -43,24 +43,24 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    boolean ret = false;
 
 	    boolean getAnswer() {
-		return ret;
+		return this.ret;
 	    }
 
 	    @Override
 	    public void run() {
 		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		dialog.setText("Build before upload?");
-		dialog.setMessage("Do you want to build before upload?\nUse preferences->arduino to set/change your default answer.");
+		dialog.setText(Messages.ArduinoInstancePreferences_Build_before_upload);
+		dialog.setMessage(Messages.ArduinoInstancePreferences_do_you_want_to_build_before_upload);
 		switch (dialog.open()) {
 		case SWT.NO:
-		    ret = false;
+		    this.ret = false;
 		    break;
 		case SWT.YES:
-		    ret = true;
+		    this.ret = true;
 		    break;
 		default:
-		    ret = false;
+		    this.ret = false;
 		    break;
 		}
 	    }
@@ -77,7 +77,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedArduinoBoardName() {
-	return getGlobalString(KEY_LAST_USED_ARDUINOBOARD, "");
+	return getGlobalString(KEY_LAST_USED_BOARD, ""); //$NON-NLS-1$
     }
 
     /**
@@ -87,30 +87,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static String getLastUsedUploadPort() {
-	return getGlobalString(KEY_LAST_USED_COM_PORT, "");
-    }
-
-    /**
-     * This method reads the arduino upload programmer from the configuration memory
-     * 
-     * @return the upload port
-     * @author Jan Baeyens
-     */
-    public static String getLastUsedUploadProgrammer() {
-	return getGlobalString(KEY_LAST_USED_PROGRAMMER, ArduinoConst.DEFAULT);
-    }
-
-    /**
-     * saves the last used arduino upload port
-     * 
-     * @param UploadPort
-     *            The port to use to upload to save
-     * 
-     * @author Jan Baeyens
-     */
-    public static void SetLastUsedUploadProgrammer(String UploadProgrammer) {
-	setGlobalValue(KEY_LAST_USED_PROGRAMMER, UploadProgrammer);
-
+	return getGlobalString(KEY_LAST_USED_COM_PORT, ""); //$NON-NLS-1$
     }
 
     /**
@@ -135,7 +112,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
      * @author Jan Baeyens
      */
     public static void SetLastUsedArduinoBoard(String ArduinoBoardName) {
-	setGlobalValue(KEY_LAST_USED_ARDUINOBOARD, ArduinoBoardName);
+	setGlobalValue(KEY_LAST_USED_BOARD, ArduinoBoardName);
     }
 
     public static String getGlobalString(String key, String defaultValue) {
@@ -165,7 +142,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key));
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -176,7 +153,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type int " + key));
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type int " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -187,7 +164,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean " + key));
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -198,66 +175,9 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key));
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
-    }
-
-    /**
-     * getUseIDESettings get the UseIDESettings flag value from the preference store
-     * 
-     * @return the value in the preference store representing the UseIDESettings flag
-     * @author Jan Baeyens
-     */
-    public static String getArduinoIDEVersion() {
-	return getGlobalString(KEY_ARDUINO_IDE_VERSION, "").trim();
-    }
-
-    /**
-     * Returns whether the arduino path in preferences is for arduino 1.0 IDE and later or before
-     * 
-     * @param project
-     *            the project to scan
-     * 
-     * @return true if it is arduino 1.0 or later; otherwise false
-     */
-    public static boolean isArduinoIdeOne() {
-	return !getArduinoIDEVersion().startsWith("00");
-    }
-
-    public static String GetArduinoDefineValue() {
-	return GetArduinoDefineValueInternal(getArduinoIDEVersion());
-    }
-
-    /*
-     * This method returns the define value for the define ARDUINO
-     */
-    public static String GetArduinoDefineValueInternal(String Version) {
-	String Ret;
-	Ret = Version.trim();
-	Ret = Ret.split("-")[0];
-	if (Ret.startsWith("1.5")) {
-	    if (Ret.contains(".")) {
-		Ret = Ret.replace(".", "");
-		if (Ret.length() == 2) {
-		    Ret = Ret.concat("0");
-		}
-	    }
-	} else {
-	    String fields[] = Ret.split("\\.");
-	    if (fields.length != 3) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Malformed Arduino IDE version expected X.Y.Z got " + Ret, null));
-	    } else {
-		try {
-		    Ret = String.format("%d%02d%02d", Integer.valueOf(fields[0]), Integer.valueOf(fields[1]), Integer.valueOf(fields[2]));
-		} catch (NumberFormatException e) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Malformed Arduino IDE version expected X.Y.Z got " + Ret,
-			    null));
-		    Ret = getArduinoIDEVersion().trim();
-		}
-	    }
-	}
-	return Ret;
     }
 
     /**
@@ -288,65 +208,57 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     public static String getLastUsedBoardsFile() {
-	return getGlobalString(KEY_LAST_USED_ARDUINO_BOARDS_FILE, "");
+	return getGlobalString(KEY_LAST_USED_BOARDS_FILE, ""); //$NON-NLS-1$
     }
 
     public static void setLastUsedBoardsFile(String boardsFile) {
-	setGlobalValue(KEY_LAST_USED_ARDUINO_BOARDS_FILE, boardsFile);
+	setGlobalValue(KEY_LAST_USED_BOARDS_FILE, boardsFile);
 
     }
 
-    public static void setLastUsedMenuOption(String menuOptions) {
-	setGlobalValue(KEY_LAST_USED_ARDUINO_MENU_OPTIONS, menuOptions);
-
-    }
-
-    public static String getLastUsedMenuOption() {
-	return getGlobalString(KEY_LAST_USED_ARDUINO_MENU_OPTIONS, "");
-    }
-
-    public static IPath getArduinoPath() {
-	return Common.getArduinoIDEPathFromUserSelection(getGlobalString(KEY_ARDUINOPATH, "."));
-    }
-
-    public static IPath getArduinoIdeHardwarePath() {
-	return getArduinoPath().append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME);
-    }
-
-    public static IPath getArduinoBoardsManagerPackagesPath() {
-	switch (Platform.getOS()) {
-	case Platform.OS_MACOSX:
-	    return new Path(System.getProperty("user.home")).append("Library").append("Arduino15").append("packages");
-
-	case Platform.OS_WIN32:
-	    return new Path(System.getenv("APPDATA")).append("Arduino15").append("packages");
-	default:
-	    return new Path(System.getProperty("user.home")).append(".arduino15").append("packages");
+    public static void setLastUsedMenuOption(Map<String, String> menuOptions) {
+	String store = ""; //$NON-NLS-1$
+	String concat = ""; //$NON-NLS-1$
+	for (Entry<String, String> curOption : menuOptions.entrySet()) {
+	    store = store + concat + curOption.getKey() + '=' + curOption.getValue();
+	    concat = "\n"; //$NON-NLS-1$
 	}
+	setGlobalValue(KEY_LAST_USED_BOARD_MENU_OPTIONS, store);
+
     }
 
-    public static String getArduinoIdeProgram() {
-	IPath ArduinoIDEPath = ArduinoInstancePreferences.getArduinoPath();
+    public static Map<String, String> getLastUsedMenuOption() {
+	Map<String, String> options = new HashMap<>();
+	String storedValue = getGlobalString(KEY_LAST_USED_BOARD_MENU_OPTIONS, ""); //$NON-NLS-1$
+	String lines[] = storedValue.split("\n"); //$NON-NLS-1$
+	for (String curLine : lines) {
+	    String values[] = curLine.split("=", 2); //$NON-NLS-1$
+	    if (values.length == 2) {
+		options.put(values[0], values[1]);
+	    }
+	}
+	return options;
+    }
 
-	if (Platform.getOS().equals(Platform.OS_MACOSX))
-	    return "\"" + URIUtil.toURI(ArduinoIDEPath.removeLastSegments(1).append("MacOS").append("Arduino")).getPath() + "\" ";
-	return "\"" + URIUtil.toURI(ArduinoIDEPath.append("arduino")).getPath() + "\" ";
+    private static boolean mIsConfigured = false;
+
+    public static void setConfigured() {
+	mIsConfigured = true;
     }
 
     /**
-     * This method returns boolean whether the arduino IDE has been pointed to or not. If you use the flag error = true a error will be shown to the
-     * end user in case Arduino is not configured.
+     * This method returns boolean whether the plugin is properly configured The plugin is configured properly if a board has been installed
      * 
      * @return
      */
     public static boolean isConfigured(boolean showError) {
-	if (ArduinoInstancePreferences.getArduinoPath().toFile().exists())
+	if (mIsConfigured)
 	    return true;
 	if (showError) {
 	    // If not then we bail out with an error.
 	    // And no pages are presented (with no option to FINISH).
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Arduino IDE path does not exist. Check Window>Preferences>Arduino",
-		    null));
+	    Common.log(
+		    new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoInstancePreferences_Plerase_wait_for_installer_job, null));
 	}
 	return false;
     }
@@ -376,7 +288,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     // get/set last used sketch template folder parameters
     //
     public static String getLastTemplateFolderName() {
-	return getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, "");
+	return getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, ""); //$NON-NLS-1$
     }
 
     public static void setLastTemplateFolderName(String folderName) {
@@ -384,27 +296,38 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 
     }
 
-    public static String getPrivateLibraryPath() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATH, "");
+    public static String[] getLastUsedExamples() {
+	return getGlobalString(KEY_LAST_USED_EXAMPLES, Common.getDefaultPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
     }
 
-    public static void setPrivateLibraryPath(String folderName) {
-	setGlobalValue(KEY_PRIVATE_LIBRARY_PATH, folderName);
+    public static void setLastUsedExamples(String[] exampleNames) {
+	setGlobalValue(KEY_LAST_USED_EXAMPLES, String.join("\n", exampleNames)); //$NON-NLS-1$
     }
 
-    public static String getPrivateHardwarePath() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATH, "");
+    public static String[] getPrivateLibraryPaths() {
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split(";"); //$NON-NLS-1$
     }
 
-    public static void setPrivateHardwarePath(String folderName) {
-	setGlobalValue(KEY_PRIVATE_HARDWARE_PATH, folderName);
+    public static void setPrivateLibraryPaths(String[] folderName) {
+	setGlobalValue(KEY_PRIVATE_LIBRARY_PATHS, String.join("\n", folderName)); //$NON-NLS-1$
     }
 
-    public static long getStoredPreferenceModificatonStamp() {
-	return getGlobalLong(KEY_PREFERENCE_MODIFICATION_STAMP);
+    public static String[] getPrivateHardwarePaths() {
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath()).split(";"); //$NON-NLS-1$
     }
 
-    public static void setStoredPreferenceModificatonStamp(long stamp) {
-	setGlobalValue(KEY_PREFERENCE_MODIFICATION_STAMP, stamp);
+    public static void setPrivateHardwarePaths(String[] folderName) {
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(";", folderName)); //$NON-NLS-1$
     }
+
+    /**
+     * Gets all the folders that can contain hardware
+     * 
+     * @return a list of all the folder locations that can contain hardware
+     */
+    public static String[] getHardwarePaths() {
+	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, "") + ";" + ConfigurationPreferences.getInstallationPath()) //$NON-NLS-1$ //$NON-NLS-2$
+		.split(";"); //$NON-NLS-1$
+    }
+
 }

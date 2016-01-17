@@ -17,7 +17,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 	try {
-	    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("it.baeyens.arduino.monitor.views.SerialMonitor");
+	    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("it.baeyens.arduino.monitor.views.SerialMonitor"); //$NON-NLS-1$
 	} catch (PartInitException e) {
 	    e.printStackTrace();
 	}

@@ -15,10 +15,6 @@
  *******************************************************************************/
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.common.Common;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +34,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
 
 /**
  * Launch external programs.
@@ -93,9 +92,9 @@ public class ExternalCommandLauncher {
 	 *            <code>OutputStream</code> for secondary console output, or <code>null</code> for no console output.
 	 */
 	public LogStreamRunner(InputStream instream, List<String> log, MessageConsoleStream consolestream) {
-	    fReader = new BufferedReader(new InputStreamReader(instream));
-	    fLog = log;
-	    fConsoleOutput = consolestream;
+	    this.fReader = new BufferedReader(new InputStreamReader(instream));
+	    this.fLog = log;
+	    this.fConsoleOutput = consolestream;
 	}
 
 	/*
@@ -109,14 +108,14 @@ public class ExternalCommandLauncher {
 		for (;;) {
 		    // Processes a new process output line.
 		    // If a Listener has been registered, call it
-		    String line = fReader.readLine();
+		    String line = this.fReader.readLine();
 		    if (line != null) {
 			// Add the line to the total output
-			fLog.add(line);
+			this.fLog.add(line);
 
 			// And print to the console (if active)
-			if (fConsoleOutput != null) {
-			    fConsoleOutput.print(line + "\n");
+			if (this.fConsoleOutput != null) {
+			    this.fConsoleOutput.print(line + ArduinoConst.NEWLINE);
 			}
 		    } else {
 			break;
@@ -124,18 +123,18 @@ public class ExternalCommandLauncher {
 		}
 	    } catch (IOException e) {
 		// This is unlikely to happen, but log it nevertheless
-		IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "I/O Error reading output", e);
+		IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.command_io, e);
 		Common.log(status);
 	    } finally {
 		try {
-		    fReader.close();
+		    this.fReader.close();
 		} catch (IOException e) {
 		    // can't do anything
 		}
 	    }
-	    synchronized (fRunLock) {
+	    synchronized (ExternalCommandLauncher.this.fRunLock) {
 		// Notify the caller that this thread is finished
-		fRunLock.notifyAll();
+		ExternalCommandLauncher.this.fRunLock.notifyAll();
 	    }
 	}
     }
@@ -150,25 +149,21 @@ public class ExternalCommandLauncher {
      */
     public ExternalCommandLauncher(String command) {
 	Assert.isNotNull(command);
-	fRunLock = this;
-	String[] commandParts = command.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+	this.fRunLock = this;
+	String[] commandParts = command.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
 	for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
-	    if (commandParts[curCommand].startsWith("\"") && commandParts[curCommand].endsWith("\"")) {
+	    if (commandParts[curCommand].startsWith("\"") && commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$ //$NON-NLS-2$
 		commandParts[curCommand] = commandParts[curCommand].substring(1, commandParts[curCommand].length() - 1);
 	    }
 
 	}
-	fProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
+	this.fProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
     }
 
     public ExternalCommandLauncher(List<String> command) {
 	Assert.isNotNull(command);
-	fRunLock = this;
-	// "-C/home/jan/programs/arduino-1.5.2/hardware/tools/avrdude.conf"
-	// -patmega2560 -cwiring -P -b115200 -D
-	// "-Uflash:w:/home/jan/workspaces/runtime-eclipse/tst_avr_mega_41/release/tst_avr_mega_41.hex:i"
-
-	fProcessBuilder = new ProcessBuilder(command);
+	this.fRunLock = this;
+	this.fProcessBuilder = new ProcessBuilder(command);
     }
 
     /**
@@ -209,7 +204,6 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
-    @SuppressWarnings("resource")
     public int launch(IProgressMonitor inMonitor) throws IOException {
 	IProgressMonitor monitor = inMonitor;
 	if (monitor == null) {
@@ -225,14 +219,14 @@ public class ExternalCommandLauncher {
 	// get three MessageStreams for the console
 	// (default in black, stdout in dark green, stderr in dark red)
 	// and print a small header (incl. command name and all args)
-	if (fConsole != null) {
+	if (this.fConsole != null) {
 	    // Limit the size of the console
-	    fConsole.setWaterMarks(8192, 16384);
+	    this.fConsole.setWaterMarks(8192, 16384);
 
 	    // and get the output streams
-	    defaultConsoleStream = fConsole.newMessageStream();
-	    stdoutConsoleStream = fConsole.newMessageStream();
-	    stderrConsoleStream = fConsole.newMessageStream();
+	    defaultConsoleStream = this.fConsole.newMessageStream();
+	    stdoutConsoleStream = this.fConsole.newMessageStream();
+	    stderrConsoleStream = this.fConsole.newMessageStream();
 
 	    // Set colors for the streams. This needs to be done in the UI
 	    // thread (in which we may not be)
@@ -250,13 +244,13 @@ public class ExternalCommandLauncher {
 	    // the console.
 	    defaultConsoleStream.println();
 	    defaultConsoleStream.println();
-	    defaultConsoleStream.print("Launching ");
-	    List<String> commandAndOptions = fProcessBuilder.command();
+	    defaultConsoleStream.print(Messages.command_launching);
+	    List<String> commandAndOptions = this.fProcessBuilder.command();
 	    for (String str : commandAndOptions) {
-		defaultConsoleStream.print(str + " ");
+		defaultConsoleStream.print(str + ArduinoConst.SPACE);
 	    }
 	    defaultConsoleStream.println();
-	    defaultConsoleStream.println("Output:");
+	    defaultConsoleStream.println(Messages.command_output);
 	} else {
 	    // No console output requested, set all streams to null
 	    defaultConsoleStream = null;
@@ -266,23 +260,23 @@ public class ExternalCommandLauncher {
 
 	// Get the name of the command (without the path)
 	// This is used upon exit to print a nice exit message
-	String command = fProcessBuilder.command().get(0);
+	String command = this.fProcessBuilder.command().get(0);
 	String commandname = command.substring(command.lastIndexOf(File.separatorChar) + 1);
 
 	// After the setup we can now start the command
 	try {
-	    monitor.beginTask("Launching " + fProcessBuilder.command().get(0), 100);
+	    monitor.beginTask(Messages.command_launching + this.fProcessBuilder.command().get(0), 100);
 
-	    fStdOut = new ArrayList<String>();
-	    fStdErr = new ArrayList<String>();
+	    this.fStdOut = new ArrayList<>();
+	    this.fStdErr = new ArrayList<>();
 
-	    fProcessBuilder.directory(ArduinoInstancePreferences.getArduinoPath().toFile());
-	    process = fProcessBuilder.start();
+	    this.fProcessBuilder.directory(Common.getWorkspaceRoot().toPath().toFile());
+	    process = this.fProcessBuilder.start();
 
-	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), fStdOut, stdoutConsoleStream));
-	    Thread stderrRunner = new Thread(new LogStreamRunner(process.getErrorStream(), fStdErr, stderrConsoleStream));
+	    Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), this.fStdOut, stdoutConsoleStream));
+	    Thread stderrRunner = new Thread(new LogStreamRunner(process.getErrorStream(), this.fStdErr, stderrConsoleStream));
 
-	    synchronized (fRunLock) {
+	    synchronized (this.fRunLock) {
 		// Wait either for the logrunners to terminate or the user to
 		// cancel the job.
 		// The monitor is polled 10 times / sec.
@@ -292,14 +286,14 @@ public class ExternalCommandLauncher {
 		monitor.worked(5);
 
 		while (stdoutRunner.isAlive() || stderrRunner.isAlive()) {
-		    fRunLock.wait(100);
+		    this.fRunLock.wait(100);
 		    if (monitor.isCanceled() == true) {
 			process.destroy();
 			process.waitFor();
 
 			if (defaultConsoleStream != null) {
 			    // Write an Abort Message to the console (if active)
-			    defaultConsoleStream.println(commandname + " execution aborted");
+			    defaultConsoleStream.println(commandname + Messages.command_aborted);
 			}
 			return -1;
 		    }
@@ -309,14 +303,14 @@ public class ExternalCommandLauncher {
 	    // external process finished normally
 	    monitor.worked(95);
 	    if (defaultConsoleStream != null) {
-		defaultConsoleStream.println(commandname + " finished");
+		defaultConsoleStream.println(commandname + Messages.command_finished);
 	    }
 	} catch (InterruptedException e) {
 	    // This thread was interrupted from outside
 	    // consider this to be a failure of the external programm
 	    if (defaultConsoleStream != null) {
 		// Write an Abort Message to the console (if active)
-		defaultConsoleStream.println(commandname + " execution interrupted");
+		defaultConsoleStream.println(commandname + Messages.command_interupted);
 	    }
 	    return -1;
 	} finally {
@@ -348,7 +342,7 @@ public class ExternalCommandLauncher {
      * @return <code>List&lt;String&gt;</code> with all lines or <code>null</code> if the external program has never been launched
      */
     public List<String> getStdOut() {
-	return fStdOut;
+	return this.fStdOut;
     }
 
     /**
@@ -357,7 +351,7 @@ public class ExternalCommandLauncher {
      * @return <code>List&lt;String&gt;</code> with all lines or <code>null</code> if the external program has never been launched
      */
     public List<String> getStdErr() {
-	return fStdErr;
+	return this.fStdErr;
     }
 
     /**
@@ -376,7 +370,7 @@ public class ExternalCommandLauncher {
      *            <code>true</code> to redirect <code>stderr</code> to <code>stdout</code>
      */
     public void redirectErrorStream(boolean redirect) {
-	fProcessBuilder.redirectErrorStream(redirect);
+	this.fProcessBuilder.redirectErrorStream(redirect);
     }
 
     /**
@@ -393,7 +387,7 @@ public class ExternalCommandLauncher {
      *            <code>MessageConsole</code> or <code>null</code> to disable console output.
      */
     public void setConsole(MessageConsole console) {
-	fConsole = console;
+	this.fConsole = console;
     }
 
 }

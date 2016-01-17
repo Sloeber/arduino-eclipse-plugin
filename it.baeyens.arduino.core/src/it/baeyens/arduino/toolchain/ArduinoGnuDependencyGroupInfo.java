@@ -16,8 +16,8 @@ public class ArduinoGnuDependencyGroupInfo {
 
     // Constructor
     public ArduinoGnuDependencyGroupInfo(String groupName, boolean bConditionallyInclude) {
-	groupBuildVar = groupName;
-	conditionallyInclude = bConditionallyInclude;
+	this.groupBuildVar = groupName;
+	this.conditionallyInclude = bConditionallyInclude;
 	// Note: not yet needed
 	// groupFiles = null;
     }

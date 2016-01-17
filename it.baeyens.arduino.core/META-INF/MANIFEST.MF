@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: it.baeyens.arduino.core;singleton:=true
-Bundle-Version: 2.5.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 3.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,
@@ -12,6 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.eclipse.cdt.core,
  org.eclipse.equinox.security;bundle-version="1.1.100",
+ com.google.gson,
+ org.apache.commons.compress,
  org.eclipse.ui.navigator
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
@@ -29,14 +31,9 @@ Import-Package: it.baeyens.arduino.arduino,
  org.eclipse.cdt.core.settings.model.util,
  org.eclipse.cdt.ui.newui,
  org.eclipse.cdt.utils,
- org.eclipse.ecf.core;version="3.0.0",
- org.eclipse.ecf.core.security,
- org.eclipse.ecf.filetransfer,
- org.eclipse.ecf.filetransfer.events,
- org.eclipse.ecf.filetransfer.identity,
  org.eclipse.ui.console,
  org.eclipse.ui.dialogs
-Bundle-Activator: it.baeyens.arduino.ui.activator
+Bundle-Activator: it.baeyens.arduino.ui.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
  lib/jmdns-3.4.1.jar

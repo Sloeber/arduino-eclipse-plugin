@@ -72,7 +72,7 @@
   <extension
            point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
-           class="it.baeyens.arduino.ui.ArduinoSelectionPage"
+           class="it.baeyens.arduino.ui.ArduinoBoardSelectionPage"
            icon="icons/arduino.png"
            name="Arduino board selection"
            weight="050"
@@ -151,11 +151,31 @@
 ####################################################################################### 
 -->
 	<extension point="org.eclipse.ui.preferencePages">
-		<page name="%page.name"
-			class="it.baeyens.arduino.ui.ArduinoPreferencePage"
-			id="it.baeyens.arduino.eclipse.ArduinoPreferencePage">
+		<page
+        class="it.baeyens.arduino.ui.ArduinoPreferencePage"
+        id="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+        name="%page.name">
 		</page>
-	</extension>   
+
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoPlatformPreferencePage"
+            id="it.baeyens.arduino.eclipse.loation_page"
+            name="Platforms and Boards">
+      </page>
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoLinkPreferencePage"
+            id="it.baeyens.arduino.eclipse.boards"
+            name="Locations">
+      </page>
+      <page
+            category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
+            class="it.baeyens.arduino.ui.ArduinoLibraryPreferencePage"
+            id="it.baeyens.arduino.eclipse.libraries"
+            name="Library Manager">
+      </page>
+   </extension>
 
 <!--
 ####################################################################################### 
@@ -169,6 +189,7 @@
 			id="it.baeyens.arduino.commands"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
         description="%command.UploadprojectAction.description"
         id="it.baeyens.arduino.actions.UploadprojectAction"
         name="%command.UploadprojectAction.name"/>
@@ -180,6 +201,7 @@
         name="%command.NewSketchAction.name"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
+        defaultHandler="it.baeyens.arduino.actions.BuildHandler"
         description="%command.ArduinoBuildAction.description"
         id="it.baeyens.arduino.actions.ArduinoBuildAction"
         name="%command.ArduinoBuildAction.name"/>
@@ -190,28 +212,31 @@
         id="it.baeyens.arduino.actions.OpenSerialMonitorAction"
         name="%command.OpenSerialMonitorAction.name"/>
         <command
-        categoryId="it.baeyens.arduino.commands"
-        description="%command.AddLibraryAction.description"
-        id="it.baeyens.arduino.actions.AddLibraryAction"
-        name="%command.AddLibraryAction.name">
+              categoryId="it.baeyens.arduino.commands"
+              defaultHandler="it.baeyens.arduino.actions.AddLibraryAction"
+              description="%command.AddLibraryAction.description"
+              id="it.baeyens.arduino.actions.AddLibraryAction"
+              name="%command.AddLibraryAction.name">
         </command>
         
         <command
-        categoryId="it.baeyens.arduino.commands"
-        description="%command.AddSourceFolder.description"
-        id="it.baeyens.arduino.actions.AddSourceFolderAction"
-        name="%command.AddSourceFolder.name">
+              categoryId="it.baeyens.arduino.commands"
+              defaultHandler="it.baeyens.arduino.actions.AddSourceFolderAction"
+              description="%command.AddSourceFolder.description"
+              id="it.baeyens.arduino.actions.AddSourceFolderAction"
+              name="%command.AddSourceFolder.name">
         </command>
 
       <command
             categoryId="it.baeyens.arduino.commands"
             defaultHandler="it.baeyens.arduino.actions.OpenScopeHandler"
-            description="%command.openOscilloscope.description"
+            description="%OpenScope.description"
             id="it.baeyens.arduino.actions.OpenScopeAction"
-            name="%command.openOscilloscope.name">
+            name="%OpenScope.label">
       </command>
       <command
             categoryId="it.baeyens.arduino.commands"
+            defaultHandler="it.baeyens.arduino.actions.ReattachLibraries"
             description="%command.ReattachLibraries.description"
             id="it.baeyens.arduino.actions.ReattachLibraries"
             name="%command.ReattachLibraries.name">
@@ -261,11 +286,11 @@
 <!-- Menu -->  	
  <extension point="org.eclipse.ui.menus">
     <menuContribution
-          allPopups="true"
           locationURI="toolbar:org.eclipse.ui.main.toolbar">
        <toolbar
              id="it.baeyens.arduino.toolbar.main" label="Arduino">
-                <visibleWhen>
+                <visibleWhen
+                      checkEnabled="false">
                     <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
                 </visibleWhen>
           <command
@@ -274,19 +299,13 @@
                 icon="icons/check.png"
                 label="%command.label"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.UploadprojectAction"
                 disabledIcon="icons/arrow_disabled.png"
                 icon="icons/arrow.png"
-                label="%command.label.0"
+                label="%command.name"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.NewSketchAction"
@@ -294,18 +313,12 @@
                 icon="icons/new.png"
                 label="%command.label.1"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="org.eclipse.ui.file.save"
                 disabledIcon="icons/save_disabled.png"
                 icon="icons/save.png"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenSerialMonitorAction"
@@ -313,24 +326,19 @@
                 icon="icons/ser_mon.png"
                 label="%command.label.2"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
           <command
                 commandId="it.baeyens.arduino.actions.OpenScopeAction"
                 icon="icons/scope.png"
-                label="%command.label.5"
+                label="%OpenScope.label"
                 style="push">
-                <visibleWhen>
-                    <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
-                </visibleWhen>
           </command>
        </toolbar>
     </menuContribution>
 		<menuContribution locationURI="menu:org.eclipse.ui.main.menu??after=Run">
 		    <menu label="%menu.label" >
-                <visibleWhen>
+                <visibleWhen
+                      checkEnabled="false">
                     <reference definitionId="it.baeyens.definition.isArduinoPerspective"/>
                 </visibleWhen>
 		    <command
@@ -406,7 +414,7 @@
         autoBuildTarget="all"
         buildfileGenerator="it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
-        command="make"
+        command="${JANTJE.MAKE_LOCATION}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
         id="it.baeyens.arduino.gnu.builder"
         ignoreErrCmd="-k"
@@ -597,7 +605,7 @@
            <tool
                  announcement="%tool.Arduino.archiver.announcement"
                  command="${A.RECIPE.AR.PATTERN}"
-                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
+                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="it.baeyens.arduino.tool.ar"
                  name="%tool.name.1">
@@ -757,56 +765,6 @@
 		</content-type>
 	</extension>
  <extension
-       point="org.eclipse.ui.handlers">
-    <handler
-          class="it.baeyens.arduino.actions.BuildHandler"
-          commandId="it.baeyens.arduino.actions.ArduinoBuildAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    <handler
-          class="it.baeyens.arduino.actions.AddLibraryAction"
-          commandId="it.baeyens.arduino.actions.AddLibraryAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    
-    <handler
-          class="it.baeyens.arduino.actions.AddSourceFolderAction"
-          commandId="it.baeyens.arduino.actions.AddSourceFolderAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    <handler
-          class="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
-          commandId="it.baeyens.arduino.actions.UploadprojectAction">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-        <handler
-          class="it.baeyens.arduino.actions.ReattachLibraries"
-          commandId="it.baeyens.arduino.actions.ReattachLibraries">
-       <enabledWhen>
-          <count
-                value="+">
-          </count>
-       </enabledWhen>
-    </handler>
-    
- </extension>
- <extension
        point="org.eclipse.ui.perspectiveExtensions">
     <perspectiveExtension
           targetID="it.baeyens.arduino.application.perspective">
@@ -847,6 +805,22 @@
 base-type="org.eclipse.cdt.core.cSource"
 file-extensions="ino,pde"
 priority="high"/>
+ </extension>
+ <extension
+       point="org.eclipse.ui.decorators">
+    <decorator
+          class="it.baeyens.arduino.ui.ExplorerLabelDecorator"
+          id="it.baeyens.arduino.core.decorator1"
+          label="label">
+       <description>
+          Show the board port and baut rate used for this project.
+       </description>
+       <enablement>
+          <objectClass
+                name="org.eclipse.core.resources.IProject">
+          </objectClass>
+       </enablement>
+    </decorator>
  </extension>
  
 </plugin>

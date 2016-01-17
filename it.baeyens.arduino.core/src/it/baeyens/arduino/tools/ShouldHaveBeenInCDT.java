@@ -1,7 +1,5 @@
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +23,8 @@ import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+
+import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
 @SuppressWarnings("restriction")
 // TOFIX Get this code in CDT so I should not have to do this
@@ -69,9 +69,9 @@ public class ShouldHaveBeenInCDT {
 	    IBuilder bld = cfg.getEditableBuilder();
 	    if (bld != null) {
 		bld.setManagedBuildOn(isManagedBuild);
-		cfg.setArtifactName("${ProjName}");
+		cfg.setArtifactName("${ProjName}"); //$NON-NLS-1$
 	    } else {
-		System.out.println("Messages.StdProjectTypeHandler_3");
+		System.out.println("Messages.StdProjectTypeHandler_3"); //$NON-NLS-1$
 	    }
 	    CConfigurationData data = cfg.getConfigurationData();
 	    ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
@@ -99,8 +99,9 @@ public class ShouldHaveBeenInCDT {
 	}
     }
 
-    private static List<ILanguageSettingsProvider> getDefaultLanguageSettingsProviders(IConfiguration cfg, ICConfigurationDescription cfgDescription) {
-	List<ILanguageSettingsProvider> providers = new ArrayList<ILanguageSettingsProvider>();
+    private static List<ILanguageSettingsProvider> getDefaultLanguageSettingsProviders(IConfiguration cfg,
+	    ICConfigurationDescription cfgDescription) {
+	List<ILanguageSettingsProvider> providers = new ArrayList<>();
 	String[] ids = cfg != null ? cfg.getDefaultLanguageSettingsProviderIds() : null;
 
 	if (ids == null) {

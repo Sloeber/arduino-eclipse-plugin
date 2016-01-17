@@ -82,7 +82,7 @@
     </div><!-- /container -->
 
     <div id="footer">
-      <!--#include file="fragments/footer.html" -->
+      <!--#include virtual="fragments/footer.html" --> 
     </div>
   </body>
 

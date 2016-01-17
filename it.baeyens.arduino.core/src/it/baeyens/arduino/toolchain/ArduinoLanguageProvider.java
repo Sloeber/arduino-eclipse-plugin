@@ -1,8 +1,5 @@
 package it.baeyens.arduino.toolchain;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +19,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
+
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector implements ILanguageSettingsEditableProvider {
     // ID must match the tool-chain definition in
     // org.eclipse.cdt.managedbuilder.core.buildDefinitions extension point
@@ -37,8 +37,8 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
     private static final AbstractOptionParser[] optionParsers = {
 	    new IncludePathOptionParser("#include \"(\\S.*)\"", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL),
 	    new IncludePathOptionParser("#include <(\\S.*)>", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
-	    new IncludePathOptionParser("#framework <(\\S.*)>", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY
-		    | ICSettingEntry.FRAMEWORKS_MAC),
+	    new IncludePathOptionParser("#framework <(\\S.*)>", "$1",
+		    ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC),
 	    new MacroOptionParser("#define\\s+(\\S*\\(.*?\\))\\s*(.*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
 	    new MacroOptionParser("#define\\s+(\\S*)\\s*(\\S*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), };
 
@@ -56,7 +56,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
      * Create a list from one item.
      */
     private static List<String> makeList(String line) {
-	List<String> list = new ArrayList<String>();
+	List<String> list = new ArrayList<>();
 	list.add(line);
 	return list;
     }
@@ -73,22 +73,22 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 
 	// contribution of includes
 	if (line.equals("#include \"...\" search starts here:")) {
-	    state = State.EXPECTING_LOCAL_INCLUDE;
+	    this.state = State.EXPECTING_LOCAL_INCLUDE;
 	} else if (line.equals("#include <...> search starts here:")) {
-	    state = State.EXPECTING_SYSTEM_INCLUDE;
+	    this.state = State.EXPECTING_SYSTEM_INCLUDE;
 	} else if (line.startsWith("End of search list.")) {
-	    state = State.NONE;
+	    this.state = State.NONE;
 	} else if (line.equals("Framework search starts here:")) {
-	    state = State.EXPECTING_FRAMEWORKS;
+	    this.state = State.EXPECTING_FRAMEWORKS;
 	} else if (line.startsWith("End of framework search list.")) {
-	    state = State.NONE;
-	} else if (state == State.EXPECTING_LOCAL_INCLUDE) {
+	    this.state = State.NONE;
+	} else if (this.state == State.EXPECTING_LOCAL_INCLUDE) {
 	    // making that up for the parser to figure out
 	    line = "#include \"" + line + "\"";
 	    return makeList(line);
 	} else {
 	    String frameworkIndicator = "(framework directory)";
-	    if (state == State.EXPECTING_SYSTEM_INCLUDE) {
+	    if (this.state == State.EXPECTING_SYSTEM_INCLUDE) {
 		// making that up for the parser to figure out
 		if (line.contains(frameworkIndicator)) {
 		    line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">";
@@ -96,7 +96,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 		    line = "#include <" + line + ">";
 		}
 		return makeList(line);
-	    } else if (state == State.EXPECTING_FRAMEWORKS) {
+	    } else if (this.state == State.EXPECTING_FRAMEWORKS) {
 		// making that up for the parser to figure out
 		line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">";
 		return makeList(line);
@@ -106,17 +106,17 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	return null;
     }
 
-    @SuppressWarnings("hiding")
+
     @Override
     public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker) throws CoreException {
 	super.startup(cfgDescription, cwdTracker);
 
-	state = State.NONE;
+	this.state = State.NONE;
     }
 
     @Override
     public void shutdown() {
-	state = State.NONE;
+	this.state = State.NONE;
 
 	super.shutdown();
     }
@@ -133,10 +133,10 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 
     @Override
     protected String getCompilerCommand(String languageId) {
-	String compilerCommand = "";
+	String compilerCommand = ArduinoConst.EMPTY_STRING;
 	// ArduinoProperties arduinoProperties = new
 	// ArduinoProperties(currentProject);
-	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(currentProject);
+	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.currentProject);
 	if (prjDesc == null)
 	    return compilerCommand;
 
@@ -145,50 +145,50 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	// envManager.getContributedEnvironment();
 	ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
 	// Bug fix for CDT 8.1 fixed in 8.2
-	IFolder buildFolder = currentProject.getFolder(confDesc.getName());
+	IFolder buildFolder = this.currentProject.getFolder(confDesc.getName());
 	if (!buildFolder.exists()) {
 	    try {
 		buildFolder.create(true, true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e));
+		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e)); //$NON-NLS-1$
 	    }
 	}
 	// End of Bug fix for CDT 8.1 fixed in 8.2
-	if (languageId.equals("org.eclipse.cdt.core.gcc")) {
+	if (languageId.equals("org.eclipse.cdt.core.gcc")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
 	    } catch (Exception e) {
-		compilerCommand = "";
+		compilerCommand = ArduinoConst.EMPTY_STRING;
 	    }
 	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
 	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
-		compilerCommand = compilerCommand + " " + op1.getValue();
+		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
 	    if (op2 != null) {
-		compilerCommand = compilerCommand + " " + op2.getValue();
+		compilerCommand = compilerCommand + ' ' + op2.getValue();
 	    }
-	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1";
-	} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
+	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1"; //$NON-NLS-1$
+	} else if (languageId.equals("org.eclipse.cdt.core.g++")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " ");
+		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$//$NON-NLS-2$
 	    } catch (Exception e) {
-		compilerCommand = "";
+		compilerCommand = ArduinoConst.EMPTY_STRING;
 	    }
 	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
 	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
-		compilerCommand = compilerCommand + " " + op1.getValue();
+		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
 	    if (op2 != null) {
-		compilerCommand = compilerCommand + " " + op2.getValue();
+		compilerCommand = compilerCommand + ' ' + op2.getValue();
 	    }
-	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1";
+	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1"; //$NON-NLS-1$
 	} else {
-	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$
+	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", "").replaceAll("  ", " "); // remove
+	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", ArduinoConst.EMPTY_STRING).replaceAll("  ", " "); // remove //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	// "" except \""
 	// and
 	// double

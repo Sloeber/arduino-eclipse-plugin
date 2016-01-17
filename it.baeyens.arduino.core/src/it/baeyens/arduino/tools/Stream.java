@@ -1,8 +1,5 @@
 package it.baeyens.arduino.tools;
 
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.ui.NewArduinoSketchWizard;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -13,6 +10,9 @@ import java.io.InputStreamReader;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.ui.NewArduinoSketchWizard;
 
 /**
  * the Stream class is used to read the board.txt file
@@ -27,7 +27,7 @@ public class Stream {
     public static InputStream openContentStream(String title, String Include, String Resource, boolean isFile) throws CoreException {
 
 	/* We want to be truly OS-agnostic */
-	final String newline = System.getProperty("line.separator");
+	final String newline = System.getProperty("line.separator"); //$NON-NLS-1$
 
 	String line;
 	StringBuffer stringBuffer = new StringBuffer();
@@ -44,7 +44,7 @@ public class Stream {
 	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(input));) {
 
 		while ((line = reader.readLine()) != null) {
-		    line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include);
+		    line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include); //$NON-NLS-1$ //$NON-NLS-2$
 		    stringBuffer.append(line);
 		    stringBuffer.append(newline);
 		}
@@ -61,7 +61,7 @@ public class Stream {
 		}
 	    }
 	    input = null;
-	    IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null);
+	    IStatus status = new Status(IStatus.ERROR, "NewFileWizard", IStatus.OK, ioe.getLocalizedMessage(), null); //$NON-NLS-1$
 	    Common.log(status);
 	    throw new CoreException(status);
 	} finally {

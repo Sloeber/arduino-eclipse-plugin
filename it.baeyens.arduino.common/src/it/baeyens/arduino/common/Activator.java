@@ -18,7 +18,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
 abstract class FamilyJob extends Job {
-    static final String MY_FAMILY = "myJobFamily";
+    static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
 
     public FamilyJob(String name) {
 	super(name);
@@ -46,12 +46,12 @@ public class Activator extends AbstractUIPlugin {
     public static final String PLUGIN_ID = "it.baeyens.arduino.common"; //$NON-NLS-1$
 
     // The shared instance
-    private static final String flagStart = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
-    private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s";
-    private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
-    private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b";
-    private static final String Localflag = "l" + flagStart;
-    private static final String helploc = "http://www.baeyens.it/eclipse/remind3_0.html";
+    private static final String flagStart = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String Localflag = "l" + flagStart; //$NON-NLS-1$
+    private static final String helploc = "http://www.baeyens.it/eclipse/remind3_0.html"; //$NON-NLS-1$
 
     /**
      * The constructor
@@ -81,7 +81,7 @@ public class Activator extends AbstractUIPlugin {
     }
 
     static void remind() {
-	Job job = new FamilyJob("pluginReminder") {
+	Job job = new FamilyJob("pluginReminder") { //$NON-NLS-1$
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 

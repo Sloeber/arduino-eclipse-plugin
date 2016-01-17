@@ -11,7 +11,7 @@ script:
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
 
   #Execute the maven commands depending on SECURE availabilty and print the elapsed time out periodically.
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,juno,all,kepler,all,luna --quiet --settings settings.xml'; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,mars --quiet --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,mars --quiet --settings settings.xml'; fi"
 
 #Several usernames and passwords/tokens are required for deployment.
 #When testing on your local/remote setup then you need to set/export env. variables:
@@ -48,4 +48,7 @@ env:
     - CI_GITHUB_REPOUSERNAME=jantje
     #Only for development work on brodykenrick's repo
 #    - CI_GITHUB_REPOUSERNAME=brodykenrick
+jdk:
+  - oraclejdk8
+
 

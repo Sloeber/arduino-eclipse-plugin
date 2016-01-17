@@ -1,17 +1,15 @@
 package it.baeyens.arduino.toolchain;
 
-import it.baeyens.arduino.tools.ArduinoHelpers;
-
 import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
 import org.eclipse.cdt.managedbuilder.makegen.gnu.DefaultGCCDependencyCalculator2Commands;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-@SuppressWarnings("unused")
-public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands implements IManagedDependencyInfo {
+import it.baeyens.arduino.tools.ArduinoHelpers;
+
+public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands {
 
     public ArduinoDependencyCalculatorCommands(IPath source, IBuildObject buildContext, ITool tool, IPath topBuildDirectory) {
 	super(source, buildContext, tool, topBuildDirectory);

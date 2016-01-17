@@ -4,7 +4,7 @@
 <product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="2.4.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
-      <image path="/it.baeyens.arduino.application/icons/logo_128.png"/>
+      <image path="/it.baeyens.arduino.application/icons/eclipse_lg.png"/>
       <text>
          Eclipse IDE for Arduino Developers
 
@@ -23,15 +23,11 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    </configIni>
 
    <launcherArgs>
-      <programArgs>-perspective 
-it.baeyens.arduino.application.perspective
---launcher.defaultAction openFile
---launcher.XXMaxPermSize 256M
---launcher.XXMaxPermSize 256m
+      <programArgs>-perspective it.baeyens.arduino.application.perspective
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.7
+      <vmArgs>-Dosgi.requiredJavaVersion=1.8
 -Xms40m
 -Xmx512m
       </vmArgs>
@@ -39,7 +35,7 @@ it.baeyens.arduino.application.perspective
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/it.baeyens.arduino.application/icons/logo_16.png" i32="/it.baeyens.arduino.application/icons/logo_32.png" i48="/it.baeyens.arduino.application/icons/logo_48.png" i64="/it.baeyens.arduino.application/icons/logo_64.png" i128="/it.baeyens.arduino.application/icons/logo_128.png"/>
+   <windowImages i16="/it.baeyens.arduino.application/icons/logo_16.png" i32="/it.baeyens.arduino.application/icons/logo_32.png" i48="/it.baeyens.arduino.application/icons/logo_48.png" i256="/it.baeyens.arduino.application/icons/logo_256.png"/>
 
    <splash
       location="it.baeyens.arduino.application"

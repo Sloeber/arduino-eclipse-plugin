@@ -1,9 +1,5 @@
 package it.baeyens.arduino.toolchain;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.ToolInfoHolder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,6 +37,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.ToolInfoHolder;
+
 /**
  * This class represents information about a Tool's inputs and outputs while a Gnu makefile is being generated.
  * 
@@ -61,14 +61,14 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
     private boolean outputsCalculated = false;
     private boolean outputVariablesCalculated = false;
     private boolean dependenciesCalculated = false;
-    private Vector<String> commandInputs = new Vector<String>();
-    private Vector<String> enumeratedInputs = new Vector<String>();
-    private Vector<String> commandOutputs = new Vector<String>();
-    private Vector<String> enumeratedPrimaryOutputs = new Vector<String>();
-    private Vector<String> enumeratedSecondaryOutputs = new Vector<String>();
-    private Vector<String> outputVariables = new Vector<String>();
-    private Vector<String> commandDependencies = new Vector<String>();
-    private Vector<String> additionalTargets = new Vector<String>();
+    private Vector<String> commandInputs = new Vector<>();
+    private Vector<String> enumeratedInputs = new Vector<>();
+    private Vector<String> commandOutputs = new Vector<>();
+    private Vector<String> enumeratedPrimaryOutputs = new Vector<>();
+    private Vector<String> enumeratedSecondaryOutputs = new Vector<>();
+    private Vector<String> outputVariables = new Vector<>();
+    private Vector<String> commandDependencies = new Vector<>();
+    private Vector<String> additionalTargets = new Vector<>();
 
     // private Vector enumeratedDependencies = new Vector();
     // Map of macro names (String) to values (List)
@@ -79,10 +79,10 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
     public ArduinoManagedBuildGnuToolInfo(IProject project, ITool tool, boolean targetTool, String name, String ext) {
 	this.project = project;
 	this.tool = (Tool) tool;
-	bIsTargetTool = targetTool;
-	if (bIsTargetTool) {
-	    targetName = name;
-	    targetExt = ext;
+	this.bIsTargetTool = targetTool;
+	if (this.bIsTargetTool) {
+	    this.targetName = name;
+	    this.targetExt = ext;
 	}
     }
 
@@ -91,66 +91,66 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
      */
     @Override
     public boolean areInputsCalculated() {
-	return inputsCalculated;
+	return this.inputsCalculated;
     }
 
     // Command inputs are top build directory relative
     @Override
     public Vector<String> getCommandInputs() {
-	return commandInputs;
+	return this.commandInputs;
     }
 
     // Enumerated inputs are project relative
     @Override
     public Vector<String> getEnumeratedInputs() {
-	return enumeratedInputs;
+	return this.enumeratedInputs;
     }
 
     @Override
     public boolean areOutputsCalculated() {
-	return outputsCalculated;
+	return this.outputsCalculated;
     }
 
     // Command outputs are top build directory relative
     @Override
     public Vector<String> getCommandOutputs() {
-	return commandOutputs;
+	return this.commandOutputs;
     }
 
     @Override
     public Vector<String> getEnumeratedPrimaryOutputs() {
-	return enumeratedPrimaryOutputs;
+	return this.enumeratedPrimaryOutputs;
     }
 
     @Override
     public Vector<String> getEnumeratedSecondaryOutputs() {
-	return enumeratedSecondaryOutputs;
+	return this.enumeratedSecondaryOutputs;
     }
 
     @Override
     public Vector<String> getOutputVariables() {
-	return outputVariables;
+	return this.outputVariables;
     }
 
     public boolean areOutputVariablesCalculated() {
-	return outputVariablesCalculated;
+	return this.outputVariablesCalculated;
     }
 
     @Override
     public boolean areDependenciesCalculated() {
-	return dependenciesCalculated;
+	return this.dependenciesCalculated;
     }
 
     // Command dependencies are top build directory relative
     @Override
     public Vector<String> getCommandDependencies() {
-	return commandDependencies;
+	return this.commandDependencies;
     }
 
     // Additional targets are top build directory relative
     @Override
     public Vector<String> getAdditionalTargets() {
-	return additionalTargets;
+	return this.additionalTargets;
     }
 
     // public Vector getEnumeratedDependencies() {
@@ -159,7 +159,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 
     @Override
     public boolean isTargetTool() {
-	return bIsTargetTool;
+	return this.bIsTargetTool;
     }
 
     /*
@@ -178,56 +178,56 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	 * file extensions and the resources in the project
 	 */
 	boolean done = true;
-	Vector<String> myCommandInputs = new Vector<String>(); // Inputs for the
-							       // tool command
-							       // line
-	Vector<String> myCommandDependencies = new Vector<String>(); // Dependencies
-								     // for the
-								     // make
-								     // rule
-	Vector<String> myEnumeratedInputs = new Vector<String>(); // Complete
-								  // list of
-								  // individual
-								  // inputs
+	Vector<String> myCommandInputs = new Vector<>(); // Inputs for the
+							 // tool command
+							 // line
+	Vector<String> myCommandDependencies = new Vector<>(); // Dependencies
+							       // for the
+							       // make
+							       // rule
+	Vector<String> myEnumeratedInputs = new Vector<>(); // Complete
+							    // list of
+							    // individual
+							    // inputs
 
-	IInputType[] inTypes = tool.getInputTypes();
+	IInputType[] inTypes = this.tool.getInputTypes();
 	if (inTypes != null && inTypes.length > 0) {
 	    for (IInputType type : inTypes) {
-		Vector<String> itCommandInputs = new Vector<String>(); // Inputs
+		Vector<String> itCommandInputs = new Vector<>(); // Inputs
+								 // for
+								 // the
+								 // tool
+								 // command
+								 // line
+								 // for
+								 // this
+								 // input-type
+		Vector<String> itCommandDependencies = new Vector<>(); // Dependencies
 								       // for
 								       // the
-								       // tool
-								       // command
-								       // line
+								       // make
+								       // rule
 								       // for
 								       // this
 								       // input-type
-		Vector<String> itCommandDependencies = new Vector<String>(); // Dependencies
-									     // for
-									     // the
-									     // make
-									     // rule
-									     // for
-									     // this
-									     // input-type
-		Vector<String> itEnumeratedInputs = new Vector<String>(); // Complete
-									  // list
-									  // of
-									  // individual
-									  // inputs
-									  // for
-									  // this
-									  // input-type
+		Vector<String> itEnumeratedInputs = new Vector<>(); // Complete
+								    // list
+								    // of
+								    // individual
+								    // inputs
+								    // for
+								    // this
+								    // input-type
 		String variable = type.getBuildVariable();
 		boolean primaryInput = type.getPrimaryInput();
 		boolean useFileExts = false;
-		IOption option = tool.getOptionBySuperClassId(type.getOptionId());
-		IOption assignToOption = tool.getOptionBySuperClassId(type.getAssignToOptionId());
+		IOption option = this.tool.getOptionBySuperClassId(type.getOptionId());
+		IOption assignToOption = this.tool.getOptionBySuperClassId(type.getAssignToOptionId());
 
 		// Option?
 		if (option != null) {
 		    try {
-			List<String> inputs = new ArrayList<String>();
+			List<String> inputs = new ArrayList<>();
 			int optType = option.getValueType();
 			if (optType == IOption.STRING) {
 			    inputs.add(option.getStringValue());
@@ -237,8 +237,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			    @SuppressWarnings("unchecked")
 			    List<String> valueList = (List<String>) option.getValue();
 			    inputs = valueList;
-			    tool.filterValues(optType, inputs);
-			    tool.filterValues(optType, inputs);
+			    this.tool.filterValues(optType, inputs);
+			    this.tool.filterValues(optType, inputs);
 			}
 			for (int j = 0; j < inputs.size(); j++) {
 			    String inputName = inputs.get(j);
@@ -256,13 +256,13 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				    // resolve to string
 				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValue(inputName, "", //$NON-NLS-1$
 					    " ", //$NON-NLS-1$
-					    IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, tool));
+					    IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, this.tool));
 				} else {
 
 				    // resolve to makefile variable format
 				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(inputName, "", //$NON-NLS-1$
 					    " ", //$NON-NLS-1$
-					    IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, tool));
+					    IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, this.tool));
 				}
 
 				if ((resolved = resolved.trim()).length() > 0)
@@ -288,7 +288,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 
 		    // Build Variable?
 		    if (variable.length() > 0) {
-			String cmdVariable = variable = "$(" + variable + ")"; //$NON-NLS-1$	//$NON-NLS-2$
+			String cmdVariable = variable = "$(" + variable + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 			itCommandInputs.add(cmdVariable);
 			if (primaryInput) {
 			    itCommandDependencies.add(0, cmdVariable);
@@ -324,8 +324,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			// it gives us an input resource for generating default
 			// names
 			// Determine the set of source input macros to use
-			HashSet<String> handledInputExtensions = new HashSet<String>();
-			String[] exts = type.getSourceExtensions(tool);
+			HashSet<String> handledInputExtensions = new HashSet<>();
+			String[] exts = type.getSourceExtensions(this.tool);
 			if (projResources != null) {
 			    for (IResource rc : projResources) {
 				if (rc.getType() == IResource.FILE) {
@@ -381,7 +381,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				    // Translate the path from project relative
 				    // to build directory relative
 				    if (!(path.startsWith("$("))) { //$NON-NLS-1$
-					IResource addlResource = project.getFile(path);
+					IResource addlResource = this.project.getFile(path);
 					if (addlResource != null) {
 					    IPath addlPath = addlResource.getLocation();
 					    if (addlPath != null) {
@@ -409,7 +409,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				}
 				optVal += itCommandInputs.get(j);
 			    }
-			    ManagedBuildManager.setOption(config, tool, assignToOption, optVal);
+			    ManagedBuildManager.setOption(config, this.tool, assignToOption, optVal);
 			} else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES || optType == IOption.OBJECTS
 				|| optType == IOption.INCLUDE_FILES || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
 				|| optType == IOption.MACRO_FILES) {
@@ -420,7 +420,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			    String[] paths = new String[itEnumeratedInputs.size()];
 			    for (int j = 0; j < itEnumeratedInputs.size(); j++) {
 				paths[j] = itEnumeratedInputs.get(j);
-				IResource enumResource = project.getFile(paths[j]);
+				IResource enumResource = this.project.getFile(paths[j]);
 				if (enumResource != null) {
 				    IPath enumPath = enumResource.getLocation();
 				    if (enumPath != null) {
@@ -428,16 +428,16 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				    }
 				}
 			    }
-			    ManagedBuildManager.setOption(config, tool, assignToOption, paths);
+			    ManagedBuildManager.setOption(config, this.tool, assignToOption, paths);
 			} else if (optType == IOption.BOOLEAN) {
 			    if (itEnumeratedInputs.size() > 0) {
-				ManagedBuildManager.setOption(config, tool, assignToOption, true);
+				ManagedBuildManager.setOption(config, this.tool, assignToOption, true);
 			    } else {
-				ManagedBuildManager.setOption(config, tool, assignToOption, false);
+				ManagedBuildManager.setOption(config, this.tool, assignToOption, false);
 			    }
 			} else if (optType == IOption.ENUMERATED || optType == IOption.TREE) {
 			    if (itCommandInputs.size() > 0) {
-				ManagedBuildManager.setOption(config, tool, assignToOption, itCommandInputs.firstElement());
+				ManagedBuildManager.setOption(config, this.tool, assignToOption, itCommandInputs.firstElement());
 			    }
 			}
 			itCommandInputs.removeAllElements();
@@ -453,7 +453,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	    }
 	} else {
 	    // For support of pre-CDT 3.0 integrations.
-	    if (bIsTargetTool) {
+	    if (this.bIsTargetTool) {
 		// NOTE WELL: This only supports the case of a single
 		// "target tool"
 		// with the following characteristics:
@@ -472,10 +472,10 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	}
 
 	if (done) {
-	    commandInputs.addAll(myCommandInputs);
-	    commandDependencies.addAll(0, myCommandDependencies);
-	    enumeratedInputs.addAll(myEnumeratedInputs);
-	    inputsCalculated = true;
+	    this.commandInputs.addAll(myCommandInputs);
+	    this.commandDependencies.addAll(0, myCommandDependencies);
+	    this.enumeratedInputs.addAll(myEnumeratedInputs);
+	    this.inputsCalculated = true;
 	    return true;
 	}
 
@@ -490,24 +490,23 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
      * 
      * NOTE: If an option is not specified and this is not the primary output type, the outputs from the type are not added to the command line
      */
-    @SuppressWarnings("unused")
     public boolean calculateOutputs(ArduinoGnuMakefileGenerator makeGen, IConfiguration config, HashSet<String> handledInputExtensions,
 	    boolean lastChance) {
 
 	boolean done = true;
-	Vector<String> myCommandOutputs = new Vector<String>();
-	Vector<String> myEnumeratedPrimaryOutputs = new Vector<String>();
-	Vector<String> myEnumeratedSecondaryOutputs = new Vector<String>();
-	HashMap<String, List<IPath>> myOutputMacros = new HashMap<String, List<IPath>>();
+	Vector<String> myCommandOutputs = new Vector<>();
+	Vector<String> myEnumeratedPrimaryOutputs = new Vector<>();
+	Vector<String> myEnumeratedSecondaryOutputs = new Vector<>();
+	HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
 	// The next two fields are used together
-	Vector<String> myBuildVars = new Vector<String>();
-	Vector<Vector<String>> myBuildVarsValues = new Vector<Vector<String>>();
+	Vector<String> myBuildVars = new Vector<>();
+	Vector<Vector<String>> myBuildVarsValues = new Vector<>();
 
 	// Get the outputs for this tool invocation
-	IOutputType[] outTypes = tool.getOutputTypes();
+	IOutputType[] outTypes = this.tool.getOutputTypes();
 	if (outTypes != null && outTypes.length > 0) {
 	    for (int i = 0; i < outTypes.length; i++) {
-		Vector<String> typeEnumeratedOutputs = new Vector<String>();
+		Vector<String> typeEnumeratedOutputs = new Vector<>();
 		IOutputType type = outTypes[i];
 		String outputPrefix = type.getOutputPrefix();
 
@@ -532,18 +531,18 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 
 		String variable = type.getBuildVariable();
 		boolean multOfType = type.getMultipleOfType();
-		boolean primaryOutput = (type == tool.getPrimaryOutputType());
-		IOption option = tool.getOptionBySuperClassId(type.getOptionId());
+		boolean primaryOutput = (type == this.tool.getPrimaryOutputType());
+		IOption option = this.tool.getOptionBySuperClassId(type.getOptionId());
 		IManagedOutputNameProvider nameProvider = type.getNameProvider();
 		String[] outputNames = type.getOutputNames();
 
 		// 1. If the tool is the build target and this is the primary
 		// output,
 		// use artifact name & extension
-		if (bIsTargetTool && primaryOutput) {
-		    String outputName = outputPrefix + targetName;
-		    if (targetExt.length() > 0) {
-			outputName += (DOT + targetExt);
+		if (this.bIsTargetTool && primaryOutput) {
+		    String outputName = outputPrefix + this.targetName;
+		    if (this.targetExt.length() > 0) {
+			outputName += (DOT + this.targetExt);
 		    }
 		    myCommandOutputs.add(outputName);
 		    typeEnumeratedOutputs.add(outputName);
@@ -552,7 +551,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		// 2. If an option is specified, use the value of the option
 		if (option != null) {
 		    try {
-			List<String> outputs = new ArrayList<String>();
+			List<String> outputs = new ArrayList<>();
 			int optType = option.getValueType();
 			if (optType == IOption.STRING) {
 			    outputs.add(outputPrefix + option.getStringValue());
@@ -562,7 +561,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			    @SuppressWarnings("unchecked")
 			    List<String> value = (List<String>) option.getValue();
 			    outputs = value;
-			    tool.filterValues(optType, outputs);
+			    this.tool.filterValues(optType, outputs);
 			    // Add outputPrefix to each if necessary
 			    if (outputPrefix.length() > 0) {
 				for (int j = 0; j < outputs.size(); j++) {
@@ -577,7 +576,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				// names
 				String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
 					" ", //$NON-NLS-1$
-					IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, tool));
+					IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, this.tool));
 				if ((resolved = resolved.trim()).length() > 0)
 				    outputs.set(j, resolved);
 			    } catch (BuildMacroException e) {// JABA is not
@@ -589,7 +588,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			// NO - myCommandOutputs.addAll(outputs);
 			typeEnumeratedOutputs.addAll(outputs);
 			if (variable.length() > 0) {
-			    List<IPath> outputPaths = new ArrayList<IPath>();
+			    List<IPath> outputPaths = new ArrayList<>();
 			    for (int j = 0; j < outputs.size(); j++) {
 				outputPaths.add(Path.fromOSString(outputs.get(j)));
 			    }
@@ -610,7 +609,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		    // The inputs must have been calculated before we can do
 		    // this
 		    IPath[] outNames = null;
-		    if (!inputsCalculated) {
+		    if (!this.inputsCalculated) {
 			done = false;
 		    } else {
 			Vector<String> inputs = getEnumeratedInputs();
@@ -631,12 +630,12 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			// if (inputPaths.length == 0) {
 			try {
 			    IManagedOutputNameProviderJaba newNameProvider = (IManagedOutputNameProviderJaba) nameProvider;
-			    outNames = newNameProvider.getOutputNames(project, config, tool, inputPaths);
+			    outNames = newNameProvider.getOutputNames(this.project, config, this.tool, inputPaths);
 			} catch (Exception e) {
 			    // The provided class is not a
 			    // IManagedOutputNameProviderJaba class;
 			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-				    "The provided class is not of type IManagedOutputNameProviderJaba", e));
+				    "The provided class is not of type IManagedOutputNameProviderJaba", e)); //$NON-NLS-1$
 			}
 			// } else {
 			// outNames = nameProvider.getOutputNames(tool,
@@ -674,7 +673,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			    currList.addAll(Arrays.asList(outNames));
 			    myOutputMacros.put(variable, currList);
 			} else {
-			    myOutputMacros.put(variable, new ArrayList<IPath>(Arrays.asList(outNames)));
+			    myOutputMacros.put(variable, new ArrayList<>(Arrays.asList(outNames)));
 			}
 		    }
 		} else
@@ -688,7 +687,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				// names
 				String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
 					" ", //$NON-NLS-1$
-					IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, tool));
+					IBuildMacroProvider.CONTEXT_OPTION, new OptionContextData(option, this.tool));
 				if ((resolved = resolved.trim()).length() > 0)
 				    outputNames[j] = resolved;
 			    } catch (BuildMacroException e) {// JABA is not
@@ -702,7 +701,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			}
 			typeEnumeratedOutputs.addAll(namesList);
 			if (variable.length() > 0) {
-			    List<IPath> outputPaths = new ArrayList<IPath>();
+			    List<IPath> outputPaths = new ArrayList<>();
 			    for (int j = 0; j < namesList.size(); j++) {
 				outputPaths.add(Path.fromOSString(namesList.get(j)));
 			    }
@@ -725,14 +724,14 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		    if (multOfType) {
 			// This case is not handled - a nameProvider or
 			// outputNames must be specified
-			List<String> errList = new ArrayList<String>();
+			List<String> errList = new ArrayList<>();
 			errList.add(ManagedMakeMessages.getResourceString("MakefileGenerator.error.no.nameprovider")); //$NON-NLS-1$
 			myCommandOutputs.addAll(errList);
 		    } else {
 			String namePattern = type.getNamePattern();
 			if (namePattern == null || namePattern.length() == 0) {
 			    namePattern = outputPrefix + IManagedBuilderMakefileGenerator.WILDCARD;
-			    String outExt = (type.getOutputExtensions(tool))[0];
+			    String outExt = (type.getOutputExtensions(this.tool))[0];
 			    if (outExt != null && outExt.length() > 0) {
 				namePattern += DOT + outExt;
 			    }
@@ -743,7 +742,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			// Calculate the output name
 			// The inputs must have been calculated before we can do
 			// this
-			if (!inputsCalculated) {
+			if (!this.inputsCalculated) {
 			    done = false;
 			} else {
 			    Vector<String> inputs = getEnumeratedInputs();
@@ -765,7 +764,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			    }
 			    typeEnumeratedOutputs.add(namePattern.replaceAll("%", fileName)); //$NON-NLS-1$
 			    if (variable.length() > 0) {
-				List<IPath> outputs = new ArrayList<IPath>();
+				List<IPath> outputs = new ArrayList<>();
 				outputs.add(Path.fromOSString(fileName));
 				if (myOutputMacros.containsKey(variable)) {
 				    List<IPath> currList = myOutputMacros.get(variable);
@@ -789,11 +788,11 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		}
 	    }
 	} else {
-	    if (bIsTargetTool) {
-		String outputPrefix = tool.getOutputPrefix();
-		String outputName = outputPrefix + targetName;
-		if (targetExt.length() > 0) {
-		    outputName += (DOT + targetExt);
+	    if (this.bIsTargetTool) {
+		String outputPrefix = this.tool.getOutputPrefix();
+		String outputName = outputPrefix + this.targetName;
+		if (this.targetExt.length() > 0) {
+		    outputName += (DOT + this.targetExt);
 		}
 		myCommandOutputs.add(outputName);
 		myEnumeratedPrimaryOutputs.add(outputName);
@@ -821,14 +820,14 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		map.put(macroName, newMacroValue);
 	    }
 	}
-	outputVariablesCalculated = true;
+	this.outputVariablesCalculated = true;
 
 	if (done) {
-	    commandOutputs.addAll(myCommandOutputs);
-	    enumeratedPrimaryOutputs.addAll(myEnumeratedPrimaryOutputs);
-	    enumeratedSecondaryOutputs.addAll(myEnumeratedSecondaryOutputs);
-	    outputVariables.addAll(myOutputMacros.keySet());
-	    outputsCalculated = true;
+	    this.commandOutputs.addAll(myCommandOutputs);
+	    this.enumeratedPrimaryOutputs.addAll(myEnumeratedPrimaryOutputs);
+	    this.enumeratedSecondaryOutputs.addAll(myEnumeratedSecondaryOutputs);
+	    this.outputVariables.addAll(myOutputMacros.keySet());
+	    this.outputsCalculated = true;
 	    for (int i = 0; i < myBuildVars.size(); i++) {
 		makeGen.addMacroAdditionFiles(makeGen.getTopBuildOutputVars(), myBuildVars.get(i), myBuildVarsValues.get(i));
 	    }
@@ -856,13 +855,13 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		    String depExt = IManagedBuilderMakefileGenerator.DEP_EXT;
 		    if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS) {
 			IManagedDependencyGenerator2 depGen2 = (IManagedDependencyGenerator2) depGen;
-			String xt = depGen2.getDependencyFileExtension(config, tool);
+			String xt = depGen2.getDependencyFileExtension(config, this.tool);
 			if (xt != null && xt.length() > 0)
 			    depExt = xt;
 		    }
 		    String depsMacroEntry = calculateSourceMacro(makeGen, extensionName, depExt, IManagedBuilderMakefileGenerator.WILDCARD);
 
-		    List<IPath> depsList = new ArrayList<IPath>();
+		    List<IPath> depsList = new ArrayList<>();
 		    depsList.add(Path.fromOSString(depsMacroEntry));
 		    String depsMacro = makeGen.getDepMacroName(extensionName).toString();
 		    if (myOutputMacros.containsKey(depsMacro)) {
@@ -880,7 +879,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	case IManagedDependencyGeneratorType.TYPE_EXTERNAL:
 	case IManagedDependencyGeneratorType.TYPE_CUSTOM:
 	    // The inputs must have been calculated before we can do this
-	    if (!inputsCalculated) {
+	    if (!this.inputsCalculated) {
 		done = false;
 	    } else {
 		Vector<String> inputs = getEnumeratedInputs();
@@ -890,7 +889,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		    IManagedDependencyInfo depInfo = null;
 		    for (int i = 0; i < inputs.size(); i++) {
 
-			depInfo = depGen2.getDependencySourceInfo(Path.fromOSString(inputs.get(i)), config, tool, makeGen.getBuildWorkingDir());
+			depInfo = depGen2.getDependencySourceInfo(Path.fromOSString(inputs.get(i)), config, this.tool, makeGen.getBuildWorkingDir());
 
 			if (depInfo instanceof IManagedDependencyCalculator) {
 			    IManagedDependencyCalculator depCalc = (IManagedDependencyCalculator) depInfo;
@@ -900,7 +899,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				    if (!depPaths[j].isAbsolute()) {
 					// Convert from project relative to
 					// build directory relative
-					IPath absolutePath = project.getLocation().append(depPaths[j]);
+					IPath absolutePath = this.project.getLocation().append(depPaths[j]);
 					depPaths[j] = ManagedBuildManager.calculateRelativePath(makeGen.getTopBuildDir(), absolutePath);
 				    }
 				    myCommandDependencies.add(depPaths[j].toString());
@@ -917,7 +916,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		} else {
 		    IManagedDependencyGenerator oldDepGen = (IManagedDependencyGenerator) depGen;
 		    for (String input : inputs) {
-			IResource[] outNames = oldDepGen.findDependencies(project.getFile(input), project);
+			IResource[] outNames = oldDepGen.findDependencies(this.project.getFile(input), this.project);
 			if (outNames != null) {
 			    for (IResource outName : outNames) {
 				myCommandDependencies.add(outName.toString());
@@ -942,19 +941,19 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	    ToolInfoHolder h, boolean lastChance) {
 	// Get the dependencies for this tool invocation
 	boolean done = true;
-	Vector<String> myCommandDependencies = new Vector<String>();
-	Vector<String> myAdditionalTargets = new Vector<String>();
+	Vector<String> myCommandDependencies = new Vector<>();
+	Vector<String> myAdditionalTargets = new Vector<>();
 	// Vector myEnumeratedDependencies = new Vector();
-	HashMap<String, List<IPath>> myOutputMacros = new HashMap<String, List<IPath>>();
+	HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
 
-	IInputType[] inTypes = tool.getInputTypes();
+	IInputType[] inTypes = this.tool.getInputTypes();
 	if (inTypes != null && inTypes.length > 0) {
 	    for (int i = 0; i < inTypes.length; i++) {
 		IInputType type = inTypes[i];
 
 		// Handle dependencies from the dependencyCalculator
 		IManagedDependencyGeneratorType depGen = type.getDependencyGenerator();
-		String[] extensionsList = type.getSourceExtensions(tool);
+		String[] extensionsList = type.getSourceExtensions(this.tool);
 		if (depGen != null) {
 		    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList, myCommandDependencies,
 			    myOutputMacros, myAdditionalTargets, h, done);
@@ -976,7 +975,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 				    // build directory relative
 				    String path = paths[k];
 				    if (!(path.startsWith("$("))) { //$NON-NLS-1$
-					IResource addlResource = project.getFile(path);
+					IResource addlResource = this.project.getFile(path);
 					if (addlResource != null) {
 					    IPath addlPath = addlResource.getLocation();
 					    if (addlPath != null) {
@@ -993,7 +992,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		}
 	    }
 	} else {
-	    if (bIsTargetTool) {
+	    if (this.bIsTargetTool) {
 		// For support of pre-CDT 3.0 integrations.
 		// NOTE WELL: This only supports the case of a single
 		// "target tool"
@@ -1008,8 +1007,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 		myCommandDependencies.add("$(USER_OBJS)"); //$NON-NLS-1$
 	    } else {
 		// Handle dependencies from the dependencyCalculator
-		IManagedDependencyGeneratorType depGen = tool.getDependencyGenerator();
-		String[] extensionsList = tool.getAllInputExtensions();
+		IManagedDependencyGeneratorType depGen = this.tool.getDependencyGenerator();
+		String[] extensionsList = this.tool.getAllInputExtensions();
 		if (depGen != null) {
 		    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList, myCommandDependencies,
 			    myOutputMacros, myAdditionalTargets, h, done);
@@ -1034,10 +1033,10 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	}
 
 	if (done) {
-	    commandDependencies.addAll(myCommandDependencies);
-	    additionalTargets.addAll(myAdditionalTargets);
+	    this.commandDependencies.addAll(myCommandDependencies);
+	    this.additionalTargets.addAll(myAdditionalTargets);
 	    // enumeratedDependencies.addAll(myEnumeratedDependencies);
-	    dependenciesCalculated = true;
+	    this.dependenciesCalculated = true;
 	    return true;
 	}
 
@@ -1052,8 +1051,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	String OptDotExt = ""; //$NON-NLS-1$
 	if (outExtensionName != null) {
 	    OptDotExt = DOT + outExtensionName;
-	} else if (tool.getOutputExtension(srcExtensionName) != "") //$NON-NLS-1$
-	    OptDotExt = DOT + tool.getOutputExtension(srcExtensionName);
+	} else if (this.tool.getOutputExtension(srcExtensionName) != "") //$NON-NLS-1$
+	    OptDotExt = DOT + this.tool.getOutputExtension(srcExtensionName);
 
 	// create rule of the form
 	// OBJS = $(macroName1: ../%.input1=%.output1) ... $(macroNameN:

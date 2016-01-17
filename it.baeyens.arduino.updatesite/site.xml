@@ -3,5 +3,5 @@
    <description name="Jan&apos;s eclipse place" url="http://www.baeyens.it/eclipse/update%20site/">
       A location for eclipse plugins created by Jan Baeyens
    </description>
-   <feature url="features/it.baeyens.arduino.feature_2.5.0.qualifier.jar" id="it.baeyens.arduino.feature" version="2.5.0.qualifier"/>
+   <feature url="features/it.baeyens.arduino.feature_3.0.0.qualifier.jar" id="it.baeyens.arduino.feature" version="3.0.0.qualifier"/>
 </site>

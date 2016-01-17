@@ -36,7 +36,7 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>java 7</jdk>
+  <jdk>java 8</jdk>
   <triggers>
     <hudson.triggers.TimerTrigger>
       <spec>H 2 * * *</spec>

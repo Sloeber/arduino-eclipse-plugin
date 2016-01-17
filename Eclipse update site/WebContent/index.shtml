@@ -25,18 +25,18 @@
     <![endif]-->
   </head>
 
-  <body role="document" ng-app='arduinoEclipse'>
+  <body role="document">
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <!--#include virtual="fragments/navbar.html" --> 
     </nav>
 
     <div class="container" role="main">
       <div class="jumbotron">
         <h1>Where <b>Arduino</b> meets <b>Eclipse</b></h1>
         <p>You like <b>Arduino</b>, your projects are getting bigger and you feel the Arduino IDE is not powerful enough?</p>
-        <p>This is about a free, open source, <b>Eclipse</b> plugin to ease your development efforts!</br>
+        <p>This is about a free, open source, <b>Eclipse</b> plugin to ease your development efforts!<br>
           As you only need the Arduino IDE, Eclipse and this plugin this represents a completely free and open Arduino IDE alternative.
         </p>
         <p>Welcome to a next stage for your Arduino projects!</p>
@@ -49,7 +49,7 @@
         <div class="col-md-4">
           <h2><span class="glyphicon glyphicon-link" style="color:blue"></span>&nbsp;Links</h2>
           <div class="list-group">
-            <a class="list-group-item" href="donate.shtml">If you would like to support, <b>buy Jantje an Arduino</b></a>
+            <a class="list-group-item" href="donate.shtml">If you would like to support Jantje, <b>Support him on Patreon</b></a>
             <a class="list-group-item" href="http://blog.baeyens.it/#home">Read <b>Jantje's blog</b> if you want to stay up to date on changes</a>
             <a class="list-group-item" href="installAdvice.shtml"><b>Installation advice</b> can be found here</a>
             <a class="list-group-item" href="download.php"><b>Nightly builds</b> of the product can be found here</a>
@@ -94,7 +94,7 @@
     </div> <!-- /container -->
 
     <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
+      <!--#include virtual="fragments/footer.html" --> 
     </div>
   </body>
 

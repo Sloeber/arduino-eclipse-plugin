@@ -1,8 +1,5 @@
 package it.baeyens.arduino.tools.uploaders;
 
-import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ExternalCommandLauncher;
-
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -10,6 +7,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.tools.ExternalCommandLauncher;
 
 public class GenericLocalUploader implements IRealUpload {
 
@@ -22,13 +22,13 @@ public class GenericLocalUploader implements IRealUpload {
 
     GenericLocalUploader(String NAmeTag, IProject Project, String CConf, MessageConsole Console, MessageConsoleStream Errconsole,
 	    MessageConsoleStream Outconsole) {
-	myNAmeTag = NAmeTag.toUpperCase();
-	myProject = Project;
-	myCConf = CConf;
+	this.myNAmeTag = NAmeTag.toUpperCase();
+	this.myProject = Project;
+	this.myCConf = CConf;
 
-	myConsole = Console;
-	myErrconsole = Errconsole;
-	myOutconsole = Outconsole;
+	this.myConsole = Console;
+	this.myErrconsole = Errconsole;
+	this.myOutconsole = Outconsole;
     }
 
     protected static void RunConsoledCommand(MessageConsole console, String command, IProgressMonitor monitor) throws IOException {
@@ -43,24 +43,24 @@ public class GenericLocalUploader implements IRealUpload {
     @Override
     public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
 	int step = 1;
-	String patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN";
-	String commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME";
-	String stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag, "");
-	String stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag, "");
+	String patternTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	String commentTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	String stepPattern = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, patternTag, ""); //$NON-NLS-1$
+	String stepName = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, commentTag, ""); //$NON-NLS-1$
 	do {
-	    monitor.subTask("Running " + stepName);
-	    myOutconsole.println(stepPattern);
+	    monitor.subTask("Running " + stepName); //$NON-NLS-1$
+	    this.myOutconsole.println(stepPattern);
 	    try {
-		RunConsoledCommand(myConsole, stepPattern, monitor);
+		RunConsoledCommand(this.myConsole, stepPattern, monitor);
 	    } catch (IOException e) {
-		myErrconsole.print("Error: " + e.getMessage());
+		this.myErrconsole.print("Error: " + e.getMessage()); //$NON-NLS-1$
 		return false;
 	    }
 	    step++;
-	    patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN";
-	    commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME";
-	    stepPattern = Common.getBuildEnvironmentVariable(myProject, myCConf, patternTag, "");
-	    stepName = Common.getBuildEnvironmentVariable(myProject, myCConf, commentTag, "");
+	    patternTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    commentTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    stepPattern = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, patternTag, ""); //$NON-NLS-1$
+	    stepName = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, commentTag, ""); //$NON-NLS-1$
 	} while (!stepPattern.isEmpty());
 
 	return true;
