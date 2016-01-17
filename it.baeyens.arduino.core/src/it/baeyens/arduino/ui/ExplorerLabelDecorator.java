@@ -1,6 +1,7 @@
 package it.baeyens.arduino.ui;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -44,10 +45,19 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
     public String decorateText(String text, Object element) {
 	// TODO Auto-generated method stub
 	IProject proj = (IProject) element;
-	String boardName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
-		"Board Error");
-	String portName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "no port");
-	return text + ' ' + boardName + ' ' + ':' + portName;
+	try {
+	    if (proj.hasNature(ArduinoConst.ArduinoNatureID)) {
+		String boardName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
+			"Board Error");
+		String portName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_COM_PORT,
+			"no port");
+		return text + ' ' + boardName + ' ' + ':' + portName;
+	    }
+	} catch (CoreException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	return null;
     }
 
 }

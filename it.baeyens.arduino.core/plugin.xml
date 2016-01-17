@@ -811,9 +811,10 @@ priority="high"/>
     <decorator
           class="it.baeyens.arduino.ui.ExplorerLabelDecorator"
           id="it.baeyens.arduino.core.decorator1"
-          label="label">
+          label="embedded development"
+          state="true">
        <description>
-          Show the board port and baut rate used for this project.
+          Arduino eclipse plugin projects -&gt;Show &quot;board : port : baut rate&quot;
        </description>
        <enablement>
           <objectClass
