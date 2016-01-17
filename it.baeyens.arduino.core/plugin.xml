@@ -806,6 +806,22 @@ base-type="org.eclipse.cdt.core.cSource"
 file-extensions="ino,pde"
 priority="high"/>
  </extension>
+ <extension
+       point="org.eclipse.ui.decorators">
+    <decorator
+          class="it.baeyens.arduino.ui.ExplorerLabelDecorator"
+          id="it.baeyens.arduino.core.decorator1"
+          label="label">
+       <description>
+          Show the board port and baut rate used for this project.
+       </description>
+       <enablement>
+          <objectClass
+                name="org.eclipse.core.resources.IProject">
+          </objectClass>
+       </enablement>
+    </decorator>
+ </extension>
  
 </plugin>
 
