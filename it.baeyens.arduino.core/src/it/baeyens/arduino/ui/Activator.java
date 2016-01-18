@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
@@ -150,16 +151,45 @@ public class Activator implements BundleActivator {
 	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
-		monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
-		makeOurOwnCustomBoards_txt();
-		addFileAssociations();
-		ArduinoManager.startup_Pluging(monitor);
-		monitor.setTaskName("Done!");
-		bonjourDiscovery = new NetworkDiscovery();
-		bonjourDiscovery.start();
-		ArduinoInstancePreferences.setConfigured();
-		registerListeners();
-		return Status.OK_STATUS;
+		if (DownloadFolderConditionsOK()) {
+		    monitor.beginTask("Sit back, relax and watch us work for a little while ..",
+			    IProgressMonitor.UNKNOWN);
+		    addFileAssociations();
+		    makeOurOwnCustomBoards_txt();
+		    ArduinoManager.startup_Pluging(monitor);
+		    monitor.setTaskName("Done!");
+		    bonjourDiscovery = new NetworkDiscovery();
+		    bonjourDiscovery.start();
+		    ArduinoInstancePreferences.setConfigured();
+		    registerListeners();
+		    return Status.OK_STATUS;
+		} else {
+		    addFileAssociations();
+		    bonjourDiscovery = new NetworkDiscovery();
+		    bonjourDiscovery.start();
+		    return Status.CANCEL_STATUS;
+
+		}
+	    }
+
+	    private boolean DownloadFolderConditionsOK() {
+		// TODO Auto-generated method stub
+		Path installPath = ConfigurationPreferences.getInstallationPath();
+		installPath.toFile().mkdirs();
+		boolean cantWrite = !installPath.toFile().canWrite();
+		boolean windowsPathToLong = false;
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		    windowsPathToLong = installPath.toString().length() > 200;
+		}
+		if (cantWrite || windowsPathToLong) {
+		    String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString() : "";
+		    errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : "");
+		    errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long" : "");
+
+		    Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage)); // $NON-NLS-1$
+		    return false;
+		}
+		return true;
 	    }
 
 	};
@@ -181,18 +211,6 @@ public class Activator implements BundleActivator {
     }
 
     public static final String PLUGIN_ID = "it.baeyens.arduino.core"; //$NON-NLS-1$
-
-    /**
-     * This is a wrapper method to quickly make the dough code that is the basis
-     * of the it.baeyens.arduino.managers and it.baeyens.arduino.managers.ui to
-     * work.
-     * 
-     * @param e
-     */
-    public static void log(Exception e) {
-	Common.log(new Status(IStatus.WARNING, getId(), "Arduino Manager problem", e)); //$NON-NLS-1$
-
-    }
 
     /**
      * This is a wrapper method to quickly make the dough code that is the basis
