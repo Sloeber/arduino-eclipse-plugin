@@ -22,17 +22,21 @@ function listFiles($prefix) {
 		}
 	}
 	rsort ( $files );
+	$count = 0;
 	foreach ( $files as $file ) {
-		$refname = basename ( $file );
-		if (substr ( $refname, 0, strlen ( $prefix ) ) == $prefix) {
-			$stat = stat ( $file );
-			$date = date ( 'Y-m-d', $stat ['mtime'] );
-			$size = formatBytes ( $stat ['size'] );
-			echo "<tr class='clickable'>";
-			echo "<td class='text-center'>$date</td>";
-			echo "<td><a href='http://eclipse.baeyens.it/download/product/$refname' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
-			echo "<td class='text-right'>$size</td>";
-			echo "</tr>";
+		if ($count < 5) {
+			$refname = basename ( $file );
+			if (substr ( $refname, 0, strlen ( $prefix ) ) == $prefix) {
+				$count = $count + 1;
+				$stat = stat ( $file );
+				$date = date ( 'Y-m-d', $stat ['mtime'] );
+				$size = formatBytes ( $stat ['size'] );
+				echo "<tr class='clickable'>";
+				echo "<td class='text-center'>$date</td>";
+				echo "<td><a href='http://eclipse.baeyens.it/download/product/$refname' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
+				echo "<td class='text-right'>$size</td>";
+				echo "</tr>";
+			}
 		}
 	}
 }
