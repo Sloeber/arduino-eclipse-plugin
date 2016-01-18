@@ -1,4 +1,5 @@
-
+     
+     
       <div class="container" ng-controller="NavBarCtrl" ng-init="init()">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -11,28 +12,36 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li ng-class="navlinks.home"><a href="{{navlinks.home.url}}">Home</a></li>
+             <li ><a href="http://eclipse.baeyens.it/index.shtml">Home</a></li>
+             
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Install <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li ng-class="navlinks.starting"><a href="{{navlinks.starting.url}}">Start here</a></li>
-                <li ng-class="navlinks.components"><a href="{{navlinks.components.url}}">The components</a></li>
+                <li><a href="http://eclipse.baeyens.it/installAdvice.shtml">Start here</a></li>
+                <li><a href="http://eclipse.baeyens.it/getting-started.shtml">The components</a></li>
+
                 <li class="dropdown-header">Stable</li>
-                <li ng-class="navlinks.linux"><a href="{{navlinks.linux.url}}">Linux</a></li>
-                <li ng-class="navlinks.win"><a href="{{navlinks.win.url}}">Windows</a></li>
-                <li ng-class="navlinks.osx"><a href="{{navlinks.osx.url}}">MacOS</a></li>
+                <li><a href="http://eclipse.baeyens.it/stable-linux.html">Linux</a></li>
+                <li><a href="http://eclipse.baeyens.it/stable-win.html">Windows</a></li>
+                <li><a href="http://eclipse.baeyens.it/stable-osx.html">MacOS</a></li>
+
+
                 <li class="dropdown-header">Nightly Builds</li>
-                <li ng-class="navlinks.linux_nightly"><a href="{{navlinks.linux_nightly.url}}">Linux</a></li>
-                <li ng-class="navlinks.win_nightly"><a href="{{navlinks.win_nightly.url}}">Windows</a></li>
-                <li ng-class="navlinks.osx_nightly"><a href="{{navlinks.osx_nightly.url}}">MacOS</a></li>
+                <li><a href="http://eclipse.baeyens.it/nightly-linux.html">Linux</a></li>
+                <li><a href="http://eclipse.baeyens.it/nightly-win.html">Windows</a></li>
+                <li><a href="http://eclipse.baeyens.it/nightly-osx.html">MacOS</a></li>
+
+
                 <li class="dropdown-header">Archived Versions</li>
                 <li><a href="http://eclipse.baeyens.it/archived-2.3.shtml">Plugin v2.3</a></li>
                 <li><a href="http://eclipse.baeyens.it/archived-2.2.html">Plugin v2.2</a></li>
                 <li><a href="http://eclipse.baeyens.it/archived-1.x.html">Plugin v1.x</a></li>
               </ul>
             </li>
-            <li ng-class="navlinks.howto"><a href="{{navlinks.howto.url}}">How To</b></a></li>
-            <li ng-class="navlinks.faq"><a href="{{navlinks.faq.url}}">FAQs</a></li>
+                
+            <li><a href="http://eclipse.baeyens.it/how_to.shtml">How To</a></li>
+            <li><a href="http://eclipse.baeyens.it/faq.shtml">FAQ</a></li>
+                
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
               <ul class="dropdown-menu">
