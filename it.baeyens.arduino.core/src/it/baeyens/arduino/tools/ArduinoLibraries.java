@@ -276,7 +276,7 @@ public class ArduinoLibraries {
 	HashMap<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
 	UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
 	availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
-	if (!UnresolvedIncludedHeaders.isEmpty()) {
+	if (!availableLibs.isEmpty()) {
 	    // there are possible libraries to add
 	    Common.log(new Status(IStatus.INFO, Common.CORE_PLUGIN_ID, "list of libraries to add to project "
 		    + affectedProject.getName() + ": " + availableLibs.keySet().toString()));
