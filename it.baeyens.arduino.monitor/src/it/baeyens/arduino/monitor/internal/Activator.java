@@ -1,4 +1,4 @@
-package it.baeyens.arduino.monitor;
+package it.baeyens.arduino.monitor.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

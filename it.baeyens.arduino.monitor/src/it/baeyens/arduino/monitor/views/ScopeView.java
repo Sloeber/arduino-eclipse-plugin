@@ -29,7 +29,8 @@ import org.osgi.framework.ServiceReference;
 
 import it.baeyens.arduino.arduino.Serial;
 import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.monitor.Activator;
+import it.baeyens.arduino.monitor.internal.Activator;
+import it.baeyens.arduino.monitor.internal.ScopeListener;
 import multichannel.Oscilloscope;
 import multichannel.OscilloscopeDispatcher;
 

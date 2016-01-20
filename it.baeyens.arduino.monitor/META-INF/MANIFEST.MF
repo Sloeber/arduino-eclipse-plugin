@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Monitor
 Bundle-SymbolicName: it.baeyens.arduino.monitor; singleton:=true
 Bundle-Version: 3.0.0.qualifier
-Bundle-Activator: it.baeyens.arduino.monitor.Activator
+Bundle-Activator: it.baeyens.arduino.monitor.internal.Activator
 Bundle-Vendor: jan baeyens
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

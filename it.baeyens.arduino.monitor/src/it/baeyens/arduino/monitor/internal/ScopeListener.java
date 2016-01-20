@@ -1,4 +1,4 @@
-package it.baeyens.arduino.monitor.views;
+package it.baeyens.arduino.monitor.internal;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.monitor.views.Messages;
 import multichannel.Oscilloscope;
 
 public class ScopeListener implements MessageConsumer {

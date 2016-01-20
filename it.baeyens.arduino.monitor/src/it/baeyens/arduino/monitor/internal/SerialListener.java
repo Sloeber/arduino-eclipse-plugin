@@ -1,4 +1,4 @@
-package it.baeyens.arduino.monitor.views;
+package it.baeyens.arduino.monitor.internal;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Display;
 import it.baeyens.arduino.arduino.MessageConsumer;
 import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.monitor.views.Messages;
+import it.baeyens.arduino.monitor.views.SerialMonitor;
 
 public class SerialListener implements MessageConsumer {
     private static boolean myScopeFilterFlag = false;
@@ -29,7 +31,7 @@ public class SerialListener implements MessageConsumer {
 	this.myReceivedScopeData.position(index);
     }
 
-    SerialListener(SerialMonitor Monitor, int ColorIndex) {
+    public SerialListener(SerialMonitor Monitor, int ColorIndex) {
 	this.TheMonitor = Monitor;
 	this.theColorIndex = ColorIndex;
 	this.myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
@@ -43,7 +45,8 @@ public class SerialListener implements MessageConsumer {
 		this.myReceivedScopeData.put(newData);
 	    } catch (BufferOverflowException e) {
 		this.myReceivedScopeData.clear();
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
+		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+			Messages.SerialListener_scope_skipping_data));
 	    }
 	    internalExtractAndProcessScopeData();
 	} else {
@@ -55,26 +58,41 @@ public class SerialListener implements MessageConsumer {
     private void internalExtractAndProcessScopeData() {
 	String MonitorMessage = ArduinoConst.EMPTY_STRING;
 	boolean dontProcessLastPart = false;
-	for (int scannnedScopePointer = 0; scannnedScopePointer < this.myReceivedScopeData.position() - 1; scannnedScopePointer++) {
+	for (int scannnedScopePointer = 0; scannnedScopePointer < this.myReceivedScopeData.position()
+		- 1; scannnedScopePointer++) {
 	    if (this.myReceivedScopeData.getShort(scannnedScopePointer) == ArduinoConst.SCOPE_START_DATA) {
 		// we have a hit.
-		if (scannnedScopePointer > 0)// there is data before the scopehit->handle it and remove it
+		if (scannnedScopePointer > 0) // there is data before the
+					      // scopehit->handle it and remove
+					      // it
 		{
 		    for (int n = 0; n < scannnedScopePointer; n++)
 			MonitorMessage += Character.toString((char) this.myReceivedScopeData.get(n));
 		    removeBytesFromStart(scannnedScopePointer);
 		}
 		// now we have a hit at the beginning of the buffer.
-		if (this.myReceivedScopeData.position() < 4) // the scopedata is not complete yet
+		if (this.myReceivedScopeData.position() < 4) // the scopedata is
+							     // not complete yet
 		{
-		    scannnedScopePointer = this.myReceivedScopeData.position(); // stop the loop
+		    scannnedScopePointer = this.myReceivedScopeData.position(); // stop
+										// the
+										// loop
 		    dontProcessLastPart = true;
 		} else {
 		    int bytestoRead = this.myReceivedScopeData.getShort(2);
 		    if ((bytestoRead < 0) || (bytestoRead > (10 * 2))) {
 			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
-				Messages.SerialListener_error_input_part_1 + bytestoRead / 2 + Messages.SerialListener_error_input_part_2));
-			this.myReceivedScopeData.putShort(0, (short) 0); // process scope data as normal data remove the ArduinoConst.SCOPE_START_DATA
+				Messages.SerialListener_error_input_part_1 + bytestoRead / 2
+					+ Messages.SerialListener_error_input_part_2));
+			this.myReceivedScopeData.putShort(0, (short) 0); // process
+									 // scope
+									 // data
+									 // as
+									 // normal
+									 // data
+									 // remove
+									 // the
+									 // ArduinoConst.SCOPE_START_DATA
 		    } else {
 			if (bytestoRead + 4 < this.myReceivedScopeData.position()) {
 			    // all data is available
@@ -89,9 +107,12 @@ public class SerialListener implements MessageConsumer {
 		}
 	    }
 	}
-	if (!dontProcessLastPart) // we don't end on a scope data set; check whether the last char is start of a new scope data set
+	if (!dontProcessLastPart) // we don't end on a scope data set; check
+				  // whether the last char is start of a new
+				  // scope data set
 	{
-	    if (this.myReceivedScopeData.get(this.myReceivedScopeData.position()) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
+	    if (this.myReceivedScopeData
+		    .get(this.myReceivedScopeData.position()) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
 		for (int n = 0; n < this.myReceivedScopeData.position() - 1; n++)
 		    MonitorMessage += Character.toString((char) this.myReceivedScopeData.get(n));
 		removeBytesFromStart(this.myReceivedScopeData.position() - 1);
@@ -127,7 +148,7 @@ public class SerialListener implements MessageConsumer {
 
     }
 
-    static void setScopeFilter(boolean selection) {
+    public static void setScopeFilter(boolean selection) {
 	myScopeFilterFlag = selection;
 
     }
