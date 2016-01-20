@@ -10,13 +10,6 @@ Require-Bundle: org.eclipse.ui,
  it.baeyens.arduino.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: it.baeyens.arduino.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
- it.baeyens.arduino.monitor.views;
-  uses:="it.baeyens.arduino.arduino,
-   org.eclipse.jface.viewers,
-   org.eclipse.ui.part,
-   org.eclipse.swt.widgets,
-   it.baeyens.arduino.common,
-   org.eclipse.jface.dialogs"
+Export-Package: it.baeyens.arduino.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework"
 Bundle-ClassPath: .,
  lib/org.eclipse.nebula.widgets.oscilloscope_1.2.0.201310192144.jar

@@ -30,7 +30,7 @@ import it.baeyens.arduino.listeners.ProjectExplorerListener;
  * serial monitor
  * 
  * 
- * The code looks for all selected projeects for the com port and the baudrate
+ * The code looks for all selected projects for the com port and the baudrate
  * and connects if they both are found
  * 
  * @author jan
@@ -54,10 +54,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 		    String comPort = Common.getBuildEnvironmentVariable(curproject,
 			    ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
 		    if (!comPort.isEmpty()) {
-
-			// it.baeyens.arduino.monitor.views.connectSerial(comPort,
-			// Integer.toString(baud));
-			// SerialPortsUpdated();
+			it.baeyens.arduino.monitor.SerialConnection.add(comPort, baud);
 		    }
 		}
 	    }
@@ -90,17 +87,19 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 	    index = CCorePlugin.getIndexManager().getIndex(curProject);
 	    index.acquireReadLock();
 	    // find bindings for name
-	    IIndexBinding[] bindings = index.findBindings(setupFunctionName.toCharArray(),
-		    IndexFilter.ALL_DECLARED_OR_IMPLICIT, new NullProgressMonitor());
-	    if (bindings.length != 1) {
-		// there should be just 1 setup function
-		return -1;
+	    IIndexBinding[] bindings = index.findBindings(setupFunctionName.toCharArray(), IndexFilter.ALL_DECLARED,
+		    new NullProgressMonitor());
+	    ICPPFunction setupFunc = null;
+	    for (IIndexBinding curbinding : bindings) {
+		if (curbinding instanceof ICPPFunction) {
+		    setupFunc = (ICPPFunction) curbinding;
+		}
+
 	    }
 
-	    if (!(bindings[0] instanceof ICPPFunction)) {
+	    if (setupFunc == null) {
 		return -2;// that on found binding must be a function
 	    }
-	    ICPPFunction setupFunc = (ICPPFunction) bindings[0];
 
 	    IIndexName[] names = index.findNames(setupFunc, org.eclipse.cdt.core.index.IIndex.FIND_DEFINITIONS);
 	    if (names.length != 1) {

@@ -106,11 +106,24 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     protected boolean myAutoScroll; // is auto scroll on or off?
     private static final String myFlagMonitor = "FmStatus"; //$NON-NLS-1$
     String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
+    private static SerialMonitor me = null;
+
+    public static SerialMonitor getSerialMonitor() {
+	if (me == null) {
+	    me = new SerialMonitor();
+	}
+	return me;
+    }
 
     /**
      * The constructor.
      */
     public SerialMonitor() {
+	if (me != null) {
+	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "You can only have one serial monitor"));
+
+	}
+	me = this;
 	this.mySerialConnections = new LinkedHashMap<>(myMaxSerialPorts);
 	IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 	ITheme currentTheme = themeManager.getCurrentTheme();
@@ -356,7 +369,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      * 
      * @return the serial port selected in the combobox
      */
-    Serial GetSelectedSerial() {
+    private Serial GetSelectedSerial() {
 	return GetSerial(this.mySerialPorts.getCombo().getText());
     }
 
@@ -402,7 +415,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		comportSelector.create();
 		if (comportSelector.open() == Window.OK) {
 		    connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate());
-		    SerialPortsUpdated();
+
 		}
 	    }
 	};
@@ -414,15 +427,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	this.myDisconnectSerialPort = new Action() {
 	    @Override
 	    public void run() {
-		Serial newSerial = GetSelectedSerial();
-		if (newSerial != null) {
-		    SerialListener theListener = SerialMonitor.this.mySerialConnections.get(newSerial);
-		    SerialMonitor.this.mySerialConnections.remove(newSerial);
-		    newSerial.removeListener(theListener);
-		    newSerial.dispose();
-		    theListener.dispose();
-		    SerialPortsUpdated();
-		}
+		disConnectSerialPort(getSerialMonitor().mySerialPorts.getCombo().getText());
 	    }
 	};
 	this.myDisconnectSerialPort.setText(Messages.SerialMonitor_disconnected_from);
@@ -508,6 +513,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		theListener.event(System.getProperty("line.separator") + Messages.SerialMonitor_connectedt_to + ComPort //$NON-NLS-1$
 			+ Messages.SerialMonitor_at + BaudRate + System.getProperty("line.separator")); //$NON-NLS-1$
 		this.mySerialConnections.put(newSerial, theListener);
+		SerialPortsUpdated();
 		return;
 	    }
 	} else {
@@ -515,6 +521,18 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		    Messages.SerialMonitor_no_more_serial_ports_supported, null));
 	}
 
+    }
+
+    public void disConnectSerialPort(String comPort) {
+	Serial newSerial = GetSerial(comPort);
+	if (newSerial != null) {
+	    SerialListener theListener = SerialMonitor.this.mySerialConnections.get(newSerial);
+	    SerialMonitor.this.mySerialConnections.remove(newSerial);
+	    newSerial.removeListener(theListener);
+	    newSerial.dispose();
+	    theListener.dispose();
+	    SerialPortsUpdated();
+	}
     }
 
     /**
