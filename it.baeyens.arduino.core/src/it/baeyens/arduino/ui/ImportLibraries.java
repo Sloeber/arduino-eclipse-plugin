@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 
@@ -27,9 +27,9 @@ import it.baeyens.arduino.listeners.ProjectExplorerListener;
  * @see performFinish
  * 
  */
-public class Import_Arduino_Libraries implements IImportWizard {
+public class ImportLibraries implements IImportWizard {
 
-    private Import_Arduino_Libraries_Page mProjectSelectionPage;
+    private Import_Libraries_Page mProjectSelectionPage;
     private IWizardPage[] mPages;
     private IWizardContainer mWizardContainer = null;
 
@@ -51,13 +51,13 @@ public class Import_Arduino_Libraries implements IImportWizard {
 
 	if (SelectedProjects.length > 0) {
 	    theProject = SelectedProjects[0];
-	    this.mProjectSelectionPage = new Import_Arduino_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
+	    this.mProjectSelectionPage = new Import_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
 	    this.mProjectSelectionPage.setWizard(this);
 	    this.mPages = new IWizardPage[1];
 	    this.mPages[0] = this.mProjectSelectionPage;
 	} else {
 
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_no_Arduino_project_selected));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.error_no_Arduino_project_selected));
 	}
     }
 

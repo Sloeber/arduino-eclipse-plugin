@@ -6,17 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.index.IIndexChangeEvent;
-import org.eclipse.cdt.core.index.IIndexChangeListener;
-import org.eclipse.cdt.core.index.IIndexerStateEvent;
-import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -34,14 +27,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.listeners.ConfigurationChangeListener;
+import it.baeyens.arduino.listeners.IndexerListener;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
-import it.baeyens.arduino.managers.ArduinoManager;
-import it.baeyens.arduino.tools.ArduinoLibraries;
+import it.baeyens.arduino.managers.Manager;
 
 /**
  * generated code
@@ -53,7 +46,7 @@ public class Activator implements BundleActivator {
     public static NetworkDiscovery bonjourDiscovery;
     public URL pluginStartInitiator = null; // Initiator to start the plugin
     public Object mstatus; // status of the plugin
-    protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + ArduinoConst.EMPTY_STRING;
+    protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + Const.EMPTY_STRING;
     protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/',
 	    'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g',
 	    'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
@@ -67,31 +60,9 @@ public class Activator implements BundleActivator {
 
     }
 
-    class indexerListener implements IIndexChangeListener, IIndexerStateListener {
-	Set<IProject> ChangedProjects = new HashSet<>();
-
-	@Override
-	public void indexChanged(IIndexChangeEvent event) {
-	    ChangedProjects.add(event.getAffectedProject().getProject());
-
-	}
-
-	@Override
-	public void indexChanged(IIndexerStateEvent event) {
-
-	    if (event.indexerIsIdle()) {
-		for (IProject curProject : ChangedProjects) {
-		    ArduinoLibraries.checkLibraries(curProject);
-		}
-		ChangedProjects.clear();
-	    }
-	}
-
-    }
-
     private void registerListeners() {
 	// TODO Auto-generated method stub
-	indexerListener myindexerListener = new indexerListener();
+	IndexerListener myindexerListener = new IndexerListener();
 	CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
 	CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
     }
@@ -114,10 +85,11 @@ public class Activator implements BundleActivator {
 
     private void initializeImportantVariables() {
 	// Make sure some important variables are being initialized
-	String LibPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
-	ArduinoInstancePreferences.setPrivateLibraryPaths(LibPaths);
-	String HardwarePaths[] = ArduinoInstancePreferences.getPrivateHardwarePaths();
-	ArduinoInstancePreferences.setPrivateHardwarePaths(HardwarePaths);
+	InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
+	InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
+	InstancePreferences.setOpenSerialWithMonitor(InstancePreferences.getOpenSerialWithMonitor());
+	InstancePreferences.setAutomaticallyIncludeLibraries(InstancePreferences.getAutomaticallyIncludeLibraries());
+
     }
 
     private void runPluginCoreStartInstantiatorJob() {
@@ -125,7 +97,7 @@ public class Activator implements BundleActivator {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
-		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(Activator.this.flagStart, 0) + 1;
 		    myScope.putInt(Activator.this.flagStart, curFsiStatus);
 		    Activator.this.pluginStartInitiator = new URL(
@@ -156,11 +128,11 @@ public class Activator implements BundleActivator {
 			    IProgressMonitor.UNKNOWN);
 		    addFileAssociations();
 		    makeOurOwnCustomBoards_txt();
-		    ArduinoManager.startup_Pluging(monitor);
+		    Manager.startup_Pluging(monitor);
 		    monitor.setTaskName("Done!");
 		    bonjourDiscovery = new NetworkDiscovery();
 		    bonjourDiscovery.start();
-		    ArduinoInstancePreferences.setConfigured();
+		    InstancePreferences.setConfigured();
 		    registerListeners();
 		    return Status.OK_STATUS;
 		} else {

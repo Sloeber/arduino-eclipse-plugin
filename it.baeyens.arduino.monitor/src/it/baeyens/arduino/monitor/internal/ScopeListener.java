@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
  * 
  */
 import it.baeyens.arduino.arduino.MessageConsumer;
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.monitor.views.Messages;
 import multichannel.Oscilloscope;
@@ -55,7 +55,7 @@ public class ScopeListener implements MessageConsumer {
 	    return;
 	if (this.myEndPosition + newData.length >= this.myReceivedScopeData.capacity()) {
 	    this.myEndPosition = 0;
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
 	} else {
 	    this.myReceivedScopeData.position(this.myEndPosition);
 	    this.myReceivedScopeData.put(newData, 0, newData.length);
@@ -101,13 +101,13 @@ public class ScopeListener implements MessageConsumer {
 	int lastFoundData = this.myEndPosition - 6;
 	// Scan for scope data
 	for (int scannnedDataPointer = 0; scannnedDataPointer < this.myEndPosition - 6; scannnedDataPointer++) {
-	    if (this.myReceivedScopeData.getShort(scannnedDataPointer) == ArduinoConst.SCOPE_START_DATA) {
+	    if (this.myReceivedScopeData.getShort(scannnedDataPointer) == Const.SCOPE_START_DATA) {
 		// we have a hit.
 		lastFoundData = scannnedDataPointer;
 		scannnedDataPointer = scannnedDataPointer + 2;
 		int bytestoRead = this.myReceivedScopeData.getShort(scannnedDataPointer);
 		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-		    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 			    Messages.SerialListener_error_input_part_1 + bytestoRead / 2 + Messages.SerialListener_error_input_part_2));
 		} else {
 		    if (bytestoRead + 2 + scannnedDataPointer < this.myEndPosition) {
@@ -130,7 +130,7 @@ public class ScopeListener implements MessageConsumer {
 	    try {
 		this.myReceivedScopeData.put(curByte, this.myReceivedScopeData.get(curByte + lastFoundData));
 	    } catch (IndexOutOfBoundsException e) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ScopeListener_buffer_overflow, e));
+		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ScopeListener_buffer_overflow, e));
 	    }
 
 	}

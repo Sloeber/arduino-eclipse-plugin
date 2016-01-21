@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 /**
  * Animated widget that tries to mimic an Oscilloscope.
@@ -90,7 +90,7 @@ public class Oscilloscope extends Canvas {
 	int baseOffset = BASE_CENTER;
 	protected ArrayList<OscilloscopeStackAdapter> stackListeners;
 	protected int progression = 0;
-	String name = ArduinoConst.EMPTY_STRING;
+	String name = Const.EMPTY_STRING;
 
     }
 
@@ -104,7 +104,7 @@ public class Oscilloscope extends Canvas {
     private int myhighValue = 0;
 
     private boolean ShowLabels = false;
-    private String myStatus = ArduinoConst.EMPTY_STRING;
+    private String myStatus = Const.EMPTY_STRING;
 
     public String getStatus() {
 	return this.myStatus;

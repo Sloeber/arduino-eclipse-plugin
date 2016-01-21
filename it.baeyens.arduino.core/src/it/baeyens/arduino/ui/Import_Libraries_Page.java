@@ -24,17 +24,17 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ArduinoLibraries;
+import it.baeyens.arduino.tools.Libraries;
 
-public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
+public class Import_Libraries_Page extends WizardResourceImportPage {
 
     protected Tree myLibrarySelector;
 
     private IProject myProject = null;
 
-    protected Import_Arduino_Libraries_Page(IProject project, String name, IStructuredSelection selection) {
+    protected Import_Libraries_Page(IProject project, String name, IStructuredSelection selection) {
 
 	super(name, selection);
 	setTitle(Messages.ui_import_arduino_libraries_in_project);
@@ -90,12 +90,12 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 
 	// find the items to add to the list
 	Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-	allLibraries.putAll(ArduinoLibraries.findAllArduinoManagerLibraries());
-	allLibraries.putAll(ArduinoLibraries.findAllPrivateLibraries());
-	allLibraries.putAll(ArduinoLibraries.findAllHarwareLibraries(prjDesc.getActiveConfiguration()));
+	allLibraries.putAll(Libraries.findAllArduinoManagerLibraries());
+	allLibraries.putAll(Libraries.findAllPrivateLibraries());
+	allLibraries.putAll(Libraries.findAllHarwareLibraries(prjDesc.getActiveConfiguration()));
 
 	// Get the data in the tree
-	Set<String> allLibrariesAlreadyUsed = ArduinoLibraries.getAllLibrariesFromProject(this.myProject);
+	Set<String> allLibrariesAlreadyUsed = Libraries.getAllLibrariesFromProject(this.myProject);
 	this.myLibrarySelector.setRedraw(false);
 	for (Entry<String, IPath> curlib : allLibraries.entrySet()) {
 	    TreeItem child = new TreeItem(this.myLibrarySelector, SWT.NONE);
@@ -122,13 +122,13 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	// check if there is a incompatibility in the library folder name
 	// windows only
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	    IFolder folder = this.myProject.getFolder(ArduinoConst.LIBRARY_PATH_SUFFIX);
+	    IFolder folder = this.myProject.getFolder(Const.LIBRARY_PATH_SUFFIX);
 	    if (!folder.exists()) {
 		try {
 		    folder.create(false, true, null);
 		} catch (CoreException e) {
 		    // TODO Auto-generated catch block
-		    Common.log(new Status(Status.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		    Common.log(new Status(Status.ERROR, Const.CORE_PLUGIN_ID,
 			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble", e));
 		    return true;
 		}
@@ -144,8 +144,8 @@ public class Import_Arduino_Libraries_Page extends WizardResourceImportPage {
 	    else
 		unselectedLibraries.add(CurItem.getText());
 	}
-	ArduinoLibraries.removeLibrariesFromProject(this.myProject, unselectedLibraries);
-	ArduinoLibraries.addLibrariesToProject(this.myProject, selectedLibraries);
+	Libraries.removeLibrariesFromProject(this.myProject, unselectedLibraries);
+	Libraries.addLibrariesToProject(this.myProject, selectedLibraries);
 
 	return true;
     }

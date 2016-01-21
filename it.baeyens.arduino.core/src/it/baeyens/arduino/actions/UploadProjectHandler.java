@@ -21,8 +21,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.tools.uploaders.UploadSketchWrapper;
@@ -37,7 +37,7 @@ class UploadJobHandler extends Job {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-	if (ArduinoInstancePreferences.getBuildBeforeUploadOption()) {
+	if (InstancePreferences.getBuildBeforeUploadOption()) {
 	    try {
 		this.myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 		Job job = new Job("Start build Activator") { //$NON-NLS-1$
@@ -48,7 +48,7 @@ class UploadJobHandler extends Job {
 			    char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/', 'e', 'c', 'l',
 				    'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r',
 				    't', '.', 'h', 't', 'm', 'l', '?', 'b', '=' };
-			    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+			    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 			    int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
 			    myScope.putInt(buildflag, curFsiStatus);
 			    URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
@@ -88,16 +88,16 @@ class UploadJobHandler extends Job {
  * @author jan
  * 
  */
-public class ArduinoUploadProjectHandler extends AbstractHandler {
+public class UploadProjectHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-	if (!ArduinoInstancePreferences.isConfigured(true))
+	if (!InstancePreferences.isConfigured(true))
 	    return null;
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoUploadProjectHandler_No_project_found));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoUploadProjectHandler_No_project_found));
 	    break;
 	case 1:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
@@ -107,7 +107,7 @@ public class ArduinoUploadProjectHandler extends AbstractHandler {
 	    mBuildJob.schedule();
 	    break;
 	default:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoUploadProjectHandler_Multiple_projects_found
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoUploadProjectHandler_Multiple_projects_found
 		    + Integer.toString(SelectedProjects.length) + Messages.ArduinoUploadProjectHandler_The_Names_Are + SelectedProjects.toString()));
 
 	}

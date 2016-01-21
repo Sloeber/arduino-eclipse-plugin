@@ -21,7 +21,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 
@@ -48,13 +49,15 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 	    IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	    // if there are project selected and the autoConnectScope feature is
 	    // on
-	    for (IProject curproject : SelectedProjects) {
-		int baud = getBaudRate(curproject);
-		if (baud > 0) {
-		    String comPort = Common.getBuildEnvironmentVariable(curproject,
-			    ArduinoConst.ENV_KEY_JANTJE_COM_PORT, "");
-		    if (!comPort.isEmpty()) {
-			it.baeyens.arduino.monitor.SerialConnection.add(comPort, baud);
+	    if ((SelectedProjects.length > 0) && (InstancePreferences.getOpenSerialWithMonitor() == true)) {
+		for (IProject curproject : SelectedProjects) {
+		    int baud = getBaudRate(curproject);
+		    if (baud > 0) {
+			String comPort = Common.getBuildEnvironmentVariable(curproject,
+				Const.ENV_KEY_JANTJE_COM_PORT, "");
+			if (!comPort.isEmpty()) {
+			    it.baeyens.arduino.monitor.SerialConnection.add(comPort, baud);
+			}
 		    }
 		}
 	    }

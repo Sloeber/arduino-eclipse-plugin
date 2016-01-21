@@ -24,12 +24,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 
-public class ArduinoLibraries {
+public class Libraries {
     /**
      * for a given folder return all subfolders
      * 
@@ -66,13 +66,13 @@ public class ArduinoLibraries {
      */
     public static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
 	Path platformFile = new Path(Common.getBuildEnvironmentVariable(confdesc,
-		ArduinoConst.ENV_KEY_JANTJE_PLATFORM_FILE, ArduinoConst.EMPTY_STRING));
-	return findAllSubFolders(platformFile.removeLastSegments(1).append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+		Const.ENV_KEY_JANTJE_PLATFORM_FILE, Const.EMPTY_STRING));
+	return findAllSubFolders(platformFile.removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX));
     }
 
     public static Map<String, IPath> findAllPrivateLibraries() {
 	Map<String, IPath> ret = new HashMap<>();
-	String privateLibPaths[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
+	String privateLibPaths[] = InstancePreferences.getPrivateLibraryPaths();
 	for (String curLibPath : privateLibPaths) {
 	    ret.putAll(findAllSubFolders(new Path(curLibPath)));
 	}
@@ -121,13 +121,13 @@ public class ArduinoLibraries {
 	    Set<String> libraries) {
 	for (String CurItem : libraries) {
 	    try {
-		final IFolder folderHandle = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem);
+		final IFolder folderHandle = project.getFolder(Const.WORKSPACE_LIB_FOLDER + CurItem);
 		folderHandle.delete(true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
 	    }
 	}
-	ArduinoHelpers.removeInvalidIncludeFolders(confdesc);
+	Helpers.removeInvalidIncludeFolders(confdesc);
     }
 
     private static HashMap<String, IPath> getAllInstalledLibraries(ICConfigurationDescription confdesc) {
@@ -152,10 +152,10 @@ public class ArduinoLibraries {
 	for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 	    try {
 
-		ArduinoHelpers.addCodeFolder(project, CurItem.getValue(),
-			ArduinoConst.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
+		Helpers.addCodeFolder(project, CurItem.getValue(),
+			Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 	    }
 	}
     }
@@ -165,7 +165,7 @@ public class ArduinoLibraries {
     // }
 
     public static Set<String> getAllLibrariesFromProject(IProject project) {
-	IFolder link = project.getFolder(ArduinoConst.WORKSPACE_LIB_FOLDER);
+	IFolder link = project.getFolder(Const.WORKSPACE_LIB_FOLDER);
 	Set<String> ret = new TreeSet<>();
 	try {
 	    if (link.exists()) {

@@ -18,22 +18,22 @@ import org.eclipse.core.runtime.Status;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
-public class ArduinoTool {
+public class Tool {
 
     private String name;
     private String version;
-    private List<ArduinoToolSystem> systems;
+    private List<ToolSystem> systems;
 
-    private transient ArduinoPackage pkg;
+    private transient Package pkg;
 
-    public void setOwner(ArduinoPackage pkg) {
+    public void setOwner(Package pkg) {
 	this.pkg = pkg;
-	for (ArduinoToolSystem system : this.systems) {
+	for (ToolSystem system : this.systems) {
 	    system.setOwner(this);
 	}
     }
 
-    public ArduinoPackage getPackage() {
+    public Package getPackage() {
 	return this.pkg;
     }
 
@@ -45,7 +45,7 @@ public class ArduinoTool {
 	return this.version;
     }
 
-    public List<ArduinoToolSystem> getSystems() {
+    public List<ToolSystem> getSystems() {
 	return this.systems;
     }
 
@@ -63,7 +63,7 @@ public class ArduinoTool {
 	    return Status.OK_STATUS;
 	}
 
-	for (ArduinoToolSystem system : this.systems) {
+	for (ToolSystem system : this.systems) {
 	    if (system.isApplicable()) {
 		return system.install(monitor);
 	    }

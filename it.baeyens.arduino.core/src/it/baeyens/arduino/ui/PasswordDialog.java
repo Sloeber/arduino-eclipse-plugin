@@ -16,13 +16,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 public class PasswordDialog extends Dialog {
     private Text txtUser;
     private Text txtPassword;
-    private String myUser = ArduinoConst.EMPTY_STRING;
-    private String myPassword = ArduinoConst.EMPTY_STRING;
+    private String myUser = Const.EMPTY_STRING;
+    private String myPassword = Const.EMPTY_STRING;
     private String myHost = Messages.error_no_host_name;
 
     public PasswordDialog(Shell parentShell) {

@@ -82,7 +82,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 /**
@@ -3269,7 +3269,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    } catch (Exception e) {
 			// The provided class is not a
 			// IManagedOutputNameProviderJaba class;
-			Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 				"The provided class is not of type IManagedOutputNameProviderJaba", e)); //$NON-NLS-1$
 		    }
 		    if (outPaths != null) { // MODDED BY JABA ADDED to handle
@@ -4595,7 +4595,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    try {
 		folder.delete(true, new SubProgressMonitor(this.monitor, 1));
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.INFO, ArduinoConst.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), e)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), e)); //$NON-NLS-1$
 	    }
 	}
     }

@@ -20,12 +20,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
-import it.baeyens.arduino.managers.ArduinoManager;
+import it.baeyens.arduino.managers.Manager;
 
 
-public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class LinkPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     private Text urlsText;
 
@@ -56,13 +56,13 @@ public class ArduinoLinkPreferencePage extends PreferencePage implements IWorkbe
     @Override
     public boolean performOk() {
 	ConfigurationPreferences.setBoardURLs(this.urlsText.getText());
-	ArduinoManager.loadIndices(true);
+	Manager.loadIndices(true);
 	return true;
     }
 
     @Override
     protected void performDefaults() {
-	String defaultBoardUrl = ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS;
+	String defaultBoardUrl = Const.DEFAULT_ARDUINO_MANAGER_BOARD_URLS;
 	this.urlsText.setText(defaultBoardUrl);
 	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
 	super.performDefaults();

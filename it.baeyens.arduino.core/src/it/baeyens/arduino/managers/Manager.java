@@ -53,7 +53,7 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
-public class ArduinoManager {
+public class Manager {
 
     private static final String ARDUINO_AVR_BOARDS = "Arduino AVR Boards"; //$NON-NLS-1$
 
@@ -83,7 +83,7 @@ public class ArduinoManager {
     public static void startup_Pluging(IProgressMonitor monitor) {
 	loadIndices(true);
 	try {
-	    List<ArduinoBoard> allBoards = getInstalledBoards();
+	    List<Board> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) { // we test for boards
 		// InformUserOfInstallationStart(monitor);
 		// so first do the libraries
@@ -96,7 +96,7 @@ public class ArduinoManager {
 
 		// now add the boards
 		String platformName = ARDUINO_AVR_BOARDS;
-		ArduinoPackage pkg = packageIndices.get(0).getPackages().get(0);
+		Package pkg = packageIndices.get(0).getPackages().get(0);
 		if (pkg != null) {
 		    ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
 		    if (platform == null) {
@@ -120,7 +120,7 @@ public class ArduinoManager {
 	String[] libraries = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard", "LiquidCrystal", "Mouse", "SD", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 		"Servo", "Stepper", "TFT", "WiFi" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	for (String library : libraries) {
-	    ArduinoLibrary toInstalLib = libindex.getLatestLibrary(library);
+	    Library toInstalLib = libindex.getLatestLibrary(library);
 	    if (toInstalLib != null) {
 		toInstalLib.install(monitor);
 	    }
@@ -287,14 +287,14 @@ public class ArduinoManager {
 	return libraryIndex;
     }
 
-    static public ArduinoBoard getBoard(String boardName, String platformName, String packageName)
+    static public Board getBoard(String boardName, String platformName, String packageName)
 	    throws CoreException {
 	for (PackageIndex index : packageIndices) {
-	    ArduinoPackage pkg = index.getPackage(packageName);
+	    Package pkg = index.getPackage(packageName);
 	    if (pkg != null) {
 		ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
 		if (platform != null) {
-		    ArduinoBoard board = platform.getBoard(boardName);
+		    Board board = platform.getBoard(boardName);
 		    if (board != null) {
 			return board;
 		    }
@@ -304,10 +304,10 @@ public class ArduinoManager {
 	return null;
     }
 
-    static public List<ArduinoBoard> getBoards() throws CoreException {
-	List<ArduinoBoard> boards = new ArrayList<>();
+    static public List<Board> getBoards() throws CoreException {
+	List<Board> boards = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
-	    for (ArduinoPackage pkg : index.getPackages()) {
+	    for (Package pkg : index.getPackages()) {
 		for (ArduinoPlatform platform : pkg.getLatestPlatforms()) {
 		    boards.addAll(platform.getBoards());
 		}
@@ -319,17 +319,17 @@ public class ArduinoManager {
     public static List<ArduinoPlatform> getPlatforms() {
 	List<ArduinoPlatform> platforms = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
-	    for (ArduinoPackage pkg : index.getPackages()) {
+	    for (Package pkg : index.getPackages()) {
 		platforms.addAll(pkg.getPlatforms());
 	    }
 	}
 	return platforms;
     }
 
-    static public List<ArduinoBoard> getInstalledBoards() throws CoreException {
-	List<ArduinoBoard> boards = new ArrayList<>();
+    static public List<Board> getInstalledBoards() throws CoreException {
+	List<Board> boards = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
-	    for (ArduinoPackage pkg : index.getPackages()) {
+	    for (Package pkg : index.getPackages()) {
 		for (ArduinoPlatform platform : pkg.getInstalledPlatforms()) {
 		    boards.addAll(platform.getBoards());
 		}
@@ -338,17 +338,17 @@ public class ArduinoManager {
 	return boards;
     }
 
-    static public List<ArduinoPackage> getPackages() {
-	List<ArduinoPackage> packages = new ArrayList<>();
+    static public List<Package> getPackages() {
+	List<Package> packages = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
 	    packages.addAll(index.getPackages());
 	}
 	return packages;
     }
 
-    static public ArduinoPackage getPackage(String packageName) {
+    static public Package getPackage(String packageName) {
 	for (PackageIndex index : packageIndices) {
-	    ArduinoPackage pkg = index.getPackage(packageName);
+	    Package pkg = index.getPackage(packageName);
 	    if (pkg != null) {
 		return pkg;
 	    }
@@ -356,11 +356,11 @@ public class ArduinoManager {
 	return null;
     }
 
-    static public ArduinoTool getTool(String packageName, String toolName, String version) {
+    static public Tool getTool(String packageName, String toolName, String version) {
 	for (PackageIndex index : packageIndices) {
-	    ArduinoPackage pkg = index.getPackage(packageName);
+	    Package pkg = index.getPackage(packageName);
 	    if (pkg != null) {
-		ArduinoTool tool = pkg.getTool(toolName, version);
+		Tool tool = pkg.getTool(toolName, version);
 		if (tool != null) {
 		    return tool;
 		}

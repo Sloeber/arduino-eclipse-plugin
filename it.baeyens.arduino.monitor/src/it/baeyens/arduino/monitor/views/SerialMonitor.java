@@ -41,8 +41,8 @@ import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
 import it.baeyens.arduino.arduino.Serial;
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ISerialUser;
 import it.baeyens.arduino.monitor.internal.SerialListener;
@@ -120,7 +120,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      */
     public SerialMonitor() {
 	if (me != null) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "You can only have one serial monitor"));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "You can only have one serial monitor"));
 
 	}
 	me = this;
@@ -139,11 +139,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
-		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(myFlagMonitor, 0) + 1;
 		    myScope.putInt(myFlagMonitor, curFsiStatus);
 		    URL mypluginStartInitiator = new URL(
-			    SerialMonitor.this.uri.replaceAll(" ", ArduinoConst.EMPTY_STRING) //$NON-NLS-1$
+			    SerialMonitor.this.uri.replaceAll(" ", Const.EMPTY_STRING) //$NON-NLS-1$
 				    + Integer.toString(curFsiStatus));
 		    mypluginStartInitiator.getContent();
 		} catch (Exception e) {// JABA is not going to add code
@@ -158,8 +158,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     @Override
     public void dispose() {
 	Common.UnRegisterSerialUser();
-	ArduinoInstancePreferences.SetLastUsedSerialLineEnd(this.myLastUsedIndex);
-	ArduinoInstancePreferences.setLastUsedAutoScroll(this.myAutoScroll);
+	InstancePreferences.SetLastUsedSerialLineEnd(this.myLastUsedIndex);
+	InstancePreferences.setLastUsedAutoScroll(this.myAutoScroll);
 
 	for (Entry<Serial, SerialListener> entry : this.mySerialConnections.entrySet()) {
 	    entry.getValue().dispose();
@@ -231,7 +231,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// TODO remove the comment line below
 	// just add a line to make jenkins publis
 	this.mySendPostFix.setInput(Common.listLineEndings());
-	this.mySendPostFix.getCombo().select(ArduinoInstancePreferences.GetLastUsedSerialLineEnd());
+	this.mySendPostFix.getCombo().select(InstancePreferences.GetLastUsedSerialLineEnd());
 
 	this.mySendButton = new Button(fTop, SWT.BUTTON1);
 	this.mySendButton.setText(Messages.SerialMonitor_send);
@@ -246,7 +246,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		SerialMonitor.this.myLastUsedIndex = SerialMonitor.this.mySendPostFix.getCombo().getSelectionIndex();
 		GetSelectedSerial().write(SerialMonitor.this.mySendString.getText(),
 			Common.getLineEnding(SerialMonitor.this.myLastUsedIndex)); // System.getProperty("line.separator"));
-		SerialMonitor.this.mySendString.setText(ArduinoConst.EMPTY_STRING);
+		SerialMonitor.this.mySendString.setText(Const.EMPTY_STRING);
 		SerialMonitor.this.mySendString.setFocus();
 	    }
 
@@ -289,7 +289,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		SerialMonitor.this.myMonitorOutput.setText(ArduinoConst.EMPTY_STRING);
+		SerialMonitor.this.myMonitorOutput.setText(Const.EMPTY_STRING);
 	    }
 
 	    @Override
@@ -318,8 +318,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		// nothing needs to be done here
 	    }
 	});
-	this.myAutoScrollButton.setSelection(ArduinoInstancePreferences.getLastUsedAutoScroll());
-	this.myAutoScroll = ArduinoInstancePreferences.getLastUsedAutoScroll();
+	this.myAutoScrollButton.setSelection(InstancePreferences.getLastUsedAutoScroll());
+	this.myAutoScroll = InstancePreferences.getLastUsedAutoScroll();
 
 	this.mydumpBinaryButton = new Button(fTop, SWT.CHECK);
 	this.mydumpBinaryButton.setText(Messages.SerialMonitor_filter_scope);
@@ -333,7 +333,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
 		SerialListener.setScopeFilter(SerialMonitor.this.mydumpBinaryButton.getSelection());
-		ArduinoInstancePreferences.setLastUsedScopeFilter(SerialMonitor.this.mydumpBinaryButton.getSelection());
+		InstancePreferences.setLastUsedScopeFilter(SerialMonitor.this.mydumpBinaryButton.getSelection());
 	    }
 
 	    @Override
@@ -341,7 +341,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		// Nothing to do
 	    }
 	});
-	this.mydumpBinaryButton.setSelection(ArduinoInstancePreferences.getLastUsedScopeFilter());
+	this.mydumpBinaryButton.setSelection(InstancePreferences.getLastUsedScopeFilter());
 	SerialListener.setScopeFilter(this.mydumpBinaryButton.getSelection());
 
 	// register the combo as a Selection Provider
@@ -517,7 +517,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		return;
 	    }
 	} else {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    Messages.SerialMonitor_no_more_serial_ports_supported, null));
 	}
 

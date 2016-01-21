@@ -19,10 +19,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
-import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.Helpers;
 
 /**
  * Import_Arduino_Library class is linked to the GUI related to the Arduino source folder import. It creates one page. All important action is in the
@@ -61,7 +61,7 @@ public class Import_Source_Folder implements IImportWizard {
 	    this.mPages[0] = this.mFolderSelectionPage;
 	    this.mFolderSelectionPage.setImportProject(SelectedProjects[0]);
 	} else {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_no_Arduino_project_selected));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.error_no_Arduino_project_selected));
 	}
     }
 
@@ -168,11 +168,11 @@ public class Import_Source_Folder implements IImportWizard {
 
 	for (int curConfigurationDescription = 0; curConfigurationDescription < configurationDescriptions.length; curConfigurationDescription++) {
 	    try {
-		ArduinoHelpers.addCodeFolder(project, new Path(this.mFolderSelectionPage.GetLibraryFolder()),
+		Helpers.addCodeFolder(project, new Path(this.mFolderSelectionPage.GetLibraryFolder()),
 			configurationDescriptions[curConfigurationDescription]);
 	    } catch (CoreException e) {
 		e.printStackTrace();
-		IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.error_failed_to_import_library_in_project, e);
+		IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.error_failed_to_import_library_in_project, e);
 		Common.log(status);
 		return false;
 	    }
@@ -181,7 +181,7 @@ public class Import_Source_Folder implements IImportWizard {
 	    try {
 		CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, projectDescription, true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			Messages.error_failed_to_import_library_in_project + ' ' + project.getName(), e));
 	    }
 	}

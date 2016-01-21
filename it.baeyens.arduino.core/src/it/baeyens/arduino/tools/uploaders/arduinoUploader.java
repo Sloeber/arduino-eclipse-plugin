@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.ui.console.MessageConsole;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.communication.ArduinoSerial;
 
 public class arduinoUploader implements IRealUpload {
@@ -35,8 +35,8 @@ public class arduinoUploader implements IRealUpload {
 
     @Override
     public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
-	String MComPort = ArduinoConst.EMPTY_STRING;
-	String boardName = ArduinoConst.EMPTY_STRING;
+	String MComPort = Const.EMPTY_STRING;
+	String boardName = Const.EMPTY_STRING;
 
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -44,21 +44,21 @@ public class arduinoUploader implements IRealUpload {
 	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
 
 	try {
-	    MComPort = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_COM_PORT, configurationDescription, true).getValue();
+	    MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_COM_PORT, configurationDescription, true).getValue();
 	} catch (Exception e) {// ignore all errors
 	}
 	try {
-	    boardName = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true).getValue();
+	    boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true).getValue();
 	} catch (Exception e) {// ignore all errors
 	}
 	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject, this.mycConf, MComPort);
 
-	IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SERIAL_PORT, NewSerialPort);
+	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT, NewSerialPort);
 	contribEnv.addVariable(var, configurationDescription);
-	var = new EnvironmentVariable(ArduinoConst.ENV_KEY_SERIAL_PORT_FILE, NewSerialPort.replace("/dev/", ArduinoConst.EMPTY_STRING)); //$NON-NLS-1$
+	var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE, NewSerialPort.replace("/dev/", Const.EMPTY_STRING)); //$NON-NLS-1$
 	contribEnv.addVariable(var, configurationDescription);
 
-	String command = ArduinoConst.EMPTY_STRING;
+	String command = Const.EMPTY_STRING;
 	try {
 	    command = envManager.getVariable("A.TOOLS." + this.myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", configurationDescription, true) //$NON-NLS-1$//$NON-NLS-2$
 		    .getValue();

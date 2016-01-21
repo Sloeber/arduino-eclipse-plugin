@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 /*
@@ -44,7 +44,7 @@ class LabelCombo {
 
     private Label mLabel;
     public Combo mCombo;
-    private String myValue = ArduinoConst.EMPTY_STRING;
+    private String myValue = Const.EMPTY_STRING;
     private String myEnvName;
     private String mMenuName;
     private Listener myListener = null;

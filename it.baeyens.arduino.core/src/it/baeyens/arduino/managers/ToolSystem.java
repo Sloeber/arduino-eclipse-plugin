@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 
-public class ArduinoToolSystem {
+public class ToolSystem {
 
     private String host;
     private String archiveFileName;
@@ -19,9 +19,9 @@ public class ArduinoToolSystem {
     private String checksum;
     private String size;
 
-    private transient ArduinoTool tool;
+    private transient Tool tool;
 
-    public void setOwner(ArduinoTool tool) {
+    public void setOwner(Tool tool) {
 	this.tool = tool;
     }
 
@@ -72,7 +72,7 @@ public class ArduinoToolSystem {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-	return ArduinoManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
+	return Manager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
     }
 
 }

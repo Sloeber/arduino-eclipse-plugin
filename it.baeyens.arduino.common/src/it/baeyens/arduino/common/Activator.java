@@ -72,8 +72,8 @@ public class Activator extends AbstractUIPlugin {
 
 	// add required properties for Arduino serial port on linux, if not
 	// defined
-	if (Platform.getOS().equals(Platform.OS_LINUX) && System.getProperty(ArduinoConst.ENV_KEY_GNU_SERIAL_PORTS) == null) {
-	    System.setProperty(ArduinoConst.ENV_KEY_GNU_SERIAL_PORTS, ArduinoConst.ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
+	if (Platform.getOS().equals(Platform.OS_LINUX) && System.getProperty(Const.ENV_KEY_GNU_SERIAL_PORTS) == null) {
+	    System.setProperty(Const.ENV_KEY_GNU_SERIAL_PORTS, Const.ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
 	}
 	remind();
 	return;
@@ -85,7 +85,7 @@ public class Activator extends AbstractUIPlugin {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		int curFsiStatus = myScope.getInt(flagStart, 0) + myScope.getInt(flagMonitor, 0) + myScope.getInt(uploadflag, 0)
 			+ myScope.getInt(buildflag, 0);
 		int lastFsiStatus = myScope.getInt(Localflag, 0);

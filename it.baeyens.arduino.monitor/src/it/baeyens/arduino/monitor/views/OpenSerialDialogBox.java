@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 
 public class OpenSerialDialogBox extends Dialog {
@@ -23,8 +23,8 @@ public class OpenSerialDialogBox extends Dialog {
 	// deleted after he close
 	this.SelectedRate = Integer.parseInt(this.BaudRates.getCombo().getText());
 	this.SelectedPort = this.SerialPorts.getCombo().getText();
-	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlRATE, this.BaudRates.getCombo().getText());
-	ArduinoInstancePreferences.setGlobalValue(ArduinoConst.KEY_SERIAlPORT, this.SelectedPort);
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAlRATE, this.BaudRates.getCombo().getText());
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAlPORT, this.SelectedPort);
 	super.okPressed();
     }
 
@@ -76,8 +76,8 @@ public class OpenSerialDialogBox extends Dialog {
 	this.BaudRates.setLabelProvider(new LabelProvider());
 	this.BaudRates.setInput(Common.listBaudRates());
 
-	this.BaudRates.getCombo().setText(ArduinoInstancePreferences.getGlobalString(ArduinoConst.KEY_SERIAlRATE, ArduinoConst.EMPTY_STRING));
-	this.SerialPorts.getCombo().setText(ArduinoInstancePreferences.getGlobalString(ArduinoConst.KEY_SERIAlPORT, ArduinoConst.EMPTY_STRING));
+	this.BaudRates.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlRATE, Const.EMPTY_STRING));
+	this.SerialPorts.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlPORT, Const.EMPTY_STRING));
 	return parent;
 
     }

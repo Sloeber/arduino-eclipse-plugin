@@ -24,20 +24,20 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.ConfigurationPreferences;
-import it.baeyens.arduino.tools.ArduinoHelpers;
-import it.baeyens.arduino.tools.ArduinoLibraries;
+import it.baeyens.arduino.tools.Helpers;
+import it.baeyens.arduino.tools.Libraries;
 
-public class ArduinoSampleSelector extends Composite {
+public class SampleSelector extends Composite {
     protected Tree sampleTree;
     protected Label myLabel;
     TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     protected Listener mylistener;
     protected int numSelected = 0;
 
-    public ArduinoSampleSelector(Composite parent, int style, String label) {
+    public SampleSelector(Composite parent, int style, String label) {
 	super(parent, style);
 	Composite composite = new Composite(parent, SWT.FILL);
 	GridLayout theGridLayout = new GridLayout();
@@ -75,12 +75,12 @@ public class ArduinoSampleSelector extends Composite {
 			thechangeItem.setChecked(false);
 		    } else {
 			if (thechangeItem.getChecked()) {
-			    ArduinoSampleSelector.this.numSelected += 1;
+			    SampleSelector.this.numSelected += 1;
 			} else {
-			    ArduinoSampleSelector.this.numSelected -= 1;
+			    SampleSelector.this.numSelected -= 1;
 			}
-			if (ArduinoSampleSelector.this.mylistener != null) {
-			    ArduinoSampleSelector.this.mylistener.handleEvent(null);
+			if (SampleSelector.this.mylistener != null) {
+			    SampleSelector.this.mylistener.handleEvent(null);
 			}
 
 		    }
@@ -113,7 +113,7 @@ public class ArduinoSampleSelector extends Composite {
 	this.numSelected = 0;
 
 	// Get the examples of the library manager installed libraries
-	String libLocations[] = ArduinoInstancePreferences.getPrivateLibraryPaths();
+	String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
 	File exampleLocation = new File(ConfigurationPreferences.getInstallationPathExamples().toString());
 
 	IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
@@ -133,7 +133,7 @@ public class ArduinoSampleSelector extends Composite {
 	// Get the examples from the example locations
 
 	if (exampleLocation.exists()) {
-	    getExamplesFromFolder(ArduinoConst.EMPTY_STRING, exampleLocation);
+	    getExamplesFromFolder(Const.EMPTY_STRING, exampleLocation);
 	}
 
 	// Get the examples of the libraries from the selected hardware
@@ -141,7 +141,7 @@ public class ArduinoSampleSelector extends Composite {
 	// hardware libraries are preferred to others
 	if (selectedPlatformLocation != null) {
 	    if (new File(selectedPlatformLocation).exists()) {
-		getLibExampleFolders(new Path(selectedPlatformLocation).append(ArduinoConst.LIBRARY_PATH_SUFFIX));
+		getLibExampleFolders(new Path(selectedPlatformLocation).append(Const.LIBRARY_PATH_SUFFIX));
 	    }
 	}
 
@@ -283,7 +283,7 @@ public class ArduinoSampleSelector extends Composite {
 		String location = (String) curchildTreeItem.getData("examplePath"); //$NON-NLS-1$
 		Path locationPath = new Path(location);
 		if (link) {
-		    ArduinoHelpers.linkDirectory(project, locationPath, target);
+		    Helpers.linkDirectory(project, locationPath, target);
 		} else {
 		    FileUtils.copyDirectory(locationPath.toFile(), project.getLocation().toFile());
 		}
@@ -318,7 +318,7 @@ public class ArduinoSampleSelector extends Composite {
 	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
 	    libs.addAll(recursiveGetSelectedLibraries(curTreeItem));
 	}
-	ArduinoLibraries.addLibrariesToProject(project, configurationDescription, libs);
+	Libraries.addLibrariesToProject(project, configurationDescription, libs);
 
     }
 
@@ -342,7 +342,7 @@ public class ArduinoSampleSelector extends Composite {
     }
 
     public void setLastUsedExamples() {
-	String[] lastUsedExamples = ArduinoInstancePreferences.getLastUsedExamples();
+	String[] lastUsedExamples = InstancePreferences.getLastUsedExamples();
 	for (TreeItem curItem : this.sampleTree.getItems()) {
 	    recursiveSetExamples(curItem, lastUsedExamples);
 	}
@@ -369,7 +369,7 @@ public class ArduinoSampleSelector extends Composite {
 	for (TreeItem curItem : this.sampleTree.getItems()) {
 	    currentUsedExamples.addAll(recursiveSetExamples(curItem));
 	}
-	ArduinoInstancePreferences
+	InstancePreferences
 		.setLastUsedExamples(currentUsedExamples.toArray(new String[currentUsedExamples.size()]));
     }
 

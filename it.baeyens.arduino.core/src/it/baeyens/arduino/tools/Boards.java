@@ -17,7 +17,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 /**
@@ -27,19 +27,19 @@ import it.baeyens.arduino.common.Common;
  * @author Jan Baeyens and trump
  * 
  */
-public class ArduinoBoards {
+public class Boards {
     private File mLastLoadedBoardsFile = null;
-    private static final String DOT = ArduinoConst.DOT;
+    private static final String DOT = Const.DOT;
     private static final String MENU = "menu"; //$NON-NLS-1$
     Map<String, String> settings = null;
     // private String mLastLoadedBoard = "";
     private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<>(); // all the data
 
-    public ArduinoBoards(File boardsFileName) {
+    public Boards(File boardsFileName) {
 	LoadBoardsFile(boardsFileName);
     }
 
-    public ArduinoBoards() {
+    public Boards() {
 	// no constructor needed
     }
 
@@ -64,7 +64,7 @@ public class ArduinoBoards {
 	for (Entry<String, Map<String, String>> entry : this.mArduinoSupportedBoards.entrySet()) {
 	    if (entry.getKey().equals(MENU)) {
 		for (Entry<String, String> e2 : entry.getValue().entrySet()) {
-		    if (!e2.getKey().contains(ArduinoConst.DOT)) {
+		    if (!e2.getKey().contains(Const.DOT)) {
 			if (!ret.contains(e2.getValue())) {
 			    ret.add(e2.getValue());
 			}
@@ -125,14 +125,14 @@ public class ArduinoBoards {
      * 
      */
     public String[] GetArduinoBoards() {
-	if (this.mLastLoadedBoardsFile.equals(ArduinoConst.EMPTY_STRING)) {
+	if (this.mLastLoadedBoardsFile.equals(Const.EMPTY_STRING)) {
 	    String[] sBoards = new String[0];
 	    return sBoards;
 	}
 	Set<String> mBoards = new HashSet<>();
 	for (String s : this.mArduinoSupportedBoards.keySet()) {
 	    if (s != null) {
-		String theboardName = this.mArduinoSupportedBoards.get(s).get(ArduinoConst.BoardNameKeyTAG);
+		String theboardName = this.mArduinoSupportedBoards.get(s).get(Const.BoardNameKeyTAG);
 		if (theboardName != null) {
 		    mBoards.add(theboardName);
 		}
@@ -190,7 +190,7 @@ public class ArduinoBoards {
 	    }
 
 	} catch (Exception e) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 		    Messages.ArduinoBoards_Failed_to_read_boards + this.mLastLoadedBoardsFile.getName(), e));
 	}
 	return true;
@@ -277,7 +277,7 @@ public class ArduinoBoards {
 	    return output;
 
 	} catch (IOException e) {
-	    IStatus status = new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Failed to read stream ", e); //$NON-NLS-1$
+	    IStatus status = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Failed to read stream ", e); //$NON-NLS-1$
 	    Common.log(status);
 	}
 	return null;

@@ -29,7 +29,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import it.baeyens.arduino.arduino.Serial;
 
-public class Common extends ArduinoInstancePreferences {
+public class Common extends InstancePreferences {
 
     static ISerialUser OtherSerialUser = null; // If someone else uses the
 					       // serial port he can register
@@ -123,7 +123,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return sret;
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
+	    log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
 	    // e.printStackTrace();
 	    return EMPTY_STRING;
 	}
@@ -137,7 +137,7 @@ public class Common extends ArduinoInstancePreferences {
 	    }
 	    return Integer.parseInt(sret);
 	} catch (CoreException e) {
-	    log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
+	    log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to read persistent setting " + Tag, e)); //$NON-NLS-1$
 	    // e.printStackTrace();
 	    return defaultValue;
 	}
@@ -161,7 +161,7 @@ public class Common extends ArduinoInstancePreferences {
 	    // downwards
 	    // compatibility
 	} catch (CoreException e) {
-	    IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	    IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    "Failed to write arduino properties", e); //$NON-NLS-1$
 	    Common.log(status);
 
@@ -204,7 +204,7 @@ public class Common extends ArduinoInstancePreferences {
 	    return UploadPortPrefix_LINUX;
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
 	    return UploadPortPrefix_MAC;
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Unsupported operating system", null)); //$NON-NLS-1$
+	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Unsupported operating system", null)); //$NON-NLS-1$
 	return UploadPortPrefix_WIN;
     }
 

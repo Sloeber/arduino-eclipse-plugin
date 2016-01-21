@@ -31,11 +31,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import it.baeyens.arduino.managers.ArduinoLibrary;
-import it.baeyens.arduino.managers.ArduinoManager;
+import it.baeyens.arduino.managers.Library;
+import it.baeyens.arduino.managers.Manager;
 import it.baeyens.arduino.managers.LibraryIndex;
 
-public class ArduinoLibraryPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class LibraryPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     protected HashMap<String, String> ModdedLibraries = null;
     private Table table;
@@ -47,7 +47,7 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 	    CCombo theCombo = (CCombo) e.getSource();
 	    String libname = (String) theCombo.getData();
 	    String version = theCombo.getText();
-	    ArduinoLibraryPreferencePage.this.ModdedLibraries.put(libname, version);
+	    LibraryPreferencePage.this.ModdedLibraries.put(libname, version);
 	}
     };
 
@@ -103,19 +103,19 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 
 	this.ModdedLibraries = new HashMap<>();
 	this.table.removeAll();
-	LibraryIndex libraryIndex = ArduinoManager.getLibraryIndex();
+	LibraryIndex libraryIndex = Manager.getLibraryIndex();
 	Set<String> categories = libraryIndex.getCategories();
 
 	for (String curCategory : categories) {
-	    Collection<ArduinoLibrary> libraries = libraryIndex.getLibraries(curCategory);
-	    List<ArduinoLibrary> librarylist = new ArrayList<>(libraries);
-	    Collections.sort(librarylist, new ArduinoLibrary());
+	    Collection<Library> libraries = libraryIndex.getLibraries(curCategory);
+	    List<Library> librarylist = new ArrayList<>(libraries);
+	    Collections.sort(librarylist, new Library());
 
 	    String prefLibraryName = null;
 	    TableItem libraryItem = null;
 	    CCombo combo = null;
 
-	    for (ArduinoLibrary curLibrary : librarylist) {
+	    for (Library curLibrary : librarylist) {
 
 		if (!curLibrary.getName().equals(prefLibraryName)) {
 		    libraryItem = new TableItem(this.table, SWT.NONE);
@@ -158,14 +158,14 @@ public class ArduinoLibraryPreferencePage extends PreferencePage implements IWor
 		for (Entry<String, String> curTableItem : this.ModdedLibraries.entrySet()) {
 		    String Version = curTableItem.getValue();
 		    String libName = curTableItem.getKey();
-		    ArduinoLibrary removeLib = ArduinoManager.getLibraryIndex().getInstalledLibrary(libName);
+		    Library removeLib = Manager.getLibraryIndex().getInstalledLibrary(libName);
 		    if (removeLib != null) {
 			if (!(removeLib.getVersion().equals(Version))) {
 			    status.add(removeLib.remove(monitor));
 			}
 
 		    }
-		    ArduinoLibrary curLib = ArduinoManager.getLibraryIndex().getLibrary(libName, Version);
+		    Library curLib = Manager.getLibraryIndex().getLibrary(libName, Version);
 		    if (curLib != null) {
 			if (!curLib.isInstalled()) {
 			    status.add(curLib.install(monitor));

@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.tools.PdePreprocessor;
@@ -45,7 +45,7 @@ class BuildJobHandler extends Job {
 	    this.myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.BuildHandler_Failed_to_build, e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BuildHandler_Failed_to_build, e));
 	}
 	return Status.OK_STATUS;
     }
@@ -63,7 +63,7 @@ public class BuildHandler extends AbstractHandler {
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.BuildHandler_No_Project_found));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BuildHandler_No_Project_found));
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
@@ -85,7 +85,7 @@ public class BuildHandler extends AbstractHandler {
 			char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/', 'e', 'c', 'l', 'i',
 				'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't',
 				'.', 'h', 't', 'm', 'l', '?', 'b', '=' };
-			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 			int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
 			myScope.putInt(buildflag, curFsiStatus);
 			URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));

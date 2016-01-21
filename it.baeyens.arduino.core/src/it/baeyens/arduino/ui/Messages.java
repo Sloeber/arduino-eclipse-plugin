@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "it.baeyens.arduino.ui.messages"; //$NON-NLS-1$
+
     public static String error_adding_arduino_code;
     public static String error_no_platform_files_found;
     public static String error_make_finder_failed;
@@ -26,7 +27,9 @@ public class Messages extends NLS {
     public static String ui_append_cpp;
     public static String ui_append_cpp_text;
     public static String ui_ask_every_upload;
+    public static String ui_open_serial_with_monitor;
     public static String ui_build_before_upload;
+    public static String ui_auto_import_libraries;
     public static String ui_category;
 
     public static String ui_import_arduino_libraries_in_project;

@@ -45,9 +45,9 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
 
@@ -57,16 +57,16 @@ import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
  * @author Jan Baeyens
  * 
  */
-public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
+public class NewSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
     private WizardNewProjectCreationPage mWizardPage; // first page of the
 						      // dialog
-    protected NewArduinoSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add
+    protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add
 												// the
 												// folder
 												// for
 												// the
 												// templates
-    protected NewArduinoSketchWizardBoardPage mArduinoPage; // add Arduino board
+    protected NewSketchWizardBoardPage mArduinoPage; // add Arduino board
 							    // and comp port
     private BuildConfigurationsPage mBuildCfgPage; // build the configuration
     private IConfigurationElement mConfig;
@@ -76,13 +76,13 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     public IWizardPage getNextPage(IWizardPage page) {
 	// TODO Auto-generated method stub
 	// if (page.equals(this.mNewArduinoSketchWizardCodeSelectionPage)) {
-	String PlatformPath = NewArduinoSketchWizard.this.mArduinoPage.getPlatformFolder().toString();
-	NewArduinoSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(PlatformPath);
+	String PlatformPath = NewSketchWizard.this.mArduinoPage.getPlatformFolder().toString();
+	NewSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(PlatformPath);
 	// }
 	return super.getNextPage(page);
     }
 
-    public NewArduinoSketchWizard() {
+    public NewSketchWizard() {
 	super();
     }
 
@@ -103,13 +103,13 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	//
 	// settings for Arduino board etc
 	//
-	this.mArduinoPage = new NewArduinoSketchWizardBoardPage(Messages.ui_new_sketch_arduino_information);
+	this.mArduinoPage = new NewSketchWizardBoardPage(Messages.ui_new_sketch_arduino_information);
 	this.mArduinoPage.setTitle(Messages.ui_new_sketch_arduino_information_help);
 	this.mArduinoPage.setDescription(Messages.ui_new_sketch_these_settings_cn_be_changed_later);
 	//
 	// settings for template file location
 	//
-	this.mNewArduinoSketchWizardCodeSelectionPage = new NewArduinoSketchWizardCodeSelectionPage(
+	this.mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
 		Messages.ui_new_sketch_sketch_template_location);
 	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
 	this.mNewArduinoSketchWizardCodeSelectionPage
@@ -227,7 +227,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
     void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor)
 	    throws OperationCanceledException {
 
-	monitor.beginTask(ArduinoConst.EMPTY_STRING, 2000);
+	monitor.beginTask(Const.EMPTY_STRING, 2000);
 	try {
 	    project.create(description, new SubProgressMonitor(monitor, 1000));
 
@@ -246,16 +246,16 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 		    monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
-	    ArduinoHelpers.addTheNatures(description);
+	    Helpers.addTheNatures(description);
 
 	    // Add the Arduino folder
-	    ArduinoHelpers.createNewFolder(project, ArduinoConst.ARDUINO_CODE_FOLDER_NAME, null);
+	    Helpers.createNewFolder(project, Const.ARDUINO_CODE_FOLDER_NAME, null);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjCDesc
 			.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
 		this.mArduinoPage.saveAllSelections(configurationDescription);
-		ArduinoHelpers.setTheEnvironmentVariables(project, configurationDescription,
+		Helpers.setTheEnvironmentVariables(project, configurationDescription,
 			cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
@@ -272,7 +272,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // Insert The Arduino Code
 	    // NOTE: Not duplicated for debug (the release reference is just to
 	    // get at some environment variables)
-	    ArduinoHelpers.addArduinoCodeToProject(project, defaultConfigDescription);
+	    Helpers.addArduinoCodeToProject(project, defaultConfigDescription);
 
 	    //
 	    // add the correct files to the project
@@ -284,15 +284,15 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getActiveConfiguration());
 
 	    ICResourceDescription cfgd = defaultConfigDescription
-		    .getResourceDescription(new Path(ArduinoConst.EMPTY_STRING), true);
+		    .getResourceDescription(new Path(Const.EMPTY_STRING), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[5];
-		exclusionPath[0] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xamples/**"); //$NON-NLS-1$
-		exclusionPath[1] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/?xtras/**"); //$NON-NLS-1$
-		exclusionPath[2] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/test/**"); //$NON-NLS-1$
-		exclusionPath[3] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "/**/third-party/**"); //$NON-NLS-1$
-		exclusionPath[4] = new Path(ArduinoConst.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
+		exclusionPath[0] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/?xamples/**"); //$NON-NLS-1$
+		exclusionPath[1] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/?xtras/**"); //$NON-NLS-1$
+		exclusionPath[2] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/test/**"); //$NON-NLS-1$
+		exclusionPath[3] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/third-party/**"); //$NON-NLS-1$
+		exclusionPath[4] = new Path(Const.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
 
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 			ICSettingEntry.VALUE_WORKSPACE_PATH);
@@ -312,8 +312,8 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    // set warning levels default on
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-	    IEnvironmentVariable var = new EnvironmentVariable(ArduinoConst.ENV_KEY_JANTJE_WARNING_LEVEL,
-		    ArduinoConst.ENV_KEY_WARNING_LEVEL_ON);
+	    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
+		    Const.ENV_KEY_WARNING_LEVEL_ON);
 	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
 	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
@@ -323,7 +323,7 @@ public class NewArduinoSketchWizard extends Wizard implements INewWizard, IExecu
 	    monitor.done();
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    Messages.ui_new_sketch_error_failed_to_create_project + project.getName(), e));
 	    throw new OperationCanceledException();
 	}

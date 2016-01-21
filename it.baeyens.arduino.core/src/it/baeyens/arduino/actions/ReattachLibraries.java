@@ -8,10 +8,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.PlatformUI;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
-import it.baeyens.arduino.tools.ArduinoLibraries;
+import it.baeyens.arduino.tools.Libraries;
 
 public class ReattachLibraries extends AbstractHandler {
 
@@ -20,12 +20,12 @@ public class ReattachLibraries extends AbstractHandler {
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ReattachLibraries_no_project_found));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ReattachLibraries_no_project_found));
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
 	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		ArduinoLibraries.reAttachLibrariesToProject(SelectedProjects[curProject]);
+		Libraries.reAttachLibrariesToProject(SelectedProjects[curProject]);
 	    }
 	}
 	return null;

@@ -17,11 +17,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
-public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
+public class Library implements Comparator<Library> {
 
     private String name;
     private String version;
@@ -151,7 +151,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_'))
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_'))
 		.append(this.version).toString());
     }
 
@@ -165,7 +165,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
 	    return Status.OK_STATUS;
 	}
 
-	return ArduinoManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
+	return Manager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
     }
 
     public Collection<Path> getIncludePath() {
@@ -210,7 +210,7 @@ public class ArduinoLibrary implements Comparator<ArduinoLibrary> {
     }
 
     @Override
-    public int compare(ArduinoLibrary o1, ArduinoLibrary o2) {
+    public int compare(Library o1, Library o2) {
 	return o1.getName().compareTo(o2.getName());
     }
 

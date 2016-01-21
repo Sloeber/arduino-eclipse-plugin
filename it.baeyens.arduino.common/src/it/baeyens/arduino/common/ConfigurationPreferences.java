@@ -19,12 +19,12 @@ public class ConfigurationPreferences {
     // //$NON-NLS-1$ //$NON-NLS-2$
 
     private static String getGlobalString(String key, String defaultValue) {
-	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 	return myScope.get(key, defaultValue);
     }
 
     private static void setGlobalString(String key, String value) {
-	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 	myScope.put(key, value);
 	try {
 	    myScope.flush();
@@ -42,7 +42,7 @@ public class ConfigurationPreferences {
 		return new Path(pathName);
 	    }
 	}
-	String storedValue = getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, ArduinoConst.EMPTY_STRING);
+	String storedValue = getGlobalString(Const.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    URI uri;
 	    try {
@@ -59,15 +59,15 @@ public class ConfigurationPreferences {
     }
 
     public static IPath getInstallationPathLibraries() {
-	return getInstallationPath().append(ArduinoConst.LIBRARY_PATH_SUFFIX);
+	return getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX);
     }
 
     public static IPath getInstallationPathExamples() {
-	return getInstallationPath().append(ArduinoConst.EXAMPLE_FOLDER_NAME);
+	return getInstallationPath().append(Const.EXAMPLE_FOLDER_NAME);
     }
 
     public static IPath getInstallationPathDownload() {
-	return getInstallationPath().append(ArduinoConst.DOWNLOADS_FOLDER);
+	return getInstallationPath().append(Const.DOWNLOADS_FOLDER);
     }
 
     /**
@@ -76,7 +76,7 @@ public class ConfigurationPreferences {
      * @return
      */
     public static File getPreProcessingPlatformFile() {
-	return getInstallationPath().append(ArduinoConst.PRE_PROCESSING_PLATFORM_TXT).toFile();
+	return getInstallationPath().append(Const.PRE_PROCESSING_PLATFORM_TXT).toFile();
     }
 
     /**
@@ -85,23 +85,23 @@ public class ConfigurationPreferences {
      * @return
      */
     public static File getPostProcessingPlatformFile() {
-	return getInstallationPath().append(ArduinoConst.POST_PROCESSING_PLATFORM_TXT).toFile();
+	return getInstallationPath().append(Const.POST_PROCESSING_PLATFORM_TXT).toFile();
     }
 
     public static File getPreProcessingBoardsFile() {
-	return getInstallationPath().append(ArduinoConst.PRE_PROCESSING_BOARDS_TXT).toFile();
+	return getInstallationPath().append(Const.PRE_PROCESSING_BOARDS_TXT).toFile();
     }
 
     public static File getPostProcessingBoardsFile() {
-	return getInstallationPath().append(ArduinoConst.POST_PROCESSING_BOARDS_TXT).toFile();
+	return getInstallationPath().append(Const.POST_PROCESSING_BOARDS_TXT).toFile();
     }
 
     public static String getBoardURLs() {
-	return getGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, ArduinoConst.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
+	return getGlobalString(Const.KEY_ARDUINO_MANAGER_BOARD_URLS, Const.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
     }
 
     public static void setBoardURLs(String urls) {
-	setGlobalString(ArduinoConst.KEY_ARDUINO_MANAGER_BOARD_URLS, urls);
+	setGlobalString(Const.KEY_ARDUINO_MANAGER_BOARD_URLS, urls);
     }
 
     public static Path getPathExtensionPath() {
@@ -110,7 +110,7 @@ public class ConfigurationPreferences {
     }
 
     public static File getPlugin_Platform_File() {
-	return getInstallationPath().append(ArduinoConst.PLATFORM_PLUGIN_FILE_NAME).toFile();
+	return getInstallationPath().append(Const.PLATFORM_PLUGIN_FILE_NAME).toFile();
     }
 
 }

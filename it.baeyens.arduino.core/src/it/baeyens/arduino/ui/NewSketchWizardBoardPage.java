@@ -16,11 +16,11 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jan Baeyens
  * 
  */
-public class NewArduinoSketchWizardBoardPage extends WizardPage {
+public class NewSketchWizardBoardPage extends WizardPage {
 
     final Shell shell = new Shell();
 
-    protected ArduinoBoardSelectionPage mPageLayout = new ArduinoBoardSelectionPage();
+    protected BoardSelectionPage mPageLayout = new BoardSelectionPage();
 
     public void setListener(Listener BoardSelectionChangedListener) {
 	this.mPageLayout.setListener(BoardSelectionChangedListener);
@@ -29,16 +29,16 @@ public class NewArduinoSketchWizardBoardPage extends WizardPage {
     private Listener completeListener = new Listener() {
 	@Override
 	public void handleEvent(Event e) {
-	    setPageComplete(NewArduinoSketchWizardBoardPage.this.mPageLayout.isPageComplete());
+	    setPageComplete(NewSketchWizardBoardPage.this.mPageLayout.isPageComplete());
 	}
     };
 
-    public NewArduinoSketchWizardBoardPage(String pageName) {
+    public NewSketchWizardBoardPage(String pageName) {
 	super(pageName);
 	setPageComplete(false);
     }
 
-    public NewArduinoSketchWizardBoardPage(String pageName, String title, ImageDescriptor titleImage) {
+    public NewSketchWizardBoardPage(String pageName, String title, ImageDescriptor titleImage) {
 	super(pageName, title, titleImage);
 	setPageComplete(false);
     }

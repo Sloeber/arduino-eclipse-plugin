@@ -35,7 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 /**
@@ -115,7 +115,7 @@ public class ExternalCommandLauncher {
 
 			// And print to the console (if active)
 			if (this.fConsoleOutput != null) {
-			    this.fConsoleOutput.print(line + ArduinoConst.NEWLINE);
+			    this.fConsoleOutput.print(line + Const.NEWLINE);
 			}
 		    } else {
 			break;
@@ -123,7 +123,7 @@ public class ExternalCommandLauncher {
 		}
 	    } catch (IOException e) {
 		// This is unlikely to happen, but log it nevertheless
-		IStatus status = new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.command_io, e);
+		IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
 		Common.log(status);
 	    } finally {
 		try {
@@ -247,7 +247,7 @@ public class ExternalCommandLauncher {
 	    defaultConsoleStream.print(Messages.command_launching);
 	    List<String> commandAndOptions = this.fProcessBuilder.command();
 	    for (String str : commandAndOptions) {
-		defaultConsoleStream.print(str + ArduinoConst.SPACE);
+		defaultConsoleStream.print(str + Const.SPACE);
 	    }
 	    defaultConsoleStream.println();
 	    defaultConsoleStream.println(Messages.command_output);

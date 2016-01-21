@@ -13,23 +13,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ArduinoPackage {
+public class Package {
 
     private String name;
     private String maintainer;
     private String websiteURL;
     private String email;
     private List<ArduinoPlatform> platforms;
-    private List<ArduinoTool> tools;
+    private List<Tool> tools;
 
     // private transient ArduinoManager manager;
 
-    void setOwner(ArduinoManager manager) {
+    void setOwner(Manager manager) {
 	// this.manager = manager;
 	for (ArduinoPlatform platform : this.platforms) {
 	    platform.setOwner(this);
 	}
-	for (ArduinoTool tool : this.tools) {
+	for (Tool tool : this.tools) {
 	    tool.setOwner(this);
 	}
     }
@@ -67,7 +67,7 @@ public class ArduinoPackage {
 	Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 	for (ArduinoPlatform platform : this.platforms) {
 	    ArduinoPlatform p = platformMap.get(platform.getName());
-	    if (p == null || ArduinoManager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+	    if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
 		platformMap.put(platform.getName(), platform);
 	    }
 	}
@@ -79,7 +79,7 @@ public class ArduinoPackage {
 	for (ArduinoPlatform platform : this.platforms) {
 	    if (platform.isInstalled()) {
 		ArduinoPlatform p = platformMap.get(platform.getName());
-		if (p == null || ArduinoManager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+		if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
 		    platformMap.put(platform.getName(), platform);
 		}
 	    }
@@ -94,7 +94,7 @@ public class ArduinoPackage {
 		if (foundPlatform == null) {
 		    foundPlatform = platform;
 		} else {
-		    if (platform.isInstalled() && ArduinoManager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+		    if (platform.isInstalled() && Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
 			foundPlatform = platform;
 		    }
 		}
@@ -110,7 +110,7 @@ public class ArduinoPackage {
 		if (foundPlatform == null) {
 		    foundPlatform = platform;
 		} else {
-		    if (ArduinoManager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+		    if (Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
 			foundPlatform = platform;
 		    }
 		}
@@ -123,7 +123,7 @@ public class ArduinoPackage {
 
 	for (ArduinoPlatform platform : this.platforms) {
 	    if (platform.getName().equals(platformName)) {
-		if (ArduinoManager.compareVersions(platform.getVersion(), version) == 0) {
+		if (Manager.compareVersions(platform.getVersion(), version) == 0) {
 		    return platform;
 		}
 	    }
@@ -131,12 +131,12 @@ public class ArduinoPackage {
 	return null;
     }
 
-    public List<ArduinoTool> getTools() {
+    public List<Tool> getTools() {
 	return this.tools;
     }
 
-    public ArduinoTool getTool(String toolName, String version) {
-	for (ArduinoTool tool : this.tools) {
+    public Tool getTool(String toolName, String version) {
+	for (Tool tool : this.tools) {
 	    if (tool.getName().equals(toolName) && tool.getVersion().equals(version)) {
 		return tool;
 	    }
@@ -144,11 +144,11 @@ public class ArduinoPackage {
 	return null;
     }
 
-    public ArduinoTool getLatestTool(String toolName) {
-	ArduinoTool latestTool = null;
-	for (ArduinoTool tool : this.tools) {
+    public Tool getLatestTool(String toolName) {
+	Tool latestTool = null;
+	for (Tool tool : this.tools) {
 	    if (tool.getName().equals(toolName)) {
-		if (latestTool == null || ArduinoManager.compareVersions(tool.getVersion(), latestTool.getVersion()) > 0) {
+		if (latestTool == null || Manager.compareVersions(tool.getVersion(), latestTool.getVersion()) > 0) {
 		    latestTool = tool;
 		}
 	    }
@@ -158,8 +158,8 @@ public class ArduinoPackage {
 
     @Override
     public boolean equals(Object obj) {
-	if (obj instanceof ArduinoPackage) {
-	    return ((ArduinoPackage) obj).getName().equals(this.name);
+	if (obj instanceof Package) {
+	    return ((Package) obj).getName().equals(this.name);
 	}
 	return super.equals(obj);
     }

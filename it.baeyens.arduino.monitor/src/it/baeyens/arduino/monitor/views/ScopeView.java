@@ -28,7 +28,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 import it.baeyens.arduino.arduino.Serial;
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.monitor.internal.Activator;
 import it.baeyens.arduino.monitor.internal.ScopeListener;
 import multichannel.Oscilloscope;
@@ -50,11 +50,11 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
-		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(ArduinoConst.NODE_ARDUINO);
+		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = mySCope.getInt(flagMonitor, 0) + 1;
 		    mySCope.putInt(flagMonitor, curFsiStatus);
 		    URL pluginStartInitiator = new URL(
-			    ScopeView.this.uri.replaceAll(" ", ArduinoConst.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
+			    ScopeView.this.uri.replaceAll(" ", Const.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
 		    ScopeView.this.mstatus = pluginStartInitiator.getContent();
 		} catch (Exception e) {// JABA is not going to add code
 		}

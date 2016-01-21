@@ -2,6 +2,7 @@ package it.baeyens.arduino.ui;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.PathEditor;
@@ -13,7 +14,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 /**
  * ArduinoPreferencePage is the class that is behind the preference page of
@@ -26,16 +27,18 @@ import it.baeyens.arduino.common.ArduinoConst;
  * @author Jan Baeyens
  * 
  */
-public class ArduinoPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
     private PathEditor arduinoPrivateLibPath;
     private PathEditor arduinoPrivateHardwarePath;
-    private ComboFieldEditor mArduinoBuildBeforeUploadOption;
+    private ComboFieldEditor buildBeforeUploadOption;
+    private BooleanFieldEditor openSerialMonitorOpensSerialsOption;
+    private BooleanFieldEditor automaticallyImportLibrariesOption;
 
-    public ArduinoPreferencePage() {
+    public PreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
 	setDescription(Messages.ui_workspace_settings);
-	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, ArduinoConst.NODE_ARDUINO));
+	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Const.NODE_ARDUINO));
     }
 
     @Override
@@ -86,23 +89,33 @@ public class ArduinoPreferencePage extends FieldEditorPreferencePage implements 
     protected void createFieldEditors() {
 	final Composite parent = getFieldEditorParent();
 
-	this.arduinoPrivateLibPath = new PathEditor(ArduinoConst.KEY_PRIVATE_LIBRARY_PATHS,
-		Messages.ui_private_lib_path, Messages.ui_private_lib_path_help, parent);
+	this.arduinoPrivateLibPath = new PathEditor(Const.KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
+		Messages.ui_private_lib_path_help, parent);
 	addField(this.arduinoPrivateLibPath);
 	this.arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
 
-	this.arduinoPrivateHardwarePath = new PathEditor(ArduinoConst.KEY_PRIVATE_HARDWARE_PATHS,
+	this.arduinoPrivateHardwarePath = new PathEditor(Const.KEY_PRIVATE_HARDWARE_PATHS,
 		Messages.ui_private_hardware_path, Messages.ui_private_hardware_path_help, parent);
 	addField(this.arduinoPrivateHardwarePath);
 	this.arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
 
 	Dialog.applyDialogFont(parent);
-
-	String[][] buildBeforeUploadOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
+	createLine(parent, 4);
+	String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
 		{ "Yes", "YES" }, { "No", "NO" } }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	this.mArduinoBuildBeforeUploadOption = new ComboFieldEditor(ArduinoConst.KEY_BUILD_BEFORE_UPLOAD_OPTION,
-		Messages.ui_build_before_upload, buildBeforeUploadOptions, parent);
-	addField(this.mArduinoBuildBeforeUploadOption);
+	this.buildBeforeUploadOption = new ComboFieldEditor(Const.KEY_BUILD_BEFORE_UPLOAD_OPTION,
+		Messages.ui_build_before_upload, YesNoAskOptions, parent);
+	addField(this.buildBeforeUploadOption);
+	createLine(parent, 4);
+
+	this.openSerialMonitorOpensSerialsOption = new BooleanFieldEditor(Const.KEY_OPEN_SERIAL_WITH_MONITOR,
+		Messages.ui_open_serial_with_monitor, BooleanFieldEditor.DEFAULT, parent);
+	addField(this.openSerialMonitorOpensSerialsOption);
+	createLine(parent, 4);
+
+	this.automaticallyImportLibrariesOption = new BooleanFieldEditor(Const.KEY_AUTO_IMPORT_LIBRARIES,
+		Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
+	addField(this.automaticallyImportLibrariesOption);
 	createLine(parent, 4);
 
     }

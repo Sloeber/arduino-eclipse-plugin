@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
@@ -46,10 +46,10 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	// TODO Auto-generated method stub
 	IProject proj = (IProject) element;
 	try {
-	    if (proj.hasNature(ArduinoConst.ArduinoNatureID)) {
-		String boardName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME,
+	    if (proj.hasNature(Const.ArduinoNatureID)) {
+		String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME,
 			"Board Error");
-		String portName = Common.getBuildEnvironmentVariable(proj, ArduinoConst.ENV_KEY_JANTJE_COM_PORT,
+		String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT,
 			"no port");
 		return text + ' ' + boardName + ' ' + ':' + portName;
 	    }

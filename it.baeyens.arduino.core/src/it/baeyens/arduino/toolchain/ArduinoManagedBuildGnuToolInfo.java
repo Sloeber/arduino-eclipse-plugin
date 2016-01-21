@@ -37,7 +37,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.toolchain.ArduinoGnuMakefileGenerator.ToolInfoHolder;
 
@@ -634,7 +634,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 			} catch (Exception e) {
 			    // The provided class is not a
 			    // IManagedOutputNameProviderJaba class;
-			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
+			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 				    "The provided class is not of type IManagedOutputNameProviderJaba", e)); //$NON-NLS-1$
 			}
 			// } else {

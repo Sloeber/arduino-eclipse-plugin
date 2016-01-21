@@ -37,17 +37,17 @@ public class ToolDependency {
 	return this.version;
     }
 
-    public ArduinoTool getTool() {
-	ArduinoPackage pkg = this.platform.getPackage();
+    public Tool getTool() {
+	Package pkg = this.platform.getPackage();
 	if (!pkg.getName().equals(this.packager)) {
-	    pkg = ArduinoManager.getPackage(this.packager);
+	    pkg = Manager.getPackage(this.packager);
 	}
 
 	return pkg.getTool(this.name, this.version);
     }
 
     public IStatus install(IProgressMonitor monitor) {
-	ArduinoTool tool = getTool();
+	Tool tool = getTool();
 	if (tool == null) {
 	    return new Status(IStatus.ERROR, Activator.getId(), String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
 	}

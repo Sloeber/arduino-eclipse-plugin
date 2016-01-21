@@ -9,7 +9,7 @@ package it.baeyens.arduino.managers;
 
 import java.util.Properties;
 
-public class ArduinoBoard {
+public class Board {
 
     private String name;
 
@@ -18,10 +18,10 @@ public class ArduinoBoard {
     private ArduinoPlatform platform;
     private HierarchicalProperties properties;
 
-    public ArduinoBoard() {
+    public Board() {
     }
 
-    public ArduinoBoard(String id, HierarchicalProperties properties) {
+    public Board(String id, HierarchicalProperties properties) {
 	this.properties = properties;
 	this.id = id;
 	this.name = this.properties.getChild("name").getValue(); //$NON-NLS-1$
@@ -39,7 +39,7 @@ public class ArduinoBoard {
 	return this.platform;
     }
 
-    ArduinoBoard setOwners(ArduinoPlatform platform) {
+    Board setOwners(ArduinoPlatform platform) {
 	this.platform = platform;
 	return this;
     }
@@ -69,7 +69,7 @@ public class ArduinoBoard {
 	    return false;
 	if (getClass() != obj.getClass())
 	    return false;
-	ArduinoBoard other = (ArduinoBoard) obj;
+	Board other = (Board) obj;
 	if (this.name == null) {
 	    if (other.name != null)
 		return false;

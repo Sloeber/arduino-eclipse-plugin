@@ -13,8 +13,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 
@@ -24,12 +24,12 @@ public class AddSourceFolderAction extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-	if (!ArduinoInstancePreferences.isConfigured(true))
+	if (!InstancePreferences.isConfigured(true))
 	    return null;
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "No project found to build")); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "No project found to build")); //$NON-NLS-1$
 	    break;
 	case 1:
 	    //
@@ -39,7 +39,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    try {
 		wizard = wizardDescriptor.createWizard();
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Failed to find import wizard", e)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to find import wizard", e)); //$NON-NLS-1$
 		return null;
 	    }
 	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
@@ -47,7 +47,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    wd.open();
 	    break;
 	default:
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Adding a source folder to multiple projects is not supported")); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Adding a source folder to multiple projects is not supported")); //$NON-NLS-1$
 	}
 	return null;
     }

@@ -50,7 +50,7 @@
 -->
 	<extension point="org.eclipse.ui.propertyPages">
 		<page
-            class="it.baeyens.arduino.ui.ArduinoPropertyPage"
+            class="it.baeyens.arduino.ui.PropertyPage"
             id="it.baeyens.arduino.eclipse.propertypage.ArduinoProperty"
             name="%page.name" >
 			<filter
@@ -72,16 +72,16 @@
   <extension
            point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
-           class="it.baeyens.arduino.ui.ArduinoBoardSelectionPage"
+           class="it.baeyens.arduino.ui.BoardSelectionPage"
            icon="icons/arduino.png"
            name="Arduino board selection"
            weight="050"
-           parent="it.baeyens.arduino.ui.ArduinoPropertyPage"/>
+           parent="it.baeyens.arduino.ui.PropertyPage"/>
      <tab
-           class="it.baeyens.arduino.ui.ArduinoCompileProperties"
+           class="it.baeyens.arduino.ui.CompileProperties"
            icon="icons/verify.png"
            name="Compile Options"
-           parent="it.baeyens.arduino.ui.ArduinoPropertyPage"
+           parent="it.baeyens.arduino.ui.PropertyPage"
            weight="050">
      </tab>
    </extension>
@@ -101,7 +101,7 @@
 		<wizard
 			id="it.baeyens.arduino.eclipse.NewArduinoSketchWizard"
 			category="it.baeyens.arduino.eclipse.newWizards"
-	        class="it.baeyens.arduino.ui.NewArduinoSketchWizard"
+	        class="it.baeyens.arduino.ui.NewSketchWizard"
 	        name="%wizard.name"
 	        icon="icons/new.png"
 	        finalPerspective ="it.baeyens.arduino.application.perspective"
@@ -121,7 +121,7 @@
       <wizard 
          id="it.baeyens.arduino.Import_Arduino_Libraries" 
          name="%wizard.name.0" 
-         class="it.baeyens.arduino.ui.Import_Arduino_Libraries" 
+         class="it.baeyens.arduino.ui.ImportLibraries" 
          icon="icons/arduino.png"
          category="it.baeyens.arduino.eclipse.importWizards">        
          <description> 
@@ -152,26 +152,26 @@
 -->
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-        class="it.baeyens.arduino.ui.ArduinoPreferencePage"
+        class="it.baeyens.arduino.ui.PreferencePage"
         id="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
         name="%page.name">
 		</page>
 
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.ui.ArduinoPlatformPreferencePage"
+            class="it.baeyens.arduino.ui.PlatformPreferencePage"
             id="it.baeyens.arduino.eclipse.loation_page"
             name="Platforms and Boards">
       </page>
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.ui.ArduinoLinkPreferencePage"
+            class="it.baeyens.arduino.ui.LinkPreferencePage"
             id="it.baeyens.arduino.eclipse.boards"
             name="Locations">
       </page>
       <page
             category="it.baeyens.arduino.eclipse.ArduinoPreferencePage"
-            class="it.baeyens.arduino.ui.ArduinoLibraryPreferencePage"
+            class="it.baeyens.arduino.ui.LibraryPreferencePage"
             id="it.baeyens.arduino.eclipse.libraries"
             name="Library Manager">
       </page>
@@ -189,7 +189,7 @@
 			id="it.baeyens.arduino.commands"/>
 		<command
         categoryId="it.baeyens.arduino.commands"
-        defaultHandler="it.baeyens.arduino.actions.ArduinoUploadProjectHandler"
+        defaultHandler="it.baeyens.arduino.actions.UploadProjectHandler"
         description="%command.UploadprojectAction.description"
         id="it.baeyens.arduino.actions.UploadprojectAction"
         name="%command.UploadprojectAction.name"/>

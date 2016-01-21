@@ -14,7 +14,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
  * 
  */
 import it.baeyens.arduino.arduino.Serial;
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 public class ArduinoSerial {
@@ -33,7 +33,7 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
 	    return false;
 	}
 	if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
@@ -178,17 +178,17 @@ public class ArduinoSerial {
     public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName, String ComPort) {
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
 	boolean use_1200bps_touch = Common
-		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_use_1200bps_touch, ArduinoConst.FALSE)
-		.equalsIgnoreCase(ArduinoConst.TRUE);
+		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_upload_use_1200bps_touch, Const.FALSE)
+		.equalsIgnoreCase(Const.TRUE);
 	boolean bDisableFlushing = Common
-		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_upload_disable_flushing, ArduinoConst.FALSE)
-		.equalsIgnoreCase(ArduinoConst.TRUE);
+		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_upload_disable_flushing, Const.FALSE)
+		.equalsIgnoreCase(Const.TRUE);
 	boolean bwait_for_upload_port = Common
-		.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_wait_for_upload_port, ArduinoConst.FALSE)
-		.equalsIgnoreCase(ArduinoConst.TRUE);
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_JANTJE_BOARD_NAME, ArduinoConst.EMPTY_STRING);
-	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, ArduinoConst.ENV_KEY_UPLOAD_PROTOCOL,
-		ArduinoConst.EMPTY_STRING);
+		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_wait_for_upload_port, Const.FALSE)
+		.equalsIgnoreCase(Const.TRUE);
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME, Const.EMPTY_STRING);
+	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_PROTOCOL,
+		Const.EMPTY_STRING);
 	/* Teensy uses halfkay protocol and does not require a reset */
 	if (upload_protocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
 	    return ComPort;
@@ -231,7 +231,7 @@ public class ArduinoSerial {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Common.log(
-		    new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort, e));
+		    new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort, e));
 	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
 	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);
@@ -239,7 +239,7 @@ public class ArduinoSerial {
 	    // throw new RunnerException(e.getMessage());
 	}
 	if (!serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoSerial_unable_to_open_serial_port + ComPort, null));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_unable_to_open_serial_port + ComPort, null));
 	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
 	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);

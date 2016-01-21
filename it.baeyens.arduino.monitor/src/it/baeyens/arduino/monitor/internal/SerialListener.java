@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 import it.baeyens.arduino.arduino.MessageConsumer;
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.monitor.views.Messages;
 import it.baeyens.arduino.monitor.views.SerialMonitor;
@@ -45,7 +45,7 @@ public class SerialListener implements MessageConsumer {
 		this.myReceivedScopeData.put(newData);
 	    } catch (BufferOverflowException e) {
 		this.myReceivedScopeData.clear();
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 			Messages.SerialListener_scope_skipping_data));
 	    }
 	    internalExtractAndProcessScopeData();
@@ -56,11 +56,11 @@ public class SerialListener implements MessageConsumer {
     }
 
     private void internalExtractAndProcessScopeData() {
-	String MonitorMessage = ArduinoConst.EMPTY_STRING;
+	String MonitorMessage = Const.EMPTY_STRING;
 	boolean dontProcessLastPart = false;
 	for (int scannnedScopePointer = 0; scannnedScopePointer < this.myReceivedScopeData.position()
 		- 1; scannnedScopePointer++) {
-	    if (this.myReceivedScopeData.getShort(scannnedScopePointer) == ArduinoConst.SCOPE_START_DATA) {
+	    if (this.myReceivedScopeData.getShort(scannnedScopePointer) == Const.SCOPE_START_DATA) {
 		// we have a hit.
 		if (scannnedScopePointer > 0) // there is data before the
 					      // scopehit->handle it and remove
@@ -81,7 +81,7 @@ public class SerialListener implements MessageConsumer {
 		} else {
 		    int bytestoRead = this.myReceivedScopeData.getShort(2);
 		    if ((bytestoRead < 0) || (bytestoRead > (10 * 2))) {
-			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID,
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 				Messages.SerialListener_error_input_part_1 + bytestoRead / 2
 					+ Messages.SerialListener_error_input_part_2));
 			this.myReceivedScopeData.putShort(0, (short) 0); // process
@@ -112,7 +112,7 @@ public class SerialListener implements MessageConsumer {
 				  // scope data set
 	{
 	    if (this.myReceivedScopeData
-		    .get(this.myReceivedScopeData.position()) == (byte) (ArduinoConst.SCOPE_START_DATA >> 8)) {
+		    .get(this.myReceivedScopeData.position()) == (byte) (Const.SCOPE_START_DATA >> 8)) {
 		for (int n = 0; n < this.myReceivedScopeData.position() - 1; n++)
 		    MonitorMessage += Character.toString((char) this.myReceivedScopeData.get(n));
 		removeBytesFromStart(this.myReceivedScopeData.position() - 1);

@@ -35,8 +35,9 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
-import it.baeyens.arduino.common.ArduinoConst;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
+import jssc.SerialNativeInterface;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -55,19 +56,22 @@ public class Serial implements SerialPortEventListener {
     // the static class would have an object that could be closed
 
     /**
-     * General error reporting, all correlated here just in case I think of something slightly more intelligent to do.
+     * General error reporting, all correlated here just in case I think of
+     * something slightly more intelligent to do.
      */
     static public void errorMessage(String where, Throwable e) {
-	Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
+	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
 
     }
 
     /**
-     * If this just hangs and never completes on Windows, it may be because the DLL doesn't have its exec bit set. Why the hell that'd be the case,
-     * who knows.
+     * If this just hangs and never completes on Windows, it may be because the
+     * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
+     * knows.
      */
     public static Vector<String> list() {
 	try {
+	    SerialNativeInterface tt = new SerialNativeInterface();
 	    String[] portNames;
 	    String OS = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 	    if (OS.indexOf("mac") >= 0) { //$NON-NLS-1$
@@ -77,8 +81,9 @@ public class Serial implements SerialPortEventListener {
 	    }
 	    return new Vector<>(Arrays.asList(portNames));
 	} catch (Error e) {
-	    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", e)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
+		    e));
 	    Vector<String> ret = new Vector<>();
 	    ret.add("config error:"); //$NON-NLS-1$
 	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
@@ -146,7 +151,8 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Returns the number of bytes that have been read from serial and are waiting to be dealt with by the user.
+     * Returns the number of bytes that have been read from serial and are
+     * waiting to be dealt with by the user.
      */
     public int available() {
 	return (this.bufferLast - this.bufferIndex);
@@ -180,23 +186,25 @@ public class Serial implements SerialPortEventListener {
 		    // handle exception
 		    if (++count == maxTries) {
 			if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
-			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Serial port " + this.PortName //$NON-NLS-1$
-				    + " already in use. Try quiting any programs that may be using it", e)); //$NON-NLS-1$
+			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+				    "Serial port " + this.PortName //$NON-NLS-1$
+					    + " already in use. Try quiting any programs that may be using it", //$NON-NLS-1$
+				    e));
 			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
-			    Common.log(
-				    new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID,
-					    "Serial port " + this.PortName //$NON-NLS-1$
-						    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", //$NON-NLS-1$
-					    e));
+			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
+				    + this.PortName
+				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", //$NON-NLS-1$
+				    e));
 			} else {
-			    Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "Error opening serial port " + this.PortName, e)); //$NON-NLS-1$
+			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+				    "Error opening serial port " + this.PortName, e)); //$NON-NLS-1$
 			}
 			return;
 		    }
 		    try {
 			Thread.sleep(200);
 		    } catch (InterruptedException e1) {
-			Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "Sleep failed", e1)); //$NON-NLS-1$
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Sleep failed", e1)); //$NON-NLS-1$
 		    }
 		}
 		// If an exception was thrown, delete port variable
@@ -246,7 +254,8 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Returns a number between 0 and 255 for the next byte that's waiting in the buffer. Returns -1 if there was no byte (although the user should
+     * Returns a number between 0 and 255 for the next byte that's waiting in
+     * the buffer. Returns -1 if there was no byte (although the user should
      * first check available() to see if things are ready to avoid this)
      */
     public int read() {
@@ -264,8 +273,9 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Return a byte array of anything that's in the serial buffer. Not particularly memory/speed efficient, because it creates a byte array on each
-     * read, but it's easier to use than readBytes(byte b[]) (see below).
+     * Return a byte array of anything that's in the serial buffer. Not
+     * particularly memory/speed efficient, because it creates a byte array on
+     * each read, but it's easier to use than readBytes(byte b[]) (see below).
      */
     public byte[] readBytes() {
 	if (this.bufferIndex == this.bufferLast)
@@ -283,10 +293,12 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Grab whatever is in the serial buffer, and stuff it into a byte buffer passed in by the user. This is more memory/time efficient than
+     * Grab whatever is in the serial buffer, and stuff it into a byte buffer
+     * passed in by the user. This is more memory/time efficient than
      * readBytes() returning a byte[] array.
      * 
-     * Returns an int for how many bytes were read. If more bytes are available than can fit into the byte array, only those that will fit are read.
+     * Returns an int for how many bytes were read. If more bytes are available
+     * than can fit into the byte array, only those that will fit are read.
      */
     public int readBytes(byte outgoing[]) {
 	if (this.bufferIndex == this.bufferLast)
@@ -308,7 +320,8 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Reads from the serial port into a buffer of bytes up to and including a particular character. If the character isn't in the serial buffer, then
+     * Reads from the serial port into a buffer of bytes up to and including a
+     * particular character. If the character isn't in the serial buffer, then
      * 'null' is returned.
      */
     public byte[] readBytesUntil(int interesting) {
@@ -338,10 +351,12 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Reads from the serial port into a buffer of bytes until a particular character. If the character isn't in the serial buffer, then 'null' is
+     * Reads from the serial port into a buffer of bytes until a particular
+     * character. If the character isn't in the serial buffer, then 'null' is
      * returned.
      * 
-     * If outgoing[] is not big enough, then -1 is returned, and an error message is printed on the console. If nothing is in the buffer, zero is
+     * If outgoing[] is not big enough, then -1 is returned, and an error
+     * message is printed on the console. If nothing is in the buffer, zero is
      * returned. If 'interesting' byte is not in the buffer, then 0 is returned.
      */
     public int readBytesUntil(int interesting, byte outgoing[]) {
@@ -362,8 +377,10 @@ public class Serial implements SerialPortEventListener {
 
 	    int length = found - this.bufferIndex + 1;
 	    if (length > outgoing.length) {
-		Common.log(new Status(IStatus.WARNING, ArduinoConst.CORE_PLUGIN_ID, "readBytesUntil() byte buffer is too small for the " + length //$NON-NLS-1$
-			+ " bytes up to and including char " + interesting, null)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+			"readBytesUntil() byte buffer is too small for the " + length //$NON-NLS-1$
+				+ " bytes up to and including char " + interesting, //$NON-NLS-1$
+			null));
 		return -1;
 	    }
 	    // byte outgoing[] = new byte[length];
@@ -379,7 +396,8 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if nothing is there.
+     * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if
+     * nothing is there.
      */
     public char readChar() {
 	if (this.bufferIndex == this.bufferLast)
@@ -388,9 +406,11 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Return whatever has been read from the serial port so far as a String. It assumes that the incoming characters are ASCII.
+     * Return whatever has been read from the serial port so far as a String. It
+     * assumes that the incoming characters are ASCII.
      * 
-     * If you want to move Unicode data, you can first convert the String to a byte stream in the representation of your choice (i.e. UTF8 or two-byte
+     * If you want to move Unicode data, you can first convert the String to a
+     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
      * Unicode data), and send it as a byte array.
      */
     public String readString() {
@@ -400,9 +420,11 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Combination of readBytesUntil and readString. See caveats in each function. Returns null if it still hasn't found what you're looking for.
+     * Combination of readBytesUntil and readString. See caveats in each
+     * function. Returns null if it still hasn't found what you're looking for.
      * 
-     * If you want to move Unicode data, you can first convert the String to a byte stream in the representation of your choice (i.e. UTF8 or two-byte
+     * If you want to move Unicode data, you can first convert the String to a
+     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
      * Unicode data), and send it as a byte array.
      */
     public String readStringUntil(int interesting) {
@@ -413,7 +435,8 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void registerService() {
-	this.fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class, this, null);
+	this.fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class,
+		this, null);
     }
 
     public void reset() {
@@ -529,11 +552,14 @@ public class Serial implements SerialPortEventListener {
     }
 
     /**
-     * Write a String to the output. Note that this doesn't account for Unicode (two bytes per char), nor will it send UTF8 characters.. It assumes
-     * that you mean to send a byte buffer (most often the case for networking and serial i/o) and will only use the bottom 8 bits of each char in the
+     * Write a String to the output. Note that this doesn't account for Unicode
+     * (two bytes per char), nor will it send UTF8 characters.. It assumes that
+     * you mean to send a byte buffer (most often the case for networking and
+     * serial i/o) and will only use the bottom 8 bits of each char in the
      * string. (Meaning that internally it uses String.getBytes)
      * 
-     * If you want to move Unicode data, you can first convert the String to a byte stream in the representation of your choice (i.e. UTF8 or two-byte
+     * If you want to move Unicode data, you can first convert the String to a
+     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
      * Unicode data), and send it as a byte array.
      */
     public void write(String what) {
@@ -541,8 +567,9 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void write(String what, String LineEnd) {
-	notifyConsumersOfEvent(System.getProperty("line.separator") + ">>Send to " + this.PortName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ System.getProperty("line.separator")); //$NON-NLS-1$
+	notifyConsumersOfEvent(
+		System.getProperty("line.separator") + ">>Send to " + this.PortName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			+ System.getProperty("line.separator")); //$NON-NLS-1$
 	write(what.getBytes());
 	if (LineEnd.length() > 0) {
 	    write(LineEnd.getBytes());

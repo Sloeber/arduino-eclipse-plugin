@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 /**
  * This class keeps the oscilloscope animation running and is used to set various attributes of the scope.
@@ -55,7 +55,7 @@ public class OscilloscopeDispatcher {
      */
     public class SoundClip {
 	Clip clip = null;
-	String oldFile = ArduinoConst.EMPTY_STRING;
+	String oldFile = Const.EMPTY_STRING;
 
 	/**
 	 * Returns the clip so you can control it.

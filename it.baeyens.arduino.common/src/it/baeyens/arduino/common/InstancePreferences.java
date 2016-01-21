@@ -16,18 +16,37 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * ArduinoPreferences is a class containing only static methods that help managing the preferences.
+ * ArduinoPreferences is a class containing only static methods that help
+ * managing the preferences.
  * 
  * @author jan Baeyens
  * 
  */
-public class ArduinoInstancePreferences extends ArduinoConst {
+public class InstancePreferences extends Const {
+
+    public static boolean getOpenSerialWithMonitor() {
+	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, true);
+    }
+
+    public static void setOpenSerialWithMonitor(boolean value) {
+	setGlobalValue(KEY_OPEN_SERIAL_WITH_MONITOR, value);
+    }
+
+    public static boolean getAutomaticallyIncludeLibraries() {
+	return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
+    }
+
+    public static void setAutomaticallyIncludeLibraries(boolean value) {
+	setGlobalValue(KEY_AUTO_IMPORT_LIBRARIES, value);
+    }
 
     /***
-     * get the stored option whether a build before the upload is wanted or not. If nothing is stored the option is ask and this method will pop up a
+     * get the stored option whether a build before the upload is wanted or not.
+     * If nothing is stored the option is ask and this method will pop up a
      * dialogbox
      * 
-     * @return true if a build is wanted before upload false if no build is wanted before upload
+     * @return true if a build is wanted before upload false if no build is
+     *         wanted before upload
      */
     public static boolean getBuildBeforeUploadOption() {
 
@@ -50,8 +69,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	    public void run() {
 		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		dialog.setText(Messages.ArduinoInstancePreferences_Build_before_upload);
-		dialog.setMessage(Messages.ArduinoInstancePreferences_do_you_want_to_build_before_upload);
+		dialog.setText(Messages.Build_before_upload);
+		dialog.setMessage(Messages.do_you_want_to_build_before_upload);
 		switch (dialog.open()) {
 		case SWT.NO:
 		    this.ret = false;
@@ -71,7 +90,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     /**
-     * This method reads the name of the last used arduino board from the instance preferences
+     * This method reads the name of the last used arduino board from the
+     * instance preferences
      * 
      * @return the Arduino Board name
      * @author Jan Baeyens
@@ -142,7 +162,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
+	    Common.log(
+		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -164,7 +185,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+		    "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -175,13 +197,15 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
+	    Common.log(
+		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
 
     /**
-     * This method returns the index of the last used line ending options are CR LF CR+LF none
+     * This method returns the index of the last used line ending options are CR
+     * LF CR+LF none
      * 
      * @return the index of the last used setting
      */
@@ -190,7 +214,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     /**
-     * This method returns the index of the last used line ending options are CR LF CR+LF none
+     * This method returns the index of the last used line ending options are CR
+     * LF CR+LF none
      * 
      * @return the index of the last used setting
      */
@@ -247,7 +272,8 @@ public class ArduinoInstancePreferences extends ArduinoConst {
     }
 
     /**
-     * This method returns boolean whether the plugin is properly configured The plugin is configured properly if a board has been installed
+     * This method returns boolean whether the plugin is properly configured The
+     * plugin is configured properly if a board has been installed
      * 
      * @return
      */
@@ -257,8 +283,7 @@ public class ArduinoInstancePreferences extends ArduinoConst {
 	if (showError) {
 	    // If not then we bail out with an error.
 	    // And no pages are presented (with no option to FINISH).
-	    Common.log(
-		    new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, Messages.ArduinoInstancePreferences_Plerase_wait_for_installer_job, null));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Please_wait_for_installer_job, null));
 	}
 	return false;
     }

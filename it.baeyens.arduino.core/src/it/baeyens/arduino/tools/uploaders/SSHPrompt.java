@@ -5,12 +5,12 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 public class SSHPrompt {
-    String host = ArduinoConst.EMPTY_STRING;
-    String user = ArduinoConst.EMPTY_STRING;
-    String passwd = ArduinoConst.EMPTY_STRING;
+    String host = Const.EMPTY_STRING;
+    String user = Const.EMPTY_STRING;
+    String passwd = Const.EMPTY_STRING;
 
     public void test() {
 

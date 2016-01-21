@@ -16,7 +16,7 @@ import com.jcraft.jsch.Session;
 import cc.arduino.packages.ssh.NoInteractionUserInfo;
 import cc.arduino.packages.ssh.SCP;
 import cc.arduino.packages.ssh.SSH;
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.PasswordManager;
 
 public class SSHUpload implements IRealUpload {
@@ -61,7 +61,7 @@ public class SSHUpload implements IRealUpload {
 	    this.myHighLevelConsoleStream.println(Messages.Upload_sketch_on_yun);
 
 	    // String additionalParams = verbose ? prefs.get("upload.params.verbose") : prefs.get("upload.params.quiet");
-	    String additionalParams = ArduinoConst.EMPTY_STRING;// Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.
+	    String additionalParams = Const.EMPTY_STRING;// Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.
 								// upload.params.quiet, "");
 
 	    // not sure why but I need to swap err and out not to get red text
@@ -77,7 +77,7 @@ public class SSHUpload implements IRealUpload {
 
 	} catch (JSchException e) {
 	    String message = e.getMessage();
-	    String errormessage = ArduinoConst.EMPTY_STRING;
+	    String errormessage = Const.EMPTY_STRING;
 	    if (Messages.Upload_auth_cancel.equals(message) || Messages.Upload_auth_fail.equals(message)) {
 		errormessage = new String(Messages.Upload_error_auth_fail) + this.myHost;
 		// TODO add to ask if if the user wants to remove the password

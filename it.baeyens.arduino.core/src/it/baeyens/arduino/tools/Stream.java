@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import it.baeyens.arduino.common.Common;
-import it.baeyens.arduino.ui.NewArduinoSketchWizard;
+import it.baeyens.arduino.ui.NewSketchWizard;
 
 /**
  * the Stream class is used to read the board.txt file
@@ -37,7 +37,7 @@ public class Stream {
 	    if (isFile) {
 		input = new FileInputStream(Resource);
 	    } else {
-		input = NewArduinoSketchWizard.class.getResourceAsStream(Resource);
+		input = NewSketchWizard.class.getResourceAsStream(Resource);
 	    }
 	    // "templates/index-xhtml-template.resource");
 

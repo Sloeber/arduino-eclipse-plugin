@@ -7,7 +7,7 @@ import org.eclipse.cdt.managedbuilder.makegen.gnu.DefaultGCCDependencyCalculator
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.tools.Helpers;
 
 public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands {
 
@@ -29,7 +29,7 @@ public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCal
 	// The source file is project relative and the dependency file is top
 	// build directory relative
 	// Remove the source extension and add the dependency extension
-	IPath depFilePath = ArduinoHelpers.GetOutputName(getSource()).addFileExtension(IManagedBuilderMakefileGenerator.DEP_EXT);
+	IPath depFilePath = Helpers.GetOutputName(getSource()).addFileExtension(IManagedBuilderMakefileGenerator.DEP_EXT);
 	// Remember that the source folder hierarchy and the build output folder
 	// hierarchy are the same
 	// but if this is a generated resource, then it may already be under the

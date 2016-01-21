@@ -6,7 +6,7 @@ package it.baeyens.arduino.common;
  * @author Jan Baeyens
  * 
  */
-public class ArduinoConst {
+public class Const {
     // java stuff
     public static final String EMPTY_STRING = "";// so I do not //$NON-NLS-1$
 						 // have to add all the time
@@ -88,6 +88,8 @@ public class ArduinoConst {
     public static final String Upload_ssh = "ssh upload";//$NON-NLS-1$
 
     public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";//$NON-NLS-1$
+    public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";//$NON-NLS-1$
+    public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";//$NON-NLS-1$
 
     public static final String ENV_KEY_BOARD_START = "A.";//$NON-NLS-1$
     public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
@@ -157,7 +159,9 @@ public class ArduinoConst {
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ where
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
@@ -173,7 +177,9 @@ public class ArduinoConst {
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ is
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
@@ -189,7 +195,9 @@ public class ArduinoConst {
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ only
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
@@ -205,7 +213,9 @@ public class ArduinoConst {
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
+												     // $NON-NLS-1$
 												     //$NON-NLS-1$ in
+												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$

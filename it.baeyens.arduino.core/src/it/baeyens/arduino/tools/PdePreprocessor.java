@@ -40,7 +40,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 
 @SuppressWarnings("restriction")
 public class PdePreprocessor {
@@ -48,8 +48,8 @@ public class PdePreprocessor {
 
     public static void processProject(IProject iProject) throws CoreException {
 	// first write some standard bla bla
-	final String NEWLINE = ArduinoConst.NEWLINE;
-	String body = ArduinoConst.EMPTY_STRING;
+	final String NEWLINE = Const.NEWLINE;
+	String body = Const.EMPTY_STRING;
 	String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE; //$NON-NLS-1$
 	String includeCodePart = NEWLINE;
 	String header = "//This is a automatic generated file" + NEWLINE; //$NON-NLS-1$
@@ -149,7 +149,7 @@ public class PdePreprocessor {
 
 	    // concatenate the parts and make the .ino.cpp file
 	    String output = header + includeHeaderPart + body + includeCodePart;
-	    ArduinoHelpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
+	    Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
 		    null);
 	    index.releaseReadLock();
 	} catch (InterruptedException e) {

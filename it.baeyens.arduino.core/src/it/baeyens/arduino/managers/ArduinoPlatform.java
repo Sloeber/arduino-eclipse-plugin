@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
@@ -41,16 +41,16 @@ public class ArduinoPlatform {
     private String archiveFileName;
     private String checksum;
     private String size;
-    private List<ArduinoBoard> boards;
+    private List<Board> boards;
     private List<ToolDependency> toolsDependencies;
 
-    private ArduinoPackage pkg;
+    private Package pkg;
     private HierarchicalProperties boardsFile;
     private Properties platformProperties;
 
-    void setOwner(ArduinoPackage pkg) {
+    void setOwner(Package pkg) {
 	this.pkg = pkg;
-	for (ArduinoBoard board : this.boards) {
+	for (Board board : this.boards) {
 	    board.setOwners(this);
 	}
 	for (ToolDependency toolDep : this.toolsDependencies) {
@@ -58,7 +58,7 @@ public class ArduinoPlatform {
 	}
     }
 
-    public ArduinoPackage getPackage() {
+    public Package getPackage() {
 	return this.pkg;
     }
 
@@ -94,7 +94,7 @@ public class ArduinoPlatform {
 	return this.size;
     }
 
-    public List<ArduinoBoard> getBoards() throws CoreException {
+    public List<Board> getBoards() throws CoreException {
 	if (isInstalled() && this.boardsFile == null) {
 	    Properties boardProps = new Properties();
 	    try (Reader reader = new FileReader(getBoardsFile())) {
@@ -111,15 +111,15 @@ public class ArduinoPlatform {
 	    for (Map.Entry<String, HierarchicalProperties> entry : this.boardsFile.getChildren().entrySet()) {
 		if (entry.getValue().getChild("name") != null) { //$NON-NLS-1$
 		    // assume things with names are boards
-		    this.boards.add(new ArduinoBoard(entry.getKey(), entry.getValue()).setOwners(this));
+		    this.boards.add(new Board(entry.getKey(), entry.getValue()).setOwners(this));
 		}
 	    }
 	}
 	return this.boards;
     }
 
-    public ArduinoBoard getBoard(String boardName) throws CoreException {
-	for (ArduinoBoard board : getBoards()) {
+    public Board getBoard(String boardName) throws CoreException {
+	for (Board board : getBoards()) {
 	    if (boardName.equals(board.getName())) {
 		return board;
 	    }
@@ -131,7 +131,7 @@ public class ArduinoPlatform {
 	return this.toolsDependencies;
     }
 
-    public ArduinoTool getTool(String toolName) {
+    public Tool getTool(String toolName) {
 	for (ToolDependency toolDep : this.toolsDependencies) {
 	    if (toolDep.getName().equals(toolName)) {
 		return toolDep.getTool();
@@ -166,16 +166,16 @@ public class ArduinoPlatform {
     }
 
     public File getBoardsFile() {
-	return getInstallPath().resolve(ArduinoConst.BOARDS_FILE_NAME).toFile();
+	return getInstallPath().resolve(Const.BOARDS_FILE_NAME).toFile();
     }
 
     public File getPlatformFile() {
-	return getInstallPath().resolve(ArduinoConst.PLATFORM_FILE_NAME).toFile();
+	return getInstallPath().resolve(Const.PLATFORM_FILE_NAME).toFile();
     }
 
     public Path getInstallPath() {
-	String stPath = ConfigurationPreferences.getInstallationPath().append(ArduinoConst.PACKAGES_FOLDER_NAME)
-		.append(this.pkg.getName()).append(ArduinoConst.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
+	String stPath = ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
+		.append(this.pkg.getName()).append(Const.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
 		.append(this.architecture).append(this.version).toString();
 	return Paths.get(stPath);
     }
@@ -209,7 +209,7 @@ public class ArduinoPlatform {
 	}
 
 	// Download platform archive
-	return ArduinoManager.downloadAndInstall(this, false, monitor);
+	return Manager.downloadAndInstall(this, false, monitor);
 
     }
 

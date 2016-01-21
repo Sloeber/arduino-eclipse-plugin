@@ -24,11 +24,11 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import it.baeyens.arduino.managers.ArduinoManager;
-import it.baeyens.arduino.managers.ArduinoPackage;
+import it.baeyens.arduino.managers.Manager;
+import it.baeyens.arduino.managers.Package;
 import it.baeyens.arduino.managers.ArduinoPlatform;
 
-public class ArduinoPlatformPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class PlatformPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     protected Tree platformTree;
     protected List<ArduinoPlatform> removePlatforms = null;
@@ -80,15 +80,15 @@ public class ArduinoPlatformPreferencePage extends PreferencePage implements IWo
 
 	this.platformTree.removeAll();
 
-	List<ArduinoPackage> packages = ArduinoManager.getPackages();
-	Collections.sort(packages, new Comparator<ArduinoPackage>() {
+	List<Package> packages = Manager.getPackages();
+	Collections.sort(packages, new Comparator<Package>() {
 	    @Override
-	    public int compare(ArduinoPackage arg0, ArduinoPackage arg1) {
+	    public int compare(Package arg0, Package arg1) {
 		return arg0.getName().compareTo(arg1.getName());
 	    }
 	});
 
-	for (ArduinoPackage curPackage : packages) {
+	for (Package curPackage : packages) {
 	    TreeItem packageItem = new TreeItem(this.platformTree, SWT.NONE);
 	    packageItem.setText(curPackage.getName());
 	    List<ArduinoPlatform> platforms = curPackage.getPlatforms();

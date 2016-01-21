@@ -21,12 +21,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import it.baeyens.arduino.common.ArduinoConst;
-import it.baeyens.arduino.common.ArduinoInstancePreferences;
-import it.baeyens.arduino.tools.ArduinoHelpers;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
+import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.Stream;
 
-public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
+public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
     final Shell shell = new Shell();
     private final int ncol = 4;
@@ -42,7 +42,7 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 						  // sketch creation options
 
     protected DirectoryFieldEditor mTemplateFolderEditor;
-    protected ArduinoSampleSelector mExampleEditor = null;
+    protected SampleSelector mExampleEditor = null;
     protected Button mCheckBoxUseCurrentLinkSample;
     private String platformPath = null;
 
@@ -55,12 +55,12 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	validatePage();
     }
 
-    public NewArduinoSketchWizardCodeSelectionPage(String pageName) {
+    public NewSketchWizardCodeSelectionPage(String pageName) {
 	super(pageName);
 	setPageComplete(true);
     }
 
-    public NewArduinoSketchWizardCodeSelectionPage(String pageName, String title, ImageDescriptor titleImage) {
+    public NewSketchWizardCodeSelectionPage(String pageName, String title, ImageDescriptor titleImage) {
 	super(pageName, title, titleImage);
 	setPageComplete(true);
     }
@@ -92,14 +92,14 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	    }
 	};
 	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, this.ncol,
-		ArduinoConst.EMPTY_STRING, true);
+		Const.EMPTY_STRING, true);
 	this.mCodeSourceOptionsCombo.addListener(comboListener);
 
 	this.mCodeSourceOptionsCombo.setItems(this.codeOptions);
 
 	this.mTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, //$NON-NLS-1$
 		composite);
-	this.mExampleEditor = new ArduinoSampleSelector(composite, SWT.NONE,
+	this.mExampleEditor = new SampleSelector(composite, SWT.NONE,
 		Messages.ui_new_sketch_select_example_code);
 	// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 	// gd.horizontalSpan = ncol;
@@ -207,15 +207,15 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	// settings are saved when the files are created and the use this as
 	// default flag is set
 	//
-	this.mTemplateFolderEditor.setStringValue(ArduinoInstancePreferences.getLastTemplateFolderName());
-	this.mCodeSourceOptionsCombo.mCombo.select(ArduinoInstancePreferences.getLastUsedDefaultSketchSelection());
+	this.mTemplateFolderEditor.setStringValue(InstancePreferences.getLastTemplateFolderName());
+	this.mCodeSourceOptionsCombo.mCombo.select(InstancePreferences.getLastUsedDefaultSketchSelection());
 	this.mExampleEditor.setLastUsedExamples();
     }
 
     public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
 
-	ArduinoInstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
-	ArduinoInstancePreferences
+	InstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
+	InstancePreferences
 		.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
 	this.mExampleEditor.saveLastUsedExamples();
 
@@ -226,13 +226,13 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	//
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
 	case defaultIno:
-	    ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
+	    Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
 		    Stream.openContentStream(project.getName(), Include, "templates/sketch.ino", false), monitor); //$NON-NLS-1$
 	    break;
 	case defaultCPP:
-	    ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
+	    Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
 		    Stream.openContentStream(project.getName(), Include, "templates/sketch.cpp", false), monitor); //$NON-NLS-1$
-	    ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
+	    Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
 		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h", false), monitor); //$NON-NLS-1$
 	    break;
 	case CustomTemplate:
@@ -241,13 +241,13 @@ public class NewArduinoSketchWizardCodeSelectionPage extends WizardPage {
 	    File hTemplateFile = folderName.append("sketch.h").toFile(); //$NON-NLS-1$
 	    File inoFile = folderName.append("sketch.ino").toFile(); //$NON-NLS-1$
 	    if (inoFile.exists()) {
-		ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
+		Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
 			Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor);
 	    } else {
-		ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
+		Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
 			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true),
 			monitor);
-		ArduinoHelpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
+		Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
 			Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor);
 	    }
 	    break;

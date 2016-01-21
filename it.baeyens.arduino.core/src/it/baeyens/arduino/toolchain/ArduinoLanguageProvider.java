@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.ArduinoConst;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
 
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector implements ILanguageSettingsEditableProvider {
@@ -133,7 +133,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 
     @Override
     protected String getCompilerCommand(String languageId) {
-	String compilerCommand = ArduinoConst.EMPTY_STRING;
+	String compilerCommand = Const.EMPTY_STRING;
 	// ArduinoProperties arduinoProperties = new
 	// ArduinoProperties(currentProject);
 	ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.currentProject);
@@ -150,18 +150,18 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    try {
 		buildFolder.create(true, true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, ArduinoConst.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e)); //$NON-NLS-1$
 	    }
 	}
 	// End of Bug fix for CDT 8.1 fixed in 8.2
 	if (languageId.equals("org.eclipse.cdt.core.gcc")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
+		compilerCommand = envManager.getVariable(Const.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
 	    } catch (Exception e) {
-		compilerCommand = ArduinoConst.EMPTY_STRING;
+		compilerCommand = Const.EMPTY_STRING;
 	    }
-	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
-	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
 		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
@@ -171,12 +171,12 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    compilerCommand = compilerCommand + " -D__IN_ECLIPSE__=1"; //$NON-NLS-1$
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(ArduinoConst.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$//$NON-NLS-2$
+		compilerCommand = envManager.getVariable(Const.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue().replace(" -o ", " "); //$NON-NLS-1$//$NON-NLS-2$
 	    } catch (Exception e) {
-		compilerCommand = ArduinoConst.EMPTY_STRING;
+		compilerCommand = Const.EMPTY_STRING;
 	    }
-	    IEnvironmentVariable op1 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
-	    IEnvironmentVariable op2 = envManager.getVariable(ArduinoConst.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
 		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
@@ -188,7 +188,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", ArduinoConst.EMPTY_STRING).replaceAll("  ", " "); // remove //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", Const.EMPTY_STRING).replaceAll("  ", " "); // remove //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	// "" except \""
 	// and
 	// double
