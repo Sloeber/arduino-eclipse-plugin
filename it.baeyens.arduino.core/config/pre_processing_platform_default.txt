@@ -6,3 +6,4 @@ BUILD.VARIANT.PATH={RUNTIME.PLATFORM.PATH}/variants/{BUILD.VARIANT}
 BUILD.CORE.PATH={RUNTIME.PLATFORM.PATH}/cores/{BUILD.CORE}
 archive_file_path={build.path}/{archive_file}
 runtime.IDE.version=10606
+build.system.path={RUNTIME.PLATFORM.PATH}/system

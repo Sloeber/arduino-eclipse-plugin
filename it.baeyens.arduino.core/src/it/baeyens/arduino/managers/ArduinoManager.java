@@ -137,7 +137,6 @@ public class ArduinoManager {
      * @param object
      * @return
      */
-    @SuppressWarnings("resource")
     static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 	    IProgressMonitor monitor) {
 
@@ -149,42 +148,10 @@ public class ArduinoManager {
 	MultiStatus mstatus = new MultiStatus(status.getPlugin(), status.getCode(), status.getMessage(),
 		status.getException());
 
-	List<ToolDependency> tools = platform.getToolsDependencies();
-	// make a platform_plugin.txt file to store the tool paths
-	File pluginFile = ConfigurationPreferences.getPlugin_Platform_File();
-	PrintWriter writer = null;
-
-	try {
-	    writer = new PrintWriter(pluginFile, "UTF-8");//$NON-NLS-1$
-	    writer.println("#This is a automatically generated file by the Arduino eclipse plugin"); //$NON-NLS-1$
-	    writer.println("#only edit if you know what you are doing"); //$NON-NLS-1$
-	    writer.println("#Have fun"); //$NON-NLS-1$
-	    writer.println("#Jantje"); //$NON-NLS-1$
-	    writer.println();
-	} catch (FileNotFoundException | UnsupportedEncodingException e) {
-	    mstatus.add(
-		    new Status(
-			    IStatus.WARNING, Activator.getId(), Messages.ArduinoManager_unable_to_create_file
-				    + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work,
-		    e));
-	}
-
-	for (ToolDependency tool : tools) {
+	for (ToolDependency tool : platform.getToolsDependencies()) {
 	    monitor.setTaskName(InstallProgress.getRandomMessage());
-	    status = tool.install(monitor);
-	    if (!status.isOK()) {
-		mstatus.add(status);
-	    }
-	    if (writer != null) {
-		writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
-		writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
-			+ tool.getTool().getInstallPath());
-	    }
+	    mstatus.add(tool.install(monitor));
 	}
-	if (writer != null) {
-	    writer.close();
-	}
-
 	// On Windows install make from equations.org
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    try {
@@ -203,7 +170,41 @@ public class ArduinoManager {
 	    }
 	}
 
+	mstatus.add(make_eclipse_plugin_txt_file(platform));
 	return mstatus.getChildren().length == 0 ? Status.OK_STATUS : mstatus;
+
+    }
+
+    static public IStatus make_eclipse_plugin_txt_file(ArduinoPlatform platform) {
+
+	// make a platform_plugin.txt file to store the tool paths
+	File pluginFile = ConfigurationPreferences.getPlugin_Platform_File();
+
+	try (PrintWriter writer = new PrintWriter(pluginFile, "UTF-8");) {
+
+	    writer.println("#This is a automatically generated file by the Arduino eclipse plugin"); //$NON-NLS-1$
+	    writer.println("#only edit if you know what you are doing"); //$NON-NLS-1$
+	    writer.println("#Have fun"); //$NON-NLS-1$
+	    writer.println("#Jantje"); //$NON-NLS-1$
+	    writer.println();
+
+	    // TODO there should be a get tools and then loop over the tools as
+	    // this implementation returns the tools several times
+	    for (ArduinoPlatform curplatform : getPlatforms()) {
+		for (ToolDependency tool : curplatform.getToolsDependencies()) {
+		    if (writer != null) {
+			writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
+			writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ tool.getTool().getInstallPath());
+		    }
+		}
+	    }
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+	    return new Status(IStatus.WARNING, Activator.getId(), Messages.ArduinoManager_unable_to_create_file
+		    + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work, e);
+	}
+
+	return Status.OK_STATUS;
 
     }
 

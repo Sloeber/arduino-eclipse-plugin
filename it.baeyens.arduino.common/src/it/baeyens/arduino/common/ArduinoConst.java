@@ -73,7 +73,7 @@ public class ArduinoConst {
     public static final String LIBRARY_PATH_SUFFIX = "libraries";//$NON-NLS-1$
     public static final String DOWNLOADS_FOLDER = "downloads";//$NON-NLS-1$
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";//$NON-NLS-1$
-    public static final String ARDUINO_CODE_FOLDER_NAME = "arduino";//$NON-NLS-1$
+    public static final String ARDUINO_CODE_FOLDER_NAME = "core";//$NON-NLS-1$
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";//$NON-NLS-1$
     public static final String DEFAULT = "Default";//$NON-NLS-1$
     public static final String BOARDS_FILE_NAME = "boards.txt";//$NON-NLS-1$
@@ -134,13 +134,15 @@ public class ArduinoConst {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
+	    + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";//$NON-NLS-1$
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+	    + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
@@ -153,49 +155,65 @@ public class ArduinoConst {
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ where
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ where
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ make
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ make
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ is
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ is
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ located
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ located
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ only
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ only
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ used
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ used
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ in
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ in
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
 												     // $NON-NLS-1$
-												     // $NON-NLS-1$ windows
+												     // $NON-NLS-1$
+												     // $NON-NLS-1$
+												     //$NON-NLS-1$ windows
     // public static final String ENV_KEY_JANTJE_PLATFORM_NAME =
     // ENV_KEY_JANTJE_START + "PLATFORM.NAME";//$NON-NLS-1$
 
@@ -203,7 +221,8 @@ public class ArduinoConst {
     // template Sketch information
 
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
+	    + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";//$NON-NLS-1$
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";//$NON-NLS-1$
