@@ -37,7 +37,6 @@ import org.osgi.framework.ServiceRegistration;
 
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
-import jssc.SerialNativeInterface;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -71,7 +70,6 @@ public class Serial implements SerialPortEventListener {
      */
     public static Vector<String> list() {
 	try {
-	    SerialNativeInterface tt = new SerialNativeInterface();
 	    String[] portNames;
 	    String OS = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 	    if (OS.indexOf("mac") >= 0) { //$NON-NLS-1$
