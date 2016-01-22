@@ -1,5 +1,9 @@
 package it.baeyens.arduino.listeners;
 
+/**
+ * his index listener makes ity possible to detect missing libraries
+ * if configured to do so libraries are added automatically to the project
+ */
 import java.util.HashSet;
 import java.util.Set;
 

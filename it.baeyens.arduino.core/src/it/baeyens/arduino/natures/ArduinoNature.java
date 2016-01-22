@@ -1,15 +1,34 @@
 package it.baeyens.arduino.natures;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.core.builder.inoToCpp;
 
 public class ArduinoNature implements IProjectNature {
+    public static final String NATURE_ID = Const.ArduinoNatureID;
     private IProject myProject = null;
 
     @Override
     public void configure() throws CoreException {
-	// Jaba is not going to write this code
+	IProjectDescription description = myProject.getDescription();
+	// add builder to project
+	ICommand command = description.newCommand();
+	ICommand[] commands = description.getBuildSpec();
+	command.setBuilderName(inoToCpp.BUILDER_ID);
+	ICommand[] newCommands = new ICommand[commands.length + 1];
+
+	// Add it before other builders.
+	System.arraycopy(commands, 0, newCommands, 1, commands.length);
+	newCommands[0] = command;
+	description.setBuildSpec(newCommands);
+
+	myProject.setDescription(description, new NullProgressMonitor());
     }
 
     @Override

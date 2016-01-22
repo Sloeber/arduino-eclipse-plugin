@@ -45,8 +45,8 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.ui.BuildConfigurationsPage.ConfigurationDescriptor;
@@ -61,13 +61,13 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
     private WizardNewProjectCreationPage mWizardPage; // first page of the
 						      // dialog
     protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage; // add
-												// the
-												// folder
-												// for
-												// the
-												// templates
+											 // the
+											 // folder
+											 // for
+											 // the
+											 // templates
     protected NewSketchWizardBoardPage mArduinoPage; // add Arduino board
-							    // and comp port
+						     // and comp port
     private BuildConfigurationsPage mBuildCfgPage; // build the configuration
     private IConfigurationElement mConfig;
     private IProject mProject;
@@ -283,8 +283,8 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    //
 	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getActiveConfiguration());
 
-	    ICResourceDescription cfgd = defaultConfigDescription
-		    .getResourceDescription(new Path(Const.EMPTY_STRING), true);
+	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
+		    true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[5];

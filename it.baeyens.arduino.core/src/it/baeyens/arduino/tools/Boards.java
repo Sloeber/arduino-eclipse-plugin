@@ -17,12 +17,13 @@ import java.util.Set;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 
 /**
  * ArduinoBoards is that class that hides the Arduino Boards.txt file <br/>
- * The is based on the code of Trump at https://github.com/Trump211/ArduinoEclipsePlugin and later adapted as needed.
+ * The is based on the code of Trump at
+ * https://github.com/Trump211/ArduinoEclipsePlugin and later adapted as needed.
  * 
  * @author Jan Baeyens and trump
  * 
@@ -33,7 +34,9 @@ public class Boards {
     private static final String MENU = "menu"; //$NON-NLS-1$
     Map<String, String> settings = null;
     // private String mLastLoadedBoard = "";
-    private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<>(); // all the data
+    private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<>(); // all
+											      // the
+											      // data
 
     public Boards(File boardsFileName) {
 	LoadBoardsFile(boardsFileName);
@@ -76,7 +79,8 @@ public class Boards {
     }
 
     /**
-     * Get all the acceptable values for a option for a board The outcome of this method can be used to fill a combobox
+     * Get all the acceptable values for a option for a board The outcome of
+     * this method can be used to fill a combobox
      * 
      * @param menu
      *            the name of a menu not the ide
@@ -103,7 +107,8 @@ public class Boards {
 	    if ((numsubkeys == 3) && (startOk))
 		ret.add(e2.getValue());
 	}
-	// from Arduino IDE 1.5.4 menu is subset of the board. The previous code will not return a result
+	// from Arduino IDE 1.5.4 menu is subset of the board. The previous code
+	// will not return a result
 	Map<String, String> boardInfo = this.mArduinoSupportedBoards.get(boardID);
 	if (boardInfo != null) {
 	    SearchKey = MENU + DOT + menuID + DOT;
@@ -118,9 +123,11 @@ public class Boards {
     }
 
     /**
-     * GetArduinoBoards returns all the boards that are in the currently loaded board.txt file.
+     * GetArduinoBoards returns all the boards that are in the currently loaded
+     * board.txt file.
      * 
-     * @return an empty list if no board file is loaded. In all other cases it returns the list of oards found in the file
+     * @return an empty list if no board file is loaded. In all other cases it
+     *         returns the list of oards found in the file
      * @author Trump
      * 
      */
@@ -186,12 +193,13 @@ public class Boards {
 		String board = key.substring(0, key.indexOf('.'));
 		if (!this.mArduinoSupportedBoards.containsKey(board))
 		    this.mArduinoSupportedBoards.put(board, new HashMap<String, String>());
-		(this.mArduinoSupportedBoards.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
+		(this.mArduinoSupportedBoards.get(board)).put(key.substring(key.indexOf('.') + 1),
+			boardPreferences.get(key));
 	    }
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoBoards_Failed_to_read_boards + this.mLastLoadedBoardsFile.getName(), e));
+		    Messages.Boards_Failed_to_read_boards + this.mLastLoadedBoardsFile.getName(), e));
 	}
 	return true;
     }
@@ -243,7 +251,8 @@ public class Boards {
 
     // Taken from PApplet.java
     /**
-     * Loads an input stream into an array of strings representing each line of the input stream
+     * Loads an input stream into an array of strings representing each line of
+     * the input stream
      * 
      * @param input
      *            the input stream to load
@@ -294,7 +303,7 @@ public class Boards {
 		return curOption.getValue();
 	    }
 	}
-	return MENU + " ID " + menuID + Messages.ArduinoBoards_not_found; //$NON-NLS-1$
+	return MENU + " ID " + menuID + Messages.Boards_not_found; //$NON-NLS-1$
     }
 
     public String getMenuIDFromName(String menuName) {
@@ -304,7 +313,7 @@ public class Boards {
 		return curOption.getKey();
 	    }
 	}
-	return MENU + Messages.ArduinoBoards_name + menuName + Messages.ArduinoBoards_not_found;
+	return MENU + Messages.Boards_name + menuName + Messages.Boards_not_found;
     }
 
     public String getMenuItemIDFromName(String boardID, String menuID, String menuItemName) {
@@ -317,7 +326,8 @@ public class Boards {
 		    return keySplit[2];
 	    }
 	}
-	// nothing found so look in the post 1.5.4 way boardid."menu".menuid.menuitemid=name
+	// nothing found so look in the post 1.5.4 way
+	// boardid."menu".menuid.menuitemid=name
 	// TODO implement in 1.5.4 case
 	return "getMenuItemIDFromName not yet implemented in 1.5.4 way"; //$NON-NLS-1$
     }
@@ -330,7 +340,8 @@ public class Boards {
 	    if (curOption.getKey().equalsIgnoreCase(lookupValue))
 		return curOption.getValue();
 	}
-	// nothing found so look in the post 1.5.4 way boardid."menu".menuid.menuitemid=name
+	// nothing found so look in the post 1.5.4 way
+	// boardid."menu".menuid.menuitemid=name
 	Map<String, String> BoardIDSectionMap = getSection(boardID);
 	String loopupValue = MENU + DOT + menuID + DOT + menuItemID;
 	for (Entry<String, String> curOption : BoardIDSectionMap.entrySet()) {
@@ -338,7 +349,7 @@ public class Boards {
 		return curOption.getValue();
 	}
 	// TODO implement 1.5.4 way
-	return Messages.ArduinoBoards_Get_menu_item_name_from_id_did_not_find + boardID + ' ' + menuID + ' ' + menuItemID;
+	return Messages.Boards_Get_menu_item_name_from_id_did_not_find + boardID + ' ' + menuID + ' ' + menuItemID;
     }
 
 }

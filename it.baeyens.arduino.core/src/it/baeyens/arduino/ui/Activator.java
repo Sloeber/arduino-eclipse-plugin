@@ -65,6 +65,9 @@ public class Activator implements BundleActivator {
 	IndexerListener myindexerListener = new IndexerListener();
 	CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
 	CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
+	CoreModel singCoreModel = CoreModel.getDefault();
+	singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
+		CProjectDescriptionEvent.ABOUT_TO_APPLY);
     }
 
     private void runGUIRegistration() {
@@ -107,9 +110,7 @@ public class Activator implements BundleActivator {
 		    // if this happens there is no real harm or functionality
 		    // lost
 		}
-		CoreModel singCoreModel = CoreModel.getDefault();
-		singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
-			CProjectDescriptionEvent.ABOUT_TO_APPLY);
+
 		return Status.OK_STATUS;
 	    }
 	};

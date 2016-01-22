@@ -1,4 +1,9 @@
 package it.baeyens.arduino.listeners;
+/**
+ * this listener listens for changes in the project explorer
+ * This is so we can know which project(s) you are currently working
+ * on
+ */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +50,8 @@ public class ProjectExplorerListener implements ISelectionListener {
 	    for (Object element : ((IStructuredSelection) newSelection).toList()) {
 		if (element instanceof IAdaptable) {
 		    @SuppressWarnings("cast") // this is needed for the oracle
-					      // sdk
+					      // sdk as it needs the cast and
+					      // otherwise I have a warning
 		    IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
 		    if (resource != null) {
 			allSelectedprojects.add(resource.getProject());

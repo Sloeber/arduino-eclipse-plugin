@@ -37,11 +37,14 @@
 -->
  	<extension point="org.eclipse.core.resources.natures"
  		id="it.baeyens.arduinonature" 
- 		name="Arduino Nature" >
+ 		name="arduinoNature" >
        <runtime>
            <run class="it.baeyens.arduino.natures.ArduinoNature" />
        </runtime>
        <requires-nature id="org.eclipse.cdt.core.cnature"/>
+       <requires-nature
+             id="org.eclipse.cdt.core.ccnature">
+       </requires-nature>
    </extension>
 <!--
 ####################################################################################### 
@@ -445,10 +448,11 @@
      <!-- TODO: Consider renaming as base. -->
      <configuration
            artifactExtension="hex"
-           cleanCommand="rm -rf"
+           cleanCommand="rm -f"
            id="it.baeyens.arduino.core.configuration.release"
            languageSettingsProviders="it.baeyens.arduino.languageSettingsProvider"
-           name="%configuration.name">
+           name="%configuration.name"
+           prebuildStep="it.baeyens.arduino.core.command.generate.cpp">
         <toolChain
               archList="all"
               id="it.baeyens.arduino.core.toolChain.release"
@@ -822,6 +826,20 @@ priority="high"/>
           </objectClass>
        </enablement>
     </decorator>
+ </extension>
+ <extension
+       id="it.baeyens.arduino.core.inoToCpp"
+       name="Convert Ino to CPP files"
+       point="org.eclipse.core.resources.builders">
+    <builder
+          callOnEmptyDelta="true"
+          hasNature="false"
+          isConfigurable="false"
+          supportsConfigurations="true">
+       <run
+             class="it.baeyens.arduino.core.builder.inoToCpp">
+       </run>
+    </builder>
  </extension>
  
 </plugin>

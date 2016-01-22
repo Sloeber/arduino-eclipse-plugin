@@ -59,10 +59,10 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
-import it.baeyens.arduino.common.Const;
-import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -187,10 +187,11 @@ public class Helpers extends Common {
 	try {
 	    mngr.setProjectDescription(project, projectDescription, true, null);
 	} catch (CoreException e) {
-	    Common.log(new Status(
-		    IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Could_not_add_folder
-			    + IncludePath.toOSString() + Messages.ArduinoHelpers_To_include_path + project.getName(),
-		    e));
+	    Common.log(
+		    new Status(
+			    IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Could_not_add_folder
+				    + IncludePath.toOSString() + Messages.Helpers_To_include_path + project.getName(),
+			    e));
 	}
 
     }
@@ -231,8 +232,8 @@ public class Helpers extends Common {
 	try {
 	    createNewFolder(project, target.toString(), URIUtil.toURI(source));
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoHelpers_Create_folder_failed + target, e));
+	    Common.log(
+		    new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Create_folder_failed + target, e));
 	}
     }
 
@@ -423,7 +424,7 @@ public class Helpers extends Common {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
 		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-			Messages.ArduinoHelpers_The_folder + folder + Messages.ArduinoHelpers_is_empty, null));
+			Messages.Helpers_The_folder + folder + Messages.Helpers_is_empty, null));
 		return;
 	    }
 	    for (File f : a) {
@@ -476,10 +477,8 @@ public class Helpers extends Common {
 	if (buildCoreFolder.contains(COLON)) {
 	    String sections[] = buildCoreFolder.split(COLON);
 	    if (sections.length != 2) {
-		Common.log(new Status(
-			IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Value_for_key
-				+ ENV_KEY_build_core + Messages.ArduinoHelpers__in_boards_invalid + buildCoreFolder,
-			null));
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Value_for_key
+			+ ENV_KEY_build_core + Messages.Helpers__in_boards_invalid + buildCoreFolder, null));
 	    } else {
 		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE,
 			EMPTY_STRING);
@@ -675,11 +674,11 @@ public class Helpers extends Common {
 		}
 	    }
 	} catch (FileNotFoundException e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Error_parsing
-		    + envVarFile.toString() + Messages.ArduinoHelpers_File_does_not_exists, e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    Messages.Helpers_Error_parsing + envVarFile.toString() + Messages.Helpers_File_does_not_exists, e));
 	} catch (IOException e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ArduinoHelpers_Error_parsing
-		    + envVarFile.toString() + Messages.ArduinoHelpers_IO_exception, e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    Messages.Helpers_Error_parsing + envVarFile.toString() + Messages.Helpers_IO_exception, e));
 	}
     }
 
@@ -705,16 +704,16 @@ public class Helpers extends Common {
 	if (boardSectionMap == null) {
 	    if (warn) {
 		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-			Messages.ArduinoHelpers_The_project + confDesc.getProjectDescription().getProject().getName()
-				+ Messages.ArduinoHelpers_Invalid_boards_config + confDesc.getName()
-				+ Messages.ArduinoHelpers_boards_file + boardsFile.getBoardsTxtName()
-				+ Messages.ArduinoHelpers_Boards_id + boardID));
+			Messages.Helpers_The_project + confDesc.getProjectDescription().getProject().getName()
+				+ Messages.Helpers_Invalid_boards_config + confDesc.getName()
+				+ Messages.Helpers_boards_file + boardsFile.getBoardsTxtName()
+				+ Messages.Helpers_Boards_id + boardID));
 	    }
 	    return;
 	}
 	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 	    // if it is not a menu item add it
-	    if (!currentPair.getKey().startsWith(Messages.ArduinoHelpers_menu)) {
+	    if (!currentPair.getKey().startsWith(Messages.Helpers_menu)) {
 		String keyString = MakeKeyString(currentPair.getKey());
 		String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
@@ -728,8 +727,7 @@ public class Helpers extends Common {
 		    String StartValue = "menu." + menuID + DOT + menuItemID + DOT; //$NON-NLS-1$
 		    if (currentPair.getKey().startsWith(StartValue)) {
 			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
-			String valueString = MakeEnvironmentString(currentPair.getValue(),
-				Const.ENV_KEY_BOARD_START);
+			String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
 			contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 		    }
 		}
@@ -772,8 +770,9 @@ public class Helpers extends Common {
 		    for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getKey().startsWith(keyStartsWithValue)) {
 			    String key = curOption.getKey().substring(keyStartsWithValue.length());
-			    contribEnv.addVariable(new EnvironmentVariable(MakeKeyString(key),
-				    MakeEnvironmentString(curOption.getValue(), Const.ENV_KEY_BOARD_START)),
+			    contribEnv.addVariable(
+				    new EnvironmentVariable(MakeKeyString(key),
+					    MakeEnvironmentString(curOption.getValue(), Const.ENV_KEY_BOARD_START)),
 				    confDesc);
 			}
 		    }
@@ -790,8 +789,8 @@ public class Helpers extends Common {
 	String MenuName = boardsFile.getMenuNameFromID(menuID);
 	String MenuItemName = boardsFile.getMenuItemNameFromID(boardID, menuID, menuItemID);
 
-	String SelectedMenuItemName = getBuildEnvironmentVariable(confDesc,
-		Const.ENV_KEY_JANTJE_START + MenuName, EMPTY_STRING);
+	String SelectedMenuItemName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_START + MenuName,
+		EMPTY_STRING);
 	if (SelectedMenuItemName.isEmpty()) {
 	    return false; // This menu item has not been selected
 	    // this should not happen
@@ -830,24 +829,21 @@ public class Helpers extends Common {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-	File boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc,
-		Const.ENV_KEY_JANTJE_BOARDS_FILE, InstancePreferences.getLastUsedBoardsFile())).toFile();
+	File boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARDS_FILE,
+		InstancePreferences.getLastUsedBoardsFile())).toFile();
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
 	File pluginPlatformFilename = ConfigurationPreferences.getPlugin_Platform_File();
 
-	String boardID = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARD_ID,
-		EMPTY_STRING);
+	String boardID = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARD_ID, EMPTY_STRING);
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID,
 		EMPTY_STRING);
 
 	architecture = architecture.toUpperCase();
 
-	Boards pluginPreProcessingBoardsTxt = new Boards(
-		ConfigurationPreferences.getPreProcessingBoardsFile());
-	Boards pluginPostProcessingBoardsTxt = new Boards(
-		ConfigurationPreferences.getPostProcessingBoardsFile());
+	Boards pluginPreProcessingBoardsTxt = new Boards(ConfigurationPreferences.getPreProcessingBoardsFile());
+	Boards pluginPostProcessingBoardsTxt = new Boards(ConfigurationPreferences.getPostProcessingBoardsFile());
 	File pluginPreProcessingPlatformTxt = ConfigurationPreferences.getPreProcessingPlatformFile();
 	File pluginPostProcessingPlatformTxt = ConfigurationPreferences.getPostProcessingPlatformFile();
 	Boards boardsFile = new Boards(boardFileName);
@@ -884,7 +880,7 @@ public class Helpers extends Common {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPlatformFilename);
 	} else {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoHelpers_File_missing + pluginPlatformFilename.getAbsolutePath()));
+		    Messages.Helpers_File_missing + pluginPlatformFilename.getAbsolutePath()));
 	}
 
 	// now process the boards file
@@ -954,7 +950,7 @@ public class Helpers extends Common {
 											       // dirty
 		if (coreReference == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			    Messages.ArduinoHelpers_Core_refference_missing + core));
+			    Messages.Helpers_Core_refference_missing + core));
 		} else {
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core_path,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());
@@ -975,7 +971,7 @@ public class Helpers extends Common {
 		IPath variantReference = findReferencedFolder(vendor, architecture);
 		if (variantReference == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			    Messages.ArduinoHelpers_Variant_reference_missing + variant));
+			    Messages.Helpers_Variant_reference_missing + variant));
 		} else {
 		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant_path,
 			    variantReference.append(ARDUINO_VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
@@ -987,12 +983,8 @@ public class Helpers extends Common {
     }
 
     /**
-     * This method looks for a referenced path. The search goes as follows
-     * ->private hardware folder ->boardsmanager folder ->installed arduino
-     * hardware folder
-     * 
-     * The first matching folder is returned if no folder is found null is
-     * returned
+     * This method looks for a referenced path. The search goes as follows it
+     * only looks in manager installed stuff
      * 
      * @param vendor
      * @param architecture
@@ -1051,7 +1043,7 @@ public class Helpers extends Common {
 	    switch (recipeParts.length) {
 	    case 0:
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1',
-			Messages.ArduinoHelpers_No_command_for + recipeKey);
+			Messages.Helpers_No_command_for + recipeKey);
 		break;
 	    case 1:
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
@@ -1073,8 +1065,7 @@ public class Helpers extends Common {
 	// Arduino uses the board approach for the upload tool.
 	// as I'm not I create some special entries to work around it
 	try {
-	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_upload_tool, confDesc).getValue()
-		    .toUpperCase();
+	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
 	    setBuildEnvironmentVariable(contribEnv, confDesc, "A.CMD", //$NON-NLS-1$
 		    makeEnvironmentVar("A.TOOLS." + uploadTool + ".CMD")); //$NON-NLS-1$ //$NON-NLS-2$
 	    setBuildEnvironmentVariable(contribEnv, confDesc, "A.PATH", //$NON-NLS-1$
@@ -1206,7 +1197,7 @@ public class Helpers extends Common {
 		buildFolder.delete(true, null);
 	    } catch (CoreException e) {
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			Messages.ArduinoHelpers_delete_folder_failed + cfgDescription.getName(), e));
+			Messages.Helpers_delete_folder_failed + cfgDescription.getName(), e));
 	    }
 	}
 
@@ -1264,7 +1255,7 @@ public class Helpers extends Common {
 	}
 	if (boardFiles.size() == 0) {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoHelpers_No_boards_txt_found + String.join("\n", hardwareFolders), null)); //$NON-NLS-1$
+		    Messages.Helpers_No_boards_txt_found + String.join("\n", hardwareFolders), null)); //$NON-NLS-1$
 	    return null;
 	}
 	return boardFiles.toArray(new String[boardFiles.size()]);
@@ -1302,7 +1293,7 @@ public class Helpers extends Common {
 	File[] a = source.toFile().listFiles();
 	if (a == null) {
 	    Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoHelpers_link_folder + source + Messages.ArduinoHelpers_is_empty, null));
+		    Messages.Helpers_link_folder + source + Messages.Helpers_is_empty, null));
 	    return;
 	}
 	for (File f : a) {
@@ -1314,7 +1305,6 @@ public class Helpers extends Common {
 		    newFileHandle.createLink(source.append(f.getName()),
 			    IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
 		} catch (CoreException e) {
-		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		}
 	    }

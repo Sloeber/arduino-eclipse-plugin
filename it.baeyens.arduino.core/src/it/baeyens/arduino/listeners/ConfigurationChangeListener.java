@@ -1,4 +1,16 @@
 package it.baeyens.arduino.listeners;
+/*** Message from jan baeyens
+ * this listener makes sure that when you change from one configuration to another
+ * the correct hardware libraries are attached to the project
+ * for instance you can have a project with 2 configurations
+ * one for teensy
+ * one for arduino uno
+ * 
+ * 
+ * when you use the spi library the library is a completely different library
+ * this code takes care that you use the correct library when switching configuration
+ * 
+ */
 
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -6,8 +18,8 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.Libraries;
 
