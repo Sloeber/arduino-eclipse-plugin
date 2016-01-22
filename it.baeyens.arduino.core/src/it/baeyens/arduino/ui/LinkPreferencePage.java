@@ -62,7 +62,7 @@ public class LinkPreferencePage extends PreferencePage implements IWorkbenchPref
 
     @Override
     protected void performDefaults() {
-	String defaultBoardUrl = Const.DEFAULT_ARDUINO_MANAGER_BOARD_URLS;
+	String defaultBoardUrl = Const.DEFAULT_MANAGER_BOARD_URLS;
 	this.urlsText.setText(defaultBoardUrl);
 	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
 	super.performDefaults();

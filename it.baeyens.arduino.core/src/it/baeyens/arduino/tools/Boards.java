@@ -31,7 +31,7 @@ import it.baeyens.arduino.common.Const;
 public class Boards {
     private File mLastLoadedBoardsFile = null;
     private static final String DOT = Const.DOT;
-    private static final String MENU = "menu"; //$NON-NLS-1$
+    private static final String MENU = Const.MENU; // $NON-NLS-1$
     Map<String, String> settings = null;
     // private String mLastLoadedBoard = "";
     private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<>(); // all

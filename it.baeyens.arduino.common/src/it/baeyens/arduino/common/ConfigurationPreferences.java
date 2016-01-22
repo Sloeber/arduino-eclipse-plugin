@@ -42,7 +42,7 @@ public class ConfigurationPreferences {
 		return new Path(pathName);
 	    }
 	}
-	String storedValue = getGlobalString(Const.KEY_ARDUINO_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
+	String storedValue = getGlobalString(Const.KEY_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    URI uri;
 	    try {
@@ -97,11 +97,11 @@ public class ConfigurationPreferences {
     }
 
     public static String getBoardURLs() {
-	return getGlobalString(Const.KEY_ARDUINO_MANAGER_BOARD_URLS, Const.DEFAULT_ARDUINO_MANAGER_BOARD_URLS);
+	return getGlobalString(Const.KEY_MANAGER_BOARD_URLS, Const.DEFAULT_MANAGER_BOARD_URLS);
     }
 
     public static void setBoardURLs(String urls) {
-	setGlobalString(Const.KEY_ARDUINO_MANAGER_BOARD_URLS, urls);
+	setGlobalString(Const.KEY_MANAGER_BOARD_URLS, urls);
     }
 
     public static Path getPathExtensionPath() {

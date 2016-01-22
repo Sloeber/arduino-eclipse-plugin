@@ -90,12 +90,11 @@ public class Common extends InstancePreferences {
      * @return a name safe to create files or folders
      */
     public static String MakeNameCompileSafe(String Name) {
-	char badChars[] = { ' ', '/', '.', SLACH, ':', ' ', UNDERSCORE, BACK_SLACH, '(', ')', '*', '?', '%', '|', '<',
-		'>', ',', '-' };
+	char badChars[] = { ' ', '/', '.', '/', ':', ' ', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
 
 	String ret = Name.trim();
 	for (char curchar : badChars) {
-	    ret = ret.replace(curchar, UNDERSCORE);
+	    ret = ret.replace(curchar, '_');
 	}
 	return ret;
     }
@@ -161,8 +160,7 @@ public class Common extends InstancePreferences {
 	    // downwards
 	    // compatibility
 	} catch (CoreException e) {
-	    IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    "Failed to write arduino properties", e); //$NON-NLS-1$
+	    IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to write arduino properties", e); //$NON-NLS-1$
 	    Common.log(status);
 
 	}

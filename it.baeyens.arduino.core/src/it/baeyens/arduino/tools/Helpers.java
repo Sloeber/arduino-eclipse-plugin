@@ -483,9 +483,9 @@ public class Helpers extends Common {
 		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE,
 			EMPTY_STRING);
 		addCodeFolder(project,
-			new Path(ARDUINO_HARDWARE_FOLDER_NAME + SLACH + sections[1] + SLACH + architecture + SLACH
-				+ ARDUINO_CORE_FOLDER_NAME + SLACH + sections[1]),
-			"arduino/core", configurationDescription); //$NON-NLS-1$
+			new Path(ARDUINO_HARDWARE_FOLDER_NAME).append(sections[1]).append(architecture)
+				.append(ARDUINO_CORE_FOLDER_NAME).append(sections[1]),
+			ARDUINO_CODE_FOLDER_NAME + "/core", configurationDescription); //$NON-NLS-1$
 	    }
 	} else {
 	    addCodeFolder(project, rootPath.append("cores").append(buildCoreFolder), ARDUINO_CODE_FOLDER_NAME + "/core", //$NON-NLS-1$ //$NON-NLS-2$
@@ -614,7 +614,7 @@ public class Helpers extends Common {
 			+ makeEnvironmentVar(ENV_KEY_build_generic_path) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_path,
-		makeEnvironmentVar("ProjDirPath") + SLACH + makeEnvironmentVar("ConfigName")); //$NON-NLS-1$ //$NON-NLS-2$
+		makeEnvironmentVar("ProjDirPath") + '/' + makeEnvironmentVar("ConfigName")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_project_name, makeEnvironmentVar("ProjName")); //$NON-NLS-1$
 
@@ -724,7 +724,7 @@ public class Helpers extends Common {
 		String menuItemID = keySplit[2];
 		if (isThisMenuItemSelected(boardsFile, confDesc, boardID, menuID, menuItemID)) {
 		    // we also need to skip the name
-		    String StartValue = "menu." + menuID + DOT + menuItemID + DOT; //$NON-NLS-1$
+		    String StartValue = MENU + DOT + menuID + DOT + menuItemID + DOT; // $NON-NLS-1$
 		    if (currentPair.getKey().startsWith(StartValue)) {
 			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
 			String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
@@ -734,7 +734,7 @@ public class Helpers extends Common {
 	    }
 	}
 
-	Map<String, String> menuSectionMap = boardsFile.getSection("menu"); //$NON-NLS-1$
+	Map<String, String> menuSectionMap = boardsFile.getSection(MENU); // $NON-NLS-1$
 	String[] optionNames = boardsFile.getMenuNames();
 	for (int currentOption = 0; currentOption < optionNames.length; currentOption++) {
 	    String optionName = optionNames[currentOption];
@@ -974,7 +974,7 @@ public class Helpers extends Common {
 			    Messages.Helpers_Variant_reference_missing + variant));
 		} else {
 		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant_path,
-			    variantReference.append(ARDUINO_VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
+			    variantReference.append(VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
 		}
 	    } else {
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variant);

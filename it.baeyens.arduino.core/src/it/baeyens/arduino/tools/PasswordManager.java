@@ -45,7 +45,8 @@ public class PasswordManager {
 		this.myLogin = node.get(Messages.security_login, null);
 	    }
 	    if (this.myPassword == null) {
-		PasswordDialog dialog = new PasswordDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		PasswordDialog dialog = new PasswordDialog(
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		if (this.myLogin != null)
 		    dialog.setUser(this.myLogin);
 		dialog.sethost(host);
@@ -86,7 +87,7 @@ public class PasswordManager {
 
     private static String ConvertHostToNodeName(String host) {
 
-	return "ssh/" + host.replace(Const.DOT, "/"); //$NON-NLS-1$ //$NON-NLS-2$
+	return "ssh/" + host.replace(Const.DOT, Const.SLACH); //$NON-NLS-1$
     }
 
 }
