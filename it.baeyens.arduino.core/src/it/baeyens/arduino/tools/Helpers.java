@@ -63,6 +63,9 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.InstancePreferences;
+import it.baeyens.arduino.managers.ArduinoPlatform;
+import it.baeyens.arduino.managers.Manager;
+import it.baeyens.arduino.managers.ToolDependency;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -800,6 +803,29 @@ public class Helpers extends Common {
 	return false;
     }
 
+    private static void setTheEnvironmentVariablesAddThePlatformInfo(IContributedEnvironment contribEnv,
+	    ICConfigurationDescription confDesc) {
+	String platformFileName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, "");
+
+	ArduinoPlatform platform = Manager.getPlatform(platformFileName);
+	if (platform == null) {
+	    return;
+	}
+	for (ToolDependency tool : platform.getToolsDependencies()) {
+	    String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path");
+	    String valueString = tool.getTool().getInstallPath().toString();
+	    contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+	    keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
+	    contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+	    // writer.println("runtime.tools." + tool.getName() + ".path=" +
+	    // tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
+	    // writer.println("runtime.tools." + tool.getName() +
+	    // tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
+	    // + tool.getTool().getInstallPath());
+	}
+
+    }
+
     /**
      * This method creates environment variables based on the platform.txt and
      * boards.txt. platform.txt is processed first and then boards.txt. This way
@@ -834,7 +860,8 @@ public class Helpers extends Common {
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
-	File pluginPlatformFilename = ConfigurationPreferences.getPlugin_Platform_File();
+	// File pluginPlatformFilename =
+	// ConfigurationPreferences.getPlugin_Platform_File();
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARD_ID, EMPTY_STRING);
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID,
@@ -876,12 +903,7 @@ public class Helpers extends Common {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, localPlatformFilename);
 	}
 
-	if (pluginPlatformFilename.exists()) {
-	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPlatformFilename);
-	} else {
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.Helpers_File_missing + pluginPlatformFilename.getAbsolutePath()));
-	}
+	setTheEnvironmentVariablesAddThePlatformInfo(contribEnv, confDesc);
 
 	// now process the boards file
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
@@ -1155,23 +1177,23 @@ public class Helpers extends Common {
     /**
      * When parsing boards.txt and platform.txt some processing needs to be done
      * to get "acceptable environment variable keys" This method does the
-     * parsing
+     * parsing some examples on windows "test.windows" becomes "A.TEST"
+     * "test.linux" becomes "A.TEST.LINUX"
+     * 
+     * on Linux "test.windows" becomes "A.TEST.WINDOWS" "test.linux" becomes
+     * "A.TEST"
+     * 
      * 
      * @param inputString
      *            the key string as read from the file
      * @return the string to be used as key for the environment variable
      */
-    static String osString = null;
-
     private static String MakeKeyString(String string) {
-	if (osString == null) {
-	    if (Platform.getOS().equals(Platform.OS_LINUX)) {
-		osString = "\\.LINUX"; //$NON-NLS-1$
-	    } else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		osString = "\\.WINDOWS"; //$NON-NLS-1$
-	    } else {
-		osString = "\\.\\."; //$NON-NLS-1$
-	    }
+	String osString = "\\.\\."; //$NON-NLS-1$
+	if (Platform.getOS().equals(Platform.OS_LINUX)) {
+	    osString = "\\.LINUX"; //$NON-NLS-1$
+	} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    osString = "\\.WINDOWS"; //$NON-NLS-1$
 	}
 	return ENV_KEY_BOARD_START + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
     }
@@ -1262,8 +1284,15 @@ public class Helpers extends Common {
 
     }
 
-    private static String makeEnvironmentVar(String string) {
-	return "${" + string + '}'; //$NON-NLS-1$
+    /**
+     * Converts a name to a tagged environment variable if variableName ="this"
+     * the output is "${this}"
+     * 
+     * @param variableName
+     * @return
+     */
+    private static String makeEnvironmentVar(String variableName) {
+	return "${" + variableName + '}'; //$NON-NLS-1$
     }
 
     /**

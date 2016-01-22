@@ -76,7 +76,6 @@ public class Const {
     public static final String PLATFORM_FILE_NAME = "platform.txt";//$NON-NLS-1$
     public static final String VARIANTS_FOLDER_NAME = "variants";//$NON-NLS-1$
     public static final String PACKAGES_FOLDER_NAME = "packages";//$NON-NLS-1$
-    public static final String PLATFORM_PLUGIN_FILE_NAME = "eclipse_plugin.txt"; //$NON-NLS-1$
 
     // tags to interpret the arduino input files
     public static final String BoardNameKeyTAG = "name";//$NON-NLS-1$
@@ -148,106 +147,7 @@ public class Const {
     public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";//$NON-NLS-1$ place
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ where
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ make
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ is
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ located
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ only
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ used
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ in
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     // $NON-NLS-1$
-												     //$NON-NLS-1$ windows
-    // public static final String ENV_KEY_JANTJE_PLATFORM_NAME =
-    // ENV_KEY_JANTJE_START + "PLATFORM.NAME";//$NON-NLS-1$
-
+    public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";//$NON-NLS-1$
     //
     // template Sketch information
 

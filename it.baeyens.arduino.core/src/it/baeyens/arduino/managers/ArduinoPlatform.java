@@ -27,8 +27,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.Activator;
 
 public class ArduinoPlatform {
@@ -101,7 +101,7 @@ public class ArduinoPlatform {
 		boardProps.load(reader);
 	    } catch (IOException e) {
 		throw new CoreException(
-			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_boards, e));
+			new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_boards, e));
 	    }
 
 	    this.boardsFile = new HierarchicalProperties(boardProps);
@@ -155,7 +155,7 @@ public class ArduinoPlatform {
 		}
 	    } catch (IOException e) {
 		throw new CoreException(
-			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoPlatform_loading_platform, e));
+			new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_platform, e));
 	    }
 	}
 	return this.platformProperties;

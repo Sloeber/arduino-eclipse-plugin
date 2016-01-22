@@ -347,6 +347,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
     }
 
+    /**
+     * Based on the current selection save the last used values$this to make
+     * sure you can create the same sketch quickly again
+     */
     private void saveAllLastUseds() {
 	//
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
@@ -364,6 +368,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	InstancePreferences.setLastUsedMenuOption(options);
     }
 
+    /**
+     * Based on the selected board and parameters save all info needed to the
+     * build environments
+     * 
+     * @param confdesc
+     */
     public void saveAllSelections(ICConfigurationDescription confdesc) {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
@@ -485,19 +495,29 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	super.handleTabEvent(kind, data);
     }
 
+    /*
+     * Returns the package name based on the platformfile name Caters for the
+     * packages (with version number and for the old way
+     */
     public String getPackage() {
 	IPath platformFile = new Path(this.mControlBoardsTxtFile.getText().trim());
 	String architecture = platformFile.removeLastSegments(1).lastSegment();
-	if (architecture.contains(".")) { //$NON-NLS-1$
+	if (architecture.contains(Const.DOT)) { // This is a version number so
+						// package
 	    return platformFile.removeLastSegments(4).lastSegment();
 	}
 	return platformFile.removeLastSegments(2).lastSegment();
     }
 
+    /*
+     * Returns the architecture based on the platfor file name Caters for the
+     * packages (with version number and for the old way
+     */
     public String getArchitecture() {
 	IPath platformFile = new Path(this.mControlBoardsTxtFile.getText().trim());
 	String architecture = platformFile.removeLastSegments(1).lastSegment();
-	if (architecture.contains(".")) { //$NON-NLS-1$
+	if (architecture.contains(Const.DOT)) { // This is a version number so
+						// package
 	    architecture = platformFile.removeLastSegments(2).lastSegment();
 	}
 	return architecture;

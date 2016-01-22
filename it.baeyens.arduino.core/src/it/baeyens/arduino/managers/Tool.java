@@ -50,7 +50,8 @@ public class Tool {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()).append(this.name) //$NON-NLS-1$
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()) //$NON-NLS-1$
+		.append(this.name)
 		.append(this.version).toString());
     }
 
@@ -70,12 +71,14 @@ public class Tool {
 	}
 
 	// No valid system
-	return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoTool_no_valid_system + this.name);
+	return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
     }
 
     // public Properties getToolProperties() {
     // Properties properties = new Properties();
-    // properties.put("runtime.tools." + name + ".path", ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$ //$NON-NLS-2$
+    // properties.put("runtime.tools." + name + ".path",
+    // ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$
+    // //$NON-NLS-2$
     // return properties;
     // }
 

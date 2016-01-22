@@ -109,8 +109,4 @@ public class ConfigurationPreferences {
 
     }
 
-    public static File getPlugin_Platform_File() {
-	return getInstallationPath().append(Const.PLATFORM_PLUGIN_FILE_NAME).toFile();
-    }
-
 }

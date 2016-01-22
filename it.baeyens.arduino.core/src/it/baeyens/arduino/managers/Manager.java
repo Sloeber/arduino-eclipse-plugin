@@ -13,14 +13,11 @@ package it.baeyens.arduino.managers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -165,46 +162,12 @@ public class Manager {
 		}
 
 	    } catch (IOException e) {
-		mstatus.add(
-			new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Downloading_make_exe, e));
+		mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Downloading_make_exe, e));
 	    }
 	}
 
-	mstatus.add(make_eclipse_plugin_txt_file(platform));
+	// mstatus.add(make_eclipse_plugin_txt_file(platform));
 	return mstatus.getChildren().length == 0 ? Status.OK_STATUS : mstatus;
-
-    }
-
-    static public IStatus make_eclipse_plugin_txt_file(ArduinoPlatform platform) {
-
-	// make a platform_plugin.txt file to store the tool paths
-	File pluginFile = ConfigurationPreferences.getPlugin_Platform_File();
-
-	try (PrintWriter writer = new PrintWriter(pluginFile, "UTF-8");) {
-
-	    writer.println("#This is a automatically generated file by the Arduino eclipse plugin"); //$NON-NLS-1$
-	    writer.println("#only edit if you know what you are doing"); //$NON-NLS-1$
-	    writer.println("#Have fun"); //$NON-NLS-1$
-	    writer.println("#Jantje"); //$NON-NLS-1$
-	    writer.println();
-
-	    // TODO there should be a get tools and then loop over the tools as
-	    // this implementation returns the tools several times
-	    for (ArduinoPlatform curplatform : getPlatforms()) {
-		for (ToolDependency tool : curplatform.getToolsDependencies()) {
-		    if (writer != null) {
-			writer.println("runtime.tools." + tool.getName() + ".path=" + tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
-			writer.println("runtime.tools." + tool.getName() + tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
-				+ tool.getTool().getInstallPath());
-		    }
-		}
-	    }
-	} catch (FileNotFoundException | UnsupportedEncodingException e) {
-	    return new Status(IStatus.WARNING, Activator.getId(), Messages.ArduinoManager_unable_to_create_file
-		    + pluginFile + '\n' + platform.getName() + Messages.ArduinoManager_will_not_work, e);
-	}
-
-	return Status.OK_STATUS;
 
     }
 
@@ -287,8 +250,7 @@ public class Manager {
 	return libraryIndex;
     }
 
-    static public Board getBoard(String boardName, String platformName, String packageName)
-	    throws CoreException {
+    static public Board getBoard(String boardName, String platformName, String packageName) throws CoreException {
 	for (PackageIndex index : packageIndices) {
 	    Package pkg = index.getPackage(packageName);
 	    if (pkg != null) {
@@ -324,6 +286,21 @@ public class Manager {
 	    }
 	}
 	return platforms;
+    }
+
+    public static ArduinoPlatform getPlatform(String PlatformTxt) {
+	String searchString = new File(PlatformTxt).toString();
+	for (PackageIndex index : packageIndices) {
+	    for (Package pkg : index.getPackages()) {
+		for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
+		    String curFile = curPlatform.getPlatformFile().toString();
+		    if (searchString.equals(curFile)) {
+			return curPlatform;
+		    }
+		}
+	    }
+	}
+	return null;
     }
 
     static public List<Board> getInstalledBoards() throws CoreException {
@@ -400,7 +377,7 @@ public class Manager {
 		Files.copy(dl.openStream(), Paths.get(archivePath.toString()), StandardCopyOption.REPLACE_EXISTING);
 	    }
 	} catch (IOException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Failed_to_download + pURL, e);
+	    return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download + pURL, e);
 	}
 	return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archiveFullFileName, pMonitor);
     }
@@ -408,7 +385,7 @@ public class Manager {
     private static IStatus processArchive(String pArchiveFileName, Path pInstallPath, boolean pForceDownload,
 	    String pArchiveFullFileName, IProgressMonitor pMonitor) {
 	// Create an ArchiveInputStream with the correct archiving algorithm
-	String faileToExtractMessage = Messages.ArduinoManager_Failed_to_extract + pArchiveFullFileName;
+	String faileToExtractMessage = Messages.Manager_Failed_to_extract + pArchiveFullFileName;
 	if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
 	    try (ArchiveInputStream inStream = new TarArchiveInputStream(
 		    new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
@@ -436,7 +413,7 @@ public class Manager {
 		return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
 	    }
 	} else {
-	    return new Status(IStatus.ERROR, Activator.getId(), Messages.ArduinoManager_Format_not_supported);
+	    return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported);
 	}
     }
 
@@ -510,7 +487,7 @@ public class Manager {
 		while (localstripPath > 0) {
 		    slash = name.indexOf("/", slash); //$NON-NLS-1$
 		    if (slash == -1) {
-			throw new IOException(Messages.ArduinoManager_no_single_root_folder);
+			throw new IOException(Messages.Manager_no_single_root_folder);
 		    }
 		    slash++;
 		    localstripPath--;
@@ -520,8 +497,8 @@ public class Manager {
 
 	    // Strip the common path prefix when requested
 	    if (!name.startsWith(pathPrefix)) {
-		throw new IOException(Messages.ArduinoManager_no_single_root_folder_while_file + name
-			+ Messages.ArduinoManager_is_outside + pathPrefix);
+		throw new IOException(Messages.Manager_no_single_root_folder_while_file + name
+			+ Messages.Manager_is_outside + pathPrefix);
 	    }
 	    name = name.substring(pathPrefix.length());
 	    if (name.isEmpty()) {
@@ -532,8 +509,8 @@ public class Manager {
 	    File outputLinkedFile = null;
 	    if (isLink && linkName != null) {
 		if (!linkName.startsWith(pathPrefix)) {
-		    throw new IOException(Messages.ArduinoManager_no_single_root_folder_while_file + linkName
-			    + Messages.ArduinoManager_is_outside + pathPrefix);
+		    throw new IOException(Messages.Manager_no_single_root_folder_while_file + linkName
+			    + Messages.Manager_is_outside + pathPrefix);
 		}
 		linkName = linkName.substring(pathPrefix.length());
 		outputLinkedFile = new File(destFolder, linkName);
@@ -542,8 +519,8 @@ public class Manager {
 		// Symbolic links are referenced with relative paths
 		outputLinkedFile = new File(linkName);
 		if (outputLinkedFile.isAbsolute()) {
-		    System.err.println(Messages.ArduinoManager_Warning_file + outputFile
-			    + Messages.ArduinoManager_links_to_absolute_path + outputLinkedFile);
+		    System.err.println(Messages.Manager_Warning_file + outputFile
+			    + Messages.Manager_links_to_absolute_path + outputLinkedFile);
 		    System.err.println();
 		}
 	    }
@@ -551,23 +528,23 @@ public class Manager {
 	    // Safety check
 	    if (isDirectory) {
 		if (outputFile.isFile() && !overwrite) {
-		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile
-			    + Messages.ArduinoManager_File_exists);
+		    throw new IOException(
+			    Messages.Manager_Cant_create_folder + outputFile + Messages.Manager_File_exists);
 		}
 	    } else {
 		// - isLink
 		// - isSymLink
 		// - anything else
 		if (outputFile.exists() && !overwrite) {
-		    throw new IOException(Messages.ArduinoManager_Cant_extract_file + outputFile
-			    + Messages.ArduinoManager_File_already_exists);
+		    throw new IOException(
+			    Messages.Manager_Cant_extract_file + outputFile + Messages.Manager_File_already_exists);
 		}
 	    }
 
 	    // Extract the entry
 	    if (isDirectory) {
 		if (!outputFile.exists() && !outputFile.mkdirs()) {
-		    throw new IOException(Messages.ArduinoManager_Cant_create_folder + outputFile);
+		    throw new IOException(Messages.Manager_Cant_create_folder + outputFile);
 		}
 		foldersTimestamps.put(outputFile, modifiedTime);
 	    } else if (isLink) {
@@ -670,7 +647,7 @@ public class Manager {
 	    while (leftToWrite > 0) {
 		int length = in.read(buffer);
 		if (length <= 0) {
-		    throw new IOException(Messages.ArduinoManager_Failed_to_extract + outputFile.getAbsolutePath());
+		    throw new IOException(Messages.Manager_Failed_to_extract + outputFile.getAbsolutePath());
 		}
 		fos.write(buffer, 0, length);
 		leftToWrite -= length;
