@@ -12,10 +12,10 @@ It works on MS Windows, Mac OSX and Linux.
 
 If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://www.baeyens.it/eclipse/.
 
-## What if I am na developer?
+## What if I am a developer?
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
-Also subscribe to the developers list by sending a mail with subject subscribe to eclipse-arduino-dev@freelists.org
+Also subscribe to the developers list by sending a mail with subject _subscribe_ to eclipse-arduino-dev@freelists.org (this is not for support questions)
 
 ## Quick Installation 
 ### Prerequisites
