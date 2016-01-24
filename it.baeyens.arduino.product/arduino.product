@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="2.4.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="3.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/it.baeyens.arduino.application/icons/eclipse_lg.png"/>
@@ -301,9 +301,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.debug" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.dsf" installMode="root"/>
-      <feature id="org.eclipse.cdt.launch.remote" installMode="root"/>
-      <feature id="org.eclipse.cdt.msw" installMode="root"/>
-      <feature id="org.eclipse.cdt.mylyn" installMode="root"/>
       <feature id="org.eclipse.cdt.platform" installMode="root"/>
       <feature id="org.eclipse.e4.rcp" installMode="root"/>
       <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
@@ -353,9 +350,17 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/releases/luna/" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.4" enabled="true" />
-      <repository location="http://www.baeyens.it/eclipse/nightly" enabled="true" />
+      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
    </repositories>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>
