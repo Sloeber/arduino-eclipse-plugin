@@ -35,8 +35,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 
 /**
  * Launch external programs.
@@ -204,6 +204,7 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
+    @SuppressWarnings("resource")
     public int launch(IProgressMonitor inMonitor) throws IOException {
 	IProgressMonitor monitor = inMonitor;
 	if (monitor == null) {

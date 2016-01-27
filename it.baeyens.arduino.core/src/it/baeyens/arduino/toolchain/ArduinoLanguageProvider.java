@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector implements ILanguageSettingsEditableProvider {
     // ID must match the tool-chain definition in
@@ -106,10 +106,9 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	return null;
     }
 
-
     @Override
-    public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker) throws CoreException {
-	super.startup(cfgDescription, cwdTracker);
+    public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker1) throws CoreException {
+	super.startup(cfgDescription, cwdTracker1);
 
 	this.state = State.NONE;
     }

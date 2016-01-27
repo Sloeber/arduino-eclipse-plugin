@@ -18,15 +18,14 @@ public class inoToCpp extends IncrementalProjectBuilder {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.
-	 * core.resources.IResourceDelta)
+	 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse. core.resources.IResourceDelta)
 	 */
+	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 	    IResource resource = delta.getResource();
 	    if (resource.getFileExtension() != null) {
-		if (resource.getFileExtension().equalsIgnoreCase("ino")
-			|| resource.getFileExtension().equalsIgnoreCase("pde")) {
+		if (resource.getFileExtension().equalsIgnoreCase("ino") //$NON-NLS-1$
+			|| resource.getFileExtension().equalsIgnoreCase("pde")) { //$NON-NLS-1$
 		    try {
 			PdePreprocessor.processProject(getProject());
 		    } catch (CoreException e) {
@@ -39,16 +38,13 @@ public class inoToCpp extends IncrementalProjectBuilder {
 	}
     }
 
-    public static final String BUILDER_ID = "it.baeyens.arduino.core.inoToCpp";
-
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-     * java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
+     * @see org.eclipse.core.internal.events.InternalBuilder#build(int, java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
-    protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
-	    throws CoreException {
+    @Override
+    protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 	if (kind == FULL_BUILD) {
 	    fullBuild(monitor);
 	} else {
@@ -62,12 +58,13 @@ public class inoToCpp extends IncrementalProjectBuilder {
 	return null;
     }
 
+    @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
 	// delete markers set and files created
 
     }
 
-    protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
+    protected void fullBuild(final IProgressMonitor monitor) {
 	try {
 	    PdePreprocessor.processProject(getProject());
 	} catch (CoreException e) {

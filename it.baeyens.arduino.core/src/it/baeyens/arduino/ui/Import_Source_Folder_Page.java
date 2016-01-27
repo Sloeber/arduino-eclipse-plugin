@@ -24,8 +24,7 @@ import it.baeyens.arduino.common.Const;
 //TODO: Or Arduino_Source_Folder_Import_Page
 
 /**
- * Import_Source_Folder_Page is the one and only page in the source folder
- * import wizard. It controls a text field and a browse button.
+ * Import_Source_Folder_Page is the one and only page in the source folder import wizard. It controls a text field and a browse button.
  * 
  * @author Jan Baeyens
  * 
@@ -83,6 +82,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 	this.controlLibraryPath.setLayoutData(theGriddata);
 	this.controlLibraryPath.addKeyListener(new KeyListener() {
 
+	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void keyReleased(KeyEvent e) {
 		updateWidgetEnablements();
@@ -141,13 +141,11 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
     }
 
     public boolean canFinish() {
-	return !((this.controlLibraryPath.getText().equals(Const.EMPTY_STRING))
-		|| (getContainerFullPath() == null));
+	return !((this.controlLibraryPath.getText().equals(Const.EMPTY_STRING)) || (getContainerFullPath() == null));
     }
 
     public String GetLibraryFolder() {
-	return this.controlLibraryPath.getText() == null ? Const.EMPTY_STRING
-		: this.controlLibraryPath.getText().trim();
+	return this.controlLibraryPath.getText() == null ? Const.EMPTY_STRING : this.controlLibraryPath.getText().trim();
     }
 
     public void setImportProject(IProject project) {

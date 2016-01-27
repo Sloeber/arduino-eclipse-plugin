@@ -8,19 +8,20 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import it.baeyens.arduino.common.Const;
-import it.baeyens.arduino.core.builder.inoToCpp;
 
 public class ArduinoNature implements IProjectNature {
     public static final String NATURE_ID = Const.ArduinoNatureID;
+    private static final String BUILDER_ID = "it.baeyens.arduino.core.inoToCpp"; //$NON-NLS-1$
+
     private IProject myProject = null;
 
     @Override
     public void configure() throws CoreException {
-	IProjectDescription description = myProject.getDescription();
+	IProjectDescription description = this.myProject.getDescription();
 	// add builder to project
 	ICommand command = description.newCommand();
 	ICommand[] commands = description.getBuildSpec();
-	command.setBuilderName(inoToCpp.BUILDER_ID);
+	command.setBuilderName(BUILDER_ID);
 	ICommand[] newCommands = new ICommand[commands.length + 1];
 
 	// Add it before other builders.
@@ -28,7 +29,7 @@ public class ArduinoNature implements IProjectNature {
 	newCommands[0] = command;
 	description.setBuildSpec(newCommands);
 
-	myProject.setDescription(description, new NullProgressMonitor());
+	this.myProject.setDescription(description, new NullProgressMonitor());
     }
 
     @Override

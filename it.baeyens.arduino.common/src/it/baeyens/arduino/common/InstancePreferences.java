@@ -32,6 +32,11 @@ public class InstancePreferences extends Const {
 	setGlobalValue(KEY_OPEN_SERIAL_WITH_MONITOR, value);
     }
 
+    /**
+     * Give back the user option if the libraries need to be added or not
+     * 
+     * @return true if libraries need to be added else false.
+     */
     public static boolean getAutomaticallyIncludeLibraries() {
 	return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
     }

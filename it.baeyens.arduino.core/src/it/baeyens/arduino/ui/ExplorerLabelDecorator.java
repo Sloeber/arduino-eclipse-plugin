@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
 
@@ -47,10 +47,8 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	IProject proj = (IProject) element;
 	try {
 	    if (proj.hasNature(Const.ArduinoNatureID)) {
-		String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME,
-			"Board Error");
-		String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT,
-			"no port");
+		String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME, "Board Error"); //$NON-NLS-1$
+		String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT, "no port"); //$NON-NLS-1$
 		return text + ' ' + boardName + ' ' + ':' + portName;
 	    }
 	} catch (CoreException e) {

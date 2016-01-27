@@ -24,10 +24,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
-import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.InstancePreferences;
 
 public class Libraries {
     /**
@@ -35,9 +35,8 @@ public class Libraries {
      * 
      * @param ipath
      *            the folder you want the subfolders off
-     * @return The subfolders of the ipath folder. May contain empty values.
-     *         This method returns a key value pair of key equals foldername and
-     *         value equals full path.
+     * @return The subfolders of the ipath folder. May contain empty values. This method returns a key value pair of key equals foldername and value
+     *         equals full path.
      */
     private static Map<String, IPath> findAllSubFolders(IPath ipath) {
 	String[] children = ipath.toFile().list();
@@ -61,12 +60,10 @@ public class Libraries {
      * 
      * @param project
      *            the project to find all hardware libraries for
-     * @return all the library folder names. May contain empty values. This
-     *         method does not return the full path only the leaves.
+     * @return all the library folder names. May contain empty values. This method does not return the full path only the leaves.
      */
     public static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
-	Path platformFile = new Path(Common.getBuildEnvironmentVariable(confdesc,
-		Const.ENV_KEY_JANTJE_PLATFORM_FILE, Const.EMPTY_STRING));
+	Path platformFile = new Path(Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, Const.EMPTY_STRING));
 	return findAllSubFolders(platformFile.removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX));
     }
 
@@ -117,8 +114,7 @@ public class Libraries {
      * @param libraries
      *            set of libraries to remove
      */
-    public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc,
-	    Set<String> libraries) {
+    public static void removeLibrariesFromProject(IProject project, ICConfigurationDescription confdesc, Set<String> libraries) {
 	for (String CurItem : libraries) {
 	    try {
 		final IFolder folderHandle = project.getFolder(Const.WORKSPACE_LIB_FOLDER + CurItem);
@@ -139,21 +135,18 @@ public class Libraries {
 	return libraries;
     }
 
-    public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
-	    Set<String> librariesToAdd) {
+    public static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, Set<String> librariesToAdd) {
 	HashMap<String, IPath> libraries = getAllInstalledLibraries(confdesc);
 	libraries.keySet().retainAll(librariesToAdd);
 	addLibrariesToProject(project, confdesc, libraries);
     }
 
-    private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
-	    HashMap<String, IPath> libraries) {
+    private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc, HashMap<String, IPath> libraries) {
 
 	for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 	    try {
 
-		Helpers.addCodeFolder(project, CurItem.getValue(),
-			Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
+		Helpers.addCodeFolder(project, CurItem.getValue(), Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
 	    } catch (CoreException e) {
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 	    }
@@ -197,8 +190,7 @@ public class Libraries {
     }
 
     public static void reAttachLibrariesToProject(ICConfigurationDescription confdesc) {
-	Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(
-		confdesc.getProjectDescription().getProject());
+	Set<String> AllLibrariesOriginallyUsed = getAllLibrariesFromProject(confdesc.getProjectDescription().getProject());
 	addLibrariesToProject(confdesc.getProjectDescription().getProject(), confdesc, AllLibrariesOriginallyUsed);
     }
 
@@ -278,8 +270,8 @@ public class Libraries {
 	availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
 	if (!availableLibs.isEmpty()) {
 	    // there are possible libraries to add
-	    Common.log(new Status(IStatus.INFO, Common.CORE_PLUGIN_ID, "list of libraries to add to project "
-		    + affectedProject.getName() + ": " + availableLibs.keySet().toString()));
+	    Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
+		    + affectedProject.getName() + ": " + availableLibs.keySet().toString())); //$NON-NLS-1$
 	    addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
 	    try {
 		mngr.setProjectDescription(affectedProject, projectDescription, true, null);

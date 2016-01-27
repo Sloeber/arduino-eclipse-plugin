@@ -21,7 +21,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
     @Override
     public void indexChanged(IIndexChangeEvent event) {
-	ChangedProjects.add(event.getAffectedProject().getProject());
+	this.ChangedProjects.add(event.getAffectedProject().getProject());
 
     }
 
@@ -30,11 +30,11 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
 	if (event.indexerIsIdle()) {
 	    if (InstancePreferences.getAutomaticallyIncludeLibraries()) {
-		for (IProject curProject : ChangedProjects) {
+		for (IProject curProject : this.ChangedProjects) {
 		    Libraries.checkLibraries(curProject);
 		}
 	    }
-	    ChangedProjects.clear();
+	    this.ChangedProjects.clear();
 	}
     }
 

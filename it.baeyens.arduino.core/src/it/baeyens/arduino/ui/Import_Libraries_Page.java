@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -24,8 +25,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Libraries;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
@@ -128,8 +129,8 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		    folder.create(false, true, null);
 		} catch (CoreException e) {
 		    // TODO Auto-generated catch block
-		    Common.log(new Status(Status.ERROR, Const.CORE_PLUGIN_ID,
-			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble", e));
+		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble", e)); //$NON-NLS-1$
 		    return true;
 		}
 
