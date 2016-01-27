@@ -1,5 +1,6 @@
 package it.baeyens.arduino.common;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,8 +17,7 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * ArduinoPreferences is a class containing only static methods that help
- * managing the preferences.
+ * ArduinoPreferences is a class containing only static methods that help managing the preferences.
  * 
  * @author jan Baeyens
  * 
@@ -41,12 +41,10 @@ public class InstancePreferences extends Const {
     }
 
     /***
-     * get the stored option whether a build before the upload is wanted or not.
-     * If nothing is stored the option is ask and this method will pop up a
+     * get the stored option whether a build before the upload is wanted or not. If nothing is stored the option is ask and this method will pop up a
      * dialogbox
      * 
-     * @return true if a build is wanted before upload false if no build is
-     *         wanted before upload
+     * @return true if a build is wanted before upload false if no build is wanted before upload
      */
     public static boolean getBuildBeforeUploadOption() {
 
@@ -90,8 +88,7 @@ public class InstancePreferences extends Const {
     }
 
     /**
-     * This method reads the name of the last used arduino board from the
-     * instance preferences
+     * This method reads the name of the last used arduino board from the instance preferences
      * 
      * @return the Arduino Board name
      * @author Jan Baeyens
@@ -162,8 +159,7 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(
-		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -185,8 +181,7 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
-		    "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -197,15 +192,13 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(
-		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
 
     /**
-     * This method returns the index of the last used line ending options are CR
-     * LF CR+LF none
+     * This method returns the index of the last used line ending options are CR LF CR+LF none
      * 
      * @return the index of the last used setting
      */
@@ -214,8 +207,7 @@ public class InstancePreferences extends Const {
     }
 
     /**
-     * This method returns the index of the last used line ending options are CR
-     * LF CR+LF none
+     * This method returns the index of the last used line ending options are CR LF CR+LF none
      * 
      * @return the index of the last used setting
      */
@@ -272,8 +264,7 @@ public class InstancePreferences extends Const {
     }
 
     /**
-     * This method returns boolean whether the plugin is properly configured The
-     * plugin is configured properly if a board has been installed
+     * This method returns boolean whether the plugin is properly configured The plugin is configured properly if a board has been installed
      * 
      * @return
      */
@@ -330,7 +321,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split(";"); //$NON-NLS-1$
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath()).split(File.pathSeparator);
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
@@ -338,7 +329,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath()).split(";"); //$NON-NLS-1$
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath()).split(File.pathSeparator);
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {
