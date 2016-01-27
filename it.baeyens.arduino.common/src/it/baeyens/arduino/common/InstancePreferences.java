@@ -333,7 +333,7 @@ public class InstancePreferences extends Const {
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {
-	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(";", folderName)); //$NON-NLS-1$
+	setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(File.pathSeparator, folderName));
     }
 
     /**
@@ -342,8 +342,8 @@ public class InstancePreferences extends Const {
      * @return a list of all the folder locations that can contain hardware
      */
     public static String[] getHardwarePaths() {
-	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, "") + ";" + ConfigurationPreferences.getInstallationPath()) //$NON-NLS-1$ //$NON-NLS-2$
-		.split(";"); //$NON-NLS-1$
+	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, EMPTY_STRING) + File.pathSeparator + ConfigurationPreferences.getInstallationPath())
+		.split(File.pathSeparator);
     }
 
 }

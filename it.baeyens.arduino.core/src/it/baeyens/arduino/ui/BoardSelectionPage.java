@@ -40,9 +40,8 @@ import it.baeyens.arduino.tools.Boards;
 import it.baeyens.arduino.tools.Helpers;
 
 /**
- * The ArduinoSelectionPage class is used in the new wizard and the project
- * properties. This class controls the gui and the data underneath the gui. This
- * class allows to select the arduino board and the port name
+ * The ArduinoSelectionPage class is used in the new wizard and the project properties. This class controls the gui and the data underneath the gui.
+ * This class allows to select the arduino board and the port name
  * 
  * @author Jan Baeyens
  * @see ArduinoProperties ArduinoSettingsPage
@@ -68,8 +67,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 				     // for the current arduino environment
 
     /**
-     * Get the configuration we are currently working in. The configuration is
-     * null if we are in the create sketch wizard.
+     * Get the configuration we are currently working in. The configuration is null if we are in the create sketch wizard.
      * 
      * @return the configuration to save info into
      */
@@ -81,8 +79,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     /**
-     * Listener for the child or leave fields. The listener saves the
-     * information in the configuration
+     * Listener for the child or leave fields. The listener saves the information in the configuration
      * 
      * @author jan
      *
@@ -128,8 +125,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	     */
 	    String CurrentBoard = BoardSelectionPage.this.mcontrolBoardName.getText();
 	    BoardSelectionPage.this.mcontrolBoardName.removeAll();
-	    BoardSelectionPage.this.mcontrolBoardName
-		    .setItems(BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
+	    BoardSelectionPage.this.mcontrolBoardName.setItems(BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
 	    BoardSelectionPage.this.mcontrolBoardName.setText(CurrentBoard);
 
 	    BoardSelectionPage.this.BoardModifyListener.handleEvent(null);
@@ -144,8 +140,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	    String boardName = BoardSelectionPage.this.mcontrolBoardName.getText();
 
 	    for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
-		curLabelCombo.setItems(BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile]
-			.getMenuItemNames(curLabelCombo.getMenuName(), boardName));
+		curLabelCombo.setItems(
+			BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
 	    }
 
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
@@ -242,8 +238,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	this.mcontrolBoardName.setEnabled(false);
 
 	// ----
-	this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, this.ncol - 1,
-		Const.ENV_KEY_JANTJE_COM_PORT, false);
+	this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, this.ncol - 1, Const.ENV_KEY_JANTJE_COM_PORT, false);
 
 	this.mControlUploadPort.setItems(ArrayUtil.addAll(Activator.bonjourDiscovery.getList(), Common.listComPorts()));
 
@@ -257,8 +252,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	this.mBoardOptionCombos = new LabelCombo[menuNames.length];
 	for (int currentOption = 0; currentOption < menuNames.length; currentOption++) {
 	    String menuName = menuNames[currentOption];
-	    this.mBoardOptionCombos[currentOption] = new LabelCombo(composite, menuName, this.ncol - 1,
-		    Const.ENV_KEY_JANTJE_START + menuName, true);
+	    this.mBoardOptionCombos[currentOption] = new LabelCombo(composite, menuName, this.ncol - 1, Const.ENV_KEY_JANTJE_START + menuName, true);
 	}
 
 	// Create the control to alert parents of changes
@@ -348,8 +342,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     /**
-     * Based on the current selection save the last used values$this to make
-     * sure you can create the same sketch quickly again
+     * Based on the current selection save the last used values$this to make sure you can create the same sketch quickly again
      */
     private void saveAllLastUseds() {
 	//
@@ -369,8 +362,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     /**
-     * Based on the selected board and parameters save all info needed to the
-     * build environments
+     * Based on the selected board and parameters save all info needed to the build environments
      * 
      * @param confdesc
      */
@@ -382,17 +374,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
 	// Set the path variables
-	IPath platformPath = new Path(new File(this.mControlBoardsTxtFile.getText().trim()).getParent())
-		.append(Const.PLATFORM_FILE_NAME);
+	IPath platformPath = new Path(new File(this.mControlBoardsTxtFile.getText().trim()).getParent()).append(Const.PLATFORM_FILE_NAME);
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
-	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
-		platformPath.toString());
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_COM_PORT, uploadPort);
 
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
-	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID,
-		getArchitecture());
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, getBoardID());
 
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
@@ -411,7 +400,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	    boardName = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_COM_PORT, uploadPort);
 	}
-	Map<String, String> options = InstancePreferences.getLastUsedMenuOption();
+
 	this.mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first
 	if (this.mControlBoardsTxtFile.getText().isEmpty()) {
@@ -424,9 +413,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	this.mControlUploadPort.setValue(uploadPort);
 
 	// set the options in the combo boxes before setting the value
+	Map<String, String> options = InstancePreferences.getLastUsedMenuOption();
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
-	    curLabelCombo.setItems(
-		    this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
+	    curLabelCombo.setItems(this.mAllBoardsFiles[selectedBoardFile].getMenuItemNames(curLabelCombo.getMenuName(), boardName));
 	    if (confdesc != null) {
 		curLabelCombo.getStoredValue(confdesc);
 	    } else {
@@ -496,8 +485,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     /*
-     * Returns the package name based on the platformfile name Caters for the
-     * packages (with version number and for the old way
+     * Returns the package name based on the platformfile name Caters for the packages (with version number and for the old way
      */
     public String getPackage() {
 	IPath platformFile = new Path(this.mControlBoardsTxtFile.getText().trim());
@@ -510,8 +498,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     /*
-     * Returns the architecture based on the platfor file name Caters for the
-     * packages (with version number and for the old way
+     * Returns the architecture based on the platfor file name Caters for the packages (with version number and for the old way
      */
     public String getArchitecture() {
 	IPath platformFile = new Path(this.mControlBoardsTxtFile.getText().trim());
