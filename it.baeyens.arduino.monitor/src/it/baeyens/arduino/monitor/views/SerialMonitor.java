@@ -164,6 +164,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	    entry.getKey().dispose();
 	}
 	this.mySerialConnections.clear();
+	me = null;
     }
 
     /**

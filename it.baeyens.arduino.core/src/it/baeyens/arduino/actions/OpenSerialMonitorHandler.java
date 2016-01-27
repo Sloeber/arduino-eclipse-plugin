@@ -98,20 +98,21 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 	    }
 
 	    IIndexName[] names = index.findNames(setupFunc, org.eclipse.cdt.core.index.IIndex.FIND_DEFINITIONS);
-	    if (names.length != 1) {
-		return -3;
-	    }
-
-	    String SetupFileName = names[0].getFileLocation().getFileName();
-	    String SetupFileContent = FileUtils.readFileToString(new File(SetupFileName));
-	    int serialBeginStart = SetupFileContent.indexOf(serialVariable);
-	    if (serialBeginStart != -1) {
-		int serialBeginStartbraket = SetupFileContent.indexOf("(", serialBeginStart); //$NON-NLS-1$
-		if (serialBeginStartbraket != -1) {
-		    int serialBeginCloseBraket = SetupFileContent.indexOf(")", serialBeginStartbraket); //$NON-NLS-1$
-		    if (serialBeginCloseBraket != -1) {
-			String baudrate = SetupFileContent.substring(serialBeginStartbraket + 1, serialBeginCloseBraket).trim();
-			return Integer.parseInt(baudrate);
+	    // if (names.length != 1) {
+	    // return -3;
+	    // }
+	    for (IIndexName name : names) {
+		String SetupFileName = name.getFileLocation().getFileName();
+		String SetupFileContent = FileUtils.readFileToString(new File(SetupFileName));
+		int serialBeginStart = SetupFileContent.indexOf(serialVariable);
+		if (serialBeginStart != -1) {
+		    int serialBeginStartbraket = SetupFileContent.indexOf("(", serialBeginStart); //$NON-NLS-1$
+		    if (serialBeginStartbraket != -1) {
+			int serialBeginCloseBraket = SetupFileContent.indexOf(")", serialBeginStartbraket); //$NON-NLS-1$
+			if (serialBeginCloseBraket != -1) {
+			    String baudrate = SetupFileContent.substring(serialBeginStartbraket + 1, serialBeginCloseBraket).trim();
+			    return Integer.parseInt(baudrate);
+			}
 		    }
 		}
 	    }
