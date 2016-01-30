@@ -1,7 +1,7 @@
 package it.baeyens.arduino.listeners;
 
 /**
- * his index listener makes ity possible to detect missing libraries
+ * this index listener makes it possible to detect missing libraries
  * if configured to do so libraries are added automatically to the project
  */
 import java.util.HashSet;
@@ -12,12 +12,17 @@ import org.eclipse.cdt.core.index.IIndexChangeListener;
 import org.eclipse.cdt.core.index.IIndexerStateEvent;
 import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
 import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.tools.Libraries;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {
-    Set<IProject> ChangedProjects = new HashSet<>();
+    protected Set<IProject> ChangedProjects = new HashSet<>();
+    Job installLibJob = null;
 
     @Override
     public void indexChanged(IIndexChangeEvent event) {
@@ -30,11 +35,27 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
 	if (event.indexerIsIdle()) {
 	    if (InstancePreferences.getAutomaticallyIncludeLibraries()) {
-		for (IProject curProject : this.ChangedProjects) {
-		    Libraries.checkLibraries(curProject);
+		if (this.installLibJob == null) {
+		    this.installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+			    for (IProject curProject : IndexerListener.this.ChangedProjects) {
+				Libraries.checkLibraries(curProject);
+			    }
+			    IndexerListener.this.ChangedProjects.clear();
+			    IndexerListener.this.installLibJob = null;
+			    return Status.OK_STATUS;
+			}
+
+		    };
+
+		    this.installLibJob.setPriority(Job.DECORATE);
+		    this.installLibJob.schedule();
 		}
+
 	    }
-	    this.ChangedProjects.clear();
+
 	}
     }
 

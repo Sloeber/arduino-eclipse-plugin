@@ -233,21 +233,25 @@ public class Libraries {
     private static Set<String> getUnresolvedProjectIncludes(IProject iProject) {
 	Set<String> ret = new TreeSet<>();
 	ICProject tt = CoreModel.getDefault().create(iProject);
+	IIndex index = null;
 
 	try {
-	    IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+	    index = CCorePlugin.getIndexManager().getIndex(tt);
 	    index.acquireReadLock();
+	    try {
 
-	    IIndexFile allFiles[] = index.getFilesWithUnresolvedIncludes();
-	    for (IIndexFile curUnesolvedIncludeFile : allFiles) {
-		IIndexInclude includes[] = curUnesolvedIncludeFile.getIncludes();
-		for (IIndexInclude curinclude : includes) {
-		    if (curinclude.isActive() && !curinclude.isResolved()) {
-			ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
+		IIndexFile allFiles[] = index.getFilesWithUnresolvedIncludes();
+		for (IIndexFile curUnesolvedIncludeFile : allFiles) {
+		    IIndexInclude includes[] = curUnesolvedIncludeFile.getIncludes();
+		    for (IIndexInclude curinclude : includes) {
+			if (curinclude.isActive() && !curinclude.isResolved()) {
+			    ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
+			}
 		    }
 		}
+	    } finally {
+		index.releaseReadLock();
 	    }
-	    index.releaseReadLock();
 	} catch (CoreException e1) {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();

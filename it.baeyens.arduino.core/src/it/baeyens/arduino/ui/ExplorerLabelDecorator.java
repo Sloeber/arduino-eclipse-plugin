@@ -46,10 +46,12 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	// TODO Auto-generated method stub
 	IProject proj = (IProject) element;
 	try {
-	    if (proj.hasNature(Const.ArduinoNatureID)) {
-		String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME, "Board Error"); //$NON-NLS-1$
-		String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT, "no port"); //$NON-NLS-1$
-		return text + ' ' + boardName + ' ' + ':' + portName;
+	    if (proj.isOpen()) {
+		if (proj.hasNature(Const.ArduinoNatureID)) {
+		    String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME, "Board Error"); //$NON-NLS-1$
+		    String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT, "no port"); //$NON-NLS-1$
+		    return text + ' ' + boardName + ' ' + ':' + portName;
+		}
 	    }
 	} catch (CoreException e) {
 	    // TODO Auto-generated catch block
