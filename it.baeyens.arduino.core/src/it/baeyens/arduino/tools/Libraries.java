@@ -264,23 +264,29 @@ public class Libraries {
 
     public static void checkLibraries(IProject affectedProject) {
 	ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-	ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
-	ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
+	if (mngr != null) {
+	    ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
+	    if (projectDescription != null) {
+		ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
+		if (configurationDescription != null) {
 
-	Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
-	Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
-	HashMap<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
-	UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
-	availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
-	if (!availableLibs.isEmpty()) {
-	    // there are possible libraries to add
-	    Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
-		    + affectedProject.getName() + ": " + availableLibs.keySet().toString())); //$NON-NLS-1$
-	    addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
-	    try {
-		mngr.setProjectDescription(affectedProject, projectDescription, true, null);
-	    } catch (CoreException e) {
-		e.printStackTrace();
+		    Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
+		    Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
+		    HashMap<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
+		    UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
+		    availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
+		    if (!availableLibs.isEmpty()) {
+			// there are possible libraries to add
+			Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
+				+ affectedProject.getName() + ": " + availableLibs.keySet().toString())); //$NON-NLS-1$
+			addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
+			try {
+			    mngr.setProjectDescription(affectedProject, projectDescription, true, null);
+			} catch (CoreException e) {
+			    e.printStackTrace();
+			}
+		    }
+		}
 	    }
 	}
     }
