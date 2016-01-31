@@ -130,7 +130,6 @@ If you do not agree with this policy, then please do not install this software.
 
    <url>
       <update label="Arduino eclipse plugin V2 update site" url="http://www.baeyens.it/eclipse/V2/"/>
-      <discovery label="AVR-Eclipse offers plenty of godies for AVR development" url="http://avr-eclipse.sourceforge.net/wiki/index.php/Plugin_Download"/>
       <discovery label="jan&apos;s site with plenty of documentation" url="http://www.baeyens.it/eclipse/"/>
    </url>
 

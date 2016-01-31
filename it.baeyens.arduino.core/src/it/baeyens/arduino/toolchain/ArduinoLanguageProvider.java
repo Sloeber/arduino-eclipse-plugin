@@ -33,14 +33,13 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 
     private State state = State.NONE;
 
-    @SuppressWarnings("nls")
     private static final AbstractOptionParser[] optionParsers = {
-	    new IncludePathOptionParser("#include \"(\\S.*)\"", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL),
-	    new IncludePathOptionParser("#include <(\\S.*)>", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
-	    new IncludePathOptionParser("#framework <(\\S.*)>", "$1",
+	    new IncludePathOptionParser("#include \"(\\S.*)\"", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.LOCAL), //$NON-NLS-1$ //$NON-NLS-2$
+	    new IncludePathOptionParser("#include <(\\S.*)>", "$1", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), //$NON-NLS-1$ //$NON-NLS-2$
+	    new IncludePathOptionParser("#framework <(\\S.*)>", "$1", //$NON-NLS-1$ //$NON-NLS-2$
 		    ICSettingEntry.BUILTIN | ICSettingEntry.READONLY | ICSettingEntry.FRAMEWORKS_MAC),
-	    new MacroOptionParser("#define\\s+(\\S*\\(.*?\\))\\s*(.*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY),
-	    new MacroOptionParser("#define\\s+(\\S*)\\s*(\\S*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), };
+	    new MacroOptionParser("#define\\s+(\\S*\\(.*?\\))\\s*(.*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	    new MacroOptionParser("#define\\s+(\\S*)\\s*(\\S*)", "$1", "$2", ICSettingEntry.BUILTIN | ICSettingEntry.READONLY), }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     @Override
     public String getToolchainId() {
@@ -61,44 +60,43 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	return list;
     }
 
-    @SuppressWarnings("nls")
     @Override
     protected List<String> parseOptions(String lineIn) {
 	String line = lineIn.trim();
 
 	// contribution of -dD option
-	if (line.startsWith("#define")) {
+	if (line.startsWith("#define")) { //$NON-NLS-1$
 	    return makeList(line);
 	}
 
 	// contribution of includes
-	if (line.equals("#include \"...\" search starts here:")) {
+	if (line.equals("#include \"...\" search starts here:")) { //$NON-NLS-1$
 	    this.state = State.EXPECTING_LOCAL_INCLUDE;
-	} else if (line.equals("#include <...> search starts here:")) {
+	} else if (line.equals("#include <...> search starts here:")) { //$NON-NLS-1$
 	    this.state = State.EXPECTING_SYSTEM_INCLUDE;
-	} else if (line.startsWith("End of search list.")) {
+	} else if (line.startsWith("End of search list.")) { //$NON-NLS-1$
 	    this.state = State.NONE;
-	} else if (line.equals("Framework search starts here:")) {
+	} else if (line.equals("Framework search starts here:")) { //$NON-NLS-1$
 	    this.state = State.EXPECTING_FRAMEWORKS;
-	} else if (line.startsWith("End of framework search list.")) {
+	} else if (line.startsWith("End of framework search list.")) { //$NON-NLS-1$
 	    this.state = State.NONE;
 	} else if (this.state == State.EXPECTING_LOCAL_INCLUDE) {
 	    // making that up for the parser to figure out
-	    line = "#include \"" + line + "\"";
+	    line = "#include \"" + line + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 	    return makeList(line);
 	} else {
-	    String frameworkIndicator = "(framework directory)";
+	    String frameworkIndicator = "(framework directory)"; //$NON-NLS-1$
 	    if (this.state == State.EXPECTING_SYSTEM_INCLUDE) {
 		// making that up for the parser to figure out
 		if (line.contains(frameworkIndicator)) {
-		    line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">";
+		    line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} else {
-		    line = "#include <" + line + ">";
+		    line = "#include <" + line + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return makeList(line);
 	    } else if (this.state == State.EXPECTING_FRAMEWORKS) {
 		// making that up for the parser to figure out
-		line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">";
+		line = "#framework <" + line.replace(frameworkIndicator, "").trim() + ">"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return makeList(line);
 	    }
 	}
@@ -143,6 +141,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	// IContributedEnvironment contribEnv =
 	// envManager.getContributedEnvironment();
 	ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
+
 	// Bug fix for CDT 8.1 fixed in 8.2
 	IFolder buildFolder = this.currentProject.getFolder(confDesc.getName());
 	if (!buildFolder.exists()) {
@@ -187,7 +186,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector imple
 	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	String ret = compilerCommand.replaceAll("[^\\\\]\"\"", Const.EMPTY_STRING).replaceAll("  ", " "); // remove //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	String ret = compilerCommand.replaceAll(" -MMD ", " ").replaceAll("[^\\\\]\"\"", Const.EMPTY_STRING).replaceAll("  ", " "); // remove //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	// "" except \""
 	// and
 	// double

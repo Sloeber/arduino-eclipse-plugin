@@ -12,11 +12,13 @@ import org.eclipse.cdt.core.index.IIndexChangeListener;
 import org.eclipse.cdt.core.index.IIndexerStateEvent;
 import org.eclipse.cdt.core.index.IIndexerStateListener;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.tools.Libraries;
 
@@ -26,7 +28,15 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 
     @Override
     public void indexChanged(IIndexChangeEvent event) {
-	this.ChangedProjects.add(event.getAffectedProject().getProject());
+	IProject project = event.getAffectedProject().getProject();
+	try {
+	    if (project.hasNature(Const.ArduinoNatureID)) {
+		this.ChangedProjects.add(project);
+	    }
+	} catch (CoreException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
     }
 
