@@ -182,6 +182,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    if (!fileName.isEmpty()) {
 			ScopeView.this.myScope.saveData(fileName);
 		    }
+		    this.inDrag = false;
+		    this.inSize = false;
 		    break;
 		default:
 		    break;
