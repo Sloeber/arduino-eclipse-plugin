@@ -1,5 +1,8 @@
 package multichannel;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -486,14 +489,7 @@ public class Oscilloscope extends Canvas {
 
     protected void paintControl(PaintEvent e) {
 
-	// long start = System.currentTimeMillis();
-
 	for (int c = 0; c < this.chan.length; c++) {
-
-	    // if (chan[c].tailSize <= 0) {
-	    // chan[c].stack.popNegate(0);
-	    // continue;
-	    // }
 
 	    // Go calculate the line
 	    Object[] result = calculate(c);
@@ -502,7 +498,6 @@ public class Oscilloscope extends Canvas {
 
 	    PositionPolyLine(l1);
 	    PositionPolyLine(l2);
-	    // System.out.print(System.currentTimeMillis() - start + "-");
 
 	    // Draw it
 	    GC gc = e.gc;
@@ -532,10 +527,8 @@ public class Oscilloscope extends Canvas {
 		}
 
 	    } else {
-		// long time = System.nanoTime();
 		gc.drawPolyline(l1);
 		gc.drawPolyline(l2);
-		// System.out.println(System.nanoTime() - time + " nanoseconds");
 	    }
 
 	    // Connects the head with the tail
@@ -543,9 +536,6 @@ public class Oscilloscope extends Canvas {
 		gc.drawLine(l2[l2.length - 2], l2[l2.length - 1], l1[0], l1[1]);
 	    }
 	}
-
-	// System.out.println(System.currentTimeMillis() - start + " milliseconds for all channels");
-
     }
 
     public Color getForeground(int channel) {
@@ -570,11 +560,6 @@ public class Oscilloscope extends Canvas {
 	int[] line2 = null;
 	int splitPos = 0;
 
-	// for (int progress = 0; progress < getProgression(c); progress++) {
-
-	// if (chan[c].stack.isEmpty() && chan[c].stackListeners != null)
-	// notifyListeners(c);
-
 	splitPos = this.chan[c].tailSize * 4;
 
 	if (!isSteady(c))
@@ -584,9 +569,6 @@ public class Oscilloscope extends Canvas {
 
 	line1 = new int[this.chan[c].tailSize * 4];
 	line2 = new int[this.chan[c].tailSize * 4];
-
-	// chan[c].tail[chan[c].tailSize] = transform(c, chan[c].width,
-	// chan[c].height, chan[c].stack.popNegate(0));
 
 	for (int i = 0; i < this.chan[c].tailSize; i++) {
 
@@ -1093,6 +1075,23 @@ public class Oscilloscope extends Canvas {
     public void dispose() {
 	// TODO Auto-generated method stub
 	super.dispose();
+    }
+
+    public void saveData(String fileName) {
+
+	try (PrintWriter writer = new PrintWriter(fileName, "UTF-8");) { //$NON-NLS-1$
+	    writer.println("chan1;chan2;chan3;chan4;chan5;chan6;nothing"); //$NON-NLS-1$
+	    for (int curvalue = 0; curvalue < this.chan[0].tail.length; curvalue++) {
+		for (int channel = 0; channel < this.chan.length; channel++) {
+		    writer.print(this.chan[channel].tail[curvalue]);
+		    writer.print(';');
+		}
+		writer.println();
+	    }
+	} catch (FileNotFoundException | UnsupportedEncodingException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
 }

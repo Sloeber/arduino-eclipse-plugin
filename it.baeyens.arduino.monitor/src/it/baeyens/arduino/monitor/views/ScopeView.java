@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -53,8 +54,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = mySCope.getInt(flagMonitor, 0) + 1;
 		    mySCope.putInt(flagMonitor, curFsiStatus);
-		    URL pluginStartInitiator = new URL(
-			    ScopeView.this.uri.replaceAll(" ", Const.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
+		    URL pluginStartInitiator = new URL(ScopeView.this.uri.replaceAll(" ", Const.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
 		    ScopeView.this.mstatus = pluginStartInitiator.getContent();
 		} catch (Exception e) {// JABA is not going to add code
 		}
@@ -174,6 +174,15 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    this.inDrag = false;
 		    this.inSize = false;
 		    break;
+		case SWT.MouseDoubleClick:
+		    // save the data
+		    FileDialog dialog = new FileDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), SWT.SAVE);
+		    dialog.setFilterExtensions(new String[] { "*.cvs" }); //$NON-NLS-1$
+		    String fileName = dialog.open();
+		    if (!fileName.isEmpty()) {
+			ScopeView.this.myScope.saveData(fileName);
+		    }
+		    break;
 		default:
 		    break;
 		}
@@ -183,6 +192,7 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	this.myScope.addListener(SWT.MouseDown, listener);
 	this.myScope.addListener(SWT.MouseUp, listener);
 	this.myScope.addListener(SWT.MouseMove, listener);
+	this.myScope.addListener(SWT.MouseDoubleClick, listener);
 	this.myScope.addControlListener(new ControlAdapter() {
 	    @Override
 	    public void controlResized(ControlEvent e) {

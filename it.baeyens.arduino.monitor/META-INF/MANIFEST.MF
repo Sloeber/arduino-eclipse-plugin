@@ -7,7 +7,8 @@ Bundle-Activator: it.baeyens.arduino.monitor.internal.Activator
 Bundle-Vendor: jan baeyens
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- it.baeyens.arduino.common
+ it.baeyens.arduino.common,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework"
