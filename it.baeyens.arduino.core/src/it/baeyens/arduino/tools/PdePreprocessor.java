@@ -61,8 +61,15 @@ public class PdePreprocessor {
 	header += NEWLINE;
 	ICProject tt = CoreModel.getDefault().create(iProject);
 	IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+
 	try {
-	    index.acquireReadLock();
+	    try {
+		index.acquireReadLock();
+	    } catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return;
+	    }
 
 	    // take all the files in the project
 	    IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
@@ -144,17 +151,15 @@ public class PdePreprocessor {
 		if (inofile != null) {
 		    inofile.delete(true, null);
 		}
-		return;
+	    } else {
+		// concatenate the parts and make the .ino.cpp file
+		String output = header + includeHeaderPart + body + includeCodePart;
+		Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
+			null);
 	    }
 
-	    // concatenate the parts and make the .ino.cpp file
-	    String output = header + includeHeaderPart + body + includeCodePart;
-	    Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
-		    null);
+	} finally {
 	    index.releaseReadLock();
-	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
 	}
     }
 }
