@@ -36,8 +36,7 @@
       <div class="page-header">
         <h1>OsX Nightly Builds <small>use only if you feel confident</small></h1>
       </div>
-      <p>Every night, a little gnome walks around our servers looking for changes occurred during the day and, when he finds any, he feels so happy he starts the build process!</p>
-      <p>Beware though, as the nightly build represents the latest and greatest version off the code, but <mark>there is no guarantee that these versions do not contain any issue</mark> (they probably do) as the little gnome is not renowned for his patience and he doesn't test the build extensively: actually he runs away right after launching it!</p>
+      <?php include 'fragments/nightly.html';?>
       <h3>These are built for OsX 64 bits</h3>
       <?php readfile ('http://eclipse.baeyens.it/fragments/file-list.php?arch=mac64.');?>
 
