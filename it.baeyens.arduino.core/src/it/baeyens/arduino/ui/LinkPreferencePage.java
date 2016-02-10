@@ -10,62 +10,125 @@
  *******************************************************************************/
 package it.baeyens.arduino.ui;
 
-import org.eclipse.jface.preference.PreferencePage;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.managers.Manager;
 
+public class LinkPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-public class LinkPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
-
-    private Text urlsText;
-
-    @Override
-    public void init(IWorkbench workbench) {
-	// no code needed
+    public LinkPreferencePage() {
+	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
+	setDescription(Messages.json_maintain);
+	setPreferenceStore(new ScopedPreferenceStore(ConfigurationScope.INSTANCE, Const.NODE_ARDUINO));
     }
 
-    @Override
-    protected Control createContents(Composite parent) {
-	Composite control = new Composite(parent, SWT.NONE);
-	control.setLayout(new GridLayout());
-
-	Text desc = new Text(control, SWT.READ_ONLY | SWT.WRAP);
-	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-	layoutData.widthHint = 500;
-	desc.setLayoutData(layoutData);
-	desc.setBackground(parent.getBackground());
-	desc.setText(Messages.ui_url_for_package_index_file);
-
-	this.urlsText = new Text(control, SWT.BORDER | SWT.MULTI);
-	this.urlsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	this.urlsText.setText(ConfigurationPreferences.getBoardURLs());
-
-	return control;
-    }
+    private MultiLineTextFieldEditor urlsText;
+    BooleanFieldEditor upDateJsons;
+    Set<String> oldSelectedJsons;
 
     @Override
     public boolean performOk() {
-	ConfigurationPreferences.setBoardURLs(this.urlsText.getText());
+	this.oldSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardURLList()));
+	this.urlsText.store();
+	deleteJsonFilesAsNeeded();
+
 	Manager.loadIndices(true);
-	return true;
+	return super.performOk();
+    }
+
+    private void deleteJsonFilesAsNeeded() {
+	Set<String> toDeleteJsons = this.oldSelectedJsons;
+	Set<String> newSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardURLList()));
+	if (toDeleteJsons == null) {
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    "Previous jason files are null. This should not happen.", null)); //$NON-NLS-1$
+	    return;
+	}
+
+	if (this.upDateJsons.getBooleanValue()) {
+	    toDeleteJsons.addAll(newSelectedJsons);
+	} else // only delete the removed ones
+	{
+	    toDeleteJsons.removeAll(newSelectedJsons);
+	}
+
+	for (String curJson : toDeleteJsons) {
+	    File localFile = Manager.getLocalFileName(curJson);
+	    if (localFile.exists()) {
+		localFile.delete();
+	    }
+	}
     }
 
     @Override
     protected void performDefaults() {
 	String defaultBoardUrl = Const.DEFAULT_MANAGER_BOARD_URLS;
-	this.urlsText.setText(defaultBoardUrl);
+	this.urlsText.setStringValue(defaultBoardUrl);
 	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
 	super.performDefaults();
+    }
+
+    @Override
+    protected void createFieldEditors() {
+	final Composite parent = getFieldEditorParent();
+	// Composite control = new Composite(parent, SWT.NONE);
+
+	this.urlsText = new MultiLineTextFieldEditor(Const.KEY_MANAGER_BOARD_URLS,
+		Messages.ui_url_for_package_index_file, parent);
+	addField(this.urlsText);
+
+	this.upDateJsons = new BooleanFieldEditor(Const.KEY_UPDATE_JASONS, Messages.json_update,
+		BooleanFieldEditor.DEFAULT, parent);
+	addField(this.upDateJsons);
+	final Hyperlink link = new Hyperlink(parent, SWT.NONE);
+	link.setText(Messages.json_find);
+	link.setHref("https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls"); //$NON-NLS-1$
+	link.setUnderlined(true);
+	link.addHyperlinkListener(new HyperlinkAdapter() {
+	    @Override
+	    public void linkActivated(HyperlinkEvent he) {
+		if (Desktop.isDesktopSupported()) {
+		    try {
+			Desktop.getDesktop().browse(new URI(link.getHref().toString()));
+
+		    } catch (IOException | URISyntaxException e) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.json_browser_fail, e));
+		    }
+
+		}
+	    }
+	});
+
+    }
+
+    @Override
+    public void init(IWorkbench workbench) {
+	// TODO Auto-generated method stub
+
     }
 
 }

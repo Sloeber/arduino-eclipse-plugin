@@ -59,6 +59,7 @@ public class Const {
     public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";//$NON-NLS-1$
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";//$NON-NLS-1$
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";//$NON-NLS-1$
+    public static final String KEY_UPDATE_JASONS = "Update jsons files";//$NON-NLS-1$
 
     // Serial monitor keys
     public static final String KEY_SERIAlRATE = "Serial monitor last selected rate";//$NON-NLS-1$
@@ -132,13 +133,15 @@ public class Const {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
+	    + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";//$NON-NLS-1$
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+	    + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";//$NON-NLS-1$
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
@@ -150,7 +153,8 @@ public class Const {
     // template Sketch information
 
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
+	    + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";//$NON-NLS-1$
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";//$NON-NLS-1$
@@ -158,7 +162,9 @@ public class Const {
     public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";//$NON-NLS-1$
     public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";//$NON-NLS-1$
     // scope stuff
-    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the 205 171 or -85 -51
+    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
+								// 205 171 or
+								// -85 -51
 								// flag that
 								// indicates
 								// scope data is

@@ -90,6 +90,14 @@ public class Messages extends NLS {
     public static String ui_error_select_arduino_project;
     public static String error;
 
+    public static String json_browser_fail;
+
+    public static String json_find;
+
+    public static String json_maintain;
+
+    public static String json_update;
+
     static {
 	// initialize resource bundle
 	NLS.initializeMessages(BUNDLE_NAME, Messages.class);

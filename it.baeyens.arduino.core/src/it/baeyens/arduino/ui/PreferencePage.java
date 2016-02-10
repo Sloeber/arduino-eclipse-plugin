@@ -70,9 +70,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	    return false;
 	}
 
-	super.performOk();
-
-	return true;
+	return super.performOk();
     }
 
     @Override

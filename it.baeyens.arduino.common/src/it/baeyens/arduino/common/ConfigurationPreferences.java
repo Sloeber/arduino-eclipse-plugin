@@ -14,6 +14,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public class ConfigurationPreferences {
 
+    static private String stringSplitter = "\n";//$NON-NLS-1$
     // private static final String defaulDownloadLocation = new
     // Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
     // //$NON-NLS-1$ //$NON-NLS-2$
@@ -98,6 +99,10 @@ public class ConfigurationPreferences {
 
     public static String getBoardURLs() {
 	return getGlobalString(Const.KEY_MANAGER_BOARD_URLS, Const.DEFAULT_MANAGER_BOARD_URLS);
+    }
+
+    public static String[] getBoardURLList() {
+	return getBoardURLs().replaceAll("\r", "").split(stringSplitter);
     }
 
     public static void setBoardURLs(String urls) {
