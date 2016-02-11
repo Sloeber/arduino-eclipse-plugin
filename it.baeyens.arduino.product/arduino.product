@@ -313,7 +313,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
       <feature id="org.eclipse.epp.mpc" installMode="root"/>
-      <feature id="org.eclipse.epp.package.common.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.executable" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
