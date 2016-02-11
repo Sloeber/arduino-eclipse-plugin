@@ -102,7 +102,7 @@ public class ConfigurationPreferences {
     }
 
     public static String[] getBoardURLList() {
-	return getBoardURLs().replaceAll("\r", "").split(stringSplitter);
+	return getBoardURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
     }
 
     public static void setBoardURLs(String urls) {

@@ -24,7 +24,8 @@ public class Const {
 					     // to add all the time
     public static final String NEWLINE = "\n";// so I do not have //$NON-NLS-1$
 					      // to add all the time
-
+    public static final String RETURN = "\r";// so I do not have //$NON-NLS-1$
+    // to add all the time
     // General stuff
     public static final String PluginStart = "it.baeyens."; //$NON-NLS-1$
     public static final String CORE_PLUGIN_ID = PluginStart + "arduino.core"; //$NON-NLS-1$
