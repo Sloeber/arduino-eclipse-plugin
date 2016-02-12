@@ -3,7 +3,6 @@ package it.baeyens.arduino.ui;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -13,7 +12,6 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -29,9 +27,8 @@ import it.baeyens.arduino.tools.Stream;
 public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
     final Shell shell = new Shell();
-    private final int ncol = 4;
-    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp,
-	    Messages.ui_new_sketch_custom_template, Messages.ui_new_sketch_sample_sketch };
+    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp, Messages.ui_new_sketch_custom_template,
+	    Messages.ui_new_sketch_sample_sketch };
     private static final int defaultIno = 0;
     private static final int defaultCPP = 1;
     private static final int CustomTemplate = 2;
@@ -70,18 +67,11 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	Composite composite = new Composite(parent, SWT.NULL);
 	this.mParentComposite = composite;
-	GridLayout theGridLayout; // references the layout
-	GridData theGriddata; // references a grid
 
-	//
-	// create the grid layout and add it to the composite
-	//
-	theGridLayout = new GridLayout();
-	theGridLayout.numColumns = this.ncol; // 4 columns
+	GridLayout theGridLayout = new GridLayout();
+	theGridLayout.numColumns = 4;
 	composite.setLayout(theGridLayout);
-	//
-	// check box Use default
-	//
+
 	Listener comboListener = new Listener() {
 
 	    @Override
@@ -91,19 +81,20 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	    }
 	};
-	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, this.ncol,
-		Const.EMPTY_STRING, true);
+	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4, Const.EMPTY_STRING, true);
 	this.mCodeSourceOptionsCombo.addListener(comboListener);
 
 	this.mCodeSourceOptionsCombo.setItems(this.codeOptions);
 
 	this.mTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, //$NON-NLS-1$
 		composite);
-	this.mExampleEditor = new SampleSelector(composite, SWT.NONE,
-		Messages.ui_new_sketch_select_example_code);
-	// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	// gd.horizontalSpan = ncol;
-	// mExampleEditor.setLayoutData(gd);
+
+	this.mExampleEditor = new SampleSelector(composite, SWT.FILL, Messages.ui_new_sketch_select_example_code, 4);
+	// GridData theGriddata = new GridData();
+	// theGriddata.horizontalSpan = 4;// (ncol - 1);
+	// theGriddata.horizontalAlignment = SWT.FILL;
+	// this.mExampleEditor.setLayoutData(theGriddata);
+
 	this.mExampleEditor.addchangeListener(new Listener() {
 
 	    @Override
@@ -118,12 +109,6 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	this.mCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
 	this.mCheckBoxUseCurrentLinkSample.setText(Messages.ui_new_sketch_link_to_sample_code);
-	theGriddata = new GridData();
-	theGriddata.horizontalSpan = this.ncol;
-	theGriddata.horizontalAlignment = SWT.LEAD;
-	theGriddata.grabExcessHorizontalSpace = false;
-	this.mCheckBoxUseCurrentLinkSample.setLayoutData(theGriddata);
-	//
 
 	//
 	// End of special controls
@@ -139,8 +124,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name SetControls() Enables or disables the controls based on the
-     *       Checkbox settings
+     * @name SetControls() Enables or disables the controls based on the Checkbox settings
      */
     protected void SetControls() {
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
@@ -170,8 +154,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name validatePage() Check if the user has provided all the info to
-     *       create the project. If so enable the finish button.
+     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finish button.
      */
     protected void validatePage() {
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
@@ -197,8 +180,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name restoreAllSelections() Restore all necessary variables into the
-     *       respective controls
+     * @name restoreAllSelections() Restore all necessary variables into the respective controls
      */
     private void restoreAllSelections() {
 	//
@@ -209,14 +191,12 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	//
 	this.mTemplateFolderEditor.setStringValue(InstancePreferences.getLastTemplateFolderName());
 	this.mCodeSourceOptionsCombo.mCombo.select(InstancePreferences.getLastUsedDefaultSketchSelection());
-	this.mExampleEditor.setLastUsedExamples();
     }
 
     public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
 
 	InstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
-	InstancePreferences
-		.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
+	InstancePreferences.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
 	this.mExampleEditor.saveLastUsedExamples();
 
 	String Include = "Arduino.h"; //$NON-NLS-1$
@@ -245,8 +225,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor);
 	    } else {
 		Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true),
-			monitor);
+			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true), monitor);
 		Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
 			Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor);
 	    }
@@ -268,23 +247,6 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     public void AddAllExamples() {
 	if (this.mExampleEditor != null) {
 	    this.mExampleEditor.AddAllExamples(this.platformPath);
-	}
-
-    }
-
-    public void importLibraries(IProject project, ICConfigurationDescription configurationDescription) {
-	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
-	case defaultIno:
-	case defaultCPP:
-	case CustomTemplate:
-	    // no need to attach libraries here
-	    break;
-	case sample:
-	    this.mExampleEditor.importSelectedLibraries(project, configurationDescription);
-	    break;
-	default:
-
-	    break;
 	}
 
     }

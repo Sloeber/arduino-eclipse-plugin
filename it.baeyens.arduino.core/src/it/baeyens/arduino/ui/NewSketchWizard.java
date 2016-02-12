@@ -88,8 +88,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 
     @Override
     /**
-     * adds pages to the wizard. We are using the standard project wizard of
-     * Eclipse
+     * adds pages to the wizard. We are using the standard project wizard of Eclipse
      */
     public void addPages() {
 	//
@@ -109,11 +108,9 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	//
 	// settings for template file location
 	//
-	this.mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
-		Messages.ui_new_sketch_sketch_template_location);
+	this.mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(Messages.ui_new_sketch_sketch_template_location);
 	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
-	this.mNewArduinoSketchWizardCodeSelectionPage
-		.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
+	this.mNewArduinoSketchWizardCodeSelectionPage.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
 	//
 	// configuration page but I haven't seen it
 	//
@@ -170,8 +167,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    desc.setLocationURI(projectURI);
 
 	    /*
-	     * Just like the ExampleWizard, but this time with an operation
-	     * object that modifies workspaces.
+	     * Just like the ExampleWizard, but this time with an operation object that modifies workspaces.
 	     */
 	    WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 		@Override
@@ -184,9 +180,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    };
 
 	    /*
-	     * This isn't as robust as the code in the
-	     * BasicNewProjectResourceWizard class. Consider beefing this up to
-	     * improve error handling.
+	     * This isn't as robust as the code in the BasicNewProjectResourceWizard class. Consider beefing this up to improve error handling.
 	     */
 	    getContainer().run(false, true, op);
 	} catch (InterruptedException e) {
@@ -224,8 +218,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
      * @param monitor
      * @throws OperationCanceledException
      */
-    void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor)
-	    throws OperationCanceledException {
+    void createProject(IProjectDescription description, IProject project, IProgressMonitor monitor) throws OperationCanceledException {
 
 	monitor.beginTask(Const.EMPTY_STRING, 2000);
 	try {
@@ -242,8 +235,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds = this.mBuildCfgPage.getBuildConfigurationDescriptors();
 
 	    // Creates the .cproject file with the configurations
-	    ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true,
-		    monitor);
+	    ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(project, cfgNamesAndTCIds, true, monitor);
 
 	    // Add the C C++ AVR and other needed Natures to the project
 	    Helpers.addTheNatures(description);
@@ -252,11 +244,9 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    Helpers.createNewFolder(project, Const.ARDUINO_CODE_FOLDER_NAME, null);
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
-		ICConfigurationDescription configurationDescription = prjCDesc
-			.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
+		ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
 		this.mArduinoPage.saveAllSelections(configurationDescription);
-		Helpers.setTheEnvironmentVariables(project, configurationDescription,
-			cfgNamesAndTCIds.get(i).DebugCompilerSettings);
+		Helpers.setTheEnvironmentVariables(project, configurationDescription, cfgNamesAndTCIds.get(i).DebugCompilerSettings);
 	    }
 
 	    // Set the path variables
@@ -265,8 +255,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    // Intermediately save or the adding code will fail
 	    // Release is the active config (as that is the "IDE" Arduino
 	    // type....)
-	    ICConfigurationDescription defaultConfigDescription = prjCDesc
-		    .getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
+	    ICConfigurationDescription defaultConfigDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
 	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
 	    // Insert The Arduino Code
@@ -278,13 +267,8 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    // add the correct files to the project
 	    //
 	    this.mNewArduinoSketchWizardCodeSelectionPage.createFiles(project, monitor);
-	    //
-	    // add the libraries to the project if needed
-	    //
-	    this.mNewArduinoSketchWizardCodeSelectionPage.importLibraries(project, prjCDesc.getActiveConfiguration());
 
-	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
-		    true);
+	    ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING), true);
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[5];
@@ -312,8 +296,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    // set warning levels default on
 	    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-	    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
-		    Const.ENV_KEY_WARNING_LEVEL_ON);
+	    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL, Const.ENV_KEY_WARNING_LEVEL_ON);
 	    contribEnv.addVariable(var, cfgd.getConfiguration());
 
 	    prjCDesc.setActiveConfiguration(defaultConfigDescription);
@@ -323,8 +306,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    monitor.done();
 
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    Messages.ui_new_sketch_error_failed_to_create_project + project.getName(), e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.ui_new_sketch_error_failed_to_create_project + project.getName(), e));
 	    throw new OperationCanceledException();
 	}
 
@@ -336,8 +318,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
     }
 
     @Override
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data)
-	    throws CoreException {
+    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
 	// snipped...
 	this.mConfig = config;
 
