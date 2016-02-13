@@ -4,19 +4,6 @@ Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: it.baeyens.arduino.core;singleton:=true
 Bundle-Version: 3.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.core.resources,
- org.eclipse.cdt.managedbuilder.core,
- org.eclipse.core.filesystem,
- org.eclipse.ui.ide,
- org.eclipse.cdt.core,
- org.eclipse.equinox.security;bundle-version="1.1.100",
- com.google.gson,
- org.apache.commons.compress,
- org.eclipse.swt,
- org.eclipse.ui.workbench,
- org.eclipse.ui.forms
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
 Import-Package: it.baeyens.arduino.arduino,
@@ -33,8 +20,28 @@ Import-Package: it.baeyens.arduino.arduino,
  org.eclipse.cdt.ui.newui,
  org.eclipse.cdt.utils,
  org.eclipse.ui.console,
- org.eclipse.ui.dialogs
+ org.eclipse.ui.dialogs,
+ org.eclipse.ui.progress,
+ org.eclipse.ui.wizards
 Bundle-Activator: it.baeyens.arduino.ui.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
  lib/jmdns-3.4.1.jar
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.equinox.registry,
+ org.eclipse.jface,
+ org.eclipse.ui.ide,
+ org.eclipse.core.jobs,
+ org.eclipse.equinox.preferences,
+ org.eclipse.core.contenttype,
+ org.eclipse.osgi,
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.core.filesystem,
+ org.eclipse.swt,
+ org.eclipse.cdt.core,
+ org.apache.commons.compress,
+ com.google.gson,
+ org.eclipse.equinox.security,
+ org.eclipse.ui.forms,
+ org.eclipse.ui.workbench,
+ org.eclipse.core.runtime;bundle-version="3.11.1"
