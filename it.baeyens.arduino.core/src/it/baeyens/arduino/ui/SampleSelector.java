@@ -81,7 +81,7 @@ public class SampleSelector {
 
 	});
 	Label label1 = new Label(composite, SWT.NONE);
-	label1.setText("Number of selected examples");
+	label1.setText(Messages.SampleSelector_num_selected);
 	this.numSelectedLabel = new Label(composite, SWT.NONE);
 	this.numSelectedLabel.setText(Integer.toString(this.numSelected));
 	theGriddata = new GridData(SWT.LEFT, SWT.TOP, true, false);

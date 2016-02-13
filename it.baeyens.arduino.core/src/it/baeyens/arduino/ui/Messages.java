@@ -98,6 +98,8 @@ public class Messages extends NLS {
 
     public static String json_update;
 
+    public static String SampleSelector_num_selected;
+
     static {
 	// initialize resource bundle
 	NLS.initializeMessages(BUNDLE_NAME, Messages.class);
