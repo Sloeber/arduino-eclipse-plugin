@@ -47,9 +47,9 @@ public class Activator implements BundleActivator {
     public URL pluginStartInitiator = null; // Initiator to start the plugin
     public Object mstatus; // status of the plugin
     protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + Const.EMPTY_STRING;
-    protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/', 'e', 'c', 'l', 'i', 'p', 's',
-	    'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',
-	    '?', 's', '=' };
+    protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/',
+	    'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g',
+	    'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
     private static final String PLUGIN_ID = "it.baeyens.arduino.core"; //$NON-NLS-1$
 
     @Override
@@ -67,7 +67,8 @@ public class Activator implements BundleActivator {
 	CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
 	CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
 	CoreModel singCoreModel = CoreModel.getDefault();
-	singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(), CProjectDescriptionEvent.ABOUT_TO_APPLY);
+	singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
+		CProjectDescriptionEvent.ABOUT_TO_APPLY);
     }
 
     private static void runGUIRegistration() {
@@ -103,7 +104,8 @@ public class Activator implements BundleActivator {
 		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(Activator.this.flagStart, 0) + 1;
 		    myScope.putInt(Activator.this.flagStart, curFsiStatus);
-		    Activator.this.pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
+		    Activator.this.pluginStartInitiator = new URL(
+			    new String(Activator.this.uri) + Integer.toString(curFsiStatus));
 		    Activator.this.mstatus = Activator.this.pluginStartInitiator.getContent();
 		} catch (Exception e) {
 		    // if this happens there is no real harm or functionality
@@ -143,7 +145,8 @@ public class Activator implements BundleActivator {
 	    }
 
 	    /**
-	     * Check whether the install conditions for the plugin are met. Test whether we can write in the download folder check whether the
+	     * Check whether the install conditions for the plugin are met. Test
+	     * whether we can write in the download folder check whether the
 	     * download folder is not to deep on windows
 	     * 
 	     * @return true is installation can be done else false
@@ -156,12 +159,14 @@ public class Activator implements BundleActivator {
 		boolean cantWrite = !installPath.toFile().canWrite();
 		boolean windowsPathToLong = false;
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		    windowsPathToLong = installPath.toString().length() > 200;
+		    windowsPathToLong = installPath.toString().length() > 100;
 		}
 		if (cantWrite || windowsPathToLong) {
-		    String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString() : Const.EMPTY_STRING; //$NON-NLS-1$
+		    String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString() //$NON-NLS-1$
+			    : Const.EMPTY_STRING;
 		    errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : Const.EMPTY_STRING);
-		    errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long" : Const.EMPTY_STRING); //$NON-NLS-1$ //$NON-NLS-2$
+		    errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long" //$NON-NLS-1$ //$NON-NLS-2$
+			    : Const.EMPTY_STRING);
 
 		    Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage)); // $NON-NLS-1$
 		    return false;
@@ -178,7 +183,8 @@ public class Activator implements BundleActivator {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework. BundleContext )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+     * BundleContext )
      */
     @Override
     public void stop(BundleContext context) throws Exception {
@@ -187,19 +193,25 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * This is a wrapper method to quickly make the dough code that is the basis of the it.baeyens.arduino.managers and it.baeyens.arduino.managers.ui
-     * to work.
+     * This is a wrapper method to quickly make the dough code that is the basis
+     * of the it.baeyens.arduino.managers and it.baeyens.arduino.managers.ui to
+     * work.
      */
     public static String getId() {
 	return PLUGIN_ID;
     }
 
     /**
-     * To be capable of overwriting the boards.txt and platform.txt file settings the plugin contains its own settings. The settings are arduino IDE
-     * version specific and it seems to be relatively difficult to read a boards.txt located in the plugin itself (so outside of the workspace)
-     * Therefore I copy the file during plugin configuration to the workspace root. The file is arduino IDE specific. If no specific file is found the
-     * default is used. There are actually 4 txt files. 2 are for pre-processing 2 are for post processing. each time 1 board.txt an platform.txt I
-     * probably do not need all of them but as I'm setting up this framework it seems best to add all possible combinations.
+     * To be capable of overwriting the boards.txt and platform.txt file
+     * settings the plugin contains its own settings. The settings are arduino
+     * IDE version specific and it seems to be relatively difficult to read a
+     * boards.txt located in the plugin itself (so outside of the workspace)
+     * Therefore I copy the file during plugin configuration to the workspace
+     * root. The file is arduino IDE specific. If no specific file is found the
+     * default is used. There are actually 4 txt files. 2 are for pre-processing
+     * 2 are for post processing. each time 1 board.txt an platform.txt I
+     * probably do not need all of them but as I'm setting up this framework it
+     * seems best to add all possible combinations.
      * 
      */
     private static void makeOurOwnCustomBoards_txt() {
@@ -214,13 +226,17 @@ public class Activator implements BundleActivator {
     }
 
     /**
-     * This method creates a file in the root of the workspace based on a file delivered with the plugin The file can be arduino IDE version specific.
-     * If no specific version is found the default is used. Decoupling the ide from the plugin makes the version specific impossible
+     * This method creates a file in the root of the workspace based on a file
+     * delivered with the plugin The file can be arduino IDE version specific.
+     * If no specific version is found the default is used. Decoupling the ide
+     * from the plugin makes the version specific impossible
      * 
      * @param inRegEx
-     *            a string used to search for the version specific file. The $ is replaced by the arduino version or default
+     *            a string used to search for the version specific file. The $
+     *            is replaced by the arduino version or default
      * @param outFile
-     *            the name of the file that will be created in the root of the workspace
+     *            the name of the file that will be created in the root of the
+     *            workspace
      */
     private static void makeOurOwnCustomBoard_txt(String inRegEx, File outFile, boolean forceOverwrite) {
 	if (outFile.exists() && !forceOverwrite) {
@@ -231,7 +247,8 @@ public class Activator implements BundleActivator {
 	// mArduinoIdeVersion.getStringValue());
 	String DefaultFile = inRegEx.replaceFirst("-", "default"); //$NON-NLS-1$ //$NON-NLS-2$
 	/*
-	 * Finding the file in the plugin as described here :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
+	 * Finding the file in the plugin as described here
+	 * :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
 	 */
 
 	byte[] buffer = new byte[4096]; // To hold file contents
@@ -268,7 +285,8 @@ public class Activator implements BundleActivator {
 	    ctbin.addFileSpec("ino", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
 	    ctbin.addFileSpec("pde", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
 	} catch (CoreException e) {
-	    Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to add *.ino and *.pde as file extensions.", e)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, Activator.getId(),
+		    "Failed to add *.ino and *.pde as file extensions.", e)); //$NON-NLS-1$
 	}
 
     }
