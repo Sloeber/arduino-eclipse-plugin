@@ -29,8 +29,10 @@ public class Package {
 	for (ArduinoPlatform platform : this.platforms) {
 	    platform.setOwner(this);
 	}
-	for (Tool tool : this.tools) {
-	    tool.setOwner(this);
+	if (this.tools != null) {
+	    for (Tool tool : this.tools) {
+		tool.setOwner(this);
+	    }
 	}
     }
 
@@ -94,7 +96,8 @@ public class Package {
 		if (foundPlatform == null) {
 		    foundPlatform = platform;
 		} else {
-		    if (platform.isInstalled() && Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+		    if (platform.isInstalled()
+			    && Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
 			foundPlatform = platform;
 		    }
 		}
