@@ -1094,6 +1094,7 @@ public class Helpers extends Common {
 	// Arduino uses the board approach for the upload tool.
 	// as I'm not I mod it so the upload tool is in the command
 	try {
+
 	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
 	    String uploadRecipe = "A.TOOLS." + uploadTool.toUpperCase() + ".UPLOAD.PATTERN";//$NON-NLS-1$//$NON-NLS-2$
 	    String UploadCommand = contribEnv.getVariable(uploadRecipe, confDesc).getValue();
@@ -1112,6 +1113,9 @@ public class Helpers extends Common {
 
 	    }
 	    setBuildEnvironmentVariable(contribEnv, confDesc, uploadRecipe, UploadCommand);
+	    // I still need to set this one
+	    setBuildEnvironmentVariable(contribEnv, confDesc, "A.PATH", //$NON-NLS-1$
+		    makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
