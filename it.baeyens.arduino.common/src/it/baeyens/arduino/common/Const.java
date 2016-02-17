@@ -51,7 +51,7 @@ public class Const {
     public static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation"; //$NON-NLS-1$
     public static final String KEY_MANAGER_BOARD_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
     public static final String DEFAULT_MANAGER_BOARD_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
-	    + "\nhttp://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
+	    + System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
 
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";//$NON-NLS-1$

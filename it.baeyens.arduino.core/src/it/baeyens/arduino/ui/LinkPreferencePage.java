@@ -86,10 +86,11 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 
     @Override
     protected void performDefaults() {
+	super.performDefaults();
 	String defaultBoardUrl = Const.DEFAULT_MANAGER_BOARD_URLS;
 	this.urlsText.setStringValue(defaultBoardUrl);
 	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
-	super.performDefaults();
+
     }
 
     @Override
