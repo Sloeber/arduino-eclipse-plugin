@@ -50,13 +50,13 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate{
     IProgressMonitor monitor;
 	
 	@Override
-	public void launch(ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor)
+	public void launch(ILaunchConfiguration launchConfig, String launchMode, ILaunch launchHandle, IProgressMonitor launchMonitor)
 			throws CoreException {
 		
-		this.config = config;
-		this.mode = mode;
-		this.launch = launch;
-		this.monitor = monitor;
+		this.config = launchConfig;
+		this.mode = launchMode;
+		this.launch = launchHandle;
+		this.monitor = launchMonitor;
 		
 		// Get data from config
         loadSettingsFromConfiguration();

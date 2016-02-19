@@ -39,10 +39,10 @@ public class LaunchShortcut implements ILaunchShortcut {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void launch(IEditorPart editor, String mode) {
-		IFile file = ResourceUtil.getFile(editor.getEditorInput());
-		if (file != null) {
-			launch(file, mode);
+	public void launch(IEditorPart editor, String launchMode) {
+		IFile editorFile = ResourceUtil.getFile(editor.getEditorInput());
+		if (editorFile != null) {
+			launch(editorFile, launchMode);
 		}
 	}
 
@@ -50,20 +50,18 @@ public class LaunchShortcut implements ILaunchShortcut {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void launch(ISelection selection, String mode) {
+	public void launch(ISelection selection, String launchMode) {
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 			if (structuredSelection.getFirstElement() instanceof IFile) {
-				launch((IFile) structuredSelection.getFirstElement(), mode);
+				launch((IFile) structuredSelection.getFirstElement(), launchMode);
 			}
 		}
 	}
 
 	/**
-	 * Launch the file by adding it to an existing launch config of this project
-	 * or creating a new one if none yet. If a new config is created the main
-	 * file and environment used to initialize it will be fetched from the
-	 * project preferences if possible or from a user dialog if not.
+	 * Launch the project of the file via an existing launch configuration
+	 * or create a new one if there is none yet.
 	 * 
 	 * @param file
 	 *            The file to be launched
@@ -71,10 +69,10 @@ public class LaunchShortcut implements ILaunchShortcut {
 	 *            The mode the launch should be performed in (e.g. 'run' or
 	 *            'debug')
 	 */
-	private void launch(IFile file, String mode) {
-		this.file = file;
+	private void launch(IFile launchFile, String launchMode) {
+		this.file = launchFile;
 		this.project = file.getProject();
-		this.mode = mode;
+		this.mode = launchMode;
 
 		// Find launch config for the project or initialize new one.
 		ILaunchConfiguration config = findOrCreateLaunchConfiguration();
