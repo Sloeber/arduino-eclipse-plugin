@@ -244,6 +244,17 @@
             id="it.baeyens.arduino.actions.ReattachLibraries"
             name="%command.ReattachLibraries.name">
       </command>
+      <command
+            categoryId="it.baeyens.arduino.commands"
+            defaultHandler="it.baeyens.arduino.actions.LinkCommandHandler"
+            id="it.baeyens.arduino.core.open.link"
+            name="open how To link">
+         <commandParameter
+               id="it.baeyens.arduino.core.link.parameter"
+               name="link url"
+               optional="true">
+         </commandParameter>
+      </command>
 
 	</extension>
 
@@ -375,6 +386,40 @@
          commandId="it.baeyens.arduino.actions.ReattachLibraries"
          id="ReattachLibrariesAction"
          style="push">
+   </command>
+   <separator
+         name="it.baeyens.arduino.core.separator1"
+         visible="true">
+   </separator>
+   <command
+         commandId="it.baeyens.arduino.core.open.link"
+         id="open.how.toweb.page"
+         label="How to"
+         style="push">
+      <parameter
+            name="it.baeyens.arduino.core.link.parameter"
+            value="http://eclipse.baeyens.it/how_to.shtml">
+      </parameter>
+   </command>
+   <command
+         commandId="it.baeyens.arduino.core.open.link"
+         id="open.how.toweb.page"
+         label="learn"
+         style="push">
+      <parameter
+            name="it.baeyens.arduino.core.link.parameter"
+            value="http://eclipse.baeyens.it/learn.shtml">
+      </parameter>
+   </command>
+   <command
+         commandId="it.baeyens.arduino.core.open.link"
+         id="open.youTube.page"
+         label="Video&apos;s"
+         style="push">
+      <parameter
+            name="it.baeyens.arduino.core.link.parameter"
+            value="https://www.youtube.com/playlist?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF">
+      </parameter>
    </command>
    
 			</menu>
