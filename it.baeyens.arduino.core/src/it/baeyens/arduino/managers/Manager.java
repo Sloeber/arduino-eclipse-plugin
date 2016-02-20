@@ -237,7 +237,7 @@ public class Manager {
 		PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
 		index.setOwners(null);
 		packageIndices.add(index);
-	    } catch (IOException e) {
+	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, Activator.getId(),
 			"Unable to parse " + packageFile.getAbsolutePath(), e)); //$NON-NLS-1$
 	    }
