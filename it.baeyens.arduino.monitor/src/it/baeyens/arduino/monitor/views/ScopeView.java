@@ -54,7 +54,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    IEclipsePreferences mySCope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = mySCope.getInt(flagMonitor, 0) + 1;
 		    mySCope.putInt(flagMonitor, curFsiStatus);
-		    URL pluginStartInitiator = new URL(ScopeView.this.uri.replaceAll(" ", Const.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
+		    URL pluginStartInitiator = new URL(
+			    ScopeView.this.uri.replaceAll(" ", Const.EMPTY_STRING) + Integer.toString(curFsiStatus)); //$NON-NLS-1$
 		    ScopeView.this.mstatus = pluginStartInitiator.getContent();
 		} catch (Exception e) {// JABA is not going to add code
 		}
@@ -108,8 +109,10 @@ public class ScopeView extends ViewPart implements ServiceListener {
 	ITheme currentTheme = themeManager.getCurrentTheme();
 	ColorRegistry colorRegistry = currentTheme.getColorRegistry();
 
-	this.myScope = new Oscilloscope(6, dsp, parent, SWT.NONE, colorRegistry.get("it.baeyens.scope.color.background"), //$NON-NLS-1$
-		colorRegistry.get("it.baeyens.scope.color.foreground"), colorRegistry.get("it.baeyens.scope.color.grid")); //$NON-NLS-1$//$NON-NLS-2$
+	this.myScope = new Oscilloscope(6, dsp, parent, SWT.NONE,
+		colorRegistry.get("it.baeyens.scope.color.background"), //$NON-NLS-1$
+		colorRegistry.get("it.baeyens.scope.color.foreground"), //$NON-NLS-1$
+		colorRegistry.get("it.baeyens.scope.color.grid")); //$NON-NLS-1$
 	GridData theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
 	theGriddata.horizontalSpan = 7;
 
@@ -140,7 +143,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    if (!(this.inDrag || this.inSize)) {
 			this.orgLowRange = ScopeView.this.myScope.getLowRangeValue();
 			this.orgHighRange = ScopeView.this.myScope.getHighRangeValue();
-			this.scale = (((float) (ScopeView.this.myScope.getHighRangeValue() - ScopeView.this.myScope.getLowRangeValue()))
+			this.scale = (((float) (ScopeView.this.myScope.getHighRangeValue()
+				- ScopeView.this.myScope.getLowRangeValue()))
 				/ (float) ScopeView.this.myScope.getSize().y);
 			this.orgY = event.y;
 			switch (event.button) {
@@ -176,8 +180,9 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		    break;
 		case SWT.MouseDoubleClick:
 		    // save the data
-		    FileDialog dialog = new FileDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(), SWT.SAVE);
-		    dialog.setFilterExtensions(new String[] { "*.cvs" }); //$NON-NLS-1$
+		    FileDialog dialog = new FileDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+			    SWT.SAVE);
+		    dialog.setFilterExtensions(new String[] { "*.csv" }); //$NON-NLS-1$
 		    String fileName = dialog.open();
 		    if (!fileName.isEmpty()) {
 			ScopeView.this.myScope.saveData(fileName);
@@ -267,7 +272,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
     }
 
     /**
-     * When the scope starts it needs to look is there are already serial services running. This method looks for the serial services and if found
+     * When the scope starts it needs to look is there are already serial
+     * services running. This method looks for the serial services and if found
      * this class is added as listener
      */
     private void registerExistingSerialService() {
@@ -293,7 +299,8 @@ public class ScopeView extends ViewPart implements ServiceListener {
 		@Override
 		public void run() {
 		    ScopeView.this.mySerial.addListener(ScopeView.this.myScopelistener);
-		    ScopeView.this.myScope.setStatus(Messages.ScopeView_connected_to + ScopeView.this.mySerial.toString());
+		    ScopeView.this.myScope
+			    .setStatus(Messages.ScopeView_connected_to + ScopeView.this.mySerial.toString());
 		    ScopeView.this.myScope.setShowLabels(true);
 		    ScopeView.this.myScope.setnewBackgroundImage();
 		}
