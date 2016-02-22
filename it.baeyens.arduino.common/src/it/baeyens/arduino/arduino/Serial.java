@@ -99,11 +99,6 @@ public class Serial implements SerialPortEventListener {
     int stopbits;
     boolean monitor = false;
 
-    byte buffer[] = new byte[32768];
-    int bufferIndex;
-
-    int bufferLast;
-
     String PortName;
 
     private ServiceRegistration<Serial> fServiceRegistration;
@@ -146,22 +141,6 @@ public class Serial implements SerialPortEventListener {
 	if (this.fConsumers == null)
 	    return;
 	this.fConsumers.remove(consumer);
-    }
-
-    /**
-     * Returns the number of bytes that have been read from serial and are
-     * waiting to be dealt with by the user.
-     */
-    public int available() {
-	return (this.bufferLast - this.bufferIndex);
-    }
-
-    /**
-     * Ignore all the bytes read so far and empty the buffer.
-     */
-    public void clear() {
-	this.bufferLast = 0;
-	this.bufferIndex = 0;
     }
 
     public void connect() {
@@ -251,187 +230,6 @@ public class Serial implements SerialPortEventListener {
 	}
     }
 
-    /**
-     * Returns a number between 0 and 255 for the next byte that's waiting in
-     * the buffer. Returns -1 if there was no byte (although the user should
-     * first check available() to see if things are ready to avoid this)
-     */
-    public int read() {
-	if (this.bufferIndex == this.bufferLast)
-	    return -1;
-
-	synchronized (this.buffer) {
-	    int outgoing = this.buffer[this.bufferIndex++] & 0xff;
-	    if (this.bufferIndex == this.bufferLast) { // rewind
-		this.bufferIndex = 0;
-		this.bufferLast = 0;
-	    }
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Return a byte array of anything that's in the serial buffer. Not
-     * particularly memory/speed efficient, because it creates a byte array on
-     * each read, but it's easier to use than readBytes(byte b[]) (see below).
-     */
-    public byte[] readBytes() {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-
-	synchronized (this.buffer) {
-	    int length = this.bufferLast - this.bufferIndex;
-	    byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex = 0; // rewind
-	    this.bufferLast = 0;
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Grab whatever is in the serial buffer, and stuff it into a byte buffer
-     * passed in by the user. This is more memory/time efficient than
-     * readBytes() returning a byte[] array.
-     * 
-     * Returns an int for how many bytes were read. If more bytes are available
-     * than can fit into the byte array, only those that will fit are read.
-     */
-    public int readBytes(byte outgoing[]) {
-	if (this.bufferIndex == this.bufferLast)
-	    return 0;
-
-	synchronized (this.buffer) {
-	    int length = this.bufferLast - this.bufferIndex;
-	    if (length > outgoing.length)
-		length = outgoing.length;
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex += length;
-	    if (this.bufferIndex == this.bufferLast) {
-		this.bufferIndex = 0; // rewind
-		this.bufferLast = 0;
-	    }
-	    return length;
-	}
-    }
-
-    /**
-     * Reads from the serial port into a buffer of bytes up to and including a
-     * particular character. If the character isn't in the serial buffer, then
-     * 'null' is returned.
-     */
-    public byte[] readBytesUntil(int interesting) {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-	byte what = (byte) interesting;
-
-	synchronized (this.buffer) {
-	    int found = -1;
-	    for (int k = this.bufferIndex; k < this.bufferLast; k++) {
-		if (this.buffer[k] == what) {
-		    found = k;
-		    break;
-		}
-	    }
-	    if (found == -1)
-		return null;
-
-	    int length = found - this.bufferIndex + 1;
-	    byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex = 0; // rewind
-	    this.bufferLast = 0;
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Reads from the serial port into a buffer of bytes until a particular
-     * character. If the character isn't in the serial buffer, then 'null' is
-     * returned.
-     * 
-     * If outgoing[] is not big enough, then -1 is returned, and an error
-     * message is printed on the console. If nothing is in the buffer, zero is
-     * returned. If 'interesting' byte is not in the buffer, then 0 is returned.
-     */
-    public int readBytesUntil(int interesting, byte outgoing[]) {
-	if (this.bufferIndex == this.bufferLast)
-	    return 0;
-	byte what = (byte) interesting;
-
-	synchronized (this.buffer) {
-	    int found = -1;
-	    for (int k = this.bufferIndex; k < this.bufferLast; k++) {
-		if (this.buffer[k] == what) {
-		    found = k;
-		    break;
-		}
-	    }
-	    if (found == -1)
-		return 0;
-
-	    int length = found - this.bufferIndex + 1;
-	    if (length > outgoing.length) {
-		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-			"readBytesUntil() byte buffer is too small for the " + length //$NON-NLS-1$
-				+ " bytes up to and including char " + interesting, //$NON-NLS-1$
-			null));
-		return -1;
-	    }
-	    // byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex += length;
-	    if (this.bufferIndex == this.bufferLast) {
-		this.bufferIndex = 0; // rewind
-		this.bufferLast = 0;
-	    }
-	    return length;
-	}
-    }
-
-    /**
-     * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if
-     * nothing is there.
-     */
-    public char readChar() {
-	if (this.bufferIndex == this.bufferLast)
-	    return (char) (-1);
-	return (char) read();
-    }
-
-    /**
-     * Return whatever has been read from the serial port so far as a String. It
-     * assumes that the incoming characters are ASCII.
-     * 
-     * If you want to move Unicode data, you can first convert the String to a
-     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
-     * Unicode data), and send it as a byte array.
-     */
-    public String readString() {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-	return new String(readBytes());
-    }
-
-    /**
-     * Combination of readBytesUntil and readString. See caveats in each
-     * function. Returns null if it still hasn't found what you're looking for.
-     * 
-     * If you want to move Unicode data, you can first convert the String to a
-     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
-     * Unicode data), and send it as a byte array.
-     */
-    public String readStringUntil(int interesting) {
-	byte b[] = readBytesUntil(interesting);
-	if (b == null)
-	    return null;
-	return new String(b);
-    }
-
     public void registerService() {
 	this.fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class,
 		this, null);
@@ -458,36 +256,12 @@ public class Serial implements SerialPortEventListener {
 	    int bytesCount = serialEvent.getEventValue();
 
 	    if (IsConnected() && bytesCount > 0) {
-		synchronized (this.buffer) {
-		    try {
-			byte[] readBytes = this.port.readBytes(bytesCount);
-
-			// Check there is enough buffer to store new bytes
-			if (readBytes.length > this.buffer.length) {
-			    int newLength = this.buffer.length;
-			    while (readBytes.length > newLength) {
-				newLength *= 2;
-			    }
-
-			    byte temp[] = new byte[newLength];
-			    System.arraycopy(this.buffer, 0, temp, 0, this.buffer.length);
-			    this.buffer = temp;
-			}
-
-			// Append read bytes to buffer tail
-			System.arraycopy(readBytes, 0, this.buffer, this.bufferLast, readBytes.length);
-			if (this.monitor == true) {
-			    System.out.print(new String(readBytes));
-			}
-			this.bufferLast += readBytes.length;
-
-			notifyConsumersOfData(readBytes());
-		    } catch (SerialPortException e) {
-			errorMessage("serialEvent", e); //$NON-NLS-1$
-		    }
+		try {
+		    notifyConsumersOfData(this.port.readBytes(bytesCount));
+		} catch (SerialPortException e) {
+		    errorMessage("serialEvent", e); //$NON-NLS-1$
 		}
 	    }
-
 	    break;
 	case SerialPortEvent.BREAK:
 	    errorMessage("Break detected", new Exception()); //$NON-NLS-1$
