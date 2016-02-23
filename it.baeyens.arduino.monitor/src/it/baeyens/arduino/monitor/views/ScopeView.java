@@ -184,8 +184,10 @@ public class ScopeView extends ViewPart implements ServiceListener {
 			    SWT.SAVE);
 		    dialog.setFilterExtensions(new String[] { "*.csv" }); //$NON-NLS-1$
 		    String fileName = dialog.open();
-		    if (!fileName.isEmpty()) {
-			ScopeView.this.myScope.saveData(fileName);
+		    if (fileName != null) {
+			if (!fileName.isEmpty()) {
+			    ScopeView.this.myScope.saveData(fileName);
+			}
 		    }
 		    this.inDrag = false;
 		    this.inSize = false;
