@@ -129,8 +129,8 @@ If you do not agree with this policy, then please do not install this software.
    </license>
 
    <url>
-      <update label="Arduino eclipse plugin V2 update site" url="http://www.baeyens.it/eclipse/V2/"/>
-      <discovery label="jan&apos;s site with plenty of documentation" url="http://www.baeyens.it/eclipse/"/>
+      <update label="Arduino eclipse plugin V3 update site" url="http://eclipse.baeyens.it/V3/"/>
+      <discovery label="jan&apos;s site with plenty of documentation" url="http://eclipse.baeyens.it/"/>
    </url>
 
    <requires>
