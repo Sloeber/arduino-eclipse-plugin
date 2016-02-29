@@ -34,7 +34,7 @@
 				</executions>
 				<configuration>
 					<formats>
-						<win32>zip</win32>
+						<win32>tar.gz</win32>
 						<linux>tar.gz</linux>
 						<macosx>tar.gz</macosx>
 					</formats>
@@ -54,9 +54,6 @@
 								/opt folder -->
 							<!-- LSB: "binary-only packages of nonessential applications and add-on 
 								software products" -->
-							<rootFolders>
-								<linux>/opt/eclipseArduino/</linux>
-							</rootFolders>
 						</product>
 					</products>
 				</configuration>
