@@ -10,3 +10,8 @@ There are a couple of rules you should keep in mind:
  
 Please read [this blog post](http://blog.baeyens.it/#post13) if you want to know more about the implementation of `.ino` files in the plugin.
  
+ 
+ **Party success**
+ 
+ 1. drink a beer
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

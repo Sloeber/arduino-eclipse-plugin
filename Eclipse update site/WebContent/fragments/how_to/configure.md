@@ -13,7 +13,7 @@ This section assumes you have installed the Arduino Eclipse plugin or product.
  7. Fill it in like below (using the location of the Arduino IDE c:/arduino)
  8.	Add the location of your private libraries.
  in V1 this looks like
-	![V1](http://iloapp.baeyens.it/data/_gallery/public/1/134998877869708900_resized.png)  
+	![V1](http://iloapp.baeyens.it/data/_gallery/public/1/134998877869708900_resized.png =500x)  
  in V2 this looks like  
  ![V2](http://iloapp.baeyens.it/data/_gallery/public/6/141798497248313500_resized.png)  
 	The newer version no longer uses RXTX so there is no longer a "test serial dll" button. If the button is there click it.  
@@ -32,4 +32,4 @@ This section assumes you have installed the Arduino Eclipse plugin or product.
  **Party success**
  
  1. drink a beer
- 2. [Buy Jantje a beer](http://eclipse.baeyens.it/donate.html "thanks")
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

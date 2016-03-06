@@ -20,3 +20,9 @@ Now we are going through some issues with Arduino IDE 1.5.x and the windows plat
 For all platforms: If you don't need Arduino IDE 1.5.5 (and why would you?) stay away from it.  
 From Arduino IDE 1.5.7 onwards the Make utility is no longer part of the Arduino IDE delivery. Look at your platform specific info to see how best to handle the situation.
  
+ 
+  
+ **Party success**
+ 
+ 1. drink a beer
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

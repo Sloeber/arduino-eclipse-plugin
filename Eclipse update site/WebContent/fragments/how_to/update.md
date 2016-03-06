@@ -38,3 +38,8 @@ All versions: For each and every project go to the project properties->arduino. 
 
 Note that it is not "abnormal" that after a update -of the plugin or the arduino IDE- the data in the preferences->arduino or project properties-arduino is completely wrong. 
 
+ 
+ **Party success**
+ 
+ 1. drink a beer
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")
