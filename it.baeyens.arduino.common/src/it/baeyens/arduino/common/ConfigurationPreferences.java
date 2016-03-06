@@ -6,8 +6,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
@@ -45,16 +47,17 @@ public class ConfigurationPreferences {
 	}
 	String storedValue = getGlobalString(Const.KEY_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
-	    URI uri;
 	    try {
-		uri = Platform.getInstallLocation().getURL().toURI();
+		URI uri = Platform.getInstallLocation().getURL().toURI();
 		String defaulDownloadLocation = Paths.get(uri).resolve("arduinoPlugin").toString(); //$NON-NLS-1$
 		return new Path(defaulDownloadLocation);
 	    } catch (URISyntaxException e) {
 		// this should not happen
-		e.printStackTrace();
+		// but it seems a space in the path makes it happen
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+			"Eclipse fails to provide its own installation folder :-(. \nThis is know to happen when you have a space in your eclipse installation path", //$NON-NLS-1$
+			e));
 	    }
-
 	}
 	return new Path(storedValue);
     }
