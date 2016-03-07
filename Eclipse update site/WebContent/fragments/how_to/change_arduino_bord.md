@@ -7,7 +7,16 @@ Right click on the project and select properties.
 In properties select Arduino.  
 Here you can change your Arduino settings.  
 The dialog looks pretty much like the one in the sketch creation wizard.  
-![change Arduino board settings](http://iloapp.baeyens.it/data/_gallery/public/6/141807692282059000_resized.png =500x)  
+
+
+
+
+
+
+
+
+
+![change Arduino board settings](http://iloapp.baeyens.it/data/_gallery/public/6/141807692282059000_resized.png)  
 
  **Party success**
  

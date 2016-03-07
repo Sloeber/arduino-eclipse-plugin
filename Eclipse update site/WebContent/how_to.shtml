@@ -47,7 +47,7 @@
             <a href="#d" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Install V2 product</a>
             <a href="#e" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Configure</a>
             <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Create sketch</a>
-            <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('lib')">Add a library to a sketch</a>
+            <a href="#lib" ng-class="tab.lib" class="list-group-item small" ng-click="select('lib')">Add a library to a sketch</a>
             <a href="#g" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Change the serial port</a>
             <a href="#h" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Change the arduino board</a>
             <a href="#i" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Work with Teensy</a>
