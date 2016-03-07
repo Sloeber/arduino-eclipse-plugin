@@ -293,63 +293,78 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
 
    <features>
       <feature id="it.baeyens.arduino.feature" installMode="root"/>
-      <feature id="org.eclipse.cdt" installMode="root"/>
-      <feature id="org.eclipse.cdt.autotools" installMode="root"/>
-      <feature id="org.eclipse.cdt.build.crossgcc" installMode="root"/>
-      <feature id="org.eclipse.cdt.debug.ui.memory" installMode="root"/>
-      <feature id="org.eclipse.cdt.gdb" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.debug" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.dsf" installMode="root"/>
-      <feature id="org.eclipse.cdt.platform" installMode="root"/>
-      <feature id="org.eclipse.e4.rcp" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
       <feature id="org.eclipse.egit" installMode="root"/>
-      <feature id="org.eclipse.emf.common" installMode="root"/>
-      <feature id="org.eclipse.emf.ecore" installMode="root"/>
-      <feature id="org.eclipse.epp.mpc" installMode="root"/>
-      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.executable" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.user.ui" installMode="root"/>
-      <feature id="org.eclipse.help" installMode="root"/>
-      <feature id="org.eclipse.jdt" installMode="root"/>
-      <feature id="org.eclipse.jgit" installMode="root"/>
-      <feature id="org.eclipse.mylyn.bugzilla_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.identity" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.notifications" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.repositories" installMode="root"/>
-      <feature id="org.eclipse.mylyn.context_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.discovery" installMode="root"/>
-      <feature id="org.eclipse.mylyn.ide_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.monitor" installMode="root"/>
-      <feature id="org.eclipse.mylyn.team_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.wikitext_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn_feature" installMode="root"/>
       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
       <feature id="org.eclipse.platform" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.cdt"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.help"/>
+      <feature id="org.eclipse.help.source"/>
+      <feature id="org.eclipse.cdt.gnu.build"/>
+      <feature id="org.eclipse.sdk"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.cvs.source"/>
+      <feature id="org.eclipse.rcp.source"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.cdt.platform"/>
+      <feature id="org.eclipse.cdt.gdb.source"/>
+      <feature id="org.eclipse.cdt.gnu.debug.source"/>
+      <feature id="org.eclipse.ecf.core.ssl.source.feature"/>
+      <feature id="org.eclipse.equinox.p2.user.ui.source"/>
+      <feature id="org.eclipse.ecf.core.source.feature"/>
+      <feature id="org.eclipse.linuxtools.cdt.libhover.feature"/>
+      <feature id="org.eclipse.emf.common.source"/>
+      <feature id="org.eclipse.jdt.source"/>
+      <feature id="org.eclipse.cvs"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="org.eclipse.cdt.autotools"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature.source"/>
+      <feature id="org.eclipse.cdt.gdb"/>
+      <feature id="org.eclipse.emf.ecore.source"/>
+      <feature id="org.eclipse.ecf.filetransfer.source.feature"/>
+      <feature id="org.eclipse.cdt.platform.source"/>
+      <feature id="org.eclipse.pde"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.cdt.testsrunner.feature"/>
+      <feature id="org.eclipse.equinox.p2.core.feature.source"/>
+      <feature id="org.eclipse.cdt.gnu.dsf"/>
+      <feature id="org.eclipse.cdt.sdk"/>
+      <feature id="org.eclipse.jdt"/>
+      <feature id="org.eclipse.platform.source"/>
+      <feature id="org.eclipse.pde.source"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.equinox.p2.user.ui"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature"/>
+      <feature id="org.eclipse.cdt.native.source"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature.source"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
+      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.source.feature"/>
+      <feature id="org.eclipse.cdt.gnu.dsf.source"/>
+      <feature id="org.eclipse.cdt.native"/>
+      <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="org.eclipse.cdt.gnu.build.source"/>
+      <feature id="org.eclipse.e4.rcp.source"/>
+      <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.remote" version="2.0.2.201601141453"/>
    </features>
 
    <configurations>
       <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="org.eclipse.update.reconcile" value="false" />
    </configurations>
 
    <repositories>
@@ -357,6 +372,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
       <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
       <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
+      <repository location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
    </repositories>
 
    <preferencesInfo>

@@ -193,13 +193,13 @@ After all it should look like this:
 
 ### Set the Code Formatting
 
-To avoid having changes all the time because of different formatting this project contains a formatting xml.
+To avoid having changes all the time because of different formatting this project uses the standard "java conventions [build in].
 
 Go to 
 
 > Window → Preferences → Java → Code Style → Formatter 
 
-and import ```codeformat.xml``` from the root of the repo.
+and check this setting.
 
 ### Set the Warning Level
 
