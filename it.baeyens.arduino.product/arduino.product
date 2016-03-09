@@ -360,14 +360,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
       <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
       <repository location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
    </repositories>
 
    <preferencesInfo>
