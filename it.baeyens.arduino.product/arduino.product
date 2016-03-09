@@ -28,6 +28,7 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
 --launcher.appendVmargs
       </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.8
+-Dorg.eclipse.update.reconcile=false
 -Xms40m
 -Xmx512m
       </vmArgs>
@@ -340,6 +341,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
       <feature id="org.eclipse.cdt.testsrunner.feature"/>
+      <feature id="org.eclipse.equinox.core.sdk"/>
    </features>
 
    <configurations>
@@ -353,6 +355,15 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
+      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
+      <repository location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
+      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
       <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
       <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
       <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
