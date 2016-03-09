@@ -3,6 +3,7 @@ package it.baeyens.arduino.common;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import org.eclipse.core.runtime.IPath;
@@ -48,14 +49,15 @@ public class ConfigurationPreferences {
 	String storedValue = getGlobalString(Const.KEY_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    try {
-		URI uri = Platform.getInstallLocation().getURL().toURI();
-		String defaulDownloadLocation = Paths.get(uri).resolve("arduinoPlugin").toString(); //$NON-NLS-1$
+		URL resolvedUrl = Platform.getInstallLocation().getURL();
+		URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
+		String defaulDownloadLocation = Paths.get(resolvedUri).resolve("arduinoPlugin").toString(); //$NON-NLS-1$
 		return new Path(defaulDownloadLocation);
 	    } catch (URISyntaxException e) {
 		// this should not happen
 		// but it seems a space in the path makes it happen
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			"Eclipse fails to provide its own installation folder :-(. \nThis is know to happen when you have a space in your eclipse installation path", //$NON-NLS-1$
+			"Eclipse fails to provide its own installation folder :-(. \nThis is know to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
 			e));
 	    }
 	}
