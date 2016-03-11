@@ -154,6 +154,8 @@ public class PdePreprocessor {
 	    } else {
 		// concatenate the parts and make the .ino.cpp file
 		String output = header + includeHeaderPart + body + includeCodePart;
+		// Make sure the file is not procesed by Arduino IDE
+		output = "#ifdef " + Const.DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
 		Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
 			null);
 	    }

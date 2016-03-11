@@ -177,5 +177,6 @@ public class Const {
     public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
     public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
     public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt"; //$NON-NLS-1$
+    public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__"; //$NON-NLS-1$
 
 }
