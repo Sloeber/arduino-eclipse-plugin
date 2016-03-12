@@ -175,7 +175,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    if (op2 != null) {
 		compilerCommand = compilerCommand + ' ' + op2.getValue();
 	    }
-	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$
+	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$ //$NON-NLS-2$
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) { //$NON-NLS-1$
 	    try {
 		compilerCommand = envManager.getVariable(Const.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue()
@@ -193,7 +193,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    if (op2 != null) {
 		compilerCommand = compilerCommand + ' ' + op2.getValue();
 	    }
-	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$
+	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$ //$NON-NLS-2$
 	} else {
 	    ManagedBuilderCorePlugin.error(
 		    "Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$

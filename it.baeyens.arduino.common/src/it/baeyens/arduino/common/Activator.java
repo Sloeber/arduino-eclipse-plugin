@@ -51,7 +51,7 @@ public class Activator extends AbstractUIPlugin {
     private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
     private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
     private static final String Localflag = "l" + flagStart; //$NON-NLS-1$
-    private static final String helploc = "http://www.baeyens.it/eclipse/remind3_0.html"; //$NON-NLS-1$
+    private static final String helploc = "http://www.baeyens.it/eclipse/remind.php"; //$NON-NLS-1$
 
     /**
      * The constructor
@@ -63,7 +63,8 @@ public class Activator extends AbstractUIPlugin {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+     * BundleContext )
      */
     @Override
     public void start(BundleContext context) throws Exception {
@@ -86,8 +87,8 @@ public class Activator extends AbstractUIPlugin {
 	    protected IStatus run(IProgressMonitor monitor) {
 
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
-		int curFsiStatus = myScope.getInt(flagStart, 0) + myScope.getInt(flagMonitor, 0) + myScope.getInt(uploadflag, 0)
-			+ myScope.getInt(buildflag, 0);
+		int curFsiStatus = myScope.getInt(flagStart, 0) + myScope.getInt(flagMonitor, 0)
+			+ myScope.getInt(uploadflag, 0) + myScope.getInt(buildflag, 0);
 		int lastFsiStatus = myScope.getInt(Localflag, 0);
 		if ((curFsiStatus - lastFsiStatus) > 50) {
 		    if (isInternetReachable()) {
@@ -113,7 +114,8 @@ public class Activator extends AbstractUIPlugin {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+     * BundleContext )
      */
     @Override
     public void stop(BundleContext context) throws Exception {
