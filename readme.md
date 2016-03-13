@@ -17,6 +17,10 @@ Below are instructions on how to download and compile the source code from the c
 You only need to do one.
 Also subscribe to the developers list by sending a mail with subject _subscribe_ to eclipse-arduino-dev@freelists.org (this is not for support questions)
 
+## There are lots of issues open that seem fixed.
+We only close issues when they are in part of a stable release. Therefore the open list contains all open items for the last stable release. Known open issue for the last nightly can be found with this query:  
+is:issue is:open -label:"status: fixed in nightly"  
+
 ## Quick Installation 
 ### Prerequisites
 
