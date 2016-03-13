@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/it.baeyens.arduino.feature_3.0.0.qualifier.jar" id="it.baeyens.arduino.feature" version="3.0.0.qualifier"/>
-   <category-def name="Arduino" label="Arduino"/>
+   <feature url="features/it.baeyens.arduino.feature_3.0.0.qualifier.jar" id="it.baeyens.arduino.feature" version="3.0.0.qualifier">
+      <category name="Arduino"/>
+   </feature>
+   <category-def name="Arduino" label="Arduino Eclipse Plugins">
+      <description>
+         If you are starting with arduino or micro controllers in general I strongly advice to start using the Arduino IDE.
+
+The arduino eclipse plugin is easy to set-up (though harder than the Arduino IDE) and easy to use. It has the same icons for verify upload and serial monitor as the Arduino IDE.
+      </description>
+   </category-def>
 </site>
