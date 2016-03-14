@@ -45,7 +45,7 @@
 		<module>../it.baeyens.arduino.core</module>
 		<module>../it.baeyens.arduino.monitor</module>
 		<module>../it.baeyens.arduino.product</module>
-		
+		<module>../it.baeyens.arduino.updatesite</module>
 		<module>../it.baeyens.arduino.application</module>
 		<module>../it.baeyens.cdt.refactor</module>
 	</modules>
