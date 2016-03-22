@@ -98,6 +98,9 @@ public class Serial implements SerialPortEventListener {
 
     int stopbits;
     boolean monitor = false;
+    
+    // whether to pull DTR to GND during reset or not
+    boolean dtr = true;
 
     String PortName;
 
@@ -106,12 +109,17 @@ public class Serial implements SerialPortEventListener {
     private List<MessageConsumer> fConsumers;
 
     public Serial(String iname, int irate) {
-	this(iname, irate, 'N', 8, 1.0f);
+    	this(iname, irate, 'N', 8, 1.0f, true);
+        }
+    
+    public Serial(String iname, int irate, boolean dtr) {
+	this(iname, irate, 'N', 8, 1.0f, dtr);
     }
 
-    public Serial(String iname, int irate, char iparity, int idatabits, float istopbits) {
+    public Serial(String iname, int irate, char iparity, int idatabits, float istopbits, boolean dtr) {
 	this.PortName = iname;
 	this.rate = irate;
+	this.dtr = dtr;
 
 	this.parity = SerialPort.PARITY_NONE;
 	if (iparity == 'E')
@@ -236,15 +244,18 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void reset() {
-	setDTR(false);
+	if(this.dtr){
+    	setDTR(false);
+	}
 	setRTS(false);
 
 	try {
 	    Thread.sleep(100);
 	} catch (InterruptedException e) {// JABA is not going to add code
 	}
-
-	setDTR(true);
+	if(this.dtr){
+		setDTR(true);
+	}
 	setRTS(true);
 
     }
