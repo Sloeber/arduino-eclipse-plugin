@@ -162,7 +162,7 @@ public class Serial implements SerialPortEventListener {
 		try {
 		    this.port = new SerialPort(this.PortName);
 		    this.port.openPort();
-		    this.port.setParams(this.rate, this.databits, this.stopbits, this.parity);
+		    this.port.setParams(this.rate, this.databits, this.stopbits, this.parity, this.dtr, this.dtr);
 
 		    int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_BREAK;
 		    this.port.addEventListener(this, eventMask);
@@ -244,18 +244,14 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void reset() {
-	if(this.dtr){
-    	setDTR(false);
-	}
+    setDTR(false);
 	setRTS(false);
 
 	try {
 	    Thread.sleep(100);
 	} catch (InterruptedException e) {// JABA is not going to add code
 	}
-	if(this.dtr){
-		setDTR(true);
-	}
+	setDTR(true);
 	setRTS(true);
 
     }
