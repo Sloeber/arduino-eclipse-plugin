@@ -240,6 +240,7 @@ public class Manager {
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, Activator.getId(),
 			"Unable to parse " + packageFile.getAbsolutePath(), e)); //$NON-NLS-1$
+		packageFile.delete();// Delete the file so it stops damaging
 	    }
 	}
     }
