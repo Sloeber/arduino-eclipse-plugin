@@ -22,6 +22,10 @@
  Boston, MA  02111-1307  USA
  */
 
+/*
+ * For documentation on jssc see  http://java-simple-serial-connector.googlecode.com/svn/trunk/additional_content/javadoc/0.8/index.html
+ */
+
 package it.baeyens.arduino.arduino;
 
 import java.util.ArrayList;
@@ -98,8 +102,10 @@ public class Serial implements SerialPortEventListener {
 
     int stopbits;
     boolean monitor = false;
-    
-    // whether to pull DTR to GND during reset or not
+
+    // initial state of RTS&DTR line(ON/OFF)
+    // This is needed as Some boards reset when the serial port is opened with
+    // RTS and DTR low.
     boolean dtr = true;
 
     String PortName;
@@ -109,9 +115,9 @@ public class Serial implements SerialPortEventListener {
     private List<MessageConsumer> fConsumers;
 
     public Serial(String iname, int irate) {
-    	this(iname, irate, 'N', 8, 1.0f, true);
-        }
-    
+	this(iname, irate, 'N', 8, 1.0f, true);
+    }
+
     public Serial(String iname, int irate, boolean dtr) {
 	this(iname, irate, 'N', 8, 1.0f, dtr);
     }
@@ -244,7 +250,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void reset() {
-    setDTR(false);
+	setDTR(false);
 	setRTS(false);
 
 	try {
