@@ -109,7 +109,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	for (String curCategory : categories) {
 	    Collection<Library> libraries = libraryIndex.getLibraries(curCategory);
 	    List<Library> librarylist = new ArrayList<>(libraries);
-	    Collections.sort(librarylist, new Library());
+	    Collections.sort(librarylist);
 
 	    String prefLibraryName = null;
 	    TableItem libraryItem = null;
