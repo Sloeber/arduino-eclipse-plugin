@@ -93,7 +93,7 @@ public class Activator implements BundleActivator {
 	InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
 	InstancePreferences.setOpenSerialWithMonitor(InstancePreferences.getOpenSerialWithMonitor());
 	InstancePreferences.setAutomaticallyIncludeLibraries(InstancePreferences.getAutomaticallyIncludeLibraries());
-
+	ConfigurationPreferences.setBoardURLs(ConfigurationPreferences.getBoardURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {

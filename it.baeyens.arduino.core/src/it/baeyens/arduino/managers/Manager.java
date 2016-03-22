@@ -87,7 +87,7 @@ public class Manager {
 
 		InstallLibraries(monitor);
 
-		// TODO add sample programs here please
+		// Downmload sample programs
 		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE,
 			Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
 
