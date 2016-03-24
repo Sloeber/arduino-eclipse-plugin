@@ -81,12 +81,7 @@ public class PlatformPreferencePage extends PreferencePage implements IWorkbench
 	this.platformTree.removeAll();
 
 	List<Package> packages = Manager.getPackages();
-	Collections.sort(packages, new Comparator<Package>() {
-	    @Override
-	    public int compare(Package arg0, Package arg1) {
-		return arg0.getName().compareTo(arg1.getName());
-	    }
-	});
+	Collections.sort(packages);
 
 	for (Package curPackage : packages) {
 	    TreeItem packageItem = new TreeItem(this.platformTree, SWT.NONE);

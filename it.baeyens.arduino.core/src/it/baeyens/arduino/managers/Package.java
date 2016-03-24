@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Package {
+public class Package implements Comparable <Package>{
 
     private String name;
     private String maintainer;
@@ -171,5 +171,10 @@ public class Package {
     public int hashCode() {
 	return this.name.hashCode();
     }
+
+	@Override
+	public int compareTo(Package other) {
+		return name.compareTo(other.name);
+	}
 
 }
