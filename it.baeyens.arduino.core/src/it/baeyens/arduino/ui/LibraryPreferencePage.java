@@ -1,53 +1,30 @@
 package it.baeyens.arduino.ui;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TreeEditor;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -63,23 +40,20 @@ import it.baeyens.arduino.managers.Manager;
 
 public class LibraryPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	protected HashMap<String, String> ModdedLibraries = null;
-	private Table table;
-	ModifyListener tt = new ModifyListener() {
-
-		@Override
-		public void modifyText(ModifyEvent e) {
-			// TODO Auto-generated method stub
-			CCombo theCombo = (CCombo) e.getSource();
-			String libname = (String) theCombo.getData();
-			String version = theCombo.getText();
-			LibraryPreferencePage.this.ModdedLibraries.put(libname, version);
-		}
-	};
-
+	private Tree tree;
+	private CheckboxTreeViewer viewer;
+	private TreeEditor editor;
+	
 	@Override
 	public void init(IWorkbench workbench) {
 		// nothing needed here
+	}
+
+	@Override
+	protected void performDefaults() {
+		viewer.setInput(new LibraryTree());
+		editor.getEditor().dispose();
+		super.performDefaults();
 	}
 
 	@Override
@@ -91,57 +65,46 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		desc.setLayoutData(layoutData);
 		desc.setBackground(parent.getBackground());
-		desc.setText("Add/remove libraries or change available versions."); //$NON-NLS-1$
-		createTree(control);
+		desc.setText("Add/remove libraries or change their version.");
+		this.createTree(control);
 
 		return control;
 	}
 
-	protected IStatus updateInstallation(IProgressMonitor monitor) {
-		MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries, null);
-
-		if (this.ModdedLibraries != null) {
-			if (this.ModdedLibraries.size() > 0) {
-
-				for (Entry<String, String> curTableItem : this.ModdedLibraries.entrySet()) {
-					String Version = curTableItem.getValue();
-					String libName = curTableItem.getKey();
-					Library removeLib = Manager.getLibraryIndex().getInstalledLibrary(libName);
-					if (removeLib != null) {
-						if (!(removeLib.getVersion().equals(Version))) {
-							status.add(removeLib.remove(monitor));
-						}
-
-					}
-					Library curLib = Manager.getLibraryIndex().getLibrary(libName, Version);
-					if (curLib != null) {
-						if (!curLib.isInstalled()) {
-							status.add(curLib.install(monitor));
-						}
-					}
+	@Override
+	public boolean performOk() {
+		final HashMap<String, String> libs = new HashMap<>();
+		for (TreeItem category : tree.getItems()) {
+			for (TreeItem  item : category.getItems()) {
+				if (item.getData() instanceof LibraryTree.Library) {
+					libs.put(item.getText(0), item.getText(1));
 				}
 			}
 		}
-		return status;
-	}
-
-	@Override
-	public boolean performOk() {
 		new Job(Messages.ui_Adopting_arduino_libraries) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-
-				return updateInstallation(monitor);
-
+				MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries, null);
+				for (Map.Entry<String, String> lib : libs.entrySet()) {
+						Library toRemove = Manager.getLibraryIndex().getInstalledLibrary(lib.getKey());
+						if (toRemove != null && !toRemove.getVersion().equals(lib.getValue())) {
+							status.add(toRemove.remove(monitor));
+						}
+						Library toInstall = Manager.getLibraryIndex().getLibrary(lib.getKey(), lib.getValue());
+						if (toInstall != null && !toInstall.isInstalled()) {
+							status.add(toInstall.install(monitor));
+						}
+				}
+				return status;
 			}
 		}.schedule();
 
 		return true;
 	}
-
+	
 	public void createTree(Composite parent) {
-		// Filtering applied to all columns
+		// filtering applied to all columns
 		PatternFilter filter = new PatternFilter() {
 			protected boolean isLeafMatch(final Viewer viewer, final Object element) {
 				TreeViewer treeViewer = (TreeViewer) viewer;
@@ -155,11 +118,11 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 				return isMatch;
 			}
 		};
-		FilteredTree tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter,
-				true);
+		
+		tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true).getViewer().getTree();
 
-		// Trick to replace the tree viewer
-		CheckboxTreeViewer viewer = new CheckboxTreeViewer(tree.getViewer().getTree());
+		// trick to replace the tree viewer
+		viewer = new CheckboxTreeViewer(tree);
 		viewer.setLabelProvider(new LibraryLabelProvider());
 		viewer.setContentProvider(new LibraryContentProvider());
 		viewer.setCheckStateProvider(new LibraryCheckProvider());
@@ -171,25 +134,16 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		TreeColumn version = new TreeColumn(viewer.getTree(), SWT.LEFT);
 		version.setWidth(100);
 
-		// Create the editor and set its attributes
-		final TreeEditor editor = new TreeEditor(viewer.getTree());
+		// create the editor and set its attributes
+		editor = new TreeEditor(viewer.getTree());
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 		editor.setColumn(1);
-//		viewer.expandAll();
-//		for (TreeItem category : viewer.getTree().getItems()) {
-//			for (TreeItem library : category.getItems()) {
-//				if (((LibraryTree.Library) library.getData()).getInstalled() != null) {
-//					// mark library as installed
-//					library.setChecked(true);
-//				}
-//				verifySubtreeCheckStatus(category);
-//			}
-//		}
-//		viewer.collapseAll();
 
+		// this ensures the tree labels are displayed correctly
 		viewer.refresh(true);
 
+		// tree interactions listener
 		viewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				if (editor.getEditor() != null) {
@@ -200,9 +154,9 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 					if (item.getItemCount() > 0) {
 						item.setGrayed(false);
 						for (TreeItem child : item.getItems()) {
-							child.setChecked(child.getChecked());
+							child.setChecked(item.getChecked());
 							if (child.getChecked()) {
-								child.setText(1, ((LibraryTree.Library) item.getData()).getLatest());
+								child.setText(1, ((LibraryTree.Library) child.getData()).getLatest());
 							} else {
 								child.setText(1, "");
 							}
@@ -228,9 +182,6 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 					// Compute the width for the editor
 					// Also, compute the column width, so that the dropdown fits
-					// editor.minimumWidth = combo.computeSize(SWT.DEFAULT,
-					// SWT.DEFAULT).x;
-					// version.setWidth(editor.minimumWidth);
 
 					// Set the focus on the dropdown and set into the editor
 					combo.setFocus();
@@ -250,7 +201,13 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		});
 	}
 
-	public void verifySubtreeCheckStatus(TreeItem item) {
+	/**
+	 * Ensures the correct checked/unchecked/greyed attributes are set
+	 * on the category.
+	 * 
+	 * @param item the tree item representing the category
+	 */
+	private void verifySubtreeCheckStatus(TreeItem item) {
 		boolean grayed = false;
 		boolean checked = false;
 		for (TreeItem child : item.getItems()) {
@@ -264,7 +221,12 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		item.setGrayed(grayed);
 	}
 
-	static class LibraryLabelProvider implements ITableLabelProvider {
+	/**
+	 * 
+	 * Displays the tree labels for both columns: name and version
+	 *
+	 */
+	private static class LibraryLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public void addListener(ILabelProviderListener arg0) {
@@ -303,14 +265,18 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 			return null;
 		}
 	}
-	
-	static class LibraryCheckProvider implements ICheckStateProvider {
+
+	/**
+	 * Provides the correct checked status for installed libraries
+	 *
+	 */
+	private static class LibraryCheckProvider implements ICheckStateProvider {
 		@Override
 		public boolean isChecked(Object element) {
 			if (element instanceof LibraryTree.Library) {
 				return ((LibraryTree.Library) element).getInstalled() != null;
 			} else if (element instanceof LibraryTree.Category) {
-				for (LibraryTree.Library library : ((LibraryTree.Category)element).getLibraries()) {
+				for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
 					if (library.getInstalled() != null) {
 						return true;
 					}
@@ -322,7 +288,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		@Override
 		public boolean isGrayed(Object element) {
 			if (element instanceof LibraryTree.Category && isChecked(element)) {
-				for (LibraryTree.Library library : ((LibraryTree.Category)element).getLibraries()) {
+				for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
 					if (library.getInstalled() == null) {
 						return true;
 					}
@@ -332,7 +298,11 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		}
 	}
 
-	static class LibraryContentProvider implements ITreeContentProvider {
+	/**
+	 * Provides the tree content data
+	 *
+	 */
+	private static class LibraryContentProvider implements ITreeContentProvider {
 
 		@Override
 		public Object[] getChildren(Object node) {
@@ -341,7 +311,10 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 		@Override
 		public Object getParent(Object node) {
-			return ((LibraryTree.Node) node).getParent();
+			if (node instanceof LibraryTree.Node) {
+				return ((LibraryTree.Node) node).getParent();
+			}
+			return null;
 		}
 
 		@Override
@@ -366,14 +339,6 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 		@Override
 		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
-		}
-
-		public Object[] getValue(Object node) {
-			if (node instanceof LibraryTree.Library) {
-				return ((LibraryTree.Library) node).getVersions().toArray();
-			} else {
-				return null;
-			}
 		}
 	}
 }
