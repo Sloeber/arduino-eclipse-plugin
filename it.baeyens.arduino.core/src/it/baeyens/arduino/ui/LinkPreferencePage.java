@@ -12,9 +12,6 @@ package it.baeyens.arduino.ui;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -114,9 +111,10 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 	    public void linkActivated(HyperlinkEvent he) {
 		if (Desktop.isDesktopSupported()) {
 		    try {
-			Desktop.getDesktop().browse(new URI(link.getHref().toString()));
+			// Desktop.getDesktop().browse(new URI());
+			org.eclipse.swt.program.Program.launch(link.getHref().toString());
 
-		    } catch (IOException | URISyntaxException e) {
+		    } catch (IllegalArgumentException e) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.json_browser_fail, e));
 		    }
 
