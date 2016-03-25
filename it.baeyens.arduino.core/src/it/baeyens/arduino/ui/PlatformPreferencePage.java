@@ -46,7 +46,6 @@ public class PlatformPreferencePage extends PreferencePage implements IWorkbench
 
 	Text desc = new Text(control, SWT.READ_ONLY);
 	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-	layoutData.widthHint = 500;
 	desc.setLayoutData(layoutData);
 	desc.setBackground(parent.getBackground());
 	desc.setText("remove or add checkboxes to update your configuration."); //$NON-NLS-1$
