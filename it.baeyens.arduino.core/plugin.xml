@@ -394,7 +394,7 @@
    <command
          commandId="it.baeyens.arduino.core.open.link"
          id="open.how.toweb.page"
-         label="How to"
+         label="How To..."
          style="push">
       <parameter
             name="it.baeyens.arduino.core.link.parameter"
@@ -404,7 +404,7 @@
    <command
          commandId="it.baeyens.arduino.core.open.link"
          id="open.how.toweb.page"
-         label="Learn"
+         label="Learn..."
          style="push">
       <parameter
             name="it.baeyens.arduino.core.link.parameter"
@@ -414,7 +414,7 @@
    <command
          commandId="it.baeyens.arduino.core.open.link"
          id="open.youTube.page"
-         label="Videos"
+         label="Videos..."
          style="push">
       <parameter
             name="it.baeyens.arduino.core.link.parameter"
