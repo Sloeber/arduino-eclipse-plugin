@@ -16,7 +16,6 @@ public class LinkCommandHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
 	try {
 	    String url = event.getParameter("it.baeyens.arduino.core.link.parameter");//$NON-NLS-1$
-	    // Desktop.getDesktop().browse(new URI(url));
 	    org.eclipse.swt.program.Program.launch(url);
 	} catch (IllegalArgumentException e) {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.json_browser_fail, e));
