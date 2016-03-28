@@ -35,6 +35,7 @@ import it.baeyens.arduino.listeners.ConfigurationChangeListener;
 import it.baeyens.arduino.listeners.IndexerListener;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
 import it.baeyens.arduino.managers.Manager;
+import it.baeyens.arduino.tools.ExternalCommandLauncher;
 
 /**
  * generated code
@@ -54,11 +55,47 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+	testKnownIssues();
 	initializeImportantVariables();
 	runPluginCoreStartInstantiatorJob();
 	runGUIRegistration();
 	runInstallJob();
 
+    }
+
+    private static void testKnownIssues() {
+	if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    String bashCommand = "bash --version"; //$NON-NLS-1$
+	    String shCommand = "sh --version"; //$NON-NLS-1$
+	    boolean bashFound = false;
+	    ExternalCommandLauncher bashCommandLauncher = new ExternalCommandLauncher(bashCommand);
+	    try {
+		bashFound = (bashCommandLauncher.launch(null) == 0);
+	    } catch (IOException e) {
+		// nothing to do here
+	    }
+	    boolean shFound = false;
+	    ExternalCommandLauncher shCommandLauncher = new ExternalCommandLauncher(shCommand);
+	    try {
+		shFound = (shCommandLauncher.launch(null) == 0);
+	    } catch (IOException e) {
+		// nothing to do here
+	    }
+	    String errorString = Const.EMPTY_STRING;
+	    String addString = Const.EMPTY_STRING;
+	    if (bashFound) {
+		errorString = errorString + addString + "bash"; //$NON-NLS-1$
+		addString = " and "; //$NON-NLS-1$
+	    }
+	    if (shFound) {
+		errorString = errorString + addString + "sh"; //$NON-NLS-1$
+		addString = " and "; //$NON-NLS-1$
+	    }
+	    if (!errorString.isEmpty()) {
+		errorString += " found on your system. \nThe plugin will not work properly."; //$NON-NLS-1$
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, errorString));
+	    }
+	}
     }
 
     private static void registerListeners() {
