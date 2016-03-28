@@ -5,112 +5,9 @@
       version="3.0.0.qualifier"
       provider-name="Jan Baeyens">
 
-   <description url="http://www.example.com/description">
+   <description url="http://baeyens.it/eclipse/">
       This feature allows easy creation of Arduino projects in an Eclipse
 environment.
-The main features are
-a new arduino sketch wizard
-a import library wizard
-a button to build the project
-a button to upload to the arduino board
-a project property page allowing to change the arduino board
-type and the port the arduino is using.
-Version 2_1_4
-Support for multiple configurations
-Support for aternative soze command
-Support for extentions to the C C++ compile instructions
-Implementation of the eep compiler
-Added flag to platform.txt to skip the archiver
-New Arduino Icons
-Support for Teensy 3
-Hard coded Teensy uploaded comands are now using Platform.txt
-Longer wait times for upload
-Fix for due compilation
-Version 2_0_0
-New version for Arduino IDE 1.5.2 compatibility and without avr-eclipse
-This version runs with Juno Only
-Arduino project and sketch are in one eclipse project
-Fixed problems with the indexer
-Support for multiple boards.txt files added
-Support for teensy added
-Version 1_2_5
-Cleaned up so that leonardo_test is not in the include path
-Sorted the list of Arduino Boards
-Version 1_2_4
-Added Leonardo support
-Undid the &quot;Fixed a bug on MAC when AVRPaths searches..)
-Disabled searching for paths (other fix for the above undo)
-Note 1_2_3 is not configurable on MAC.
-Version 1_2_3
-Added a serial test button to test the serial library in the
-preference page
-Fixed a bug to support non arduino cores (the correct include
-folder is
-now set)
-Fixed a bug on MAC when AVRPaths searches for the location of
-G++ AvrDude and others. (no MAC search as been added but the
-POSIX is no longer used in case of mac)
-Added suport for specific c compile, c++ compile and link instructions
-the keys to be added to the boards.txt are
-[board id].build.cpp.options
-[board id].build.c.options
-[board id].build.link.options
-fixed the bug that when the &quot;private library&quot; is not selected
-the eclipse environment is not setup properly. If not set a error
-will pop up. it should not be possible to exit the preferences
-without setting it.
-Version 1_2_2
-Added multiple library import
-Added support for other cores than the Arduino (boards.txs file
-attrribute XX.build.core)
-Added serial monitor
-version 1_2_1
-Changed the lib for MAC os to a 4 architecture lib.
-version 1_2_0
-Added Com functionality.
-Available Com ports are listed where you can select a com port
-Now all arduino boards are reset when doing an upload.
-adde , to the list of non allowed characters
-version 1_1_6
-Some board names contain ( and ) which gives problems when creating
-the arduino project names.
-This has been fixed now.
-When importing a library the selected project is used as the
-default project.
-Error handling during import pops up now
-Version 1_1_5
-Mac os is supported now. This means the errors have been removed
-and the default values should be ok.
-Version 1_1_3
-Fixes a bug that the latest used com port is used to uload a
-file to arduino. Now the correct set port is used.
-version 1_1_2
-The ARDUINO define is now built based on the version.txt file.
-The in eclipse define has been removed.
-version 1_1_1 
-includes better error reporting (now errors are also shown in
-a dialog box and not only logged in the error log.
-Bixes a bug when that made the referenced project corrupt when
-changing the arduino board.
-version 1_1_0 is a major change.
-It fixed the incompatibilities with arduino 1.0
-Therfore the arduino core library is replaced by arduino board
-library (ths was needed due to the pins_arduino
-I ow use the programmer as described in boards.txt
-version 1_0_9 fixed unix incompatibilities
-version 1_0_8 fixed the ok button not enabled in preference page
-version 1_0_7 changed licence agreement and fixes issues 
-import of arduino library subforder &quot;utilities&quot;
-the c perspective is now proposed when a new project is created.
-version 1_0_6 add import library functionality
-previous versions are no longer available
-This is a plugin build upon the avr-eclise plugin.
-I included the avr-eclipse source code in this feature because
-I had to make some changes and didn&apos;t want to wait for the next
-version of the avr-eclipse plugin.
-To avoid conflict I had to rename de .innot to it.baeyens. I
-kept the same ID to keep the plugins data compatible.
-Jan
    </description>
 
    <copyright>
@@ -174,6 +71,13 @@ If you do not agree with this policy, then please do not install this software.
 
    <plugin
          id="it.baeyens.cdt.refactor"
+         download-size="0"
+         install-size="0"
+         version="3.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="it.baeyens.arduino.product"
          download-size="0"
          install-size="0"
          version="3.0.0.qualifier"
