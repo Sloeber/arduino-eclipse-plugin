@@ -55,7 +55,10 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	protected void performDefaults() {
 		// viewer.setInput(new LibraryTree());
 		libs.reset();
-		editor.getEditor().dispose();
+		viewer.refresh();
+		if (editor != null && editor.getEditor() != null) {
+			editor.getEditor().dispose();
+		}
 		super.performDefaults();
 	}
 
