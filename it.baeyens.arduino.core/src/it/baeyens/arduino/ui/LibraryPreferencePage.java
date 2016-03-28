@@ -10,19 +10,23 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -53,7 +57,6 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 	@Override
 	protected void performDefaults() {
-		// viewer.setInput(new LibraryTree());
 		libs.reset();
 		viewer.refresh();
 		if (editor != null && editor.getEditor() != null) {
@@ -108,7 +111,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 			protected boolean isLeafMatch(final Viewer viewer, final Object element) {
 
 				int numberOfColumns = ((TreeViewer) viewer).getTree().getColumnCount();
-				ITableLabelProvider labelProvider = (ITableLabelProvider) ((TreeViewer) viewer).getLabelProvider();
+				LibraryLabelProvider labelProvider = (LibraryLabelProvider) ((TreeViewer) viewer).getLabelProvider();
 				boolean isMatch = false;
 				for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
 					String labelText = labelProvider.getColumnText(element, columnIndex);
@@ -145,7 +148,10 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 		// this ensures the tree labels are displayed correctly
 		viewer.refresh(true);
-
+		
+		// enable tooltips
+		ColumnViewerToolTipSupport.enableFor(viewer);
+		
 		// tree interactions listener
 		viewer.getTree().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -241,31 +247,16 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	 * Displays the tree labels for both columns: name and version
 	 *
 	 */
-	private static class LibraryLabelProvider implements ITableLabelProvider {
+	private static class LibraryLabelProvider extends CellLabelProvider {
 
 		@Override
-		public void addListener(ILabelProviderListener arg0) {
-		}
-
-		@Override
-		public void dispose() {
-		}
-
-		@Override
-		public boolean isLabelProperty(Object arg0, String arg1) {
-			return false;
-		}
-
-		@Override
-		public void removeListener(ILabelProviderListener arg0) {
-		}
-
-		@Override
-		public Image getColumnImage(Object element, int col) {
+		public String getToolTipText(Object element) {
+			if (element instanceof LibraryTree.Library) {
+				return ((LibraryTree.Library)element).getTooltip();
+			}
 			return null;
 		}
-
-		@Override
+		
 		public String getColumnText(Object element, int col) {
 			switch (col) {
 			case 0:
@@ -279,7 +270,33 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 			}
 			return null;
 		}
-	}
+
+		@Override
+		public Point getToolTipShift(Object object) {
+			return new Point(5,5);
+		}
+
+		@Override
+		public int getToolTipDisplayDelayTime(Object object) {
+			return 500;
+		}
+
+		@Override
+		public int getToolTipTimeDisplayed(Object object) {
+			return 0;
+		}
+
+		@Override
+		public void update(ViewerCell cell) {
+			if (cell.getColumnIndex() == 0) {
+				cell.setText(((LibraryTree.Node)cell.getElement()).getName());
+			} else if (cell.getElement() instanceof LibraryTree.Library) {
+				cell.setText(((LibraryTree.Library)cell.getElement()).getVersion());
+			} else {
+				cell.setText(null);
+			}
+		}
+    }
 
 	/**
 	 * Provides the correct checked status for installed libraries
@@ -412,10 +429,12 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 			private Category category;
 			private TreeSet<Version> versions = new TreeSet<>();
 			private String version;
+			private String tooltip;
 
-			public Library(Category category, String name) {
+			public Library(Category category, String name, String tooltip) {
 				this.category = category;
 				this.name = name;
+				this.tooltip = tooltip;
 			}
 
 			public Collection<Version> getVersions() {
@@ -424,6 +443,10 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 
 			public String getName() {
 				return name;
+			}
+
+			public String getTooltip() {
+				return tooltip;
 			}
 
 			public String getLatest() {
@@ -506,7 +529,11 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 				for (it.baeyens.arduino.managers.Library library : libraryIndex.getLibraries(categoryName)) {
 					Library lib = category.libraries.get(library.getName());
 					if (lib == null) {
-						lib = new Library(category, library.getName());
+						StringBuilder builder = new StringBuilder("Architectures: ")
+								.append(library.getArchitectures().toString())
+								.append("\n\n")
+								.append(library.getSentence());
+						lib = new Library(category, library.getName(), builder.toString());
 						category.libraries.put(lib.getName(), lib);
 					}
 					lib.versions.add(new Version(library.getVersion()));
