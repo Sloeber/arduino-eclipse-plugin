@@ -76,11 +76,4 @@ If you do not agree with this policy, then please do not install this software.
          version="3.0.0.qualifier"
          unpack="false"/>
 
-   <plugin
-         id="it.baeyens.arduino.product"
-         download-size="0"
-         install-size="0"
-         version="3.0.0.qualifier"
-         unpack="false"/>
-
 </feature>
