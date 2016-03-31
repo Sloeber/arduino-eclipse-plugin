@@ -58,41 +58,6 @@ public class Serial implements SerialPortEventListener {
     // for the classloading problem.. because if code ran again,
     // the static class would have an object that could be closed
 
-    /**
-     * General error reporting, all correlated here just in case I think of
-     * something slightly more intelligent to do.
-     */
-    static public void errorMessage(String where, Throwable e) {
-	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
-
-    }
-
-    /**
-     * If this just hangs and never completes on Windows, it may be because the
-     * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
-     * knows.
-     */
-    public static Vector<String> list() {
-	try {
-	    String[] portNames;
-	    String OS = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-	    if (OS.indexOf("mac") >= 0) { //$NON-NLS-1$
-		portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(serial|usb).*")); //$NON-NLS-1$ //$NON-NLS-2$
-	    } else {
-		portNames = SerialPortList.getPortNames();
-	    }
-	    return new Vector<>(Arrays.asList(portNames));
-	} catch (Error e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
-		    e));
-	    Vector<String> ret = new Vector<>();
-	    ret.add("config error:"); //$NON-NLS-1$
-	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
-	    return ret;
-	}
-    }
-
     SerialPort port = null;
     int rate;
     int parity;
@@ -108,7 +73,7 @@ public class Serial implements SerialPortEventListener {
     // RTS and DTR low.
     boolean dtr = true;
 
-    String PortName;
+    String portName;
 
     private ServiceRegistration<Serial> fServiceRegistration;
 
@@ -123,7 +88,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public Serial(String iname, int irate, char iparity, int idatabits, float istopbits, boolean dtr) {
-	this.PortName = iname;
+	this.portName = iname;
 	this.rate = irate;
 	this.dtr = dtr;
 
@@ -142,6 +107,41 @@ public class Serial implements SerialPortEventListener {
 	    this.stopbits = SerialPort.STOPBITS_2;
 	connect();
 
+    }
+
+    /**
+     * General error reporting, all correlated here just in case I think of
+     * something slightly more intelligent to do.
+     */
+    public static void errorMessage(String where, Throwable e) {
+	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
+
+    }
+
+    /**
+     * If this just hangs and never completes on Windows, it may be because the
+     * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
+     * knows.
+     */
+    public static Vector<String> list() {
+	try {
+	    String[] portNames;
+	    String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+	    if (os.indexOf("mac") >= 0) { //$NON-NLS-1$
+		portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(serial|usb).*")); //$NON-NLS-1$ //$NON-NLS-2$
+	    } else {
+		portNames = SerialPortList.getPortNames();
+	    }
+	    return new Vector<>(Arrays.asList(portNames));
+	} catch (Exception e) {
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
+		    e));
+	    Vector<String> ret = new Vector<>();
+	    ret.add("config error:"); //$NON-NLS-1$
+	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
+	    return ret;
+	}
     }
 
     public void addListener(MessageConsumer consumer) {
@@ -166,7 +166,7 @@ public class Serial implements SerialPortEventListener {
 	    int count = 0;
 	    while (true) {
 		try {
-		    this.port = new SerialPort(this.PortName);
+		    this.port = new SerialPort(this.portName);
 		    this.port.openPort();
 		    this.port.setParams(this.rate, this.databits, this.stopbits, this.parity, this.dtr, this.dtr);
 
@@ -178,17 +178,17 @@ public class Serial implements SerialPortEventListener {
 		    if (++count == maxTries) {
 			if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-				    "Serial port " + this.PortName //$NON-NLS-1$
+				    "Serial port " + this.portName //$NON-NLS-1$
 					    + " already in use. Try quiting any programs that may be using it", //$NON-NLS-1$
 				    e));
 			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
-				    + this.PortName
+				    + this.portName
 				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", //$NON-NLS-1$
 				    e));
 			} else {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-				    "Error opening serial port " + this.PortName, e)); //$NON-NLS-1$
+				    "Error opening serial port " + this.portName, e)); //$NON-NLS-1$
 			}
 			return;
 		    }
@@ -225,7 +225,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public boolean IsConnected() {
-	return (this.port != null && this.port.isOpened());
+	return this.port != null && this.port.isOpened();
     }
 
     private void notifyConsumersOfData(byte[] message) {
@@ -263,7 +263,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     @Override
-    synchronized public void serialEvent(SerialPortEvent serialEvent) {
+    public synchronized void serialEvent(SerialPortEvent serialEvent) {
 	switch (serialEvent.getEventType()) {
 	case SerialPortEvent.RXCHAR:
 	    int bytesCount = serialEvent.getEventValue();
@@ -310,10 +310,10 @@ public class Serial implements SerialPortEventListener {
     // needed to fill viewers in jfases
     @Override
     public String toString() {
-	return this.PortName;
+	return this.portName;
     }
 
-    public void write(byte bytes[]) {
+    public void write(byte[] bytes) {
 	if (this.port != null) {
 	    try {
 		this.port.writeBytes(bytes);
@@ -351,13 +351,13 @@ public class Serial implements SerialPortEventListener {
 	write(what.getBytes());
     }
 
-    public void write(String what, String LineEnd) {
+    public void write(String what, String lineEnd) {
 	notifyConsumersOfEvent(
-		System.getProperty("line.separator") + ">>Send to " + this.PortName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		System.getProperty("line.separator") + ">>Send to " + this.portName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			+ System.getProperty("line.separator")); //$NON-NLS-1$
 	write(what.getBytes());
-	if (LineEnd.length() > 0) {
-	    write(LineEnd.getBytes());
+	if (lineEnd.length() > 0) {
+	    write(lineEnd.getBytes());
 	}
     }
 }
