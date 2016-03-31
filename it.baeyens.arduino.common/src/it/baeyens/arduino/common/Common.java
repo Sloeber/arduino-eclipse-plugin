@@ -197,13 +197,13 @@ public class Common extends InstancePreferences {
      */
     public static String UploadPortPrefix() {
 	if (Platform.getOS().equals(Platform.OS_WIN32))
-	    return UploadPortPrefix_WIN;
+	    return UPLOAD_PORT_PREFIX_WIN;
 	if (Platform.getOS().equals(Platform.OS_LINUX))
-	    return UploadPortPrefix_LINUX;
+	    return UPLOAD_PORT_PREFIX_LINUX;
 	if (Platform.getOS().equals(Platform.OS_MACOSX))
-	    return UploadPortPrefix_MAC;
+	    return UPLOAD_PORT_PREFIX_MAC;
 	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Unsupported operating system", null)); //$NON-NLS-1$
-	return UploadPortPrefix_WIN;
+	return UPLOAD_PORT_PREFIX_WIN;
     }
 
     /**

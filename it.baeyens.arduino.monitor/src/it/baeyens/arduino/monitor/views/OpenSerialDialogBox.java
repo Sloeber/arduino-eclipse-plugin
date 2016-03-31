@@ -25,8 +25,8 @@ public class OpenSerialDialogBox extends Dialog {
 	this.SelectedRate = Integer.parseInt(this.BaudRates.getCombo().getText());
 	this.SelectedPort = this.SerialPorts.getCombo().getText();
 	this.SelectedDtr = this.DtrCheckbox.getSelection();
-	InstancePreferences.setGlobalValue(Const.KEY_SERIAlRATE, this.BaudRates.getCombo().getText());
-	InstancePreferences.setGlobalValue(Const.KEY_SERIAlPORT, this.SelectedPort);
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAL_RATE, this.BaudRates.getCombo().getText());
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAL_PORT, this.SelectedPort);
 	super.okPressed();
     }
 
@@ -80,8 +80,8 @@ public class OpenSerialDialogBox extends Dialog {
 	this.BaudRates.setLabelProvider(new LabelProvider());
 	this.BaudRates.setInput(Common.listBaudRates());
 
-	this.BaudRates.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlRATE, Const.EMPTY_STRING));
-	this.SerialPorts.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlPORT, Const.EMPTY_STRING));
+	this.BaudRates.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAL_RATE, Const.EMPTY_STRING));
+	this.SerialPorts.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAL_PORT, Const.EMPTY_STRING));
 	
 	this.DtrCheckbox = new Button(parent, SWT.CHECK);
 	this.DtrCheckbox.setText(Messages.OpenSerialDialogBox_Dtr);

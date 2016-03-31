@@ -23,7 +23,7 @@ public class ArchiveNameProvider implements IManagedOutputNameProviderJaba {
     @Override
     public IPath[] getOutputNames(IProject project, IConfiguration cConf, ITool tool, IPath[] primaryInputNames) {
 	IPath[] outputNames = new IPath[primaryInputNames.length];
-	boolean bUseArchiver = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_use_archiver, Const.TRUE)
+	boolean bUseArchiver = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
 		.equalsIgnoreCase(Const.TRUE);
 	for (int curPath = 0; curPath < primaryInputNames.length; curPath++) {
 	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_NAME) && (bUseArchiver)) {

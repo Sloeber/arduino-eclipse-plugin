@@ -166,14 +166,14 @@ public class ArduinoSerial {
 	    String ComPort) {
 	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
 	boolean use_1200bps_touch = Common
-		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_upload_use_1200bps_touch, Const.FALSE)
+		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
 		.equalsIgnoreCase(Const.TRUE);
 	// boolean bDisableFlushing = Common
 	// .getBuildEnvironmentVariable(project, configName,
 	// Const.ENV_KEY_upload_disable_flushing, Const.FALSE)
 	// .equalsIgnoreCase(Const.TRUE);
 	boolean bwait_for_upload_port = Common
-		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_wait_for_upload_port, Const.FALSE)
+		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
 		.equalsIgnoreCase(Const.TRUE);
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME,
 		Const.EMPTY_STRING);
