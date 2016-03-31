@@ -92,7 +92,9 @@ public class Activator implements BundleActivator {
 		addString = " and "; //$NON-NLS-1$
 	    }
 	    if (!errorString.isEmpty()) {
-		errorString += " found in the path of your system.\nThe Eclipse Arduino IDE may not work properly with these files in the path.\nPlease change the path environment variable."; //$NON-NLS-1$
+		errorString = "we have found programs in the path that might conflict with our external builder.\nThe conflicting programs are " //$NON-NLS-1$
+			+ errorString
+			+ ".\nThe program might still function but if you get strange build errors you know where to look"; //$NON-NLS-1$
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, errorString));
 	    }
 	}

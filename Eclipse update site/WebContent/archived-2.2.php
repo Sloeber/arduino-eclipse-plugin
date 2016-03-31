@@ -8,7 +8,7 @@
     <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Arduino Eclipse IDE - OsX Latest Stable</title>
+    <title>Arduino Eclipse IDE - Archive ver 2.2</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -29,33 +29,30 @@
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <?php include 'fragments/navbar.html';?>
     </nav>
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>OsX Latest Stable <small>runs smoothly and nicely</small></h1>
+        <h1>Archive version 2.2 <small>in case you want to travel back in time</small></h1>
         <a name="top">&nbsp;</a>
       </div>
-      <p>This is the latest stable build of Arduino Eclipse and it's available as a product and a plugin: pick the one you prefer!</p>
-      <h3>Product bundle</h3><a name="product">&nbsp;</a>
-      <p>Strongly advised when you are new to the Arduino eclipse IDE.</p>
-      <p>This is the simplest way to start using Arduino Eclipse as it bundles in one single download a complete setup including a stable version of the Eclipse CDT and the latest stable build of our great plugin!</p>
-      <div class="row">
-        <ng-include src="'fragments/file-buttons.php?arch=mac&ver=3.0'"></ng-include>
-      </div>
+            <p  class="solid"><small>One of the major problems encountered in time travel is not that of becoming your own father or mother. There is no problem in becoming your own father or mother that a broad-minded and well-adjusted family can't cope with. There is no problem with changing the course of history—the course of history does not change because it all fits together like a jigsaw. All the important changes have happened before the things they were supposed to change and it all sorts itself out in the end.<br>
+      The hitchhikers guide to the galaxy.</small></p>
+      <h3>Before you start <small>don't skip this section, you will regret it!</small></h3>
+      <p>...installation instructions go here...</p>
       <a href="#top" scroll-to="top">Back to top</a>
-      <h3>Plugin update site</h3><a name="plugin">&nbsp;</a>
-      <p>If you want to pick a different version of the Eclipse CDT than the one included in the product bundle or you want to add the Arduino Eclipse plugin to an exisisting installation this is the way to go.</p>
-      <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-          <div class="well text-center">http://www.baeyens.it/eclipse/V3</div>
-        </div>
-      </div>
+      <h3>Pick your OS architecture in the following list</h3>
+      		<?php include 'fragments/file-list.php?ver=2.2';?>
+
+      <a href="#top" scroll-to="top">Back to top</a>
+      <h3>Troubleshooting <small>known solutions to common problems</small></h3>
+      <p>...known solutions to know problems...</p>
+      <a href="#top" scroll-to="top">Back to top</a>
     </div><!-- /container -->
 
     <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
+      <?php include 'fragments/footer.html';?>
     </div>
   </body>
 
