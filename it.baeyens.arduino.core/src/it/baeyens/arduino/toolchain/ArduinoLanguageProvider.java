@@ -160,7 +160,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	// End of Bug fix for CDT 8.1 fixed in 8.2
 	if (languageId.equals("org.eclipse.cdt.core.gcc")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(Const.ENV_KEY_recipe_c_o_pattern, confDesc, true).getValue()
+		compilerCommand = envManager.getVariable(Const.ENV_KEY_RECIPE_C_O_PATTERN, confDesc, true).getValue()
 			.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
 	    } catch (Exception e) {
 		compilerCommand = Const.EMPTY_STRING;
@@ -178,7 +178,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$ //$NON-NLS-2$
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(Const.ENV_KEY_recipe_cpp_o_pattern, confDesc, true).getValue()
+		compilerCommand = envManager.getVariable(Const.ENV_KEY_RECIPE_CPP_O_PATTERN, confDesc, true).getValue()
 			.replace(" -o ", " "); //$NON-NLS-1$//$NON-NLS-2$
 	    } catch (Exception e) {
 		compilerCommand = Const.EMPTY_STRING;

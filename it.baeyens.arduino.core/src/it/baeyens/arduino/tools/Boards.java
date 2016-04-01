@@ -139,7 +139,7 @@ public class Boards {
 	Set<String> mBoards = new HashSet<>();
 	for (String s : this.mArduinoSupportedBoards.keySet()) {
 	    if (s != null) {
-		String theboardName = this.mArduinoSupportedBoards.get(s).get(Const.BoardNameKeyTAG);
+		String theboardName = this.mArduinoSupportedBoards.get(s).get(Const.BOARD_NAME_KEY_TAG);
 		if (theboardName != null) {
 		    mBoards.add(theboardName);
 		}

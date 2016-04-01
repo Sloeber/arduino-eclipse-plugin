@@ -47,7 +47,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	IProject proj = (IProject) element;
 	try {
 	    if (proj.isOpen()) {
-		if (proj.hasNature(Const.ArduinoNatureID)) {
+		if (proj.hasNature(Const.ARDUINO_NATURE_ID)) {
 		    String boardName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME, "Board Error"); //$NON-NLS-1$
 		    String portName = Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_COM_PORT, "no port"); //$NON-NLS-1$
 		    return text + ' ' + boardName + ' ' + ':' + portName;

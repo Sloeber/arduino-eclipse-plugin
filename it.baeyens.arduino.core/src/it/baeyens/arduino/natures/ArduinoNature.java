@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import it.baeyens.arduino.common.Const;
 
 public class ArduinoNature implements IProjectNature {
-    public static final String NATURE_ID = Const.ArduinoNatureID;
+    public static final String NATURE_ID = Const.ARDUINO_NATURE_ID;
     private static final String BUILDER_ID = "it.baeyens.arduino.core.inoToCpp"; //$NON-NLS-1$
 
     private IProject myProject = null;

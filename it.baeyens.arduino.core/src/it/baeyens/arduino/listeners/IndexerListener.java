@@ -30,7 +30,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
     public void indexChanged(IIndexChangeEvent event) {
 	IProject project = event.getAffectedProject().getProject();
 	try {
-	    if (project.hasNature(Const.ArduinoNatureID)) {
+	    if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
 		this.ChangedProjects.add(project);
 	    }
 	} catch (CoreException e) {

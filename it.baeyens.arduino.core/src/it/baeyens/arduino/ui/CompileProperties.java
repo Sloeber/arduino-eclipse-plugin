@@ -86,7 +86,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    } else {
 			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-				+ Const.ENV_KEY_recipe_size_pattern + "}"); //$NON-NLS-1$
+				+ Const.ENV_KEY_RECIPE_SIZE_PATTERN + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    }
 		}

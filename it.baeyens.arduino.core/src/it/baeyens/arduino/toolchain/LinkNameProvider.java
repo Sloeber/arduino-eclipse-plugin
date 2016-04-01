@@ -22,7 +22,7 @@ public class LinkNameProvider implements IManagedOutputNameProviderJaba {
 
     @Override
     public IPath[] getOutputNames(IProject project, IConfiguration cConf, ITool tool, IPath[] primaryInputNames) {
-	boolean bUseArchiver = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_use_archiver, Const.TRUE)
+	boolean bUseArchiver = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
 		.equalsIgnoreCase(Const.TRUE);
 	IPath[] outputNames = new IPath[primaryInputNames.length];
 	for (int curPath = 0; curPath < outputNames.length; curPath++) {

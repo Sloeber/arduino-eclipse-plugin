@@ -33,7 +33,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
 	// only handle arduino nature projects
 	try {
-	    if (!event.getProject().hasNature(Const.ArduinoNatureID)) {
+	    if (!event.getProject().hasNature(Const.ARDUINO_NATURE_ID)) {
 		return;
 	    }
 	} catch (Exception e) {

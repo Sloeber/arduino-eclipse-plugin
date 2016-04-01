@@ -335,11 +335,11 @@ public class Helpers extends Common {
      */
     public static void addTheNatures(IProjectDescription description) throws CoreException {
 	String[] newnatures = new String[5];
-	newnatures[0] = Const.Cnatureid;
-	newnatures[1] = Const.CCnatureid;
-	newnatures[2] = Const.Buildnatureid;
-	newnatures[3] = Const.Scannernatureid;
-	newnatures[4] = Const.ArduinoNatureID;
+	newnatures[0] = Const.CNATURE_ID;
+	newnatures[1] = Const.CCNATURE_ID;
+	newnatures[2] = Const.BUILD_NATURE_ID;
+	newnatures[3] = Const.SCANNER_NATURE_ID;
+	newnatures[4] = Const.ARDUINO_NATURE_ID;
 	description.setNatureIds(newnatures);
 
     }
@@ -470,9 +470,9 @@ public class Helpers extends Common {
     public static void addArduinoCodeToProject(IProject project, ICConfigurationDescription configurationDescription)
 	    throws CoreException {
 
-	String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_variant,
+	String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_BUILD_VARIANT,
 		EMPTY_STRING); // $NON-NLS-1$
-	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_build_core,
+	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_BUILD_CORE,
 		EMPTY_STRING);
 	String rootFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_JANTJE_PLATFORM_FILE,
 		EMPTY_STRING);
@@ -481,7 +481,7 @@ public class Helpers extends Common {
 	    String sections[] = buildCoreFolder.split(COLON);
 	    if (sections.length != 2) {
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Value_for_key
-			+ ENV_KEY_build_core + Messages.Helpers__in_boards_invalid + buildCoreFolder, null));
+			+ ENV_KEY_BUILD_CORE + Messages.Helpers__in_boards_invalid + buildCoreFolder, null));
 	    } else {
 		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE,
 			EMPTY_STRING);
@@ -613,19 +613,19 @@ public class Helpers extends Common {
 	// some glue to make it work
 	String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
 	setBuildEnvironmentVariable(contribEnv, confDesc, "PATH", //$NON-NLS-1$
-		makeEnvironmentVar(ENV_KEY_compiler_path) + pathDelimiter
-			+ makeEnvironmentVar(ENV_KEY_build_generic_path) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
+		makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
+			+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
 
-	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_path,
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_PATH,
 		makeEnvironmentVar("ProjDirPath") + '/' + makeEnvironmentVar("ConfigName")); //$NON-NLS-1$ //$NON-NLS-2$
 
-	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_project_name, makeEnvironmentVar("ProjName")); //$NON-NLS-1$
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_PROJECT_NAME, makeEnvironmentVar("ProjName")); //$NON-NLS-1$
 
 	// if (firstTime)
 	String sizeSwitch = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, EMPTY_STRING, false);
 	if (sizeSwitch.isEmpty()) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_SIZE_SWITCH,
-		    makeEnvironmentVar(ENV_KEY_recipe_size_pattern));
+		    makeEnvironmentVar(ENV_KEY_RECIPE_SIZE_PATTERN));
 	} else {
 	    sizeSwitch.toString();
 	}
@@ -981,7 +981,7 @@ public class Helpers extends Common {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    Messages.Helpers_Core_refference_missing + core));
 		} else {
-		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core_path,
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE_PATH,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE,
 			    coreReference.append(PLATFORM_FILE_NAME).toString());
@@ -1002,7 +1002,7 @@ public class Helpers extends Common {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    Messages.Helpers_Variant_reference_missing + variant));
 		} else {
-		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant_path,
+		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,
 			    variantReference.append(VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
 		}
 	    } else {
@@ -1060,9 +1060,9 @@ public class Helpers extends Common {
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc) {
 
-	String recipes[] = { ENV_KEY_recipe_c_o_pattern, ENV_KEY_recipe_cpp_o_pattern, ENV_KEY_recipe_S_o_pattern,
-		ENV_KEY_recipe_objcopy_hex_pattern, ENV_KEY_recipe_objcopy_eep_pattern, ENV_KEY_recipe_size_pattern,
-		ENV_KEY_recipe_AR_pattern, ENV_KEY_recipe_c_combine_pattern };
+	String recipes[] = { ENV_KEY_RECIPE_C_O_PATTERN, ENV_KEY_RECIPE_CPP_O_PATTERN, ENV_KEY_RECIPE_S_O_PATTERN,
+		ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN, ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN, ENV_KEY_RECIPE_SIZE_PATTERN,
+		ENV_KEY_RECIPE_AR_PATTERN, ENV_KEY_RECIPE_C_COMBINE_PATTERN };
 	for (String recipeKey : recipes) {
 	    String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, EMPTY_STRING, false);
 
@@ -1095,7 +1095,7 @@ public class Helpers extends Common {
 	// as I'm not I mod it so the upload tool is in the command
 	try {
 
-	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_upload_tool, confDesc).getValue().toUpperCase();
+	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_UPLOAD_TOOL, confDesc).getValue().toUpperCase();
 	    String uploadRecipe = "A.TOOLS." + uploadTool.toUpperCase() + ".UPLOAD.PATTERN";//$NON-NLS-1$//$NON-NLS-2$
 	    String UploadCommand = contribEnv.getVariable(uploadRecipe, confDesc).getValue();
 	    int indexOfVar = UploadCommand.indexOf("${A."); //$NON-NLS-1$
@@ -1122,10 +1122,10 @@ public class Helpers extends Common {
 	}
 
 	// link build.core to jantje.build.core
-	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_core,
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE,
 		makeEnvironmentVar(ENV_KEY_JANTJE_BUILD_CORE));
 	// link build.variant to jantje.build.variant
-	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_build_variant,
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT,
 		makeEnvironmentVar(ENV_KEY_JANTJE_BUILD_VARIANT));
     }
 

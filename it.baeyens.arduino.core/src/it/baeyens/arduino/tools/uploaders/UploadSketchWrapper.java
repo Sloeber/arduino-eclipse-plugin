@@ -49,7 +49,7 @@ public class UploadSketchWrapper {
 
 	// Check that we have a AVR Project
 	try {
-	    if (Project == null || !Project.hasNature(Const.ArduinoNatureID)) {
+	    if (Project == null || !Project.hasNature(Const.ARDUINO_NATURE_ID)) {
 		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null));
 		return;
 	    }
@@ -58,7 +58,7 @@ public class UploadSketchWrapper {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e));
 	}
 
-	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_upload_tool, Const.EMPTY_STRING);
+	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_UPLOAD_TOOL, Const.EMPTY_STRING);
 	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_COM_PORT, Const.EMPTY_STRING);
 	this.myConsole = Helpers.findConsole(Messages.Upload_console);
 	this.myConsole.clearConsole();
@@ -86,8 +86,8 @@ public class UploadSketchWrapper {
 	    String login = pwdManager.getLogin();
 
 	    realUploader = new SSHUpload(this.myHighLevelConsoleStream, this.myOutconsoleStream, this.myErrconsoleStream, password, host, login);
-	    uploadJobName = Const.Upload_ssh;
-	} else if (UpLoadTool.equalsIgnoreCase(Const.UploadToolTeensy)) {
+	    uploadJobName = Const.UPLOAD_SSH;
+	} else if (UpLoadTool.equalsIgnoreCase(Const.UPLOAD_TOOL_TEENSY)) {
 	    this.myHighLevelConsoleStream.println(Messages.Upload_generic);
 	    realUploader = new GenericLocalUploader(UpLoadTool, Project, cConf, this.myConsole, this.myErrconsoleStream, this.myOutconsoleStream);
 	    uploadJobName = UpLoadTool;
