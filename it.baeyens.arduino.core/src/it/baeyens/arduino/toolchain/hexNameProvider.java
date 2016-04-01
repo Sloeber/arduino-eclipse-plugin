@@ -23,7 +23,7 @@ public class hexNameProvider implements IManagedOutputNameProviderJaba {
     @Override
     public IPath[] getOutputNames(IProject project, IConfiguration cConf, ITool tool, IPath[] primaryInputNames) {
 	String fileExtension = "hex"; //$NON-NLS-1$
-	String command = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_recipe_objcopy_hex_pattern, ".hex"); //$NON-NLS-1$
+	String command = Common.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN, ".hex"); //$NON-NLS-1$
 	if (command.indexOf(".hex") != -1) //$NON-NLS-1$
 	    fileExtension = "hex"; //$NON-NLS-1$
 	else if (command.indexOf(".bin") != -1) //$NON-NLS-1$

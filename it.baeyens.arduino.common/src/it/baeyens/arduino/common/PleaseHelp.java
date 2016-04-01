@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.FrameworkUtil;
 
 public class PleaseHelp extends Dialog {
 
@@ -61,7 +62,14 @@ public class PleaseHelp extends Dialog {
 
 	this.buttonBar = createButtonBar(parent);
 
-	this.browser.setUrl(myhelpLocation + "?os=" + Platform.getOS() + ";arch=" + Platform.getOSArch()); //$NON-NLS-1$ //$NON-NLS-2$
+	org.osgi.framework.Version version = FrameworkUtil.getBundle(getClass()).getVersion();
+	String url = myhelpLocation + "?os=" + Platform.getOS(); //$NON-NLS-1$
+	url += ";arch=" + Platform.getOSArch(); //$NON-NLS-1$
+	url += ";majorVersion=" + version.getMajor(); //$NON-NLS-1$
+	url += ";minorVersion=" + version.getMinor(); //$NON-NLS-1$
+	url += ";microVersion=" + version.getMicro(); //$NON-NLS-1$
+	url += ";qualifierVersion=" + version.getQualifier(); //$NON-NLS-1$
+	this.browser.setUrl(url);
 
 	return parent;
 

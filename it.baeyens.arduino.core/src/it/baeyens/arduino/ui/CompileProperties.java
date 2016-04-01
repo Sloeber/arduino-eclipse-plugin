@@ -26,7 +26,7 @@ import it.baeyens.arduino.common.Const;
 public class CompileProperties extends AbstractCPropertyTab {
     Button myWarningLevel;
     Button mySizeCommand;
-    public Text myCCppCommand;
+    public Text myCAndCppCommand;
     public Text myCppCommand;
     public Text myCCommand;
 
@@ -86,7 +86,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    } else {
 			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-				+ Const.ENV_KEY_recipe_size_pattern + "}"); //$NON-NLS-1$
+				+ Const.ENV_KEY_RECIPE_SIZE_PATTERN + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    }
 		}
@@ -98,16 +98,16 @@ public class CompileProperties extends AbstractCPropertyTab {
 	Label label = new Label(this.usercomp, SWT.LEFT);
 	label.setText(Messages.ui_Apend_c_cpp);
 	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-	this.myCCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-	this.myCCppCommand.setText(Const.EMPTY_STRING);
-	this.myCCppCommand.setToolTipText(Messages.ui_append_c_cpp_text);
-	this.myCCppCommand.setEnabled(true);
+	this.myCAndCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
+	this.myCAndCppCommand.setText(Const.EMPTY_STRING);
+	this.myCAndCppCommand.setToolTipText(Messages.ui_append_c_cpp_text);
+	this.myCAndCppCommand.setEnabled(true);
 
 	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 	gridData.horizontalSpan = 1;
 	gridData.verticalSpan = 2;
-	this.myCCppCommand.setLayoutData(gridData);
-	this.myCCppCommand.addModifyListener(new ModifyListener() {
+	this.myCAndCppCommand.setLayoutData(gridData);
+	this.myCAndCppCommand.addModifyListener(new ModifyListener() {
 
 	    @Override
 	    public void modifyText(ModifyEvent e) {
@@ -116,7 +116,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
 		    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,
-			    CompileProperties.this.myCCppCommand.getText());
+			    CompileProperties.this.myCAndCppCommand.getText());
 		    contribEnv.addVariable(var, getResDesc().getConfiguration());
 		}
 
@@ -127,7 +127,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	label = new Label(this.usercomp, SWT.LEFT);
 	label.setText(Messages.ui_append_cpp);
 	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-	this.myCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+	this.myCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
 	this.myCppCommand.setText(Const.EMPTY_STRING);
 	this.myCppCommand.setToolTipText(Messages.ui_append_cpp_text);
 	this.myCppCommand.setEnabled(true);
@@ -140,7 +140,8 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-		    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
+		    IEnvironmentVariable var = new EnvironmentVariable(
+			    Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
 			    CompileProperties.this.myCppCommand.getText());
 		    contribEnv.addVariable(var, getResDesc().getConfiguration());
 		}
@@ -152,7 +153,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	label = new Label(this.usercomp, SWT.LEFT);
 	label.setText(Messages.ui_append_c);
 	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-	this.myCCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+	this.myCCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
 	this.myCCommand.setText(Const.EMPTY_STRING);
 	this.myCCommand.setToolTipText(Messages.ui_append_c_text);
 	this.myCCommand.setEnabled(true);
@@ -165,7 +166,8 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-		    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
+		    IEnvironmentVariable var = new EnvironmentVariable(
+			    Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
 			    CompileProperties.this.myCCommand.getText());
 		    contribEnv.addVariable(var, getResDesc().getConfiguration());
 		}
@@ -195,9 +197,9 @@ public class CompileProperties extends AbstractCPropertyTab {
 	    this.mySizeCommand.setSelection((var.getValue().contains(Const.ENV_KEY_JANTJE_SIZE_COMMAND)));
 	var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc);
 	if (var == null)
-	    this.myCCppCommand.setText(Const.EMPTY_STRING);
+	    this.myCAndCppCommand.setText(Const.EMPTY_STRING);
 	else
-	    this.myCCppCommand.setText(var.getValue());
+	    this.myCAndCppCommand.setText(var.getValue());
 	var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc);
 	if (var == null)
 	    this.myCCommand.setText(Const.EMPTY_STRING);
@@ -235,7 +237,7 @@ public class CompileProperties extends AbstractCPropertyTab {
     protected void performDefaults() {
 	this.myWarningLevel.setSelection(true);
 	this.mySizeCommand.setSelection(false);
-	this.myCCppCommand.setText(Const.EMPTY_STRING);
+	this.myCAndCppCommand.setText(Const.EMPTY_STRING);
 	this.myCCommand.setText(Const.EMPTY_STRING);
 	this.myCppCommand.setText(Const.EMPTY_STRING);
     }

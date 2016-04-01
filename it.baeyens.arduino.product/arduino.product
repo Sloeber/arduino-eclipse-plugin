@@ -28,6 +28,7 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
 --launcher.appendVmargs
       </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.8
+-Dorg.eclipse.update.reconcile=false
 -Xms40m
 -Xmx512m
       </vmArgs>
@@ -340,18 +341,23 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
       <feature id="org.eclipse.cdt.testsrunner.feature"/>
+      <feature id="org.eclipse.equinox.core.sdk"/>
    </features>
 
    <configurations>
       <plugin id="it.baeyens.arduino.application" autoStart="true" startLevel="4" />
-      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
-      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
 
    <repositories>
       <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
       <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/nightly" enabled="true" />
       <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
    </repositories>
 

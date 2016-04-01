@@ -87,7 +87,7 @@ public class Manager {
 
 		InstallLibraries(monitor);
 
-		// TODO add sample programs here please
+		// Downmload sample programs
 		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE,
 			Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
 
@@ -237,9 +237,10 @@ public class Manager {
 		PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
 		index.setOwners(null);
 		packageIndices.add(index);
-	    } catch (IOException e) {
+	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, Activator.getId(),
 			"Unable to parse " + packageFile.getAbsolutePath(), e)); //$NON-NLS-1$
+		packageFile.delete();// Delete the file so it stops damaging
 	    }
 	}
     }

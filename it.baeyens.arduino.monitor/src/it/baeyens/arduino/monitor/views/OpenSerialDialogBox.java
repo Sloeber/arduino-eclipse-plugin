@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -23,16 +24,19 @@ public class OpenSerialDialogBox extends Dialog {
 	// deleted after he close
 	this.SelectedRate = Integer.parseInt(this.BaudRates.getCombo().getText());
 	this.SelectedPort = this.SerialPorts.getCombo().getText();
-	InstancePreferences.setGlobalValue(Const.KEY_SERIAlRATE, this.BaudRates.getCombo().getText());
-	InstancePreferences.setGlobalValue(Const.KEY_SERIAlPORT, this.SelectedPort);
+	this.SelectedDtr = this.DtrCheckbox.getSelection();
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAL_RATE, this.BaudRates.getCombo().getText());
+	InstancePreferences.setGlobalValue(Const.KEY_SERIAL_PORT, this.SelectedPort);
 	super.okPressed();
     }
 
     private ComboViewer SerialPorts;
     private ComboViewer BaudRates;
+    private Button DtrCheckbox;
     // private ComboViewer LineEndings;
     private String SelectedPort;
     private int SelectedRate;
+    private boolean SelectedDtr;
 
     protected OpenSerialDialogBox(Shell parentShell) {
 	super(parentShell);
@@ -76,8 +80,13 @@ public class OpenSerialDialogBox extends Dialog {
 	this.BaudRates.setLabelProvider(new LabelProvider());
 	this.BaudRates.setInput(Common.listBaudRates());
 
-	this.BaudRates.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlRATE, Const.EMPTY_STRING));
-	this.SerialPorts.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAlPORT, Const.EMPTY_STRING));
+	this.BaudRates.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAL_RATE, Const.EMPTY_STRING));
+	this.SerialPorts.getCombo().setText(InstancePreferences.getGlobalString(Const.KEY_SERIAL_PORT, Const.EMPTY_STRING));
+	
+	this.DtrCheckbox = new Button(parent, SWT.CHECK);
+	this.DtrCheckbox.setText(Messages.OpenSerialDialogBox_Dtr);
+	this.DtrCheckbox.setSelection(true);
+	
 	return parent;
 
     }
@@ -89,5 +98,9 @@ public class OpenSerialDialogBox extends Dialog {
     public int GetBaudRate() {
 	return this.SelectedRate;
     }
+
+	public boolean GetDtr() {
+	return this.SelectedDtr;
+	}
 
 }

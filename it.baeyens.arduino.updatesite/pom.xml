@@ -22,7 +22,7 @@
 				<configuration>
 					<!-- Aggregate all transitive dependencies, making the resulting p2 
 						repository self-contained. -->
-					<includeAllDependencies>true</includeAllDependencies>
+					<includeAllDependencies>false</includeAllDependencies>
 				</configuration>
 			</plugin>
 		</plugins>

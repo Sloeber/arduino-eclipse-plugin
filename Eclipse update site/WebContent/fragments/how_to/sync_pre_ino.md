@@ -26,3 +26,9 @@ change the .cpp to .ino or .pde
 After inclusion of a library add an include reference to the library to the ino or pde file.  
 In the ino file at the top add a line that looks like  
     #include < [the imported library].h >   
+    
+     
+ **Party success**
+ 
+ 1. drink a beer
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

@@ -1,3 +1,8 @@
+<?php
+  if(isset($_GET["OS"]) ) 
+    $OS = $_GET["OS"] ;
+  $os =  $OS; ?>
+    
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,9 +11,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse IDE - Windows Latest Stable</title>
+    
+    <?php	echo "<title>Arduino Eclipse IDE - $OS Latest Stable</title>"; ?>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -18,38 +24,33 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,600,300|Open+Sans+Condensed:300,700|Ubuntu+Mono:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href="css/theme.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
 
-  <body role="document" ng-app='arduinoEclipse'>
+  <body role="document" >
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <?php include 'fragments/navbar.html';?>
     </nav>
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>Windows Latest Stable <small>runs smoothly and nicely</small></h1>
+      <?php	echo "<h1>$OS Latest Stable <small>runs smoothly and nicely</small></h1>"; ?>
         <a name="top">&nbsp;</a>
       </div>
-      <p>This is the latest stable build of Arduino Eclipse and it's available as a product and a plugin: pick the one you prefer!</p>
-      <h3>Product bundle</h3><a name="product">&nbsp;</a>
+      <p>This is the latest stable build of Arduino Eclipse IDE and it's available as a product and a plugin: pick the one you prefer!</p>
+      <h3>Product bundle</h3>
+      <a name="product">&nbsp;</a>
       <p>Strongly advised when you are new to the Arduino eclipse IDE.</p>
-      <p>This is the simplest way to start using Arduino Eclipse as it bundles in one single download a complete setup including a stable version of the Eclipse CDT and the latest stable build of our great plugin!</p>
-            <p>Watch this movie to see how easy it is to get started:</p>
+      <p>This is the simplest way to start using Arduino Eclipse as it bundles in one single download a complete setup including a stable version of the Eclipse CDT and the latest stable build of our great Arduino eclipse IDE!</p>
+      <p>Watch this movie to see how easy it is to get started:</p>
       <iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
-      
       <div class="row">
-        <ng-include src="'fragments/file-buttons.php?arch=win&ver=3.0'"></ng-include>
+        <?php include 'fragments/file-buttons.php?arch=$OS&ver=3.0';?>
       </div>
       <a href="#top" scroll-to="top">Back to top</a>
       <h3>Plugin update site</h3><a name="plugin">&nbsp;</a>
-      <p>If you want to pick a different version of the Eclipse CDT than the one included in the product bundle or you want to add the Arduino Eclipse plugin to an exisisting installation this is the way to go.</p>
+      <p>If you want to pick a different version of the Eclipse CDT than the one included in the product bundle or you want to add the Arduino Eclipse plugin to an existing installation this is the way to go.</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
           <div class="well text-center">http://www.baeyens.it/eclipse/V3</div>
@@ -58,7 +59,7 @@
     </div><!-- /container -->
 
     <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
+      <?php include 'fragments/footer.html';?>
     </div>
   </body>
 

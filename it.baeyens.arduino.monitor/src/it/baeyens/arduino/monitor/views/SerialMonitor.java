@@ -409,7 +409,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(SerialMonitor.this.myparent.getShell());
 		comportSelector.create();
 		if (comportSelector.open() == Window.OK) {
-		    connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate());
+		    connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate(), comportSelector.GetDtr());
 
 		}
 	    }
@@ -495,24 +495,28 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      *            the bautrate to connect to the com port
      */
     public void connectSerial(String ComPort, int BaudRate) {
-	if (this.mySerialConnections.size() < myMaxSerialPorts) {
-	    int colorindex = this.mySerialConnections.size();
-	    Serial newSerial = new Serial(ComPort, BaudRate);
-	    if (newSerial.IsConnected()) {
-		newSerial.registerService();
-		SerialListener theListener = new SerialListener(this, colorindex);
-		newSerial.addListener(theListener);
-		theListener.event(System.getProperty("line.separator") + Messages.SerialMonitor_connectedt_to + ComPort //$NON-NLS-1$
-			+ Messages.SerialMonitor_at + BaudRate + System.getProperty("line.separator")); //$NON-NLS-1$
-		this.mySerialConnections.put(newSerial, theListener);
-		SerialPortsUpdated();
-		return;
-	    }
-	} else {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.SerialMonitor_no_more_serial_ports_supported, null));
-	}
-
+    	connectSerial(ComPort, BaudRate, true);
     }
+    
+    public void connectSerial(String ComPort, int BaudRate, boolean dtr) {
+    	if (this.mySerialConnections.size() < myMaxSerialPorts) {
+    	    int colorindex = this.mySerialConnections.size();
+    	    Serial newSerial = new Serial(ComPort, BaudRate, dtr);
+    	    if (newSerial.IsConnected()) {
+    		newSerial.registerService();
+    		SerialListener theListener = new SerialListener(this, colorindex);
+    		newSerial.addListener(theListener);
+    		theListener.event(System.getProperty("line.separator") + Messages.SerialMonitor_connectedt_to + ComPort //$NON-NLS-1$
+    			+ Messages.SerialMonitor_at + BaudRate + System.getProperty("line.separator")); //$NON-NLS-1$
+    		this.mySerialConnections.put(newSerial, theListener);
+    		SerialPortsUpdated();
+    		return;
+    	    }
+    	} else {
+    	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.SerialMonitor_no_more_serial_ports_supported, null));
+    	}
+
+        }
 
     public void disConnectSerialPort(String comPort) {
 	Serial newSerial = GetSerial(comPort);

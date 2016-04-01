@@ -17,6 +17,10 @@ Below are instructions on how to download and compile the source code from the c
 You only need to do one.
 Also subscribe to the developers list by sending a mail with subject _subscribe_ to eclipse-arduino-dev@freelists.org (this is not for support questions)
 
+## There are lots of issues open that seem fixed.
+We only close issues when they are in part of a stable release. Therefore the open list contains all open items for the last stable release. Known open issue for the last nightly can be found with this query:  
+is:issue is:open -label:"status: fixed in nightly"  
+
 ## Quick Installation 
 ### Prerequisites
 
@@ -193,13 +197,13 @@ After all it should look like this:
 
 ### Set the Code Formatting
 
-To avoid having changes all the time because of different formatting this project contains a formatting xml.
+To avoid having changes all the time because of different formatting this project uses the standard "java conventions [build in].
 
 Go to 
 
 > Window → Preferences → Java → Code Style → Formatter 
 
-and import ```codeformat.xml``` from the root of the repo.
+and check this setting.
 
 ### Set the Warning Level
 

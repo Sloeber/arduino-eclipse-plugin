@@ -6,6 +6,7 @@ public class Messages extends NLS {
     private static final String BUNDLE_NAME = "it.baeyens.arduino.monitor.views.messages"; //$NON-NLS-1$
     public static String OpenSerialDialogBox_Select_the_baut_rate;
     public static String OpenSerialDialogBox_Serial_port_to_connect_to;
+    public static String OpenSerialDialogBox_Dtr;
     public static String ScopeListener_buffer_overflow;
     public static String ScopeView_channel;
     public static String ScopeView_connected_to;

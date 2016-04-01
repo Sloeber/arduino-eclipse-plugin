@@ -8,7 +8,7 @@
 <meta name="author" content="Roberto Lo Giacco">
 <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-<title>Arduino Eclipse Plugin - Archive ver 2.3</title>
+<title>Arduino Eclipse IDE - Archive ver 2.3</title>
 
 <!-- Bootstrap core CSS and theme -->
 <link rel="stylesheet"
@@ -33,7 +33,7 @@
 
 	<!-- Fixed navbar -->
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-		<!--#include virtual="fragments/navbar.html" -->
+		<?php include 'fragments/navbar.html';?>
 	</nav>
 
 	<div class="container" role="main">
@@ -44,7 +44,8 @@
 			</h1>
 			<a name="top">&nbsp;</a>
 		</div>
-		<p>...some funny description of the archive list...</p>
+		      <p  class="solid"><small>One of the major problems encountered in time travel is not that of becoming your own father or mother. There is no problem in becoming your own father or mother that a broad-minded and well-adjusted family can't cope with. There is no problem with changing the course of history—the course of history does not change because it all fits together like a jigsaw. All the important changes have happened before the things they were supposed to change and it all sorts itself out in the end.<br>
+      The hitchhikers guide to the galaxy.</small></p>
 		<h3>
 			Before you start <small>don't skip this section, you will
 				regret it!</small>
@@ -52,20 +53,21 @@
 		<p>Only for ArduinoIDE 1.6.2 and earlier</p>
 		<a href="#top" scroll-to="top">Back to top</a>
 		<h3>Pick your OS architecture in the following list</h3>
-		<ng-include src="'fragments/file-list.php?ver=2.3'"></ng-include>
-		<!--#include virtual="fragments/file-list.php?ver=2.3" --> 
+				<?php include 'fragments/file-list.php?ver=2.3';?>
+
 		<a href="#top" scroll-to="top">Back to top</a>
 		<h3>
 			Troubleshooting <small>known problems</small>
 		</h3>
 		<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?q=label%3A%22status%3A+fixed+in+2.4%22+is%3Aclosed">Fixed issue in 2.4 and as such not fixed in this release.</a>
 		<p>...known solutions to know problems...</p>
+		<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=label%3A%22status%3A+fixed+in+2.4%22++label%3A%22status%3A+workaround+documented%22+">Fixed issue in 2.4 with a known workaround.</a>
 		<a href="#top" scroll-to="top">Back to top</a>
 	</div>
 	<!-- /container -->
 
     <div id="footer">
-      <!--#include virtual="fragments/footer.html" --> 
+      <?php include 'fragments/footer.html';?>
     </div>
 </body>
 

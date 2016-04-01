@@ -71,4 +71,4 @@ In V2 only one project is created. The Arduino code is in folder Arduino in your
  **Party success**
  
  1. drink a beer
- 2. [Buy Jantje a beer](http://eclipse.baeyens.it/donate.html "thanks")
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

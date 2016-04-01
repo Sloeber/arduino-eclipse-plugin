@@ -22,6 +22,10 @@
  Boston, MA  02111-1307  USA
  */
 
+/*
+ * For documentation on jssc see  http://java-simple-serial-connector.googlecode.com/svn/trunk/additional_content/javadoc/0.8/index.html
+ */
+
 package it.baeyens.arduino.arduino;
 
 import java.util.ArrayList;
@@ -54,41 +58,6 @@ public class Serial implements SerialPortEventListener {
     // for the classloading problem.. because if code ran again,
     // the static class would have an object that could be closed
 
-    /**
-     * General error reporting, all correlated here just in case I think of
-     * something slightly more intelligent to do.
-     */
-    static public void errorMessage(String where, Throwable e) {
-	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
-
-    }
-
-    /**
-     * If this just hangs and never completes on Windows, it may be because the
-     * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
-     * knows.
-     */
-    public static Vector<String> list() {
-	try {
-	    String[] portNames;
-	    String OS = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-	    if (OS.indexOf("mac") >= 0) { //$NON-NLS-1$
-		portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(serial|usb).*")); //$NON-NLS-1$ //$NON-NLS-2$
-	    } else {
-		portNames = SerialPortList.getPortNames();
-	    }
-	    return new Vector<>(Arrays.asList(portNames));
-	} catch (Error e) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
-		    e));
-	    Vector<String> ret = new Vector<>();
-	    ret.add("config error:"); //$NON-NLS-1$
-	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
-	    return ret;
-	}
-    }
-
     SerialPort port = null;
     int rate;
     int parity;
@@ -99,24 +68,29 @@ public class Serial implements SerialPortEventListener {
     int stopbits;
     boolean monitor = false;
 
-    byte buffer[] = new byte[32768];
-    int bufferIndex;
+    // initial state of RTS&DTR line(ON/OFF)
+    // This is needed as Some boards reset when the serial port is opened with
+    // RTS and DTR low.
+    boolean dtr = true;
 
-    int bufferLast;
-
-    String PortName;
+    String portName;
 
     private ServiceRegistration<Serial> fServiceRegistration;
 
     private List<MessageConsumer> fConsumers;
 
     public Serial(String iname, int irate) {
-	this(iname, irate, 'N', 8, 1.0f);
+	this(iname, irate, 'N', 8, 1.0f, true);
     }
 
-    public Serial(String iname, int irate, char iparity, int idatabits, float istopbits) {
-	this.PortName = iname;
+    public Serial(String iname, int irate, boolean dtr) {
+	this(iname, irate, 'N', 8, 1.0f, dtr);
+    }
+
+    public Serial(String iname, int irate, char iparity, int idatabits, float istopbits, boolean dtr) {
+	this.portName = iname;
 	this.rate = irate;
+	this.dtr = dtr;
 
 	this.parity = SerialPort.PARITY_NONE;
 	if (iparity == 'E')
@@ -135,6 +109,41 @@ public class Serial implements SerialPortEventListener {
 
     }
 
+    /**
+     * General error reporting, all correlated here just in case I think of
+     * something slightly more intelligent to do.
+     */
+    public static void errorMessage(String where, Throwable e) {
+	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Error inside Serial. " + where, e)); //$NON-NLS-1$
+
+    }
+
+    /**
+     * If this just hangs and never completes on Windows, it may be because the
+     * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
+     * knows.
+     */
+    public static Vector<String> list() {
+	try {
+	    String[] portNames;
+	    String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+	    if (os.indexOf("mac") >= 0) { //$NON-NLS-1$
+		portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(serial|usb).*")); //$NON-NLS-1$ //$NON-NLS-2$
+	    } else {
+		portNames = SerialPortList.getPortNames();
+	    }
+	    return new Vector<>(Arrays.asList(portNames));
+	} catch (Exception e) {
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
+		    e));
+	    Vector<String> ret = new Vector<>();
+	    ret.add("config error:"); //$NON-NLS-1$
+	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
+	    return ret;
+	}
+    }
+
     public void addListener(MessageConsumer consumer) {
 	if (this.fConsumers == null) {
 	    this.fConsumers = new ArrayList<>();
@@ -148,22 +157,6 @@ public class Serial implements SerialPortEventListener {
 	this.fConsumers.remove(consumer);
     }
 
-    /**
-     * Returns the number of bytes that have been read from serial and are
-     * waiting to be dealt with by the user.
-     */
-    public int available() {
-	return (this.bufferLast - this.bufferIndex);
-    }
-
-    /**
-     * Ignore all the bytes read so far and empty the buffer.
-     */
-    public void clear() {
-	this.bufferLast = 0;
-	this.bufferIndex = 0;
-    }
-
     public void connect() {
 	connect(1);
     }
@@ -173,9 +166,9 @@ public class Serial implements SerialPortEventListener {
 	    int count = 0;
 	    while (true) {
 		try {
-		    this.port = new SerialPort(this.PortName);
+		    this.port = new SerialPort(this.portName);
 		    this.port.openPort();
-		    this.port.setParams(this.rate, this.databits, this.stopbits, this.parity);
+		    this.port.setParams(this.rate, this.databits, this.stopbits, this.parity, this.dtr, this.dtr);
 
 		    int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_BREAK;
 		    this.port.addEventListener(this, eventMask);
@@ -185,17 +178,17 @@ public class Serial implements SerialPortEventListener {
 		    if (++count == maxTries) {
 			if (SerialPortException.TYPE_PORT_BUSY.equals(e.getExceptionType())) {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-				    "Serial port " + this.PortName //$NON-NLS-1$
+				    "Serial port " + this.portName //$NON-NLS-1$
 					    + " already in use. Try quiting any programs that may be using it", //$NON-NLS-1$
 				    e));
 			} else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
-				    + this.PortName
+				    + this.portName
 				    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", //$NON-NLS-1$
 				    e));
 			} else {
 			    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-				    "Error opening serial port " + this.PortName, e)); //$NON-NLS-1$
+				    "Error opening serial port " + this.portName, e)); //$NON-NLS-1$
 			}
 			return;
 		    }
@@ -232,7 +225,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public boolean IsConnected() {
-	return (this.port != null && this.port.isOpened());
+	return this.port != null && this.port.isOpened();
     }
 
     private void notifyConsumersOfData(byte[] message) {
@@ -251,187 +244,6 @@ public class Serial implements SerialPortEventListener {
 	}
     }
 
-    /**
-     * Returns a number between 0 and 255 for the next byte that's waiting in
-     * the buffer. Returns -1 if there was no byte (although the user should
-     * first check available() to see if things are ready to avoid this)
-     */
-    public int read() {
-	if (this.bufferIndex == this.bufferLast)
-	    return -1;
-
-	synchronized (this.buffer) {
-	    int outgoing = this.buffer[this.bufferIndex++] & 0xff;
-	    if (this.bufferIndex == this.bufferLast) { // rewind
-		this.bufferIndex = 0;
-		this.bufferLast = 0;
-	    }
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Return a byte array of anything that's in the serial buffer. Not
-     * particularly memory/speed efficient, because it creates a byte array on
-     * each read, but it's easier to use than readBytes(byte b[]) (see below).
-     */
-    public byte[] readBytes() {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-
-	synchronized (this.buffer) {
-	    int length = this.bufferLast - this.bufferIndex;
-	    byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex = 0; // rewind
-	    this.bufferLast = 0;
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Grab whatever is in the serial buffer, and stuff it into a byte buffer
-     * passed in by the user. This is more memory/time efficient than
-     * readBytes() returning a byte[] array.
-     * 
-     * Returns an int for how many bytes were read. If more bytes are available
-     * than can fit into the byte array, only those that will fit are read.
-     */
-    public int readBytes(byte outgoing[]) {
-	if (this.bufferIndex == this.bufferLast)
-	    return 0;
-
-	synchronized (this.buffer) {
-	    int length = this.bufferLast - this.bufferIndex;
-	    if (length > outgoing.length)
-		length = outgoing.length;
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex += length;
-	    if (this.bufferIndex == this.bufferLast) {
-		this.bufferIndex = 0; // rewind
-		this.bufferLast = 0;
-	    }
-	    return length;
-	}
-    }
-
-    /**
-     * Reads from the serial port into a buffer of bytes up to and including a
-     * particular character. If the character isn't in the serial buffer, then
-     * 'null' is returned.
-     */
-    public byte[] readBytesUntil(int interesting) {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-	byte what = (byte) interesting;
-
-	synchronized (this.buffer) {
-	    int found = -1;
-	    for (int k = this.bufferIndex; k < this.bufferLast; k++) {
-		if (this.buffer[k] == what) {
-		    found = k;
-		    break;
-		}
-	    }
-	    if (found == -1)
-		return null;
-
-	    int length = found - this.bufferIndex + 1;
-	    byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex = 0; // rewind
-	    this.bufferLast = 0;
-	    return outgoing;
-	}
-    }
-
-    /**
-     * Reads from the serial port into a buffer of bytes until a particular
-     * character. If the character isn't in the serial buffer, then 'null' is
-     * returned.
-     * 
-     * If outgoing[] is not big enough, then -1 is returned, and an error
-     * message is printed on the console. If nothing is in the buffer, zero is
-     * returned. If 'interesting' byte is not in the buffer, then 0 is returned.
-     */
-    public int readBytesUntil(int interesting, byte outgoing[]) {
-	if (this.bufferIndex == this.bufferLast)
-	    return 0;
-	byte what = (byte) interesting;
-
-	synchronized (this.buffer) {
-	    int found = -1;
-	    for (int k = this.bufferIndex; k < this.bufferLast; k++) {
-		if (this.buffer[k] == what) {
-		    found = k;
-		    break;
-		}
-	    }
-	    if (found == -1)
-		return 0;
-
-	    int length = found - this.bufferIndex + 1;
-	    if (length > outgoing.length) {
-		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-			"readBytesUntil() byte buffer is too small for the " + length //$NON-NLS-1$
-				+ " bytes up to and including char " + interesting, //$NON-NLS-1$
-			null));
-		return -1;
-	    }
-	    // byte outgoing[] = new byte[length];
-	    System.arraycopy(this.buffer, this.bufferIndex, outgoing, 0, length);
-
-	    this.bufferIndex += length;
-	    if (this.bufferIndex == this.bufferLast) {
-		this.bufferIndex = 0; // rewind
-		this.bufferLast = 0;
-	    }
-	    return length;
-	}
-    }
-
-    /**
-     * Returns the next byte in the buffer as a char. Returns -1, or 0xffff, if
-     * nothing is there.
-     */
-    public char readChar() {
-	if (this.bufferIndex == this.bufferLast)
-	    return (char) (-1);
-	return (char) read();
-    }
-
-    /**
-     * Return whatever has been read from the serial port so far as a String. It
-     * assumes that the incoming characters are ASCII.
-     * 
-     * If you want to move Unicode data, you can first convert the String to a
-     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
-     * Unicode data), and send it as a byte array.
-     */
-    public String readString() {
-	if (this.bufferIndex == this.bufferLast)
-	    return null;
-	return new String(readBytes());
-    }
-
-    /**
-     * Combination of readBytesUntil and readString. See caveats in each
-     * function. Returns null if it still hasn't found what you're looking for.
-     * 
-     * If you want to move Unicode data, you can first convert the String to a
-     * byte stream in the representation of your choice (i.e. UTF8 or two-byte
-     * Unicode data), and send it as a byte array.
-     */
-    public String readStringUntil(int interesting) {
-	byte b[] = readBytesUntil(interesting);
-	if (b == null)
-	    return null;
-	return new String(b);
-    }
-
     public void registerService() {
 	this.fServiceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext().registerService(Serial.class,
 		this, null);
@@ -445,49 +257,24 @@ public class Serial implements SerialPortEventListener {
 	    Thread.sleep(100);
 	} catch (InterruptedException e) {// JABA is not going to add code
 	}
-
 	setDTR(true);
 	setRTS(true);
 
     }
 
     @Override
-    synchronized public void serialEvent(SerialPortEvent serialEvent) {
+    public synchronized void serialEvent(SerialPortEvent serialEvent) {
 	switch (serialEvent.getEventType()) {
 	case SerialPortEvent.RXCHAR:
 	    int bytesCount = serialEvent.getEventValue();
 
 	    if (IsConnected() && bytesCount > 0) {
-		synchronized (this.buffer) {
-		    try {
-			byte[] readBytes = this.port.readBytes(bytesCount);
-
-			// Check there is enough buffer to store new bytes
-			if (readBytes.length > this.buffer.length) {
-			    int newLength = this.buffer.length;
-			    while (readBytes.length > newLength) {
-				newLength *= 2;
-			    }
-
-			    byte temp[] = new byte[newLength];
-			    System.arraycopy(this.buffer, 0, temp, 0, this.buffer.length);
-			    this.buffer = temp;
-			}
-
-			// Append read bytes to buffer tail
-			System.arraycopy(readBytes, 0, this.buffer, this.bufferLast, readBytes.length);
-			if (this.monitor == true) {
-			    System.out.print(new String(readBytes));
-			}
-			this.bufferLast += readBytes.length;
-
-			notifyConsumersOfData(readBytes());
-		    } catch (SerialPortException e) {
-			errorMessage("serialEvent", e); //$NON-NLS-1$
-		    }
+		try {
+		    notifyConsumersOfData(this.port.readBytes(bytesCount));
+		} catch (SerialPortException e) {
+		    errorMessage("serialEvent", e); //$NON-NLS-1$
 		}
 	    }
-
 	    break;
 	case SerialPortEvent.BREAK:
 	    errorMessage("Break detected", new Exception()); //$NON-NLS-1$
@@ -523,10 +310,10 @@ public class Serial implements SerialPortEventListener {
     // needed to fill viewers in jfases
     @Override
     public String toString() {
-	return this.PortName;
+	return this.portName;
     }
 
-    public void write(byte bytes[]) {
+    public void write(byte[] bytes) {
 	if (this.port != null) {
 	    try {
 		this.port.writeBytes(bytes);
@@ -564,13 +351,13 @@ public class Serial implements SerialPortEventListener {
 	write(what.getBytes());
     }
 
-    public void write(String what, String LineEnd) {
+    public void write(String what, String lineEnd) {
 	notifyConsumersOfEvent(
-		System.getProperty("line.separator") + ">>Send to " + this.PortName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		System.getProperty("line.separator") + ">>Send to " + this.portName + ": \"" + what + "\"<<" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			+ System.getProperty("line.separator")); //$NON-NLS-1$
 	write(what.getBytes());
-	if (LineEnd.length() > 0) {
-	    write(LineEnd.getBytes());
+	if (lineEnd.length() > 0) {
+	    write(lineEnd.getBytes());
 	}
     }
 }

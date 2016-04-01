@@ -36,22 +36,18 @@ abstract class FamilyJob extends Job {
  */
 public class Activator extends AbstractUIPlugin {
 
-    private static Activator instance;
-
-    public static Activator getDefault() {
-	return instance;
-    }
-
     // The plug-in ID
     public static final String PLUGIN_ID = "it.baeyens.arduino.common"; //$NON-NLS-1$
 
     // The shared instance
-    private static final String flagStart = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-    private static final String flagMonitor = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-    private static final String uploadflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-    private static final String buildflag = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-    private static final String Localflag = "l" + flagStart; //$NON-NLS-1$
-    private static final String helploc = "http://www.baeyens.it/eclipse/remind3_0.html"; //$NON-NLS-1$
+    private static final String FLAGS_TART = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String FLAG_MONITOR = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String UPLOAD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String BUILD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+    private static final String LOCAL_FLAG = "l" + FLAGS_TART; //$NON-NLS-1$
+    private static final String HELP_LOC = "http://www.baeyens.it/eclipse/remind.php"; //$NON-NLS-1$
+
+    private static Activator instance;
 
     /**
      * The constructor
@@ -60,10 +56,15 @@ public class Activator extends AbstractUIPlugin {
 	// no activator code needed
     }
 
+    public static Activator getDefault() {
+	return instance;
+    }
+
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+     * BundleContext )
      */
     @Override
     public void start(BundleContext context) throws Exception {
@@ -86,21 +87,19 @@ public class Activator extends AbstractUIPlugin {
 	    protected IStatus run(IProgressMonitor monitor) {
 
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
-		int curFsiStatus = myScope.getInt(flagStart, 0) + myScope.getInt(flagMonitor, 0) + myScope.getInt(uploadflag, 0)
-			+ myScope.getInt(buildflag, 0);
-		int lastFsiStatus = myScope.getInt(Localflag, 0);
-		if ((curFsiStatus - lastFsiStatus) > 50) {
-		    if (isInternetReachable()) {
-			myScope.putInt(Localflag, curFsiStatus);
+		int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
+			+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
+		int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
+		if ((curFsiStatus - lastFsiStatus) > 50 && isInternetReachable()) {
+			myScope.putInt(LOCAL_FLAG, curFsiStatus);
 			try {
 			    myScope.flush();
 			} catch (BackingStoreException e) {
 			    // this should not happen
 			}
-			PleaseHelp.DoHelp(helploc);
+			PleaseHelp.DoHelp(HELP_LOC);
 			return Status.OK_STATUS; // once per run will be
 						 // sufficient
-		    }
 		}
 		remind();
 		return Status.OK_STATUS;
@@ -113,7 +112,8 @@ public class Activator extends AbstractUIPlugin {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext )
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+     * BundleContext )
      */
     @Override
     public void stop(BundleContext context) throws Exception {
@@ -129,7 +129,7 @@ public class Activator extends AbstractUIPlugin {
 
 	try {
 	    // make a URL to a known source
-	    URL url = new URL(helploc);
+	    URL url = new URL(HELP_LOC);
 	    // open a connection to that source
 	    urlConnect = (HttpURLConnection) url.openConnection();
 	    // trying to retrieve data from the source. If there is no

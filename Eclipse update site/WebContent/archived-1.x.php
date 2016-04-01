@@ -8,7 +8,7 @@
     <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Arduino Eclipse Plugin - Archive ver 1.x</title>
+    <title>Arduino Eclipse IDE - Archive ver 1.x</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -29,7 +29,7 @@
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <ng-include src="'fragments/navbar.html'"/>
+      <?php include 'fragments/navbar.html';?>
     </nav>
 
     <div class="container" role="main">
@@ -37,9 +37,10 @@
         <h1>Archive version 1.x <small>in case you want to travel back in time</small></h1>
         <a name="top">&nbsp;</a>
       </div>
-      <p>One of the major problems encountered in time travel is not that of becoming your own father or mother. There is no problem in becoming your own father or mother that a broad-minded and well-adjusted family can't cope with. There is no problem with changing the course of history—the course of history does not change because it all fits together like a jigsaw. All the important changes have happened before the things they were supposed to change and it all sorts itself out in the end.<br>The hitchhikers guide to the galaxy.</p>
+      <p  class="solid"><small>One of the major problems encountered in time travel is not that of becoming your own father or mother. There is no problem in becoming your own father or mother that a broad-minded and well-adjusted family can't cope with. There is no problem with changing the course of history—the course of history does not change because it all fits together like a jigsaw. All the important changes have happened before the things they were supposed to change and it all sorts itself out in the end.<br>
+      The hitchhikers guide to the galaxy.</small></p>
       <h3>Before you start <small>don't skip this section, you will regret it!</small></h3>
-      <p>V1 is only available as plugin.</p>
+      <p>V1 Arduino eclipse IDE is only available as plugin.</p>
 
       <h3>Eclipse Update Site</h3>
       <p>Install V1 of the plugin by setting the following update site within an existing Eclipse CDT installation</p>
@@ -55,7 +56,7 @@
     </div><!-- /container -->
 
     <div id="footer">
-      <ng-include src="'fragments/footer.html'"/>
+      <?php include 'fragments/footer.html';?>
     </div>
   </body>
 
