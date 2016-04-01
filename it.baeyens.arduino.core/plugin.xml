@@ -182,6 +182,80 @@
 
 <!--
 ####################################################################################### 
+#    Launch Configuration                                                             #
+####################################################################################### 
+-->
+<!-- Arduino Launch Configuration -->
+    <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="it.baeyens.arduino.tools.LaunchConfiguration"
+            id="it.baeyens.arduino.tools.arduinoLaunchConfiguration"
+            modes="run, debug"
+            name="Arduino Launch"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+
+<!-- Launch Configuration Tab Group -->
+    <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="it.baeyens.arduino.ui.launchconfig.LaunchConfigurationTabGroup"
+            id="it.baeyens.arduino.ui.launchconfig.arduinoLaunchConfigurationTabGroup"
+            type="it.baeyens.arduino.tools.arduinoLaunchConfiguration">
+         <launchMode
+               mode="run">
+         </launchMode>
+         <launchMode
+               mode="debug">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+   
+<!-- Launch Configuration Image -->
+    <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="it.baeyens.arduino.tools.arduinoLaunchConfiguration"
+            icon="icons/16px-upload.png"
+            id="it.baeyens.arduino.tools.arduinoLaunchConfigurationTypeImages">
+      </launchConfigurationTypeImage>
+   </extension>
+   
+<!-- Launch Shortcut -->
+    <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="it.baeyens.arduino.ui.launchconfig.LaunchShortcut"
+            icon="icons/16px-upload.png"
+            id="it.baeyens.arduino.ui.launchconfig.launchShortcut"
+            label="Arduino Launch"
+            modes="run, debug">
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <or>
+                        <test
+                              forcePluginActivation="false"
+                              property="org.eclipse.debug.ui.matchesPattern"
+                              value="*.ino">
+                        </test>
+                     </or>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   
+<!--
+####################################################################################### 
 #    Arduino Plugin Commands                                                              # 
 ####################################################################################### 
 -->
