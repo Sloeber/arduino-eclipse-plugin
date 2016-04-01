@@ -1,3 +1,8 @@
+<?php
+  if(isset($_GET["OS"]) ) 
+    $OS = $_GET["OS"] ;
+  $os =  $OS; ?>
+    
 <!DOCTYPE html>
 <html lang="en">
   <head>

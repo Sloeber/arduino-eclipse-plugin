@@ -6,16 +6,8 @@
     global $filter;
     $filter = $prefix;
     date_default_timezone_set('UTC');
-    $location="../download/product";
+    $location="/customers/0/9/d/baeyens.it/httpd.www/eclipse/download/product";
     echo "<!-- listing files in $location with prefix $prefix -->";
-    $dir = opendir($location);
-    while(false != ($file = readdir($dir))) {
-      if(($file != ".") and ($file != "..") and ($file != "index.php")) {
-        $files[] = $location."/".$file; // put in array.
-      }
-    }
-    closedir($dir);
-    $location="../../download/product";
     $dir = opendir($location);
     while(false != ($file = readdir($dir))) {
       if(($file != ".") and ($file != "..") and ($file != "index.php")) {
