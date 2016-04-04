@@ -330,7 +330,7 @@ public class InstancePreferences extends Const {
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
-	setGlobalValue(KEY_PRIVATE_LIBRARY_PATHS, String.join("\n", folderName)); //$NON-NLS-1$
+	setGlobalValue(KEY_PRIVATE_LIBRARY_PATHS, String.join(File.pathSeparator, folderName)); //$NON-NLS-1$
     }
 
     public static String[] getPrivateHardwarePaths() {
