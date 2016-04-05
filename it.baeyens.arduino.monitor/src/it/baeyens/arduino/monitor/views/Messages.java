@@ -17,7 +17,7 @@ public class Messages extends NLS {
     public static String SerialListener_scope_skipping_data;
     public static String SerialMonitor_Add_connection_to_seral_monitor;
     public static String SerialMonitor_at;
-    public static String SerialMonitor_autoscrol;
+    public static String SerialMonitor_scroll_lock;
     public static String SerialMonitor_clear;
     public static String SerialMonitor_connected_to;
     public static String SerialMonitor_connectedt_to;
