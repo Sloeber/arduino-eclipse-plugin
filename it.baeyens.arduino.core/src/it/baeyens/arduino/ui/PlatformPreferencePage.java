@@ -46,7 +46,6 @@ public class PlatformPreferencePage extends PreferencePage implements IWorkbench
 
 	Text desc = new Text(control, SWT.READ_ONLY);
 	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-	layoutData.widthHint = 500;
 	desc.setLayoutData(layoutData);
 	desc.setBackground(parent.getBackground());
 	desc.setText("remove or add checkboxes to update your configuration."); //$NON-NLS-1$
@@ -81,12 +80,7 @@ public class PlatformPreferencePage extends PreferencePage implements IWorkbench
 	this.platformTree.removeAll();
 
 	List<Package> packages = Manager.getPackages();
-	Collections.sort(packages, new Comparator<Package>() {
-	    @Override
-	    public int compare(Package arg0, Package arg1) {
-		return arg0.getName().compareTo(arg1.getName());
-	    }
-	});
+	Collections.sort(packages);
 
 	for (Package curPackage : packages) {
 	    TreeItem packageItem = new TreeItem(this.platformTree, SWT.NONE);

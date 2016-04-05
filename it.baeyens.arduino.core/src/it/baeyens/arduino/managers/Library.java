@@ -21,7 +21,7 @@ import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.ui.Activator;
 
-public class Library implements Comparator<Library> {
+public class Library implements Comparable<Library> {
 
     private String name;
     private String version;
@@ -210,8 +210,8 @@ public class Library implements Comparator<Library> {
     }
 
     @Override
-    public int compare(Library o1, Library o2) {
-	return o1.getName().compareTo(o2.getName());
+    public int compareTo(Library other) {
+	return this.name.compareTo(other.name);
     }
 
     public IStatus remove(IProgressMonitor monitor) {
