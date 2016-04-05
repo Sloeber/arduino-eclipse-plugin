@@ -67,10 +67,10 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	// public static final String ID =
 	// "it.baeyens.arduino.monitor.views.SerialMonitor";
-	
+
 	// If you increase this number you must also assign colors in plugin.xml
 	static private final int myMaxSerialPorts = 6;
-	
+
 	static private final URL IMG_CLEAR;
 	static private final URL IMG_LOCK;
 	static private final URL IMG_FILTER;
@@ -81,7 +81,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 	// Connect to a serial port
 	private Action connect;
-	// this action will disconnect the serial port selected by the serialPorts combo
+	// this action will disconnect the serial port selected by the serialPorts
+	// combo
 	private Action disconnect;
 	// lock serial monitor scrolling
 	private Action scrollLock;
@@ -91,37 +92,39 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	private Action clear;
 
 	// The string to send to the serial port
-	private Text sendString; 
+	private Text sendString;
 	// This control contains the output of the serial port
-	private StyledText monitorOutput; 
+	private StyledText monitorOutput;
 	// Port used when doing actions
-	protected ComboViewer serialPorts; 
+	protected ComboViewer serialPorts;
 	// Add CR? LF? CR+LF? Nothing?
-	private ComboViewer lineTerminator; 
-	private Button send; // When click will send the content of
-	// SendString to the port selected SerialPorts
-	// adding the postfix selected in
-	// SendPostFix
-	private Button reset; // The button to reset the arduino
-
-	private String serialColorID[] = null; // Contains the colors that are
-	// used
-	private ColorRegistry colorRegistry = null;// link to color registry;
+	private ComboViewer lineTerminator;
+	// When click will send the content of SendString to the port selected SerialPorts
+	// adding the postfix selected in SendPostFix
+	private Button send; 
+	// The button to reset the arduino
+	private Button reset;
+	// Contains the colors that are used
+	private String serialColorID[] = null; 
+	// link to color registry
+	private ColorRegistry colorRegistry = null;
 
 	private Composite parent;
 
 	/* **************
 	 *  Below are variables needed for good housekeeping
 	 ************** */
-	
-	// The serial connections that are open with the listeners listening to this port
+
+
+	// The serial connections that are open with the listeners listening to this
+	// port
 	protected Map<Serial, SerialListener> serialConnections;
 	// the last used index of the lineTerminator combo
 	protected int lastUsedIndex;
-	
+
 	private static final String myFlagMonitor = "FmStatus"; //$NON-NLS-1$
 	String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
-	
+
 	private static SerialMonitor instance = null;
 
 	public static SerialMonitor getSerialMonitor() {
@@ -354,38 +357,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		manager.add(new Separator());
 		manager.add(this.disconnect);
 	}
-<<<<<<< HEAD
-	return null;
-    }
-
-    private void contributeToActionBars() {
-	IActionBars bars = getViewSite().getActionBars();
-	fillLocalPullDown(bars.getMenuManager());
-	fillLocalToolBar(bars.getToolBarManager());
-    }
-
-    private void fillLocalToolBar(IToolBarManager manager) {
-	manager.add(this.myConnectToSerialPort);
-	manager.add(this.myDisconnectSerialPort);
-    }
-
-    private void fillLocalPullDown(IMenuManager manager) {
-	manager.add(this.myConnectToSerialPort);
-	manager.add(new Separator());
-	manager.add(this.myDisconnectSerialPort);
-    }
-
-    private void makeActions() {
-	this.myConnectToSerialPort = new Action() {
-	    @SuppressWarnings("synthetic-access")
-	    @Override
-	    public void run() {
-		OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(SerialMonitor.this.myparent.getShell());
-		comportSelector.create();
-		if (comportSelector.open() == Window.OK) {
-		    connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate(), comportSelector.GetDtr());
-=======
->>>>>>> moved serial monitor commands and toggles to view action bar
 
 	private void makeActions() {
 		this.connect = new Action() {
@@ -502,51 +473,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			}
 		}
 	}
-<<<<<<< HEAD
-    }
-
-    /**
-     * Connect to a serial port and sets the listener
-     * 
-     * @param ComPort
-     *            the name of the comport to connect to
-     * @param BaudRate
-     *            the bautrate to connect to the com port
-     */
-    public void connectSerial(String ComPort, int BaudRate) {
-    	connectSerial(ComPort, BaudRate, true);
-    }
-    
-    public void connectSerial(String ComPort, int BaudRate, boolean dtr) {
-    	if (this.mySerialConnections.size() < myMaxSerialPorts) {
-    	    int colorindex = this.mySerialConnections.size();
-    	    Serial newSerial = new Serial(ComPort, BaudRate, dtr);
-    	    if (newSerial.IsConnected()) {
-    		newSerial.registerService();
-    		SerialListener theListener = new SerialListener(this, colorindex);
-    		newSerial.addListener(theListener);
-    		theListener.event(System.getProperty("line.separator") + Messages.SerialMonitor_connectedt_to + ComPort //$NON-NLS-1$
-    			+ Messages.SerialMonitor_at + BaudRate + System.getProperty("line.separator")); //$NON-NLS-1$
-    		this.mySerialConnections.put(newSerial, theListener);
-    		SerialPortsUpdated();
-    		return;
-    	    }
-    	} else {
-    	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.SerialMonitor_no_more_serial_ports_supported, null));
-    	}
-
-        }
-
-    public void disConnectSerialPort(String comPort) {
-	Serial newSerial = GetSerial(comPort);
-	if (newSerial != null) {
-	    SerialListener theListener = SerialMonitor.this.mySerialConnections.get(newSerial);
-	    SerialMonitor.this.mySerialConnections.remove(newSerial);
-	    newSerial.removeListener(theListener);
-	    newSerial.dispose();
-	    theListener.dispose();
-	    SerialPortsUpdated();
-=======
 
 	/**
 	 * Connect to a serial port and sets the listener
@@ -587,7 +513,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			theListener.dispose();
 			SerialPortsUpdated();
 		}
->>>>>>> moved serial monitor commands and toggles to view action bar
 	}
 
 	/**
