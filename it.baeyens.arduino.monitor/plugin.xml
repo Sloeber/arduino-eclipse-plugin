@@ -15,7 +15,7 @@
       <view
             category="it.baeyens.arduino.monitor"
             class="it.baeyens.arduino.monitor.views.ScopeView"
-            icon="icons/Oscilloscope.png"
+            icon="icons/oscilloscope.png"
             id="it.baeyens.arduino.monitor.views.ScopeView"
             name="Scope"
             restorable="true">
