@@ -18,6 +18,9 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 
 public class ArduinoSerial {
+
+    private ArduinoSerial() {}
+
     /**
      * This method resets arduino based on setting the baud rate. Used for due,
      * Leonardo and others
@@ -53,36 +56,36 @@ public class ArduinoSerial {
      * Waits for a serial port to appear. It is assumed that the default comport
      * is not available on the system
      * 
-     * @param OriginalPorts
+     * @param originalPorts
      *            The ports available on the system
      * @param defaultComPort
      *            The port to return if no new com port is found
      * @return the new comport if found else the defaultComPort
      */
-    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> OriginalPorts,
+    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> originalPorts,
 	    String defaultComPort) {
 
 	Vector<String> NewPorts;
 	Vector<String> NewPortsCopy;
 
 	// wait for port to disappear and appear
-	int NumTries = 0;
-	int MaxTries = 40; // wait for max 10 seconds as arduino does
+	int numTries = 0;
+	int maxTries = 40; // wait for max 10 seconds as arduino does
 	int delayMs = 250;
-	int PrefNewPortsCopySize = -10;
+	int prefNewPortsCopySize = -10;
 	do {
 
 	    NewPorts = Serial.list();
 
 	    NewPortsCopy = new Vector<>(NewPorts);
-	    for (int i = 0; i < OriginalPorts.size(); i++) {
-		NewPortsCopy.remove(OriginalPorts.get(i));
+	    for (int i = 0; i < originalPorts.size(); i++) {
+		NewPortsCopy.remove(originalPorts.get(i));
 	    }
 
 	    /* dump the serial ports to the console */
 	    console.print("PORTS {"); //$NON-NLS-1$
-	    for (int i = 0; i < OriginalPorts.size(); i++) {
-		console.print(' ' + OriginalPorts.get(i) + ',');
+	    for (int i = 0; i < originalPorts.size(); i++) {
+		console.print(' ' + originalPorts.get(i) + ',');
 	    }
 	    console.print("} / {"); //$NON-NLS-1$
 	    for (int i = 0; i < NewPorts.size(); i++) {
@@ -97,18 +100,18 @@ public class ArduinoSerial {
 
 	    // code to capture the case: the com port reappears with a name that
 	    // was in the original list
-	    int NewPortsCopySize = NewPorts.size();
-	    if ((NewPortsCopy.size() == 0) && (NewPortsCopySize == PrefNewPortsCopySize + 1)) {
+	    int newPortsCopySize = NewPorts.size();
+	    if ((NewPortsCopy.isEmpty()) && (newPortsCopySize == prefNewPortsCopySize + 1)) {
 		console.println(Messages.ArduinoSerial_Comport_Appeared_and_disappeared);
 		return defaultComPort;
 	    }
-	    PrefNewPortsCopySize = NewPortsCopySize;
+	    prefNewPortsCopySize = newPortsCopySize;
 
-	    if (NumTries++ > MaxTries) {
+	    if (numTries++ > maxTries) {
 		console.println(Messages.ArduinoSerial_Comport_is_not_behaving_as_expected);
 		return defaultComPort;
 	    }
-	    if (NewPortsCopy.size() == 0) // wait a while before we do the next
+	    if (NewPortsCopy.isEmpty()) // wait a while before we do the next
 					  // try
 	    {
 		try {
@@ -118,10 +121,10 @@ public class ArduinoSerial {
 		    // code
 		}
 	    }
-	} while (NewPortsCopy.size() == 0);
+	} while (NewPortsCopy.isEmpty());
 
 	console.println(
-		Messages.ArduinoSerial_Comport_reset_took + (NumTries * delayMs) + Messages.ArduinoSerial_miliseconds);
+		Messages.ArduinoSerial_Comport_reset_took + (numTries * delayMs) + Messages.ArduinoSerial_miliseconds);
 	return NewPortsCopy.get(0);
     }
 
@@ -158,38 +161,33 @@ public class ArduinoSerial {
      * 
      * @param project
      *            The project related to the com port to reset
-     * @param ComPort
+     * @param comPort
      *            The name of the com port to reset
      * @return The com port to upload to
      */
     public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName,
-	    String ComPort) {
-	// ArduinoProperties arduinoProperties = new ArduinoProperties(project);
+	    String comPort) {
 	boolean use_1200bps_touch = Common
 		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
 		.equalsIgnoreCase(Const.TRUE);
-	// boolean bDisableFlushing = Common
-	// .getBuildEnvironmentVariable(project, configName,
-	// Const.ENV_KEY_upload_disable_flushing, Const.FALSE)
-	// .equalsIgnoreCase(Const.TRUE);
-	boolean bwait_for_upload_port = Common
+	boolean bWaitForUploadPort = Common
 		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
 		.equalsIgnoreCase(Const.TRUE);
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME,
 		Const.EMPTY_STRING);
-	String upload_protocol = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_PROTOCOL,
+	String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_PROTOCOL,
 		Const.EMPTY_STRING);
 	/* Teensy uses halfkay protocol and does not require a reset */
-	if (upload_protocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
-	    return ComPort;
+	if (uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
+	    return comPort;
 	}
 	/* end of Teensy and halfkay */
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println(Messages.ArduinoSerial_Using_12000bps_touch);
-	    Vector<String> OriginalPorts = Serial.list();
+	    Vector<String> originalPorts = Serial.list();
 
-	    if (!reset_Arduino_by_baud_rate(ComPort, 1200, 300) /* || */) {
+	    if (!reset_Arduino_by_baud_rate(comPort, 1200, 300) /* || */) {
 		console.println(Messages.ArduinoSerial_reset_failed);
 
 	    } else {
@@ -202,58 +200,49 @@ public class ArduinoSerial {
 			// ignore error
 		    }
 		}
-		if (bwait_for_upload_port) {
-		    String NewComport = wait_for_com_Port_to_appear(console, OriginalPorts, ComPort);
-		    console.println(Messages.ArduinoSerial_Using_comport + NewComport
+		if (bWaitForUploadPort) {
+		    String newComport = wait_for_com_Port_to_appear(console, originalPorts, comPort);
+		    console.println(Messages.ArduinoSerial_Using_comport + newComport
 			    + Messages.ArduinoSerial_From_Now_Onwards);
 		    console.println(Messages.ArduinoSerial_Ending_reset);
-		    return NewComport;
+		    return newComport;
 		}
 	    }
-	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);
-	    return ComPort;
+	    return comPort;
 	}
 
 	// connect to the serial port
 	console.println(Messages.ArduinoSerial_reset_dtr_toggle);
 	Serial serialPort;
 	try {
-	    serialPort = new Serial(ComPort, 9600);
+	    serialPort = new Serial(comPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort, e));
-	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
-	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+		    Messages.ArduinoSerial_exception_while_opening_seral_port + comPort, e));
+	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);
-	    return ComPort;
-	    // throw new RunnerException(e.getMessage());
+	    return comPort;
 	}
 	if (!serialPort.IsConnected()) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_unable_to_open_serial_port + ComPort, null));
-	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + ComPort);
-	    console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+		    Messages.ArduinoSerial_unable_to_open_serial_port + comPort, null));
+	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
+	    console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);
-	    return ComPort;
+	    return comPort;
 	}
 
-	// if (!bDisableFlushing) {
-	// // Cleanup the serial buffer
-	// console.println(Messages.ArduinoSerial_Flushing_buffer);
-	// flushSerialBuffer(serialPort);// I wonder is this code on the right
-	// // place (I mean before the reset?;
-	// // shouldn't it be after?)
-	// }
-	// reset arduino
 	console.println(Messages.ArduinoSerial_23);
 	ToggleDTR(serialPort, 100);
 
 	serialPort.dispose();
-	console.println(Messages.ArduinoSerial_Continuing_to_use + ComPort);
+	console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	console.println(Messages.ArduinoSerial_Ending_reset);
-	return ComPort;
+	return comPort;
 
     }
 }

@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -17,11 +16,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.Activator;
 
-public class Library implements Comparator<Library> {
+public class Library implements Comparable<Library> {
 
     private String name;
     private String version;
@@ -151,8 +150,8 @@ public class Library implements Comparator<Library> {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_'))
-		.append(this.version).toString());
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX)
+		.append(this.name.replace(' ', '_')).append(this.version).toString());
     }
 
     public boolean isInstalled() {
@@ -210,8 +209,8 @@ public class Library implements Comparator<Library> {
     }
 
     @Override
-    public int compare(Library o1, Library o2) {
-	return o1.getName().compareTo(o2.getName());
+    public int compareTo(Library other) {
+	return this.name.compareTo(other.name);
     }
 
     public IStatus remove(IProgressMonitor monitor) {
@@ -222,7 +221,8 @@ public class Library implements Comparator<Library> {
 	try {
 	    FileUtils.deleteDirectory(getInstallPath().toFile());
 	} catch (IOException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), e); //$NON-NLS-1$
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
+		    e);
 	}
 
 	return Status.OK_STATUS;

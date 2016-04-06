@@ -65,8 +65,8 @@ public class Activator implements BundleActivator {
 
     private static void testKnownIssues() {
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	    String bashCommand = "bash --version"; //$NON-NLS-1$
-	    String shCommand = "sh --version"; //$NON-NLS-1$
+	    String bashCommand = "where bash"; //$NON-NLS-1$
+	    String shCommand = "where sh"; //$NON-NLS-1$
 	    boolean bashFound = false;
 	    ExternalCommandLauncher bashCommandLauncher = new ExternalCommandLauncher(bashCommand);
 	    try {
