@@ -145,12 +145,12 @@ public class ArduinoPlatform {
 	    this.platformProperties = new Properties();
 	    try (BufferedReader reader = new BufferedReader(new FileReader(getPlatformFile()))) {
 		// There are regex's here and need to preserve the \'s
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder builder = new StringBuilder();
 		for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-		    buffer.append(line.replace("\\", "\\\\")); //$NON-NLS-1$ //$NON-NLS-2$
-		    buffer.append('\n');
+		    builder.append(line.replace("\\", "\\\\")); //$NON-NLS-1$ //$NON-NLS-2$
+		    builder.append('\n');
 		}
-		try (Reader reader1 = new StringReader(buffer.toString())) {
+		try (Reader reader1 = new StringReader(builder.toString())) {
 		    this.platformProperties.load(reader1);
 		}
 	    } catch (IOException e) {
