@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -17,8 +16,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.Activator;
 
 public class Library implements Comparable<Library> {
@@ -151,8 +150,8 @@ public class Library implements Comparable<Library> {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX).append(this.name.replace(' ', '_'))
-		.append(this.version).toString());
+	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX)
+		.append(this.name.replace(' ', '_')).append(this.version).toString());
     }
 
     public boolean isInstalled() {
@@ -222,7 +221,8 @@ public class Library implements Comparable<Library> {
 	try {
 	    FileUtils.deleteDirectory(getInstallPath().toFile());
 	} catch (IOException e) {
-	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), e); //$NON-NLS-1$
+	    return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
+		    e);
 	}
 
 	return Status.OK_STATUS;

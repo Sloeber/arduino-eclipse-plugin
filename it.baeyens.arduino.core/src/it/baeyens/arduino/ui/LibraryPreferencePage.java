@@ -72,7 +72,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
 	desc.setLayoutData(layoutData);
 	desc.setBackground(parent.getBackground());
-	desc.setText("Add/remove libraries or change their version.");
+	desc.setText(Messages.LibraryPreferencePage_add_remove);
 	this.createTree(control);
 
 	return control;
@@ -110,10 +110,9 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	    protected boolean isLeafMatch(final Viewer viewer1, final Object element) {
 
 		int numberOfColumns = ((TreeViewer) viewer1).getTree().getColumnCount();
-		LibraryLabelProvider labelProvider = (LibraryLabelProvider) ((TreeViewer) viewer1).getLabelProvider();
 		boolean isMatch = false;
 		for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
-		    String labelText = labelProvider.getColumnText(element, columnIndex);
+		    String labelText = LibraryLabelProvider.getColumnText(element, columnIndex);
 		    isMatch |= wordMatches(labelText);
 		}
 		return isMatch;
@@ -121,6 +120,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 	};
 
 	this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true) {
+	    @SuppressWarnings("synthetic-access")
 	    @Override
 	    protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
 		CheckboxTreeViewer viewer1 = new CheckboxTreeViewer(composite);
@@ -513,7 +513,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 			return this.compareParts(other, level + 1);
 		    }
 		    try {
-			return new Integer(this.parts[level]).compareTo(Integer.parseInt(other[level]));
+			return new Integer(this.parts[level]).compareTo(new Integer(Integer.parseInt(other[level])));
 		    } catch (Exception e) {
 			return this.parts[level].compareTo(other[level]);
 		    }
@@ -535,7 +535,7 @@ public class LibraryPreferencePage extends PreferencePage implements IWorkbenchP
 		for (it.baeyens.arduino.managers.Library library : libraryIndex.getLibraries(categoryName)) {
 		    Library lib = category.libraries.get(library.getName());
 		    if (lib == null) {
-			StringBuilder builder = new StringBuilder("Architectures: ")
+			StringBuilder builder = new StringBuilder(Messages.LibraryPreferencePage_architectures)
 				.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
 				.append(library.getSentence());
 			lib = new Library(category, library.getName(), builder.toString());

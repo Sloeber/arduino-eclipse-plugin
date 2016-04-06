@@ -98,6 +98,10 @@ public class Messages extends NLS {
 
     public static String json_update;
 
+    public static String LibraryPreferencePage_add_remove;
+
+    public static String LibraryPreferencePage_architectures;
+
     public static String SampleSelector_num_selected;
 
     static {
