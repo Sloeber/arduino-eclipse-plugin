@@ -64,6 +64,8 @@ public class Manager {
 	static private List<PackageIndex> packageIndices;
 	static private LibraryIndex libraryIndex;
 
+	private Manager() {}
+
 	private static void internalLoadIndices() {
 		String[] boardUrls = ConfigurationPreferences.getBoardURLList();
 		packageIndices = new ArrayList<>(boardUrls.length);
@@ -100,7 +102,7 @@ public class Manager {
 				if (pkg != null) {
 					ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
 					if (platform == null) {
-						ArduinoPlatform platformList[] = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
+						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
 						pkg.getLatestPlatforms().toArray(platformList);
 						platform = platformList[0];
 					}
@@ -169,7 +171,6 @@ public class Manager {
 			}
 		}
 
-		// mstatus.add(make_eclipse_plugin_txt_file(platform));
 		return mstatus.getChildren().length == 0 ? Status.OK_STATUS : mstatus;
 
 	}
@@ -327,8 +328,8 @@ public class Manager {
 		return platforms;
 	}
 
-	public static ArduinoPlatform getPlatform(String PlatformTxt) {
-		String searchString = new File(PlatformTxt).toString();
+	public static ArduinoPlatform getPlatform(String platformTxt) {
+		String searchString = new File(platformTxt).toString();
 		for (PackageIndex index : packageIndices) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
@@ -627,8 +628,8 @@ public class Manager {
 		}
 
 		// Set folders timestamps
-		for (File folder : foldersTimestamps.keySet()) {
-			folder.setLastModified(foldersTimestamps.get(folder).longValue());
+		for (Map.Entry<File, Long> entry : foldersTimestamps.entrySet()) {
+			entry.getKey().setLastModified(entry.getValue().longValue());
 		}
 
 		return Status.OK_STATUS;
@@ -672,7 +673,7 @@ public class Manager {
 
 			// if size is not available, copy until EOF...
 			if (size == -1) {
-				byte buffer[] = new byte[4096];
+				byte[] buffer = new byte[4096];
 				int length;
 				while ((length = in.read(buffer)) != -1) {
 					fos.write(buffer, 0, length);
@@ -681,7 +682,7 @@ public class Manager {
 			}
 
 			// ...else copy just the needed amount of bytes
-			byte buffer[] = new byte[4096];
+			byte[] buffer = new byte[4096];
 			long leftToWrite = size;
 			while (leftToWrite > 0) {
 				int length = in.read(buffer);
