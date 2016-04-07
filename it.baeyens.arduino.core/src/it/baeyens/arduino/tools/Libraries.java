@@ -1,5 +1,6 @@
 package it.baeyens.arduino.tools;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,7 +48,8 @@ public class Libraries {
 	    for (String curFolder : children) {
 		// Get filename of file or directory
 		IPath LibPath = ipath.append(curFolder);
-		if (LibPath.toFile().isDirectory()) {
+		File LibPathFile = LibPath.toFile(); 
+		if (LibPathFile.isDirectory() && !LibPathFile.isHidden()) {
 		    ret.put(curFolder, LibPath);
 		}
 	    }
