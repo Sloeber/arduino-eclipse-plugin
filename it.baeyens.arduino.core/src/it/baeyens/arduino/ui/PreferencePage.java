@@ -95,12 +95,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	this.arduinoPrivateLibPath = new PathEditor(Const.KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
 		Messages.ui_private_lib_path_help, parent);
 	addField(this.arduinoPrivateLibPath);
-	this.arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
 
 	this.arduinoPrivateHardwarePath = new PathEditor(Const.KEY_PRIVATE_HARDWARE_PATHS,
 		Messages.ui_private_hardware_path, Messages.ui_private_hardware_path_help, parent);
 	addField(this.arduinoPrivateHardwarePath);
-	this.arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
 
 	Dialog.applyDialogFont(parent);
 	createLine(parent, 4);
