@@ -328,7 +328,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getLastUsedExamples() {
-	return getGlobalString(KEY_LAST_USED_EXAMPLES, Common.getDefaultPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
+	return getGlobalString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
     }
 
     public static void setLastUsedExamples(String[] exampleNames) {
@@ -336,8 +336,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath())
-		.split(File.pathSeparator);
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath()).split(File.pathSeparator);
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
@@ -345,8 +344,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath())
-		.split(File.pathSeparator);
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath()).split(File.pathSeparator);
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {

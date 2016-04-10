@@ -103,7 +103,7 @@ public class ConfigurationPreferences {
     }
 
     public static String getBoardURLs() {
-	return getGlobalString(Const.KEY_MANAGER_BOARD_URLS, Const.DEFAULT_MANAGER_BOARD_URLS);
+	return getGlobalString(Const.KEY_MANAGER_BOARD_URLS, Defaults.PLATFORM_URLS);
     }
 
     public static String[] getBoardURLList() {

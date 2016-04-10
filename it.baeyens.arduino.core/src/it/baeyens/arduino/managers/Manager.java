@@ -51,15 +51,11 @@ import com.google.gson.Gson;
 
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
+import it.baeyens.arduino.common.Defaults;
 import it.baeyens.arduino.ui.Activator;
 
 public class Manager {
 
-    private static final String ARDUINO_AVR_BOARDS = "Arduino AVR Boards"; //$NON-NLS-1$
-
-    public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
-    public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip"; //$NON-NLS-1$
-    public static final String EXAMPLES_URL = "http://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE; //$NON-NLS-1$
     static private List<PackageIndex> packageIndices;
     static private LibraryIndex libraryIndex;
 
@@ -90,17 +86,16 @@ public class Manager {
 		// InformUserOfInstallationStart(monitor);
 		// so first do the libraries
 
-		InstallLibraries(monitor);
+		InstallDefaultLibraries(monitor);
 
 		// Downmload sample programs
-		downloadAndInstall(EXAMPLES_URL, EXAMPLE_PACKAGE,
+		downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
 			Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
 
 		// now add the boards
-		String platformName = ARDUINO_AVR_BOARDS;
 		Package pkg = packageIndices.get(0).getPackages().get(0);
 		if (pkg != null) {
-		    ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
+		    ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
 		    if (platform == null) {
 			ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
 			pkg.getLatestPlatforms().toArray(platformList);
@@ -117,11 +112,10 @@ public class Manager {
 
     }
 
-    private static void InstallLibraries(IProgressMonitor monitor) {
+    private static void InstallDefaultLibraries(IProgressMonitor monitor) {
 	LibraryIndex libindex = getLibraryIndex();
-	String[] libraries = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard", "LiquidCrystal", "Mouse", "SD", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-		"Servo", "Stepper", "TFT", "WiFi" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	for (String library : libraries) {
+
+	for (String library : Defaults.INSTALLED_LIBRARIES) {
 	    Library toInstalLib = libindex.getLatestLibrary(library);
 	    if (toInstalLib != null) {
 		toInstalLib.install(monitor);
@@ -262,7 +256,7 @@ public class Manager {
 
     private static void loadLibraryIndex(boolean download) {
 	try {
-	    URL librariesUrl = new URL(LIBRARIES_URL);
+	    URL librariesUrl = new URL(Defaults.LIBRARIES_URL);
 	    String localFileName = Paths.get(librariesUrl.getPath()).getFileName().toString();
 	    Path librariesPath = Paths
 		    .get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());

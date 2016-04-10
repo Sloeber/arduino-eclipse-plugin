@@ -17,9 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -352,23 +350,6 @@ public class Common extends InstancePreferences {
 	} catch (Exception e) {// ignore all errors and return the default value
 	}
 	return defaultvalue;
-    }
-
-    /**
-     * Arduino has the default libraries in the user home directory in subfolder
-     * Arduino/libraries. As the home directory is platform dependent getting
-     * the value is resolved by this method
-     * 
-     * @return the folder where Arduino puts the libraries by default.
-     */
-    public static String getDefaultPrivateLibraryPath() {
-	IPath homPath = new Path(System.getProperty("user.home")); //$NON-NLS-1$
-	return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString(); //$NON-NLS-1$
-    }
-
-    public static String getDefaultPrivateHardwarePath() {
-	IPath homPath = new Path(System.getProperty("user.home")); //$NON-NLS-1$
-	return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toString(); //$NON-NLS-1$ }
     }
 
     public static File getWorkspaceRoot() {
