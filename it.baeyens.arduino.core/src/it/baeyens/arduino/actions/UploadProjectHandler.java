@@ -81,7 +81,7 @@ class UploadJobHandler extends Job {
 				job.setPriority(Job.DECORATE);
 				job.schedule();
 				if (hasBuildErrors()) {
-					throw new CoreException(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Build completed with errors."));
+					throw new CoreException(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.UploadProjectHandler_build_failed));
 				}
 			} catch (CoreException e) {
 				Display.getDefault().asyncExec(new Runnable() {
