@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
@@ -811,7 +812,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	for (Entry<String, List<IPath>> entry : entrySet) {
 	    String macroName = entry.getKey();
 	    List<IPath> newMacroValue = entry.getValue();
-	    HashMap<String, List<IPath>> map = makeGen.getBuildOutputVars();
+	    Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
 	    if (map.containsKey(macroName)) {
 		List<IPath> macroValue = map.get(macroName);
 		macroValue.addAll(newMacroValue);
@@ -1022,7 +1023,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	for (Entry<String, List<IPath>> entry : entrySet) {
 	    String macroName = entry.getKey();
 	    List<IPath> newMacroValue = entry.getValue();
-	    HashMap<String, List<IPath>> map = makeGen.getBuildOutputVars();
+	    Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
 	    if (map.containsKey(macroName)) {
 		List<IPath> macroValue = map.get(macroName);
 		macroValue.addAll(newMacroValue);
@@ -1047,7 +1048,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
      * Calculate the source macro for the given extension
      */
     protected String calculateSourceMacro(ArduinoGnuMakefileGenerator makeGen, String srcExtensionName, String outExtensionName, String wildcard) {
-	StringBuffer macroName = makeGen.getSourceMacroName(srcExtensionName);
+	StringBuilder macroName = makeGen.getSourceMacroName(srcExtensionName);
 	String OptDotExt = ""; //$NON-NLS-1$
 	if (outExtensionName != null) {
 	    OptDotExt = DOT + outExtensionName;
