@@ -232,14 +232,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		this.lineTerminator = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
 		this.lineTerminator.setContentProvider(new ArrayContentProvider());
 		this.lineTerminator.setLabelProvider(new LabelProvider());
-		// TODO remove the comment line below
-		// just add a line to make jenkins publis
 		this.lineTerminator.setInput(Common.listLineEndings());
 		this.lineTerminator.getCombo().select(InstancePreferences.getLastUsedSerialLineEnd());
 		this.lineTerminator.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			@Override
-			public void selectionChanged(SelectionChangedEvent arg0) {
+			public void selectionChanged(SelectionChangedEvent event) {
 				InstancePreferences.setLastUsedSerialLineEnd(lineTerminator.getCombo().getSelectionIndex());
 			}
 		});
