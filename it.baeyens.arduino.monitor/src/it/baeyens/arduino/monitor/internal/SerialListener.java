@@ -16,9 +16,15 @@ import it.baeyens.arduino.monitor.views.SerialMonitor;
 
 public class SerialListener implements MessageConsumer {
     private static boolean myScopeFilterFlag = false;
-    SerialMonitor TheMonitor;
+    SerialMonitor theMonitor;
     int theColorIndex;
     private ByteBuffer myReceivedScopeData = ByteBuffer.allocate(2000);
+
+    public SerialListener(SerialMonitor monitor, int colorIndex) {
+	this.theMonitor = monitor;
+	this.theColorIndex = colorIndex;
+	this.myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
+    }
 
     public int removeBytesFromStart(int n) {
 	if (n == 0) {
@@ -33,12 +39,6 @@ public class SerialListener implements MessageConsumer {
 	}
 
 	return this.myReceivedScopeData.position(index).position();
-    }
-
-    public SerialListener(SerialMonitor Monitor, int ColorIndex) {
-	this.TheMonitor = Monitor;
-	this.theColorIndex = ColorIndex;
-	this.myReceivedScopeData.order(ByteOrder.LITTLE_ENDIAN);
     }
 
     @Override
@@ -64,18 +64,14 @@ public class SerialListener implements MessageConsumer {
 
     private void internalExtractAndRemoveScopeData() {
 
-	String MonitorMessage = Const.EMPTY_STRING;
+	String monitorMessage = Const.EMPTY_STRING;
 	boolean doneSearching = false;
 	int length = this.myReceivedScopeData.position();
-	// System.out.println(""); //$NON-NLS-1$
-	// System.out.print("start :>"); //$NON-NLS-1$
-	// System.out.print(new String(this.myReceivedScopeData.array()));
-	// System.out.println("<"); //$NON-NLS-1$
 	int searchPointer;
 	for (searchPointer = 0; (searchPointer < length - 1) && !doneSearching; searchPointer++) {
 	    if (this.myReceivedScopeData.getShort(searchPointer) != Const.SCOPE_START_DATA) {
 		char addChar = (char) this.myReceivedScopeData.get(searchPointer);
-		MonitorMessage += Character.toString(addChar);
+		monitorMessage += Character.toString(addChar);
 	    } else {
 		// have we received the full header of the scope data?
 		if (length < (searchPointer + 6)) {
@@ -122,18 +118,12 @@ public class SerialListener implements MessageConsumer {
 			addChar = ' ';
 		    }
 		    searchPointer++;
-		    MonitorMessage += Character.toString((char) addChar);
+		    monitorMessage += Character.toString((char) addChar);
 		}
 	    }
 	    removeBytesFromStart(searchPointer);
 	}
-
-	// System.out.print("done :"); //$NON-NLS-1$
-	// System.out.print(" :>"); //$NON-NLS-1$
-	// System.out.print(MonitorMessage);
-	// System.out.println("<"); //$NON-NLS-1$
-
-	event(MonitorMessage);
+	event(monitorMessage);
     }
 
     @Override
@@ -143,12 +133,12 @@ public class SerialListener implements MessageConsumer {
 
     @Override
     public void event(String event) {
-	final String TempString = new String(event);
+	final String tempString = new String(event);
 	Display.getDefault().asyncExec(new Runnable() {
 	    @Override
 	    public void run() {
 		try {
-		    SerialListener.this.TheMonitor.ReportSerialActivity(TempString, SerialListener.this.theColorIndex);
+		    SerialListener.this.theMonitor.ReportSerialActivity(tempString, SerialListener.this.theColorIndex);
 		} catch (Exception e) {// ignore as we get errors when closing
 				       // down
 		}

@@ -58,7 +58,7 @@ public class RenameFolderChangeHandler extends Change {
 	for (int curProject = 0; curProject < projects.length; curProject++) {
 	    ICProjectDescription projectDescription = mngr.getProjectDescription(projects[curProject], true);
 	    if (projectDescription != null) { // if the description is null it probably is not a cdt project
-		ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
+		ICConfigurationDescription[] configurationDescriptions = projectDescription.getConfigurations();
 		boolean projectDescriptionChanged = false;
 		for (int curConfigDescription = 0; curConfigDescription < configurationDescriptions.length; curConfigDescription++) {
 
@@ -68,27 +68,25 @@ public class RenameFolderChangeHandler extends Change {
 		    // Add include path to all languages
 		    for (int idx = 0; idx < languageSettings.length; idx++) {
 			ICLanguageSetting lang = languageSettings[idx];
-			String LangID = lang.getLanguageId();
-			if (LangID != null) {
-			    if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
+			String langId = lang.getLanguageId();
+			if (langId != null && langId.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
 				boolean languageChanged = false;
-				ICLanguageSettingEntry[] IncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-				for (int curIncludeEntry = 0; curIncludeEntry < IncludeEntries.length; curIncludeEntry++) {
-				    if (IncludeEntries[curIncludeEntry].getName().startsWith(this.myOldName)) {
-					String newValue = IncludeEntries[curIncludeEntry].getName().replace(this.myOldName, this.myNewName);
+				ICLanguageSettingEntry[] includeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
+				for (int curIncludeEntry = 0; curIncludeEntry < includeEntries.length; curIncludeEntry++) {
+				    if (includeEntries[curIncludeEntry].getName().startsWith(this.myOldName)) {
+					String newValue = includeEntries[curIncludeEntry].getName().replace(this.myOldName, this.myNewName);
 					languageChanged = true;
 					projectDescriptionChanged = true;
-					IncludeEntries[curIncludeEntry] = new CIncludePathEntry(newValue, ICSettingEntry.VALUE_WORKSPACE_PATH);
+					includeEntries[curIncludeEntry] = new CIncludePathEntry(newValue, ICSettingEntry.VALUE_WORKSPACE_PATH);
 					Activator.getDefault().getLog()
 						.log(new Status(IStatus.INFO, "it.baeyens.cdt.refactor", //$NON-NLS-1$
 							"changed path from " + this.myOldName + " to " //$NON-NLS-1$ //$NON-NLS-2$
 								+ this.myNewName));
 				    }
 				}
-				if (languageChanged) {
-				    lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-				}
-			    }
+			if (languageChanged) {
+				lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, includeEntries);
+			}
 			}
 		    }
 		}
