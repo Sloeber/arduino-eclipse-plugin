@@ -15,6 +15,7 @@ public class Messages extends NLS {
     public static String BuildHandler_No_Project_found;
     public static String BuildHandler_Start_Build_Activator;
     public static String ReattachLibraries_no_project_found;
+    public static String UploadProjectHandler_build_failed;
 
     static {
 	// initialize resource bundle

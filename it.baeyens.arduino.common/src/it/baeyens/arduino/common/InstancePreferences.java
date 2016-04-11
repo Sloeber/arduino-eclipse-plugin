@@ -26,7 +26,7 @@ import org.osgi.service.prefs.BackingStoreException;
 public class InstancePreferences extends Const {
 
     public static boolean getOpenSerialWithMonitor() {
-	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, true);
+	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
     }
 
     public static void setOpenSerialWithMonitor(boolean value) {
@@ -39,7 +39,7 @@ public class InstancePreferences extends Const {
      * @return true if libraries need to be added else false.
      */
     public static boolean getAutomaticallyIncludeLibraries() {
-	return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
+	return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, Defaults.AUTO_IMPORT_LIBRARIES);
     }
 
     public static void setAutomaticallyIncludeLibraries(boolean value) {
@@ -328,7 +328,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getLastUsedExamples() {
-	return getGlobalString(KEY_LAST_USED_EXAMPLES, Common.getDefaultPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
+	return getGlobalString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n"); //$NON-NLS-1$
     }
 
     public static void setLastUsedExamples(String[] exampleNames) {
@@ -336,8 +336,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Common.getDefaultPrivateLibraryPath())
-		.split(File.pathSeparator);
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath()).split(File.pathSeparator);
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
@@ -345,8 +344,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Common.getDefaultPrivateHardwarePath())
-		.split(File.pathSeparator);
+	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath()).split(File.pathSeparator);
     }
 
     public static void setPrivateHardwarePaths(String[] folderName) {

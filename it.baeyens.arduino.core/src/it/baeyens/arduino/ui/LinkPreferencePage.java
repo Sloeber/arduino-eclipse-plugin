@@ -32,6 +32,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.Defaults;
 import it.baeyens.arduino.managers.Manager;
 
 public class LinkPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -67,6 +68,7 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 
 	if (this.upDateJsons.getBooleanValue()) {
 	    toDeleteJsons.addAll(newSelectedJsons);
+	    toDeleteJsons.add(Defaults.LIBRARIES_URL);
 	} else // only delete the removed ones
 	{
 	    toDeleteJsons.removeAll(newSelectedJsons);
@@ -83,10 +85,8 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
     @Override
     protected void performDefaults() {
 	super.performDefaults();
-	String defaultBoardUrl = Const.DEFAULT_MANAGER_BOARD_URLS;
-	this.urlsText.setStringValue(defaultBoardUrl);
-	ConfigurationPreferences.setBoardURLs(defaultBoardUrl);
-
+	this.urlsText.setStringValue(Defaults.PLATFORM_URLS);
+	ConfigurationPreferences.setBoardURLs(Defaults.PLATFORM_URLS);
     }
 
     @Override

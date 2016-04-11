@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import it.baeyens.arduino.common.Const;
+import it.baeyens.arduino.common.Defaults;
 
 /**
  * ArduinoPreferencePage is the class that is behind the preference page of
@@ -38,7 +39,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     public PreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
 	setDescription(Messages.ui_workspace_settings);
-	setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Const.NODE_ARDUINO));
+	
+	ScopedPreferenceStore preferences = new ScopedPreferenceStore(InstanceScope.INSTANCE, Const.NODE_ARDUINO);
+	preferences.setDefault(Const.KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
+	preferences.setDefault(Const.KEY_AUTO_IMPORT_LIBRARIES, Defaults.AUTO_IMPORT_LIBRARIES);
+	setPreferenceStore(preferences);
     }
 
     @Override
@@ -90,12 +95,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	this.arduinoPrivateLibPath = new PathEditor(Const.KEY_PRIVATE_LIBRARY_PATHS, Messages.ui_private_lib_path,
 		Messages.ui_private_lib_path_help, parent);
 	addField(this.arduinoPrivateLibPath);
-	this.arduinoPrivateLibPath.setPreferenceStore(getPreferenceStore());
 
 	this.arduinoPrivateHardwarePath = new PathEditor(Const.KEY_PRIVATE_HARDWARE_PATHS,
 		Messages.ui_private_hardware_path, Messages.ui_private_hardware_path_help, parent);
 	addField(this.arduinoPrivateHardwarePath);
-	this.arduinoPrivateHardwarePath.setPreferenceStore(getPreferenceStore());
 
 	Dialog.applyDialogFont(parent);
 	createLine(parent, 4);

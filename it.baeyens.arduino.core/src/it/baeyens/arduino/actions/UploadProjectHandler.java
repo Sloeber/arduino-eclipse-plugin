@@ -3,10 +3,13 @@ package it.baeyens.arduino.actions;
 import java.net.URL;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,6 +36,21 @@ class UploadJobHandler extends Job {
 	public UploadJobHandler(IProject buildProject) {
 		super(Messages.ArduinoUploadProjectHandler_Upload_for_project + buildProject.getName());
 		this.myBuildProject = buildProject;
+	}
+	
+	/**
+	 * Checks if build completed successfully.
+	 * @return true iff project was not built successfully last time.
+	 * @throws CoreException if current project does not exist or is not open.
+	 */
+	private boolean hasBuildErrors() throws CoreException {
+		IMarker[] markers = this.myBuildProject.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
+		for (IMarker marker: markers) {
+			if (marker.getAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -62,12 +80,20 @@ class UploadJobHandler extends Job {
 				};
 				job.setPriority(Job.DECORATE);
 				job.schedule();
+				if (hasBuildErrors()) {
+					throw new CoreException(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.UploadProjectHandler_build_failed));
+				}
 			} catch (CoreException e) {
-				Shell theShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.OK);
-				dialog.setText(Messages.ArduinoUploadProjectHandler_Build_failed);
-				dialog.setMessage(Messages.ArduinoUploadProjectHandler_Build_failed_so_no_upload);
-				dialog.open();
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						Shell theShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+						MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.OK);
+						dialog.setText(Messages.ArduinoUploadProjectHandler_Build_failed);
+						dialog.setMessage(Messages.ArduinoUploadProjectHandler_Build_failed_so_no_upload);
+						dialog.open();
+					}
+				});
 				return Status.OK_STATUS;
 			}
 		}

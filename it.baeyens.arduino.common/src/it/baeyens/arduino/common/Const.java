@@ -6,162 +6,153 @@ package it.baeyens.arduino.common;
  * @author Jan Baeyens
  * 
  */
+@SuppressWarnings("nls")
 public class Const {
-    // java stuff
-    public static final String EMPTY_STRING = "";// so I do not //$NON-NLS-1$
-						 // have to add all the time
-    public static final String DOT = ".";// so I do not have to //$NON-NLS-1$
-					 // add all the time
-    public static final String SLACH = "/";// so I do not have to //$NON-NLS-1$
-    // add all the time
-    public static final String COLON = ":";// so I do not have to //$NON-NLS-1$
-					   // add all the time
-    public static final String SPACE = " "; // so I do not have to //$NON-NLS-1$
-					    // add all the time
-    public static final String FALSE = "FALSE";// so I do not have //$NON-NLS-1$
-					       // to add all the time
-    public static final String TRUE = "TRUE";// so I do not have //$NON-NLS-1$
-					     // to add all the time
-    public static final String NEWLINE = "\n";// so I do not have //$NON-NLS-1$
-					      // to add all the time
-    public static final String RETURN = "\r";// so I do not have //$NON-NLS-1$
-    // to add all the time
+    // java stuff so I do not have to add all the time $NON-NLS-1$
+    public static final String EMPTY_STRING = "";
+    public static final String DOT = ".";
+    public static final String SLACH = "/";
+    public static final String COLON = ":";
+    public static final String SPACE = " ";
+    public static final String FALSE = "FALSE";
+    public static final String TRUE = "TRUE";
+    public static final String NEWLINE = "\n";
+    public static final String RETURN = "\r";
+
     // General stuff
-    public static final String PLUGIN_START = "it.baeyens."; //$NON-NLS-1$
-    public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core"; //$NON-NLS-1$
+    public static final String PLUGIN_START = "it.baeyens.";
+    public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
 
     // prefix to be added to the arduino environment
-    protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\"; //$NON-NLS-1$
-    protected static final String UPLOAD_PORT_PREFIX_LINUX = "-P"; //$NON-NLS-1$
-    protected static final String UPLOAD_PORT_PREFIX_MAC = "-P"; //$NON-NLS-1$
+    protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\";
+    protected static final String UPLOAD_PORT_PREFIX_LINUX = "-P";
+    protected static final String UPLOAD_PORT_PREFIX_MAC = "-P";
 
     // natures
-    public static final String CNATURE_ID = "org.eclipse.cdt.core.cnature"; //$NON-NLS-1$
-    public static final String CCNATURE_ID = "org.eclipse.cdt.core.ccnature"; //$NON-NLS-1$
-    public static final String BUILD_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.managedBuildNature";//$NON-NLS-1$
-    public static final String SCANNER_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.ScannerConfigNature";//$NON-NLS-1$
-    public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";//$NON-NLS-1$
+    public static final String CNATURE_ID = "org.eclipse.cdt.core.cnature";
+    public static final String CCNATURE_ID = "org.eclipse.cdt.core.ccnature";
+    public static final String BUILD_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.managedBuildNature";
+    public static final String SCANNER_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.ScannerConfigNature";
+    public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";
 
     // preference nodes
-    public static final String NODE_ARDUINO = PLUGIN_START + "arduino";//$NON-NLS-1$
+    public static final String NODE_ARDUINO = PLUGIN_START + "arduino";
 
     // preference keys
-    public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";//$NON-NLS-1$
-    public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";//$NON-NLS-1$
-    public static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation"; //$NON-NLS-1$
-    public static final String KEY_MANAGER_BOARD_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
-    public static final String DEFAULT_MANAGER_BOARD_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
-	    + System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
+    public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
+    public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
+    public static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation";
+    public static final String KEY_MANAGER_BOARD_URLS = "Arduino Manager board Urls";
 
     // properties keys
-    public static final String KEY_LAST_USED_BOARD = "Board";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_COM_PORT = "upload Port";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_BOARDS_FILE = "boards file";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";//$NON-NLS-1$
-    public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";//$NON-NLS-1$
-    public static final String KEY_UPDATE_JASONS = "Update jsons files";//$NON-NLS-1$
+    public static final String KEY_LAST_USED_BOARD = "Board";
+    public static final String KEY_LAST_USED_COM_PORT = "upload Port";
+    public static final String KEY_LAST_USED_BOARDS_FILE = "boards file";
+    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";
+    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
+    public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
+    public static final String KEY_UPDATE_JASONS = "Update jsons files";
 
     // Serial monitor keys
-    public static final String KEY_SERIAL_RATE = "Serial monitor last selected rate";//$NON-NLS-1$
-    public static final String KEY_SERIAL_PORT = "Serial monitor last selected Port";//$NON-NLS-1$
-    public static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index";//$NON-NLS-1$
-    public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";//$NON-NLS-1$
+    public static final String KEY_SERIAL_RATE = "Serial monitor last selected rate";
+    public static final String KEY_SERIAL_PORT = "Serial monitor last selected Port";
+    public static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index";
+    public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";
     // Folder Information
-    public static final String LIBRARY_PATH_SUFFIX = "libraries";//$NON-NLS-1$
-    public static final String DOWNLOADS_FOLDER = "downloads";//$NON-NLS-1$
-    public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";//$NON-NLS-1$
-    public static final String ARDUINO_CODE_FOLDER_NAME = "core";//$NON-NLS-1$
-    public static final String ARDUINO_CORE_FOLDER_NAME = "cores";//$NON-NLS-1$
-    public static final String DEFAULT = "Default";//$NON-NLS-1$
-    public static final String BOARDS_FILE_NAME = "boards.txt";//$NON-NLS-1$
-    public static final String PLATFORM_FILE_NAME = "platform.txt";//$NON-NLS-1$
-    public static final String VARIANTS_FOLDER_NAME = "variants";//$NON-NLS-1$
-    public static final String PACKAGES_FOLDER_NAME = "packages";//$NON-NLS-1$
+    public static final String LIBRARY_PATH_SUFFIX = "libraries";
+    public static final String DOWNLOADS_FOLDER = "downloads";
+    public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
+    public static final String ARDUINO_CODE_FOLDER_NAME = "core";
+    public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
+    public static final String DEFAULT = "Default";
+    public static final String BOARDS_FILE_NAME = "boards.txt";
+    public static final String PLATFORM_FILE_NAME = "platform.txt";
+    public static final String VARIANTS_FOLDER_NAME = "variants";
+    public static final String PACKAGES_FOLDER_NAME = "packages";
 
     // tags to interpret the arduino input files
-    public static final String BOARD_NAME_KEY_TAG = "name";//$NON-NLS-1$
-    public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot";//$NON-NLS-1$
-    public static final String UPLOAD_SSH = "ssh upload";//$NON-NLS-1$
-    public static final String MENU = "menu";//$NON-NLS-1$
+    public static final String BOARD_NAME_KEY_TAG = "name";
+    public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot";
+    public static final String UPLOAD_SSH = "ssh upload";
+    public static final String MENU = "menu";
 
-    public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";//$NON-NLS-1$
-    public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";//$NON-NLS-1$
-    public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";//$NON-NLS-1$
+    public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";
+    public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";
+    public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";
 
-    public static final String ENV_KEY_BOARD_START = "A.";//$NON-NLS-1$
-    public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
-    public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";//$NON-NLS-1$
-    public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";//$NON-NLS-1$
-    public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_VERSION = ENV_KEY_BOARD_START + "VERSION";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";//$NON-NLS-1$
-    public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN"; //$NON-NLS-1$
+    public static final String ENV_KEY_BOARD_START = "A.";
+    public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
+    public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
+    public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";
+    public static final String ENV_KEY_VERSION = ENV_KEY_BOARD_START + "VERSION";
+    public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";
+    public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";
+    public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";
+    public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";
+    public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";
+    public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";
+    public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";
+    public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN";
 
-    public static final String ENV_KEY_BUILD_VARIANT = ENV_KEY_BOARD_START + "BUILD.VARIANT";//$NON-NLS-1$
-    public static final String ENV_KEY_COMPILER_PATH = ENV_KEY_BOARD_START + "COMPILER.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_SYSTEM_PATH = ENV_KEY_BOARD_START + "BUILD.SYSTEM.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_GENERIC_PATH = ENV_KEY_BOARD_START + "BUILD.GENERIC.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_SOFTWARE = ENV_KEY_BOARD_START + "SOFTWARE";//$NON-NLS-1$
-    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_BOARD_START + "ARCHITECTURE";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_BOARD_START + "BUILD.ARCH";//$NON-NLS-1$
-    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_BOARD_START + "RUNTIME.HARDWARE.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_BOARD_START + "RUNTIME.PLATFORM.PATH";//$NON-NLS-1$
+    public static final String ENV_KEY_BUILD_VARIANT = ENV_KEY_BOARD_START + "BUILD.VARIANT";
+    public static final String ENV_KEY_COMPILER_PATH = ENV_KEY_BOARD_START + "COMPILER.PATH";
+    public static final String ENV_KEY_BUILD_SYSTEM_PATH = ENV_KEY_BOARD_START + "BUILD.SYSTEM.PATH";
+    public static final String ENV_KEY_BUILD_GENERIC_PATH = ENV_KEY_BOARD_START + "BUILD.GENERIC.PATH";
+    public static final String ENV_KEY_SOFTWARE = ENV_KEY_BOARD_START + "SOFTWARE";
+    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_BOARD_START + "ARCHITECTURE";
+    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_BOARD_START + "BUILD.ARCH";
+    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_BOARD_START + "RUNTIME.HARDWARE.PATH";
+    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_BOARD_START + "RUNTIME.PLATFORM.PATH";
 
-    public static final String ENV_KEY_BUILD_PATH = ENV_KEY_BOARD_START + "BUILD.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_PROJECT_NAME = ENV_KEY_BOARD_START + "BUILD.PROJECT_NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_VARIANT_PATH = ENV_KEY_BOARD_START + "BUILD.VARIANT.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";//$NON-NLS-1$
-    public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";//$NON-NLS-1$
-    public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";//$NON-NLS-1$
-    public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";//$NON-NLS-1$
-    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";//$NON-NLS-1$
-    public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";//$NON-NLS-1$
-    public static final String ENV_KEY_USE_ARCHIVER = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";//$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_BOARD_START + "SERIAL.PORT";//$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_BOARD_START + "SERIAL.PORT.FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_BUILD_PATH = ENV_KEY_BOARD_START + "BUILD.PATH";
+    public static final String ENV_KEY_BUILD_PROJECT_NAME = ENV_KEY_BOARD_START + "BUILD.PROJECT_NAME";
+    public static final String ENV_KEY_BUILD_VARIANT_PATH = ENV_KEY_BOARD_START + "BUILD.VARIANT.PATH";
+    public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";
+    public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
+    public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
+    public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";
+    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
+    public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
+    public static final String ENV_KEY_USE_ARCHIVER = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";
+    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_BOARD_START + "SERIAL.PORT";
+    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_BOARD_START + "SERIAL.PORT.FILE";
 
-    public static final String ENV_KEY_JANTJE_START = "JANTJE.";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_BOARD_START + "ALT_SIZE_COMMAND";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_START = "JANTJE.";
+    public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
+    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_BOARD_START + "ALT_SIZE_COMMAND";
+    public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
+    public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
+    public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
-	    + "REFERENCED_PLATFORM_FILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";//$NON-NLS-1$
+	    + "REFERENCED_PLATFORM_FILE";
+    public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
+    public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
-	    + "EXTRA.CPP.COMPILE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";//$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";//$NON-NLS-1$
+	    + "EXTRA.CPP.COMPILE";
+    public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";
+    public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
+    public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";
+    public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";
+    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";
+    public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";
+    public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
     //
     // template Sketch information
 
-    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";//$NON-NLS-1$
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
-	    + "TEMPLATE_USE_DEFAULT";//$NON-NLS-1$
+	    + "TEMPLATE_USE_DEFAULT";
 
-    public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";//$NON-NLS-1$
-    public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";//$NON-NLS-1$
+    public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
+    public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
 
-    public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";//$NON-NLS-1$
-    public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";//$NON-NLS-1$
+    public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
+    public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
     // scope stuff
     public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
 								// 205 171 or
@@ -171,12 +162,12 @@ public class Const {
 								// scope data is
 								// following
     // least significant first 0xCDAB;
-    public static final String EXAMPLE_FOLDER_NAME = "examples";//$NON-NLS-1$
+    public static final String EXAMPLE_FOLDER_NAME = "examples";
 
-    public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
-    public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
-    public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
-    public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt"; //$NON-NLS-1$
-    public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__"; //$NON-NLS-1$
+    public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
+    public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt";
+    public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
+    public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
+    public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 
 }
