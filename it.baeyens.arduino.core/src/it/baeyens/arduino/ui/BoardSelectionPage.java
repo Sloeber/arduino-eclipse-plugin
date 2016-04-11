@@ -350,8 +350,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
 	InstancePreferences.setLastUsedBoardsFile(boardFile);
-	InstancePreferences.SetLastUsedArduinoBoard(boardName);
-	InstancePreferences.SetLastUsedUploadPort(uploadPort);
+	InstancePreferences.setLastUsedArduinoBoard(boardName);
+	InstancePreferences.setLastUsedUploadPort(uploadPort);
 
 	Map<String, String> options = new HashMap<>();
 	for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {

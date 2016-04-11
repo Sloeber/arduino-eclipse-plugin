@@ -21,8 +21,10 @@ import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -118,8 +120,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// The serial connections that are open with the listeners listening to this
 	// port
 	protected Map<Serial, SerialListener> serialConnections;
-	// the last used index of the lineTerminator combo
-	protected int lastUsedIndex;
 
 	private static final String myFlagMonitor = "FmStatus"; //$NON-NLS-1$
 	String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
@@ -174,8 +174,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	@Override
 	public void dispose() {
 		Common.UnRegisterSerialUser();
-		InstancePreferences.SetLastUsedSerialLineEnd(this.lastUsedIndex);
-		InstancePreferences.setLastUsedAutoScroll(!this.scrollLock.isChecked());
 
 		for (Entry<Serial, SerialListener> entry : this.serialConnections.entrySet()) {
 			entry.getValue().dispose();
@@ -237,7 +235,14 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		// TODO remove the comment line below
 		// just add a line to make jenkins publis
 		this.lineTerminator.setInput(Common.listLineEndings());
-		this.lineTerminator.getCombo().select(InstancePreferences.GetLastUsedSerialLineEnd());
+		this.lineTerminator.getCombo().select(InstancePreferences.getLastUsedSerialLineEnd());
+		this.lineTerminator.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent arg0) {
+				InstancePreferences.setLastUsedSerialLineEnd(lineTerminator.getCombo().getSelectionIndex());
+			}
+		});
 
 		this.send = new Button(top, SWT.BUTTON1);
 		this.send.setText(Messages.SerialMonitor_send);
@@ -245,9 +250,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SerialMonitor.this.lastUsedIndex = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
-				GetSelectedSerial().write(SerialMonitor.this.sendString.getText(),
-						Common.getLineEnding(SerialMonitor.this.lastUsedIndex)); // System.getProperty("line.separator"));
+				int index = lineTerminator.getCombo().getSelectionIndex();
+				GetSelectedSerial().write(sendString.getText(), Common.getLineEnding(index));
 				SerialMonitor.this.sendString.setText(Const.EMPTY_STRING);
 				SerialMonitor.this.sendString.setFocus();
 			}
@@ -265,9 +269,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SerialMonitor.this.lastUsedIndex = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
 				GetSelectedSerial().reset();
-				SerialMonitor.this.sendString.setFocus();
+				sendString.setFocus();
 			}
 
 			@Override
@@ -435,7 +438,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * methoid to make sure the visualisation is correct
+	 * method to make sure the visualization is correct
 	 */
 	void SerialPortsUpdated() {
 		this.disconnect.setEnabled(this.serialConnections.size() != 0);
@@ -463,9 +466,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * Connect to a serial port and sets the listener
 	 * 
 	 * @param ComPort
-	 *            the name of the comport to connect to
+	 *            the name of the com port to connect to
 	 * @param BaudRate
-	 *            the bautrate to connect to the com port
+	 *            the baud rate to connect to the com port
 	 */
 	public void connectSerial(String ComPort, int BaudRate) {
 		if (this.serialConnections.size() < myMaxSerialPorts) {
