@@ -35,6 +35,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     private ComboFieldEditor buildBeforeUploadOption;
     private BooleanFieldEditor openSerialMonitorOpensSerialsOption;
     private BooleanFieldEditor automaticallyImportLibrariesOption;
+    private BooleanFieldEditor privateOverrideHardwareLibraries;
 
     public PreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -43,6 +44,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	ScopedPreferenceStore preferences = new ScopedPreferenceStore(InstanceScope.INSTANCE, Const.NODE_ARDUINO);
 	preferences.setDefault(Const.KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
 	preferences.setDefault(Const.KEY_AUTO_IMPORT_LIBRARIES, Defaults.AUTO_IMPORT_LIBRARIES);
+	preferences.setDefault(Const.KEY_PRIVATE_OVER_HARDWARE_LIBRARIES, Defaults.PRIVATE_OVER_HARDWARE_LIBRARIES);
 	setPreferenceStore(preferences);
     }
 
@@ -117,6 +119,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	this.automaticallyImportLibrariesOption = new BooleanFieldEditor(Const.KEY_AUTO_IMPORT_LIBRARIES,
 		Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
 	addField(this.automaticallyImportLibrariesOption);
+	createLine(parent, 4);
+	
+	this.privateOverrideHardwareLibraries = new BooleanFieldEditor(Const.KEY_PRIVATE_OVER_HARDWARE_LIBRARIES,
+		Messages.ui_private_over_hardware_libraries, BooleanFieldEditor.DEFAULT, parent);
+	addField(this.privateOverrideHardwareLibraries);
 	createLine(parent, 4);
 
     }

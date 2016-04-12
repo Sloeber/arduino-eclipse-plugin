@@ -79,6 +79,7 @@ public class Const {
     public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option";
     public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";
     public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";
+    public static final String KEY_PRIVATE_OVER_HARDWARE_LIBRARIES = "Private libraries override hardware libraries";
 
     public static final String ENV_KEY_BOARD_START = "A.";
     public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";

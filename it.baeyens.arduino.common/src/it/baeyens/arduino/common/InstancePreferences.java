@@ -46,6 +46,14 @@ public class InstancePreferences extends Const {
 		setGlobalValue(KEY_AUTO_IMPORT_LIBRARIES, value);
 	}
 
+    public static boolean getPrivateOverrideHardwareLibraries() {
+    	return getGlobalBoolean(KEY_PRIVATE_OVER_HARDWARE_LIBRARIES, Defaults.PRIVATE_OVER_HARDWARE_LIBRARIES);
+    }
+    
+    public static void setPrivateOverrideHardwareLibraries(boolean value) {
+    	setGlobalValue(KEY_PRIVATE_OVER_HARDWARE_LIBRARIES, value);
+    }
+
 	/***
 	 * get the stored option whether a build before the upload is wanted or not.
 	 * If nothing is stored the option is ask and this method will pop up a

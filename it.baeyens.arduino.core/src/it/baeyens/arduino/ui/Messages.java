@@ -71,6 +71,7 @@ public class Messages extends NLS {
     public static String ui_private_hardware_path_help;
     public static String ui_private_lib_path;
     public static String ui_private_lib_path_help;
+    public static String ui_private_over_hardware_libraries;
     public static String ui_remove;
     public static String ui_sec_login;
     public static String ui_sec_login_and_password;

@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Path;
 public class Defaults {
     public static final boolean OPEN_SERIAL_WITH_MONITOR = true;
     public static final boolean AUTO_IMPORT_LIBRARIES = true;
+    public static final boolean PRIVATE_OVER_HARDWARE_LIBRARIES = true;
     public static final String PLATFORM_URLS = "http://downloads.arduino.cc/packages/package_index.json"
 	    + System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
     public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json";
