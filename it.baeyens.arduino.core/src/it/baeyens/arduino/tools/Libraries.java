@@ -131,9 +131,16 @@ public class Libraries {
     private static HashMap<String, IPath> getAllInstalledLibraries(ICConfigurationDescription confdesc) {
 	HashMap<String, IPath> libraries = new HashMap<>(); // a hashmap libname
 							    // lib folder name
+	if (InstancePreferences.getPrivateOverrideHardwareLibraries()) {
+	libraries.putAll(findAllHarwareLibraries(confdesc));
 	libraries.putAll(findAllArduinoManagerLibraries());
 	libraries.putAll(findAllPrivateLibraries());
+	}
+	else {
+	libraries.putAll(findAllPrivateLibraries());
 	libraries.putAll(findAllHarwareLibraries(confdesc));
+	libraries.putAll(findAllArduinoManagerLibraries());	
+	}
 	return libraries;
     }
 
