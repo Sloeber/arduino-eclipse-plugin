@@ -46,9 +46,9 @@ public class Const {
 
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";
-    public static final String KEY_LAST_USED_COM_PORT = "upload Port";
-    public static final String KEY_LAST_USED_BOARDS_FILE = "boards file";
-    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";
+    public static final String KEY_LAST_USED_COM_PORT = "Upload port";
+    public static final String KEY_LAST_USED_BOARDS_FILE = "Boards file";
+    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
     public static final String KEY_UPDATE_JASONS = "Update jsons files";
