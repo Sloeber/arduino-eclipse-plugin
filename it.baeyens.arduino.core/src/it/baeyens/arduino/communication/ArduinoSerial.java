@@ -1,6 +1,7 @@
 package it.baeyens.arduino.communication;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
@@ -25,20 +26,20 @@ public class ArduinoSerial {
      * This method resets arduino based on setting the baud rate. Used for due,
      * Leonardo and others
      * 
-     * @param ComPort
+     * @param comPort
      *            The port to set the baud rate
      * @param bautrate
      *            The baud rate to set
      * @return true is successful otherwise false
      */
-    public static boolean reset_Arduino_by_baud_rate(String ComPort, int baudrate, long openTime) {
+    public static boolean reset_Arduino_by_baud_rate(String comPort, int baudRate, long openTime) {
 	Serial serialPort;
 	try {
-	    serialPort = new Serial(ComPort, baudrate);
+	    serialPort = new Serial(comPort, baudRate);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
+		    Messages.ArduinoSerial_Unable_To_Open_Port + comPort, e));
 	    return false;
 	}
 	if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
@@ -62,11 +63,11 @@ public class ArduinoSerial {
      *            The port to return if no new com port is found
      * @return the new comport if found else the defaultComPort
      */
-    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> originalPorts,
+    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, List<String> originalPorts,
 	    String defaultComPort) {
 
-	Vector<String> NewPorts;
-	Vector<String> NewPortsCopy;
+	List<String> newPorts;
+	List<String> newPortsCopy;
 
 	// wait for port to disappear and appear
 	int numTries = 0;
@@ -75,11 +76,11 @@ public class ArduinoSerial {
 	int prefNewPortsCopySize = -10;
 	do {
 
-	    NewPorts = Serial.list();
+	    newPorts = Serial.list();
 
-	    NewPortsCopy = new Vector<>(NewPorts);
+	    newPortsCopy = new ArrayList<>(newPorts);
 	    for (int i = 0; i < originalPorts.size(); i++) {
-		NewPortsCopy.remove(originalPorts.get(i));
+		newPortsCopy.remove(originalPorts.get(i));
 	    }
 
 	    /* dump the serial ports to the console */
@@ -88,20 +89,20 @@ public class ArduinoSerial {
 		console.print(' ' + originalPorts.get(i) + ',');
 	    }
 	    console.print("} / {"); //$NON-NLS-1$
-	    for (int i = 0; i < NewPorts.size(); i++) {
-		console.print(' ' + NewPorts.get(i) + ',');
+	    for (int i = 0; i < newPorts.size(); i++) {
+		console.print(' ' + newPorts.get(i) + ',');
 	    }
 	    console.print("} => {"); //$NON-NLS-1$
-	    for (int i = 0; i < NewPortsCopy.size(); i++) {
-		console.print(' ' + NewPortsCopy.get(i) + ',');
+	    for (int i = 0; i < newPortsCopy.size(); i++) {
+		console.print(' ' + newPortsCopy.get(i) + ',');
 	    }
 	    console.println("}"); //$NON-NLS-1$
 	    /* end of dump to the console */
 
 	    // code to capture the case: the com port reappears with a name that
 	    // was in the original list
-	    int newPortsCopySize = NewPorts.size();
-	    if ((NewPortsCopy.isEmpty()) && (newPortsCopySize == prefNewPortsCopySize + 1)) {
+	    int newPortsCopySize = newPorts.size();
+	    if ((newPortsCopy.isEmpty()) && (newPortsCopySize == prefNewPortsCopySize + 1)) {
 		console.println(Messages.ArduinoSerial_Comport_Appeared_and_disappeared);
 		return defaultComPort;
 	    }
@@ -111,7 +112,7 @@ public class ArduinoSerial {
 		console.println(Messages.ArduinoSerial_Comport_is_not_behaving_as_expected);
 		return defaultComPort;
 	    }
-	    if (NewPortsCopy.isEmpty()) // wait a while before we do the next
+	    if (newPortsCopy.isEmpty()) // wait a while before we do the next
 					  // try
 	    {
 		try {
@@ -121,11 +122,11 @@ public class ArduinoSerial {
 		    // code
 		}
 	    }
-	} while (NewPortsCopy.isEmpty());
+	} while (newPortsCopy.isEmpty());
 
 	console.println(
 		Messages.ArduinoSerial_Comport_reset_took + (numTries * delayMs) + Messages.ArduinoSerial_miliseconds);
-	return NewPortsCopy.get(0);
+	return newPortsCopy.get(0);
     }
 
     /**
@@ -185,7 +186,7 @@ public class ArduinoSerial {
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println(Messages.ArduinoSerial_Using_12000bps_touch);
-	    Vector<String> originalPorts = Serial.list();
+	    List<String> originalPorts = Serial.list();
 
 	    if (!reset_Arduino_by_baud_rate(comPort, 1200, 300) /* || */) {
 		console.println(Messages.ArduinoSerial_reset_failed);

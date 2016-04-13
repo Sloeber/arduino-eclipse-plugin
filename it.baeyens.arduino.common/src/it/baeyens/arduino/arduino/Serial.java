@@ -31,7 +31,6 @@ package it.baeyens.arduino.arduino;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
@@ -123,7 +122,7 @@ public class Serial implements SerialPortEventListener {
      * DLL doesn't have its exec bit set. Why the hell that'd be the case, who
      * knows.
      */
-    public static Vector<String> list() {
+    public static List<String> list() {
 	try {
 	    String[] portNames;
 	    String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
@@ -132,12 +131,12 @@ public class Serial implements SerialPortEventListener {
 	    } else {
 		portNames = SerialPortList.getPortNames();
 	    }
-	    return new Vector<>(Arrays.asList(portNames));
+	    return new ArrayList<>(Arrays.asList(portNames));
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    "There is a config problem on your system.\nFor more detail see https://github.com/jantje/arduino-eclipse-plugin/issues/252", //$NON-NLS-1$
 		    e));
-	    Vector<String> ret = new Vector<>();
+	    List<String> ret = new ArrayList<>();
 	    ret.add("config error:"); //$NON-NLS-1$
 	    ret.add("see https://github.com/jantje/arduino-eclipse-plugin/issues/252"); //$NON-NLS-1$
 	    return ret;
