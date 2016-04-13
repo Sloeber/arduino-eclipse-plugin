@@ -241,7 +241,12 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    Helpers.addTheNatures(description);
 
 	    // Add the Arduino folder
-	    Helpers.createNewFolder(project, Const.ARDUINO_CODE_FOLDER_NAME, null);
+	    try {
+		Helpers.createNewFolder(project, Const.ARDUINO_CODE_FOLDER_NAME, null);
+	    } catch (CoreException e) {
+		monitor.done();
+		return;
+	    }
 
 	    for (int i = 0; i < cfgNamesAndTCIds.size(); i++) {
 		ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(cfgNamesAndTCIds.get(i).Name);
