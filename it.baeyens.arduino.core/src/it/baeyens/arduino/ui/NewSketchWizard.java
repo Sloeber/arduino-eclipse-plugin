@@ -277,10 +277,10 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	    ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 	    if (entries.length == 1) {
 		Path exclusionPath[] = new Path[5];
-		exclusionPath[0] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/?xamples/**"); //$NON-NLS-1$
-		exclusionPath[1] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/?xtras/**"); //$NON-NLS-1$
-		exclusionPath[2] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/test/**"); //$NON-NLS-1$
-		exclusionPath[3] = new Path(Const.LIBRARY_PATH_SUFFIX + "/**/third-party/**"); //$NON-NLS-1$
+		exclusionPath[0] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xamples/**"); //$NON-NLS-1$
+		exclusionPath[1] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xtras/**"); //$NON-NLS-1$
+		exclusionPath[2] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/test*/**"); //$NON-NLS-1$
+		exclusionPath[3] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/third-party/**"); //$NON-NLS-1$
 		exclusionPath[4] = new Path(Const.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
 
 		ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
