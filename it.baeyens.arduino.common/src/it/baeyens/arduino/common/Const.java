@@ -170,4 +170,6 @@ public class Const {
     public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 
+    protected Const() {}
+
 }

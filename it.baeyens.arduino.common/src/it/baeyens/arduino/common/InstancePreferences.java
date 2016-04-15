@@ -25,6 +25,8 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class InstancePreferences extends Const {
 
+	private static boolean mIsConfigured = false;
+
 	public static boolean getOpenSerialWithMonitor() {
 		return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
 	}
@@ -75,8 +77,8 @@ public class InstancePreferences extends Const {
 			public void run() {
 				Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-				dialog.setText(Messages.Build_before_upload);
-				dialog.setMessage(Messages.do_you_want_to_build_before_upload);
+				dialog.setText(Messages.buildBeforeUpload);
+				dialog.setMessage(Messages.doYouWantToBuildBeforeUpload);
 				switch (dialog.open()) {
 				case SWT.NO:
 					this.ret = false;
@@ -119,26 +121,26 @@ public class InstancePreferences extends Const {
 	/**
 	 * saves the last used arduino upload port
 	 * 
-	 * @param UploadPort
+	 * @param uploadPort
 	 *            The port to use to upload to save
 	 * 
 	 * @author Jan Baeyens
 	 */
-	public static void setLastUsedUploadPort(String UploadPort) {
-		setGlobalValue(KEY_LAST_USED_COM_PORT, UploadPort);
+	public static void setLastUsedUploadPort(String uploadPort) {
+		setGlobalValue(KEY_LAST_USED_COM_PORT, uploadPort);
 
 	}
 
 	/**
 	 * saves the last used arduino board name
 	 * 
-	 * @param ArduinoBoardName
+	 * @param arduinoBoardName
 	 *            The arduino board name to save
 	 * 
 	 * @author Jan Baeyens
 	 */
-	public static void setLastUsedArduinoBoard(String ArduinoBoardName) {
-		setGlobalValue(KEY_LAST_USED_BOARD, ArduinoBoardName);
+	public static void setLastUsedArduinoBoard(String arduinoBoardName) {
+		setGlobalValue(KEY_LAST_USED_BOARD, arduinoBoardName);
 	}
 
 	public static String getGlobalString(String key, String defaultValue) {
@@ -161,10 +163,10 @@ public class InstancePreferences extends Const {
 		return myScope.getLong(key, 0);
 	}
 
-	public static void setGlobalValue(String key, String Value) {
+	public static void setGlobalValue(String key, String value) {
 
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.put(key, Value);
+		myScope.put(key, value);
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
@@ -174,9 +176,9 @@ public class InstancePreferences extends Const {
 		}
 	}
 
-	protected static void setGlobalValue(String key, int Value) {
+	protected static void setGlobalValue(String key, int value) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putInt(key, Value);
+		myScope.putInt(key, value);
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
@@ -185,9 +187,9 @@ public class InstancePreferences extends Const {
 		}
 	}
 
-	protected static void setGlobalValue(String key, boolean Value) {
+	protected static void setGlobalValue(String key, boolean value) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putBoolean(key, Value);
+		myScope.putBoolean(key, value);
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
@@ -197,9 +199,9 @@ public class InstancePreferences extends Const {
 		}
 	}
 
-	protected static void setGlobalValue(String key, long Value) {
+	protected static void setGlobalValue(String key, long value) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putLong(key, Value);
+		myScope.putLong(key, value);
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
@@ -261,17 +263,15 @@ public class InstancePreferences extends Const {
 	public static Map<String, String> getLastUsedMenuOption() {
 		Map<String, String> options = new HashMap<>();
 		String storedValue = getGlobalString(KEY_LAST_USED_BOARD_MENU_OPTIONS, ""); //$NON-NLS-1$
-		String lines[] = storedValue.split("\n"); //$NON-NLS-1$
+		String[] lines = storedValue.split("\n"); //$NON-NLS-1$
 		for (String curLine : lines) {
-			String values[] = curLine.split("=", 2); //$NON-NLS-1$
+			String[] values = curLine.split("=", 2); //$NON-NLS-1$
 			if (values.length == 2) {
 				options.put(values[0], values[1]);
 			}
 		}
 		return options;
 	}
-
-	private static boolean mIsConfigured = false;
 
 	public static void setConfigured() {
 		mIsConfigured = true;
@@ -289,7 +289,7 @@ public class InstancePreferences extends Const {
 		if (showError) {
 			// If not then we bail out with an error.
 			// And no pages are presented (with no option to FINISH).
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Please_wait_for_installer_job, null));
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.pleaseWaitForInstallerJob, null));
 		}
 		return false;
 	}

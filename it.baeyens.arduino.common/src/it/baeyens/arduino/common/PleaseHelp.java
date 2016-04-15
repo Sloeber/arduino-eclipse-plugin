@@ -18,13 +18,18 @@ import org.osgi.framework.FrameworkUtil;
 
 public class PleaseHelp extends Dialog {
 
-    @Override
-    protected void handleShellCloseEvent() {// JABA is not going to add code
-    }
-
     public Browser browser = null;
     public PleaseHelp ph;
     private static String myhelpLocation;
+
+    public PleaseHelp(Shell parent) {
+	super(parent);
+	this.ph = this;
+    }
+
+    @Override
+    protected void handleShellCloseEvent() {// JABA is not going to add code
+    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -79,7 +84,7 @@ public class PleaseHelp extends Dialog {
      * Static helper function to popup the help jantje page
      * 
      */
-    static void DoHelp(String helpLocation) {
+    static void doHelp(String helpLocation) {
 	myhelpLocation = helpLocation;
 	PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 	    @Override
@@ -94,11 +99,4 @@ public class PleaseHelp extends Dialog {
     protected Point getInitialSize() {
 	return this.getShell().computeSize(SWT.MAX, SWT.MAX, true);
     }
-
-    public PleaseHelp(Shell parent) {
-	super(parent);
-	this.ph = this;
-
-    }
-
 }

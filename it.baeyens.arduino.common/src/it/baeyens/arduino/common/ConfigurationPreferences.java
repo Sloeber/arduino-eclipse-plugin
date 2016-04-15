@@ -18,9 +18,8 @@ import org.osgi.service.prefs.BackingStoreException;
 public class ConfigurationPreferences {
 
     static private String stringSplitter = "\n";//$NON-NLS-1$
-    // private static final String defaulDownloadLocation = new
-    // Path(System.getProperty("user.home")).append("arduinoPlugin").toString();
-    // //$NON-NLS-1$ //$NON-NLS-2$
+
+    private ConfigurationPreferences() {}
 
     private static String getGlobalString(String key, String defaultValue) {
 	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
@@ -38,11 +37,11 @@ public class ConfigurationPreferences {
     }
 
     public static Path getInstallationPath() {
-	final String ArgStart = "-manager_path:"; //$NON-NLS-1$
-	String args[] = Platform.getApplicationArgs();
+	final String argStart = "-manager_path:"; //$NON-NLS-1$
+	String[] args = Platform.getApplicationArgs();
 	for (String arg : args) {
-	    if (arg.startsWith(ArgStart)) {
-		String pathName = arg.substring(ArgStart.length());
+	    if (arg.startsWith(argStart)) {
+		String pathName = arg.substring(argStart.length());
 		return new Path(pathName);
 	    }
 	}
