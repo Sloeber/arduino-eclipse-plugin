@@ -16,6 +16,8 @@ public class Defaults {
     public static final String[] INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 	    "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi" };
 
+    private Defaults () {}
+
     /**
      * Arduino has the default libraries in the user home directory in subfolder
      * Arduino/libraries. As the home directory is platform dependent getting

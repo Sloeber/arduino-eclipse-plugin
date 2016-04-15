@@ -30,7 +30,7 @@ import it.baeyens.arduino.arduino.Serial;
 
 public class Common extends InstancePreferences {
 
-    static ISerialUser OtherSerialUser = null; // If someone else uses the
+    static ISerialUser otherSerialUser = null; // If someone else uses the
 					       // serial port he can register
 					       // here so we can
 					       // request him to disconnect
@@ -47,14 +47,14 @@ public class Common extends InstancePreferences {
      * @param serialUser
      */
     public static void registerSerialUser(ISerialUser serialUser) {
-	OtherSerialUser = serialUser;
+	otherSerialUser = serialUser;
     }
 
     /**
      * This method is to unregister a serial user.
      */
     public static void UnRegisterSerialUser() {
-	OtherSerialUser = null;
+	otherSerialUser = null;
     }
 
     /**
@@ -237,15 +237,15 @@ public class Common extends InstancePreferences {
     }
 
     public static boolean StopSerialMonitor(String mComPort) {
-	if (OtherSerialUser != null) {
-	    return OtherSerialUser.PauzePort(mComPort);
+	if (otherSerialUser != null) {
+	    return otherSerialUser.PauzePort(mComPort);
 	}
 	return false;
     }
 
     public static void StartSerialMonitor(String mComPort) {
-	if (OtherSerialUser != null) {
-	    OtherSerialUser.ResumePort(mComPort);
+	if (otherSerialUser != null) {
+	    otherSerialUser.ResumePort(mComPort);
 	}
 
     }
@@ -258,13 +258,13 @@ public class Common extends InstancePreferences {
     }
 
     public static String[] listBaudRates() {
-	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+	String[] outgoing = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 		"1200", "300" }; //$NON-NLS-1$ //$NON-NLS-2$
 	return outgoing;
     }
 
     public static String[] listLineEndings() {
-	String outgoing[] = { "none", "CR", "NL", "CR/NL" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	String[] outgoing = { "none", "CR", "NL", "CR/NL" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	return outgoing;
     }
 
