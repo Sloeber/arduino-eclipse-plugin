@@ -13,12 +13,6 @@ public class ArduinoIDEVersionNameParsing {
     @Test
     public void testAllArduinoVersions() {
 	this.versionList = new LinkedHashMap<>();
-	// The tests below have been deactivated as they fail
-	// and the plugin does not support these versions
-	// VersionList.put("1.0.1", "101");
-	// VersionList.put("1.0.2", "102");
-	// VersionList.put("1.0.3", "103");
-	// VersionList.put("1.0.4", "104");
 	this.versionList.put("1.5.1", "151"); //$NON-NLS-1$ //$NON-NLS-2$
 	this.versionList.put("1.5.2", "152"); //$NON-NLS-1$ //$NON-NLS-2$
 	this.versionList.put("1.5.3", "153"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -38,8 +32,5 @@ public class ArduinoIDEVersionNameParsing {
 	this.versionList.put("1.6.5-r3", "10605"); //$NON-NLS-1$ //$NON-NLS-2$
 	this.versionList.put("1.6.5-r4", "10605"); //$NON-NLS-1$ //$NON-NLS-2$
 	this.versionList.put("1.6.5-r5", "10605"); //$NON-NLS-1$ //$NON-NLS-2$
-	for (@SuppressWarnings("unused")
-	Entry<String, String> currentVersion : this.versionList.entrySet()) {
-	}
     }
 }

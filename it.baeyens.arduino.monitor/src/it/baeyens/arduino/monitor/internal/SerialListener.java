@@ -50,7 +50,7 @@ public class SerialListener implements MessageConsumer {
 	    } catch (BufferOverflowException e) {
 		this.myReceivedScopeData.clear();
 		Common.log(
-			new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
+			new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.serialListenerScopeSkippingData));
 	    }
 	    internalExtractAndRemoveScopeData();
 	} else {
@@ -84,8 +84,8 @@ public class SerialListener implements MessageConsumer {
 		    int bytestoRead = this.myReceivedScopeData.getShort(2);
 		    if ((bytestoRead < 0) || (bytestoRead > (10 * 2))) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-				Messages.SerialListener_error_input_part_1 + bytestoRead / 2
-					+ Messages.SerialListener_error_input_part_2));
+				Messages.serialListenerErrorInputPart1 + bytestoRead / 2
+					+ Messages.serialListenerErrorInputPart2));
 			searchPointer += 4;// skip the scope start and length so
 					   // data is shown
 			// System.out.println("case 2"); //$NON-NLS-1$
