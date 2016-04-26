@@ -17,8 +17,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Common;
+import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.PasswordManager;
 
@@ -58,7 +58,7 @@ public class UploadSketchWrapper {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e));
 	}
 
-	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_UPLOAD_TOOL, Const.EMPTY_STRING);
+	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, Const.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
 	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_COM_PORT, Const.EMPTY_STRING);
 	this.myConsole = Helpers.findConsole(Messages.Upload_console);
 	this.myConsole.clearConsole();

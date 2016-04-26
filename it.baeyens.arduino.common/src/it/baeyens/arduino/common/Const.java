@@ -38,6 +38,31 @@ public class Const {
     // preference nodes
     public static final String NODE_ARDUINO = PLUGIN_START + "arduino";
 
+    // Actions
+    public static final String ACTION_UPLOAD = "UPLOAD";
+    public static final String ACTION_PROGRAM = "PROGRAM";
+    public static final String ACTION_C_to_O = "RECIPE.C.O";
+    public static final String ACTION_CPP_to_O = "RECIPE.CPP.O";
+    public static final String ACTION_S_to_O = "RECIPE.S.O";
+    public static final String ACTION_OBJCOPY_to_HEX = "RECIPE.OBJCOPY.HEX";
+    public static final String ACTION_OBJCOPY_to_EEP = "RECIPE.OBJCOPY.EEP";
+    public static final String ACTION_SIZE = "RECIPE.SIZE";
+    public static final String ACTION_AR = "RECIPE.AR";
+    public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
+    // public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";
+    // public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";
+    // public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";
+    // public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";
+    // public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";
+    // public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";
+    // public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";
+    // public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN";
+
+    // Describers
+    public static final String ENV_PROTOCOL = "PROTOCOL";
+    public static final String ENV_TOOL = "TOOL";
+    public static final String ENV_PATTERN = "PATTERN";
+
     // preference keys
     public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
@@ -47,6 +72,7 @@ public class Const {
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";
     public static final String KEY_LAST_USED_COM_PORT = "Upload port";
+    public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = ACTION_UPLOAD + DOT + ENV_PROTOCOL;
     public static final String KEY_LAST_USED_BOARDS_FILE = "Boards file";
     public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
@@ -70,8 +96,8 @@ public class Const {
     public static final String VARIANTS_FOLDER_NAME = "variants";
     public static final String PACKAGES_FOLDER_NAME = "packages";
 
-    // tags to interpret the arduino input files
-    public static final String BOARD_NAME_KEY_TAG = "name";
+    // tags to interpret the arduino txt config files
+    public static final String TXT_NAME_KEY_TAG = "name";
     public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot";
     public static final String UPLOAD_SSH = "ssh upload";
     public static final String MENU = "menu";
@@ -80,20 +106,14 @@ public class Const {
     public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";
     public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";
 
-    public static final String ENV_KEY_BOARD_START = "A.";
-    public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    public static final String ENV_KEY_BOARD_START = "A" + DOT;
+
+    public static final String ENV_KEY_PROGRAMMERS_START = ENV_KEY_BOARD_START + "PROGRAMMERS.";
+    // public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
     public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";
     public static final String ENV_KEY_VERSION = ENV_KEY_BOARD_START + "VERSION";
-    public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";
-    public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";
-    public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";
-    public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";
-    public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN";
 
     public static final String ENV_KEY_BUILD_VARIANT = ENV_KEY_BOARD_START + "BUILD.VARIANT";
     public static final String ENV_KEY_COMPILER_PATH = ENV_KEY_BOARD_START + "COMPILER.PATH";
@@ -111,8 +131,9 @@ public class Const {
     public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";
     public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
-    public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";
-    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    // public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";
+    // public static final String ENV_KEY_PROGRAM_TOOL = ENV_KEY_BOARD_START + "PROGRAM.TOOL";
+    // public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
     public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
     public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
     public static final String ENV_KEY_USE_ARCHIVER = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";
@@ -125,15 +146,13 @@ public class Const {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
-	    + "REFERENCED_PLATFORM_FILE";
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START + "REFERENCED_PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
-	    + "EXTRA.CPP.COMPILE";
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";
@@ -145,8 +164,7 @@ public class Const {
     // template Sketch information
 
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
-    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
-	    + "TEMPLATE_USE_DEFAULT";
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
@@ -169,5 +187,53 @@ public class Const {
     public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
     public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
+
+    /**
+     * given a action return the environment key that matches it's protocol
+     * 
+     * @param action
+     * @return the environment variable key to find the protocol
+     */
+    public static String get_ENV_KEY_PROTOCOL(String action) {
+	return ENV_KEY_BOARD_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+    }
+
+    /**
+     * given a action return the environment key that matches it's tool
+     * 
+     * @param action
+     * @return the environment variable key to find the tool
+     */
+    public static String get_ENV_KEY_TOOL(String action) {
+	return ENV_KEY_BOARD_START + action.toUpperCase() + DOT + ENV_TOOL;
+    }
+
+    /**
+     * given a action return the environment key that matches it's recipe
+     * 
+     * @param action
+     * @return he environment variable key to find the recipe
+     */
+    public static String get_ENV_KEY_RECIPE(String action) {
+	return ENV_KEY_BOARD_START + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
+
+    /**
+     * given a action and a tool return the environment key that matches it's recipe
+     * 
+     * @param action
+     * @return he environment variable key to find the recipe
+     */
+    public static String get_ENV_KEY_RECIPE(String tool, String action) {
+	return ENV_KEY_BOARD_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
+
+    public static String get_Jantje_KEY_PROTOCOL(String action) {
+	return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+    }
+
+    public static String get_Jantje_KEY_RECIPE(String action) {
+	return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
 
 }

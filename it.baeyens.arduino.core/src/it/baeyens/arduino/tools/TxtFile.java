@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,28 +20,28 @@ import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 
 /**
- * ArduinoBoards is that class that hides the Arduino Boards.txt file <br/>
- * The is based on the code of Trump at
- * https://github.com/Trump211/ArduinoEclipsePlugin and later adapted as needed.
+ * TxtFile is a class that hides the Arduino *.txt file processing <br/>
+ * The is based on the code of Trump at https://github.com/Trump211/ArduinoEclipsePlugin and later renamed from Boards to TxtFile and adapted as
+ * needed.
+ * 
+ * This class is at the root of processing the boards.txt platform.txt and programmers.txt from the Arduino eco system As this feature is available
+ * most other configuration stuff is put in files with the same setup and processed by this class
  * 
  * @author Jan Baeyens and trump
  * 
  */
-public class Boards {
-    private File mLastLoadedBoardsFile = null;
+public class TxtFile {
+    private File mLastLoadedTxtFile = null;
     private static final String DOT = Const.DOT;
-    private static final String MENU = Const.MENU; // $NON-NLS-1$
+    private static final String MENU = Const.MENU;
     Map<String, String> settings = null;
-    // private String mLastLoadedBoard = "";
-    private Map<String, Map<String, String>> mArduinoSupportedBoards = new LinkedHashMap<>(); // all
-											      // the
-											      // data
+    private LinkedHashMap<String, Map<String, String>> fileContent = new LinkedHashMap<>(); // all the data
 
-    public Boards(File boardsFileName) {
+    public TxtFile(File boardsFileName) {
 	LoadBoardsFile(boardsFileName);
     }
 
-    public Boards() {
+    public TxtFile() {
 	// no constructor needed
     }
 
@@ -54,17 +53,17 @@ public class Boards {
      * @return all entries that match the filter
      */
     public Map<String, String> getSection(String SectionKey) {
-	return this.mArduinoSupportedBoards.get(SectionKey);
+	return this.fileContent.get(SectionKey);
     }
 
     /**
-     * Get all the options in the boards.txt file
+     * Get all the menu option names in the .txt file
      * 
-     * @return a list of all the menu option name
+     * @return a list of all the menu option names
      */
     public String[] getMenuNames() {
 	HashSet<String> ret = new HashSet<>();
-	for (Entry<String, Map<String, String>> entry : this.mArduinoSupportedBoards.entrySet()) {
+	for (Entry<String, Map<String, String>> entry : this.fileContent.entrySet()) {
 	    if (entry.getKey().equals(MENU)) {
 		for (Entry<String, String> e2 : entry.getValue().entrySet()) {
 		    if (!e2.getKey().contains(Const.DOT)) {
@@ -79,8 +78,7 @@ public class Boards {
     }
 
     /**
-     * Get all the acceptable values for a option for a board The outcome of
-     * this method can be used to fill a combobox
+     * Get all the acceptable values for a option for a board The outcome of this method can be used to fill a combobox
      * 
      * @param menu
      *            the name of a menu not the ide
@@ -90,9 +88,9 @@ public class Boards {
      */
     public String[] getMenuItemNames(String menuLabel, String boardName) {
 	String menuID = null;
-	String boardID = getBoardIDFromName(boardName);
+	String boardID = getIDFromName(boardName);
 	HashSet<String> ret = new HashSet<>();
-	Map<String, String> menuInfo = this.mArduinoSupportedBoards.get(MENU);
+	Map<String, String> menuInfo = this.fileContent.get(MENU);
 	if (menuInfo == null) {
 	    return new String[0];
 	}
@@ -109,7 +107,7 @@ public class Boards {
 	}
 	// from Arduino IDE 1.5.4 menu is subset of the board. The previous code
 	// will not return a result
-	Map<String, String> boardInfo = this.mArduinoSupportedBoards.get(boardID);
+	Map<String, String> boardInfo = this.fileContent.get(boardID);
 	if (boardInfo != null) {
 	    SearchKey = MENU + DOT + menuID + DOT;
 	    for (Entry<String, String> e2 : boardInfo.entrySet()) {
@@ -122,31 +120,38 @@ public class Boards {
 	return ret.toArray(new String[ret.size()]);
     }
 
+    public String[] getAllNames() {
+	return getAllNames(new String[0]);
+    }
+
     /**
-     * GetArduinoBoards returns all the boards that are in the currently loaded
-     * board.txt file.
+     * getAllNames returns all the "names" that are in the currently loaded *.txt file. The toaddNames are added to the end result toaddNames should
+     * be a string array and can not be null
      * 
-     * @return an empty list if no board file is loaded. In all other cases it
-     *         returns the list of oards found in the file
+     * For a biards.txt file that means all the board names. For a programmers.txt file that means all the programmers
+     * 
+     * @return an empty list if no board file is loaded. In all other cases it returns the list of boards found in the file
      * @author Trump
      * 
      */
-    public String[] GetArduinoBoards() {
-	if (this.mLastLoadedBoardsFile.equals(Const.EMPTY_STRING)) {
-	    String[] sBoards = new String[0];
-	    return sBoards;
+    public String[] getAllNames(String[] toaddNames) {
+	if (this.mLastLoadedTxtFile.equals(Const.EMPTY_STRING)) {
+	    return toaddNames;
 	}
-	Set<String> mBoards = new HashSet<>();
-	for (String s : this.mArduinoSupportedBoards.keySet()) {
+	HashSet<String> allNames = new HashSet<>();
+	for (String curName : toaddNames) {
+	    allNames.add(curName);
+	}
+	for (String s : this.fileContent.keySet()) {
 	    if (s != null) {
-		String theboardName = this.mArduinoSupportedBoards.get(s).get(Const.BOARD_NAME_KEY_TAG);
-		if (theboardName != null) {
-		    mBoards.add(theboardName);
+		String theName = this.fileContent.get(s).get(Const.TXT_NAME_KEY_TAG);
+		if (theName != null) {
+		    allNames.add(theName);
 		}
 	    }
 	}
-	String[] sBoards = new String[mBoards.size()];
-	mBoards.toArray(sBoards);
+	String[] sBoards = new String[allNames.size()];
+	allNames.toArray(sBoards);
 	Arrays.sort(sBoards);
 	return sBoards;
     }
@@ -161,14 +166,10 @@ public class Boards {
      */
     public boolean LoadBoardsFile(File boardsFile) {
 
-	if ((this.mLastLoadedBoardsFile != null) && (this.mLastLoadedBoardsFile.equals(boardsFile)))
+	if ((this.mLastLoadedTxtFile != null) && (this.mLastLoadedTxtFile.equals(boardsFile)))
 	    return true; // do nothing when value didn't change
-	this.mLastLoadedBoardsFile = boardsFile;
+	this.mLastLoadedTxtFile = boardsFile;
 	return LoadBoardsFile();
-    }
-
-    public boolean exists() {
-	return this.mLastLoadedBoardsFile.exists();
     }
 
     /**
@@ -180,40 +181,39 @@ public class Boards {
      */
     private boolean LoadBoardsFile() {
 	// If the file doesn't exist ignore it.
-	if (!this.mLastLoadedBoardsFile.exists())
+	if (!this.mLastLoadedTxtFile.exists())
 	    return false;
 
-	this.mArduinoSupportedBoards.clear();
+	this.fileContent.clear();
 
 	try {
 	    Map<String, String> boardPreferences = new LinkedHashMap<>();
-	    load(this.mLastLoadedBoardsFile, boardPreferences);
+	    load(this.mLastLoadedTxtFile, boardPreferences);
 	    for (Object k : boardPreferences.keySet()) {
 		String key = (String) k;
 		String board = key.substring(0, key.indexOf('.'));
-		if (!this.mArduinoSupportedBoards.containsKey(board))
-		    this.mArduinoSupportedBoards.put(board, new HashMap<String, String>());
-		(this.mArduinoSupportedBoards.get(board)).put(key.substring(key.indexOf('.') + 1),
-			boardPreferences.get(key));
+		if (!this.fileContent.containsKey(board))
+		    this.fileContent.put(board, new HashMap<String, String>());
+		(this.fileContent.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
 	    }
 
 	} catch (Exception e) {
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.Boards_Failed_to_read_boards + this.mLastLoadedBoardsFile.getName(), e));
+	    Common.log(
+		    new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Boards_Failed_to_read_boards + this.mLastLoadedTxtFile.getName(), e));
 	}
 	return true;
     }
 
     /**
-     * @author Trump
+     * Given a nice name look for the ID The assumption is that the txt file contains a line like ID.name=[nice name] Given this this method returns
+     * ID when given [nice name]
      */
-    public String getBoardIDFromName(String boardName) {
-	for (Entry<String, Map<String, String>> entry : this.mArduinoSupportedBoards.entrySet()) {
+    public String getIDFromName(String name) {
+	for (Entry<String, Map<String, String>> entry : this.fileContent.entrySet()) {
 	    for (Entry<String, String> e2 : entry.getValue().entrySet()) {
-		if (e2.getValue().equals(boardName))
+		if (e2.getValue().equals(name))
 		    return entry.getKey();
 	    }
-
 	}
 	return null;
     }
@@ -249,10 +249,8 @@ public class Boards {
 	}
     }
 
-    // Taken from PApplet.java
     /**
-     * Loads an input stream into an array of strings representing each line of
-     * the input stream
+     * Loads an input stream into an array of strings representing each line of the input stream
      * 
      * @param input
      *            the input stream to load
@@ -292,8 +290,12 @@ public class Boards {
 	return null;
     }
 
-    public String getBoardsTxtName() {
-	return this.mLastLoadedBoardsFile.getAbsolutePath();
+    /**
+     * 
+     * @return the file name that is currently loaded
+     */
+    public File getTxtFile() {
+	return this.mLastLoadedTxtFile;
     }
 
     public String getMenuNameFromID(String menuID) {
@@ -351,5 +353,4 @@ public class Boards {
 	// TODO implement 1.5.4 way
 	return Messages.Boards_Get_menu_item_name_from_id_did_not_find + boardID + ' ' + menuID + ' ' + menuItemID;
     }
-
 }

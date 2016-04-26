@@ -23,13 +23,11 @@ public class arduinoUploader implements IRealUpload {
 
     private IProject myProject;
     private String mycConf;
-    private String myUploadTool;
     private MessageConsole myConsole;
 
     arduinoUploader(IProject Project, String cConf, String UploadTool, MessageConsole Console) {
 	this.myProject = Project;
 	this.mycConf = cConf;
-	this.myUploadTool = UploadTool;
 	this.myConsole = Console;
     }
 
@@ -60,8 +58,7 @@ public class arduinoUploader implements IRealUpload {
 
 	String command = Const.EMPTY_STRING;
 	try {
-	    command = envManager.getVariable("A.TOOLS." + this.myUploadTool.toUpperCase() + ".UPLOAD.PATTERN", configurationDescription, true) //$NON-NLS-1$//$NON-NLS-2$
-		    .getValue();
+	    command = envManager.getVariable(Const.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true).getValue();
 	} catch (Exception e) {// ignore all errors
 	}
 
