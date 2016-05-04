@@ -362,7 +362,12 @@ public class Helpers extends Common {
 	    IProgressMonitor monitor, boolean overwrite) throws CoreException {
 	final IFile file = container.getFile(path);
 	file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-	if (overwrite || !file.exists()) {
+	if (overwrite && file.exists()) {
+	    file.delete(true, null);
+	    file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+	}
+
+	if (!file.exists()) {
 	    file.create(contentStream, true, monitor);
 	}
     }
