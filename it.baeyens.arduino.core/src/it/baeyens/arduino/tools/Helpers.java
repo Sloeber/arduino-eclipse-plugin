@@ -929,7 +929,7 @@ public class Helpers extends Common {
 	// Then add the programmers file
 	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, localProgrammers,
-		localProgrammers.getIDFromName(programmer), true);
+		localProgrammers.getIDFromName(programmer), false);
 
 	// add the stuff that comes with the plugin that is marked as post
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
