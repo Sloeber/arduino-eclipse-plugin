@@ -730,7 +730,11 @@ public class Helpers extends Common {
 		String keyString = MakeKeyString(currentPair.getKey());
 		String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
-	    } else {
+	    }
+	}
+	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
+	    // if it is not a menu item add it
+	    if (currentPair.getKey().startsWith(Messages.Helpers_menu)) {
 
 		String[] keySplit = currentPair.getKey().split("\\."); //$NON-NLS-1$
 		String menuID = keySplit[1];
