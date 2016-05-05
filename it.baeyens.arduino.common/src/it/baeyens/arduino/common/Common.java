@@ -258,7 +258,8 @@ public class Common extends InstancePreferences {
     }
 
     public static String[] listBaudRates() {
-	String outgoing[] = { "115200", "57600", "38400", "31250", "28800", "19200", "14400", "9600", "4800", "2400", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+	String outgoing[] = { "921600", "460800", "230400", "115200", "57600", "38400", "31250", "28800", "19200", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
+		"14400", "9600", "4800", "2400", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		"1200", "300" }; //$NON-NLS-1$ //$NON-NLS-2$
 	return outgoing;
     }
