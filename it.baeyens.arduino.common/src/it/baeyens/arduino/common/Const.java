@@ -22,6 +22,7 @@ public class Const {
     // General stuff
     public static final String PLUGIN_START = "it.baeyens.";
     public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
+    public static final String NETWORK = "NETWORK";
 
     // prefix to be added to the arduino environment
     protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\";
@@ -49,7 +50,8 @@ public class Const {
     public static final String ACTION_SIZE = "RECIPE.SIZE";
     public static final String ACTION_AR = "RECIPE.AR";
     public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
-
+    public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
+    public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
     // Describers
     public static final String ENV_PROTOCOL = "PROTOCOL";
@@ -124,7 +126,6 @@ public class Const {
     public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
     public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ENV_KEY_BOARD_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
-
 
     public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
     public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
