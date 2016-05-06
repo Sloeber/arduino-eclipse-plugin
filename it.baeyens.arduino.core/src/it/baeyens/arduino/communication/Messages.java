@@ -7,6 +7,7 @@ public class Messages extends NLS {
     public static String ArduinoSerial_23;
     public static String ArduinoSerial_Comport_Appeared_and_disappeared;
     public static String ArduinoSerial_Comport_is_not_behaving_as_expected;
+    public static String ArduinoSerial_comport_not_found;
     public static String ArduinoSerial_Comport_reset_took;
     public static String ArduinoSerial_Continuing_to_use;
     public static String ArduinoSerial_Ending_reset;
