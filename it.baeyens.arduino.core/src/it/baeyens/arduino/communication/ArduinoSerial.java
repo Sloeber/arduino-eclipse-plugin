@@ -151,8 +151,7 @@ public class ArduinoSerial {
     /**
      * reset the arduino
      * 
-     * This method takes into account all the setting to be able to reset all different types of arduino If RXTXDisabled is set the method only return
-     * the parameter Comport
+     * This method takes into account all the setting to be able to reset all different types of arduino If RXTXDisabled is set the method only return the parameter Comport
      * 
      * @param project
      *            The project related to the com port to reset
@@ -161,22 +160,30 @@ public class ArduinoSerial {
      * @return The com port to upload to
      */
     public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName, String comPort) {
-	boolean use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
-		.equalsIgnoreCase(Const.TRUE);
-	boolean bWaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
-		.equalsIgnoreCase(Const.TRUE);
+	boolean use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE).equalsIgnoreCase(Const.TRUE);
+	boolean bWaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE).equalsIgnoreCase(Const.TRUE);
 	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME, Const.EMPTY_STRING);
-	String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName, Const.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD),
-		Const.EMPTY_STRING);
-	/* Teensy uses halfkay protocol and does not require a reset */
-	if (uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
+	String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName, Const.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
+
+	boolean bResetPortForUpload = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE).equalsIgnoreCase(Const.TRUE);
+
+	/*
+	 * Teensy uses halfkay protocol and does not require a reset in boards.txt use Const.ENV_KEY_RESET_BEFORE_UPLOAD=FALSE to disable a reset
+	 */
+	if (!bResetPortForUpload || uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
 	    return comPort;
 	}
-	/* end of Teensy and halfkay */
+	/*
+	 * if the com port can not be found and no specific com port reset method is specified assume it is a network port and do not try to reset
+	 */
+	Vector<String> originalPorts = Serial.list();
+	if (!originalPorts.contains(comPort) && !use_1200bps_touch && !bWaitForUploadPort) {
+	    console.println(Messages.ArduinoSerial_comport_not_found);
+	    return comPort;
+	}
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println(Messages.ArduinoSerial_Using_12000bps_touch);
-	    Vector<String> originalPorts = Serial.list();
 
 	    if (!reset_Arduino_by_baud_rate(comPort, 1200, 300) /* || */) {
 		console.println(Messages.ArduinoSerial_reset_failed);

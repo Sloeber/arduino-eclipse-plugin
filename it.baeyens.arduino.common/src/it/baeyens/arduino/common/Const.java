@@ -49,14 +49,7 @@ public class Const {
     public static final String ACTION_SIZE = "RECIPE.SIZE";
     public static final String ACTION_AR = "RECIPE.AR";
     public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
-    // public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";
-    // public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";
-    // public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";
-    // public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";
-    // public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";
-    // public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";
-    // public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";
-    // public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN";
+
 
     // Describers
     public static final String ENV_PROTOCOL = "PROTOCOL";
@@ -109,7 +102,6 @@ public class Const {
     public static final String ENV_KEY_BOARD_START = "A" + DOT;
 
     public static final String ENV_KEY_PROGRAMMERS_START = ENV_KEY_BOARD_START + "PROGRAMMERS.";
-    // public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
     public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";
@@ -131,9 +123,9 @@ public class Const {
     public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";
     public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
-    // public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";
-    // public static final String ENV_KEY_PROGRAM_TOOL = ENV_KEY_BOARD_START + "PROGRAM.TOOL";
-    // public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ENV_KEY_BOARD_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
+
+
     public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
     public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
     public static final String ENV_KEY_USE_ARCHIVER = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";
@@ -172,14 +164,7 @@ public class Const {
     public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
     public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
     // scope stuff
-    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
-								// 205 171 or
-								// -85 -51
-								// flag that
-								// indicates
-								// scope data is
-								// following
-    // least significant first 0xCDAB;
+    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the 205 171 or -85 -51 flag that indicates scope data is following least significant first 0xCDAB;
     public static final String EXAMPLE_FOLDER_NAME = "examples";
 
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
