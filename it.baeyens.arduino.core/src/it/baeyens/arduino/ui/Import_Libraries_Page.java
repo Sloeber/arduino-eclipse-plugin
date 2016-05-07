@@ -128,7 +128,6 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		try {
 		    folder.create(false, true, null);
 		} catch (CoreException e) {
-		    // TODO Auto-generated catch block
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    "Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity proble", e)); //$NON-NLS-1$
 		    return true;

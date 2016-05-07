@@ -22,8 +22,7 @@ import org.eclipse.core.runtime.Status;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 
-public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
-	implements ILanguageSettingsEditableProvider {
+public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector implements ILanguageSettingsEditableProvider {
     // ID must match the tool-chain definition in
     // org.eclipse.cdt.managedbuilder.core.buildDefinitions extension point
     private static final String GCC_TOOLCHAIN_ID = "cdt.managedbuild.toolchain.gnu.base"; //$NON-NLS-1$
@@ -109,8 +108,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
     }
 
     @Override
-    public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker1)
-	    throws CoreException {
+    public void startup(ICConfigurationDescription cfgDescription, IWorkingDirectoryTracker cwdTracker1) throws CoreException {
 	super.startup(cfgDescription, cwdTracker1);
 
 	this.state = State.NONE;
@@ -153,22 +151,19 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    try {
 		buildFolder.create(true, true, null);
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			"failed to create folder " + confDesc.getName(), e)); //$NON-NLS-1$
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to create folder " + confDesc.getName(), e)); //$NON-NLS-1$
 	    }
 	}
 	// End of Bug fix for CDT 8.1 fixed in 8.2
 	if (languageId.equals("org.eclipse.cdt.core.gcc")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(Const.ENV_KEY_RECIPE_C_O_PATTERN, confDesc, true).getValue()
-			.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
+		compilerCommand = envManager.getVariable(Const.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O), confDesc, true).getValue().replace(" -o ", //$NON-NLS-1$
+			" "); //$NON-NLS-1$
 	    } catch (Exception e) {
 		compilerCommand = Const.EMPTY_STRING;
 	    }
-	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc,
-		    true);
-	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
-		    confDesc, true);
+	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
 		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
@@ -178,15 +173,13 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$ //$NON-NLS-2$
 	} else if (languageId.equals("org.eclipse.cdt.core.g++")) { //$NON-NLS-1$
 	    try {
-		compilerCommand = envManager.getVariable(Const.ENV_KEY_RECIPE_CPP_O_PATTERN, confDesc, true).getValue()
-			.replace(" -o ", " "); //$NON-NLS-1$//$NON-NLS-2$
+		compilerCommand = envManager.getVariable(Const.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O), confDesc, true).getValue().replace(" -o ", //$NON-NLS-1$
+			" "); //$NON-NLS-1$
 	    } catch (Exception e) {
 		compilerCommand = Const.EMPTY_STRING;
 	    }
-	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc,
-		    true);
-	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
-		    confDesc, true);
+	    IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc, true);
+	    IEnvironmentVariable op2 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc, true);
 	    if (op1 != null) {
 		compilerCommand = compilerCommand + ' ' + op1.getValue();
 	    }
@@ -195,8 +188,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 	    }
 	    compilerCommand = compilerCommand + " -D" + Const.DEFINE_IN_ECLIPSE + "=1"; //$NON-NLS-1$ //$NON-NLS-2$
 	} else {
-	    ManagedBuilderCorePlugin.error(
-		    "Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$
+	    ManagedBuilderCorePlugin.error("Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	String ret = compilerCommand.replaceAll(" -MMD ", " ").replaceAll("[^\\\\]\"\"", Const.EMPTY_STRING) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

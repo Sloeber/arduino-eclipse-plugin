@@ -20,7 +20,7 @@ import org.osgi.service.prefs.BackingStoreException;
  * ArduinoPreferences is a class containing only static methods that help
  * managing the preferences.
  * 
- * @author jan Baeyens
+ * @author Jan Baeyens
  * 
  */
 public class InstancePreferences extends Const {
@@ -128,7 +128,14 @@ public class InstancePreferences extends Const {
 	 */
 	public static void setLastUsedUploadPort(String uploadPort) {
 		setGlobalValue(KEY_LAST_USED_COM_PORT, uploadPort);
+	}
 
+	public static String getLastUsedUploadProtocol() {
+		return getGlobalString(KEY_LAST_USED_UPLOAD_PROTOCOL, DEFAULT);
+	}
+
+	public static void setLastUsedUploadProtocol(String uploadProtocol) {
+		setGlobalValue(KEY_LAST_USED_UPLOAD_PROTOCOL, uploadProtocol);
 	}
 
 	/**

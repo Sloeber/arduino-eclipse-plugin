@@ -57,12 +57,10 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 		    if (CompileProperties.this.myWarningLevel.getSelection() == true) {
-			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
-				Const.ENV_KEY_WARNING_LEVEL_ON);
+			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL, Const.ENV_KEY_WARNING_LEVEL_ON);
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    } else {
-			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
-				Const.ENV_KEY_WARNING_LEVEL_OFF);
+			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL, Const.ENV_KEY_WARNING_LEVEL_OFF);
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    }
 		}
@@ -86,7 +84,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    } else {
 			IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-				+ Const.ENV_KEY_RECIPE_SIZE_PATTERN + "}"); //$NON-NLS-1$
+				+ Const.get_ENV_KEY_RECIPE(Const.ACTION_SIZE) + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, getResDesc().getConfiguration());
 		    }
 		}
@@ -140,8 +138,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-		    IEnvironmentVariable var = new EnvironmentVariable(
-			    Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
+		    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
 			    CompileProperties.this.myCppCommand.getText());
 		    contribEnv.addVariable(var, getResDesc().getConfiguration());
 		}
@@ -166,8 +163,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		    IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		    IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-		    IEnvironmentVariable var = new EnvironmentVariable(
-			    Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
+		    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
 			    CompileProperties.this.myCCommand.getText());
 		    contribEnv.addVariable(var, getResDesc().getConfiguration());
 		}

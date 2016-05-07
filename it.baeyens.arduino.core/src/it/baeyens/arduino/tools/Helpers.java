@@ -345,7 +345,8 @@ public class Helpers extends Common {
     }
 
     /**
-     * This method adds the content of a content stream to a file
+     * This method adds the content of a content stream to a file If the file
+     * already exist the file remains untouched
      * 
      * @param container
      *            used as a reference to the file
@@ -358,14 +359,17 @@ public class Helpers extends Common {
      * @throws CoreException
      */
     public static void addFileToProject(IContainer container, Path path, InputStream contentStream,
-	    IProgressMonitor monitor) throws CoreException {
+	    IProgressMonitor monitor, boolean overwrite) throws CoreException {
 	final IFile file = container.getFile(path);
-	if (file.exists()) {
-	    file.setContents(contentStream, true, true, monitor);
-	} else {
-	    file.create(contentStream, true, monitor);
+	file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+	if (overwrite && file.exists()) {
+	    file.delete(true, null);
+	    file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 	}
 
+	if (!file.exists()) {
+	    file.create(contentStream, true, monitor);
+	}
     }
 
     // /**
@@ -581,7 +585,8 @@ public class Helpers extends Common {
 		platformPath.removeLastSegments(numSegmentsToSubtractForHardwarePath).toString());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH,
 		platformPath.removeLastSegments(1).toString());
-
+	setBuildEnvironmentVariable(contribEnv, confDesc, "A.SERIAL.PORT", //$NON-NLS-1$
+		makeEnvironmentVar(Const.ENV_KEY_JANTJE_COM_PORT));
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 		    ConfigurationPreferences.getPathExtensionPath().toOSString() + '/');
@@ -625,7 +630,7 @@ public class Helpers extends Common {
 	String sizeSwitch = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, EMPTY_STRING, false);
 	if (sizeSwitch.isEmpty()) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_SIZE_SWITCH,
-		    makeEnvironmentVar(ENV_KEY_RECIPE_SIZE_PATTERN));
+		    makeEnvironmentVar(get_ENV_KEY_RECIPE(ACTION_SIZE)));
 	} else {
 	    sizeSwitch.toString();
 	}
@@ -640,6 +645,11 @@ public class Helpers extends Common {
 
     }
 
+    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
+	    ICConfigurationDescription confDesc, File envVarFile) {
+	setTheEnvironmentVariablesAddAFile(ENV_KEY_BOARD_START, contribEnv, confDesc, envVarFile);
+    }
+
     /**
      * This method parses a file with environment variables like the
      * platform.txt file for values to be added to the environment variables
@@ -649,7 +659,7 @@ public class Helpers extends Common {
      * @param envVarFile
      *            The file to parse
      */
-    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
+    private static void setTheEnvironmentVariablesAddAFile(String prefix, IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc, File envVarFile) {
 	try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(envVarFile));
 		BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));) {
@@ -670,7 +680,7 @@ public class Helpers extends Common {
 			} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
 			    value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 			}
-			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(var[0]),
+			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(prefix, var[0]),
 				MakeEnvironmentString(value, Const.ENV_KEY_BOARD_START));
 			contribEnv.addVariable(envVar, confDesc);
 		    }
@@ -699,7 +709,7 @@ public class Helpers extends Common {
      *            The file to parse
      */
     private static void setTheEnvironmentVariablesAddtheBoardsTxt(IContributedEnvironment contribEnv,
-	    ICConfigurationDescription confDesc, Boards boardsFile, String boardID, boolean warn) {
+	    ICConfigurationDescription confDesc, TxtFile boardsFile, String boardID, boolean warn) {
 
 	// Get the boards section and add all entries to the environment
 	// variables
@@ -709,7 +719,7 @@ public class Helpers extends Common {
 		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
 			Messages.Helpers_The_project + confDesc.getProjectDescription().getProject().getName()
 				+ Messages.Helpers_Invalid_boards_config + confDesc.getName()
-				+ Messages.Helpers_boards_file + boardsFile.getBoardsTxtName()
+				+ Messages.Helpers_boards_file + boardsFile.getTxtFile().toString()
 				+ Messages.Helpers_Boards_id + boardID));
 	    }
 	    return;
@@ -720,7 +730,11 @@ public class Helpers extends Common {
 		String keyString = MakeKeyString(currentPair.getKey());
 		String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
-	    } else {
+	    }
+	}
+	for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
+	    // if it is not a menu item add it
+	    if (currentPair.getKey().startsWith(Messages.Helpers_menu)) {
 
 		String[] keySplit = currentPair.getKey().split("\\."); //$NON-NLS-1$
 		String menuID = keySplit[1];
@@ -786,7 +800,7 @@ public class Helpers extends Common {
 	}
     }
 
-    private static boolean isThisMenuItemSelected(Boards boardsFile, ICConfigurationDescription confDesc,
+    private static boolean isThisMenuItemSelected(TxtFile boardsFile, ICConfigurationDescription confDesc,
 	    String boardID, String menuID, String menuItemID) {
 
 	String MenuName = boardsFile.getMenuNameFromID(menuID);
@@ -867,6 +881,7 @@ public class Helpers extends Common {
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
+	Programmers localProgrammers = Programmers.fromBoards(boardFileName);
 	// File pluginPlatformFilename =
 	// ConfigurationPreferences.getPlugin_Platform_File();
 
@@ -876,11 +891,11 @@ public class Helpers extends Common {
 
 	architecture = architecture.toUpperCase();
 
-	Boards pluginPreProcessingBoardsTxt = new Boards(ConfigurationPreferences.getPreProcessingBoardsFile());
-	Boards pluginPostProcessingBoardsTxt = new Boards(ConfigurationPreferences.getPostProcessingBoardsFile());
+	TxtFile pluginPreProcessingBoardsTxt = new TxtFile(ConfigurationPreferences.getPreProcessingBoardsFile());
+	TxtFile pluginPostProcessingBoardsTxt = new TxtFile(ConfigurationPreferences.getPostProcessingBoardsFile());
 	File pluginPreProcessingPlatformTxt = ConfigurationPreferences.getPreProcessingPlatformFile();
 	File pluginPostProcessingPlatformTxt = ConfigurationPreferences.getPostProcessingPlatformFile();
-	Boards boardsFile = new Boards(boardFileName);
+	TxtFile boardsFile = new TxtFile(boardFileName);
 
 	// Now we have all info we can start processing
 
@@ -889,8 +904,13 @@ public class Helpers extends Common {
 
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, localPlatformFilename);
 
+	// add the stuff that comes with the plugin that are marked as pre
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPreProcessingPlatformTxt);
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, boardID, false);
+
+	// // Then add the programmers file
+	// setTheEnvironmentVariablesAddAFile(ENV_KEY_PROGRAMMERS_START,
+	// contribEnv, confDesc, localProgrammers.getTxtFile());
 
 	// Do some magic for the arduino:arduino stuff
 	setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsFile, boardID,
@@ -912,9 +932,15 @@ public class Helpers extends Common {
 
 	setTheEnvironmentVariablesAddThePlatformInfo(contribEnv, confDesc);
 
-	// now process the boards file
+	// add the boards file
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsFile, boardID, true);
 
+	// Then add the programmers file
+	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
+	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, localProgrammers,
+		localProgrammers.getIDFromName(programmer), false);
+
+	// add the stuff that comes with the plugin that is marked as post
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
 	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, boardID, false);
 
@@ -955,7 +981,7 @@ public class Helpers extends Common {
      * @param boardID
      */
     private static void setTheEnvironmentVariablesRedirectToOtherVendors(IContributedEnvironment contribEnv,
-	    ICConfigurationDescription confDesc, Boards boardsFile, String boardID, String architecture) {
+	    ICConfigurationDescription confDesc, TxtFile boardsFile, String boardID, String architecture) {
 	Map<String, String> boardInfo = boardsFile.getSection(boardID);
 	if (boardInfo == null) {
 	    return; // there is a problem with the board ID
@@ -1049,10 +1075,21 @@ public class Helpers extends Common {
     }
 
     /**
-     * Some post processing is needed because the macro expansion resolves the
-     * "file tag" Therefore I split the "recipe" patterns in 2 parts (before and
-     * after the "file tag") the pattern in the toolchain is then ${first part}
-     * ${files} ${second part}
+     * Following post processing is done
+     * 
+     * the macro expansion resolves the "file tag" Therefore I split the
+     * "recipe" patterns in 2 parts (before and after the "file tag") the
+     * pattern in the toolchain is then ${first part} ${files} ${second part}
+     * 
+     * The handling of the upload variables is done differently in arduino than
+     * here. This is taken care of here. for example the output of this input
+     * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}"
+     * {upload.verbose} is changed as if it were the output of this input
+     * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
+     * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
+     * 
+     * if a programmer is selected different from default some extra actions are
+     * done here so no special code is needed to handle programmers
      * 
      * @param contribEnv
      * @param confDesc
@@ -1060,10 +1097,10 @@ public class Helpers extends Common {
     private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc) {
 
-	String recipes[] = { ENV_KEY_RECIPE_C_O_PATTERN, ENV_KEY_RECIPE_CPP_O_PATTERN, ENV_KEY_RECIPE_S_O_PATTERN,
-		ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN, ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN, ENV_KEY_RECIPE_SIZE_PATTERN,
-		ENV_KEY_RECIPE_AR_PATTERN, ENV_KEY_RECIPE_C_COMBINE_PATTERN };
-	for (String recipeKey : recipes) {
+	String actions[] = { ACTION_C_to_O, ACTION_CPP_to_O, ACTION_S_to_O, ACTION_OBJCOPY_to_HEX,
+		ACTION_OBJCOPY_to_EEP, ACTION_SIZE, ACTION_AR, ACTION_C_COMBINE };
+	for (String action : actions) {
+	    String recipeKey = get_ENV_KEY_RECIPE(action);
 	    String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, EMPTY_STRING, false);
 
 	    String recipeParts[] = recipe.split(
@@ -1091,31 +1128,46 @@ public class Helpers extends Common {
 	    }
 	}
 
-	// Arduino uses the board approach for the upload tool.
-	// as I'm not I mod it so the upload tool is in the command
+	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
+	if (programmer.equalsIgnoreCase(Const.DEFAULT)) {
+	    String uploadTool = contribEnv.getVariable(get_ENV_KEY_TOOL(ACTION_UPLOAD), confDesc).getValue();
+	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
+		    makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
+	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM),
+		    makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
+	} else {
+	    String uploadTool = contribEnv.getVariable("A.PROGRAM.TOOL", confDesc).getValue(); //$NON-NLS-1$
+	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
+		    makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_PROGRAM)));
+	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
+	}
+
+	// Arduino uses the board approach for the tools.
+	// as I'm not, therefore I mod the tools in the command to be FQN
 	try {
+	    IEnvironmentVariable[] curVariables = contribEnv.getVariables(confDesc);
+	    for (IEnvironmentVariable curVariable : curVariables) {
+		String name = curVariable.getName();
+		if (name.startsWith("A.TOOLS.")) { //$NON-NLS-1$
+		    String toolID = curVariable.getName().split("\\.")[2]; //$NON-NLS-1$
+		    String recipe = curVariable.getValue();
+		    int indexOfVar = recipe.indexOf("${A."); //$NON-NLS-1$
+		    while (indexOfVar != -1) {
+			int endIndexOfVar = recipe.indexOf('}', indexOfVar);
+			if (endIndexOfVar != -1) {
+			    String foundSuffix = recipe.substring(indexOfVar + 3, endIndexOfVar);
+			    String foundVar = "A" + foundSuffix; //$NON-NLS-1$
+			    String replaceVar = "A.TOOLS." + toolID.toUpperCase() + foundSuffix; //$NON-NLS-1$
+			    if (contribEnv.getVariable(foundVar, confDesc) == null) {// $NON-NLS-1$
+				recipe = recipe.replaceAll(foundVar, replaceVar);
+			    }
+			}
+			indexOfVar = recipe.indexOf("${A.", indexOfVar + 4); //$NON-NLS-1$
 
-	    String uploadTool = contribEnv.getVariable(Const.ENV_KEY_UPLOAD_TOOL, confDesc).getValue().toUpperCase();
-	    String uploadRecipe = "A.TOOLS." + uploadTool.toUpperCase() + ".UPLOAD.PATTERN";//$NON-NLS-1$//$NON-NLS-2$
-	    String UploadCommand = contribEnv.getVariable(uploadRecipe, confDesc).getValue();
-	    int indexOfVar = UploadCommand.indexOf("${A."); //$NON-NLS-1$
-	    while (indexOfVar != -1) {
-		int endIndexOfVar = UploadCommand.indexOf('}', indexOfVar);
-		if (endIndexOfVar != -1) {
-		    String foundSuffix = UploadCommand.substring(indexOfVar + 3, endIndexOfVar);
-		    String foundVar = "A" + foundSuffix; //$NON-NLS-1$
-		    String replaceVar = "A.TOOLS." + uploadTool.toUpperCase() + foundSuffix; //$NON-NLS-1$
-		    if (contribEnv.getVariable(replaceVar, confDesc) != null) {
-			UploadCommand = UploadCommand.replaceAll(foundVar, replaceVar);
 		    }
+		    setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 		}
-		indexOfVar = UploadCommand.indexOf("${A.", indexOfVar + 4); //$NON-NLS-1$
-
 	    }
-	    setBuildEnvironmentVariable(contribEnv, confDesc, uploadRecipe, UploadCommand);
-	    // I still need to set this one
-	    setBuildEnvironmentVariable(contribEnv, confDesc, "A.PATH", //$NON-NLS-1$
-		    makeEnvironmentVar("A.TOOLS." + uploadTool + ".PATH")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
@@ -1210,13 +1262,18 @@ public class Helpers extends Common {
      * @return the string to be used as key for the environment variable
      */
     private static String MakeKeyString(String string) {
+
+	return MakeKeyString(ENV_KEY_BOARD_START, string);
+    }
+
+    private static String MakeKeyString(String prefix, String string) {
 	String osString = "\\.\\."; //$NON-NLS-1$
 	if (Platform.getOS().equals(Platform.OS_LINUX)) {
 	    osString = "\\.LINUX"; //$NON-NLS-1$
 	} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    osString = "\\.WINDOWS"; //$NON-NLS-1$
 	}
-	return ENV_KEY_BOARD_START + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
+	return prefix + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
     }
 
     /**

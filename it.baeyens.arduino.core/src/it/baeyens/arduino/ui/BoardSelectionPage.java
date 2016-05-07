@@ -36,8 +36,9 @@ import org.eclipse.swt.widgets.Text;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.InstancePreferences;
-import it.baeyens.arduino.tools.Boards;
 import it.baeyens.arduino.tools.Helpers;
+import it.baeyens.arduino.tools.Programmers;
+import it.baeyens.arduino.tools.TxtFile;
 
 /**
  * The ArduinoSelectionPage class is used in the new wizard and the project properties. This class controls the gui and the data underneath the gui.
@@ -54,6 +55,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     // GUI elements
     protected Combo mControlBoardsTxtFile;
     protected Combo mcontrolBoardName;
+    protected Combo mControlUploadProtocol;
     protected LabelCombo mControlUploadPort;
     protected LabelCombo[] mBoardOptionCombos = null;
     private final int ncol = 2;
@@ -63,8 +65,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     private String[] mAllBoardsFileNames; // contains the boards.txt file names
 					  // found
 					  // for the current arduino environment
-    Boards mAllBoardsFiles[] = null; // contains the boards.txt content found
-				     // for the current arduino environment
+    TxtFile mAllBoardsFiles[] = null; // contains the boards.txt content found
+				      // for the current arduino environment
 
     /**
      * Get the configuration we are currently working in. The configuration is null if we are in the create sketch wizard.
@@ -125,8 +127,16 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	     */
 	    String CurrentBoard = BoardSelectionPage.this.mcontrolBoardName.getText();
 	    BoardSelectionPage.this.mcontrolBoardName.removeAll();
-	    BoardSelectionPage.this.mcontrolBoardName.setItems(BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
+	    BoardSelectionPage.this.mcontrolBoardName.setItems(BoardSelectionPage.this.mAllBoardsFiles[selectedBoardFile].getAllNames());
 	    BoardSelectionPage.this.mcontrolBoardName.setText(CurrentBoard);
+
+	    /*
+	     * Change the list of available upload protocols
+	     */
+	    String CurrentUploadProtocol = BoardSelectionPage.this.mControlUploadProtocol.getText();
+	    BoardSelectionPage.this.mControlUploadProtocol.removeAll();
+	    BoardSelectionPage.this.mControlUploadProtocol.setItems(Programmers.fromBoards(boardFile).GetUploadProtocols());
+	    BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 
 	    BoardSelectionPage.this.BoardModifyListener.handleEvent(null);
 	}
@@ -195,9 +205,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		    "ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed.")); //$NON-NLS-1$
 	}
 	Arrays.sort(this.mAllBoardsFileNames);
-	this.mAllBoardsFiles = new Boards[this.mAllBoardsFileNames.length];
+	this.mAllBoardsFiles = new TxtFile[this.mAllBoardsFileNames.length];
 	for (int currentBoardFile = 0; currentBoardFile < this.mAllBoardsFileNames.length; currentBoardFile++) {
-	    this.mAllBoardsFiles[currentBoardFile] = new Boards(new File(this.mAllBoardsFileNames[currentBoardFile]));
+	    this.mAllBoardsFiles[currentBoardFile] = new TxtFile(new File(this.mAllBoardsFileNames[currentBoardFile]));
 
 	}
 
@@ -236,6 +246,15 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	theGriddata.horizontalSpan = (this.ncol - 1);
 	this.mcontrolBoardName.setLayoutData(theGriddata);
 	this.mcontrolBoardName.setEnabled(false);
+
+	// ------
+	new Label(composite, SWT.NONE).setText("Upload Protocol:"); //$NON-NLS-1$
+	this.mControlUploadProtocol = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
+	theGriddata = new GridData();
+	theGriddata.horizontalAlignment = SWT.FILL;
+	theGriddata.horizontalSpan = (this.ncol - 1);
+	this.mControlUploadProtocol.setLayoutData(theGriddata);
+	this.mControlUploadProtocol.setEnabled(false);
 
 	// ----
 	this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, this.ncol - 1, Const.ENV_KEY_JANTJE_COM_PORT, false);
@@ -312,6 +331,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     protected void EnableControls() {
 	this.mcontrolBoardName.setEnabled(true);
 	this.mControlUploadPort.setEnabled(true);
+	this.mControlUploadProtocol.setEnabled(true);
 	this.mControlBoardsTxtFile.setEnabled((this.mAllBoardsFileNames.length > 1));
 	this.mControlBoardsTxtFile.setVisible(this.mAllBoardsFileNames.length > 1);
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
@@ -349,9 +369,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
+	String uploadProtocol = this.mControlUploadPort.getValue();
 	InstancePreferences.setLastUsedBoardsFile(boardFile);
 	InstancePreferences.setLastUsedArduinoBoard(boardName);
 	InstancePreferences.setLastUsedUploadPort(uploadPort);
+	InstancePreferences.setLastUsedUploadProtocol(uploadProtocol);
 
 	Map<String, String> options = new HashMap<>();
 	for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
@@ -370,6 +392,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
+	String uploadProtocol = this.mControlUploadProtocol.getText();
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
@@ -379,6 +402,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, platformPath.toString());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_COM_PORT, uploadPort);
+	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), uploadProtocol);
 
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
 	Common.setBuildEnvironmentVariable(contribEnv, confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
@@ -395,21 +419,32 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	String boardFile = InstancePreferences.getLastUsedBoardsFile();
 	String boardName = InstancePreferences.getLastUsedArduinoBoardName();
 	String uploadPort = InstancePreferences.getLastUsedUploadPort();
+	String uploadProtocol = InstancePreferences.getLastUsedUploadProtocol();
 	if (confdesc != null) {
 	    boardFile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, boardFile);
 	    boardName = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, boardName);
 	    uploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_COM_PORT, uploadPort);
+	    uploadProtocol = Common.getBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), uploadProtocol);
 	}
 
 	this.mControlBoardsTxtFile.setText(boardFile);
 	// if no boards file is selected select the first
 	if (this.mControlBoardsTxtFile.getText().isEmpty()) {
 	    this.mControlBoardsTxtFile.setText(this.mControlBoardsTxtFile.getItem(0));
+	    boardFile = this.mControlBoardsTxtFile.getText();
 	}
 	int selectedBoardFile = this.mControlBoardsTxtFile.getSelectionIndex();
-	this.mcontrolBoardName.setItems(this.mAllBoardsFiles[selectedBoardFile].GetArduinoBoards());
+	this.mcontrolBoardName.setItems(this.mAllBoardsFiles[selectedBoardFile].getAllNames());
 	this.mcontrolBoardName.setText(boardName);
-	// BoardModifyListener.handleEvent(null);
+
+	String CurrentUploadProtocol = BoardSelectionPage.this.mControlUploadProtocol.getText();
+	BoardSelectionPage.this.mControlUploadProtocol.removeAll();
+	BoardSelectionPage.this.mControlUploadProtocol.setItems(Programmers.fromBoards(boardFile).GetUploadProtocols());
+	BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
+	if (this.mControlUploadProtocol.getText().isEmpty()) {
+	    this.mControlUploadProtocol.setText(uploadProtocol);
+	}
+
 	this.mControlUploadPort.setValue(uploadPort);
 
 	// set the options in the combo boxes before setting the value
@@ -425,7 +460,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 	    }
 	}
-
     }
 
     public IPath getPlatformFolder() {
@@ -513,6 +547,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     public String getBoardID() {
 	int selectedBoardFile = this.mControlBoardsTxtFile.getSelectionIndex();
 	String boardName = this.mcontrolBoardName.getText().trim();
-	return this.mAllBoardsFiles[selectedBoardFile].getBoardIDFromName(boardName);
+	return this.mAllBoardsFiles[selectedBoardFile].getIDFromName(boardName);
     }
 }
