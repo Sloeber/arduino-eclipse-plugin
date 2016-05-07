@@ -66,6 +66,7 @@ import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.managers.ArduinoPlatform;
 import it.baeyens.arduino.managers.Manager;
 import it.baeyens.arduino.managers.ToolDependency;
+import it.baeyens.arduino.ui.Activator;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -531,7 +532,7 @@ public class Helpers extends Common {
 		platformPath.removeLastSegments(numSegmentsToSubtractForHardwarePath).toString());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH,
 		platformPath.removeLastSegments(1).toString());
-	setBuildEnvironmentVariable(contribEnv, confDesc, "A.SERIAL.PORT", //$NON-NLS-1$
+	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT,
 		makeEnvironmentVar(Const.ENV_KEY_JANTJE_COM_PORT));
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
@@ -1076,8 +1077,15 @@ public class Helpers extends Common {
 	if (programmer.equalsIgnoreCase(Const.DEFAULT)) {
 	    String uploadTool = contribEnv.getVariable(get_ENV_KEY_TOOL(ACTION_UPLOAD), confDesc).getValue();
 	    String MComPort = contribEnv.getVariable(Const.ENV_KEY_JANTJE_COM_PORT, confDesc).getValue();
-	    if (getHostFromComPort(MComPort) != null) {
+	    String host = getHostFromComPort(MComPort);
+	    if (host != null) {
 		String platform = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ARCITECTURE_ID, confDesc).getValue();
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT,
+			Activator.bonjourDiscovery.getPort(host));
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_AUTH,
+			Activator.bonjourDiscovery.hasAuth(host) ? TRUE : FALSE);
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
+
 		try {
 		    String key = ENV_KEY_BOARD_START + platform.toUpperCase() + DOT + NETWORK + DOT
 			    + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
@@ -1092,7 +1100,8 @@ public class Helpers extends Common {
 		    // simply ignore
 		}
 	    }
-	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD), makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
+	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
+		    makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM),
 		    makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 	} else {
@@ -1335,7 +1344,8 @@ public class Helpers extends Common {
 
     /**
      * Give the string entered in the com port try to extract a host. If no host
-     * is found return null yun at xxx.yyy.zzz (arduino yun) returns yun.local
+     * is found return null yun.local at xxx.yyy.zzz (arduino yun) returns
+     * yun.local
      * 
      * @param mComPort
      * @return

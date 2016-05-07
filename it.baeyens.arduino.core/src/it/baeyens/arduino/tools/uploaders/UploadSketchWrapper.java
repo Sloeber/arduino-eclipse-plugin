@@ -64,6 +64,7 @@ public class UploadSketchWrapper {
 		Const.EMPTY_STRING);
 	String uploadClass = Common.getBuildEnvironmentVariable(Project, cConf,
 		Const.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS), Const.EMPTY_STRING);
+
 	this.myConsole = Helpers.findConsole(Messages.Upload_console);
 	this.myConsole.clearConsole();
 	this.myConsole.activate();

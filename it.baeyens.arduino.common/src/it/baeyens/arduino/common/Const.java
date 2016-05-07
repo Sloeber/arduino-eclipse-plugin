@@ -126,6 +126,8 @@ public class Const {
     public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
     public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ENV_KEY_BOARD_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
+    public static final String ENV_KEY_NETWORK_PORT = ENV_KEY_BOARD_START + "NETWORK.PORT";
+    public static final String ENV_KEY_NETWORK_AUTH = ENV_KEY_BOARD_START + "NETWORK.AUTH";
 
     public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
     public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
@@ -139,13 +141,15 @@ public class Const {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START + "REFERENCED_PLATFORM_FILE";
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
+	    + "REFERENCED_PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
     public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";
-    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.CPP.COMPILE";
+    public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+	    + "EXTRA.CPP.COMPILE";
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";
@@ -157,7 +161,8 @@ public class Const {
     // template Sketch information
 
     public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
-    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START + "TEMPLATE_USE_DEFAULT";
+    public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
+	    + "TEMPLATE_USE_DEFAULT";
 
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
@@ -165,7 +170,16 @@ public class Const {
     public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
     public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
     // scope stuff
-    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the 205 171 or -85 -51 flag that indicates scope data is following least significant first 0xCDAB;
+    public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
+								// 205 171 or
+								// -85 -51 flag
+								// that
+								// indicates
+								// scope data is
+								// following
+								// least
+								// significant
+								// first 0xCDAB;
     public static final String EXAMPLE_FOLDER_NAME = "examples";
 
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
@@ -205,13 +219,15 @@ public class Const {
     }
 
     /**
-     * given a action and a tool return the environment key that matches it's recipe
+     * given a action and a tool return the environment key that matches it's
+     * recipe
      * 
      * @param action
      * @return he environment variable key to find the recipe
      */
     public static String get_ENV_KEY_RECIPE(String tool, String action) {
-	return ENV_KEY_BOARD_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN;
+	return ENV_KEY_BOARD_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT
+		+ ENV_PATTERN;
     }
 
     public static String get_Jantje_KEY_PROTOCOL(String action) {

@@ -32,7 +32,8 @@ public class arduinoUploader implements IRealUpload {
     }
 
     @Override
-    public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
+    public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer,
+	    IProgressMonitor monitor) {
 	String MComPort = Const.EMPTY_STRING;
 	String boardName = Const.EMPTY_STRING;
 
@@ -46,19 +47,24 @@ public class arduinoUploader implements IRealUpload {
 	} catch (Exception e) {// ignore all errors
 	}
 	try {
-	    boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true).getValue();
+	    boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true)
+		    .getValue();
 	} catch (Exception e) {// ignore all errors
 	}
-	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject, this.mycConf, MComPort);
+	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
+		this.mycConf, MComPort);
 
-	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT, NewSerialPort);
+	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_COM_PORT, NewSerialPort);
 	contribEnv.addVariable(var, configurationDescription);
-	var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE, NewSerialPort.replace("/dev/", Const.EMPTY_STRING)); //$NON-NLS-1$
+	var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE,
+		NewSerialPort.replace("/dev/", Const.EMPTY_STRING)); //$NON-NLS-1$
 	contribEnv.addVariable(var, configurationDescription);
 
 	String command = Const.EMPTY_STRING;
 	try {
-	    command = envManager.getVariable(Const.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true).getValue();
+	    command = envManager
+		    .getVariable(Const.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
+		    .getValue();
 	} catch (Exception e) {// ignore all errors
 	}
 

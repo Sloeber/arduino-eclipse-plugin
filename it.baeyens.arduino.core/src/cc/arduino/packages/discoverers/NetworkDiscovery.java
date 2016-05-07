@@ -55,11 +55,12 @@ public class NetworkDiscovery
     private class bonour {
 	public String address;
 	public String name;
-
 	public String board;
 	public String distroversion;
-
 	public String port;
+	public boolean ssh_upload;
+	public boolean tcp_check;
+	public boolean auth_upload;
 
 	public bonour() {
 	    this.address = ""; //$NON-NLS-1$
@@ -67,6 +68,9 @@ public class NetworkDiscovery
 	    this.board = ""; //$NON-NLS-1$
 	    this.distroversion = ""; //$NON-NLS-1$
 	    this.port = ""; //$NON-NLS-1$
+	    this.ssh_upload = true;
+	    this.tcp_check = true;
+	    this.auth_upload = false;
 	}
 
 	public String getLabel() {
@@ -96,30 +100,6 @@ public class NetworkDiscovery
 	}
 	return ret;
     }
-
-    // @Override
-    // public List<BoardPort> discovery() {
-    // List<BoardPort> ports = clonePortsList();
-    // Iterator<BoardPort> iterator = ports.iterator();
-    // while (iterator.hasNext()) {
-    // try {
-    // BoardPort board = iterator.next();
-    // if (!NetUtils.isReachable(InetAddress.getByName(board.getAddress()),
-    // Integer.parseInt(board.getPrefs().get("port")))) {
-    // iterator.remove();
-    // }
-    // } catch (UnknownHostException e) {
-    // iterator.remove();
-    // }
-    // }
-    // return ports;
-    // }
-
-    // private List<BoardPort> clonePortsList() {
-    // synchronized (this) {
-    // return new ArrayList<BoardPort>(this.ports);
-    // }
-    // }
 
     public void start() {
 	this.timer = new Timer(this.getClass().getName() + " timer"); //$NON-NLS-1$
@@ -166,6 +146,15 @@ public class NetworkDiscovery
 		newItem.board = info.getPropertyString("board"); //$NON-NLS-1$
 		newItem.distroversion = info.getPropertyString("distro_version"); //$NON-NLS-1$
 		newItem.name = info.getServer();
+		String useSSH = info.getPropertyString("ssh_upload"); //$NON-NLS-1$
+		String checkTCP = info.getPropertyString("tcp_check"); //$NON-NLS-1$
+		String useAuth = info.getPropertyString("auth_upload"); //$NON-NLS-1$
+		if (useSSH != null && useSSH.contentEquals("no")) //$NON-NLS-1$
+		    newItem.ssh_upload = false;
+		if (checkTCP != null && checkTCP.contentEquals("no")) //$NON-NLS-1$
+		    newItem.tcp_check = false;
+		if (useAuth != null && useAuth.contentEquals("yes")) //$NON-NLS-1$
+		    newItem.auth_upload = true;
 	    }
 	    while (newItem.name.endsWith(".")) { //$NON-NLS-1$
 		newItem.name = newItem.name.substring(0, newItem.name.length() - 1);
@@ -225,5 +214,51 @@ public class NetworkDiscovery
 		e.printStackTrace();
 	    }
 	}
+    }
+
+    private bonour getBoardByName(String name) {
+	Iterator<bonour> iterator = this.myComPorts.iterator();
+	while (iterator.hasNext()) {
+	    bonour board = iterator.next();
+	    if (name.equals(board.name)) {
+		return board;
+	    }
+	}
+	return null;
+    }
+
+    public String getAddress(String name) {
+	bonour board = getBoardByName(name);
+	if (board == null)
+	    return null;
+	return board.address;
+    }
+
+    public String getPort(String name) {
+	bonour board = getBoardByName(name);
+	if (board == null)
+	    return null;
+	return board.port;
+    }
+
+    public boolean hasAuth(String name) {
+	bonour board = getBoardByName(name);
+	if (board == null)
+	    return false;
+	return board.auth_upload;
+    }
+
+    public boolean isSSH(String name) {
+	bonour board = getBoardByName(name);
+	if (board == null)
+	    return false;
+	return board.ssh_upload;
+    }
+
+    public boolean needstcpCheck(String name) {
+	bonour board = getBoardByName(name);
+	if (board == null)
+	    return false;
+	return board.tcp_check;
     }
 }
