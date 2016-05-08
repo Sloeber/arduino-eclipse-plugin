@@ -29,8 +29,6 @@
 
 package cc.arduino.packages.discoverers;
 
-//import cc.arduino.packages.BoardPort;
-//import cc.arduino.packages.Discovery;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashSet;
@@ -46,11 +44,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.DNSTaskStarter;
 
-import cc.arduino.packages.discoverers.network.NetworkChecker;
-import processing.app.zeroconf.jmdns.ArduinoDNSTaskStarter;
-
-public class NetworkDiscovery
-	implements ServiceListener, cc.arduino.packages.discoverers.network.NetworkTopologyListener {
+public class NetworkDiscovery implements ServiceListener {
 
     private class bonour {
 	public String address;
@@ -79,21 +73,25 @@ public class NetworkDiscovery
 
     }
 
-    private Timer timer;
-    private final HashSet<bonour> myComPorts; // well not really com ports but
-					      // we treat them like com ports
-    private final Map<InetAddress, JmDNS> mappedJmDNSs;
+    private static Timer timer = new Timer("Network discovery timer"); //$NON-NLS-1$ ;
+    private static final HashSet<bonour> myComPorts = new HashSet<>(); // well
+								       // not
+								       // really
+								       // com
+								       // ports
+								       // but
+    // we treat them like com ports
+    private final static Map<InetAddress, JmDNS> mappedJmDNSs = new Hashtable<>();
+    private static NetworkDiscovery me = null;
 
-    public NetworkDiscovery() {
+    private NetworkDiscovery() {
 	DNSTaskStarter.Factory.setClassDelegate(new ArduinoDNSTaskStarter());
-	this.myComPorts = new HashSet<>();
-	this.mappedJmDNSs = new Hashtable<>();
     }
 
-    public String[] getList() {
-	String[] ret = new String[this.myComPorts.size()];
+    public static String[] getList() {
+	String[] ret = new String[myComPorts.size()];
 	int curPort = 0;
-	Iterator<bonour> iterator = this.myComPorts.iterator();
+	Iterator<bonour> iterator = myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    ret[curPort++] = board.getLabel();
@@ -101,13 +99,15 @@ public class NetworkDiscovery
 	return ret;
     }
 
-    public void start() {
-	this.timer = new Timer(this.getClass().getName() + " timer"); //$NON-NLS-1$
-	new NetworkChecker(this, NetworkTopologyDiscovery.Factory.getInstance()).start(this.timer);
+    public static void start() {
+	if (me == null) {
+	    me = new NetworkDiscovery();
+	}
+	new NetworkChecker(NetworkTopologyDiscovery.Factory.getInstance()).start(timer);
     }
 
-    public void stop() {
-	this.timer.purge();
+    public static void stop() {
+	timer.purge();
 	// we don't close each JmDNS instance as it's too slow
     }
 
@@ -163,13 +163,13 @@ public class NetworkDiscovery
 
 	    synchronized (this) {
 		removeBoardswithSameAdress(newItem);
-		this.myComPorts.add(newItem);
+		myComPorts.add(newItem);
 	    }
 	}
     }
 
-    private void removeBoardswithSameAdress(bonour newBoard) {
-	Iterator<bonour> iterator = this.myComPorts.iterator();
+    private static void removeBoardswithSameAdress(bonour newBoard) {
+	Iterator<bonour> iterator = myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    if (newBoard.address.equals(board.address)) {
@@ -178,8 +178,8 @@ public class NetworkDiscovery
 	}
     }
 
-    private void removeBoardswithSameName(String name) {
-	Iterator<bonour> iterator = this.myComPorts.iterator();
+    private static void removeBoardswithSameName(String name) {
+	Iterator<bonour> iterator = myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    if (name.equals(board.name)) {
@@ -189,24 +189,22 @@ public class NetworkDiscovery
     }
 
     @SuppressWarnings("resource")
-    @Override
-    public void inetAddressAdded(InetAddress address) {
-	if (this.mappedJmDNSs.containsKey(address)) {
+    public static void inetAddressAdded(InetAddress address) {
+	if (mappedJmDNSs.containsKey(address)) {
 	    return;
 	}
 	try {
 	    JmDNS jmDNS = JmDNS.create(address);
-	    jmDNS.addServiceListener("_arduino._tcp.local.", this); //$NON-NLS-1$
-	    this.mappedJmDNSs.put(address, jmDNS);
+	    jmDNS.addServiceListener("_arduino._tcp.local.", me); //$NON-NLS-1$
+	    mappedJmDNSs.put(address, jmDNS);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
     }
 
     @SuppressWarnings("resource")
-    @Override
-    public void inetAddressRemoved(InetAddress address) {
-	JmDNS jmDNS = this.mappedJmDNSs.remove(address);
+    public static void inetAddressRemoved(InetAddress address) {
+	JmDNS jmDNS = mappedJmDNSs.remove(address);
 	if (jmDNS != null) {
 	    try {
 		jmDNS.close();
@@ -216,8 +214,8 @@ public class NetworkDiscovery
 	}
     }
 
-    private bonour getBoardByName(String name) {
-	Iterator<bonour> iterator = this.myComPorts.iterator();
+    private static bonour getBoardByName(String name) {
+	Iterator<bonour> iterator = myComPorts.iterator();
 	while (iterator.hasNext()) {
 	    bonour board = iterator.next();
 	    if (name.equals(board.name)) {
@@ -227,35 +225,35 @@ public class NetworkDiscovery
 	return null;
     }
 
-    public String getAddress(String name) {
+    public static String getAddress(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
 	    return null;
 	return board.address;
     }
 
-    public String getPort(String name) {
+    public static String getPort(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
 	    return null;
 	return board.port;
     }
 
-    public boolean hasAuth(String name) {
+    public static boolean hasAuth(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
 	    return false;
 	return board.auth_upload;
     }
 
-    public boolean isSSH(String name) {
+    public static boolean isSSH(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
 	    return false;
 	return board.ssh_upload;
     }
 
-    public boolean needstcpCheck(String name) {
+    public static boolean needstcpCheck(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
 	    return false;

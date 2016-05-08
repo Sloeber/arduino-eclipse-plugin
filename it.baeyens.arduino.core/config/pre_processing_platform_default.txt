@@ -9,6 +9,6 @@ runtime.IDE.version=10606
 build.system.path={RUNTIME.PLATFORM.PATH}/system
 
 #for esp8266 network upload
-tools.esp8266ATO={tools.esptool.network_cmd}
-tools.esp8266ATO.upload.pattern={tools.esptool.upload.network_pattern}
-esp8266.network.upload.tool=esp8266ATO
+tools.esp8266OTA={tools.esptool.network_cmd}
+tools.esp8266OTA.upload.pattern={tools.esptool.upload.network_pattern}
+esp8266.network.upload.tool=esp8266OTA

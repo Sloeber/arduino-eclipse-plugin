@@ -44,7 +44,6 @@ import it.baeyens.arduino.tools.ExternalCommandLauncher;
  * 
  */
 public class Activator implements BundleActivator {
-    public static NetworkDiscovery bonjourDiscovery;
     public URL pluginStartInitiator = null; // Initiator to start the plugin
     public Object mstatus; // status of the plugin
     protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + Const.EMPTY_STRING;
@@ -101,7 +100,6 @@ public class Activator implements BundleActivator {
     }
 
     private static void registerListeners() {
-	// TODO Auto-generated method stub
 	IndexerListener myindexerListener = new IndexerListener();
 	CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
 	CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
@@ -111,7 +109,6 @@ public class Activator implements BundleActivator {
     }
 
     private static void runGUIRegistration() {
-	// TODO Auto-generated method stub
 	UIJob installJob = new UIJob("Arduino installer job") { //$NON-NLS-1$
 
 	    @Override
@@ -171,15 +168,13 @@ public class Activator implements BundleActivator {
 		    makeOurOwnCustomBoards_txt();
 		    Manager.startup_Pluging(monitor);
 		    monitor.setTaskName("Done!"); //$NON-NLS-1$
-		    bonjourDiscovery = new NetworkDiscovery();
-		    bonjourDiscovery.start();
+		    NetworkDiscovery.start();
 		    InstancePreferences.setConfigured();
 		    registerListeners();
 		    return Status.OK_STATUS;
 		}
 		addFileAssociations();
-		bonjourDiscovery = new NetworkDiscovery();
-		bonjourDiscovery.start();
+		NetworkDiscovery.start();
 		return Status.CANCEL_STATUS;
 	    }
 

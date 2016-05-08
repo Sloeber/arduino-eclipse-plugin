@@ -59,6 +59,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
+import cc.arduino.packages.discoverers.NetworkDiscovery;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
@@ -66,7 +67,6 @@ import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.managers.ArduinoPlatform;
 import it.baeyens.arduino.managers.Manager;
 import it.baeyens.arduino.managers.ToolDependency;
-import it.baeyens.arduino.ui.Activator;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -1080,10 +1080,9 @@ public class Helpers extends Common {
 	    String host = getHostFromComPort(MComPort);
 	    if (host != null) {
 		String platform = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ARCITECTURE_ID, confDesc).getValue();
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT,
-			Activator.bonjourDiscovery.getPort(host));
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT, NetworkDiscovery.getPort(host));
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_AUTH,
-			Activator.bonjourDiscovery.hasAuth(host) ? TRUE : FALSE);
+			NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
 
 		try {
