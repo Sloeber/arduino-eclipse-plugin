@@ -15,7 +15,7 @@ If you are not a developer and don't want to build from sources, then there are 
 ## What if I am a developer?
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
-Also subscribe to the developers list by sending a mail with subject _subscribe_ to eclipse-arduino-dev@freelists.org (this is not for support questions)
+Also subscribe to the developers list by [clicking here](http://www.freelists.org/list/eclipse-arduino-dev) or by sending a mail with subject _Subscribe_ to [eclipse-arduino-dev@freelists.org](mailto:eclipse-arduino-dev@freelists.org?subject=Subscribe) (this is not for support questions)
 
 ## There are lots of issues open that seem fixed.
 We only close issues when they are in part of a stable release. Therefore the open list contains all open items for the last stable release. Known open issue for the last nightly can be found with this query:  
