@@ -75,7 +75,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
      */
     private static int getBaudRate(IProject iProject) {
 	String setupFunctionName = "setup"; //$NON-NLS-1$
-	String serialVariable = "Serial.begin"; //$NON-NLS-1$
+	String functionName = "Serial.begin"; //$NON-NLS-1$
 
 	ICProject curProject = CoreModel.getDefault().getCModel().getCProject(iProject.getName());
 
@@ -104,7 +104,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 	    for (IIndexName name : names) {
 		String SetupFileName = name.getFileLocation().getFileName();
 		String SetupFileContent = FileUtils.readFileToString(new File(SetupFileName));
-		int serialBeginStart = SetupFileContent.indexOf(serialVariable);
+		int serialBeginStart = SetupFileContent.indexOf(functionName);
 		if (serialBeginStart != -1) {
 		    int serialBeginStartbraket = SetupFileContent.indexOf("(", serialBeginStart); //$NON-NLS-1$
 		    if (serialBeginStartbraket != -1) {
