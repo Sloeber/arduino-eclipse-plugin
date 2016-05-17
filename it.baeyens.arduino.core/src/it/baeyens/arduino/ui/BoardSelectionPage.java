@@ -144,6 +144,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		    .setItems(Programmers.fromBoards(boardFile).GetUploadProtocols());
 	    BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 
+	    if (BoardSelectionPage.this.mControlUploadProtocol.getText().isEmpty()) {
+
+		BoardSelectionPage.this.mControlUploadProtocol.setText(Const.DEFAULT);
+	    }
+
 	    BoardSelectionPage.this.BoardModifyListener.handleEvent(null);
 	}
     };
@@ -378,7 +383,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	String boardFile = this.mControlBoardsTxtFile.getText().trim();
 	String boardName = this.mcontrolBoardName.getText().trim();
 	String uploadPort = this.mControlUploadPort.getValue();
-	String uploadProtocol = this.mControlUploadPort.getValue();
+	String uploadProtocol = this.mControlUploadProtocol.getText().trim();
 	InstancePreferences.setLastUsedBoardsFile(boardFile);
 	InstancePreferences.setLastUsedArduinoBoard(boardName);
 	InstancePreferences.setLastUsedUploadPort(uploadPort);
@@ -458,6 +463,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 	if (this.mControlUploadProtocol.getText().isEmpty()) {
 	    this.mControlUploadProtocol.setText(uploadProtocol);
+	    if (this.mControlUploadProtocol.getText().isEmpty()) {
+		this.mControlUploadProtocol.setText(Const.DEFAULT);
+	    }
 	}
 
 	this.mControlUploadPort.setValue(uploadPort);
