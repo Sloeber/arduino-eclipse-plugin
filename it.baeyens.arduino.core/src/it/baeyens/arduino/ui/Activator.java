@@ -44,8 +44,6 @@ import it.baeyens.arduino.tools.ExternalCommandLauncher;
  * 
  */
 public class Activator implements BundleActivator {
-    public URL pluginStartInitiator = null; // Initiator to start the plugin
-    public Object mstatus; // status of the plugin
     protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + Const.EMPTY_STRING;
     protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/',
 	    'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g',
@@ -137,12 +135,12 @@ public class Activator implements BundleActivator {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
+
 		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(Activator.this.flagStart, 0) + 1;
 		    myScope.putInt(Activator.this.flagStart, curFsiStatus);
-		    Activator.this.pluginStartInitiator = new URL(
-			    new String(Activator.this.uri) + Integer.toString(curFsiStatus));
-		    Activator.this.mstatus = Activator.this.pluginStartInitiator.getContent();
+		    URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
+		    pluginStartInitiator.getContent();
 		} catch (Exception e) {
 		    // if this happens there is no real harm or functionality
 		    // lost
@@ -187,7 +185,6 @@ public class Activator implements BundleActivator {
 	     */
 	    @SuppressWarnings("boxing")
 	    private boolean DownloadFolderConditionsOK() {
-		// TODO Auto-generated method stub
 		Path installPath = ConfigurationPreferences.getInstallationPath();
 		installPath.toFile().mkdirs();
 		boolean cantWrite = !installPath.toFile().canWrite();
