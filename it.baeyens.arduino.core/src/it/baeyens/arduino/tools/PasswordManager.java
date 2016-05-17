@@ -33,7 +33,7 @@ public class PasswordManager {
 	return this.myhost;
     }
 
-    public boolean setHost(String host) {
+    public boolean setHost(String host, boolean askPwdIfNotFound) {
 	this.myhost = host;
 	this.myPassword = null;
 	this.myLogin = null;
@@ -47,8 +47,12 @@ public class PasswordManager {
 		this.myPassword = node.get(Messages.security_password, null);
 		this.myLogin = node.get(Messages.security_login, null);
 	    }
+	    if (!askPwdIfNotFound) {
+		return false;
+	    }
 	    if (this.myPassword == null) {
-		PasswordDialog dialog = new PasswordDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		PasswordDialog dialog = new PasswordDialog(
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		if (this.myLogin != null)
 		    dialog.setUser(this.myLogin);
 		dialog.sethost(host);

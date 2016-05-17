@@ -44,6 +44,8 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.DNSTaskStarter;
 
+import it.baeyens.arduino.common.Const;
+
 public class NetworkDiscovery implements ServiceListener {
 
     private class bonour {
@@ -235,7 +237,7 @@ public class NetworkDiscovery implements ServiceListener {
     public static String getPort(String name) {
 	bonour board = getBoardByName(name);
 	if (board == null)
-	    return null;
+	    return Const.EMPTY_STRING;
 	return board.port;
     }
 

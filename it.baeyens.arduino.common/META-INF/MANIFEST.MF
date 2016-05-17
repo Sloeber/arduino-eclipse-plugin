@@ -6,13 +6,16 @@ Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: it.baeyens.arduino.common.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit
+ org.junit,
+ org.eclipse.wb.core.lib,
+ org.eclipse.cdt.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
  it.baeyens.arduino.common
 Import-Package: org.eclipse.cdt.core,
  org.eclipse.cdt.core.envvar,
+ org.eclipse.cdt.core.index,
  org.eclipse.cdt.core.model,
  org.eclipse.cdt.core.settings.model,
  org.eclipse.core.resources

@@ -29,7 +29,8 @@ public class SSHUpload implements IRealUpload {
     private MessageConsoleStream myOutconsole;
     private MessageConsoleStream myErrconsole;
 
-    SSHUpload(MessageConsoleStream HighLevelConsoleStream, MessageConsoleStream Outconsole, MessageConsoleStream Errconsole, String host) {
+    SSHUpload(MessageConsoleStream HighLevelConsoleStream, MessageConsoleStream Outconsole,
+	    MessageConsoleStream Errconsole, String host) {
 
 	this.myHost = host;
 
@@ -46,8 +47,9 @@ public class SSHUpload implements IRealUpload {
 	    return false;
 	}
 	PasswordManager pwdManager = new PasswordManager();
-	if (!pwdManager.setHost(this.myHost)) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing + this.myHost));
+	if (!pwdManager.setHost(this.myHost, true)) {
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		    Messages.Upload_login_credentials_missing + this.myHost));
 	}
 
 	Session session = null;
@@ -61,13 +63,19 @@ public class SSHUpload implements IRealUpload {
 
 	    scp = new SCP(session);
 	    SSH ssh = new SSH(session);
-	    this.myHighLevelConsoleStream.println(Messages.Upload_sending_sketch + hexFile + Messages.Upload_to + this.myHost);
+	    this.myHighLevelConsoleStream
+		    .println(Messages.Upload_sending_sketch + hexFile + Messages.Upload_to + this.myHost);
 	    scpFiles(scp, hexFile);
 	    this.myHighLevelConsoleStream.println(Messages.Upload_sketch_on_yun);
 
-	    // String additionalParams = verbose ? prefs.get("upload.params.verbose") : prefs.get("upload.params.quiet");
-	    String additionalParams = Const.EMPTY_STRING;// Common.getBuildEnvironmentVariable(myProject, myCConf, ArduinoConst.
-							 // upload.params.quiet, "");
+	    // String additionalParams = verbose ?
+	    // prefs.get("upload.params.verbose") :
+	    // prefs.get("upload.params.quiet");
+	    String additionalParams = Const.EMPTY_STRING;// Common.getBuildEnvironmentVariable(myProject,
+							 // myCConf,
+							 // ArduinoConst.
+							 // upload.params.quiet,
+							 // "");
 
 	    // not sure why but I need to swap err and out not to get red text
 	    PrintStream stderr = new PrintStream(this.myOutconsole);
