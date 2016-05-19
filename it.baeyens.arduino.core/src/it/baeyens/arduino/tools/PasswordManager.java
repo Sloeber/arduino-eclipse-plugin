@@ -1,11 +1,14 @@
 package it.baeyens.arduino.tools;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
+import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.PasswordDialog;
 
@@ -30,7 +33,7 @@ public class PasswordManager {
 	return this.myhost;
     }
 
-    public boolean setHost(String host) {
+    public boolean setHost(String host, boolean askPwdIfNotFound) {
 	this.myhost = host;
 	this.myPassword = null;
 	this.myLogin = null;
@@ -43,6 +46,9 @@ public class PasswordManager {
 	    if (root.nodeExists(nodename)) {
 		this.myPassword = node.get(Messages.security_password, null);
 		this.myLogin = node.get(Messages.security_login, null);
+	    }
+	    if (!askPwdIfNotFound) {
+		return false;
 	    }
 	    if (this.myPassword == null) {
 		PasswordDialog dialog = new PasswordDialog(
@@ -61,12 +67,27 @@ public class PasswordManager {
 		}
 	    }
 	} catch (StorageException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to set login info", e)); //$NON-NLS-1$
 	    return false;
 	}
 
 	return true;
+    }
+
+    static public void setPwd(String host, String login, String pwd) {
+
+	String nodename = ConvertHostToNodeName(host);
+	ISecurePreferences root = SecurePreferencesFactory.getDefault();
+	ISecurePreferences node = root.node(nodename);
+
+	try {
+	    node.put(Messages.security_login, login, false);
+	    node.put(Messages.security_password, pwd, false);
+	} catch (StorageException e) {
+
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to set login info", e)); //$NON-NLS-1$
+	}
+
     }
 
     public static void ErasePassword(String host) {
@@ -79,8 +100,7 @@ public class PasswordManager {
 	    }
 
 	} catch (StorageException e) {
-	    // ignore this error
-	    e.printStackTrace();
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "failed to erase login info", e)); //$NON-NLS-1$
 	}
 
     }

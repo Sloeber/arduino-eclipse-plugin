@@ -41,7 +41,7 @@ public class GenericLocalUploader implements IRealUpload {
     }
 
     @Override
-    public boolean uploadUsingPreferences(IFile hexFile, IProject project, boolean usingProgrammer, IProgressMonitor monitor) {
+    public boolean uploadUsingPreferences(IFile hexFile, boolean usingProgrammer, IProgressMonitor monitor) {
 	int step = 1;
 	String patternTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	String commentTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

@@ -20,7 +20,6 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Helpers;
-import it.baeyens.arduino.tools.PasswordManager;
 
 public class UploadSketchWrapper {
 
@@ -60,6 +59,8 @@ public class UploadSketchWrapper {
 
 	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf, Const.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
 	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_COM_PORT, Const.EMPTY_STRING);
+	String uploadClass = Common.getBuildEnvironmentVariable(Project, cConf, Const.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS), Const.EMPTY_STRING);
+
 	this.myConsole = Helpers.findConsole(Messages.Upload_console);
 	this.myConsole.clearConsole();
 	this.myConsole.activate();
@@ -76,17 +77,16 @@ public class UploadSketchWrapper {
 	String host = Helpers.getHostFromComPort(MComPort);
 
 	if (host != null) {
-	    this.myHighLevelConsoleStream.println(Messages.Upload_ssh);
-	    PasswordManager pwdManager = new PasswordManager();
-	    if (!pwdManager.setHost(host)) {
-		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing + host));
+	    if (Const.UPLOAD_CLASS_DEFAULT.equals(uploadClass)) {
+		this.myHighLevelConsoleStream.println(Messages.Upload_arduino);
+		realUploader = new arduinoUploader(Project, cConf, UpLoadTool, this.myConsole);
+		uploadJobName = UpLoadTool;
+	    } else {
+		this.myHighLevelConsoleStream.println(Messages.Upload_ssh);
+
+		realUploader = new SSHUpload(this.myHighLevelConsoleStream, this.myOutconsoleStream, this.myErrconsoleStream, host);
+		uploadJobName = Const.UPLOAD_SSH;
 	    }
-
-	    String password = pwdManager.getPassword();
-	    String login = pwdManager.getLogin();
-
-	    realUploader = new SSHUpload(this.myHighLevelConsoleStream, this.myOutconsoleStream, this.myErrconsoleStream, password, host, login);
-	    uploadJobName = Const.UPLOAD_SSH;
 	} else if (UpLoadTool.equalsIgnoreCase(Const.UPLOAD_TOOL_TEENSY)) {
 	    this.myHighLevelConsoleStream.println(Messages.Upload_generic);
 	    realUploader = new GenericLocalUploader(UpLoadTool, Project, cConf, this.myConsole, this.myErrconsoleStream, this.myOutconsoleStream);
@@ -152,7 +152,8 @@ public class UploadSketchWrapper {
 	    boolean WeStoppedTheComPort = false;
 	    String myComPort = Const.EMPTY_STRING;
 	    try {
-		monitor.beginTask(Messages.Upload_uploading + " \"" + this.myProject.getName() + "\" " + this.myNAmeTag, 2); //$NON-NLS-1$//$NON-NLS-2$
+		monitor.beginTask(Messages.Upload_uploading + " \"" + this.myProject.getName() + "\" " + this.myNAmeTag, //$NON-NLS-1$//$NON-NLS-2$
+			2);
 		myComPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, Const.ENV_KEY_JANTJE_COM_PORT, ""); //$NON-NLS-1$
 
 		try {
@@ -161,7 +162,7 @@ public class UploadSketchWrapper {
 		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e));
 		}
 		IFile hexFile = this.myProject.getFile(new Path(this.myCConf).append(this.myProject.getName() + ".hex")); //$NON-NLS-1$
-		if (this.myUploader.uploadUsingPreferences(hexFile, this.myProject, false, monitor)) {
+		if (this.myUploader.uploadUsingPreferences(hexFile, false, monitor)) {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_Done);
 		} else {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_failed_upload);
