@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -28,15 +29,19 @@ public class SSHUpload implements IRealUpload {
     private MessageConsoleStream myHighLevelConsoleStream;
     private MessageConsoleStream myOutconsole;
     private MessageConsoleStream myErrconsole;
+    private String myUpLoadTool;
+    private IProject myProject;
 
-    SSHUpload(MessageConsoleStream HighLevelConsoleStream, MessageConsoleStream Outconsole,
-	    MessageConsoleStream Errconsole, String host) {
+    SSHUpload(IProject project, String upLoadTool, MessageConsoleStream HighLevelConsoleStream,
+	    MessageConsoleStream Outconsole, MessageConsoleStream Errconsole, String host) {
 
 	this.myHost = host;
 
 	this.myHighLevelConsoleStream = HighLevelConsoleStream;
 	this.myErrconsole = Errconsole;
 	this.myOutconsole = Outconsole;
+	this.myUpLoadTool = upLoadTool;
+	this.myProject = project;
     }
 
     @Override
@@ -71,11 +76,9 @@ public class SSHUpload implements IRealUpload {
 	    // String additionalParams = verbose ?
 	    // prefs.get("upload.params.verbose") :
 	    // prefs.get("upload.params.quiet");
-	    String additionalParams = Const.EMPTY_STRING;// Common.getBuildEnvironmentVariable(myProject,
-							 // myCConf,
-							 // ArduinoConst.
-							 // upload.params.quiet,
-							 // "");
+	    String remoteUploadCommand = Common.getBuildEnvironmentVariable(this.myProject,
+		    "A.TOOLS." + this.myUpLoadTool.toUpperCase() + "_REMOTE.UPLOAD.PATTERN", //$NON-NLS-1$ //$NON-NLS-2$
+		    "run-avrdude /tmp/sketch.hex "); //$NON-NLS-1$
 
 	    // not sure why but I need to swap err and out not to get red text
 	    PrintStream stderr = new PrintStream(this.myOutconsole);
@@ -85,8 +88,8 @@ public class SSHUpload implements IRealUpload {
 	    ret = ssh.execSyncCommand("merge-sketch-with-bootloader.lua /tmp/sketch.hex", stdout, stderr); //$NON-NLS-1$
 	    this.myHighLevelConsoleStream.println("kill-bridge"); //$NON-NLS-1$
 	    ssh.execSyncCommand("kill-bridge", stdout, stderr); //$NON-NLS-1$
-	    this.myHighLevelConsoleStream.println("run-avrdude /tmp/sketch.hex '" + additionalParams + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-	    ret = ret && ssh.execSyncCommand("run-avrdude /tmp/sketch.hex '" + additionalParams + "'", stdout, stderr); //$NON-NLS-1$ //$NON-NLS-2$
+	    this.myHighLevelConsoleStream.println(remoteUploadCommand);
+	    ret = ret && ssh.execSyncCommand(remoteUploadCommand, stdout, stderr);
 
 	} catch (JSchException e) {
 	    String message = e.getMessage();

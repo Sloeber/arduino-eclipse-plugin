@@ -13,3 +13,6 @@ tools.esp8266OTA={tools.esptool.network_cmd}
 tools.esp8266OTA.upload.pattern={tools.esptool.upload.network_pattern}
 esp8266.network.upload.tool=esp8266OTA
 TOOLS.ESPTOOL.NETWORK.PASSWORD={NETWORK.AUTH}
+
+#for yun shield to work
+TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
