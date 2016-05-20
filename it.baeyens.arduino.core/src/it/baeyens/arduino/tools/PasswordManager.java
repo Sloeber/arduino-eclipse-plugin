@@ -6,6 +6,7 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import it.baeyens.arduino.common.Common;
@@ -16,6 +17,7 @@ public class PasswordManager {
     private String myPassword;
     private String myLogin = null;
     private String myhost = null;
+    boolean ret = false;
 
     public PasswordManager() {
 	// no constructor needed
@@ -34,6 +36,28 @@ public class PasswordManager {
     }
 
     public boolean setHost(String host, boolean askPwdIfNotFound) {
+	if (!askPwdIfNotFound) { // if we do not ask the pwd if it is not found
+				 // we do not need to be on a gui thread
+	    return internalSetHost(host, askPwdIfNotFound);
+	}
+
+	Runnable myRunnable = new Runnable() {
+
+	    @Override
+	    public void run() {
+		try {
+		    PasswordManager.this.ret = internalSetHost(host, askPwdIfNotFound);
+		} catch (Exception e) {// ignore as we get errors when closing
+				       // down
+		}
+	    }
+
+	};
+	Display.getDefault().syncExec(myRunnable);
+	return this.ret;
+    }
+
+    protected boolean internalSetHost(String host, boolean askPwdIfNotFound) {
 	this.myhost = host;
 	this.myPassword = null;
 	this.myLogin = null;
