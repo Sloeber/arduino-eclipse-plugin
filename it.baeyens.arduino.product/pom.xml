@@ -45,11 +45,11 @@
 							<!-- Customise the packaged product's archive name (Instead of "it.baeyens.arduino.product")
 							    Suffix is still <os>.<ws>.<arch>.<archiveExtension> (e.g. linux.gtk.x86_64.tar.gz)
 							 -->
-                            <archiveFileName>EclipseArduinoIDE-${platform-version-name}</archiveFileName>
+                            <archiveFileName>sloeber-ide-${platform-version-name}</archiveFileName>
 							<!-- Causes the archives to contain a folder todo/ that contains the 
 								application -->
 							<!-- Without it, the application is at the archive root -->
-							<rootFolder>eclipseArduino</rootFolder>
+							<rootFolder>sloeber</rootFolder>
 							<!-- On Linux self contained installations are commonly extract to 
 								/opt folder -->
 							<!-- LSB: "binary-only packages of nonessential applications and add-on 
