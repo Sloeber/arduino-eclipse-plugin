@@ -6,7 +6,7 @@ The Eclipse IDE (Integrated Developement Environment) is a full featured program
 
 The Sloeber IDE bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
 
-    *Software Logic to program Open Electronic Boards in an Eclipse Runtime (SLOEBER)
+    Software Logic to program Open Electronic Boards in an Eclipse Runtime (SLOEBER)
 
 It works on MS Windows, Mac OSX and Linux.
 
