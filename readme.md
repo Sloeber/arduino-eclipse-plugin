@@ -37,7 +37,7 @@ mvn clean verify
 Then the runnable application executable can be started, i.e. on a 64-bit mac, with:
 
 ```bash
-open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/eclipseArduino/eclipseArduinoIDE.app
+open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
 ```
 
 On Linux you can run start eclipse using provided shell script:
