@@ -1,10 +1,12 @@
-#Arduino-Eclipse-Plugin
+#Sloeber IDE
 
-The Arduino Eclipse Plugin/IDE.
+Sloeber IDE. The Arduino IDE for Eclipse.
 
 The Eclipse IDE (Integrated Developement Environment) is a full featured programming editor with many fantastic features to help you code more quickly and easily. The Arduino IDE is great for what it does – but it doesn't do much to help writing, navigating and understanding your (and other people's) code.
 
-The Arduino Eclipse Plugin bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
+The Sloeber IDE bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
+
+    *Software Logic to program Open Electronic Boards in an Eclipse Runtime (SLOEBER)
 
 It works on MS Windows, Mac OSX and Linux.
 
