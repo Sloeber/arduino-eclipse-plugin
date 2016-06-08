@@ -44,8 +44,11 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
    <launcher name="sloeber-ide">
+      <linux icon="launch/icon.xpm"/>
+      <macosx icon="launch/icon.icns"/>
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>
