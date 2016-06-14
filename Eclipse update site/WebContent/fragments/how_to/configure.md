@@ -1,16 +1,16 @@
-This section contains Detailed instructions on how to configure the Arduino Eclipse plugin.
+This section contains Detailed instructions on how to configure the Sloeber IDE.
 ===
 
 This section assumes you have installed the Arduino Eclipse plugin or product.
 
 **tell which Arduino IDE you use**  
- 1. Start Eclipse that contains the plugin. c:/eclipse/Eclipse or c:/eclipse/eclipseArduinoIDE for the product
+ 1. Start Eclipse that contains the plugin. c:/eclipse/Eclipse or c:/eclipse/sloeber for the product
  2. Open a workspace of your choice C:/workspace
  3. If needed close the welcome page
  4. open the preferences (windows -> preferences) 
  5. in V1 open the section Arduino->Arduino 
  6. In V2 open Arduino 
- 7. Fill it in like below (using the location of the Arduino IDE c:/arduino)
+ 7. Fill it in like below (using the location of the Sloeber IDE c:/sloeber)
  8.	Add the location of your private libraries.
  in V1 this looks like
 	![V1](http://iloapp.baeyens.it/data/_gallery/public/1/134998877869708900_resized.png =500x)  

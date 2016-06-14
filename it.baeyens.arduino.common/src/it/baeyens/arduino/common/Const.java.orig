@@ -172,14 +172,23 @@ public class Const {
     // scope stuff
     public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
 								// 205 171 or
+<<<<<<< HEAD
 								// -85 -51
 								// flag that
+								// indicates
+								// scope data is
+								// following
+    // least significant first 0xCDAB;
+=======
+								// -85 -51 flag
+								// that
 								// indicates
 								// scope data is
 								// following
 								// least
 								// significant
 								// first 0xCDAB;
+>>>>>>> upstream/master
     public static final String EXAMPLE_FOLDER_NAME = "examples";
 
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";

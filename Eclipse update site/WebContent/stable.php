@@ -50,18 +50,22 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 			available as a product and a plugin: pick the one you prefer!</p>
 		<h3>Product bundle</h3>
 		<a name="product">&nbsp;</a>
-		<p>Strongly advised when you are new to the Arduino eclipse IDE.</p>
+		<p><strong>Strongly advised when you are new to the Arduino eclipse IDE.</strong></p>
 		<p>This is the simplest way to start using Arduino Eclipse as it
 			bundles in one single download a complete setup including a stable
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
-		<p>Watch this movie to see how easy it is to get started:</p>
-		<iframe width="560" height="315"
-			src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0"
-			allowfullscreen></iframe>
-		<div class="row">
-        <?php listFiles("V" . $version . '_' . $os);?>
-      </div>
+
+        <?php 
+        if ($os==lin)
+        	echo "<p><strong>The product uses 100% CPU on Ubunto 16.04 uses 100%. If you need to run on this OS installneon and the plugin version.</strong></p>";
+        ?>
+        <div class="row">
+         <?php 
+        listFiles("V" . $version . '_' . $os);?>
+        </div>
+        
+
 		<a href="#top" scroll-to="top">Back to top</a>
 		<h3>Plugin update site</h3>
 		<a name="plugin">&nbsp;</a>
@@ -73,6 +77,14 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 				<div class="well text-center">http://www.baeyens.it/eclipse/V3</div>
 			</div>
 		</div>
+		        <div class="row">
+        <p>Watch these movies to get a quick start:</p>
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/h-rz2FR3H6Y" frameborder="0" allowfullscreen></iframe>
+		
+      </div>
 	</div>
 	<!-- /container -->
 

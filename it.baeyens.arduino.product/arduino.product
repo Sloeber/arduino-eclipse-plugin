@@ -12,8 +12,8 @@ Info: http://eclipse.baeyens.it/
 Source: https://github.com/jantje/arduino-eclipse-plugin
 Binaries: http://eclipse.baeyens.it/download.php
 
-Contributors: jantje, brodykenrick, wimjongman, neuweiler, 
-darcade, amorellgarcia
+Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler, 
+darcade, amorellgarcia, MarceloLimori
 
 https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </text>
@@ -43,9 +43,12 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
-   <launcher name="eclipseArduinoIDE">
+   <launcher name="sloeber-ide">
+      <linux icon="launch/icon.xpm"/>
+      <macosx icon="launch/icon.icns"/>
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>

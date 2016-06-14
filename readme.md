@@ -1,10 +1,12 @@
-#Arduino-Eclipse-Plugin
+#Sloeber IDE
 
-The Arduino Eclipse Plugin/IDE.
+Sloeber IDE. The Arduino IDE for Eclipse.
 
 The Eclipse IDE (Integrated Developement Environment) is a full featured programming editor with many fantastic features to help you code more quickly and easily. The Arduino IDE is great for what it does – but it doesn't do much to help writing, navigating and understanding your (and other people's) code.
 
-The Arduino Eclipse Plugin bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
+The Sloeber IDE bridges that gap and helps move you to a more powerful development environment whilst keeping the Arduino hardware and libraries that you love (and make life simple).
+
+    Software Logic to program Open Electronic Boards in an Eclipse Runtime (SLOEBER)
 
 It works on MS Windows, Mac OSX and Linux.
 
@@ -15,7 +17,7 @@ If you are not a developer and don't want to build from sources, then there are 
 ## What if I am a developer?
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
-Also subscribe to the developers list by sending a mail with subject _subscribe_ to eclipse-arduino-dev@freelists.org (this is not for support questions)
+Also subscribe to the developers list by [clicking here](http://www.freelists.org/list/eclipse-arduino-dev) or by sending a mail with subject _Subscribe_ to [eclipse-arduino-dev@freelists.org](mailto:eclipse-arduino-dev@freelists.org?subject=Subscribe) (this is not for support questions)
 
 ## There are lots of issues open that seem fixed.
 We only close issues when they are in part of a stable release. Therefore the open list contains all open items for the last stable release. Known open issue for the last nightly can be found with this query:  
@@ -37,7 +39,7 @@ mvn clean verify
 Then the runnable application executable can be started, i.e. on a 64-bit mac, with:
 
 ```bash
-open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/eclipseArduino/eclipseArduinoIDE.app
+open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
 ```
 
 On Linux you can run start eclipse using provided shell script:

@@ -27,7 +27,7 @@
  * Copyright 2013 Arduino LLC (http://www.arduino.cc/)
  */
 
-package cc.arduino.packages.discoverers.network;
+package cc.arduino.packages.discoverers;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -40,14 +40,12 @@ import javax.jmdns.NetworkTopologyDiscovery;
 
 public class NetworkChecker extends TimerTask {
 
-    private final NetworkTopologyListener topologyListener;
     private final NetworkTopologyDiscovery topology;
 
     private Set<InetAddress> knownAddresses;
 
-    public NetworkChecker(NetworkTopologyListener topologyListener, NetworkTopologyDiscovery topology) {
+    public NetworkChecker(NetworkTopologyDiscovery topology) {
 	super();
-	this.topologyListener = topologyListener;
 	this.topology = topology;
 	this.knownAddresses = Collections.synchronizedSet(new HashSet<InetAddress>());
     }
@@ -64,12 +62,12 @@ public class NetworkChecker extends TimerTask {
 	    for (InetAddress address : curentAddresses) {
 		current.add(address);
 		if (!this.knownAddresses.contains(address)) {
-		    this.topologyListener.inetAddressAdded(address);
+		    NetworkDiscovery.inetAddressAdded(address);
 		}
 	    }
 	    for (InetAddress address : this.knownAddresses) {
 		if (!current.contains(address)) {
-		    this.topologyListener.inetAddressRemoved(address);
+		    NetworkDiscovery.inetAddressRemoved(address);
 		}
 	    }
 	    this.knownAddresses = current;
