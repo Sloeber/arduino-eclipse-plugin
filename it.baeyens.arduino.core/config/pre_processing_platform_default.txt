@@ -16,3 +16,6 @@ TOOLS.ESPTOOL.NETWORK.PASSWORD={NETWORK.AUTH}
 
 #for yun shield to work
 TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
+
+#for due
+serial.port.file={serial.port} 
