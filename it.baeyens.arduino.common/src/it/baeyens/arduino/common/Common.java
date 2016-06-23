@@ -257,29 +257,31 @@ public class Common extends InstancePreferences {
 	return outgoing;
     }
 
+    @SuppressWarnings("nls")
     public static String[] listBaudRates() {
-	String outgoing[] = { "921600", "460800", "230400", "115200", "57600", "38400", "31250", "28800", "19200", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
-		"14400", "9600", "4800", "2400", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		"1200", "300" }; //$NON-NLS-1$ //$NON-NLS-2$
+	String outgoing[] = { "230400", "250000", "921600", "460800", "230400", "115200", "57600", "38400", "31250",
+		"28800", "19200", "14400", "9600", "4800", "2400", "1200", "300" };
 	return outgoing;
     }
 
+    @SuppressWarnings("nls")
     public static String[] listLineEndings() {
-	String outgoing[] = { "none", "CR", "NL", "CR/NL" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	String outgoing[] = { "none", "CR", "NL", "CR/NL" };
 	return outgoing;
     }
 
+    @SuppressWarnings("nls")
     public static String getLineEnding(int selectionIndex) {
 	switch (selectionIndex) {
 	default:
 	case 0:
 	    return EMPTY_STRING;
 	case 1:
-	    return "\r"; //$NON-NLS-1$
+	    return "\r";
 	case 2:
-	    return "\n"; //$NON-NLS-1$
+	    return "\n";
 	case 3:
-	    return "\r\n"; //$NON-NLS-1$
+	    return "\r\n";
 	}
     }
 
