@@ -1110,12 +1110,17 @@ public class Helpers extends Common {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
 	}
 
-	// Arduino uses the board approach for the tools.
-	// as I'm not, therefore I mod the tools in the command to be FQN
+	String objcopyCommand = "";
+	String objcopyCommandLinker = objcopyCommand;
+
+	// I'm looping through the set of variables to fix some things up
 	try {
 	    IEnvironmentVariable[] curVariables = contribEnv.getVariables(confDesc);
 	    for (IEnvironmentVariable curVariable : curVariables) {
 		String name = curVariable.getName();
+		// Arduino uses the board approach for the tools.
+		// as I'm not, therefore I mod the tools in the command to be
+		// FQN
 		if (name.startsWith("A.TOOLS.")) { //$NON-NLS-1$
 		    String toolID = curVariable.getName().split("\\.")[2]; //$NON-NLS-1$
 		    String recipe = curVariable.getValue();
@@ -1135,11 +1140,16 @@ public class Helpers extends Common {
 		    }
 		    setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 		}
+		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) {
+		    objcopyCommand += objcopyCommandLinker + makeEnvironmentVar(name);
+		    objcopyCommandLinker = "\n\t";
+		}
 	    }
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 	}
+	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand);
 
 	// link build.core to jantje.build.core
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE,
