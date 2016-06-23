@@ -425,30 +425,24 @@ public class Helpers extends Common {
 		EMPTY_STRING); // $NON-NLS-1$
 	String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_BUILD_CORE,
 		EMPTY_STRING);
-	String rootFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_JANTJE_PLATFORM_FILE,
+	String platformFile = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_JANTJE_PLATFORM_FILE,
 		EMPTY_STRING);
-	IPath rootPath = new Path(rootFolder).removeLastSegments(1);
-	if (buildCoreFolder.contains(COLON)) {
-	    String sections[] = buildCoreFolder.split(COLON);
-	    if (sections.length != 2) {
-		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Value_for_key
-			+ ENV_KEY_BUILD_CORE + Messages.Helpers__in_boards_invalid + buildCoreFolder, null));
-	    } else {
-		String architecture = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_ARCHITECTURE,
-			EMPTY_STRING);
-		addCodeFolder(project,
-			new Path(ARDUINO_HARDWARE_FOLDER_NAME).append(sections[1]).append(architecture)
-				.append(ARDUINO_CORE_FOLDER_NAME).append(sections[1]),
-			ARDUINO_CODE_FOLDER_NAME + "/core", configurationDescription); //$NON-NLS-1$
-	    }
-	} else {
-	    addCodeFolder(project, rootPath.append("cores").append(buildCoreFolder), ARDUINO_CODE_FOLDER_NAME + "/core", //$NON-NLS-1$ //$NON-NLS-2$
-		    configurationDescription);
-	    // //$NON-NLS-3$
-	}
+	String redirectPlatformFile = getBuildEnvironmentVariable(configurationDescription,
+		ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, platformFile);
+	IPath corePath = new Path(redirectPlatformFile).removeLastSegments(1).append("cores").append(buildCoreFolder); //$NON-NLS-1$
+
+	addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + "/core", configurationDescription); //$NON-NLS-1$
 	if (!boardVariant.isEmpty()) {
-	    Helpers.addCodeFolder(project, rootPath.append("variants").append(boardVariant), //$NON-NLS-1$
-		    ARDUINO_CODE_FOLDER_NAME + "/variant", //$NON-NLS-1$
+	    String redirectVariantPath = getBuildEnvironmentVariable(configurationDescription,
+		    ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH, EMPTY_STRING);
+	    IPath VariantFile;
+	    if (redirectVariantPath.isEmpty()) {
+		VariantFile = new Path(platformFile).removeLastSegments(1).append(VARIANTS_FOLDER_NAME)
+			.append(boardVariant);
+	    } else {
+		VariantFile = new Path(redirectVariantPath).append(boardVariant);
+	    }
+	    Helpers.addCodeFolder(project, VariantFile, ARDUINO_CODE_FOLDER_NAME + "/variant", //$NON-NLS-1$
 		    configurationDescription);
 	}
 
@@ -486,12 +480,12 @@ public class Helpers extends Common {
      * @param contribEnv
      * @param confDesc
      */
-    private static void RemoveAllArduinoEnvironmentVariables(IContributedEnvironment contribEnv,
+    private static void removeAllEraseEnvironmentVariables(IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc) {
 
 	IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
 	for (int i = (CurVariables.length - 1); i > 0; i--) {
-	    if (CurVariables[i].getName().startsWith(Const.ENV_KEY_BOARD_START)) {
+	    if (CurVariables[i].getName().startsWith(Const.ERASE_START)) {
 		contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
 	    }
 	}
@@ -523,8 +517,6 @@ public class Helpers extends Common {
 	    architecture = platformPath.removeLastSegments(2).lastSegment();
 	    packagename = platformPath.removeLastSegments(4).lastSegment();
 	}
-	// String buildVariantPath = makeEnvironmentVar(ENV_KEY_PLATFORM_PATH) +
-	// "/variants/";
 
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, architecture.toUpperCase());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
@@ -594,7 +586,7 @@ public class Helpers extends Common {
 
     private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc, File envVarFile) {
-	setTheEnvironmentVariablesAddAFile(ENV_KEY_BOARD_START, contribEnv, confDesc, envVarFile);
+	setTheEnvironmentVariablesAddAFile(ERASE_START, contribEnv, confDesc, envVarFile);
     }
 
     /**
@@ -628,7 +620,7 @@ public class Helpers extends Common {
 			    value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 			}
 			IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(prefix, var[0]),
-				MakeEnvironmentString(value, Const.ENV_KEY_BOARD_START));
+				MakeEnvironmentString(value, Const.ERASE_START));
 			contribEnv.addVariable(envVar, confDesc);
 		    }
 		}
@@ -675,7 +667,7 @@ public class Helpers extends Common {
 	    // if it is not a menu item add it
 	    if (!currentPair.getKey().startsWith(Messages.Helpers_menu)) {
 		String keyString = MakeKeyString(currentPair.getKey());
-		String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
+		String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START);
 		contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 	    }
 	}
@@ -691,7 +683,7 @@ public class Helpers extends Common {
 		    String StartValue = MENU + DOT + menuID + DOT + menuItemID + DOT; // $NON-NLS-1$
 		    if (currentPair.getKey().startsWith(StartValue)) {
 			String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
-			String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ENV_KEY_BOARD_START);
+			String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START);
 			contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 		    }
 		}
@@ -734,10 +726,8 @@ public class Helpers extends Common {
 		    for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getKey().startsWith(keyStartsWithValue)) {
 			    String key = curOption.getKey().substring(keyStartsWithValue.length());
-			    contribEnv.addVariable(
-				    new EnvironmentVariable(MakeKeyString(key),
-					    MakeEnvironmentString(curOption.getValue(), Const.ENV_KEY_BOARD_START)),
-				    confDesc);
+			    contribEnv.addVariable(new EnvironmentVariable(MakeKeyString(key),
+				    MakeEnvironmentString(curOption.getValue(), Const.ERASE_START)), confDesc);
 			}
 		    }
 
@@ -845,7 +835,7 @@ public class Helpers extends Common {
 	// Now we have all info we can start processing
 
 	// first remove all Arduino Variables so there is no memory effect
-	RemoveAllArduinoEnvironmentVariables(contribEnv, confDesc);
+	removeAllEraseEnvironmentVariables(contribEnv, confDesc);
 
 	setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, localPlatformFilename);
 
@@ -858,9 +848,7 @@ public class Helpers extends Common {
 	// contribEnv, confDesc, localProgrammers.getTxtFile());
 
 	// Do some magic for the arduino:arduino stuff
-	setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsFile, boardID,
-		architecture.toLowerCase());// TOFIX again some
-					    // dirty thing
+	setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsFile, boardID, architecture);
 
 	// process the platform file that is referenced in the build.core of the
 	// boards.txt file
@@ -938,29 +926,18 @@ public class Helpers extends Common {
 	    if (coreSplit.length == 2) {
 		String vendor = coreSplit[0];
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_CORE, coreSplit[1]);
-		IPath coreReference = findReferencedFolder(vendor, architecture.toLowerCase());// TODO
-											       // fix
-											       // this
-											       // quickfix
-											       // to
-											       // lower
-											       // which
-											       // is
-											       // really
-											       // dirty
+		IPath coreReference = findReferencedPlatformFile(vendor, architecture);
 		if (coreReference == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    Messages.Helpers_Core_refference_missing + core));
 		} else {
-		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE_PATH,
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_CORE,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE,
-			    coreReference.append(PLATFORM_FILE_NAME).toString());
+			    coreReference.toString());
 		}
 	    } else {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_CORE, core);
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE,
-			EMPTY_STRING);
 	    }
 	}
 	if (variant != null) {
@@ -968,12 +945,12 @@ public class Helpers extends Common {
 	    if (variantSplit.length == 2) {
 		String vendor = variantSplit[0];
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variantSplit[1]);
-		IPath variantReference = findReferencedFolder(vendor, architecture);
+		IPath variantReference = findReferencedPlatformFile(vendor, architecture);
 		if (variantReference == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    Messages.Helpers_Variant_reference_missing + variant));
 		} else {
-		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,
+		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH,
 			    variantReference.append(VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
 		}
 	    } else {
@@ -983,21 +960,24 @@ public class Helpers extends Common {
     }
 
     /**
-     * This method looks for a referenced path. The search goes as follows it
-     * only looks in manager installed stuff
+     * This method looks for a referenced platformFile. Ask the boards manager
+     * to find the latest installed vendor/architecture platform file
+     * 
+     * If this is not found there is still sme old code that probably can be
+     * deleted.
      * 
      * @param vendor
      * @param architecture
      * @return
      */
-    private static IPath findReferencedFolder(String vendor, String architecture) {
+    private static IPath findReferencedPlatformFile(String vendor, String architecture) {
+	// ask the boardsmanager for the platform file
+	IPath ret = Manager.getPlatformFile(vendor, architecture);
+	if (ret != null)
+	    return ret;
 
-	// TODO look in all hardware paths
-	Path privateHardwareFolder = new Path(getPrivateHardwarePaths()[0]);
+	// all below this can probably be deleted
 	IPath boardsManagerPackagesFolder = ConfigurationPreferences.getInstallationPath();
-	if (privateHardwareFolder.append(vendor).append(architecture).toFile().exists()) {
-	    return privateHardwareFolder.append(vendor).append(architecture);
-	}
 	if (boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME).append(architecture)
 		.toFile().exists()) {
 	    // need to add version
@@ -1015,7 +995,13 @@ public class Helpers extends Common {
 		return foundPath.append(versions[0]);
 	    }
 	}
+	// This section should probably be deleted
+	Path privateHardwareFolder = new Path(getPrivateHardwarePaths()[0]);
 
+	if (privateHardwareFolder.append(vendor).append(architecture).toFile().exists()) {
+	    return privateHardwareFolder.append(vendor).append(architecture);
+	}
+	// end of the section that probably should be deleted
 	return null;
     }
 
@@ -1086,7 +1072,7 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
 
 		try {
-		    String key = ENV_KEY_BOARD_START + platform.toUpperCase() + DOT + NETWORK + DOT
+		    String key = ERASE_START + platform.toUpperCase() + DOT + NETWORK + DOT
 			    + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
 		    String networkUploadTool = contribEnv.getVariable(key, confDesc).getValue();
 		    if (!networkUploadTool.isEmpty()) {
@@ -1182,7 +1168,7 @@ public class Helpers extends Common {
 	IEnvironmentVariable original = null;
 	IEnvironmentVariable replacement = null;
 
-	original = envManager.getVariable(ENV_KEY_BOARD_START + "COMPILER.C.FLAGS", confDesc, true); //$NON-NLS-1$
+	original = envManager.getVariable(ERASE_START + "COMPILER.C.FLAGS", confDesc, true); //$NON-NLS-1$
 	if (original != null) {
 	    replacement = new EnvironmentVariable(original.getName(),
 		    original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
@@ -1190,7 +1176,7 @@ public class Helpers extends Common {
 	    contribEnv.addVariable(replacement, confDesc);
 	}
 
-	original = envManager.getVariable(ENV_KEY_BOARD_START + "COMPILER.CPP.FLAGS", confDesc, true); //$NON-NLS-1$
+	original = envManager.getVariable(ERASE_START + "COMPILER.CPP.FLAGS", confDesc, true); //$NON-NLS-1$
 	if (original != null) {
 	    replacement = new EnvironmentVariable(original.getName(),
 		    original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
@@ -1241,7 +1227,7 @@ public class Helpers extends Common {
      */
     private static String MakeKeyString(String string) {
 
-	return MakeKeyString(ENV_KEY_BOARD_START, string);
+	return MakeKeyString(ERASE_START, string);
     }
 
     private static String MakeKeyString(String prefix, String string) {
