@@ -105,14 +105,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="Eclipse Arduino IDE">
+            name="Sloeber, the Eclipse Arduino IDE">
          <property
                name="windowImages"
                value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_256.png">
          </property>
          <property
                name="aboutText"
-               value="Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: http://eclipse.baeyens.it/&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0A;&#x0A;Contributors: jantje, brodykenrick, wimjongman, neuweiler, &#x0A;darcade, amorellgarcia&#x0A;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
+               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: http://eclipse.baeyens.it/&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0A;&#x0A;Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler, &#x0A;darcade, amorellgarcia, MarceloLimori&#x0A;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
          </property>
          <property
                name="aboutImage"
@@ -132,7 +132,7 @@
          </property>
          <property
                name="appName"
-               value="Eclipse Arduino IDE">
+               value="Sloeber, the Eclipse Arduino IDE">
          </property>
          <property
                name="preferenceCustomization"
