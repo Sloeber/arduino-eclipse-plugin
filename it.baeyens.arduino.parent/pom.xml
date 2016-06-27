@@ -402,11 +402,16 @@
 		</profile>
 	</profiles>
 
-	<repositories>
+	<repositories>		
 		<repository>
 			<id>nebula</id>
 			<layout>p2</layout>
-			<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
+		</repository>
+		<repository>
+			<id>cdt-8.8</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/cdt/releases/8.8</url>
 		</repository>
 	</repositories>
 
