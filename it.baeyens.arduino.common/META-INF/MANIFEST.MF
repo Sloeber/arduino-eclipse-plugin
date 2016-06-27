@@ -12,7 +12,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: it.baeyens.arduino.arduino,
  it.baeyens.arduino.common
-Import-Package: org.eclipse.cdt.core,
+Import-Package: org.apache.commons.io,
+ org.eclipse.cdt.core,
  org.eclipse.cdt.core.envvar,
  org.eclipse.cdt.core.index,
  org.eclipse.cdt.core.model,
