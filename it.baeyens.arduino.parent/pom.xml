@@ -398,11 +398,6 @@
 					<url> http://download.eclipse.org/releases/neon</url>
 				</repository>
 
-				<repository>
-					<id>window_builder_neon</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/</url>
-				</repository>
 			</repositories>	
 		</profile>
 	</profiles>
