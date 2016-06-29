@@ -784,8 +784,8 @@
            </tool>
            <tool
                  announcement="%tool.announcement.3"
-                 command="${A.RECIPE.OBJCOPY.EEP.PATTERN} "
-                 commandLinePattern="${COMMAND}"
+                 command="all objcopy commands"
+                 commandLinePattern="${JANTJE.OBJCOPY}"
                  id="it.baeyens.arduino.tool.objcopy.eep"
                  isAbstract="false"
                  name="%tool.name.3"
@@ -801,39 +801,12 @@
                     sources="elf">
               </inputType>
               <outputType
-                    buildVariable="EEP"
-                    id="it.baeyens.arduino.tool.objcopy.eep.output"
+                    buildVariable="HEX"
+                    id="it.baeyens.arduino.tool.objcopy.output"
                     multipleOfType="false"
                     name="%outputType.name.5"
-                    outputNames="${ProjName}.eep"
-                    outputs="eep">
-              </outputType>
-           </tool>
-           <tool
-                 announcement="%tool.announcement.4"
-                 command="${A.RECIPE.OBJCOPY.HEX.PATTERN} "
-                 commandLinePattern="${COMMAND}"
-                 id="it.baeyens.arduino.tool.objcopy.flash"
-                 isAbstract="false"
-                 name="%tool.name.4"
-                 natureFilter="both">
-              <inputType
-                    buildVariable="EEP"
-                    dependencyExtensions="eep"
-                    id="it.baeyens.arduino.tool.objcopy.flash.input"
-                    multipleOfType="true"
-                    name="%inputType.name.4"
-                    primaryInput="true"
-                    sourceContentType="it.baeyens.arduino.tool.eep.output"
-                    sources="eep">
-              </inputType>
-              <outputType
-                    buildVariable="FLASH_IMAGE"
-                    id="it.baeyens.arduino.tool.objcopy.flash.output"
-                    multipleOfType="false"
-                    name="%outputType.name.6"
-                    nameProvider="it.baeyens.arduino.toolchain.hexNameProvider"
-                    outputs="hex,bin">
+                    outputNames="${ProjName}.hex"
+                    outputs="hex">
               </outputType>
            </tool>
            <tool
@@ -843,12 +816,12 @@
                  id="it.baeyens.arduino.tool.size"
                  name="%tool.name.5">
               <inputType
-                    buildVariable="FLASH_IMAGE"
+                    buildVariable="HEX"
                     dependencyExtensions="hex"
                     id="it.baeyens.arduino.tool.size.input"
                     multipleOfType="true"
                     primaryInput="true"
-                    sourceContentType="it.baeyens.arduino.tool.objcopy.flash.output">
+                    sourceContentType="it.baeyens.arduino.tool.objcopy.output">
               </inputType>
               <outputType
                     buildVariable="SIZEDUMMY"

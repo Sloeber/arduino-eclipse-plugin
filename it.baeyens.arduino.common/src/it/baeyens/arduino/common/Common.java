@@ -257,6 +257,7 @@ public class Common extends InstancePreferences {
 		return outgoing;
 	}
 
+	@SuppressWarnings("nls")
 	public static String[] listBaudRates() {
 
 		String[] outgoing = { "921600", "460800", "230400", "115200", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -265,11 +266,13 @@ public class Common extends InstancePreferences {
 		return outgoing;
 	}
 
+	@SuppressWarnings("nls")
 	public static String[] listLineEndings() {
 		String[] outgoing = { "none", "CR", "NL", "CR/NL" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return outgoing;
 	}
 
+	@SuppressWarnings("nls")
 	public static String getLineEnding(int selectionIndex) {
 		switch (selectionIndex) {
 		default:

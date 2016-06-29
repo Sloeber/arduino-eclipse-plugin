@@ -323,6 +323,22 @@ public class Manager {
 	return platforms;
     }
 
+    public static IPath getPlatformFile(String vendor, String architecture) {
+
+	for (PackageIndex index : packageIndices) {
+	    for (Package pkg : index.getPackages()) {
+		for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
+		    if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
+			    && (vendor.equalsIgnoreCase(pkg.getMaintainer()))) {
+			ArduinoPlatform latestPlatform = pkg.getLatestPlatform(curPlatform.getName());
+			return new org.eclipse.core.runtime.Path(latestPlatform.getPlatformFile().toString());
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+
     public static ArduinoPlatform getPlatform(String platformTxt) {
 	String searchString = new File(platformTxt).toString();
 	for (PackageIndex index : packageIndices) {

@@ -73,8 +73,8 @@ public class InstancePreferences extends Const {
 			@Override
 			public void run() {
 
-		MessageDialog dialog = new MessageDialog(null, Messages.Build_before_upload, null,
-			Messages.do_you_want_to_build_before_upload, MessageDialog.QUESTION,
+		MessageDialog dialog = new MessageDialog(null, Messages.buildBeforeUpload, null,
+			Messages.doYouWantToBuildBeforeUpload, MessageDialog.QUESTION,
 			new String[] { "Yes", "No", "Always", "Never" }, 0); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 				switch (dialog.open()) {
