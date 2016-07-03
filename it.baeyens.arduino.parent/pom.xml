@@ -358,7 +358,7 @@
                 <platform-version-name>mars</platform-version-name>
             </properties>
             <activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 
 			<repositories>
@@ -375,13 +375,38 @@
 				</repository>
 			</repositories>
 		</profile>
+
+		<profile>
+			<id>neon</id>
+            <properties>
+                <platform-version-name>neon</platform-version-name>
+            </properties>
+            <activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>platform_neon</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/eclipse/updates/4.6</url>
+				</repository>
+
+				<repository>
+					<id>release-train_neon</id>
+					<layout>p2</layout>
+					<url> http://download.eclipse.org/releases/neon</url>
+				</repository>
+				
+			</repositories>	
+		</profile>
 	</profiles>
 
-	<repositories>
+	<repositories>		
 		<repository>
 			<id>nebula</id>
 			<layout>p2</layout>
-			<url> http://download.eclipse.org/technology/nebula/snapshot</url>
+			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
 		</repository>
 	</repositories>
 
