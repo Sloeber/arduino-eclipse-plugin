@@ -1096,7 +1096,7 @@ public class Helpers extends Common {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
 	}
 
-	String objcopyCommand = "";
+	String objcopyCommand = Const.EMPTY_STRING;
 	String objcopyCommandLinker = objcopyCommand;
 
 	// I'm looping through the set of variables to fix some things up
@@ -1126,16 +1126,16 @@ public class Helpers extends Common {
 		    }
 		    setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 		}
-		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) {
+		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) { //$NON-NLS-1$ //$NON-NLS-2$
 		    objcopyCommand += objcopyCommandLinker + makeEnvironmentVar(name);
-		    objcopyCommandLinker = "\n\t";
+		    objcopyCommandLinker = "\n\t"; //$NON-NLS-1$
 		}
 	    }
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 	}
-	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand);
+	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand); //$NON-NLS-1$
 
 	// link build.core to jantje.build.core
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE,
