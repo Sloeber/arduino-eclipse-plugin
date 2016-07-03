@@ -1759,19 +1759,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// TODO report error
 		flags = EMPTY_STRING_ARRAY;
 	    }
-	    String command = tool.getToolCommand();
-	    try {
-		// try to resolve the build macros in the tool command
-		String resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValueToMakefileFormat(command, EMPTY_STRING, WHITESPACE,
-				IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-		    command = resolvedCommand;
 
-	    } catch (BuildMacroException e) {// JABA is not going to write this
-					     // code
-	    }
+	    String command = resolveCommand(true, tool.getToolCommand(), null, null, tool);
+
 	    String[] cmdInputs = inputs.toArray(new String[inputs.size()]);
 	    IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
 	    IManagedCommandLineInfo cmdLInfo = gen.generateCommandLineInfo(tool, command, flags, outflag, outputPrefix,
@@ -1794,17 +1784,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	    // resolve any remaining macros in the command after it has been
 	    // generated
-	    try {
-		String resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
-				IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$//$NON-NLS-2$
-		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-		    buildCmd = resolvedCommand;
-
-	    } catch (BuildMacroException e) {// JABA is not going to write this
-					     // code
-	    }
+	    buildCmd = resolveCommand(true, buildCmd, null, null, tool);
 
 	    // buffer.append(TAB + AT + escapedEcho(buildCmd));
 	    // buffer.append(TAB + AT + buildCmd);
@@ -2375,40 +2355,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
     }
 
-    @SuppressWarnings({ "static-method" })
+    @SuppressWarnings({ "static-method", "nls" })
     private IManagedCommandLineInfo generateToolCommandLineInfo(ITool tool, String sourceExtension, String[] flags,
 	    String outputFlag, String outputPrefix, String outputName, String[] inputResources, IPath inputLocation,
 	    IPath outputLocation) {
 
 	String cmd = tool.getToolCommand();
 	// try to resolve the build macros in the tool command
-	try {
-	    String resolvedCommand = null;
 
-	    if ((inputLocation != null && inputLocation.toString().indexOf(" ") != -1) || //$NON-NLS-1$
-		    (outputLocation != null && outputLocation.toString().indexOf(" ") != -1)) //$NON-NLS-1$
-	    {
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValue(cmd, "", //$NON-NLS-1$
-				" ", //$NON-NLS-1$
-				IBuildMacroProvider.CONTEXT_FILE,
-				new FileContextData(inputLocation, outputLocation, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-	    }
-
-	    else {
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValueToMakefileFormat(cmd, "", //$NON-NLS-1$
-				" ", //$NON-NLS-1$
-				IBuildMacroProvider.CONTEXT_FILE,
-				new FileContextData(inputLocation, outputLocation, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-	    }
-	    if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-		cmd = resolvedCommand;
-
-	} catch (BuildMacroException e) {// JABA is not going to write this code
-	}
+	boolean useMakeFileFormat = !((inputLocation != null && inputLocation.toString().indexOf(" ") != -1)
+		|| (outputLocation != null && outputLocation.toString().indexOf(" ") != -1));
+	cmd = resolveCommand(useMakeFileFormat, cmd, inputLocation, outputLocation, tool);
 
 	IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
 	return gen.generateCommandLineInfo(tool, cmd, flags, outputFlag, outputPrefix, outputName, inputResources,
@@ -2614,28 +2571,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Get and resolve the command
 	String cmd = tool.getToolCommand();
 
-	try {
-	    String resolvedCommand = null;
-	    if (!needExplicitRuleForFile) {
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValueToMakefileFormat(cmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-				new FileContextData(sourceLocation, outputLocation, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-	    } else {
-		// if we need an explicit rule then don't use any builder
-		// variables, resolve everything
-		// to explicit strings
-		resolvedCommand = ManagedBuildManager.getBuildMacroProvider()
-			.resolveValue(cmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-				new FileContextData(sourceLocation, outputLocation, null, tool))
-			.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-	    }
-
-	    if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-		cmd = resolvedCommand;
-
-	} catch (BuildMacroException e) {// JABA is not going to write this code
-	}
+	cmd = resolveCommand(!needExplicitRuleForFile, cmd, sourceLocation, outputLocation, tool);
 
 	String defaultOutputName = EMPTY_STRING;
 	String primaryDependencyName = EMPTY_STRING;
@@ -2765,31 +2701,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		String[] preToolCommands = depCommands.getPreToolDependencyCommands();
 		if (preToolCommands != null && preToolCommands.length > 0) {
 		    for (String preCmd : preToolCommands) {
-			try {
-			    String resolvedCommand;
-			    IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-			    if (!needExplicitRuleForFile) {
-				resolvedCommand = provider
-					.resolveValueToMakefileFormat(preCmd, EMPTY_STRING, WHITESPACE,
-						IBuildMacroProvider.CONTEXT_FILE,
-						new FileContextData(sourceLocation, outputLocation, null, tool))
-					.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-			    } else {
-				// if we need an explicit rule then don't use
-				// any builder
-				// variables, resolve everything to explicit
-				// strings
-				resolvedCommand = provider
-					.resolveValue(preCmd, EMPTY_STRING, WHITESPACE,
-						IBuildMacroProvider.CONTEXT_FILE,
-						new FileContextData(sourceLocation, outputLocation, null, tool))
-					.replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-			    }
-			    if (resolvedCommand != null)
-				buffer.append(resolvedCommand + NEWLINE);
-			} catch (BuildMacroException e) {// JABA is not going to
-							 // write this code
-			}
+			buffer.append(
+				resolveCommand(!needExplicitRuleForFile, preCmd, sourceLocation, outputLocation, tool)
+					+ NEWLINE);
 		    }
 		}
 	    }
@@ -2872,32 +2786,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			+ outputPrefix + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
 	    }
 
-	    // resolve any remaining macros in the command after it has been
-	    // generated
-	    try {
-		String resolvedCommand;
-		IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-		if (!needExplicitRuleForFile) {
-		    resolvedCommand = provider
-			    .resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
-				    IBuildMacroProvider.CONTEXT_FILE,
-				    new FileContextData(sourceLocation, outputLocation, null, tool))
-			    .replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-		} else {
-		    // if we need an explicit rule then don't use any builder
-		    // variables, resolve everything to explicit strings
-		    resolvedCommand = provider
-			    .resolveValue(buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-				    new FileContextData(sourceLocation, outputLocation, null, tool))
-			    .replaceFirst(" -w ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-		if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-		    buildCmd = resolvedCommand;
-
-	    } catch (BuildMacroException e) {// JABA is not going to write this
-					     // code
-	    }
+	    buildCmd = resolveCommand(!needExplicitRuleForFile, buildCmd, sourceLocation, outputLocation, tool);
 
 	    // buffer.append(TAB + AT + escapedEcho(buildCmd));
 	    // buffer.append(TAB + AT + buildCmd);
@@ -4950,5 +4839,32 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    }
 	}
 	return h;
+    }
+
+    @SuppressWarnings("nls")
+    private static String resolveCommand(boolean makeFormat, String inCommand, IPath inputLocation,
+	    IPath outputLocation, IBuildObject tool) {
+	String returnedCommand = inCommand;
+	try {
+	    if (makeFormat) {
+		returnedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(inCommand,
+			"", " ", IBuildMacroProvider.CONTEXT_FILE,
+			new FileContextData(inputLocation, outputLocation, null, tool));
+	    } else {
+		returnedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(inCommand, "", " ",
+			IBuildMacroProvider.CONTEXT_FILE,
+			new FileContextData(inputLocation, outputLocation, null, tool));
+	    }
+
+	} catch (BuildMacroException e) {// JABA is not going to write this
+	    // code
+	}
+	returnedCommand = returnedCommand.replaceFirst(" -w ", " ").trim();
+	if (returnedCommand.isEmpty()) {
+	    return inCommand;
+
+	}
+	return ArduinoLanguageProvider.adaptCompilerCommand(returnedCommand);
+
     }
 }
