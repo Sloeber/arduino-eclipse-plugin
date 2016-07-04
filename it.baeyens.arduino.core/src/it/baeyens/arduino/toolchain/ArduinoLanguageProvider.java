@@ -222,7 +222,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
     public static String adaptCompilerCommand(String environmentReceivedRecipe) {
 	String ret = environmentReceivedRecipe.replaceAll("[^\\\\]\"\"", Const.EMPTY_STRING);
 
-	String replaceString = "'-D$1=\"$2\"'"; // linux and mac
+	String replaceString = " '-D$1=\"$2\"'"; // linux and mac
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    replaceString = " \"-D$1=\\\\\"$2\\\\\"\""; // windows
 	}
