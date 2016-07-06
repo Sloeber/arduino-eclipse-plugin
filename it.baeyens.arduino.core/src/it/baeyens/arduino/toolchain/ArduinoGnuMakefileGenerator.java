@@ -1,6 +1,7 @@
 package it.baeyens.arduino.toolchain;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -79,6 +80,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
@@ -93,9 +95,11 @@ import it.baeyens.arduino.common.Const;
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-@SuppressWarnings({ "deprecation", "restriction" })
+@SuppressWarnings({ "deprecation", "restriction", "nls" })
 public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
-    private static final IPath DOT_SLASH_PATH = new Path("./"); //$NON-NLS-1$
+    private static final String SLASH = File.separator;
+    private static final String DOTSLASH = "." + File.separator;
+    private static final IPath DOT_SLASH_PATH = new Path(DOTSLASH);
 
     /**
      * This class walks the delta supplied by the build system to determine what
@@ -280,43 +284,43 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     }
 
     // String constants for makefile contents and messages
-    private static final String COMMENT = "MakefileGenerator.comment"; //$NON-NLS-1$
+    private static final String COMMENT = "MakefileGenerator.comment"; //
 
-    private static final String HEADER = COMMENT + ".header"; //$NON-NLS-1$
+    private static final String HEADER = COMMENT + ".header"; //
 
     protected static final String MESSAGE_FINISH_BUILD = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.finish.build"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.finish.build"); //
     protected static final String MESSAGE_FINISH_FILE = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.finish.file"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.finish.file"); //
     protected static final String MESSAGE_START_BUILD = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.start.build"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.start.build"); //
     protected static final String MESSAGE_START_FILE = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.start.file"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.start.file"); //
     protected static final String MESSAGE_START_DEPENDENCY = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.start.dependency"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.start.dependency"); //
     protected static final String MESSAGE_NO_TARGET_TOOL = ManagedMakeMessages
-	    .getResourceString("MakefileGenerator.message.no.target"); //$NON-NLS-1$
+	    .getResourceString("MakefileGenerator.message.no.target"); //
 
-    private static final String MOD_LIST = COMMENT + ".module.list"; //$NON-NLS-1$
-    private static final String MOD_VARS = COMMENT + ".module.variables"; //$NON-NLS-1$
-    private static final String MOD_RULES = COMMENT + ".build.rule"; //$NON-NLS-1$
-    private static final String BUILD_TOP = COMMENT + ".build.toprules"; //$NON-NLS-1$
-    private static final String ALL_TARGET = COMMENT + ".build.alltarget"; //$NON-NLS-1$
-    private static final String MAINBUILD_TARGET = COMMENT + ".build.mainbuildtarget"; //$NON-NLS-1$
-    private static final String BUILD_TARGETS = COMMENT + ".build.toptargets"; //$NON-NLS-1$
-    private static final String SRC_LISTS = COMMENT + ".source.list"; //$NON-NLS-1$
+    private static final String MOD_LIST = COMMENT + ".module.list"; //
+    private static final String MOD_VARS = COMMENT + ".module.variables"; //
+    private static final String MOD_RULES = COMMENT + ".build.rule"; //
+    private static final String BUILD_TOP = COMMENT + ".build.toprules"; //
+    private static final String ALL_TARGET = COMMENT + ".build.alltarget"; //
+    private static final String MAINBUILD_TARGET = COMMENT + ".build.mainbuildtarget"; //
+    private static final String BUILD_TARGETS = COMMENT + ".build.toptargets"; //
+    private static final String SRC_LISTS = COMMENT + ".source.list"; //
 
-    private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+    private static final String EMPTY_STRING = ""; //
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-    private static final String OBJS_MACRO = "OBJS"; //$NON-NLS-1$
-    private static final String MACRO_ADDITION_ADDPREFIX_HEADER = "${addprefix "; //$NON-NLS-1$
-    private static final String MACRO_ADDITION_ADDPREFIX_SUFFIX = "," + WHITESPACE + LINEBREAK; //$NON-NLS-1$
-    private static final String MACRO_ADDITION_PREFIX_SUFFIX = "+=" + WHITESPACE + LINEBREAK; //$NON-NLS-1$
-    private static final String PREBUILD = "pre-build"; //$NON-NLS-1$
-    private static final String MAINBUILD = "main-build"; //$NON-NLS-1$
-    private static final String POSTBUILD = "post-build"; //$NON-NLS-1$
-    private static final String SECONDARY_OUTPUTS = "secondary-outputs"; //$NON-NLS-1$
+    private static final String OBJS_MACRO = "OBJS"; //
+    private static final String MACRO_ADDITION_ADDPREFIX_HEADER = "${addprefix "; //
+    private static final String MACRO_ADDITION_ADDPREFIX_SUFFIX = "," + WHITESPACE + LINEBREAK; //
+    private static final String MACRO_ADDITION_PREFIX_SUFFIX = "+=" + WHITESPACE + LINEBREAK; //
+    private static final String PREBUILD = "pre-build"; //
+    private static final String MAINBUILD = "main-build"; //
+    private static final String POSTBUILD = "post-build"; //
+    private static final String SECONDARY_OUTPUTS = "secondary-outputs"; //
 
     // Enumerations
     public static final int PROJECT_RELATIVE = 1, PROJECT_SUBDIR_RELATIVE = 2, ABSOLUTE = 3;
@@ -406,8 +410,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	try {
 	    // try to resolve the build macros in the target extension
 	    this.buildTargetExt = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-		    this.buildTargetExt, "", //$NON-NLS-1$
-		    " ", //$NON-NLS-1$
+		    this.buildTargetExt, "", //
+		    " ", //
 		    IBuildMacroProvider.CONTEXT_CONFIGURATION, info.getDefaultConfiguration());
 	} catch (BuildMacroException e) {// JABA is not going to write this code
 	}
@@ -415,8 +419,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	try {
 	    // try to resolve the build macros in the target name
 	    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-		    this.buildTargetName, "", //$NON-NLS-1$
-		    " ", //$NON-NLS-1$
+		    this.buildTargetName, "", //
+		    " ", //
 		    IBuildMacroProvider.CONTEXT_CONFIGURATION, info.getDefaultConfiguration());
 	    if (resolved != null && (resolved = resolved.trim()).length() > 0)
 		this.buildTargetName = resolved;
@@ -465,7 +469,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    boolean callPopulateDummyTargets, boolean force) throws CoreException {
 	try {
 	    updateMonitor(ManagedMakeMessages
-		    .getFormattedString("ArduinoGnuMakefileGenerator.message.postproc.dep.file", depFile.getName())); //$NON-NLS-1$
+		    .getFormattedString("ArduinoGnuMakefileGenerator.message.postproc.dep.file", depFile.getName())); //
 	    if (postProcessors != null) {
 		IPath absolutePath = new Path(
 			EFSExtensionManager.getDefault().getPathFromURI(depFile.getLocationURI()));
@@ -647,13 +651,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Visit the resources in the delta and compile a list of subdirectories
 	// to regenerate
 	updateMonitor(
-		ManagedMakeMessages.getFormattedString("MakefileGenerator.message.calc.delta", this.project.getName())); //$NON-NLS-1$
+		ManagedMakeMessages.getFormattedString("MakefileGenerator.message.calc.delta", this.project.getName())); //
 	ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(this, this.config);
 	delta.accept(visitor);
 	checkCancel();
 
 	// Get all the subdirectories participating in the build
-	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", //$NON-NLS-1$
+	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", //
 		this.project.getName()));
 	ResourceProxyVisitor resourceVisitor = new ResourceProxyVisitor(this, this.config);
 	this.project.accept(resourceVisitor, IResource.NONE);
@@ -666,7 +670,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Make sure there is something to build
 	if (getSubdirList().isEmpty()) {
-	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //$NON-NLS-1$
+	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //
 		    this.project.getName());
 	    updateMonitor(info);
 	    status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, new String(), null);
@@ -940,7 +944,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Populate the makefile if any buildable source files have been found
 	// in the project
 	if (getSubdirList().isEmpty()) {
-	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //$NON-NLS-1$
+	    String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source", //
 		    this.project.getName());
 	    updateMonitor(info);
 	    status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, new String(), null);
@@ -1027,7 +1031,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
 
 	IPath moduleOutputPath = buildRoot.append(moduleRelativePath);
-	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.gen.source.makefile", //$NON-NLS-1$
+	updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.gen.source.makefile", //
 		moduleOutputPath.toString()));
 
 	// Now create the directory
@@ -1069,7 +1073,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	for (String lib : libs) {
 	    valueList.add(lib);
 	}
-	outputMacros.put("LIBS", valueList); //$NON-NLS-1$
+	outputMacros.put("LIBS", valueList); //
 
 	// Add the extra user-specified objects
 	valueList = new ArrayList<>();
@@ -1077,11 +1081,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	for (String obj : userObjs) {
 	    valueList.add(obj);
 	}
-	outputMacros.put("USER_OBJS", valueList); //$NON-NLS-1$
+	outputMacros.put("USER_OBJS", valueList); //
 
 	// Write every macro to the file
 	for (Entry<String, List<String>> entry : outputMacros.entrySet()) {
-	    macroBuilder.append(entry.getKey() + " :="); //$NON-NLS-1$
+	    macroBuilder.append(entry.getKey() + " :="); //
 	    valueList = entry.getValue();
 	    for (String path : valueList) {
 		// These macros will also be used within commands.
@@ -1180,12 +1184,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Add the macros to the makefile
 	for (Entry<String, List<IPath>> entry : this.buildSrcVars.entrySet()) {
 	    String macroName = entry.getKey();
-	    builder1.append(macroName + WHITESPACE + ":=" + WHITESPACE + NEWLINE); //$NON-NLS-1$
+	    builder1.append(macroName + WHITESPACE + ":=" + WHITESPACE + NEWLINE); //
 	}
 	Set<Entry<String, List<IPath>>> set = this.buildOutVars.entrySet();
 	for (Entry<String, List<IPath>> entry : set) {
 	    String macroName = entry.getKey();
-	    builder1.append(macroName + WHITESPACE + ":=" + WHITESPACE + NEWLINE); //$NON-NLS-1$
+	    builder1.append(macroName + WHITESPACE + ":=" + WHITESPACE + NEWLINE); //
 	}
 
 	// Add a list of subdirectories to the makefile
@@ -1247,29 +1251,21 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	StringBuffer buffer = new StringBuffer();
 
 	// Add the ROOT macro
-	// buffer.append("ROOT := .." + NEWLINE); //$NON-NLS-1$
+	// buffer.append("ROOT := .." + NEWLINE); //
 	// buffer.append(NEWLINE);
 
 	// include makefile.init supplementary makefile
-	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_INIT + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_INIT + NEWLINE); //
 	buffer.append(NEWLINE);
 
 	// Get the clean command from the build model
-	buffer.append("RM := "); //$NON-NLS-1$
+	buffer.append("RM := "); //
 
 	// support macros in the clean command
-	String cleanCommand = "rm -f"; // config.getCleanCommand(); //$NON-NLS-1$
-				       // Modded by
-				       // JABA
-
-	// try {
-	// cleanCommand =
-	// ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(config.getCleanCommand(),
-	// EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION,
-	// config);
-	// } catch (BuildMacroException e) {// JABA is not going to write this
-	// code
-	// }
+	String cleanCommand = "rm -f";
+	if (Platform.getOS().equals(Platform.OS_WIN32)) {
+	    cleanCommand = "del ";
+	}
 
 	buffer.append(cleanCommand + NEWLINE);
 
@@ -1277,55 +1273,55 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Now add the source providers
 	buffer.append(COMMENT_SYMBOL + WHITESPACE + ManagedMakeMessages.getResourceString(SRC_LISTS) + NEWLINE);
-	buffer.append("-include sources.mk" + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include sources.mk" + NEWLINE); //
 
 	// Change the include of the "root" (our sketch) folder to be before
 	// libraries and other files
 	// When it is after it is different to the Arduino IDE and can cause
 	// linking/combining issues
-	buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include subdir.mk" + NEWLINE); //
 
 	// Add includes for each subdir in child-subdir-first order (required
 	// for makefile rule matching to work).
 	List<String> subDirList = new ArrayList<>();
 	for (IContainer subDir : getSubdirList()) {
 	    IPath projectRelativePath = subDir.getProjectRelativePath();
-	    if (!projectRelativePath.toString().equals("")) //$NON-NLS-1$
-		subDirList.add(0, projectRelativePath.toString());
+	    if (!projectRelativePath.toString().equals("")) //
+		subDirList.add(0, projectRelativePath.toOSString());
 	}
 	Collections.sort(subDirList, Collections.reverseOrder());
 	for (String dir : subDirList) {
-	    buffer.append("-include " + escapeWhitespaces(dir) + SEPARATOR + "subdir.mk" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
+	    buffer.append("-include " + escapeWhitespaces(dir) + SEPARATOR + "subdir.mk" + NEWLINE); // //
 	}
 
 	// Change the include of the "root" (our sketch) folder to be before
 	// libraries and other files
-	// buffer.append("-include subdir.mk" + NEWLINE); //$NON-NLS-1$
+	// buffer.append("-include subdir.mk" + NEWLINE); //
 
-	buffer.append("-include objects.mk" + NEWLINE + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include objects.mk" + NEWLINE + NEWLINE); //
 
 	// Include generated dependency makefiles if non-empty AND a "clean" has
 	// not been requested
 	if (!this.buildDepVars.isEmpty()) {
-	    buffer.append("ifneq ($(MAKECMDGOALS),clean)" + NEWLINE); //$NON-NLS-1$
+	    buffer.append("ifneq ($(MAKECMDGOALS),clean)" + NEWLINE); //
 
 	    for (Entry<String, ArduinoGnuDependencyGroupInfo> entry : this.buildDepVars.entrySet()) {
 		String depsMacro = entry.getKey();
 		ArduinoGnuDependencyGroupInfo info = entry.getValue();
-		buffer.append("ifneq ($(strip $(" + depsMacro + ")),)" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
+		buffer.append("ifneq ($(strip $(" + depsMacro + ")),)" + NEWLINE); // //
 		if (info.conditionallyInclude) {
-		    buffer.append("-include $(" + depsMacro + ")" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
+		    buffer.append("-include $(" + depsMacro + ")" + NEWLINE); // //
 		} else {
-		    buffer.append("include $(" + depsMacro + ")" + NEWLINE); //$NON-NLS-1$ //$NON-NLS-2$
+		    buffer.append("include $(" + depsMacro + ")" + NEWLINE); // //
 		}
-		buffer.append("endif" + NEWLINE); //$NON-NLS-1$
+		buffer.append("endif" + NEWLINE); //
 	    }
 
-	    buffer.append("endif" + NEWLINE + NEWLINE); //$NON-NLS-1$
+	    buffer.append("endif" + NEWLINE + NEWLINE); //
 	}
 
 	// Include makefile.defs supplemental makefile
-	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_DEFS + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_DEFS + NEWLINE); //
 
 	return (buffer.append(NEWLINE));
     }
@@ -1367,7 +1363,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 					      // characters)
 	String preannouncebuildStep = this.config.getPreannouncebuildStep();
 	String postannouncebuildStep = this.config.getPostannouncebuildStep();
-	String targets = rebuild ? "clean all" : "all"; //$NON-NLS-1$ //$NON-NLS-2$
+	String targets = rebuild ? "clean all" : "all"; // //
 
 	ITool targetTool = this.config.calculateTargetTool();
 	// if (targetTool == null) {
@@ -1396,7 +1392,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// makefile is
 	// extracted and run standalone via "make all"
 	//
-	String defaultTarget = "all:"; //$NON-NLS-1$
+	String defaultTarget = "all:"; //
 	if (prebuildStep.length() > 0) {
 
 	    // Add the comment for the "All" target
@@ -1460,10 +1456,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 		// if (!dep.exists()) continue;
 		if (addDeps) {
-		    buffer.append("dependents:" + NEWLINE); //$NON-NLS-1$
+		    buffer.append("dependents:" + NEWLINE); //
 		    addDeps = false;
 		}
-		String buildDir = depCfg.getOwner().getLocation().toString();
+		String buildDir = depCfg.getOwner().getLocation().toOSString();
 		String depTargets = targets;
 		// if (ManagedBuildManager.manages(dep)) {
 		// Add the current configuration to the makefile path
@@ -1477,8 +1473,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 		try {
 		    // try to resolve the build macros in the artifact extension
-		    depExt = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(depExt, "", //$NON-NLS-1$
-			    " ", //$NON-NLS-1$
+		    depExt = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(depExt, "", //
+			    " ", //
 			    IBuildMacroProvider.CONTEXT_CONFIGURATION, depCfg);
 		} catch (BuildMacroException e) {// JABA is not going to write
 						 // this code
@@ -1487,8 +1483,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		try {
 		    // try to resolve the build macros in the artifact name
 		    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-			    depTarget, "", //$NON-NLS-1$
-			    " ", //$NON-NLS-1$
+			    depTarget, "", //
+			    " ", //
 			    IBuildMacroProvider.CONTEXT_CONFIGURATION, depCfg);
 		    if ((resolved = resolved.trim()).length() > 0)
 			depTarget = resolved;
@@ -1498,7 +1494,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 		String depPrefix = depCfg.getOutputPrefix(depExt);
 		if (depCfg.needsRebuild()) {
-		    depTargets = "clean all"; //$NON-NLS-1$
+		    depTargets = "clean all"; //
 		}
 		String dependency = buildDir + SEPARATOR + depPrefix + depTarget;
 		if (depExt.length() > 0) {
@@ -1507,8 +1503,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		dependency = escapeWhitespaces(dependency);
 		managedProjectOutputs.add(dependency);
 		// }
-		buffer.append(TAB + "-cd" + WHITESPACE + escapeWhitespaces(buildDir) + WHITESPACE + LOGICAL_AND //$NON-NLS-1$
-			+ WHITESPACE + "$(MAKE) " + depTargets //$NON-NLS-1$
+		buffer.append(TAB + "-cd" + WHITESPACE + escapeWhitespaces(buildDir) + WHITESPACE + LOGICAL_AND //
+			+ WHITESPACE + "$(MAKE) " + depTargets //
 			+ NEWLINE);
 	    }
 	    // }
@@ -1544,14 +1540,14 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    buffer.append(SECONDARY_OUTPUTS + COLON);
 	    Vector<String> outs2 = calculateSecondaryOutputs(secondaryOutputs);
 	    for (int i = 0; i < outs2.size(); i++) {
-		buffer.append(WHITESPACE + "$(" + outs2.get(i) + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		buffer.append(WHITESPACE + "$(" + outs2.get(i) + ")"); // //
 	    }
 	    buffer.append(NEWLINE + NEWLINE);
 	}
 
 	// Add all the needed dummy and phony targets
-	buffer.append(".PHONY: all clean dependents" + NEWLINE); //$NON-NLS-1$
-	buffer.append(".SECONDARY:"); //$NON-NLS-1$
+	buffer.append(".PHONY: all clean dependents" + NEWLINE); //
+	buffer.append(".SECONDARY:"); //
 	if (prebuildStep.length() > 0) {
 	    buffer.append(WHITESPACE + MAINBUILD + WHITESPACE + PREBUILD);
 	}
@@ -1565,7 +1561,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	buffer.append(NEWLINE);
 
 	// Include makefile.targets supplemental makefile
-	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_TARGETS + NEWLINE); //$NON-NLS-1$
+	buffer.append("-include " + ROOT + SEPARATOR + MAKEFILE_TARGETS + NEWLINE); //
 
 	return buffer;
     }
@@ -1635,11 +1631,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	buffer.append(COMMENT_SYMBOL + WHITESPACE + ManagedMakeMessages.getResourceString(BUILD_TARGETS) + NEWLINE);
 
 	// Always add a clean target
-	buffer.append("clean:" + NEWLINE); //$NON-NLS-1$
-	buffer.append(TAB + "-$(RM)" + WHITESPACE); //$NON-NLS-1$
+	buffer.append("clean:" + NEWLINE); //
+	buffer.append(TAB + "-$(RM)" + WHITESPACE); //
 	for (Entry<String, List<IPath>> entry : this.buildOutVars.entrySet()) {
 	    String macroName = entry.getKey();
-	    buffer.append("$(" + macroName + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+	    buffer.append("$(" + macroName + ")"); // //
 	}
 	String outputPrefix = EMPTY_STRING;
 	if (targetTool != null) {
@@ -1649,11 +1645,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (this.buildTargetExt.length() > 0) {
 	    completeBuildTargetName = completeBuildTargetName + DOT + this.buildTargetExt;
 	}
-	if (completeBuildTargetName.contains(" ")) { //$NON-NLS-1$
-	    buffer.append(WHITESPACE + "\"" + completeBuildTargetName + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-	} else {
-	    buffer.append(WHITESPACE + completeBuildTargetName);
-	}
+	// if (completeBuildTargetName.contains(" ")) { //
+	// buffer.append(WHITESPACE + "\"" + completeBuildTargetName + "\""); //
+	// //
+	// } else {
+	// buffer.append(WHITESPACE + completeBuildTargetName);
+	// }
 	buffer.append(NEWLINE);
 	buffer.append(TAB + DASH + AT + ECHO_BLANK_LINE + NEWLINE);
 
@@ -1984,18 +1981,18 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Add the comment
 	buffer.append(COMMENT_SYMBOL + WHITESPACE + ManagedMakeMessages.getResourceString(MOD_LIST) + NEWLINE);
 
-	buffer.append("SUBDIRS := " + LINEBREAK); //$NON-NLS-1$
+	buffer.append("SUBDIRS := " + LINEBREAK); //
 
 	// Get all the module names
 	for (IResource container : getSubdirList()) {
-	    updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.adding.source.folder", //$NON-NLS-1$
+	    updateMonitor(ManagedMakeMessages.getFormattedString("MakefileGenerator.message.adding.source.folder", //
 		    container.getFullPath().toString()));
 	    // Check the special case where the module is the project root
 	    if (container.getFullPath() == this.project.getFullPath()) {
 		buffer.append(DOT + WHITESPACE + LINEBREAK);
 	    } else {
 		IPath path = container.getProjectRelativePath();
-		buffer.append(escapeWhitespaces(path.toString()) + WHITESPACE + LINEBREAK);
+		buffer.append(escapeWhitespaces(path.toOSString()) + WHITESPACE + LINEBREAK);
 	    }
 	}
 
@@ -2028,8 +2025,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     protected StringBuffer addSources(IContainer module) throws CoreException {
 	// Calculate the new directory relative to the build output
 	IPath moduleRelativePath = module.getProjectRelativePath();
-	String relativePath = moduleRelativePath.toString();
-	relativePath += relativePath.length() == 0 ? "" : SEPARATOR; //$NON-NLS-1$
+	String relativePath = moduleRelativePath.toOSString();
+	relativePath += relativePath.length() == 0 ? "" : SEPARATOR; //
 
 	// For build macros in the configuration, create a map which will map
 	// them
@@ -2046,7 +2043,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
 	for (Entry<String, List<IPath>> entry : this.buildOutVars.entrySet()) {
 	    String macroName = entry.getKey();
-	    addMacroAdditionPrefix(buildVarToRuleStringMap, macroName, "./" + relativePath, false); //$NON-NLS-1$
+	    addMacroAdditionPrefix(buildVarToRuleStringMap, macroName, DOTSLASH + relativePath, false); //
 	}
 
 	// String buffers
@@ -2195,8 +2192,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    for (int k = 0; k < generatedDepFiles.size(); k++) {
 			IPath generatedDepFile = generatedDepFiles.get(k);
 			addMacroAdditionFile(buildVarToRuleStringMap, getDepMacroName(ext).toString(),
-				(generatedDepFile.isAbsolute() ? "" : "./") + //$NON-NLS-1$ //$NON-NLS-2$
-					generatedDepFile.toString());
+				(generatedDepFile.isAbsolute() ? "" : DOTSLASH) + // //
+					generatedDepFile.toOSString());
 		    }
 		}
 
@@ -2355,7 +2352,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	}
     }
 
-    @SuppressWarnings({ "static-method", "nls" })
+    @SuppressWarnings({ "static-method" })
     private IManagedCommandLineInfo generateToolCommandLineInfo(ITool tool, String sourceExtension, String[] flags,
 	    String outputFlag, String outputPrefix, String outputName, String[] inputResources, IPath inputLocation,
 	    IPath outputLocation) {
@@ -2527,7 +2524,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	enumeratedOutputs.addAll(enumeratedSecondaryOutputs);
 	String primaryOutputName = null;
 	if (enumeratedPrimaryOutputs.size() > 0) {
-	    primaryOutputName = escapeWhitespaces(enumeratedPrimaryOutputs.get(0).toString());
+	    primaryOutputName = escapeWhitespaces(enumeratedPrimaryOutputs.get(0).toOSString());
 	} else {
 	    primaryOutputName = escapeWhitespaces(relativePath + fileName + optDotExt);
 	}
@@ -2535,7 +2532,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	for (int i = 1; i < enumeratedPrimaryOutputs.size(); i++) { // Starting
 								    // with 1 is
 								    // intentional
-	    otherPrimaryOutputs += WHITESPACE + escapeWhitespaces(enumeratedPrimaryOutputs.get(i).toString());
+	    otherPrimaryOutputs += WHITESPACE + escapeWhitespaces(enumeratedPrimaryOutputs.get(i).toOSString());
 	}
 
 	// Output file location needed for the file-specific build macros
@@ -2583,7 +2580,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (resource.isLinked(IResource.CHECK_ANCESTORS)) {
 	    // it IS linked, so use the actual location
 	    isItLinked = true;
-	    resourcePath = sourceLocation.toString();
+	    resourcePath = sourceLocation.toOSString();
 	    // Need a hardcoded rule, not a pattern rule, as a linked file
 	    // can reside in any path
 	    defaultOutputName = escapeWhitespaces(relativePath + fileName + optDotExt);
@@ -2621,7 +2618,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    patternRule = false;
 	    // Make sure that at least one of the rule outputs contains a %.
 	    for (int i = 0; i < ruleOutputs.size(); i++) {
-		String ruleOutput = ruleOutputs.get(i).toString();
+		String ruleOutput = ruleOutputs.get(i).toOSString();
 		if (ruleOutput.indexOf('%') >= 0) {
 		    patternRule = true;
 		    break;
@@ -2641,7 +2638,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    } else {
 		boolean first = true;
 		for (int i = 0; i < ruleOutputs.size(); i++) {
-		    String ruleOutput = ruleOutputs.get(i).toString();
+		    String ruleOutput = ruleOutputs.get(i).toOSString();
 		    if (ruleOutput.indexOf('%') >= 0) {
 			if (first) {
 			    first = false;
@@ -2667,7 +2664,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    // Translate the path from project relative to build directory
 	    // relative
 	    IPath addlPath = addlDepPath;
-	    if (!(addlPath.toString().startsWith("$("))) { //$NON-NLS-1$
+	    if (!(addlPath.toString().startsWith("$("))) { //
 		if (!addlPath.isAbsolute()) {
 		    IPath tempPath = this.project.getLocation().append(new Path(ensureUnquoted(addlPath.toString())));
 		    if (tempPath != null) {
@@ -2675,7 +2672,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		    }
 		}
 	    }
-	    String suitablePath = ensurePathIsGNUMakeTargetRuleCompatibleSyntax(addlPath.toString());
+	    String suitablePath = ensurePathIsGNUMakeTargetRuleCompatibleSyntax(addlPath.toOSString());
 	    buildRuleDependencies += WHITESPACE + suitablePath;
 	    patternBuildRuleDependencies += WHITESPACE + suitablePath;
 	}
@@ -2721,7 +2718,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// Translate the path from project relative to build directory
 		// relative
 		IPath addlPath = addlInputPath;
-		if (!(addlPath.toString().startsWith("$("))) { //$NON-NLS-1$
+		if (!(addlPath.toString().startsWith("$("))) { //
 		    if (!addlPath.isAbsolute()) {
 			IPath tempPath = getPathForResource(this.project).append(addlPath);
 			if (tempPath != null) {
@@ -2729,7 +2726,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			}
 		    }
 		}
-		inputs.add(addlPath.toString());
+		inputs.add(addlPath.toOSString());
 	    }
 	    String[] inputStrings = inputs.toArray(new String[inputs.size()]);
 
@@ -2813,23 +2810,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// Note: do not trim the result because it will strip
 			// out necessary tab characters.
 			buffer.append(WHITESPACE + LOGICAL_AND + WHITESPACE + LINEBREAK);
-			try {
-			    if (!needExplicitRuleForFile) {
-				depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-					depCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-					new FileContextData(sourceLocation, outputLocation, null, tool));
-			    }
-
-			    else {
-				depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValue(depCmd, EMPTY_STRING,
-					WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-					new FileContextData(sourceLocation, outputLocation, null, tool));
-			    }
-
-			} catch (BuildMacroException e) {// JABA is not going to
-							 // write this code
-			}
-
+			depCmd = resolveCommand(!needExplicitRuleForFile, depCmd, sourceLocation, outputLocation, tool);
 			buffer.append(depCmd);
 		    }
 		}
@@ -2864,7 +2845,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (addlDeps != null && addlDeps.length > 0) {
 	    calculatedDependencies = new String();
 	    for (IPath addlDep : addlDeps) {
-		calculatedDependencies += WHITESPACE + escapeWhitespaces(addlDep.toString());
+		calculatedDependencies += WHITESPACE + escapeWhitespaces(addlDep.toOSString());
 	    }
 	}
 
@@ -2891,7 +2872,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		addlOutputs.add(addlTarget);
 	}
 	for (int i = 0; i < addlOutputs.size(); i++) {
-	    depLine = escapeWhitespaces(addlOutputs.get(i).toString()) + COLON + WHITESPACE + primaryOutputName;
+	    depLine = escapeWhitespaces(addlOutputs.get(i).toOSString()) + COLON + WHITESPACE + primaryOutputName;
 	    if (calculatedDependencies != null)
 		depLine += calculatedDependencies;
 	    depLine += NEWLINE;
@@ -2912,7 +2893,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    addedDepLines = false;
 	    String[] preBuildCommands = depPreBuild.getDependencyCommands();
 	    if (preBuildCommands != null) {
-		depLine = ""; //$NON-NLS-1$
+		depLine = ""; //
 		// Can we use a pattern rule?
 		patternRule = !isItLinked && !needExplicitRuleForFile && depPreBuild.areCommandsGeneric();
 		// Begin building the rule
@@ -2926,7 +2907,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			    optDotExt = DOT + depExt;
 			depLine += escapeWhitespaces(relativePath + WILDCARD + optDotExt);
 		    } else {
-			depLine += escapeWhitespaces((depFiles[i]).toString());
+			depLine += escapeWhitespaces((depFiles[i]).toOSString());
 		    }
 		}
 		depLine += COLON + WHITESPACE + (patternRule ? patternBuildRuleDependencies : buildRuleDependencies);
@@ -2980,8 +2961,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    }
 	    for (int i = 0; i < depOptions.length; i++) {
 		// FIXME: SJA Patch begins here.
-		if (depOptions[i].startsWith("-MT")) { //$NON-NLS-1$
-		    depOptions[i] = "-MT\"$@\""; //$NON-NLS-1$
+		if (depOptions[i].startsWith("-MT")) { //
+		    depOptions[i] = "-MT\"$@\""; //
 		}
 		// FIXME: SJA Patch ends here.
 		flagsCopy[i + flagsLen] = depOptions[i];
@@ -3009,7 +2990,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    if (!type.getPrimaryInput() && type != tool.getPrimaryInputType()) {
 		String var = type.getBuildVariable();
 		if (var != null && var.length() > 0) {
-		    allRes.add(Path.fromOSString("$(" + type.getBuildVariable() + ")")); //$NON-NLS-1$ //$NON-NLS-2$
+		    allRes.add(Path.fromOSString("$(" + type.getBuildVariable() + ")")); // //
 		} else {
 		    // Use file extensions
 		    String[] typeExts = type.getSourceExtensions(tool);
@@ -3017,7 +2998,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			if (projectResource.getType() == IResource.FILE) {
 			    String fileExt = projectResource.getFileExtension();
 			    if (fileExt == null) {
-				fileExt = ""; //$NON-NLS-1$
+				fileExt = ""; //
 			    }
 			    for (String typeExt : typeExts) {
 				if (fileExt.equals(typeExt)) {
@@ -3039,13 +3020,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			IResourceInfo rcInfo = tool.getParentResourceInfo();
 			if (rcInfo != null) {
 			    if (optType == IOption.STRING) {
-				String optVal = ""; //$NON-NLS-1$
+				String optVal = ""; //
 				for (int j = 0; j < allRes.size(); j++) {
 				    if (j != 0) {
-					optVal += " "; //$NON-NLS-1$
+					optVal += " "; //
 				    }
 				    String resPath = allRes.get(j).toString();
-				    if (!resPath.startsWith("$(")) { //$NON-NLS-1$
+				    if (!resPath.startsWith("$(")) { //
 					IResource addlResource = this.project.getFile(resPath);
 					if (addlResource != null) {
 					    IPath addlPath = addlResource.getLocation();
@@ -3071,14 +3052,14 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				// to top build directory relative
 				String[] paths = new String[allRes.size()];
 				for (int j = 0; j < allRes.size(); j++) {
-				    paths[j] = allRes.get(j).toString();
-				    if (!paths[j].startsWith("$(")) { //$NON-NLS-1$
+				    paths[j] = allRes.get(j).toOSString();
+				    if (!paths[j].startsWith("$(")) { //
 					IResource addlResource = this.project.getFile(paths[j]);
 					if (addlResource != null) {
 					    IPath addlPath = addlResource.getLocation();
 					    if (addlPath != null) {
 						paths[j] = ManagedBuildManager
-							.calculateRelativePath(getTopBuildDir(), addlPath).toString();
+							.calculateRelativePath(getTopBuildDir(), addlPath).toOSString();
 					    }
 					}
 				    }
@@ -3091,7 +3072,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				ManagedBuildManager.setOption(rcInfo, tool, assignToOption, b);
 			    } else if (optType == IOption.ENUMERATED || optType == IOption.TREE) {
 				if (allRes.size() > 0) {
-				    String s = allRes.get(0).toString();
+				    String s = allRes.get(0).toOSString();
 				    ManagedBuildManager.setOption(rcInfo, tool, assignToOption, s);
 				}
 			    }
@@ -3182,13 +3163,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		try {
 
 		    if (containsSpecialCharacters(sourceLocation.toString())) {
-			outputPrefix = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputPrefix, "", //$NON-NLS-1$
-				" ", //$NON-NLS-1$
+			outputPrefix = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputPrefix, "", //
+				" ", //
 				IBuildMacroProvider.CONTEXT_CONFIGURATION, this.config);
 		    } else {
 			outputPrefix = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-				outputPrefix, "", //$NON-NLS-1$
-				" ", //$NON-NLS-1$
+				outputPrefix, "", //
+				" ", //
 				IBuildMacroProvider.CONTEXT_CONFIGURATION, this.config);
 		    }
 		}
@@ -3240,16 +3221,16 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				String resolved = null;
 
 				if (containsSpecialCharacters(sourceLocation.toString())) {
-				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputName, "", //$NON-NLS-1$
-					    " ", //$NON-NLS-1$
+				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputName, "", //
+					    " ", //
 					    IBuildMacroProvider.CONTEXT_FILE,
 					    new FileContextData(sourceLocation, null, option, tool));
 				}
 
 				else {
 				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-					    outputName, "", //$NON-NLS-1$
-					    " ", //$NON-NLS-1$
+					    outputName, "", //
+					    " ", //
 					    IBuildMacroProvider.CONTEXT_FILE,
 					    new FileContextData(sourceLocation, null, option, tool));
 				}
@@ -3292,7 +3273,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// The provided class is not a
 			// IManagedOutputNameProviderJaba class;
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-				"The provided class is not of type IManagedOutputNameProviderJaba", //$NON-NLS-1$
+				"The provided class is not of type IManagedOutputNameProviderJaba", //
 				e));
 		    }
 		    if (outPaths != null) { // MODDED BY JABA ADDED to handle
@@ -3303,7 +3284,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// command line
 			for (int j = 0; j < outPaths.length; j++) {
 			    IPath outPath = outPaths[j];
-			    String outputName = outPaths[j].toString();
+			    String outputName = outPaths[j].toOSString();
 
 			    // try to resolve the build macros in the output
 			    // names
@@ -3312,16 +3293,16 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				String resolved = null;
 
 				if (containsSpecialCharacters(sourceLocation.toString())) {
-				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputName, "", //$NON-NLS-1$
-					    " ", //$NON-NLS-1$
+				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValue(outputName, "", //
+					    " ", //
 					    IBuildMacroProvider.CONTEXT_FILE,
 					    new FileContextData(sourceLocation, null, option, tool));
 				}
 
 				else {
 				    resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-					    outputName, "", //$NON-NLS-1$
-					    " ", //$NON-NLS-1$
+					    outputName, "", //
+					    " ", //
 					    IBuildMacroProvider.CONTEXT_FILE,
 					    new FileContextData(sourceLocation, null, option, tool));
 				}
@@ -3336,7 +3317,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			    // If only a file name is specified, add the
 			    // relative path of this output directory
 			    if (outPath.segmentCount() == 1) {
-				outPath = Path.fromOSString(relativePath + outPath.toString());
+				outPath = Path.fromOSString(relativePath + outPath.toOSString());
 			    }
 			    if (primaryOutput) {
 				ruleOutputs.add(j, outPath);
@@ -3356,8 +3337,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			    // try to resolve the build macros in the output
 			    // names
 			    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-				    outputName, "", //$NON-NLS-1$
-				    " ", //$NON-NLS-1$
+				    outputName, "", //
+				    " ", //
 				    IBuildMacroProvider.CONTEXT_FILE,
 				    new FileContextData(sourceLocation, null, option, tool));
 			    if ((resolved = resolved.trim()).length() > 0)
@@ -3370,7 +3351,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// If only a file name is specified, add the relative
 			// path of this output directory
 			if (outPath.segmentCount() == 1) {
-			    outPath = Path.fromOSString(relativePath + outPath.toString());
+			    outPath = Path.fromOSString(relativePath + outPath.toOSString());
 			}
 			if (primaryOutput) {
 			    ruleOutputs.add(j, outPath);
@@ -3407,7 +3388,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			    // If only a file name is specified, add the
 			    // relative path of this output directory
 			    if (namePatternPath.segmentCount() == 1) {
-				namePatternPath = Path.fromOSString(relativePath + namePatternPath.toString());
+				namePatternPath = Path.fromOSString(relativePath + namePatternPath.toOSString());
 			    }
 			}
 
@@ -3449,7 +3430,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// Get the input file name
 	String fileName = sourceLocation.removeFileExtension().lastSegment();
 	// Replace the % with the file name
-	String outName = outPath.toOSString().replaceAll("%", fileName); //$NON-NLS-1$
+	String outName = outPath.toOSString().replaceAll("%", fileName); //
 	IPath result = Path.fromOSString(outName);
 	return DOT_SLASH_PATH.isPrefixOf(outPath) ? DOT_SLASH_PATH.append(result) : result;
     }
@@ -3547,12 +3528,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// truly
 	// unique name.
 	if (extensionName.equals(extensionName.toUpperCase())) {
-	    macroName.append(extensionName.toUpperCase() + "_UPPER"); //$NON-NLS-1$
+	    macroName.append(extensionName.toUpperCase() + "_UPPER"); //
 	} else {
 	    // lower case... no need for "UPPER_"
 	    macroName.append(extensionName.toUpperCase());
 	}
-	macroName.append("_SRCS"); //$NON-NLS-1$
+	macroName.append("_SRCS"); //
 	return macroName;
     }
 
@@ -3575,12 +3556,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	// truly
 	// unique name.
 	if (extensionName.equals(extensionName.toUpperCase())) {
-	    macroName.append(extensionName.toUpperCase() + "_UPPER"); //$NON-NLS-1$
+	    macroName.append(extensionName.toUpperCase() + "_UPPER"); //
 	} else {
 	    // lower case... no need for "UPPER_"
 	    macroName.append(extensionName.toUpperCase());
 	}
-	macroName.append("_DEPS"); //$NON-NLS-1$
+	macroName.append("_DEPS"); //
 	return macroName;
     }
 
@@ -3664,9 +3645,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Try to determine if this file already has dummy targets defined.
 	// If so, we will only add the comment.
-	String[] builderLines = inBuilderString.split("[\\r\\n]"); //$NON-NLS-1$
+	String[] builderLines = inBuilderString.split("[\\r\\n]"); //
 	for (String builderLine : builderLines) {
-	    if (builderLine.endsWith(":")) { //$NON-NLS-1$
+	    if (builderLine.endsWith(":")) { //
 		StringBuilder outBuilder = addDefaultHeader();
 		outBuilder.append(inBuilder);
 		save(outBuilder, makefile);
@@ -3676,18 +3657,18 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Reconstruct the buffer tokens into useful chunks of dependency
 	// information
-	Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBuilderString.split("\\s"))); //$NON-NLS-1$
+	Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBuilderString.split("\\s"))); //
 	Vector<String> deps = new Vector<>(bufferTokens.size());
 	Iterator<String> tokenIter = bufferTokens.iterator();
 	while (tokenIter.hasNext()) {
 	    String token = tokenIter.next();
-	    if (token.lastIndexOf("\\") == token.length() - 1 && token.length() > 1) { //$NON-NLS-1$
+	    if (token.lastIndexOf("\\") == token.length() - 1 && token.length() > 1) { //
 		// This is escaped so keep adding to the token until we find the
 		// end
 		while (tokenIter.hasNext()) {
 		    String nextToken = tokenIter.next();
 		    token += WHITESPACE + nextToken;
-		    if (!nextToken.endsWith("\\")) { //$NON-NLS-1$
+		    if (!nextToken.endsWith("\\")) { //
 			break;
 		    }
 		}
@@ -3719,7 +3700,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
 	// Some echo implementations misbehave and put the -n and newline in the
 	// output
-	if (firstToken.startsWith("-n")) { //$NON-NLS-1$
+	if (firstToken.startsWith("-n")) { //
 
 	    // Now let's parse:
 	    // Win32 outputs -n '<path>/<file>.d <path>/'
@@ -3731,7 +3712,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    } catch (ArrayIndexOutOfBoundsException e) {
 		secondToken = new String();
 	    }
-	    if (secondToken.startsWith("'")) { //$NON-NLS-1$
+	    if (secondToken.startsWith("'")) { //
 		// This is the Win32 implementation of echo (MinGW without MSYS)
 		outBuilder.append(secondToken.substring(1) + WHITESPACE);
 	    } else {
@@ -3745,7 +3726,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    } catch (ArrayIndexOutOfBoundsException e) {
 		thirdToken = new String();
 	    }
-	    int lastIndex = thirdToken.lastIndexOf("'"); //$NON-NLS-1$
+	    int lastIndex = thirdToken.lastIndexOf("'"); //
 	    if (lastIndex != -1) {
 		if (lastIndex == 0) {
 		    outBuilder.append(WHITESPACE);
@@ -3774,7 +3755,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    // Followed by the actual dependencies
 	    try {
 		for (String nextElement : deps) {
-		    if (nextElement.endsWith("\\")) { //$NON-NLS-1$
+		    if (nextElement.endsWith("\\")) { //
 			outBuilder.append(nextElement + NEWLINE + WHITESPACE);
 		    } else {
 			outBuilder.append(nextElement + WHITESPACE);
@@ -3824,7 +3805,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * @return resulting string
      */
     static public String escapedEcho(String string) {
-	String escapedString = string.replaceAll("'", "'\"'\"'"); //$NON-NLS-1$ //$NON-NLS-2$
+	String escapedString = string.replaceAll("'", "'\"'\"'"); // //
 	return ECHO + WHITESPACE + SINGLE_QUOTE + escapedString + SINGLE_QUOTE + NEWLINE;
     }
 
@@ -3854,7 +3835,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     }
 
     static public boolean containsSpecialCharacters(String path) {
-	return path.matches(".*(\\s|[\\{\\}\\(\\)\\$\\@%=;]).*"); //$NON-NLS-1$
+	return path.matches(".*(\\s|[\\{\\}\\(\\)\\$\\@%=;]).*"); //
     }
 
     /**
@@ -3863,13 +3844,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      */
     static public String escapeWhitespaces(String path) {
 	// Escape the spaces in the path/filename if it has any
-	String[] segments = path.split("\\s"); //$NON-NLS-1$
+	String[] segments = path.split("\\s"); //
 	if (segments.length > 1) {
 	    StringBuffer escapedPath = new StringBuffer();
 	    for (int index = 0; index < segments.length; ++index) {
 		escapedPath.append(segments[index]);
 		if (index + 1 < segments.length) {
-		    escapedPath.append("\\ "); //$NON-NLS-1$
+		    escapedPath.append("\\ "); //
 		}
 	    }
 	    return escapedPath.toString().trim();
@@ -3932,17 +3913,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (dirLocation.isPrefixOf(sourceLocation)) {
 	    IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
 	    if (generatedSource) {
-		srcName = "./" + srcPath.toString(); //$NON-NLS-1$
+		srcName = DOTSLASH + srcPath.toOSString(); //
 	    } else {
-		srcName = ROOT + "/" + srcPath.toString(); //$NON-NLS-1$
+		srcName = ROOT + SLASH + srcPath.toOSString(); //
 	    }
 	} else {
 	    if (generatedSource && !sourceLocation.isAbsolute()) {
-		srcName = "./" + relativePath + sourceLocation.lastSegment().toString(); //$NON-NLS-1$
+		srcName = DOTSLASH + relativePath + sourceLocation.lastSegment().toString(); //
 	    } else {
 		// TODO: Should we use relative paths when possible (e.g., see
 		// MbsMacroSupplier.calculateRelPath)
-		srcName = sourceLocation.toString();
+		srcName = sourceLocation.toOSString();
 	    }
 	}
 	addMacroAdditionFile(map, macroName, srcName);
@@ -3982,7 +3963,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    if (!(macroString.endsWith(MACRO_ADDITION_PREFIX_SUFFIX))) {
 		StringBuffer currentBuffer = new StringBuffer();
 
-		// Remove the final "/"
+		// Remove the final SLASH
 		if (macroString.endsWith(LINEBREAK)) {
 		    macroString = macroString.substring(0, (macroString.length() - 2)) + NEWLINE;
 		}
@@ -4057,8 +4038,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// try to resolve the build macros in the artifact
 			// extension
 			try {
-			    ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", //$NON-NLS-1$
-				    " ", //$NON-NLS-1$
+			    ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", //
+				    " ", //
 				    IBuildMacroProvider.CONTEXT_CONFIGURATION, ArduinoGnuMakefileGenerator.this.config);
 			} catch (BuildMacroException e) {// JABA is not going to
 							 // write this code
@@ -4068,8 +4049,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// try to resolve the build macros in the artifact name
 			try {
 			    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-				    name, "", //$NON-NLS-1$
-				    " ", //$NON-NLS-1$
+				    name, "", //
+				    " ", //
 				    IBuildMacroProvider.CONTEXT_CONFIGURATION, ArduinoGnuMakefileGenerator.this.config);
 			    if ((resolved = resolved.trim()).length() > 0)
 				name = resolved;
@@ -4091,7 +4072,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		Set<Entry<String, List<IPath>>> set = ArduinoGnuMakefileGenerator.this.buildOutVars.entrySet();
 		for (Entry<String, List<IPath>> entry : set) {
 		    String macroName = entry.getKey();
-		    addMacroAdditionPrefix(map, macroName, "", false); //$NON-NLS-1$
+		    addMacroAdditionPrefix(map, macroName, "", false); //
 		}
 
 		// Set of input extensions for which macros have been created so
@@ -4228,7 +4209,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		if (fileList == null) {
 		    fileList = new Vector<>();
 		}
-		fileList.add(path.toString());
+		fileList.add(path.toOSString());
 	    }
 	}
 
@@ -4385,7 +4366,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    if (!parentPath.isEmpty()) {
 		IFolder parent = this.project.getFolder(parentPath);
 		if (!parent.exists()) {
-		    createDirectory(parentPath.toString());
+		    createDirectory(parentPath.toOSString());
 		}
 	    }
 
@@ -4449,14 +4430,14 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (folderPath != null) {
 	    folderPath = folderPath.removeFirstSegments(1);
 	} else {
-	    folderPath = new Path(""); //$NON-NLS-1$
+	    folderPath = new Path(""); //
 	}
 	IResourceInfo rcInfo = this.config.getResourceInfo(folderPath, false);
 	if (rcInfo instanceof IFileInfo) {
 	    rcInfo = this.config.getResourceInfo(folderPath.removeLastSegments(1), false);
 	}
 	String targetExtension = ((IFolderInfo) rcInfo).getOutputExtension(srcExtension);
-	if (targetExtension != "") //$NON-NLS-1$
+	if (targetExtension != "") //
 	    fileName += DOT + targetExtension;
 	IPath projectRelativePath = deletedFile.getProjectRelativePath().removeLastSegments(1);
 	IPath targetFilePath = getBuildWorkingDir().append(projectRelativePath).append(fileName);
@@ -4491,7 +4472,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	if (folderPath != null) {
 	    folderPath = folderPath.removeFirstSegments(1);
 	} else {
-	    folderPath = new Path(""); //$NON-NLS-1$
+	    folderPath = new Path(""); //
 	}
 	ToolInfoHolder h = getToolInfo(folderPath);
 	ITool[] tools = h.buildTools;
@@ -4667,7 +4648,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	    try {
 		folder.delete(true, new SubProgressMonitor(this.monitor, 1));
 	    } catch (CoreException e) {
-		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), //$NON-NLS-1$
+		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "Folder deletion failed " + folder.toString(), //
 			e));
 	    }
 	}
@@ -4720,8 +4701,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * @return a String without the outermost quotes (if the input has them)
      */
     public static String ensureUnquoted(String path) {
-	boolean doubleQuoted = path.startsWith("\"") && path.endsWith("\""); //$NON-NLS-1$ //$NON-NLS-2$
-	boolean singleQuoted = path.startsWith("'") && path.endsWith("'"); //$NON-NLS-1$ //$NON-NLS-2$
+	boolean doubleQuoted = path.startsWith("\"") && path.endsWith("\"");
+	boolean singleQuoted = path.startsWith("'") && path.endsWith("'");
 	return doubleQuoted || singleQuoted ? path.substring(1, path.length() - 1) : path;
     }
 
@@ -4750,8 +4731,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	try {
 	    // try to resolve the build macros in the target extension
 	    this.buildTargetExt = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-		    this.buildTargetExt, "", //$NON-NLS-1$
-		    " ", //$NON-NLS-1$
+		    this.buildTargetExt, "", //
+		    " ", //
 		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder1);
 	} catch (BuildMacroException e) {// JABA is not going to write this code
 	}
@@ -4759,8 +4740,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	try {
 	    // try to resolve the build macros in the target name
 	    String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-		    this.buildTargetName, "", //$NON-NLS-1$
-		    " ", //$NON-NLS-1$
+		    this.buildTargetName, "", //
+		    " ", //
 		    IBuildMacroProvider.CONTEXT_CONFIGURATION, builder1);
 	    if (resolved != null) {
 		resolved = resolved.trim();
@@ -4841,7 +4822,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	return h;
     }
 
-    @SuppressWarnings("nls")
     private static String resolveCommand(boolean makeFormat, String inCommand, IPath inputLocation,
 	    IPath outputLocation, IBuildObject tool) {
 	String returnedCommand = inCommand;
