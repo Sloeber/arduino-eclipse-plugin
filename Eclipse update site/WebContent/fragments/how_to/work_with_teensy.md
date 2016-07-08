@@ -7,7 +7,7 @@ Please see [his website](http://trippylighting.com/teensy-arduino-ect/arduino-ec
 
 **Users of V3**  
 Teensyduino 1.27 needs some modifications before you can use it.  
-It is expected that TeensyDuino 1.28 will work without modifications.  
+TeensyDuino 1.28 works without modifications.  
 To get this to work add [teensyduino]/hardware/teensy to the additional hardware paths.  
 
 Due to a bug in eclipse The file open dialogs on Mac don't let you access the package contents as you can do in Finder ([please vote for his bug](https://bugs.eclipse.org/bugs/show_bug.cgi?id=487534)).  

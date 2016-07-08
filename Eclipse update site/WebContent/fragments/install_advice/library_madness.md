@@ -1,6 +1,6 @@
-Library madness
+V2: Library madness
 ==
-in 1.5.7 this problem has been solved completely.
+**in 1.5.7 this problem has been solved completely.**
 
 Arduino introduced library specification 1.5 which made maintaining the arduino eclipse plugin impossible. Fortunately the Arduino core team listened to the concerns of "other IDE developpers" and undid the changes this specification created.  
 The library specification 1.5 has not been completely undone in Arduino IDE 1.5.5 as such these libraries will not compile in the plugin.

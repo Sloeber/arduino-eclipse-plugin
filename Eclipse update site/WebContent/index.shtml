@@ -36,8 +36,8 @@
       <div class="jumbotron">
         <h1>Where <b>Arduino</b> meets <b>Eclipse</b></h1>
         <p>You like <b>Arduino</b>, your projects are getting bigger and you feel the Arduino IDE is not powerful enough?</p>
-        <p>This is about a free, open source, <b>Eclipse</b> IDE to ease your development efforts!<br>
-          This represents a completely free and open Arduino IDE alternative!<br>
+        <p>This is about <b>Sloeber</b> a free, open source, <b>Eclipse</b> IDE to ease your development efforts!<br>
+          This represents a completely <b>free and open</b> Arduino IDE alternative!<br>
           Download the product, unpack and play!<br>
         </p>
         <h1>V3 Is out. Try it out now!!!</h1>
@@ -46,8 +46,8 @@
         	<a href="learn.shtml" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>
         	<a href="donate.shtml" class="btn btn-success btn-lg pull-right" role="button">Support me on Patreon!</a>
         </p>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/zc2JLbtbI7Q" frameborder="0" allowfullscreen></iframe>
-        
+        <iframe width="500" height="315" src="https://www.youtube.com/embed/zc2JLbtbI7Q" frameborder="0" allowfullscreen></iframe>
+        <iframe width="500" height="315" src="https://www.youtube.com/embed/QWEvO2DztoI" frameborder="0" allowfullscreen float : right></iframe>
       </div>
       <div class="row">
         <div class="col-md-4">

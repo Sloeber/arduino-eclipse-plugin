@@ -66,8 +66,9 @@ if (isset ( $_GET ["OS"] ))
 
               <?php 
         if ($os==linux)
-        	echo "<p><strong>The product uses 100% CPU on Ubunto 16.04 uses 100%. If you need to run on this OS installneon and the plugin version.</strong></p>";
+        	echo "<p><strong>The product uses 100% CPU on Ubuntu 16.04. If you need to run on this OS install neon and the plugin version.</strong></p>";
         ?>
+        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
       <?php 
       echo "<h3>These are built for $OS 64 bits</h3>";
         $filetoRead="http://eclipse.baeyens.it/fragments/file-list.php?arch=${os}64.";

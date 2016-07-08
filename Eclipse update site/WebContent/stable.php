@@ -60,6 +60,7 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
         if ($os==lin)
         	echo "<p><strong>The product uses 100% CPU on Ubunto 16.04 uses 100%. If you need to run on this OS installneon and the plugin version.</strong></p>";
         ?>
+        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php 
         listFiles("V" . $version . '_' . $os);?>
