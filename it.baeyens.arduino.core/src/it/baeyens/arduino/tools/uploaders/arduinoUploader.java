@@ -54,8 +54,11 @@ public class arduinoUploader implements IRealUpload {
 		    .getValue().equalsIgnoreCase(Const.TRUE);
 	} catch (Exception e) {// ignore all errors
 	}
-	String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
-		this.mycConf, MComPort);
+	String NewSerialPort = MComPort;
+	if (!usingProgrammer) {
+	    NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
+		    this.mycConf, MComPort);
+	}
 
 	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_COM_PORT, NewSerialPort);
 	contribEnv.addVariable(var, configurationDescription);
