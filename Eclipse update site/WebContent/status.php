@@ -1,7 +1,7 @@
 <?php
 require 'fragments/file-buttons.php';
-$STABLE_MAJOR_VERSION = 3;
-$STABLE_MINOR_VERSION = 0;
+$STABLE_MAJOR_VERSION = "3";
+$STABLE_MINOR_VERSION = "0";
 $OS = "unknown";
 $ARCH = "unknown";
 $MAJOR_VERSION = "unknown";
@@ -38,27 +38,7 @@ if (isset ( $_GET ["qualifierVersion"] ))
 <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     <?php
-				
 				echo "<title>Should I upgrade from - $MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION.$QUALIFIER_VERSION on $OS</title>";
-				if (($MAJOR_VERSION != $STABLE_MAJOR_VERSION) or ($MINOR_VERSION != $STABLE_MINOR_VERSION)) {
-					echo "you are on the latest stable version. There is no need to upgrade.<br>";
-				} else {
-					echo "Please consider upgrading to the latest stable.<br>";
-					if ($MAJOR_VERSION == "1") {
-						echo "Are you really still running V1??? Why???<br>";
-					} elseif ($MAJOR_VERSION == "2") {
-						if ($MINOR_VERSION < "4") {
-							echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%202.4%22%20"> Fixed in 2.4</a><br> )';
-						}
-						echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%203.0%22%20"> Fixed in 3.0</a><br> )';
-					} elseif ($MAJOR_VERSION == "3") {
-						if ($MINOR_VERSION == "0") {
-							echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%203.1%22%20"> Fixed in 3.1</a><br> )';
-						}
-					}
-					echo "Fixed in nightly<br>";
-					echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?q=is%3Aissue+is%3Aopen+label%3A%22status%3A+fixed+in+nightly%22"> Fixed in nightly</a><br> )';
-				}
 				?>
     <!-- Bootstrap core CSS and theme -->
 <link rel="stylesheet"
@@ -88,8 +68,28 @@ if (isset ( $_GET ["qualifierVersion"] ))
 
 	<div class="container" role="main">
 		<div class="page-header">
-        <?php	echo "<h1>You are running version  $VERSION</h1>"; ?>
+        <?php	echo "<h1>You are running version $MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION.$QUALIFIER_VERSION on $OS</h1>"; ?>
 </div>
+   <?php
+			if (($MAJOR_VERSION == $STABLE_MAJOR_VERSION) and ($MINOR_VERSION == $STABLE_MINOR_VERSION)) {
+				echo "you are on the latest stable version $STABLE_MAJOR_VERSION.$STABLE_MINOR_VERSION. There is no need to upgrade.<br>";
+			} else {
+				echo "Please consider upgrading to the latest stable.<br>";
+				if ($MAJOR_VERSION == "1") {
+					echo "<strong>Are you really still running V1??? Why???</strong><br>";
+				} elseif ($MAJOR_VERSION == "2") {
+					if ($MINOR_VERSION < "4") {
+						echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%202.4%22%20"> Fixed in 2.4</a><br>';
+					}
+					echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%203.0%22%20"> Fixed in 3.0</a><br>';
+				} elseif ($MAJOR_VERSION == "3") {
+					if ($MINOR_VERSION == "0") {
+						echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?utf8=%E2%9C%93&q=%20label%3A%22status%3A%20fixed%20in%203.1%22%20"> Fixed in 3.1</a><br>';
+					}
+				}
+			}
+			echo '<a href="https://github.com/jantje/arduino-eclipse-plugin/issues?q=is%3Aissue+label%3A%22status%3A+fixed+in+nightly%22"> Fixed in nightly</a><br>';
+			?>
 	</div>
 	<div id="footer">
       <?php include 'fragments/footer.html';?>
