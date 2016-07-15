@@ -818,7 +818,7 @@ public class Helpers extends Common {
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
-	Programmers localProgrammers = Programmers.fromBoards(boardFileName);
+	Programmers localProgrammers[] = Programmers.fromBoards(boardFileName);
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARD_ID, EMPTY_STRING);
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID,
@@ -870,8 +870,10 @@ public class Helpers extends Common {
 
 	// Then add the programmers file
 	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
-	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, localProgrammers,
-		localProgrammers.getIDFromName(programmer), false);
+	for (Programmers curProgrammer : localProgrammers) {
+	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, curProgrammer,
+		    curProgrammer.getIDFromName(programmer), false);
+	}
 
 	// add the stuff that comes with the plugin that is marked as post
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
