@@ -140,7 +140,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	     */
 	    String CurrentUploadProtocol = BoardSelectionPage.this.mControlUploadProtocol.getText();
 	    BoardSelectionPage.this.mControlUploadProtocol.removeAll();
-	    BoardSelectionPage.this.mControlUploadProtocol.setItems(Programmers.getUploadProtocols(CurrentBoard));
+	    BoardSelectionPage.this.mControlUploadProtocol.setItems(Programmers.getUploadProtocols(boardFile));
 	    BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 
 	    if (BoardSelectionPage.this.mControlUploadProtocol.getText().isEmpty()) {
