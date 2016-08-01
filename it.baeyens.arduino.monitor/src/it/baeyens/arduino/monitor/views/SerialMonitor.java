@@ -21,8 +21,10 @@ import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -118,8 +120,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     // The serial connections that are open with the listeners listening to this
     // port
     protected Map<Serial, SerialListener> serialConnections;
-    // the last used index of the lineTerminator combo
-    protected int lastUsedIndex;
 
     private static final String myFlagMonitor = "FmStatus"; //$NON-NLS-1$
     String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
@@ -174,8 +174,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     @Override
     public void dispose() {
 	Common.UnRegisterSerialUser();
-	InstancePreferences.SetLastUsedSerialLineEnd(this.lastUsedIndex);
-	InstancePreferences.setLastUsedAutoScroll(!this.scrollLock.isChecked());
 
 	for (Entry<Serial, SerialListener> entry : this.serialConnections.entrySet()) {
 	    entry.getValue().dispose();
@@ -193,19 +191,17 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     public void createPartControl(Composite parent1) {
 	this.parent = parent1;
 	parent1.setLayout(new GridLayout());
-	GridLayout gl = new GridLayout(7, false);
-	gl.marginHeight = 0;
-	gl.marginWidth = 0;
-	Composite fTop = new Composite(parent1, SWT.NONE);
-	fTop.setLayout(gl);
-	fTop.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	GridLayout layout = new GridLayout(5, false);
+	layout.marginHeight = 0;
+	layout.marginWidth = 0;
+	Composite top = new Composite(parent1, SWT.NONE);
+	top.setLayout(layout);
+	top.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-	this.serialPorts = new ComboViewer(fTop, SWT.READ_ONLY | SWT.DROP_DOWN);
-	GridData MinimuSizeGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-	MinimuSizeGridData.widthHint = 150;
-	MinimuSizeGridData.horizontalSpan = 1;
-	MinimuSizeGridData.verticalSpan = 2;
-	this.serialPorts.getControl().setLayoutData(MinimuSizeGridData);
+	this.serialPorts = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
+	GridData minSizeGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+	minSizeGridData.widthHint = 150;
+	this.serialPorts.getControl().setLayoutData(minSizeGridData);
 	this.serialPorts.setContentProvider(new IStructuredContentProvider() {
 
 	    @Override
@@ -230,37 +226,31 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	this.serialPorts.setInput(this.serialConnections);
 	this.serialPorts.addSelectionChangedListener(new ComPortChanged(this));
 
-	this.sendString = new Text(fTop, SWT.SINGLE | SWT.BORDER);
-	GridData theGriddata = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	theGriddata.horizontalSpan = 1;
-	theGriddata.verticalSpan = 2;
-	this.sendString.setLayoutData(theGriddata);
+	this.sendString = new Text(top, SWT.SINGLE | SWT.BORDER);
+	this.sendString.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-	this.lineTerminator = new ComboViewer(fTop, SWT.READ_ONLY | SWT.DROP_DOWN);
-	theGriddata = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-	theGriddata.horizontalSpan = 1;
-	theGriddata.verticalSpan = 2;
-	this.lineTerminator.getControl().setLayoutData(theGriddata);
+	this.lineTerminator = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
 	this.lineTerminator.setContentProvider(new ArrayContentProvider());
 	this.lineTerminator.setLabelProvider(new LabelProvider());
-	// TODO remove the comment line below
-	// just add a line to make jenkins publis
 	this.lineTerminator.setInput(Common.listLineEndings());
-	this.lineTerminator.getCombo().select(InstancePreferences.GetLastUsedSerialLineEnd());
+	this.lineTerminator.getCombo().select(InstancePreferences.getLastUsedSerialLineEnd());
+	this.lineTerminator.addSelectionChangedListener(new ISelectionChangedListener() {
 
-	this.send = new Button(fTop, SWT.BUTTON1);
+	    @Override
+	    public void selectionChanged(SelectionChangedEvent event) {
+		InstancePreferences
+			.setLastUsedSerialLineEnd(SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex());
+	    }
+	});
+
+	this.send = new Button(top, SWT.BUTTON1);
 	this.send.setText(Messages.SerialMonitor_send);
-	theGriddata = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-	theGriddata.horizontalSpan = 1;
-	theGriddata.verticalSpan = 2;
-	this.send.setLayoutData(theGriddata);
 	this.send.addSelectionListener(new SelectionListener() {
 
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		SerialMonitor.this.lastUsedIndex = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
-		GetSelectedSerial().write(SerialMonitor.this.sendString.getText(),
-			Common.getLineEnding(SerialMonitor.this.lastUsedIndex)); // System.getProperty("line.separator"));
+		int index = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
+		GetSelectedSerial().write(SerialMonitor.this.sendString.getText(), Common.getLineEnding(index));
 		SerialMonitor.this.sendString.setText(Const.EMPTY_STRING);
 		SerialMonitor.this.sendString.setFocus();
 	    }
@@ -272,17 +262,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	});
 	this.send.setEnabled(false);
 
-	this.reset = new Button(fTop, SWT.BUTTON1);
+	this.reset = new Button(top, SWT.BUTTON1);
 	this.reset.setText(Messages.SerialMonitor_reset);
-	theGriddata = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-	theGriddata.horizontalSpan = 1;
-	theGriddata.verticalSpan = 2;
-	this.reset.setLayoutData(theGriddata);
 	this.reset.addSelectionListener(new SelectionListener() {
 
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		SerialMonitor.this.lastUsedIndex = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
 		GetSelectedSerial().reset();
 		SerialMonitor.this.sendString.setFocus();
 	    }
@@ -297,10 +282,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// register the combo as a Selection Provider
 	getSite().setSelectionProvider(this.serialPorts);
 
-	this.monitorOutput = new StyledText(fTop, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	theGriddata = new GridData(SWT.FILL, SWT.FILL, true, true);
-	theGriddata.horizontalSpan = 7;
-	this.monitorOutput.setLayoutData(theGriddata);
+	this.monitorOutput = new StyledText(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	this.monitorOutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
 	this.monitorOutput.setEditable(false);
 	IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 	ITheme currentTheme = themeManager.getCurrentTheme();
@@ -454,7 +437,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
     }
 
     /**
-     * methoid to make sure the visualisation is correct
+     * method to make sure the visualization is correct
      */
     void SerialPortsUpdated() {
 	this.disconnect.setEnabled(this.serialConnections.size() != 0);
@@ -482,9 +465,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
      * Connect to a serial port and sets the listener
      * 
      * @param ComPort
-     *            the name of the comport to connect to
+     *            the name of the com port to connect to
      * @param BaudRate
-     *            the bautrate to connect to the com port
+     *            the baud rate to connect to the com port
      */
     public void connectSerial(String ComPort, int BaudRate) {
 	if (this.serialConnections.size() < myMaxSerialPorts) {

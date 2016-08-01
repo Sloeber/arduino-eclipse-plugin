@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="3.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE" uid="it.baeyens.arduino.product" id="it.baeyens.arduino.application.product" application="org.eclipse.ui.ide.workbench" version="3.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/it.baeyens.arduino.application/icons/eclipse_lg.png"/>
       <text>
-         Eclipse IDE for Arduino Developers
+         Sloeber, the Eclipse IDE for Arduino Developers
 
 Info: http://eclipse.baeyens.it/
 Source: https://github.com/jantje/arduino-eclipse-plugin
 Binaries: http://eclipse.baeyens.it/download.php
 
-Contributors: jantje, brodykenrick, wimjongman, neuweiler, 
-darcade, amorellgarcia
+Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler, 
+darcade, amorellgarcia, MarceloLimori
 
 https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </text>
@@ -43,9 +43,12 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       startupProgressRect="97,370,100,4"
       startupMessageRect="400,370,441,20"
       startupForegroundColor="C8D5EA" />
-   <launcher name="eclipseArduinoIDE">
+   <launcher name="sloeber-ide">
+      <linux icon="launch/icon.xpm"/>
+      <macosx icon="launch/icon.icns"/>
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="launch/icons.ico"/>
          <bmp/>
       </win>
    </launcher>
@@ -342,6 +345,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse" installMode="root"/>
       <feature id="org.eclipse.cdt.testsrunner.feature"/>
       <feature id="org.eclipse.equinox.core.sdk"/>
+      <feature id="org.eclipse.pde"/>
    </features>
 
    <configurations>
@@ -355,10 +359,10 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/releases/mars" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.5" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/nightly" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/nightly" enabled="false" />
       <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
+      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
    </repositories>
 
    <preferencesInfo>

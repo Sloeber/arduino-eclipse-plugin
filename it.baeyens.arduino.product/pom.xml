@@ -4,12 +4,12 @@
 	<parent>
         <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 		<artifactId>it.baeyens.arduino.parent</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+		<version>3.1.0-SNAPSHOT</version>
     <relativePath>../it.baeyens.arduino.parent</relativePath>
 	</parent>
     <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 	<artifactId>it.baeyens.arduino.product</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0</version>
 	<packaging>eclipse-repository</packaging>
 	<build>
 		<plugins>
@@ -45,11 +45,11 @@
 							<!-- Customise the packaged product's archive name (Instead of "it.baeyens.arduino.product")
 							    Suffix is still <os>.<ws>.<arch>.<archiveExtension> (e.g. linux.gtk.x86_64.tar.gz)
 							 -->
-                            <archiveFileName>EclipseArduinoIDE-${platform-version-name}</archiveFileName>
+                            <archiveFileName>sloeber-ide-${platform-version-name}</archiveFileName>
 							<!-- Causes the archives to contain a folder todo/ that contains the 
 								application -->
 							<!-- Without it, the application is at the archive root -->
-							<rootFolder>eclipseArduino</rootFolder>
+							<rootFolder>sloeber</rootFolder>
 							<!-- On Linux self contained installations are commonly extract to 
 								/opt folder -->
 							<!-- LSB: "binary-only packages of nonessential applications and add-on 

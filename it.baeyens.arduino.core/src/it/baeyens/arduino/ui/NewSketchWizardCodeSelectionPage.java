@@ -27,8 +27,8 @@ import it.baeyens.arduino.tools.Stream;
 public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
     final Shell shell = new Shell();
-    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp, Messages.ui_new_sketch_custom_template,
-	    Messages.ui_new_sketch_sample_sketch };
+    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp,
+	    Messages.ui_new_sketch_custom_template, Messages.ui_new_sketch_sample_sketch };
     private static final int defaultIno = 0;
     private static final int defaultCPP = 1;
     private static final int CustomTemplate = 2;
@@ -81,7 +81,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	    }
 	};
-	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4, Const.EMPTY_STRING, true);
+	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4,
+		Const.EMPTY_STRING, true);
 	this.mCodeSourceOptionsCombo.addListener(comboListener);
 
 	this.mCodeSourceOptionsCombo.setItems(this.codeOptions);
@@ -124,7 +125,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name SetControls() Enables or disables the controls based on the Checkbox settings
+     * @name SetControls() Enables or disables the controls based on the
+     *       Checkbox settings
      */
     protected void SetControls() {
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
@@ -154,7 +156,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name validatePage() Check if the user has provided all the info to create the project. If so enable the finish button.
+     * @name validatePage() Check if the user has provided all the info to
+     *       create the project. If so enable the finish button.
      */
     protected void validatePage() {
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
@@ -180,7 +183,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     }
 
     /**
-     * @name restoreAllSelections() Restore all necessary variables into the respective controls
+     * @name restoreAllSelections() Restore all necessary variables into the
+     *       respective controls
      */
     private void restoreAllSelections() {
 	//
@@ -207,13 +211,15 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
 	case defaultIno:
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.ino", false), monitor); //$NON-NLS-1$
+		    Stream.openContentStream(project.getName(), Include, "templates/sketch.ino", false), monitor, //$NON-NLS-1$
+		    false);
 	    break;
 	case defaultCPP:
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.cpp", false), monitor); //$NON-NLS-1$
+		    Stream.openContentStream(project.getName(), Include, "templates/sketch.cpp", false), monitor, //$NON-NLS-1$
+		    false);
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h", false), monitor); //$NON-NLS-1$
+		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h", false), monitor, false); //$NON-NLS-1$
 	    break;
 	case CustomTemplate:
 	    Path folderName = new Path(this.mTemplateFolderEditor.getStringValue());
@@ -222,12 +228,14 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	    File inoFile = folderName.append("sketch.ino").toFile(); //$NON-NLS-1$
 	    if (inoFile.exists()) {
 		Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor);
+			Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor, false);
 	    } else {
 		Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true), monitor);
+			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true), monitor,
+			false);
 		Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor);
+			Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor,
+			false);
 	    }
 	    break;
 	case sample:

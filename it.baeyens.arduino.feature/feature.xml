@@ -2,7 +2,7 @@
 <feature
       id="it.baeyens.arduino.feature"
       label="%featureName"
-      version="3.0.0.qualifier"
+      version="3.1.0.qualifier"
       provider-name="%provider">
 
    <description url="http://baeyens.it/eclipse/">
@@ -17,7 +17,7 @@ All rights reserved by the owning parties.
 
 Arduino -&gt; The Arduino software is also open-source. The source code for the Java environment is released under the GPL and the C/C++ microcontroller libraries are under the LGPL.
        
-Remaining code of AVR-eclipse AVR-eclipse-&gt;  see license-AVR.html	
+Remaining code of AVR-eclipse AVR-eclipse-&gt;  see license-AVR.html 
 
 Eclipse -&gt; see license-Eclipse.HTML
 
@@ -43,42 +43,42 @@ Trump211
          id="it.baeyens.arduino.common"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.core"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.monitor"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.arduino.core.nl1"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          fragment="true"/>
 
    <plugin
          id="it.baeyens.arduino.application"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="it.baeyens.cdt.refactor"
          download-size="0"
          install-size="0"
-         version="3.0.0.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

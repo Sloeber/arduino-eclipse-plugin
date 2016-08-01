@@ -183,7 +183,7 @@ public class ArduinoPlatform {
     public List<Path> getIncludePath() {
 	Path installPath = getInstallPath();
 	return Arrays.asList(installPath.resolve("cores/{build.core}"), //$NON-NLS-1$
-		installPath.resolve("variants/{build.variant}")); //$NON-NLS-1$
+		installPath.resolve(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
     public IStatus remove(IProgressMonitor monitor) {

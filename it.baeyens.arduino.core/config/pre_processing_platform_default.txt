@@ -5,5 +5,17 @@ ALT_SIZE_COMMAND="{COMPILER.PATH}{COMPILER.SIZE.CMD}" --format=avr --mcu={BUILD.
 BUILD.VARIANT.PATH={RUNTIME.PLATFORM.PATH}/variants/{BUILD.VARIANT}
 BUILD.CORE.PATH={RUNTIME.PLATFORM.PATH}/cores/{BUILD.CORE}
 archive_file_path={build.path}/{archive_file}
-runtime.IDE.version=10606
+runtime.IDE.version=10609
 build.system.path={RUNTIME.PLATFORM.PATH}/system
+
+#for esp8266 network upload
+tools.esp8266OTA={tools.esptool.network_cmd}
+tools.esp8266OTA.upload.pattern={tools.esptool.upload.network_pattern}
+esp8266.network.upload.tool=esp8266OTA
+TOOLS.ESPTOOL.NETWORK.PASSWORD={NETWORK.AUTH}
+
+#for yun shield to work
+TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
+
+#for due
+serial.port.file={serial.port} 

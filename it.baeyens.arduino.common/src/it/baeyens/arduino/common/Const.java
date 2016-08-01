@@ -22,6 +22,7 @@ public class Const {
     // General stuff
     public static final String PLUGIN_START = "it.baeyens.";
     public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
+    public static final String NETWORK = "NETWORK";
 
     // prefix to be added to the arduino environment
     protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\";
@@ -38,6 +39,25 @@ public class Const {
     // preference nodes
     public static final String NODE_ARDUINO = PLUGIN_START + "arduino";
 
+    // Actions
+    public static final String ACTION_UPLOAD = "UPLOAD";
+    public static final String ACTION_PROGRAM = "PROGRAM";
+    public static final String ACTION_C_to_O = "RECIPE.C.O";
+    public static final String ACTION_CPP_to_O = "RECIPE.CPP.O";
+    public static final String ACTION_S_to_O = "RECIPE.S.O";
+    public static final String ACTION_OBJCOPY_to_HEX = "RECIPE.OBJCOPY.HEX";
+    public static final String ACTION_OBJCOPY_to_EEP = "RECIPE.OBJCOPY.EEP";
+    public static final String ACTION_SIZE = "RECIPE.SIZE";
+    public static final String ACTION_AR = "RECIPE.AR";
+    public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
+    public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
+    public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
+
+    // Describers
+    public static final String ENV_PROTOCOL = "PROTOCOL";
+    public static final String ENV_TOOL = "TOOL";
+    public static final String ENV_PATTERN = "PATTERN";
+
     // preference keys
     public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
@@ -46,9 +66,10 @@ public class Const {
 
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";
-    public static final String KEY_LAST_USED_COM_PORT = "upload Port";
-    public static final String KEY_LAST_USED_BOARDS_FILE = "boards file";
-    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board Custom Option Selections";
+    public static final String KEY_LAST_USED_COM_PORT = "Upload port";
+    public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = ACTION_UPLOAD + DOT + ENV_PROTOCOL;
+    public static final String KEY_LAST_USED_BOARDS_FILE = "Boards file";
+    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
     public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
     public static final String KEY_UPDATE_JASONS = "Update jsons files";
@@ -70,8 +91,8 @@ public class Const {
     public static final String VARIANTS_FOLDER_NAME = "variants";
     public static final String PACKAGES_FOLDER_NAME = "packages";
 
-    // tags to interpret the arduino input files
-    public static final String BOARD_NAME_KEY_TAG = "name";
+    // tags to interpret the arduino txt config files
+    public static final String TXT_NAME_KEY_TAG = "name";
     public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot";
     public static final String UPLOAD_SSH = "ssh upload";
     public static final String MENU = "menu";
@@ -80,53 +101,52 @@ public class Const {
     public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor";
     public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";
 
-    public static final String ENV_KEY_BOARD_START = "A.";
-    public static final String ENV_KEY_BOARD_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
+    public static final String ERASE_START = "A" + DOT;
+
+    public static final String ENV_KEY_PROGRAMMERS_START = ERASE_START + "PROGRAMMERS.";
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
     public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
-    public static final String ENV_KEY_NAME = ENV_KEY_BOARD_START + "NAME";
-    public static final String ENV_KEY_VERSION = ENV_KEY_BOARD_START + "VERSION";
-    public static final String ENV_KEY_RECIPE_C_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_CPP_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.CPP.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_S_O_PATTERN = ENV_KEY_BOARD_START + "RECIPE.S.O.PATTERN";
-    public static final String ENV_KEY_RECIPE_OBJCOPY_HEX_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.HEX.PATTERN";
-    public static final String ENV_KEY_RECIPE_OBJCOPY_EEP_PATTERN = ENV_KEY_BOARD_START + "RECIPE.OBJCOPY.EEP.PATTERN";
-    public static final String ENV_KEY_RECIPE_SIZE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.SIZE.PATTERN";
-    public static final String ENV_KEY_RECIPE_AR_PATTERN = ENV_KEY_BOARD_START + "RECIPE.AR.PATTERN";
-    public static final String ENV_KEY_RECIPE_C_COMBINE_PATTERN = ENV_KEY_BOARD_START + "RECIPE.C.COMBINE.PATTERN";
+    public static final String ENV_KEY_NAME = ERASE_START + "NAME";
+    public static final String ENV_KEY_VERSION = ERASE_START + "VERSION";
 
-    public static final String ENV_KEY_BUILD_VARIANT = ENV_KEY_BOARD_START + "BUILD.VARIANT";
-    public static final String ENV_KEY_COMPILER_PATH = ENV_KEY_BOARD_START + "COMPILER.PATH";
-    public static final String ENV_KEY_BUILD_SYSTEM_PATH = ENV_KEY_BOARD_START + "BUILD.SYSTEM.PATH";
-    public static final String ENV_KEY_BUILD_GENERIC_PATH = ENV_KEY_BOARD_START + "BUILD.GENERIC.PATH";
-    public static final String ENV_KEY_SOFTWARE = ENV_KEY_BOARD_START + "SOFTWARE";
-    public static final String ENV_KEY_ARCHITECTURE = ENV_KEY_BOARD_START + "ARCHITECTURE";
-    public static final String ENV_KEY_BUILD_ARCH = ENV_KEY_BOARD_START + "BUILD.ARCH";
-    public static final String ENV_KEY_HARDWARE_PATH = ENV_KEY_BOARD_START + "RUNTIME.HARDWARE.PATH";
-    public static final String ENV_KEY_PLATFORM_PATH = ENV_KEY_BOARD_START + "RUNTIME.PLATFORM.PATH";
+    public static final String ENV_KEY_BUILD_VARIANT = ERASE_START + "BUILD.VARIANT";
+    public static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
+    public static final String ENV_KEY_BUILD_SYSTEM_PATH = ERASE_START + "BUILD.SYSTEM.PATH";
+    public static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
+    public static final String ENV_KEY_SOFTWARE = ERASE_START + "SOFTWARE";
+    public static final String ENV_KEY_ARCHITECTURE = ERASE_START + "ARCHITECTURE";
+    public static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
+    public static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
+    public static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
 
-    public static final String ENV_KEY_BUILD_PATH = ENV_KEY_BOARD_START + "BUILD.PATH";
-    public static final String ENV_KEY_BUILD_PROJECT_NAME = ENV_KEY_BOARD_START + "BUILD.PROJECT_NAME";
-    public static final String ENV_KEY_BUILD_VARIANT_PATH = ENV_KEY_BOARD_START + "BUILD.VARIANT.PATH";
-    public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ENV_KEY_BOARD_START + "UPLOAD.USE_1200BPS_TOUCH";
-    public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ENV_KEY_BOARD_START + "UPLOAD.DISABLE_FLUSHING";
-    public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ENV_KEY_BOARD_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
-    public static final String ENV_KEY_UPLOAD_TOOL = ENV_KEY_BOARD_START + "UPLOAD.TOOL";
-    public static final String ENV_KEY_UPLOAD_PROTOCOL = ENV_KEY_BOARD_START + "UPLOAD.PROTOCOL";
-    public static final String ENV_KEY_BUILD_CORE = ENV_KEY_BOARD_START + "BUILD.CORE";
-    public static final String ENV_KEY_BUILD_CORE_PATH = ENV_KEY_BOARD_START + "BUILD.CORE.PATH";
-    public static final String ENV_KEY_USE_ARCHIVER = ENV_KEY_BOARD_START + "BUILD.USE_ARCHIVER";
-    public static final String ENV_KEY_SERIAL_PORT = ENV_KEY_BOARD_START + "SERIAL.PORT";
-    public static final String ENV_KEY_SERIAL_PORT_FILE = ENV_KEY_BOARD_START + "SERIAL.PORT.FILE";
+    public static final String ENV_KEY_BUILD_PATH = ERASE_START + "BUILD.PATH";
+    public static final String ENV_KEY_BUILD_PROJECT_NAME = ERASE_START + "BUILD.PROJECT_NAME";
+    public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "UPLOAD.USE_1200BPS_TOUCH";
+    public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ERASE_START + "UPLOAD.DISABLE_FLUSHING";
+    public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
+    public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
+    public static final String ENV_KEY_NETWORK_PORT = ERASE_START + "NETWORK.PORT";
+    public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "NETWORK.AUTH";
+
+    public static final String ENV_KEY_BUILD_CORE = ERASE_START + "BUILD.CORE";
+
+    public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
+    public static final String ENV_KEY_SERIAL_PORT = ERASE_START + "SERIAL.PORT";
+    public static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "SERIAL.PORT.FILE";
+
+    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ERASE_START
+	    + "JANTJE.REFERENCED_PLATFORM_FILE";
+    public static final String ENV_KEY_JANTJE_REFERENCED_CORE = ERASE_START + "JANTJE.REFERENCED.CORE.FILE";
+    public static final String ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH = ERASE_START + "JANTJE.BUILD.VARIANT.PATH";
+    public static final String ENV_KEY_JANTJE_BUILD_CORE = ERASE_START + "JANTJE.BUILD_CORE";
+    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ERASE_START + "JANTJE.BUILD_VARIANT";
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
-    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ENV_KEY_BOARD_START + "ALT_SIZE_COMMAND";
+    public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ERASE_START + "ALT_SIZE_COMMAND";
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ENV_KEY_JANTJE_START
-	    + "REFERENCED_PLATFORM_FILE";
     public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
@@ -137,8 +157,6 @@ public class Const {
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";
-    public static final String ENV_KEY_JANTJE_BUILD_CORE = ENV_KEY_JANTJE_START + "BUILD_CORE";
-    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ENV_KEY_JANTJE_START + "BUILD_VARIANT";
     public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";
     public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
     //
@@ -156,12 +174,14 @@ public class Const {
     // scope stuff
     public static final short SCOPE_START_DATA = (short) 0xCDAB;// This is the
 								// 205 171 or
-								// -85 -51
-								// flag that
+								// -85 -51 flag
+								// that
 								// indicates
 								// scope data is
 								// following
-    // least significant first 0xCDAB;
+								// least
+								// significant
+								// first 0xCDAB;
     public static final String EXAMPLE_FOLDER_NAME = "examples";
 
     public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
@@ -169,5 +189,54 @@ public class Const {
     public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
     public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
+
+    /**
+     * given a action return the environment key that matches it's protocol
+     * 
+     * @param action
+     * @return the environment variable key to find the protocol
+     */
+    public static String get_ENV_KEY_PROTOCOL(String action) {
+	return ERASE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+    }
+
+    /**
+     * given a action return the environment key that matches it's tool
+     * 
+     * @param action
+     * @return the environment variable key to find the tool
+     */
+    public static String get_ENV_KEY_TOOL(String action) {
+	return ERASE_START + action.toUpperCase() + DOT + ENV_TOOL;
+    }
+
+    /**
+     * given a action return the environment key that matches it's recipe
+     * 
+     * @param action
+     * @return he environment variable key to find the recipe
+     */
+    public static String get_ENV_KEY_RECIPE(String action) {
+	return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
+
+    /**
+     * given a action and a tool return the environment key that matches it's
+     * recipe
+     * 
+     * @param action
+     * @return he environment variable key to find the recipe
+     */
+    public static String get_ENV_KEY_RECIPE(String tool, String action) {
+	return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
+
+    public static String get_Jantje_KEY_PROTOCOL(String action) {
+	return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+    }
+
+    public static String get_Jantje_KEY_RECIPE(String action) {
+	return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+    }
 
 }

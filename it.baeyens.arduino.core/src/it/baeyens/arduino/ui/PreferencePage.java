@@ -39,7 +39,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     public PreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
 	setDescription(Messages.ui_workspace_settings);
-	
+
 	ScopedPreferenceStore preferences = new ScopedPreferenceStore(InstanceScope.INSTANCE, Const.NODE_ARDUINO);
 	preferences.setDefault(Const.KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
 	preferences.setDefault(Const.KEY_AUTO_IMPORT_LIBRARIES, Defaults.AUTO_IMPORT_LIBRARIES);
@@ -103,7 +103,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	Dialog.applyDialogFont(parent);
 	createLine(parent, 4);
 	String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
-		{ "Yes", "YES" }, { "No", "NO" } }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		{ "Yes", Const.TRUE }, { "No", Const.FALSE } }; //$NON-NLS-1$ //$NON-NLS-2$
 	this.buildBeforeUploadOption = new ComboFieldEditor(Const.KEY_BUILD_BEFORE_UPLOAD_OPTION,
 		Messages.ui_build_before_upload, YesNoAskOptions, parent);
 	addField(this.buildBeforeUploadOption);

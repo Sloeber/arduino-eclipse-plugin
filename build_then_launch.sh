@@ -1,7 +1,7 @@
 #!/bin/bash
 
-file_x86="./it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86/opt/eclipseArduino/eclipseArduinoIDE"
-file_x86_64="./it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86_64/opt/eclipseArduino/eclipseArduinoIDE"
+file_x86="./it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86/opt/sloeber/sloeber-ide"
+file_x86_64="./it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/linux/gtk/x86_64/opt/sloeber/sloeber-ide"
 file=""
 
 echo "Trying to build and then launch the Arduino Eclipse IDE"

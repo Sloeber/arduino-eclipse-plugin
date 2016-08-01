@@ -1,4 +1,4 @@
-package processing.app.zeroconf.jmdns;
+package cc.arduino.packages.discoverers;
 
 import java.util.Timer;
 

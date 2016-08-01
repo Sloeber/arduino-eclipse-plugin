@@ -157,7 +157,7 @@ public class PdePreprocessor {
 		// Make sure the file is not procesed by Arduino IDE
 		output = "#ifdef " + Const.DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
 		Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
-			null);
+			null, true);
 	    }
 
 	} finally {

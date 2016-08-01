@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse Plugin - Pre Requisites</title>
+    <title>Sloeber- Pre Requisites</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -37,21 +37,23 @@
         <h1><small>Deciding on  what you want to install</small></h1>
         <a name="top">&nbsp;</a>
       </div>
-      <p>The Arduino Eclipse plugin comes in several flavors and so does the Arduino IDE and eclipse. If this is all new to you it is mighty overwhelming. If you know about the eclipse and Arduino IDE flavors it is all pretty straightforward.<br>
-      However apart from the normal stuff there is also the special little detail stuff that might hit you. This page is to help you avoid the frustration and enjoy the fun.<br></p>
+      <p>Sloeber comes in several flavors and so does the Arduino IDE and eclipse. If this is all new to you it is mighty overwhelming. If you know about the eclipse and Arduino IDE flavors it is all pretty straightforward.<br>
+      However apart from the normal stuff there is also the special little detail stuff that might hit you. This page is to help you avoid the frustration and enjoy the fun.<br>
+      If you just want to get started without hassle; start with the latest stable product.</p>
 
       <div ng-controller="AffixCtrl">
         <div class="col-md-3 col-md-push-9">
           <div class="list-group hidden-print">
             <a href="#" ng-class="tab.welcome" class="list-group-item small" ng-click="select('welcome')">Overview</a>
-            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">V1? V2? Product? Eclipse</a>
+            <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">V1? V2? V3? Product? Eclipse</a>
             <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">V1</a>
             <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">V2</a>
+            <a href="#" ng-class="tab.cc" class="list-group-item small" ng-click="select('cc')">V3</a>
             <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">All os comments</a>
             <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Linux comments</a>
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Mac comments</a>
             <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Windows comments</a>
-            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Library madness</a>
+            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">V2: Library madness</a>
             </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
@@ -59,6 +61,7 @@
           <section ng-show="tab.a" marked ng-include="'fragments/how_to/install_advice.md'"></section>
           <section ng-show="tab.b" marked ng-include="'fragments/install_advice/V1.md'"></section>
           <section ng-show="tab.c" marked ng-include="'fragments/install_advice/V2.md'"></section>
+          <section ng-show="tab.cc" marked ng-include="'fragments/install_advice/V3.md'"></section>
           <section ng-show="tab.d" marked ng-include="'fragments/install_advice/all_os.md'"></section>
           <section ng-show="tab.e" marked ng-include="'fragments/install_advice/linux.md'"></section>
           <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac.md'"></section>

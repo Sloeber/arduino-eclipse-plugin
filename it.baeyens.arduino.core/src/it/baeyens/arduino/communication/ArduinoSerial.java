@@ -19,11 +19,11 @@ import it.baeyens.arduino.common.Const;
 
 public class ArduinoSerial {
 
-    private ArduinoSerial() {}
+    private ArduinoSerial() {
+    }
 
     /**
-     * This method resets arduino based on setting the baud rate. Used for due,
-     * Leonardo and others
+     * This method resets arduino based on setting the baud rate. Used for due, Leonardo and others
      * 
      * @param ComPort
      *            The port to set the baud rate
@@ -37,8 +37,7 @@ public class ArduinoSerial {
 	    serialPort = new Serial(ComPort, baudrate);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_Unable_To_Open_Port + ComPort, e));
 	    return false;
 	}
 	if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
@@ -53,8 +52,7 @@ public class ArduinoSerial {
     }
 
     /**
-     * Waits for a serial port to appear. It is assumed that the default comport
-     * is not available on the system
+     * Waits for a serial port to appear. It is assumed that the default comport is not available on the system
      * 
      * @param originalPorts
      *            The ports available on the system
@@ -62,8 +60,7 @@ public class ArduinoSerial {
      *            The port to return if no new com port is found
      * @return the new comport if found else the defaultComPort
      */
-    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> originalPorts,
-	    String defaultComPort) {
+    public static String wait_for_com_Port_to_appear(MessageConsoleStream console, Vector<String> originalPorts, String defaultComPort) {
 
 	Vector<String> NewPorts;
 	Vector<String> NewPortsCopy;
@@ -112,7 +109,7 @@ public class ArduinoSerial {
 		return defaultComPort;
 	    }
 	    if (NewPortsCopy.isEmpty()) // wait a while before we do the next
-					  // try
+					// try
 	    {
 		try {
 		    Thread.sleep(delayMs);
@@ -123,8 +120,7 @@ public class ArduinoSerial {
 	    }
 	} while (NewPortsCopy.isEmpty());
 
-	console.println(
-		Messages.ArduinoSerial_Comport_reset_took + (numTries * delayMs) + Messages.ArduinoSerial_miliseconds);
+	console.println(Messages.ArduinoSerial_Comport_reset_took + (numTries * delayMs) + Messages.ArduinoSerial_miliseconds);
 	return NewPortsCopy.get(0);
     }
 
@@ -155,9 +151,7 @@ public class ArduinoSerial {
     /**
      * reset the arduino
      * 
-     * This method takes into account all the setting to be able to reset all
-     * different types of arduino If RXTXDisabled is set the method only return
-     * the parameter Comport
+     * This method takes into account all the setting to be able to reset all different types of arduino If RXTXDisabled is set the method only return the parameter Comport
      * 
      * @param project
      *            The project related to the com port to reset
@@ -165,27 +159,31 @@ public class ArduinoSerial {
      *            The name of the com port to reset
      * @return The com port to upload to
      */
-    public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName,
-	    String comPort) {
-	boolean use_1200bps_touch = Common
-		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
-		.equalsIgnoreCase(Const.TRUE);
-	boolean bWaitForUploadPort = Common
-		.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
-		.equalsIgnoreCase(Const.TRUE);
-	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME,
-		Const.EMPTY_STRING);
-	String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_PROTOCOL,
-		Const.EMPTY_STRING);
-	/* Teensy uses halfkay protocol and does not require a reset */
-	if (uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
+    public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName, String comPort) {
+	boolean use_1200bps_touch = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE).equalsIgnoreCase(Const.TRUE);
+	boolean bWaitForUploadPort = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE).equalsIgnoreCase(Const.TRUE);
+	String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME, Const.EMPTY_STRING);
+	String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName, Const.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
+
+	boolean bResetPortForUpload = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE).equalsIgnoreCase(Const.TRUE);
+
+	/*
+	 * Teensy uses halfkay protocol and does not require a reset in boards.txt use Const.ENV_KEY_RESET_BEFORE_UPLOAD=FALSE to disable a reset
+	 */
+	if (!bResetPortForUpload || uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
 	    return comPort;
 	}
-	/* end of Teensy and halfkay */
+	/*
+	 * if the com port can not be found and no specific com port reset method is specified assume it is a network port and do not try to reset
+	 */
+	Vector<String> originalPorts = Serial.list();
+	if (!originalPorts.contains(comPort) && !use_1200bps_touch && !bWaitForUploadPort) {
+	    console.println(Messages.ArduinoSerial_comport_not_found);
+	    return comPort;
+	}
 	if (use_1200bps_touch) {
 	    // Get the list of the current com serial ports
 	    console.println(Messages.ArduinoSerial_Using_12000bps_touch);
-	    Vector<String> originalPorts = Serial.list();
 
 	    if (!reset_Arduino_by_baud_rate(comPort, 1200, 300) /* || */) {
 		console.println(Messages.ArduinoSerial_reset_failed);
@@ -202,8 +200,7 @@ public class ArduinoSerial {
 		}
 		if (bWaitForUploadPort) {
 		    String newComport = wait_for_com_Port_to_appear(console, originalPorts, comPort);
-		    console.println(Messages.ArduinoSerial_Using_comport + newComport
-			    + Messages.ArduinoSerial_From_Now_Onwards);
+		    console.println(Messages.ArduinoSerial_Using_comport + newComport + Messages.ArduinoSerial_From_Now_Onwards);
 		    console.println(Messages.ArduinoSerial_Ending_reset);
 		    return newComport;
 		}
@@ -220,16 +217,14 @@ public class ArduinoSerial {
 	    serialPort = new Serial(comPort, 9600);
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_exception_while_opening_seral_port + comPort, e));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_exception_while_opening_seral_port + comPort, e));
 	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
 	    console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);
 	    return comPort;
 	}
 	if (!serialPort.IsConnected()) {
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		    Messages.ArduinoSerial_unable_to_open_serial_port + comPort, null));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ArduinoSerial_unable_to_open_serial_port + comPort, null));
 	    console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
 	    console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
 	    console.println(Messages.ArduinoSerial_Ending_reset);

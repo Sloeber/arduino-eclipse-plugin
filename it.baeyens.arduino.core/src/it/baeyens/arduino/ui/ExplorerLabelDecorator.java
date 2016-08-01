@@ -2,6 +2,8 @@ package it.baeyens.arduino.ui;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -13,37 +15,34 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 
     @Override
     public void addListener(ILabelProviderListener listener) {
-	// TODO Auto-generated method stub
+	// nothing to do here
 
     }
 
     @Override
     public void dispose() {
-	// TODO Auto-generated method stub
+	// nothing to do here
 
     }
 
     @Override
     public boolean isLabelProperty(Object element, String property) {
-	// TODO Auto-generated method stub
 	return false;
     }
 
     @Override
     public void removeListener(ILabelProviderListener listener) {
-	// TODO Auto-generated method stub
+	// nothing to do here
 
     }
 
     @Override
     public Image decorateImage(Image image, Object element) {
-	// TODO Auto-generated method stub
 	return null;
     }
 
     @Override
     public String decorateText(String text, Object element) {
-	// TODO Auto-generated method stub
 	IProject proj = (IProject) element;
 	try {
 	    if (proj.isOpen()) {
@@ -54,8 +53,8 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 		}
 	    }
 	} catch (CoreException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Decoration failed", e)); //$NON-NLS-1$
 	}
 	return null;
     }

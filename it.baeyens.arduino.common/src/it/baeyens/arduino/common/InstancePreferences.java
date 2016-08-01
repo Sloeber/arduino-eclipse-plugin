@@ -9,11 +9,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -57,9 +54,9 @@ public class InstancePreferences extends Const {
     public static boolean getBuildBeforeUploadOption() {
 
 	switch (getGlobalString(KEY_BUILD_BEFORE_UPLOAD_OPTION, "ASK")) { //$NON-NLS-1$
-	case "YES": //$NON-NLS-1$
+	case Const.TRUE:
 	    return true;
-	case "NO": //$NON-NLS-1$
+	case Const.FALSE:
 	    return false;
 	default:
 	    break;
@@ -73,16 +70,25 @@ public class InstancePreferences extends Const {
 
 	    @Override
 	    public void run() {
-		Shell theShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-		MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-		dialog.setText(Messages.Build_before_upload);
-		dialog.setMessage(Messages.do_you_want_to_build_before_upload);
+
+		MessageDialog dialog = new MessageDialog(null, Messages.Build_before_upload, null,
+			Messages.do_you_want_to_build_before_upload, MessageDialog.QUESTION,
+			new String[] { "Yes", "No", "Always", "Never" }, 0); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
 		switch (dialog.open()) {
-		case SWT.NO:
+		case 0:
+		    this.ret = true;
+		    break;
+		case 1:
 		    this.ret = false;
 		    break;
-		case SWT.YES:
+		case 2:
+		    setGlobalValue(KEY_BUILD_BEFORE_UPLOAD_OPTION, Const.TRUE);
 		    this.ret = true;
+		    break;
+		case 3:
+		    setGlobalValue(KEY_BUILD_BEFORE_UPLOAD_OPTION, Const.FALSE);
+		    this.ret = false;
 		    break;
 		default:
 		    this.ret = false;
@@ -124,8 +130,17 @@ public class InstancePreferences extends Const {
      * 
      * @author Jan Baeyens
      */
-    public static void SetLastUsedUploadPort(String UploadPort) {
+    public static void setLastUsedUploadPort(String UploadPort) {
 	setGlobalValue(KEY_LAST_USED_COM_PORT, UploadPort);
+
+    }
+
+    public static String getLastUsedUploadProtocol() {
+	return getGlobalString(KEY_LAST_USED_UPLOAD_PROTOCOL, DEFAULT);
+    }
+
+    public static void setLastUsedUploadProtocol(String uploadProtocol) {
+	setGlobalValue(KEY_LAST_USED_UPLOAD_PROTOCOL, uploadProtocol);
 
     }
 
@@ -137,7 +152,7 @@ public class InstancePreferences extends Const {
      * 
      * @author Jan Baeyens
      */
-    public static void SetLastUsedArduinoBoard(String ArduinoBoardName) {
+    public static void setLastUsedArduinoBoard(String ArduinoBoardName) {
 	setGlobalValue(KEY_LAST_USED_BOARD, ArduinoBoardName);
     }
 
@@ -215,7 +230,7 @@ public class InstancePreferences extends Const {
      * 
      * @return the index of the last used setting
      */
-    public static int GetLastUsedSerialLineEnd() {
+    public static int getLastUsedSerialLineEnd() {
 	return getGlobalInt(KEY_RXTX_LAST_USED_LINE_INDES);
     }
 
@@ -225,8 +240,8 @@ public class InstancePreferences extends Const {
      * 
      * @return the index of the last used setting
      */
-    public static void SetLastUsedSerialLineEnd(int LastUsedIndex) {
-	setGlobalValue(KEY_RXTX_LAST_USED_LINE_INDES, LastUsedIndex);
+    public static void setLastUsedSerialLineEnd(int index) {
+	setGlobalValue(KEY_RXTX_LAST_USED_LINE_INDES, index);
     }
 
     public static boolean getLastUsedAutoScroll() {

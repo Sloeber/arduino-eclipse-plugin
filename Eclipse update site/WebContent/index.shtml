@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse IDE - Welcome!</title>
+    <title>Arduino Eclipse IDE named Sloeber - Welcome!</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -36,21 +36,18 @@
       <div class="jumbotron">
         <h1>Where <b>Arduino</b> meets <b>Eclipse</b></h1>
         <p>You like <b>Arduino</b>, your projects are getting bigger and you feel the Arduino IDE is not powerful enough?</p>
-        <p>This is about a free, open source, <b>Eclipse</b> IDE to ease your development efforts!<br>
-          This represents a completely free and open Arduino IDE alternative!<br>
+        <p>This is about <b>Sloeber</b> a free, open source, <b>Eclipse</b> IDE to ease your development efforts!<br>
+          This represents a completely <b>free and open</b> Arduino IDE alternative!<br>
           Download the product, unpack and play!<br>
         </p>
-        <h1>V3 Is out. Try it out now!!!</h1>
+        <h1>V3.1 Is out. Try it out now!!!</h1>
         <p>Welcome to a next stage for your Arduino projects!</p>
         <p>
         	<a href="learn.shtml" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>
         	<a href="donate.shtml" class="btn btn-success btn-lg pull-right" role="button">Support me on Patreon!</a>
         </p>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/h-rz2FR3H6Y" frameborder="0" allowfullscreen></iframe>
-        
+        <iframe width="500" height="315" src="https://www.youtube.com/embed/zc2JLbtbI7Q" frameborder="0" allowfullscreen></iframe>
+        <iframe width="500" height="315" src="https://www.youtube.com/embed/QWEvO2DztoI" frameborder="0" allowfullscreen float : right></iframe>
       </div>
       <div class="row">
         <div class="col-md-4">
