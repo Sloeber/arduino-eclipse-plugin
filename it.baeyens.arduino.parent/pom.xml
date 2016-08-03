@@ -1,421 +1,421 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
-	<artifactId>it.baeyens.arduino.parent</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+  <artifactId>it.baeyens.arduino.parent</artifactId>
+  <version>3.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-	<properties>
-		<tycho.version>0.24.0</tycho.version>
-        <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
-	</properties>
+  <properties>
+    <tycho.version>0.24.0</tycho.version>
+    <built.repo.dir>${project.build.directory}/repo</built.repo.dir>
+  </properties>
 
-	<parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <relativePath>org.sonatype.oss:oss-parent</relativePath>
-        <version>9</version>
-	</parent>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <relativePath>org.sonatype.oss:oss-parent</relativePath>
+    <version>9</version>
+  </parent>
 
-	<scm>
-        <connection>scm:git:git://github.com/${github.repo.username}/arduino-eclipse-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:${github.repo.username}/arduino-eclipse-plugin.git</developerConnection>
-        <url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
-    </scm>
+  <scm>
+    <connection>scm:git:git://github.com/${github.repo.username}/arduino-eclipse-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:${github.repo.username}/arduino-eclipse-plugin.git</developerConnection>
+    <url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
+  </scm>
 
-    <!-- Sonatype repos -->
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus snapshot repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
+  <!-- Sonatype repos -->
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus snapshot repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype Nexus release repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <modules>
+    <module>../it.baeyens.arduino.core.nl1</module>
+    <module>../it.baeyens.arduino.feature</module>
+    <module>../it.baeyens.arduino.common</module>
+    <module>../it.baeyens.arduino.core</module>
+    <module>../it.baeyens.arduino.monitor</module>
+    <module>../it.baeyens.arduino.product</module>
+    <module>../it.baeyens.arduino.updatesite</module>
+    <module>../it.baeyens.arduino.application</module>
+    <module>../it.baeyens.cdt.refactor</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <!-- Enable tycho build extension -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-compiler-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <debug>true</debug>
+          <encoding>UTF-8</encoding>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <!-- Enable version management -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-versions-plugin</artifactId>
+        <version>${tycho.version}</version>
+      </plugin>
+      
+      <!-- Maven release with PGP signing -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-packaging-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+            </archive>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <!-- GPG Signing -->
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <configuration>
+              <passphrase>${gpg.passphrase}</passphrase>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>all</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <environment>
+                  <os>win32</os>
+                  <ws>win32</ws>
+                  <arch>x86</arch>
+                </environment>
+                <environment>
+                  <os>win32</os>
+                  <ws>win32</ws>
+                  <arch>x86_64</arch>
+                </environment>
+                <environment>
+                  <os>linux</os>
+                  <ws>gtk</ws>
+                  <arch>x86</arch>
+                </environment>
+                <environment>
+                  <os>linux</os>
+                  <ws>gtk</ws>
+                  <arch>x86_64</arch>
+                </environment>
+                <environment>
+                  <os>macosx</os>
+                  <ws>cocoa</ws>
+                  <arch>x86_64</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>win32</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <environment>
+                  <os>win32</os>
+                  <ws>win32</ws>
+                  <arch>x86</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>win64</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <environment>
+                  <os>win32</os>
+                  <ws>win32</ws>
+                  <arch>x86_64</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+
+    <profile>
+      <id>linux32</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <environment>
+                  <os>linux</os>
+                  <ws>gtk</ws>
+                  <arch>x86</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>linux64</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <environment>
+                  <os>linux</os>
+                  <ws>gtk</ws>
+                  <arch>x86_64</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>mac32</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <!-- Mac -->
+                <environment>
+                  <os>macosx</os>
+                  <ws>cocoa</ws>
+                  <arch>x86</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>mac64</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho.version}</version>
+            <configuration>
+              <!-- configure the p2 target environments for multi-platform build -->
+              <!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi spec -->
+              <environments>
+                <!-- Mac -->
+                <environment>
+                  <os>macosx</os>
+                  <ws>cocoa</ws>
+                  <arch>x86_64</arch>
+                </environment>
+              </environments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>luna</id>
+      <properties>
+        <platform-version-name>luna</platform-version-name>
+      </properties>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+
+      <repositories>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Sonatype Nexus release repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+          <id>platform_luna</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/eclipse/updates/4.4</url>
         </repository>
-    </distributionManagement>
 
-	<modules>
-		<module>../it.baeyens.arduino.core.nl1</module>
-		<module>../it.baeyens.arduino.feature</module>
-		<module>../it.baeyens.arduino.common</module>
-		<module>../it.baeyens.arduino.core</module>
-		<module>../it.baeyens.arduino.monitor</module>
-		<module>../it.baeyens.arduino.product</module>
-		<module>../it.baeyens.arduino.updatesite</module>
-		<module>../it.baeyens.arduino.application</module>
-		<module>../it.baeyens.cdt.refactor</module>
-	</modules>
+        <repository>
+          <id>release-train_luna</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/releases/luna</url>
+        </repository>
+      </repositories>
+    </profile>
 
-	<build>
-		<plugins>
-			<!-- Enable tycho build extension -->
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<extensions>true</extensions>
-			</plugin>
+    <profile>
+      <id>mars</id>
+      <properties>
+        <platform-version-name>mars</platform-version-name>
+      </properties>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
 
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<debug>true</debug>
-					<encoding>UTF-8</encoding>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
+      <repositories>
+        <repository>
+          <id>platform_mars</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/eclipse/updates/4.5</url>
+        </repository>
 
-            <!-- Maven release with PGP signing -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
-                </configuration>
-            </plugin>
+        <repository>
+          <id>release-train_mars</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/releases/mars</url>
+        </repository>
+      </repositories>
+    </profile>
 
-		</plugins>
+    <profile>
+      <id>neon</id>
+      <properties>
+        <platform-version-name>neon</platform-version-name>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-packaging-plugin</artifactId>
-					<version>${tycho.version}</version>
-					<configuration>
-						<archive>
-							<addMavenDescriptor>false</addMavenDescriptor>
-						</archive>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+      <repositories>
+        <repository>
+          <id>platform_neon</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/eclipse/updates/4.6</url>
+        </repository>
 
-	<profiles>
-        <!-- GPG Signing -->
-	    <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-            <property>
-            <name>performRelease</name>
-            <value>true</value>
-            </property>
-            </activation>
-            <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.4</version>
-                    <configuration>
-                        <passphrase>${gpg.passphrase}</passphrase>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-            </build>
-        </profile>
+        <repository>
+          <id>release-train_neon</id>
+          <layout>p2</layout>
+          <url> http://download.eclipse.org/releases/neon</url>
+        </repository>
 
-		<profile>
-			<id>all</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<environment>
-									<os>win32</os>
-									<ws>win32</ws>
-									<arch>x86</arch>
-								</environment>
-								<environment>
-									<os>win32</os>
-									<ws>win32</ws>
-									<arch>x86_64</arch>
-								</environment>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86</arch>
-								</environment>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86_64</arch>
-								</environment>
-								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
-									<arch>x86_64</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+      </repositories>
+    </profile>
+  </profiles>
 
-		<profile>
-			<id>win32</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<environment>
-									<os>win32</os>
-									<ws>win32</ws>
-									<arch>x86</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>win64</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<environment>
-									<os>win32</os>
-									<ws>win32</ws>
-									<arch>x86_64</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+  <repositories>
+    <repository>
+      <id>nebula</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/technology/nebula/snapshot</url>
+    </repository>
+  </repositories>
 
-
-		<profile>
-			<id>linux32</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>linux64</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86_64</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>mac32</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<!-- Mac -->
-								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
-									<arch>x86</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>mac64</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
-								spec -->
-							<environments>
-								<!-- Mac -->
-								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
-									<arch>x86_64</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>luna</id>
-            <properties>
-                <platform-version-name>luna</platform-version-name>
-            </properties>
-            <activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>platform_luna</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.4</url>
-				</repository>
-
-				<repository>
-					<id>release-train_luna</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/luna</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>mars</id>
-            <properties>
-                <platform-version-name>mars</platform-version-name>
-            </properties>
-            <activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>platform_mars</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.5</url>
-				</repository>
-
-				<repository>
-					<id>release-train_mars</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/mars</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>neon</id>
-            <properties>
-                <platform-version-name>neon</platform-version-name>
-            </properties>
-            <activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>platform_neon</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.6</url>
-				</repository>
-
-				<repository>
-					<id>release-train_neon</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/neon</url>
-				</repository>
-				
-			</repositories>	
-		</profile>
-	</profiles>
-
-	<repositories>		
-		<repository>
-			<id>nebula</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/nebula/snapshot</url>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>tycho-staged</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-1004/</url>
-		</pluginRepository>
-	</pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>tycho-staged</id>
+      <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-1004/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
 

@@ -157,21 +157,27 @@ public class UploadSketchWrapper {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 	    boolean WeStoppedTheComPort = false;
-	    String myComPort = Const.EMPTY_STRING;
+	    String comPort = Const.EMPTY_STRING;
 	    try {
-		monitor.beginTask(Messages.Upload_uploading + " \"" + this.myProject.getName() + "\" " + this.myNAmeTag, //$NON-NLS-1$//$NON-NLS-2$
-			2);
-		myComPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
-			Const.ENV_KEY_JANTJE_COM_PORT, ""); //$NON-NLS-1$
+		String message = Messages.Upload_uploading;
+		message += " \"" + this.myProject.getName() + "\" "; //$NON-NLS-1$//$NON-NLS-2$
+		message += this.myNAmeTag + Const.SPACE;
+		// message+= this.+Const.SPACE;
+		monitor.beginTask(message, 2);
+		comPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
+			Const.ENV_KEY_JANTJE_COM_PORT, Const.EMPTY_STRING);
+		String programmer = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
+			Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.DEFAULT);
 
 		try {
-		    WeStoppedTheComPort = Common.StopSerialMonitor(myComPort);
+		    WeStoppedTheComPort = Common.StopSerialMonitor(comPort);
 		} catch (Exception e) {
 		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e));
 		}
 		IFile hexFile = this.myProject
 			.getFile(new Path(this.myCConf).append(this.myProject.getName() + ".hex")); //$NON-NLS-1$
-		if (this.myUploader.uploadUsingPreferences(hexFile, false, monitor)) {
+		if (this.myUploader.uploadUsingPreferences(hexFile, !programmer.equalsIgnoreCase(Const.DEFAULT),
+			monitor)) {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_Done);
 		} else {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_failed_upload);
@@ -182,7 +188,7 @@ public class UploadSketchWrapper {
 	    } finally {
 		try {
 		    if (WeStoppedTheComPort) {
-			Common.StartSerialMonitor(myComPort);
+			Common.StartSerialMonitor(comPort);
 		    }
 		} catch (Exception e) {
 		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,

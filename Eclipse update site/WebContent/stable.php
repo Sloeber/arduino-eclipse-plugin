@@ -1,6 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "3.0";
+$version = "3.1";
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];
@@ -56,10 +56,8 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
 
-        <?php 
-        if ($os==lin)
-        	echo "<p><strong>The product uses 100% CPU on Ubunto 16.04 uses 100%. If you need to run on this OS installneon and the plugin version.</strong></p>";
-        ?>
+
+        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php 
         listFiles("V" . $version . '_' . $os);?>
@@ -78,7 +76,7 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 			</div>
 		</div>
 		        <div class="row">
-        <p>Watch these movies to get a quick start:</p>
+        <p>Watch these V3.0 new and noteworthy video's to get a quick start:</p>
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>

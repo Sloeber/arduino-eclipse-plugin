@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse Plugin - Pre Requisites</title>
+    <title>Sloeber - getting started</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -34,10 +34,10 @@
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1><small>Understanding the components   to prepare your environment</small></h1>
+        <h1><small>Understanding the components to prepare your environment</small></h1>
         <a name="top">&nbsp;</a>
       </div>
-      <p>The Arduino Eclipse plugin is based on existing software and technologies, as such it has a set of requirements that must be met in order to set it up: please read carefully the following sections in order to avoid long troubleshoting sessions.</p>
+      <p>The Arduino Eclipse plugin named Sloeber is based on existing software and technologies, as such it has a set of requirements that must be met in order to set it up: please read carefully the following sections in order to avoid long troubleshoting sessions.</p>
 
       <div ng-controller="AffixCtrl">
         <div class="col-md-3 col-md-push-9">
@@ -50,7 +50,7 @@
             <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Arduino Eclipse plugin</a>
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Make</a>
             <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Toolchain</a>
-            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Avr Dude</a>
+            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">AvrDude/uploader</a>
           </div>
         </div>
         <div class="col-md-9 col-md-pull-3">

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="Roberto Lo Giacco">
-<link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+<link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
 <title>Arduino Eclipse IDE - Archive ver 2.3</title>
 

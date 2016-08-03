@@ -818,7 +818,7 @@ public class Helpers extends Common {
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
-	Programmers localProgrammers = Programmers.fromBoards(boardFileName);
+	Programmers localProgrammers[] = Programmers.fromBoards(boardFileName);
 
 	String boardID = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARD_ID, EMPTY_STRING);
 	String architecture = Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID,
@@ -870,8 +870,10 @@ public class Helpers extends Common {
 
 	// Then add the programmers file
 	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
-	setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, localProgrammers,
-		localProgrammers.getIDFromName(programmer), false);
+	for (Programmers curProgrammer : localProgrammers) {
+	    setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, curProgrammer,
+		    curProgrammer.getIDFromName(programmer), false);
+	}
 
 	// add the stuff that comes with the plugin that is marked as post
 	setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPostProcessingPlatformTxt);
@@ -1096,7 +1098,7 @@ public class Helpers extends Common {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
 	}
 
-	String objcopyCommand = "";
+	String objcopyCommand = Const.EMPTY_STRING;
 	String objcopyCommandLinker = objcopyCommand;
 
 	// I'm looping through the set of variables to fix some things up
@@ -1126,16 +1128,16 @@ public class Helpers extends Common {
 		    }
 		    setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 		}
-		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) {
+		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) { //$NON-NLS-1$ //$NON-NLS-2$
 		    objcopyCommand += objcopyCommandLinker + makeEnvironmentVar(name);
-		    objcopyCommandLinker = "\n\t";
+		    objcopyCommandLinker = "\n\t"; //$NON-NLS-1$
 		}
 	    }
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 	}
-	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand);
+	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand); //$NON-NLS-1$
 
 	// link build.core to jantje.build.core
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE,
