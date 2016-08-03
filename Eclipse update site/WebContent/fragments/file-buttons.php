@@ -24,12 +24,19 @@ function listFiles($prefix) {
 	closedir ( $dir );
 	$files = array_filter ( $files, "filter" );
 	sort ( $files );
+	$lines = array (
+			"32" => "",
+			"64" => ""
+	);
 	foreach ( $files as &$file ) {
 		$curfile = basename ( $file );
-		echo '<div class="text-center col-md-4 col-md-offset-4">';
-		echo '  <a href="http://eclipse.baeyens.it/download/product/' . $curfile . '" class="btn btn-success btn-lg text-center">Download <b>' . my_bitness ( $curfile, $prefix ) . ' bits</b> Bundle <i class="glyphicon glyphicon-cloud-download"></i></a>';
-		echo '</div>';
+		$bitness=my_bitness ( $curfile, $prefix );
+		$lines[$bitness]= '<div class="text-center col-md-4 col-md-offset-4">';
+		$lines[$bitness]= $lines[$bitness] . '  <a href="http://eclipse.baeyens.it/download/product/' . $curfile . '" class="btn btn-success btn-lg text-center">Download <b>' . $bitness . ' bits</b> Bundle <i class="glyphicon glyphicon-cloud-download"></i></a>';
+		$lines[$bitness]= $lines[$bitness] . '</div>';
 	}
+	echo $lines [ "64" ];
+	echo $lines [ "32" ];
 }
 function filter($file) {
 	global $filter;
