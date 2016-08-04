@@ -97,7 +97,7 @@ public class Activator extends AbstractUIPlugin {
 			} catch (BackingStoreException e) {
 			    // this should not happen
 			}
-			PleaseHelp.DoHelp(HELP_LOC);
+			PleaseHelp.doHelp(HELP_LOC);
 			return Status.OK_STATUS; // once per run will be
 						 // sufficient
 		}

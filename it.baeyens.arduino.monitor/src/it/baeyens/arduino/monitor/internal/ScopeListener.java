@@ -69,7 +69,7 @@ public class ScopeListener implements MessageConsumer {
 	    return;
 	if (this.myEndPosition + newData.length >= this.myReceivedScopeData.capacity()) {
 	    this.myEndPosition = 0;
-	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.SerialListener_scope_skipping_data));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.serialListenerScopeSkippingData));
 	} else {
 	    this.myReceivedScopeData.position(this.myEndPosition);
 	    this.myReceivedScopeData.put(newData, 0, newData.length);
@@ -81,7 +81,6 @@ public class ScopeListener implements MessageConsumer {
 
     @Override
     public void dispose() {
-	// myScope.removeStackListener(0, stackAdapter);
 	this.myScope = null;
 	this.myReceivedScopeData = null;
     }
@@ -126,8 +125,8 @@ public class ScopeListener implements MessageConsumer {
 		int bytestoRead = this.myReceivedScopeData.getShort(scannnedDataPointer);
 		if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
 		    Common.log(
-			    new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.SerialListener_error_input_part_1
-				    + bytestoRead / 2 + ' ' + Messages.SerialListener_error_input_part_2));
+			    new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.serialListenerErrorInputPart1
+				    + bytestoRead / 2 + ' ' + Messages.serialListenerErrorInputPart2));
 		} else {
 		    if (bytestoRead + 2 + scannnedDataPointer < this.myEndPosition) {
 			// all data is available
@@ -150,7 +149,7 @@ public class ScopeListener implements MessageConsumer {
 		this.myReceivedScopeData.put(curByte, this.myReceivedScopeData.get(curByte + lastFoundData));
 	    } catch (IndexOutOfBoundsException e) {
 		Common.log(
-			new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.ScopeListener_buffer_overflow, e));
+			new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.scopeListenerBufferOverflow, e));
 	    }
 
 	}
