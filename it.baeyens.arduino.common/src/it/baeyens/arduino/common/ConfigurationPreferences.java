@@ -1,10 +1,15 @@
 package it.baeyens.arduino.common;
 
 import java.io.File;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -19,7 +24,8 @@ public class ConfigurationPreferences {
 
     static private String stringSplitter = "\n";//$NON-NLS-1$
 
-    private ConfigurationPreferences() {}
+    private ConfigurationPreferences() {
+    }
 
     private static String getGlobalString(String key, String defaultValue) {
 	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
@@ -101,21 +107,61 @@ public class ConfigurationPreferences {
 	return getInstallationPath().append(Const.POST_PROCESSING_BOARDS_TXT).toFile();
     }
 
-    public static String getBoardURLs() {
-	return getGlobalString(Const.KEY_MANAGER_BOARD_URLS, Defaults.PLATFORM_URLS);
+    public static String getJsonURLs() {
+	return getGlobalString(Const.KEY_MANAGER_JSON_URLS, Defaults.JSON_URLS);
     }
 
-    public static String[] getBoardURLList() {
-	return getBoardURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
+    public static String[] getJsonURLList() {
+	return getJsonURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
     }
 
-    public static void setBoardURLs(String urls) {
-	setGlobalString(Const.KEY_MANAGER_BOARD_URLS, urls);
+    public static void setJsonURLs(String urls) {
+	setGlobalString(Const.KEY_MANAGER_JSON_URLS, urls);
     }
 
     public static Path getPathExtensionPath() {
 	return new Path(getInstallationPath().append("tools/make").toString()); //$NON-NLS-1$
 
+    }
+
+    private static String systemHash = null;
+
+    /**
+     * Make a unique hashKey based on system parameters so we can identify users
+     * To make thekey the mac adresses of the network cards are used
+     * 
+     * @return a unique key identyfying the system
+     */
+    public static String getSystemHash() {
+	if (systemHash != null) {
+	    return systemHash;
+	}
+	Collection<String> macs = new TreeSet<>();
+	Enumeration<NetworkInterface> inters;
+	try {
+	    inters = NetworkInterface.getNetworkInterfaces();
+
+	    while (inters.hasMoreElements()) {
+		NetworkInterface inter = inters.nextElement();
+		if (inter.getHardwareAddress() == null) {
+		    continue;
+		}
+		if (inter.isVirtual()) {
+		    continue;
+		}
+		byte curmac[] = inter.getHardwareAddress();
+		StringBuilder b = new StringBuilder();
+		for (byte curbyte : curmac) {
+		    b.append(String.format("%02X", new Byte(curbyte))); //$NON-NLS-1$
+		}
+		macs.add(b.toString());
+	    }
+	} catch (SocketException e) {
+	    // ignore
+	}
+	Integer hascode = new Integer(macs.toString().hashCode());
+	systemHash = hascode.toString();
+	return systemHash;
     }
 
 }

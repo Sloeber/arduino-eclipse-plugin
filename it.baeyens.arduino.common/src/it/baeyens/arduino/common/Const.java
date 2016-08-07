@@ -62,7 +62,7 @@ public class Const {
     public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
     public static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation";
-    public static final String KEY_MANAGER_BOARD_URLS = "Arduino Manager board Urls";
+    public static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls";
 
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";

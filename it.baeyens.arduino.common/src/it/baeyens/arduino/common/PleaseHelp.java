@@ -51,11 +51,8 @@ public class PleaseHelp extends Dialog {
 	this.browser.setLayoutData(data);
 
 	this.browser.addProgressListener(new ProgressListener() {
-	    // @SuppressWarnings("synthetic-access")
 	    @Override
 	    public void changed(ProgressEvent event) {
-		// ph.getButton(IDialogConstants.OK_ID).setEnabled(false);
-		// ph.getButton(IDialogConstants.CANCEL_ID).setEnabled(false);
 	    }
 
 	    @Override

@@ -63,7 +63,7 @@ public class Manager {
     }
 
     private static void internalLoadIndices() {
-	String[] boardUrls = ConfigurationPreferences.getBoardURLList();
+	String[] boardUrls = ConfigurationPreferences.getJsonURLList();
 	packageIndices = new ArrayList<>(boardUrls.length);
 	for (String boardUrl : boardUrls) {
 	    loadPackageIndex(boardUrl, false);
@@ -245,7 +245,7 @@ public class Manager {
 
     static public List<PackageIndex> getPackageIndices() {
 	if (packageIndices == null) {
-	    String[] boardUrls = ConfigurationPreferences.getBoardURLList();
+	    String[] boardUrls = ConfigurationPreferences.getJsonURLList();
 	    packageIndices = new ArrayList<>(boardUrls.length);
 	    for (String boardUrl : boardUrls) {
 		loadPackageIndex(boardUrl, false);

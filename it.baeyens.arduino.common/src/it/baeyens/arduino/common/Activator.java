@@ -90,23 +90,22 @@ public class Activator extends AbstractUIPlugin {
 		int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
 			+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
 		int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-		if ((curFsiStatus - lastFsiStatus) > 50 && isInternetReachable()) {
-			myScope.putInt(LOCAL_FLAG, curFsiStatus);
-			try {
-			    myScope.flush();
-			} catch (BackingStoreException e) {
-			    // this should not happen
-			}
-			PleaseHelp.doHelp(HELP_LOC);
-			return Status.OK_STATUS; // once per run will be
-						 // sufficient
+		if ((curFsiStatus - lastFsiStatus) >= 0 && isInternetReachable()) {
+		    myScope.putInt(LOCAL_FLAG, curFsiStatus);
+		    try {
+			myScope.flush();
+		    } catch (BackingStoreException e) {
+			// this should not happen
+		    }
+		    PleaseHelp.doHelp(HELP_LOC);
+		    return Status.OK_STATUS;
 		}
 		remind();
 		return Status.OK_STATUS;
 	    }
 	};
 	job.setPriority(Job.DECORATE);
-	job.schedule(10000);
+	job.schedule(60000);
     }
 
     /*
@@ -125,11 +124,12 @@ public class Activator extends AbstractUIPlugin {
     }
 
     static boolean isInternetReachable() {
+	boolean ret = false;
 	HttpURLConnection urlConnect = null;
 
 	try {
 	    // make a URL to a known source
-	    URL url = new URL(HELP_LOC);
+	    URL url = new URL(HELP_LOC + "?systemhash=" + ConfigurationPreferences.getSystemHash());//$NON-NLS-1$
 	    // open a connection to that source
 	    urlConnect = (HttpURLConnection) url.openConnection();
 	    // trying to retrieve data from the source. If there is no
@@ -140,10 +140,16 @@ public class Activator extends AbstractUIPlugin {
 	} catch (IOException e) {
 	    return false;
 	} finally {
-	    // cleanup
-	    if (urlConnect != null)
+	    if (urlConnect != null) {
+		try {
+		    ret = (urlConnect.getResponseCode() != 404);
+		} catch (IOException e) {
+		    // ignore
+		}
 		urlConnect.disconnect();
+	    }
+
 	}
-	return true;
+	return ret;
     }
 }

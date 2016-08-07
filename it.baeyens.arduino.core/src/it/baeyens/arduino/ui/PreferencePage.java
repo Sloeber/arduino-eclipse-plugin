@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Defaults;
 
@@ -118,6 +119,17 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
 	addField(this.automaticallyImportLibrariesOption);
 	createLine(parent, 4);
+	Label label = new Label(parent, SWT.LEFT);
+	label.setText("Your HashKey: " + ConfigurationPreferences.getSystemHash());
+	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
+
+	// StringFieldEditor hashKeyShower = new StringFieldEditor("Your
+	// HashKey", "Your HashKey", parent);
+	//
+	// addField(hashKeyShower);
+	// String text = ;
+	// hashKeyShower.getTextControl(parent).setText(text);
+	// // hashKeyShower. .setEnabled(false, parent);
 
     }
 

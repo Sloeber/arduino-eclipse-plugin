@@ -49,7 +49,7 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 
     @Override
     public boolean performOk() {
-	this.oldSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardURLList()));
+	this.oldSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
 	this.urlsText.store();
 	deleteJsonFilesAsNeeded();
 
@@ -59,7 +59,7 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 
     private void deleteJsonFilesAsNeeded() {
 	Set<String> toDeleteJsons = this.oldSelectedJsons;
-	Set<String> newSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardURLList()));
+	Set<String> newSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
 	if (toDeleteJsons == null) {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    "Previous jason files are null. This should not happen.", null)); //$NON-NLS-1$
@@ -85,8 +85,8 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
     @Override
     protected void performDefaults() {
 	super.performDefaults();
-	this.urlsText.setStringValue(Defaults.PLATFORM_URLS);
-	ConfigurationPreferences.setBoardURLs(Defaults.PLATFORM_URLS);
+	this.urlsText.setStringValue(Defaults.JSON_URLS);
+	ConfigurationPreferences.setJsonURLs(Defaults.JSON_URLS);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 	final Composite parent = getFieldEditorParent();
 	// Composite control = new Composite(parent, SWT.NONE);
 
-	this.urlsText = new MultiLineTextFieldEditor(Const.KEY_MANAGER_BOARD_URLS,
+	this.urlsText = new MultiLineTextFieldEditor(Const.KEY_MANAGER_JSON_URLS,
 		Messages.ui_url_for_package_index_file, parent);
 	addField(this.urlsText);
 
