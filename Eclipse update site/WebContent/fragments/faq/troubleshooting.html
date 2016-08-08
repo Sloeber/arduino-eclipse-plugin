@@ -66,6 +66,8 @@
   <p>The compiler is responsible for the build and the indexer is responsible for the editing experience.</p>
 
 <p>The bugs (the red animals in the code) you see in the code can be found by any of the 2.</p>
+<p>To start the compiler to remove compiler found issues (That are the once you also see in the console view) simply verify the sketch.</p>
+<p>To force the indexer to "reconsider" the bugs. right click the project and select index->rebuild.</p>
 <p>In older versions of Eclipse the indexer behaves weird and sometimes doesn't find declarations that it knows. In that case you have the bug icon without actually having a bug (in other words the code compiles ok but the indexer thinks it will not).</p>
 <p>In Indigo the following actions can solve the serial problem. (note I have been thinking other solutions solved the problem)</p>
 <br>Setting the preference windows-&gt;preferences-&gt;C/C++-&gt;indexer-&gt;Files to index upfront . Add arduino.h and or WProgram.h including the full path. With me it currently states &quot;D:/arduino-1.0.1/hardware/arduino/cores/arduino/Arduino.h,cstdarg, stdarg.h, stddef.h, sys/resource.h, ctime, sys/types.h, signal.h, cstdio&quot;.<br><br>
