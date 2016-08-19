@@ -13,7 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import it.baeyens.arduino.common.Common;
@@ -21,11 +23,14 @@ import it.baeyens.arduino.common.Const;
 
 /**
  * TxtFile is a class that hides the Arduino *.txt file processing <br/>
- * The is based on the code of Trump at https://github.com/Trump211/ArduinoEclipsePlugin and later renamed from Boards to TxtFile and adapted as
- * needed.
+ * The is based on the code of Trump at
+ * https://github.com/Trump211/ArduinoEclipsePlugin and later renamed from
+ * Boards to TxtFile and adapted as needed.
  * 
- * This class is at the root of processing the boards.txt platform.txt and programmers.txt from the Arduino eco system As this feature is available
- * most other configuration stuff is put in files with the same setup and processed by this class
+ * This class is at the root of processing the boards.txt platform.txt and
+ * programmers.txt from the Arduino eco system As this feature is available most
+ * other configuration stuff is put in files with the same setup and processed
+ * by this class
  * 
  * @author Jan Baeyens and trump
  * 
@@ -35,7 +40,9 @@ public class TxtFile {
     private static final String DOT = Const.DOT;
     private static final String MENU = Const.MENU;
     Map<String, String> settings = null;
-    private LinkedHashMap<String, Map<String, String>> fileContent = new LinkedHashMap<>(); // all the data
+    private LinkedHashMap<String, Map<String, String>> fileContent = new LinkedHashMap<>(); // all
+											    // the
+											    // data
 
     public TxtFile(File boardsFileName) {
 	LoadBoardsFile(boardsFileName);
@@ -78,7 +85,8 @@ public class TxtFile {
     }
 
     /**
-     * Get all the acceptable values for a option for a board The outcome of this method can be used to fill a combobox
+     * Get all the acceptable values for a option for a board The outcome of
+     * this method can be used to fill a combobox
      * 
      * @param menu
      *            the name of a menu not the ide
@@ -125,12 +133,15 @@ public class TxtFile {
     }
 
     /**
-     * getAllNames returns all the "names" that are in the currently loaded *.txt file. The toaddNames are added to the end result toaddNames should
+     * getAllNames returns all the "names" that are in the currently loaded
+     * *.txt file. The toaddNames are added to the end result toaddNames should
      * be a string array and can not be null
      * 
-     * For a biards.txt file that means all the board names. For a programmers.txt file that means all the programmers
+     * For a biards.txt file that means all the board names. For a
+     * programmers.txt file that means all the programmers
      * 
-     * @return an empty list if no board file is loaded. In all other cases it returns the list of boards found in the file
+     * @return an empty list if no board file is loaded. In all other cases it
+     *         returns the list of boards found in the file
      * @author Trump
      * 
      */
@@ -198,14 +209,15 @@ public class TxtFile {
 	    }
 
 	} catch (Exception e) {
-	    Common.log(
-		    new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Boards_Failed_to_read_boards + this.mLastLoadedTxtFile.getName(), e));
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+		    Messages.Boards_Failed_to_read_boards + this.mLastLoadedTxtFile.getName(), e));
 	}
 	return true;
     }
 
     /**
-     * Given a nice name look for the ID The assumption is that the txt file contains a line like ID.name=[nice name] Given this this method returns
+     * Given a nice name look for the ID The assumption is that the txt file
+     * contains a line like ID.name=[nice name] Given this this method returns
      * ID when given [nice name]
      */
     public String getIDFromName(String name) {
@@ -250,7 +262,8 @@ public class TxtFile {
     }
 
     /**
-     * Loads an input stream into an array of strings representing each line of the input stream
+     * Loads an input stream into an array of strings representing each line of
+     * the input stream
      * 
      * @param input
      *            the input stream to load
@@ -352,5 +365,42 @@ public class TxtFile {
 	}
 	// TODO implement 1.5.4 way
 	return Messages.Boards_Get_menu_item_name_from_id_did_not_find + boardID + ' ' + menuID + ' ' + menuItemID;
+    }
+
+    public String getNameFromID(String myBoardID) {
+	Map<String, String> boardSection = getSection(myBoardID);
+	if (boardSection == null) {
+	    return Const.EMPTY_STRING;
+	}
+	return boardSection.get("name"); //$NON-NLS-1$
+    }
+
+    /*
+     * Returns the package name based on the boardsfile name Caters for the
+     * packages (with version number and for the old way
+     */
+    public String getPackage() {
+	IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
+	String architecture = platformFile.removeLastSegments(1).lastSegment();
+	if (architecture.contains(Const.DOT)) { // This is a version number so
+						// package
+	    return platformFile.removeLastSegments(4).lastSegment();
+	}
+	return platformFile.removeLastSegments(2).lastSegment();
+    }
+
+    /*
+     * Returns the architecture based on the platfor file name Caters for the
+     * packages (with version number and for the old way
+     */
+    public String getArchitecture() {
+
+	IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
+	String architecture = platformFile.removeLastSegments(1).lastSegment();
+	if (architecture.contains(Const.DOT)) { // This is a version number so
+						// package
+	    architecture = platformFile.removeLastSegments(2).lastSegment();
+	}
+	return architecture;
     }
 }

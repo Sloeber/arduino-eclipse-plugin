@@ -1,12 +1,8 @@
 package it.baeyens.arduino.ui;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -19,20 +15,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import it.baeyens.arduino.common.Const;
-import it.baeyens.arduino.common.InstancePreferences;
-import it.baeyens.arduino.tools.Helpers;
-import it.baeyens.arduino.tools.Stream;
+import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CodeDescriptor.CodeTypes;
 
 public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
     final Shell shell = new Shell();
-    String[] codeOptions = { Messages.ui_new_sketch_default_ino, Messages.ui_new_sketch_default_cpp,
-	    Messages.ui_new_sketch_custom_template, Messages.ui_new_sketch_sample_sketch };
-    private static final int defaultIno = 0;
-    private static final int defaultCPP = 1;
-    private static final int CustomTemplate = 2;
-    private static final int sample = 3;
     Composite mParentComposite = null;
 
     protected LabelCombo mCodeSourceOptionsCombo; // ComboBox Containing all the
@@ -42,13 +30,14 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     protected SampleSelector mExampleEditor = null;
     protected Button mCheckBoxUseCurrentLinkSample;
     private String platformPath = null;
+    private CodeDescriptor myCodedescriptor = CodeDescriptor.createLastUsed();
 
     public void setPlatformPath(String newPlatformPath) {
 	if (newPlatformPath.equals(this.platformPath))
 	    return; // this is needed as setting the examples will remove the
 		    // selection
 	this.platformPath = newPlatformPath;
-	AddAllExamples();
+	AddAllExamples(this.myCodedescriptor.getMySamples());
 	validatePage();
     }
 
@@ -81,11 +70,10 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	    }
 	};
-	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4,
-		Const.EMPTY_STRING, true);
+	this.mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4, true);
 	this.mCodeSourceOptionsCombo.addListener(comboListener);
 
-	this.mCodeSourceOptionsCombo.setItems(this.codeOptions);
+	this.mCodeSourceOptionsCombo.setItems(CodeDescriptor.getCodeTypeDescriptions());
 
 	this.mTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, //$NON-NLS-1$
 		composite);
@@ -129,7 +117,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
      *       Checkbox settings
      */
     protected void SetControls() {
-	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
+	switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
 	case defaultIno:
 	    this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 	    this.mExampleEditor.setEnabled(false);
@@ -160,7 +148,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
      *       create the project. If so enable the finish button.
      */
     protected void validatePage() {
-	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
+	switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
 	case defaultIno:
 	case defaultCPP:
 	    setPageComplete(true);// default always works
@@ -193,70 +181,33 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	// settings are saved when the files are created and the use this as
 	// default flag is set
 	//
-	this.mTemplateFolderEditor.setStringValue(InstancePreferences.getLastTemplateFolderName());
-	this.mCodeSourceOptionsCombo.mCombo.select(InstancePreferences.getLastUsedDefaultSketchSelection());
+	this.mTemplateFolderEditor.setStringValue(this.myCodedescriptor.getTemPlateFoldername().toString());
+	this.mCodeSourceOptionsCombo.mCombo.select(this.myCodedescriptor.getCodeType().ordinal());
     }
 
-    public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
-
-	InstancePreferences.setLastTemplateFolderName(this.mTemplateFolderEditor.getStringValue());
-	InstancePreferences.setLastUsedDefaultSketchSelection(this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex());
-	this.mExampleEditor.saveLastUsedExamples();
-
-	String Include = "Arduino.h"; //$NON-NLS-1$
-
-	//
-	// Create the source files (sketch.cpp and sketch.h)
-	//
-	switch (this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()) {
-	case defaultIno:
-	    Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.ino", false), monitor, //$NON-NLS-1$
-		    false);
-	    break;
-	case defaultCPP:
-	    Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.cpp", false), monitor, //$NON-NLS-1$
-		    false);
-	    Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h", false), monitor, false); //$NON-NLS-1$
-	    break;
-	case CustomTemplate:
-	    Path folderName = new Path(this.mTemplateFolderEditor.getStringValue());
-	    File cppTemplateFile = folderName.append("sketch.cpp").toFile(); //$NON-NLS-1$
-	    File hTemplateFile = folderName.append("sketch.h").toFile(); //$NON-NLS-1$
-	    File inoFile = folderName.append("sketch.ino").toFile(); //$NON-NLS-1$
-	    if (inoFile.exists()) {
-		Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor, false);
-	    } else {
-		Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true), monitor,
-			false);
-		Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
-			Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor,
-			false);
-	    }
-	    break;
-	case sample:
-	    try {
-		boolean MakeLinks = this.mCheckBoxUseCurrentLinkSample.getSelection();
-		this.mExampleEditor.CopySelectedExamples(project, new Path("/"), MakeLinks); //$NON-NLS-1$
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
-	    break;
-	default:
-
-	    break;
-	}
-    }
-
-    public void AddAllExamples() {
+    public void AddAllExamples(Path[] paths) {
 	if (this.mExampleEditor != null) {
-	    this.mExampleEditor.AddAllExamples(this.platformPath);
+	    this.mExampleEditor.AddAllExamples(this.platformPath, paths);
 	}
 
+    }
+
+    public CodeDescriptor getCodeDescription() {
+
+	switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
+	case defaultIno:
+	    return CodeDescriptor.createDefaultIno();
+	case defaultCPP:
+	    return CodeDescriptor.createDefaultCPP();
+	case CustomTemplate:
+	    return CodeDescriptor.createCustomTemplate(new Path(this.mTemplateFolderEditor.getStringValue()));
+	case sample:
+	    Path sampleFolders[] = this.mExampleEditor.GetSampleFolders();
+	    boolean link = this.mExampleEditor.isSampleSelected();
+	    return CodeDescriptor.createSample(link, sampleFolders);
+	}
+	// make sure this never happens
+	return null;
     }
 
 }

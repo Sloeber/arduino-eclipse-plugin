@@ -147,7 +147,7 @@ public class Const {
     public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
     public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
     public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
-    public static final String ENV_KEY_JANTJE_COM_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
+    public static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
     public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
     public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
@@ -189,8 +189,10 @@ public class Const {
     public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
     public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
+    public static final String INSTALLER_JOB_NAME = "Arduino installer job";
 
-    protected Const() {}
+    protected Const() {
+    }
 
     /**
      * given a action return the environment key that matches it's protocol

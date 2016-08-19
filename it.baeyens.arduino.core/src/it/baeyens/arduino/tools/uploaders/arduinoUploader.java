@@ -47,7 +47,7 @@ public class arduinoUploader implements IRealUpload {
 	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
 
 	try {
-	    MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_COM_PORT, configurationDescription, true).getValue();
+	    MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, configurationDescription, true).getValue();
 	    boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true)
 		    .getValue();
 	    needsPassword = envManager.getVariable(Const.ENV_KEY_NETWORK_AUTH, configurationDescription, true)
@@ -60,7 +60,7 @@ public class arduinoUploader implements IRealUpload {
 		    this.mycConf, MComPort);
 	}
 
-	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_COM_PORT, NewSerialPort);
+	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, NewSerialPort);
 	contribEnv.addVariable(var, configurationDescription);
 	var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE,
 		NewSerialPort.replace("/dev/", Const.EMPTY_STRING)); //$NON-NLS-1$

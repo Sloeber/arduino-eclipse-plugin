@@ -63,7 +63,6 @@ import cc.arduino.packages.discoverers.NetworkDiscovery;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
-import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.managers.ArduinoPlatform;
 import it.baeyens.arduino.managers.Manager;
 import it.baeyens.arduino.managers.ToolDependency;
@@ -191,11 +190,8 @@ public class Helpers extends Common {
 	try {
 	    mngr.setProjectDescription(project, projectDescription, true, null);
 	} catch (CoreException e) {
-	    Common.log(
-		    new Status(
-			    IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Could_not_add_folder
-				    + IncludePath.toOSString() + Messages.Helpers_To_include_path + project.getName(),
-			    e));
+	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Could_not_add_folder
+		    + IncludePath.toOSString() + Messages.Helpers_To_include_path + project.getName(), e));
 	}
 
     }
@@ -386,7 +382,7 @@ public class Helpers extends Common {
 		    searchFiles(f, Hardwarelists, Filename, depth - 1);
 		} else if (f.getName().equals(Filename)) {
 		    try {
-			Hardwarelists.add(f.getCanonicalPath());
+			Hardwarelists.add(new Path(f.getCanonicalPath()).toString());
 		    } catch (IOException e) {
 			// e.printStackTrace();
 		    }
@@ -525,7 +521,7 @@ public class Helpers extends Common {
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH,
 		platformPath.removeLastSegments(1).toString());
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT,
-		makeEnvironmentVar(Const.ENV_KEY_JANTJE_COM_PORT));
+		makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
 	if (Platform.getOS().equals(Platform.OS_WIN32)) {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 		    ConfigurationPreferences.getPathExtensionPath().toOSString() + '/');
@@ -806,6 +802,7 @@ public class Helpers extends Common {
      *            the info of the selected board to set the variables for
      */
 
+    @SuppressWarnings("nls")
     public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc,
 	    boolean debugCompilerSettings) {
 
@@ -813,8 +810,8 @@ public class Helpers extends Common {
 	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-	File boardFileName = new Path(Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARDS_FILE,
-		InstancePreferences.getLastUsedBoardsFile())).toFile();
+	File boardFileName = new Path(
+		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, "")).toFile();
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
@@ -1063,34 +1060,43 @@ public class Helpers extends Common {
 
 	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
 	if (programmer.equalsIgnoreCase(Const.DEFAULT)) {
-	    String uploadTool = contribEnv.getVariable(get_ENV_KEY_TOOL(ACTION_UPLOAD), confDesc).getValue();
-	    String MComPort = contribEnv.getVariable(Const.ENV_KEY_JANTJE_COM_PORT, confDesc).getValue();
-	    String host = getHostFromComPort(MComPort);
-	    if (host != null) {
-		String platform = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ARCITECTURE_ID, confDesc).getValue();
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT, NetworkDiscovery.getPort(host));
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_AUTH,
-			NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
+	    IEnvironmentVariable uploadToolVar = contribEnv.getVariable(get_ENV_KEY_TOOL(ACTION_UPLOAD), confDesc);
+	    IEnvironmentVariable comportVar = contribEnv.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, confDesc);
+	    if ((uploadToolVar == null) || (comportVar == null)) {
+		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+			"Upload will fail due to missing upload parameters")); //$NON-NLS-1$
+	    } else {
+		String uploadTool = uploadToolVar.getValue();
 
-		try {
-		    String key = ERASE_START + platform.toUpperCase() + DOT + NETWORK + DOT
-			    + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
-		    String networkUploadTool = contribEnv.getVariable(key, confDesc).getValue();
-		    if (!networkUploadTool.isEmpty()) {
-			uploadTool = networkUploadTool;
-			setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(UPLOAD_CLASS),
-				UPLOAD_CLASS_DEFAULT);
-			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_RESET_BEFORE_UPLOAD, FALSE);
+		String MComPort = comportVar.getValue();
+		String host = getHostFromComPort(MComPort);
+		if (host != null) {
+		    String platform = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ARCITECTURE_ID, confDesc).getValue();
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT,
+			    NetworkDiscovery.getPort(host));
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_AUTH,
+			    NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
+		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
+
+		    try {
+			String key = ERASE_START + platform.toUpperCase() + DOT + NETWORK + DOT
+				+ ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
+			String networkUploadTool = contribEnv.getVariable(key, confDesc).getValue();
+			if (!networkUploadTool.isEmpty()) {
+			    uploadTool = networkUploadTool;
+			    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(UPLOAD_CLASS),
+				    UPLOAD_CLASS_DEFAULT);
+			    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_RESET_BEFORE_UPLOAD, FALSE);
+			}
+		    } catch (Exception e) {
+			// simply ignore
 		    }
-		} catch (Exception e) {
-		    // simply ignore
 		}
+		setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
+			makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
+		setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM),
+			makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 	    }
-	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
-		    makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
-	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM),
-		    makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 	} else {
 	    String uploadTool = contribEnv.getVariable("A.PROGRAM.TOOL", confDesc).getValue(); //$NON-NLS-1$
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),

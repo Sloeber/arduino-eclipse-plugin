@@ -40,7 +40,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 		for (IProject curproject : SelectedProjects) {
 		    int baud = getBaudRate(curproject);
 		    if (baud > 0) {
-			String comPort = Common.getBuildEnvironmentVariable(curproject, Const.ENV_KEY_JANTJE_COM_PORT,
+			String comPort = Common.getBuildEnvironmentVariable(curproject, Const.ENV_KEY_JANTJE_UPLOAD_PORT,
 				Const.EMPTY_STRING);
 			if (!comPort.isEmpty()) {
 			    it.baeyens.arduino.monitor.SerialConnection.add(comPort, baud);

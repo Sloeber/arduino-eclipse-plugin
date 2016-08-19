@@ -59,7 +59,7 @@ public class UploadSketchWrapper {
 
 	String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf,
 		Const.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
-	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_COM_PORT,
+	String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_UPLOAD_PORT,
 		Const.EMPTY_STRING);
 	String uploadClass = Common.getBuildEnvironmentVariable(Project, cConf,
 		Const.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS), Const.EMPTY_STRING);
@@ -165,7 +165,7 @@ public class UploadSketchWrapper {
 		// message+= this.+Const.SPACE;
 		monitor.beginTask(message, 2);
 		comPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
-			Const.ENV_KEY_JANTJE_COM_PORT, Const.EMPTY_STRING);
+			Const.ENV_KEY_JANTJE_UPLOAD_PORT, Const.EMPTY_STRING);
 		String programmer = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
 			Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.DEFAULT);
 

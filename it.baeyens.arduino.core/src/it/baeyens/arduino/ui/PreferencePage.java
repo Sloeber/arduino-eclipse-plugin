@@ -120,7 +120,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	addField(this.automaticallyImportLibrariesOption);
 	createLine(parent, 4);
 	Label label = new Label(parent, SWT.LEFT);
-	label.setText("Your HashKey: " + ConfigurationPreferences.getSystemHash());
+	label.setText("Your HashKey: " + ConfigurationPreferences.getSystemHash()); //$NON-NLS-1$
 	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
 
 	// StringFieldEditor hashKeyShower = new StringFieldEditor("Your

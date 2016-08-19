@@ -53,6 +53,7 @@ public class PleaseHelp extends Dialog {
 	this.browser.addProgressListener(new ProgressListener() {
 	    @Override
 	    public void changed(ProgressEvent event) {
+		// I'm not interested in change
 	    }
 
 	    @Override

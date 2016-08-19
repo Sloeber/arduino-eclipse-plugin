@@ -107,7 +107,7 @@ public class Activator implements BundleActivator {
     }
 
     private static void runGUIRegistration() {
-	UIJob installJob = new UIJob("Arduino installer job") { //$NON-NLS-1$
+	UIJob installJob = new UIJob(Const.INSTALLER_JOB_NAME) { // $NON-NLS-1$
 
 	    @Override
 	    public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -116,7 +116,7 @@ public class Activator implements BundleActivator {
 	    }
 
 	};
-	installJob.setPriority(Job.SHORT);
+	installJob.setPriority(Job.BUILD);
 	installJob.setUser(true);
 	installJob.schedule();
     }

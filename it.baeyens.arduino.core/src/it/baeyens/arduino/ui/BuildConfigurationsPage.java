@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
+import io.sloeber.core.api.ConfigurationDescriptor;
+
 /**
  * This class is linked to page in the import wizard.
  * 
@@ -99,41 +101,11 @@ public class BuildConfigurationsPage extends WizardPage implements IWizardPage {
 	Dialog.applyDialogFont(composite);
     }
 
-    /**
-     * A "struct" for the configs - names and tool chain IDs.
-     * 
-     * @author Brody Kenrick
-     * 
-     */
-    public class ConfigurationDescriptor {
-	public final String Name;
-	public final String ToolchainID;
-	public final boolean DebugCompilerSettings;
-
-	public ConfigurationDescriptor(String Name, String ToolchainID, boolean DebugCompilerSettings) {
-	    this.Name = Name;
-	    this.ToolchainID = ToolchainID;
-	    this.DebugCompilerSettings = DebugCompilerSettings;
-	}
-    }
-
     public ArrayList<ConfigurationDescriptor> getBuildConfigurationDescriptors() {
-	// TODO: Consider renaming Release to ArduinoIDEConfig
-	// JABA:I don't think his is a good idea "standard" or "arduino" may be better
-	// Note that changing Release invalidates all existing workspaces. So if we change this timing will be very important.
-	ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<ConfigurationDescriptor>();
-
-	ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor("Release", "it.baeyens.arduino.core.toolChain.release", false); //$NON-NLS-1$ //$NON-NLS-2$
-	alCfgs.add(cfgTCidPair); // Always have the release build here
-
-	// If this button is selected (checked) we add the configuration
 	if (this.button_BldCfg_AVaRICE.getSelection()) {
-	    // Debug has same toolchain as release
-	    ConfigurationDescriptor cfgTCidPair2 = new ConfigurationDescriptor("Debug_AVaRICE", "it.baeyens.arduino.core.toolChain.release", true); //$NON-NLS-1$ //$NON-NLS-2$
-	    alCfgs.add(cfgTCidPair2);
+	    return ConfigurationDescriptor.getReleaseAndDebug();
 	}
-
-	return alCfgs;
+	return ConfigurationDescriptor.getDefaultDescriptors();
     }
 
 }

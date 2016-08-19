@@ -1,14 +1,11 @@
 package it.baeyens.arduino.ui;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.FileUtils;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
@@ -23,7 +20,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.InstancePreferences;
-import it.baeyens.arduino.tools.Helpers;
 
 public class SampleSelector {
     private static final String EXAMPLEPATH = "examplePath"; //$NON-NLS-1$
@@ -66,10 +62,12 @@ public class SampleSelector {
 		    } else {
 			if (thechangeItem.getChecked()) {
 			    SampleSelector.this.numSelected += 1;
-			    SampleSelector.this.numSelectedLabel.setText(Integer.toString(SampleSelector.this.numSelected));
+			    SampleSelector.this.numSelectedLabel
+				    .setText(Integer.toString(SampleSelector.this.numSelected));
 			} else {
 			    SampleSelector.this.numSelected -= 1;
-			    SampleSelector.this.numSelectedLabel.setText(Integer.toString(SampleSelector.this.numSelected));
+			    SampleSelector.this.numSelectedLabel
+				    .setText(Integer.toString(SampleSelector.this.numSelected));
 			}
 			if (SampleSelector.this.mylistener != null) {
 			    SampleSelector.this.mylistener.handleEvent(null);
@@ -93,7 +91,10 @@ public class SampleSelector {
     }
 
     /**
-     * This method adds all examples to the selection listbox All examples already in the listbox are removed first.
+     * This method adds all examples to the selection listbox All examples
+     * already in the listbox are removed first.
+     * 
+     * @param paths
      * 
      * @param arduinoExample
      *            The folder with the arduino samples
@@ -104,7 +105,7 @@ public class SampleSelector {
      * @param mPlatformPathPath
      */
 
-    public void AddAllExamples(String selectedPlatformLocation) {
+    public void AddAllExamples(String selectedPlatformLocation, Path[] paths) {
 	this.numSelected = 0;
 
 	// Get the examples of the library manager installed libraries
@@ -169,7 +170,7 @@ public class SampleSelector {
 
 	}
 	// Mark the examples selected
-	setLastUsedExamples();
+	setLastUsedExamples(paths);
     }
 
     private static TreeItem findItem(TreeItem items[], String text) {
@@ -182,7 +183,8 @@ public class SampleSelector {
     }
 
     /**
-     * This method adds a folder of examples. There is no search. The provided folder is assumed to be a tree where the parents of the leaves are
+     * This method adds a folder of examples. There is no search. The provided
+     * folder is assumed to be a tree where the parents of the leaves are
      * assumed examples
      * 
      * @param iPath
@@ -204,7 +206,8 @@ public class SampleSelector {
     }
 
     /**
-     * This method adds a folder recursively examples. Leaves containing ino files are assumed to be examples
+     * This method adds a folder recursively examples. Leaves containing ino
+     * files are assumed to be examples
      * 
      * @param File
      */
@@ -229,7 +232,8 @@ public class SampleSelector {
     }
 
     /***
-     * finds all the example folders for both the version including and without version libraries
+     * finds all the example folders for both the version including and without
+     * version libraries
      * 
      * @param location
      *            The parent folder of the libraries
@@ -274,28 +278,6 @@ public class SampleSelector {
 	this.myLabel.setEnabled(enable);
     }
 
-    private void recursiveCopySelectedExamples(IProject project, IPath target, TreeItem TreeItem, boolean link) throws IOException {
-	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
-	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData(EXAMPLEPATH) != null)) {
-		String location = (String) curchildTreeItem.getData(EXAMPLEPATH);
-		Path locationPath = new Path(location);
-		if (link) {
-		    Helpers.linkDirectory(project, locationPath, target);
-		} else {
-		    FileUtils.copyDirectory(locationPath.toFile(), project.getLocation().toFile());
-		}
-	    }
-	    recursiveCopySelectedExamples(project, target, curchildTreeItem, link);
-	}
-    }
-
-    public void CopySelectedExamples(IProject project, IPath target, boolean link) throws IOException {
-	this.sampleTree.getItems();
-	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
-	    recursiveCopySelectedExamples(project, target, curTreeItem, link);
-	}
-    }
-
     /**
      * is at least 1 sample selected in this tree
      * 
@@ -306,7 +288,8 @@ public class SampleSelector {
     }
 
     /**
-     * you can only set 1 listener. The listener is triggered each time a item is selected or deselected
+     * you can only set 1 listener. The listener is triggered each time a item
+     * is selected or deselected
      * 
      * @param listener
      */
@@ -315,22 +298,25 @@ public class SampleSelector {
     }
 
     /**
-     * Marks the previous selected example(s) as selected and expands the items plus all parent items
+     * Marks the previous selected example(s) as selected and expands the items
+     * plus all parent items
+     * 
+     * @param paths
      */
-    public void setLastUsedExamples() {
-	String[] lastUsedExamples = InstancePreferences.getLastUsedExamples();
+    private void setLastUsedExamples(Path[] paths) {
+
 	TreeItem[] startIems = this.sampleTree.getItems();
 	for (TreeItem curItem : startIems) {
-	    recursiveSetExamples(curItem, lastUsedExamples);
+	    recursiveSetExamples(curItem, paths);
 	}
 	this.numSelectedLabel.setText(Integer.toString(this.numSelected));
     }
 
-    private void recursiveSetExamples(TreeItem curTreeItem, String[] lastUsedExamples) {
+    private void recursiveSetExamples(TreeItem curTreeItem, Path[] lastUsedExamples) {
 	for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 	    if (curchildTreeItem.getItems().length == 0) {
-		for (String curLastUsedExample : lastUsedExamples) {
-		    String ss = (String) curchildTreeItem.getData(EXAMPLEPATH);
+		for (Path curLastUsedExample : lastUsedExamples) {
+		    Path ss = new Path((String) curchildTreeItem.getData(EXAMPLEPATH));
 		    if (curLastUsedExample.equals(ss)) {
 			curchildTreeItem.setChecked(true);
 			curchildTreeItem.setExpanded(true);
@@ -349,24 +335,25 @@ public class SampleSelector {
 	}
     }
 
-    public void saveLastUsedExamples() {
-	ArrayList<String> currentUsedExamples = new ArrayList<>();
-	for (TreeItem curItem : this.sampleTree.getItems()) {
-	    currentUsedExamples.addAll(recursiveSetExamples(curItem));
+    public Path[] GetSampleFolders() {
+	this.sampleTree.getItems();
+	List<Path> ret = new ArrayList<>();
+	for (TreeItem curTreeItem : this.sampleTree.getItems()) {
+	    ret.addAll(recursiveGetSelectedExamples(curTreeItem));
 	}
-	InstancePreferences.setLastUsedExamples(currentUsedExamples.toArray(new String[currentUsedExamples.size()]));
+	return ret.toArray(new Path[0]);
     }
 
-    private List<String> recursiveSetExamples(TreeItem TreeItem) {
-	List<String> currentUsedExamples = new ArrayList<>();
+    private List<Path> recursiveGetSelectedExamples(TreeItem TreeItem) {
+	List<Path> ret = new ArrayList<>();
 	for (TreeItem curchildTreeItem : TreeItem.getItems()) {
-	    if (curchildTreeItem.getChecked()) {
-		currentUsedExamples.add((String) curchildTreeItem.getData(EXAMPLEPATH));
-	    } else {
-		currentUsedExamples.addAll(recursiveSetExamples(curchildTreeItem));
-	    }
+	    if (curchildTreeItem.getChecked() && (curchildTreeItem.getData(EXAMPLEPATH) != null)) {
+		String location = (String) curchildTreeItem.getData(EXAMPLEPATH);
+		ret.add(new Path(location));
 
+	    }
+	    ret.addAll(recursiveGetSelectedExamples(curchildTreeItem));
 	}
-	return currentUsedExamples;
+	return ret;
     }
 }

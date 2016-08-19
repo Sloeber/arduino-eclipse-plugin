@@ -22,10 +22,7 @@ public class Package implements Comparable<Package> {
     private List<ArduinoPlatform> platforms;
     private List<Tool> tools;
 
-    // private transient ArduinoManager manager;
-
     void setOwner(Manager manager) {
-	// this.manager = manager;
 	for (ArduinoPlatform platform : this.platforms) {
 	    platform.setOwner(this);
 	}
@@ -35,10 +32,6 @@ public class Package implements Comparable<Package> {
 	    }
 	}
     }
-
-    // ArduinoManager getManager() {
-    // return manager;
-    // }
 
     public String getName() {
 	return this.name;

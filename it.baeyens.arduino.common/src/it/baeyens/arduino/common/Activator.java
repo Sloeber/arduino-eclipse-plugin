@@ -90,7 +90,7 @@ public class Activator extends AbstractUIPlugin {
 		int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
 			+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
 		int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-		if ((curFsiStatus - lastFsiStatus) >= 0 && isInternetReachable()) {
+		if ((curFsiStatus - lastFsiStatus) >= 50 && isInternetReachable()) {
 		    myScope.putInt(LOCAL_FLAG, curFsiStatus);
 		    try {
 			myScope.flush();
