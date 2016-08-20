@@ -750,15 +750,8 @@ public class Helpers extends Common {
 	return false;
     }
 
-    private static void setTheEnvironmentVariablesAddThePlatformInfo(IContributedEnvironment contribEnv,
+    private static void addPlatformFileTools(ArduinoPlatform platform, IContributedEnvironment contribEnv,
 	    ICConfigurationDescription confDesc) {
-	String platformFileName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
-		Const.EMPTY_STRING);
-
-	ArduinoPlatform platform = Manager.getPlatform(platformFileName);
-	if (platform == null) {
-	    return;
-	}
 	for (ToolDependency tool : platform.getToolsDependencies()) {
 	    String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
 	    String valueString = tool.getTool().getInstallPath().toString();
@@ -776,6 +769,26 @@ public class Helpers extends Common {
 	    // writer.println("runtime.tools." + tool.getName() +
 	    // tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
 	    // + tool.getTool().getInstallPath());
+	}
+    }
+
+    private static void setTheEnvironmentVariablesAddThePlatformInfo(IContributedEnvironment contribEnv,
+	    ICConfigurationDescription confDesc) {
+	String platformFileName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
+		Const.EMPTY_STRING);
+	String referencedPlatformFileName = getBuildEnvironmentVariable(confDesc,
+		Const.ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, Const.EMPTY_STRING);
+
+	for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
+	    addPlatformFileTools(curPlatform, contribEnv, confDesc);
+	}
+	ArduinoPlatform platform = Manager.getPlatform(referencedPlatformFileName);
+	if (platform != null) {
+	    addPlatformFileTools(platform, contribEnv, confDesc);
+	}
+	platform = Manager.getPlatform(platformFileName);
+	if (platform != null) {
+	    addPlatformFileTools(platform, contribEnv, confDesc);
 	}
 
     }
@@ -955,6 +968,9 @@ public class Helpers extends Common {
 	    } else {
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variant);
 	    }
+	} else {
+	    // this is the case where the variant is defined in a menu option
+	    // This case is handled in the post processing
 	}
     }
 
@@ -1144,6 +1160,16 @@ public class Helpers extends Common {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 	}
 	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand); //$NON-NLS-1$
+
+	// if we have a variant defined in a menu option we need to
+	// grab the value in ENV_KEY_BUILD_VARIANT and put it in
+	// ENV_KEY_JANTJE_BUILD_VARIANT
+	// because ENV_KEY_JANTJE_BUILD_VARIANT is empty
+	String variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, "", true);
+	if (variant.isEmpty()) {
+	    variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_BUILD_VARIANT, "", true);
+	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variant);
+	}
 
 	// link build.core to jantje.build.core
 	setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_CORE,

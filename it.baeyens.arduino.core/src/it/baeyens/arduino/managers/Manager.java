@@ -354,6 +354,18 @@ public class Manager {
 	return null;
     }
 
+    static public List<ArduinoPlatform> getInstalledPlatforms() {
+	List<ArduinoPlatform> platforms = new ArrayList<>();
+	for (PackageIndex index : packageIndices) {
+	    for (Package pkg : index.getPackages()) {
+
+		platforms.addAll(pkg.getInstalledPlatforms());
+
+	    }
+	}
+	return platforms;
+    }
+
     static public List<Board> getInstalledBoards() throws CoreException {
 	List<Board> boards = new ArrayList<>();
 	for (PackageIndex index : packageIndices) {
