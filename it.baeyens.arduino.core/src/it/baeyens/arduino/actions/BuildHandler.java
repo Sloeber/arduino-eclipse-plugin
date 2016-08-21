@@ -15,10 +15,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.MessageConsole;
 
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.listeners.ProjectExplorerListener;
+import it.baeyens.arduino.tools.Helpers;
 
 /**
  * This id a handler to connect the plugin.xml to the code for building the code
@@ -42,6 +44,11 @@ class BuildJobHandler extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
 	try {
+	    MessageConsole theconsole = Helpers
+		    .findConsole("CDT Build Console (" + this.myBuildProject.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+	    if (theconsole != null) {
+		theconsole.activate();
+	    }
 	    this.myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 
 	} catch (CoreException e) {
