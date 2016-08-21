@@ -955,15 +955,17 @@ public class Helpers extends Common {
 	if (variant != null) {
 	    String variantSplit[] = variant.split(COLON);
 	    if (variantSplit.length == 2) {
-		String vendor = variantSplit[0];
-		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variantSplit[1]);
-		IPath variantReference = findReferencedPlatformFile(vendor, architecture);
-		if (variantReference == null) {
+		String refVendor = variantSplit[0];
+		String refVariant = variantSplit[1];
+		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, refVariant);
+		IPath referencdPlatformFile = findReferencedPlatformFile(refVendor, architecture);
+		if (referencdPlatformFile == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 			    Messages.Helpers_Variant_reference_missing + variant));
 		} else {
+		    IPath referencedVariant = referencdPlatformFile.removeLastSegments(1).append(VARIANTS_FOLDER_NAME);
 		    Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH,
-			    variantReference.append(VARIANTS_FOLDER_NAME).append(variantSplit[1]).toString());
+			    referencedVariant.toString());
 		}
 	    } else {
 		Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variant);
