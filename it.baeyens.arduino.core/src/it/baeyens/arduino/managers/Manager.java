@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     QNX Software Systems - Initial API and implementation
- *     Jan Baeyens integrated in and extended for the arduino eclipse plugin
+ *     Jan Baeyens integrated in and extended for the arduino eclipse plugin named Sloeber
  *******************************************************************************/
 package it.baeyens.arduino.managers;
 
@@ -45,7 +45,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 
 import com.google.gson.Gson;
 
@@ -62,14 +61,18 @@ public class Manager {
     private Manager() {
     }
 
-    private static void internalLoadIndices() {
-	String[] boardUrls = ConfigurationPreferences.getJsonURLList();
-	packageIndices = new ArrayList<>(boardUrls.length);
-	for (String boardUrl : boardUrls) {
-	    loadPackageIndex(boardUrl, false);
+    public static void addPackageURLs(String packageUrlsToAdd[]) {
+	String[] originalBoardUrls = ConfigurationPreferences.getPackageURLList();
+
+	String[] newBoardsUrls = new String[packageUrlsToAdd.length + originalBoardUrls.length];
+	System.arraycopy(packageUrlsToAdd, 0, newBoardsUrls, 0, packageUrlsToAdd.length);
+	System.arraycopy(originalBoardUrls, 0, newBoardsUrls, packageUrlsToAdd.length, originalBoardUrls.length);
+	ConfigurationPreferences.setPackageURLs(newBoardsUrls);
+
+	if (packageIndices != null) {
+	    loadIndices();
 	}
 
-	loadLibraryIndex(false);
     }
 
     /**
@@ -79,7 +82,7 @@ public class Manager {
      * @param monitor
      */
     public static void startup_Pluging(IProgressMonitor monitor) {
-	loadIndices(true);
+	loadIndices();
 	try {
 	    List<Board> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) { // we test for boards
@@ -169,19 +172,15 @@ public class Manager {
 
     }
 
-    static public void loadIndices(boolean immediatly) {
-	if (immediatly) {
-	    internalLoadIndices();
-	    return;
+    static public void loadIndices() {
+	String[] boardUrls = ConfigurationPreferences.getPackageURLList();
+	packageIndices = new ArrayList<>(boardUrls.length);
+	for (String boardUrl : boardUrls) {
+	    loadPackageIndex(boardUrl, false);
 	}
-	new Job("Fetching package index") { //$NON-NLS-1$
-	    @SuppressWarnings("synthetic-access")
-	    @Override
-	    protected IStatus run(IProgressMonitor monitor) {
-		internalLoadIndices();
-		return Status.OK_STATUS;
-	    }
-	}.schedule();
+
+	loadLibraryIndex(false);
+
     }
 
     /**
@@ -234,6 +233,7 @@ public class Manager {
 	    try (Reader reader = new FileReader(packageFile)) {
 		PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
 		index.setOwners(null);
+		index.setJsonFileName(packageFile.getName());
 		packageIndices.add(index);
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, Activator.getId(),
@@ -245,7 +245,7 @@ public class Manager {
 
     static public List<PackageIndex> getPackageIndices() {
 	if (packageIndices == null) {
-	    String[] boardUrls = ConfigurationPreferences.getJsonURLList();
+	    String[] boardUrls = ConfigurationPreferences.getPackageURLList();
 	    packageIndices = new ArrayList<>(boardUrls.length);
 	    for (String boardUrl : boardUrls) {
 		loadPackageIndex(boardUrl, false);
@@ -384,6 +384,15 @@ public class Manager {
 	    packages.addAll(index.getPackages());
 	}
 	return packages;
+    }
+
+    static public Package getPackage(String JasonName, String packageName) {
+	for (PackageIndex index : packageIndices) {
+	    if (index.getJsonFileName().equals(JasonName)) {
+		return index.getPackage(packageName);
+	    }
+	}
+	return null;
     }
 
     static public Package getPackage(String packageName) {

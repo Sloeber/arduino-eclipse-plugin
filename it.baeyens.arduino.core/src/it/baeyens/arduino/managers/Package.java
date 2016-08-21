@@ -82,23 +82,6 @@ public class Package implements Comparable<Package> {
 	return Collections.unmodifiableCollection(platformMap.values());
     }
 
-    public ArduinoPlatform getPlatform(String platformName) {
-	ArduinoPlatform foundPlatform = null;
-	for (ArduinoPlatform platform : this.platforms) {
-	    if (platform.getName().equals(platformName)) {
-		if (foundPlatform == null) {
-		    foundPlatform = platform;
-		} else {
-		    if (platform.isInstalled()
-			    && Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
-			foundPlatform = platform;
-		    }
-		}
-	    }
-	}
-	return foundPlatform;
-    }
-
     public ArduinoPlatform getLatestPlatform(String platformName) {
 	ArduinoPlatform foundPlatform = null;
 	for (ArduinoPlatform platform : this.platforms) {

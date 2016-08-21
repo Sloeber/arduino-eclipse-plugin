@@ -127,7 +127,7 @@ public class Activator implements BundleActivator {
 	InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
 	InstancePreferences.setOpenSerialWithMonitor(InstancePreferences.getOpenSerialWithMonitor());
 	InstancePreferences.setAutomaticallyIncludeLibraries(InstancePreferences.getAutomaticallyIncludeLibraries());
-	ConfigurationPreferences.setJsonURLs(ConfigurationPreferences.getJsonURLs());
+	ConfigurationPreferences.setPackageURLs(ConfigurationPreferences.getPackageURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {

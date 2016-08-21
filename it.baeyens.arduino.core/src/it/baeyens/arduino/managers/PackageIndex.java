@@ -13,6 +13,16 @@ public class PackageIndex {
 
     private List<Package> packages;
 
+    private String jsonFileName;
+
+    public String getJsonFileName() {
+	return jsonFileName;
+    }
+
+    public void setJsonFileName(String jsonFileName) {
+	this.jsonFileName = jsonFileName;
+    }
+
     public List<Package> getPackages() {
 	return this.packages;
     }

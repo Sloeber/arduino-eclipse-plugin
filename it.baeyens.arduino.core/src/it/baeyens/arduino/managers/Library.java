@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import it.baeyens.arduino.common.ConfigurationPreferences;
-import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.ui.Activator;
 
 public class Library implements Comparable<Library> {
@@ -150,8 +149,8 @@ public class Library implements Comparable<Library> {
     }
 
     public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX)
-		.append(this.name.replace(' ', '_')).append(this.version).toString());
+	return Paths.get(ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'))
+		.append(this.version).toString());
     }
 
     public boolean isInstalled() {

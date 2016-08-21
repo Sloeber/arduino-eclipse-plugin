@@ -61,7 +61,7 @@ public class Const {
     // preference keys
     public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
-    public static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation";
+
     public static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls";
 
     // properties keys
@@ -81,7 +81,7 @@ public class Const {
     public static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting";
     // Folder Information
     public static final String LIBRARY_PATH_SUFFIX = "libraries";
-    public static final String DOWNLOADS_FOLDER = "downloads";
+
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
     public static final String ARDUINO_CODE_FOLDER_NAME = "core";
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
@@ -184,10 +184,6 @@ public class Const {
 								// first 0xCDAB;
     public static final String EXAMPLE_FOLDER_NAME = "examples";
 
-    public static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt";
-    public static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt";
-    public static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt";
-    public static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt";
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
     public static final String INSTALLER_JOB_NAME = "Arduino installer job";
 

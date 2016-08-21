@@ -49,17 +49,17 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
 
     @Override
     public boolean performOk() {
-	this.oldSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+	this.oldSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getPackageURLList()));
 	this.urlsText.store();
 	deleteJsonFilesAsNeeded();
 
-	Manager.loadIndices(true);
+	Manager.loadIndices();
 	return super.performOk();
     }
 
     private void deleteJsonFilesAsNeeded() {
 	Set<String> toDeleteJsons = this.oldSelectedJsons;
-	Set<String> newSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+	Set<String> newSelectedJsons = new HashSet<>(Arrays.asList(ConfigurationPreferences.getPackageURLList()));
 	if (toDeleteJsons == null) {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    "Previous jason files are null. This should not happen.", null)); //$NON-NLS-1$
@@ -86,7 +86,7 @@ public class LinkPreferencePage extends FieldEditorPreferencePage implements IWo
     protected void performDefaults() {
 	super.performDefaults();
 	this.urlsText.setStringValue(Defaults.JSON_URLS);
-	ConfigurationPreferences.setJsonURLs(Defaults.JSON_URLS);
+	ConfigurationPreferences.setPackageURLs(Defaults.JSON_URLS);
     }
 
     @Override

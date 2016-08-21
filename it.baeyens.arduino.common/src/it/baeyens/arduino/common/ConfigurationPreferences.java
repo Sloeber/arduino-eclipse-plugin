@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.TreeSet;
 
+import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -20,9 +21,22 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+/**
+ * Items on the Configuration level are linked to the ConfigurationScope
+ * (=eclipse install base).
+ * 
+ * @author jan
+ *
+ */
 public class ConfigurationPreferences {
 
-    static private String stringSplitter = "\n";//$NON-NLS-1$
+    private static String stringSplitter = "\n";//$NON-NLS-1$
+    private static final String KEY_MANAGER_DOWNLOAD_LOCATION = "arduino Manager downloadlocation"; //$NON-NLS-1$
+    private static final String DOWNLOADS_FOLDER = "downloads"; //$NON-NLS-1$
+    private static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
+    private static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt"; //$NON-NLS-1$
+    private static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
+    private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 
     private ConfigurationPreferences() {
     }
@@ -51,7 +65,7 @@ public class ConfigurationPreferences {
 		return new Path(pathName);
 	    }
 	}
-	String storedValue = getGlobalString(Const.KEY_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
+	String storedValue = getGlobalString(KEY_MANAGER_DOWNLOAD_LOCATION, Const.EMPTY_STRING);
 	if (storedValue.isEmpty()) {
 	    try {
 		URL resolvedUrl = Platform.getInstallLocation().getURL();
@@ -78,7 +92,7 @@ public class ConfigurationPreferences {
     }
 
     public static IPath getInstallationPathDownload() {
-	return getInstallationPath().append(Const.DOWNLOADS_FOLDER);
+	return getInstallationPath().append(DOWNLOADS_FOLDER);
     }
 
     /**
@@ -87,7 +101,7 @@ public class ConfigurationPreferences {
      * @return
      */
     public static File getPreProcessingPlatformFile() {
-	return getInstallationPath().append(Const.PRE_PROCESSING_PLATFORM_TXT).toFile();
+	return getInstallationPath().append(PRE_PROCESSING_PLATFORM_TXT).toFile();
     }
 
     /**
@@ -96,27 +110,31 @@ public class ConfigurationPreferences {
      * @return
      */
     public static File getPostProcessingPlatformFile() {
-	return getInstallationPath().append(Const.POST_PROCESSING_PLATFORM_TXT).toFile();
+	return getInstallationPath().append(POST_PROCESSING_PLATFORM_TXT).toFile();
     }
 
     public static File getPreProcessingBoardsFile() {
-	return getInstallationPath().append(Const.PRE_PROCESSING_BOARDS_TXT).toFile();
+	return getInstallationPath().append(PRE_PROCESSING_BOARDS_TXT).toFile();
     }
 
     public static File getPostProcessingBoardsFile() {
-	return getInstallationPath().append(Const.POST_PROCESSING_BOARDS_TXT).toFile();
+	return getInstallationPath().append(POST_PROCESSING_BOARDS_TXT).toFile();
     }
 
-    public static String getJsonURLs() {
+    public static String getPackageURLs() {
 	return getGlobalString(Const.KEY_MANAGER_JSON_URLS, Defaults.JSON_URLS);
     }
 
-    public static String[] getJsonURLList() {
-	return getJsonURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
+    public static String[] getPackageURLList() {
+	return getPackageURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
     }
 
-    public static void setJsonURLs(String urls) {
+    public static void setPackageURLs(String urls) {
 	setGlobalString(Const.KEY_MANAGER_JSON_URLS, urls);
+    }
+
+    public static void setPackageURLs(String urls[]) {
+	setGlobalString(Const.KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
     }
 
     public static Path getPathExtensionPath() {
