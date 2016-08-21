@@ -17,6 +17,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.common.Defaults;
+import it.baeyens.arduino.common.InstancePreferences;
 
 /**
  * ArduinoPreferencePage is the class that is behind the preference page of
@@ -36,6 +37,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     private ComboFieldEditor buildBeforeUploadOption;
     private BooleanFieldEditor openSerialMonitorOpensSerialsOption;
     private BooleanFieldEditor automaticallyImportLibrariesOption;
+    private BooleanFieldEditor cleanSerialMonitorAfterUpload;
 
     public PreferencePage() {
 	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -118,6 +120,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	this.automaticallyImportLibrariesOption = new BooleanFieldEditor(Const.KEY_AUTO_IMPORT_LIBRARIES,
 		Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
 	addField(this.automaticallyImportLibrariesOption);
+
+	this.cleanSerialMonitorAfterUpload = new BooleanFieldEditor(
+		InstancePreferences.getCleanSerialMonitorAfterUploadKey(),
+		Messages.ui_Clean_Serial_Monitor_After_Upload, BooleanFieldEditor.DEFAULT, parent);
+	addField(this.cleanSerialMonitorAfterUpload);
+
 	createLine(parent, 4);
 	Label label = new Label(parent, SWT.LEFT);
 	label.setText("Your HashKey: " + ConfigurationPreferences.getSystemHash()); //$NON-NLS-1$

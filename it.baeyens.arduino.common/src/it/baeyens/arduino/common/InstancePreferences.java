@@ -20,6 +20,8 @@ import org.osgi.service.prefs.BackingStoreException;
 public class InstancePreferences extends Const {
 
     private static boolean mIsConfigured = false;
+    private static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload";
+    private static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
 
     public static boolean getOpenSerialWithMonitor() {
 	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);
@@ -257,5 +259,19 @@ public class InstancePreferences extends Const {
     public static String[] getHardwarePaths() {
 	return (getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, EMPTY_STRING) + File.pathSeparator
 		+ ConfigurationPreferences.getInstallationPath()).split(File.pathSeparator);
+    }
+
+    public static String getCleanSerialMonitorAfterUploadKey() {
+	return KEY_CLEAN_MONITOR_AFTER_UPLOAD;
+    }
+
+    public static boolean getCleanSerialMonitorAfterUpload() {
+	return getGlobalBoolean(KEY_CLEAN_MONITOR_AFTER_UPLOAD, false);
+
+    }
+
+    public static void setCleanSerialMonitorAfterUpload(boolean newFilter) {
+	setGlobalValue(KEY_CLEAN_MONITOR_AFTER_UPLOAD, newFilter);
+
     }
 }

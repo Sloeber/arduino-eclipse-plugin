@@ -20,7 +20,6 @@ public class Messages extends NLS {
     public static String serialMonitorScrollLock;
     public static String serialMonitorClear;
     public static String serialMonitorConnectedTo;
-    public static String serialMonitorConnectedtTo;
     public static String serialMonitorDisconnectedFrom;
     public static String serialMonitorFilterScope;
     public static String serialMonitorNoInput;
@@ -35,5 +34,6 @@ public class Messages extends NLS {
     }
 
     private Messages() {
+
     }
 }

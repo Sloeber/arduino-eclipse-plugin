@@ -104,6 +104,8 @@ public class Messages extends NLS {
 
     public static String SampleSelector_num_selected;
 
+    public static String ui_Clean_Serial_Monitor_After_Upload;
+
     static {
 	// initialize resource bundle
 	NLS.initializeMessages(BUNDLE_NAME, Messages.class);

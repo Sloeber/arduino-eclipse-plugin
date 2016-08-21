@@ -70,7 +70,7 @@ public class Const {
     public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = ACTION_UPLOAD + DOT + ENV_PROTOCOL;
     public static final String KEY_LAST_USED_BOARDS_FILE = "Boards file";
     public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
-    public static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
+
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
     public static final String KEY_UPDATE_JASONS = "Update jsons files";
 
