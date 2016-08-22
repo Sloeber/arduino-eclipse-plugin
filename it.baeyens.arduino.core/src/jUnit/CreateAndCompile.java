@@ -60,6 +60,30 @@ public class CreateAndCompile {
     @Parameterized.Parameters
     public static Collection boards() {
 	return Arrays.asList(new Object[][] {
+		// Arduino SAM
+		{ "package_index.json", "arduino", "Arduino SAM Boards (32-bits ARM Cortex-M3)", "arduino_due_x_dbg",
+			"" }, //
+		{ "package_index.json", "arduino", "Arduino SAM Boards (32-bits ARM Cortex-M3)", "arduino_due_x", "" }, //
+
+		// Arduino SAMD
+		{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)", "arduino_zero_edbg",
+			"" }, //
+		{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)",
+			"arduino_zero_native", "" }, //
+		{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)", "mkr1000", "" }, //
+
+		// RedBearLab
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blend", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blendmicro8", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blendmicro16", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+			"nRF51822", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+			"nRF51822_NANO", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+			"nRF51822_32KB", "" }, //
+		{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+			"nRF51822_NANO_32KB", "" }, //
 
 		// ESP boards
 		{ "package_esp8266com_index.json", "esp8266", "esp8266", "generic",
@@ -194,7 +218,8 @@ public class CreateAndCompile {
 	String packageUrlsToAdd[] = { "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
 		"https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json",
 		"https://raw.githubusercontent.com/mikaelpatel/Cosa/master/package_cosa_index.json",
-		"https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json" };
+		"https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json",
+		"https://redbearlab.github.io/arduino/package_redbearlab_index.json" };
 	Manager.addPackageURLs(packageUrlsToAdd);
 	NullProgressMonitor monitor = new NullProgressMonitor();
 	List<Package> allPackages = Manager.getPackages();

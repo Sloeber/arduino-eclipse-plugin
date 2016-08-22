@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
@@ -1122,8 +1124,7 @@ public class Helpers extends Common {
 	    setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
 	}
 
-	String objcopyCommand = Const.EMPTY_STRING;
-	String objcopyCommandLinker = objcopyCommand;
+	ArrayList<String> objcopyCommand = new ArrayList<>();
 
 	// I'm looping through the set of variables to fix some things up
 	try {
@@ -1153,15 +1154,17 @@ public class Helpers extends Common {
 		    setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 		}
 		if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")) { //$NON-NLS-1$ //$NON-NLS-2$
-		    objcopyCommand += objcopyCommandLinker + makeEnvironmentVar(name);
-		    objcopyCommandLinker = "\n\t"; //$NON-NLS-1$
+		    objcopyCommand.add(makeEnvironmentVar(name));
+
 		}
 	    }
 
 	} catch (Exception e) {
 	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 	}
-	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", objcopyCommand); //$NON-NLS-1$
+
+	Collections.sort(objcopyCommand);
+	setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	// if we have a variant defined in a menu option we need to
 	// grab the value in ENV_KEY_BUILD_VARIANT and put it in
