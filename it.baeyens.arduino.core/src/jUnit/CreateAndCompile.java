@@ -60,6 +60,34 @@ public class CreateAndCompile {
     @Parameterized.Parameters
     public static Collection boards() {
 	return Arrays.asList(new Object[][] {
+		// amel
+		{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_atmel_ice", "" }, //
+		{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_sam_ice", "" }, //
+		{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
+		{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
+
+		{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_atmel_ice", "" }, //
+		{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_sam_ice", "" }, //
+		{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_native", "" }, //
+		{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_atmel_ice", "" }, //
+		{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_sam_ice", "" }, //
+		{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_native", "" }, //
+
+		{ "package_index.json", "atmel-avr-xminis", "Atmel AVR Xplained-minis", "atmega328p_xplained_mini",
+			"" }, //
+		{ "package_index.json", "atmel-avr-xminis", "Atmel AVR Xplained-minis", "atmega168pb_xplained_mini",
+			"" }, //
+		{ "package_index.json", "emoro", "EMORO 2560", "emoro2560", "" }, //
+		{ "package_index.json", "Intel", "Intel Curie Boards", "arduino_101", "" }, //
+		{ "package_index.json", "Intel", "Intel i586 Boards", "izmir_fd", "" }, //
+		{ "package_index.json", "Intel", "Intel i586 Boards", "izmir_fg", "" }, //
+		{ "package_index.json", "Intel", "Intel i686 Boards", "izmir_ec", "" }, //
+
+		// acore
+		{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo", "" }, //
+		{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo2", "" }, //
+		{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "micro", "" }, //
+
 		// Arduino SAM
 		{ "package_index.json", "arduino", "Arduino SAM Boards (32-bits ARM Cortex-M3)", "arduino_due_x_dbg",
 			"" }, //
