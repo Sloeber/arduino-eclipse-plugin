@@ -324,11 +324,13 @@ public class BoardID {
 	    e.printStackTrace();
 	    return;
 	}
-	String[] lines = storedValue.split("\n"); //$NON-NLS-1$
-	for (String curLine : lines) {
-	    String[] values = curLine.split("=", 2); //$NON-NLS-1$
-	    if (values.length == 2) {
-		this.myOptions.put(values[0], values[1]);
+	if (storedValue != null) {
+	    String[] lines = storedValue.split("\n"); //$NON-NLS-1$
+	    for (String curLine : lines) {
+		String[] values = curLine.split("=", 2); //$NON-NLS-1$
+		if (values.length == 2) {
+		    this.myOptions.put(values[0], values[1]);
+		}
 	    }
 	}
 
