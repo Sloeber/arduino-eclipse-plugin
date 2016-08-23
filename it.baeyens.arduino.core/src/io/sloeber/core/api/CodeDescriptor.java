@@ -30,16 +30,12 @@ public class CodeDescriptor {
 
     private CodeTypes codeType;
     private Path myTemPlateFoldername;
+    private boolean myMakeLinks = false;
 
     public Path getTemPlateFoldername() {
 	return this.myTemPlateFoldername;
     }
 
-    public boolean isMyMakeLinks() {
-	return this.myMakeLinks;
-    }
-
-    private boolean myMakeLinks = false;
     private Path mySamples[];
 
     public Path[] getMySamples() {
