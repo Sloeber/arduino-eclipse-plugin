@@ -257,6 +257,9 @@ public class CreateAndCompile {
 		curPlatform.install(monitor);
 	    }
 	}
+	// add Teensy. For this to work Teensy has to be installed at this exact
+	// Place
+	// "D:\arduino\teensy 1.29\hardware"
     }
 
     @Test
