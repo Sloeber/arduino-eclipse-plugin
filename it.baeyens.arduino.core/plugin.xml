@@ -699,6 +699,19 @@
                  id="it.baeyens.arduino.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"
                  natureFilter="both">
+              <optionCategory
+                    id="it.baeyens.arduino.core.asm.optionCategory.includePaths"
+                    name="%optionCategory.include.name">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="it.baeyens.arduino.core.asm.optionCategory.includePaths"
+                    command="-I"
+                    id="it.baeyens.arduino.compiler.asm.sketch.option.incpath"
+                    name="%option.include.path.name"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
               <inputType
                     buildVariable="S_SKETCH_FILES"
                     dependencyCalculator="it.baeyens.arduino.toolchain.ArduinoDependencyCalculator"

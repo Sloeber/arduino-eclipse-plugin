@@ -21,7 +21,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import io.sloeber.core.api.BoardID;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
@@ -132,7 +132,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 
     protected void createProjectWrapper(IProgressMonitor monitor) {
 
-	BoardID boardID = this.mArduinoPage.getBoardID();
+	BoardDescriptor boardID = this.mArduinoPage.getBoardID();
 	CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
 	try {
 	    this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),

@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import io.sloeber.core.api.BoardID;
+import io.sloeber.core.api.BoardDescriptor;
 
 /**
  * The ArduinoSettingsPage class is linked to page in the import wizard. It
@@ -53,7 +53,7 @@ public class NewSketchWizardBoardPage extends WizardPage {
 	setPageComplete(this.mPageLayout.isPageComplete());
     }
 
-    public BoardID getBoardID() {
+    public BoardDescriptor getBoardID() {
 	return this.mPageLayout.getBoardID();
     }
 

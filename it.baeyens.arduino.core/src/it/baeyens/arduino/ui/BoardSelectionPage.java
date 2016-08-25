@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
-import io.sloeber.core.api.BoardID;
+import io.sloeber.core.api.BoardDescriptor;
 import it.baeyens.arduino.common.Common;
 import it.baeyens.arduino.common.Const;
 import it.baeyens.arduino.tools.Helpers;
@@ -62,7 +62,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     protected LabelCombo[] mBoardOptionCombos = null;
     private final int ncol = 2;
     protected Listener mBoardSelectionChangedListener = null;
-    private BoardID myBoardID = null;
+    private BoardDescriptor myBoardID = null;
 
     // the properties to modify
     private String[] mAllBoardsFileNames; // contains the boards.txt file names
@@ -340,7 +340,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     private void setValues(ICConfigurationDescription confdesc) {
 
 	if (this.myBoardID == null) {
-	    this.myBoardID = new BoardID(confdesc);
+	    this.myBoardID = new BoardDescriptor(confdesc);
 	}
 
 	String boardIdBoardFile = this.myBoardID.getBoardsFile();
@@ -497,7 +497,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	return options;
     }
 
-    public BoardID getBoardID() {
+    public BoardDescriptor getBoardID() {
 	this.myBoardID.setBoardsFile(getSelectedBoardsFile());
 	this.myBoardID.setBoardName(getBoardName());
 	this.myBoardID.setOptions(getOptions());

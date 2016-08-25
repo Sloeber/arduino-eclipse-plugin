@@ -40,7 +40,7 @@ import it.baeyens.arduino.tools.Helpers;
 import it.baeyens.arduino.tools.ShouldHaveBeenInCDT;
 import it.baeyens.arduino.tools.TxtFile;
 
-public class BoardID {
+public class BoardDescriptor {
 
     private String myUploadPort;
     private String myUploadProtocol;
@@ -60,7 +60,7 @@ public class BoardID {
      * 
      */
     @SuppressWarnings("nls")
-    public BoardID(ICConfigurationDescription confdesc) {
+    public BoardDescriptor(ICConfigurationDescription confdesc) {
 	if (confdesc == null) {
 	    String boardsFile = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARDS_FILE, "");
 	    this.myBoardsFile = new TxtFile(new File(boardsFile));
@@ -78,6 +78,14 @@ public class BoardID {
 	    this.myBoardsFile = new TxtFile(new File(boardsfile));
 	    getMenuOptions(confdesc);
 	}
+    }
+
+    public BoardDescriptor(TxtFile boardsTxtFile, String boardID, Map<String, String> options) {
+	this.myUploadPort = Const.EMPTY_STRING;
+	this.myUploadProtocol = Const.DEFAULT;
+	this.myBoardID = boardID;
+	this.myOptions = options;
+	this.myBoardsFile = boardsTxtFile;
     }
 
     /*
@@ -195,10 +203,11 @@ public class BoardID {
 	    Common.setBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
 		    this.myUploadProtocol);
 	    setMenuOptions(confdesc);
-
-	    for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
-		Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_START + curoption.getKey(),
-			curoption.getValue());
+	    if (this.myOptions != null) {
+		for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
+		    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_START + curoption.getKey(),
+			    curoption.getValue());
+		}
 	    }
 	}
 
@@ -278,9 +287,11 @@ public class BoardID {
     private void setLastUsedMenuOption() {
 	String store = ""; //$NON-NLS-1$
 	String concat = ""; //$NON-NLS-1$
-	for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-	    store = store + concat + curOption.getKey() + '=' + curOption.getValue();
-	    concat = "\n"; //$NON-NLS-1$
+	if (this.myOptions != null) {
+	    for (Entry<String, String> curOption : this.myOptions.entrySet()) {
+		store = store + concat + curOption.getKey() + '=' + curOption.getValue();
+		concat = "\n"; //$NON-NLS-1$
+	    }
 	}
 	InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_BOARD_MENU_OPTIONS, store);
 
@@ -301,9 +312,11 @@ public class BoardID {
     private void setMenuOptions(ICConfigurationDescription confdesc) {
 	String store = ""; //$NON-NLS-1$
 	String concat = ""; //$NON-NLS-1$
-	for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-	    store = store + concat + curOption.getKey() + '=' + curOption.getValue();
-	    concat = "\n"; //$NON-NLS-1$
+	if (this.myOptions != null) {
+	    for (Entry<String, String> curOption : this.myOptions.entrySet()) {
+		store = store + concat + curOption.getKey() + '=' + curOption.getValue();
+		concat = "\n"; //$NON-NLS-1$
+	    }
 	}
 	try {
 	    confdesc.getProjectDescription().getProject().setPersistentProperty(this.optionsStorageQualifiedName,
@@ -334,5 +347,9 @@ public class BoardID {
 	    }
 	}
 
+    }
+
+    public String getBoardID() {
+	return this.myBoardID;
     }
 }
