@@ -2,12 +2,15 @@ package io.sloeber.core.api;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import it.baeyens.arduino.common.ConfigurationPreferences;
 import it.baeyens.arduino.common.InstancePreferences;
 import it.baeyens.arduino.managers.ArduinoPlatform;
 import it.baeyens.arduino.managers.Board;
@@ -23,6 +26,11 @@ import it.baeyens.arduino.tools.TxtFile;
  *
  */
 public class BoardsManager {
+
+    public static String getUpdateJasonFilesKey() {
+	return ConfigurationPreferences.getUpdateJasonFilesKey();
+    }
+
     /**
      * Gets the board id based on the information provided. If
      * jsonFileName="local" the board is assumend not to be installed by the
@@ -92,8 +100,12 @@ public class BoardsManager {
 	return null;
     }
 
-    public static void addPackageURLs(String[] packageUrlsToAdd) {
-	Manager.addPackageURLs(packageUrlsToAdd);
+    public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
+	Manager.addPackageURLs(packageUrlsToAdd, forceDownload);
+    }
+
+    public static void removePackageURLs(Set<String> packageUrlsToRemove) {
+	Manager.removeBoardsPackageURLs(packageUrlsToRemove);
 
     }
 
@@ -121,6 +133,18 @@ public class BoardsManager {
 	}
 	newPaths[currentPaths.length] = newHardwarePath;
 	InstancePreferences.setPrivateHardwarePaths(newPaths);
+    }
+
+    public static String[] getBoardsPackageURLList() {
+	return Manager.getBoardsPackageURLList();
+    }
+
+    public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
+	Manager.setBoardsPackageURL(newBoardJsonUrls);
+    }
+
+    public static String getBoardsPackageURLs() {
+	return Manager.getBoardsPackageURLs();
     }
 
 }

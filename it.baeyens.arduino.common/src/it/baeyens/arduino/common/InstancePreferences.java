@@ -20,8 +20,8 @@ import org.osgi.service.prefs.BackingStoreException;
 public class InstancePreferences extends Const {
 
     private static boolean mIsConfigured = false;
-    private static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload";
-    private static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off";
+    private static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
+    private static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off"; //$NON-NLS-1$
 
     public static boolean getOpenSerialWithMonitor() {
 	return getGlobalBoolean(KEY_OPEN_SERIAL_WITH_MONITOR, Defaults.OPEN_SERIAL_WITH_MONITOR);

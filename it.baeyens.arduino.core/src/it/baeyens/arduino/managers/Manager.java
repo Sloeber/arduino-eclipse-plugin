@@ -27,9 +27,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -61,17 +64,13 @@ public class Manager {
     private Manager() {
     }
 
-    public static void addPackageURLs(String packageUrlsToAdd[]) {
-	String[] originalBoardUrls = ConfigurationPreferences.getPackageURLList();
+    public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
+	HashSet<String> originalBoardUrls = new HashSet<>(
+		Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
+	packageUrlsToAdd.addAll(originalBoardUrls);
 
-	String[] newBoardsUrls = new String[packageUrlsToAdd.length + originalBoardUrls.length];
-	System.arraycopy(packageUrlsToAdd, 0, newBoardsUrls, 0, packageUrlsToAdd.length);
-	System.arraycopy(originalBoardUrls, 0, newBoardsUrls, packageUrlsToAdd.length, originalBoardUrls.length);
-	ConfigurationPreferences.setPackageURLs(newBoardsUrls);
-
-	if (packageIndices != null) {
-	    loadIndices();
-	}
+	ConfigurationPreferences.setBoardsPackageURLs(packageUrlsToAdd);
+	loadIndices(forceDownload);
 
     }
 
@@ -82,7 +81,7 @@ public class Manager {
      * @param monitor
      */
     public static void startup_Pluging(IProgressMonitor monitor) {
-	loadIndices();
+	loadIndices(ConfigurationPreferences.getUpdateJasonFilesValue());
 	try {
 	    List<Board> allBoards = getInstalledBoards();
 	    if (allBoards.isEmpty()) { // we test for boards
@@ -172,11 +171,11 @@ public class Manager {
 
     }
 
-    static public void loadIndices() {
-	String[] boardUrls = ConfigurationPreferences.getPackageURLList();
+    static private void loadIndices(boolean forceDownload) {
+	String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
 	packageIndices = new ArrayList<>(boardUrls.length);
 	for (String boardUrl : boardUrls) {
-	    loadPackageIndex(boardUrl, false);
+	    loadPackageIndex(boardUrl, forceDownload);
 	}
 
 	loadLibraryIndex(false);
@@ -245,7 +244,7 @@ public class Manager {
 
     static public List<PackageIndex> getPackageIndices() {
 	if (packageIndices == null) {
-	    String[] boardUrls = ConfigurationPreferences.getPackageURLList();
+	    String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
 	    packageIndices = new ArrayList<>(boardUrls.length);
 	    for (String boardUrl : boardUrls) {
 		loadPackageIndex(boardUrl, false);
@@ -770,6 +769,73 @@ public class Manager {
 	}
 
 	return 0;
+    }
+
+    /**
+     * This method removes the json files from disk and removes memory
+     * references to these files or their content
+     * 
+     * @param packageUrlsToRemove
+     */
+    public static void removeBoardsPackageURLs(Set<String> packageUrlsToRemove) {
+	// remove the files from memory
+	Set<String> activeBoardUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
+
+	activeBoardUrls.removeAll(packageUrlsToRemove);
+
+	ConfigurationPreferences.setBoardsPackageURLs(activeBoardUrls.toArray(null));
+
+	// remove the files from disk
+	for (String curJson : packageUrlsToRemove) {
+	    File localFile = getLocalFileName(curJson);
+	    if (localFile.exists()) {
+		localFile.delete();
+	    }
+	}
+
+	// reload the indices (this will remove all potential remaining
+	// references
+	// existing files do not need to be refreshed as they have been
+	// refreshed at startup
+	loadIndices(false);
+
+    }
+
+    public static String[] getBoardsPackageURLList() {
+	return ConfigurationPreferences.getBoardsPackageURLList();
+    }
+
+    /**
+     * Completely replace the list with jsons with a new list
+     * 
+     * @param newBoardJsonUrls
+     */
+    public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
+
+	String curJsons[] = getBoardsPackageURLList();
+	HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
+	HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newBoardJsonUrls));
+	currentSelectedJsons.removeAll(origJsons);
+	// remove the files from disk which were in the old lst but not in the
+	// new one
+	for (String curJson : currentSelectedJsons) {
+	    File localFile = getLocalFileName(curJson);
+	    if (localFile.exists()) {
+		localFile.delete();
+	    }
+	}
+	// save to configurationsettings before calling LoadIndices
+	ConfigurationPreferences.setBoardsPackageURLs(newBoardJsonUrls);
+	// reload the indices (this will remove all potential remaining
+	// references
+	// existing files do not need to be refreshed as they have been
+	// refreshed at startup
+	// new files will be added
+	loadIndices(false);
+    }
+
+    public static String getBoardsPackageURLs() {
+	return ConfigurationPreferences.getDefaultBoardsPackageURLs();
     }
 
 }

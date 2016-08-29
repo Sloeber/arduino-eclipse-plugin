@@ -62,8 +62,6 @@ public class Const {
     public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
 
-    public static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls";
-
     // properties keys
     public static final String KEY_LAST_USED_BOARD = "Board";
     public static final String KEY_LAST_USED_COM_PORT = "Upload port";
@@ -72,7 +70,6 @@ public class Const {
     public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
 
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
-    public static final String KEY_UPDATE_JASONS = "Update jsons files";
 
     // Serial monitor keys
     public static final String KEY_SERIAL_RATE = "Serial monitor last selected rate";

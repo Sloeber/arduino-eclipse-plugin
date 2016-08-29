@@ -7,8 +7,7 @@ import org.eclipse.core.runtime.Path;
 public class Defaults {
     public static final boolean OPEN_SERIAL_WITH_MONITOR = true;
     public static final boolean AUTO_IMPORT_LIBRARIES = true;
-    public static final String JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json"
-	    + System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+
     public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json";
     public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip";
     public static final String EXAMPLES_URL = "http://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE;
@@ -16,7 +15,8 @@ public class Defaults {
     public static final String[] INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 	    "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi" };
 
-    private Defaults () {}
+    private Defaults() {
+    }
 
     /**
      * Arduino has the default libraries in the user home directory in subfolder
