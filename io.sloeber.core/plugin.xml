@@ -36,7 +36,7 @@
 ####################################################################################### 
 -->
  	<extension point="org.eclipse.core.resources.natures"
- 		id="io.sloebernature" 
+ 		id="io.sloeber.arduinonature" 
  		name="arduinoNature" >
        <runtime>
            <run class="io.sloeber.core.natures.ArduinoNature" />
@@ -331,23 +331,6 @@
       </command>
 
 	</extension>
-
-<!-- Definition: "is this a Arduino project?"  
-   <extension       point="org.eclipse.core.expressions.definitions">
-  -->
-  
- <!-- Is arduino definition 
-   <definition
-            id="io.sloeber.defenition.isArduinoproject">
-               <iterate ifEmpty="false">
-		       <adapt type="org.eclipse.core.resources.IResource">
-		          <test property="org.eclipse.core.resources.projectNature" 
-		          value="io.sloebernature"/>
-		       </adapt> 
-		       </iterate>
-           </definition>
-    </extension  > 
---> 
 
 <!-- Definition to know if the active perspective is Arduino -->
 <extension point="org.eclipse.core.expressions.definitions">
