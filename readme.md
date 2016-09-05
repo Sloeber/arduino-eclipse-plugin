@@ -199,7 +199,7 @@ After all it should look like this:
 
 ### Set the Code Formatting
 
-To avoid having changes all the time because of different formatting this project uses the standard "java conventions [build in].
+To avoid having changes all the time because of different formatting this project uses the standard "Eclipse [built-in]".
 
 Go to 
 
