@@ -39,7 +39,7 @@ mvn clean verify
 Then the runnable application executable can be started, i.e. on a 64-bit mac, with:
 
 ```bash
-open it.baeyens.arduino.product/target/products/it.baeyens.arduino.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
+open io.sloeber.product/target/products/io.sloeber.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
 ```
 
 On Linux you can run start eclipse using provided shell script:
@@ -88,7 +88,7 @@ mvn clean verify
 
 ### Setting up a repository
 
-If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/it.baeyens.arduino.product/target/repository```
+If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/io.sloeber.product/target/repository```
 
 ![alt text](images_plugin_dev_setup/add_local_repository.png "Adding a local repository")
 
@@ -234,7 +234,7 @@ My current settings are as follows:
 
 ### Running the Plugin
 
-Then running is very simple - just right click it.bayaens.arduino.core and select:
+Then running is very simple - just right click io.sloeber.core and select:
 
 > Run as → Eclipse Application
 

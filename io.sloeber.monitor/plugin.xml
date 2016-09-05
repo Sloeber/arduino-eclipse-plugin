@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension point="org.eclipse.ui.views">
+	<category
+            name="Sloeber"
+            id="io.sloeber.monitor">
+      </category>
+      <view id="io.sloeber.monitor.views.SerialMonitor"
+            category="io.sloeber.monitor"
+            class="io.sloeber.monitor.views.SerialMonitor"
+            icon="icons/arduino.png"
+            name="Serial monitor view">
+      </view>
+      <view
+            category="io.sloeber.monitor"
+            class="io.sloeber.monitor.views.ScopeView"
+            icon="icons/oscilloscope.png"
+            id="io.sloeber.monitor.views.ScopeView"
+            name="Scope"
+            restorable="true">
+      </view>
+
+	</extension>
+
+ <!-- 
+####################################################################################### 
+#   fonts and colors used by the plugin              
+# 
+####################################################################################### 
+-->
+ 
+ <extension point="org.eclipse.ui.themes">
+ <themeElementCategory
+      id="io.sloeber.themeCategory"
+      label="Sloeber">
+</themeElementCategory>
+<themeElementCategory
+      id="io.sloeber.scope.themeCategory"
+      label="Scope"
+      parentId="io.sloeber.themeCategory">
+<description>
+Fonts and colors used by the arduino eclipse plugin scope view
+</description>
+</themeElementCategory>
+<themeElementCategory
+      id="io.sloeber.serialMonitor.themeCategory"
+      label="Serial monitor"
+      parentId="io.sloeber.themeCategory">
+<description>
+Fonts and colors used by the arduino eclipse plugin serial monitor view
+</description>
+</themeElementCategory>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.background" label="Background color" value="COLOR_BLACK">
+<description>
+The background color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.foreground" label="Foreground color" value="COLOR_WHITE">
+<description>
+The foreground color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.grid" label="Grid color" value="COLOR_DARK_CYAN">
+<description>
+The grid color of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.1" label="Channel 1 color" value="COLOR_BLUE">
+<description>
+The color used by the first channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.2" label="Channel 2 color" value="COLOR_CYAN">
+<description>
+The color used by the second channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.3" label="Channel 3 color" value="COLOR_DARK_GRAY">
+<description>
+The color used by the third channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.4" label="Channel 4 color" value="COLOR_DARK_GREEN">
+<description>
+The color used by the fourth channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.5" label="Channel 5 color" value="COLOR_DARK_RED">
+<description>
+The color used by the fifth channel of the Arduino scope
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.6" label="Channel 6 color" value="COLOR_DARK_YELLOW">
+<description>
+The color used by the sixth channel of the Arduino scope
+</description>
+</colorDefinition>
+<fontDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
+<description>
+The font for in the serial monitor
+</description>
+</fontDefinition>
+
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.1" label="Channel 1 color" value="COLOR_BLACK">
+<description>
+The color used by the first serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.2" label="Channel 2 color" value="COLOR_RED">
+<description>
+The color used by the second serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.3" label="Channel 3 color" value="COLOR_GREEN">
+<description>
+The color used by the third serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.4" label="Channel 4 color" value="COLOR_BLUE">
+<description>
+The color used by the fourth serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      id="io.sloeber.serial.color.5"
+      label=" Channel 5 color"
+      value="COLOR_DARK_RED">
+   <description>
+      The color used by the fifth serial connection of the serial monitor
+   </description>
+</colorDefinition>
+<colorDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      id="io.sloeber.serial.color.6"
+      label="Channel 6 color"
+      value="COLOR_DARK_YELLOW">
+   <description>
+      The color used by the sixth serial connection of the serial monitor
+   </description>
+</colorDefinition>
+</extension>
+</plugin>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+		<artifactId>io.sloeber.parent</artifactId>
+		<version>3.1.0-SNAPSHOT</version>
+    <relativePath>../io.sloeber.parent</relativePath>
+	</parent>
+    <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+	<artifactId>io.sloeber.product</artifactId>
+	<version>3.1.0</version>
+	<packaging>eclipse-repository</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<!-- http://eclipse.org/tycho/sitedocs/tycho-p2/tycho-p2-director-plugin/plugin-info.html -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-director-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<id>materialize-products</id>
+						<goals>
+							<goal>materialize-products</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>archive-products</id>
+						<goals>
+							<goal>archive-products</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<formats>
+						<win32>tar.gz</win32>
+						<linux>tar.gz</linux>
+						<macosx>tar.gz</macosx>
+					</formats>
+					<products>
+						<product>
+							<!-- id is verbatim to todo.product "uid" -->
+							<id>io.sloeber.product</id>
+							<!-- Customise the packaged product's archive name (Instead of "io.sloeber.product")
+							    Suffix is still <os>.<ws>.<arch>.<archiveExtension> (e.g. linux.gtk.x86_64.tar.gz)
+							 -->
+                            <archiveFileName>sloeber-ide-${platform-version-name}</archiveFileName>
+							<!-- Causes the archives to contain a folder todo/ that contains the 
+								application -->
+							<!-- Without it, the application is at the archive root -->
+							<rootFolder>sloeber</rootFolder>
+							<!-- On Linux self contained installations are commonly extract to 
+								/opt folder -->
+							<!-- LSB: "binary-only packages of nonessential applications and add-on 
+								software products" -->
+						</product>
+					</products>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
