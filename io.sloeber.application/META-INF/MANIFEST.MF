@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Application
+Bundle-SymbolicName: io.sloeber.application;singleton:=true
+Bundle-Version: 3.1.0.qualifier
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ io.sloeber.monitor,
+ org.eclipse.ui.intro,
+ io.sloeber.cdt.refactor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

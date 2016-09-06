@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="io.sloeber.feature"
+      label="%featureName"
+      version="3.1.0.qualifier"
+      provider-name="%provider">
+
+   <description url="http://baeyens.it/eclipse/">
+      %description
+   </description>
+
+   <copyright>
+      Copyright (c) 2011-2016 Jan Baeyens and others
+
+
+All rights reserved by the owning parties.
+
+Arduino -&gt; The Arduino software is also open-source. The source code for the Java environment is released under the GPL and the C/C++ microcontroller libraries are under the LGPL.
+       
+Remaining code of AVR-eclipse AVR-eclipse-&gt;  see license-AVR.html 
+
+Eclipse -&gt; see license-Eclipse.HTML
+
+Boards code
+
+Trump211
+   </copyright>
+
+   <license url="%licenseUrl">
+      %license
+   </license>
+
+   <url>
+      <update label="Arduino eclipse plugin V3 update site" url="http://eclipse.baeyens.it/V3/"/>
+      <discovery label="jan&apos;s site with plenty of documentation" url="http://eclipse.baeyens.it/"/>
+   </url>
+
+   <requires>
+      <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="io.sloeber.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sloeber.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sloeber.monitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sloeber.core.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="io.sloeber.application"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sloeber.cdt.refactor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
