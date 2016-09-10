@@ -299,8 +299,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
-      <feature id="org.eclipse.cdt.build.crossgcc" installMode="root"/>
-      <feature id="org.eclipse.cdt.debug.ui.memory" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
       <feature id="org.eclipse.cdt.gnu.debug" installMode="root"/>
@@ -317,8 +315,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.emf.common" installMode="root"/>
       <feature id="org.eclipse.emf.ecore" installMode="root"/>
       <feature id="org.eclipse.epp.mpc" installMode="root"/>
-      <feature id="org.eclipse.equinox.core.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.executable" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature" installMode="root"/>
       <feature id="org.eclipse.equinox.p2.extras.feature" installMode="root"/>
@@ -346,6 +342,14 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.cdt.testsrunner.feature"/>
       <feature id="org.eclipse.equinox.core.sdk"/>
       <feature id="org.eclipse.pde"/>
+      <feature id="org.eclipse.rse.local"/>
+      <feature id="org.eclipse.mylyn.tasks.ide"/>
+      <feature id="org.eclipse.rse.dstore"/>
+      <feature id="org.eclipse.rse.ftp"/>
+      <feature id="org.eclipse.rse.telnet"/>
+      <feature id="org.eclipse.rse.ssh"/>
+      <feature id="org.eclipse.rse.core"/>
+      <feature id="org.eclipse.cdt.native"/>
    </features>
 
    <configurations>

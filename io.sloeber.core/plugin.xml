@@ -58,7 +58,7 @@
             name="%page.name" >
 			<filter
 				name="projectNature"
-				value="io.sloebernature">
+				value="io.sloeber.arduinonature">
 			</filter>            
 			<enabledWhen>
 				<or>
