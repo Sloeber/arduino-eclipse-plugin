@@ -56,7 +56,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 		    // curconf:projDesc.getConfigurations()){
 		    // curconf.getConfiguration().
 		    // }
-		    // projDesc.getProject().setDescription(desc, null);
+		    projDesc.getProject().setDescription(desc, null);
 		} else {
 		    return;
 		}
