@@ -14,10 +14,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -371,7 +371,7 @@ public class Helpers extends Common {
 	}
     }
 
-    private static void searchFiles(File folder, HashSet<String> Hardwarelists, String Filename, int depth) {
+    private static void searchFiles(File folder, TreeSet<String> Hardwarelists, String Filename, int depth) {
 	if (depth > 0) {
 	    File[] a = folder.listFiles();
 	    if (a == null) {
@@ -1345,14 +1345,16 @@ public class Helpers extends Common {
     }
 
     /**
-     * Searches for all boards.txt files from the arduino hardware folder
+     * Searches for all boards.txt files from the hardware folders and the
+     * boards manager
      * 
-     * @return all the boards.txt files with full path
+     * @return all the boards.txt files with full path and in a case insensitive
+     *         order
      */
     public static String[] getBoardsFiles() {
 	String hardwareFolders[] = getHardwarePaths();
 
-	HashSet<String> boardFiles = new HashSet<>();
+	TreeSet<String> boardFiles = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 	for (String CurFolder : hardwareFolders) {
 	    searchFiles(new File(CurFolder), boardFiles, Const.BOARDS_FILE_NAME, 6);
 	}

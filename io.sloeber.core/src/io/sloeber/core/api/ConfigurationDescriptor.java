@@ -10,12 +10,12 @@ import java.util.ArrayList;
  */
 @SuppressWarnings("nls")
 public class ConfigurationDescriptor {
-    public final String Name;
+    public final String configName;
     public final String ToolchainID;
     public final boolean DebugCompilerSettings;
 
     public ConfigurationDescriptor(String Name, String ToolchainID, boolean DebugCompilerSettings) {
-	this.Name = Name;
+	this.configName = Name;
 	this.ToolchainID = ToolchainID;
 	this.DebugCompilerSettings = DebugCompilerSettings;
     }

@@ -1,7 +1,6 @@
 package io.sloeber.core.ui;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,7 +188,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    "ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed.")); //$NON-NLS-1$
 	}
-	Arrays.sort(this.mAllBoardsFileNames);
 	this.mAllBoardsFiles = new TxtFile[this.mAllBoardsFileNames.length];
 	for (int currentBoardFile = 0; currentBoardFile < this.mAllBoardsFileNames.length; currentBoardFile++) {
 	    this.mAllBoardsFiles[currentBoardFile] = new TxtFile(new File(this.mAllBoardsFileNames[currentBoardFile]));

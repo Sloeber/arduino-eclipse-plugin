@@ -39,4 +39,5 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.ui.ide,
  org.eclipse.ui,
  org.eclipse.debug.ui,
- org.junit
+ org.junit,
+ org.eclipse.ui.externaltools

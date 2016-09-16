@@ -70,7 +70,7 @@ public class ShouldHaveBeenInCDT {
 	    IToolChain tcs = ManagedBuildManager.getExtensionToolChain(alCfgs.get(i).ToolchainID);
 
 	    Configuration cfg = new Configuration(mProj, (ToolChain) tcs,
-		    ManagedBuildManager.calculateChildId(alCfgs.get(i).ToolchainID, null), alCfgs.get(i).Name);
+		    ManagedBuildManager.calculateChildId(alCfgs.get(i).ToolchainID, null), alCfgs.get(i).configName);
 	    IBuilder bld = cfg.getEditableBuilder();
 	    if (bld != null) {
 		bld.setManagedBuildOn(isManagedBuild);

@@ -122,7 +122,7 @@ public class BoardDescriptor {
 	Helpers.createNewFolder(projectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
 
 	for (ConfigurationDescriptor curConfig : cfgNamesAndTCIds) {
-	    ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.Name);
+	    ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.configName);
 	    save(configurationDescription);
 	    Helpers.setTheEnvironmentVariables(projectHandle, configurationDescription,
 		    curConfig.DebugCompilerSettings);
@@ -135,7 +135,7 @@ public class BoardDescriptor {
 	// Release is the active config (as that is the "IDE" Arduino
 	// type....)
 	ICConfigurationDescription defaultConfigDescription = prjCDesc
-		.getConfigurationByName(cfgNamesAndTCIds.get(0).Name);
+		.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
 	prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
 	// Insert The Arduino Code
