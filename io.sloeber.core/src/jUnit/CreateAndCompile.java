@@ -446,9 +446,9 @@ public class CreateAndCompile {
 		"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
 		// redirected
 		// "http://digistump.com/package_digistump_index.json",
-		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/package_olimex_index.json",
-		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/package_olimex_pic_index.json",
-		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/package_olimex_stm_index.json",
+		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_index.json",
+		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/PIC/package_olimex_pic_index.json",
+		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/STM/package_olimex_stm_index.json",
 		"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
 		"https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
 		"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
