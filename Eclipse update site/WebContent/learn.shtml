@@ -8,7 +8,7 @@
     <meta name="author" content="Jan Baeyens">
     <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse Plugin - Learn</title>
+    <title>Sloeber - Learn</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -34,7 +34,7 @@
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>Learn <small>about the arduino eclipse plugin</small></h1>
+        <h1>Learn <small>about the arduino eclipse plugin named</small> Sloeber</h1>
         <a name="top">&nbsp;</a>
       </div>
 
@@ -48,8 +48,10 @@
             <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Arduino core source code at your finger tips</a>
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Arduino library code at your finger tips</a>
             <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Lots of search functionalities</a>
+            <a href="#" ng-class="tab.gg" class="list-group-item small" ng-click="select('gg')">Known limitations</a>
             <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">Lots easier to make libraries</a>
             <a href="#" ng-class="tab.i" class="list-group-item small" ng-click="select('i')">Multiple configurations</a>
+            <a href="#" ng-class="tab.j" class="list-group-item small" ng-click="select('j')">Supported boards</a>
 
           </div>
         </div>
@@ -62,8 +64,10 @@
           <section ng-show="tab.e" marked ng-include="'fragments/learn/arduino_code.md'"></section>
           <section ng-show="tab.f" marked ng-include="'fragments/learn/library_code.md'"></section>
           <section ng-show="tab.g" marked ng-include="'fragments/learn/search_functionality.md'"></section>
+          <section ng-show="tab.gg" marked ng-include="'fragments/learn/knownLimitations.md'"></section>
           <section ng-show="tab.h" marked ng-include="'fragments/learn/easy_library.md'"></section>
           <section ng-show="tab.i" marked ng-include="'fragments/learn/multiple_configurations.md'"></section>
+          <section ng-show="tab.j" marked ng-include="'fragments/learn/supportedBoards.md'"></section>
 
         </div>
       </div>

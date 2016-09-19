@@ -1,4 +1,4 @@
-Why would you use the plugin
+Why would you use the plugin named Sloeber
 ========
 If you are starting with arduino or micro controllers in general I strongly advice to start using the arduino IDE. 
 
@@ -16,5 +16,5 @@ So when you have a need that goes above "low entry level" you are out of the foc
 
 At that point in time, one of the doors/options is the arduino eclipse plugin. One of the strong points of the Arduino eclipse plugin compared to the other available tools is that it is multi platform. It has active users using Windows, Mac and linux.
 
-The arduino eclipse plugin is easy to set-up (though harder than the Arduino IDE) and easy to use. It has the same icons for verify upload and serial monitor as the arduino IDE. -There is a difference in that the upload does not do the verify first.-  
+The arduino eclipse plugin is easy to set-up (though harder than the Arduino IDE) and easy to use. It has the same icons for verify upload and serial monitor as the arduino IDE.   
 Most people have uploaded a sketch in less than 15 minutes -there are some people who never succeeded in running the tool-.
