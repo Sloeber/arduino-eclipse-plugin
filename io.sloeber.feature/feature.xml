@@ -27,7 +27,8 @@ Trump211
    </copyright>
 
    <license url="%licenseUrl">
-      %license
+      -This software sends non personalised activity data (build/upload/open serial monitor/open scope) to baeyens.it for statistical analyses of the usage of the plugin.
+-If you do not agree with this policy, then please do not install this software.
    </license>
 
    <url>
