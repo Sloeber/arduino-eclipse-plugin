@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.core.ui.Activator;
+import io.sloeber.core.Activator;
 
 public class Library implements Comparable<Library> {
 

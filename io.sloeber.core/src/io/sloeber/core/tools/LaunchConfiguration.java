@@ -10,7 +10,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
-import io.sloeber.core.actions.UploadProjectHandler;
+import io.sloeber.core.api.Sketch;
 
 public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
@@ -63,7 +63,7 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
 	if (this.project != null) {
 	    // Delegate launching the project
-	    UploadProjectHandler.uploadProject(this.project);
+	    Sketch.upload(this.project);
 	}
     }
 

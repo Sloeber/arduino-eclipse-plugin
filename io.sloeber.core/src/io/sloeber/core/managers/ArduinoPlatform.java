@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.common.Const;
-import io.sloeber.core.ui.Activator;
+import io.sloeber.core.Activator;
 
 public class ArduinoPlatform {
 
@@ -248,6 +248,14 @@ public class ArduinoPlatform {
 	} else if (!this.version.equals(other.version))
 	    return false;
 	return true;
+    }
+
+    public List<String> getBoardNames() {
+	List<String> ret = new ArrayList<>();
+	for (Board curBoar : this.boards) {
+	    ret.add(curBoar.getName());
+	}
+	return ret;
     }
 
 }

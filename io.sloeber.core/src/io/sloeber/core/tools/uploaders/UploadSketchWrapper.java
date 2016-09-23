@@ -19,6 +19,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
+import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.tools.Helpers;
 
 public class UploadSketchWrapper {
@@ -170,7 +171,7 @@ public class UploadSketchWrapper {
 			Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.DEFAULT);
 
 		try {
-		    WeStoppedTheComPort = Common.StopSerialMonitor(comPort);
+		    WeStoppedTheComPort = SerialManager.StopSerialMonitor(comPort);
 		} catch (Exception e) {
 		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e));
 		}
@@ -188,7 +189,7 @@ public class UploadSketchWrapper {
 	    } finally {
 		try {
 		    if (WeStoppedTheComPort) {
-			Common.StartSerialMonitor(comPort);
+			SerialManager.StartSerialMonitor(comPort);
 		    }
 		} catch (Exception e) {
 		    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,

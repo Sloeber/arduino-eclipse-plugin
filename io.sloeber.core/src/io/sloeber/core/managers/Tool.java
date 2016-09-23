@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.core.ui.Activator;
+import io.sloeber.core.Activator;
 
 public class Tool {
 
@@ -51,8 +51,7 @@ public class Tool {
 
     public Path getInstallPath() {
 	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()) //$NON-NLS-1$
-		.append(this.name)
-		.append(this.version).toString());
+		.append(this.name).append(this.version).toString());
     }
 
     public boolean isInstalled() {

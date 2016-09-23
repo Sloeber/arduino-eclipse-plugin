@@ -17,7 +17,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -368,28 +367,6 @@ public class Helpers extends Common {
 
 	if (!file.exists()) {
 	    file.create(contentStream, true, monitor);
-	}
-    }
-
-    private static void searchFiles(File folder, TreeSet<String> Hardwarelists, String Filename, int depth) {
-	if (depth > 0) {
-	    File[] a = folder.listFiles();
-	    if (a == null) {
-		Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-			Messages.Helpers_The_folder + folder + Messages.Helpers_is_empty, null));
-		return;
-	    }
-	    for (File f : a) {
-		if (f.isDirectory()) {
-		    searchFiles(f, Hardwarelists, Filename, depth - 1);
-		} else if (f.getName().equals(Filename)) {
-		    try {
-			Hardwarelists.add(new Path(f.getCanonicalPath()).toString());
-		    } catch (IOException e) {
-			// e.printStackTrace();
-		    }
-		}
-	    }
 	}
     }
 
@@ -817,7 +794,6 @@ public class Helpers extends Common {
      *            the info of the selected board to set the variables for
      */
 
-    @SuppressWarnings("nls")
     public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc,
 	    boolean debugCompilerSettings) {
 
@@ -826,7 +802,7 @@ public class Helpers extends Common {
 	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
 	File boardFileName = new Path(
-		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, "")).toFile();
+		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, "")).toFile(); //$NON-NLS-1$
 	File localPlatformFilename = new Path(
 		Common.getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, EMPTY_STRING))
 			.toFile();
@@ -1170,9 +1146,9 @@ public class Helpers extends Common {
 	// grab the value in ENV_KEY_BUILD_VARIANT and put it in
 	// ENV_KEY_JANTJE_BUILD_VARIANT
 	// because ENV_KEY_JANTJE_BUILD_VARIANT is empty
-	String variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, "", true);
+	String variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, "", true); //$NON-NLS-1$
 	if (variant.isEmpty()) {
-	    variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_BUILD_VARIANT, "", true);
+	    variant = getBuildEnvironmentVariable(confDesc, ENV_KEY_BUILD_VARIANT, "", true); //$NON-NLS-1$
 	    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BUILD_VARIANT, variant);
 	}
 
@@ -1342,29 +1318,6 @@ public class Helpers extends Common {
 	    outputName = Source;
 	}
 	return outputName;
-    }
-
-    /**
-     * Searches for all boards.txt files from the hardware folders and the
-     * boards manager
-     * 
-     * @return all the boards.txt files with full path and in a case insensitive
-     *         order
-     */
-    public static String[] getBoardsFiles() {
-	String hardwareFolders[] = getHardwarePaths();
-
-	TreeSet<String> boardFiles = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-	for (String CurFolder : hardwareFolders) {
-	    searchFiles(new File(CurFolder), boardFiles, Const.BOARDS_FILE_NAME, 6);
-	}
-	if (boardFiles.size() == 0) {
-	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		    Messages.Helpers_No_boards_txt_found + String.join("\n", hardwareFolders), null)); //$NON-NLS-1$
-	    return null;
-	}
-	return boardFiles.toArray(new String[boardFiles.size()]);
-
     }
 
     /**

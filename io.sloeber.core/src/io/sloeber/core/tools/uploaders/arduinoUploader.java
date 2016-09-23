@@ -18,9 +18,9 @@ import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.common.Const;
 import io.sloeber.common.IndexHelper;
+import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.communication.ArduinoSerial;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.core.tools.PasswordManager;
 
 public class arduinoUploader implements IRealUpload {
 
@@ -47,7 +47,8 @@ public class arduinoUploader implements IRealUpload {
 	ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
 
 	try {
-	    MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, configurationDescription, true).getValue();
+	    MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, configurationDescription, true)
+		    .getValue();
 	    boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true)
 		    .getValue();
 	    needsPassword = envManager.getVariable(Const.ENV_KEY_NETWORK_AUTH, configurationDescription, true)
@@ -116,7 +117,7 @@ public class arduinoUploader implements IRealUpload {
 	    ICConfigurationDescription configurationDescription, String host) {
 	String passWord;
 	PasswordManager pwdManager = new PasswordManager();
-	if (!pwdManager.setHost(Helpers.getHostFromComPort(host), false)) {
+	if (!pwdManager.setHost(Helpers.getHostFromComPort(host))) {
 	    passWord = getPasswordFromCode();
 	} else {
 	    passWord = pwdManager.getPassword();

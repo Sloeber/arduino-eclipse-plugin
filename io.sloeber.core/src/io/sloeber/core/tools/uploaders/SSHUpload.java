@@ -20,7 +20,7 @@ import cc.arduino.packages.ssh.SCP;
 import cc.arduino.packages.ssh.SSH;
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
-import io.sloeber.core.tools.PasswordManager;
+import io.sloeber.core.api.PasswordManager;
 
 public class SSHUpload implements IRealUpload {
 
@@ -52,7 +52,9 @@ public class SSHUpload implements IRealUpload {
 	    return false;
 	}
 	PasswordManager pwdManager = new PasswordManager();
-	if (!pwdManager.setHost(this.myHost, true)) {
+	if (!pwdManager.setHost(this.myHost)) {
+	    // TODO need a way to get to the password now the gui is no longer
+	    // in the method
 	    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		    Messages.Upload_login_credentials_missing + this.myHost));
 	}

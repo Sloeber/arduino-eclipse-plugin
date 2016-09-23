@@ -37,6 +37,7 @@ import io.sloeber.common.Common;
 import io.sloeber.common.Const;
 import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
+import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
@@ -46,7 +47,8 @@ public class BoardDescriptor {
     private String myUploadProtocol;
     private String myBoardID;
     private Map<String, String> myOptions;
-    private TxtFile myBoardsFile;
+    private File myBoardsFile;
+    private TxtFile myTxtFile;
     private QualifiedName optionsStorageQualifiedName = new QualifiedName(Const.CORE_PLUGIN_ID,
 	    Const.KEY_LAST_USED_BOARD_MENU_OPTIONS);
 
@@ -62,8 +64,8 @@ public class BoardDescriptor {
     @SuppressWarnings("nls")
     public BoardDescriptor(ICConfigurationDescription confdesc) {
 	if (confdesc == null) {
-	    String boardsFile = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARDS_FILE, "");
-	    this.myBoardsFile = new TxtFile(new File(boardsFile));
+	    this.myBoardsFile = new File(InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARDS_FILE, ""));
+	    this.myTxtFile = new TxtFile(this.myBoardsFile);
 	    this.myBoardID = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARD, "");
 	    this.myUploadPort = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_COM_PORT, "");
 	    this.myUploadProtocol = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_UPLOAD_PROTOCOL,
@@ -73,19 +75,21 @@ public class BoardDescriptor {
 	    this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, "");
 	    this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
 		    Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), ""); //$NON-NLS-1$
-	    String boardsfile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, "");
+	    this.myBoardsFile = new File(
+		    Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
 	    this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
-	    this.myBoardsFile = new TxtFile(new File(boardsfile));
+	    this.myTxtFile = new TxtFile(this.myBoardsFile);
 	    getMenuOptions(confdesc);
 	}
     }
 
-    public BoardDescriptor(TxtFile boardsTxtFile, String boardID, Map<String, String> options) {
+    public BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
 	this.myUploadPort = Const.EMPTY_STRING;
 	this.myUploadProtocol = Const.DEFAULT;
 	this.myBoardID = boardID;
 	this.myOptions = options;
-	this.myBoardsFile = boardsTxtFile;
+	this.myBoardsFile = boardsFile;
+	this.myTxtFile = new TxtFile(this.myBoardsFile);
     }
 
     /*
@@ -189,7 +193,7 @@ public class BoardDescriptor {
 	return projectHandle;
     }
 
-    public void save(ICConfigurationDescription confdesc) {
+    public void save(ICConfigurationDescription confdesc) throws Exception {
 	if (confdesc != null) {
 
 	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, getPlatformFile());
@@ -209,6 +213,14 @@ public class BoardDescriptor {
 			    curoption.getValue());
 		}
 	    }
+	    IProject project = confdesc.getProjectDescription().getProject();
+
+	    Helpers.setTheEnvironmentVariables(project, confdesc, false);
+
+	    Helpers.addArduinoCodeToProject(project, confdesc);
+
+	    Helpers.removeInvalidIncludeFolders(confdesc);
+	    Helpers.setDirtyFlag(project, confdesc);
 	}
 
 	// Also save last used values
@@ -223,19 +235,19 @@ public class BoardDescriptor {
     }
 
     public String getPackage() {
-	return this.myBoardsFile.getPackage();
+	return this.myTxtFile.getPackage();
     }
 
     public String getArchitecture() {
-	return this.myBoardsFile.getArchitecture();
+	return this.myTxtFile.getArchitecture();
     }
 
     public String getBoardsFile() {
-	return new Path(this.myBoardsFile.getTxtFile().toString()).toString();
+	return new Path(this.myTxtFile.getTxtFile().toString()).toString();
     }
 
     public String getBoardName() {
-	return this.myBoardsFile.getNameFromID(this.myBoardID);
+	return this.myTxtFile.getNameFromID(this.myBoardID);
     }
 
     public String getUploadPort() {
@@ -247,7 +259,7 @@ public class BoardDescriptor {
     }
 
     public IPath getPlatformPath() {
-	return new Path(this.myBoardsFile.getTxtFile().getParent());
+	return new Path(this.myTxtFile.getTxtFile().getParent());
     }
 
     public String getPlatformFile() {
@@ -268,11 +280,12 @@ public class BoardDescriptor {
     }
 
     public void setBoardName(String boardName) {
-	this.myBoardID = this.myBoardsFile.getIDFromName(boardName);
+	this.myBoardID = this.myTxtFile.getIDFromName(boardName);
     }
 
-    public void setBoardsFile(TxtFile boardsFile) {
+    public void setBoardsFile(File boardsFile) {
 	this.myBoardsFile = boardsFile;
+	this.myTxtFile = new TxtFile(this.myBoardsFile);
     }
 
     public void setOptions(Map<String, String> options) {
@@ -351,5 +364,23 @@ public class BoardDescriptor {
 
     public String getBoardID() {
 	return this.myBoardID;
+    }
+
+    public String[] getCompatibleBoards() {
+	return this.myTxtFile.getAllNames();
+    }
+
+    public String[] getUploadProtocols() {
+	return Programmers.getUploadProtocols(this.myBoardsFile.toString());
+    }
+
+    public String[] getMenuItemNames(String menuName) {
+	// TODO Auto-generated method stub
+	return this.myTxtFile.getMenuItemNames(menuName, this.myBoardID);
+    }
+
+    public String[] getAllMenuNames() {
+	// TODO Auto-generated method stub
+	return this.myTxtFile.getMenuNames();
     }
 }

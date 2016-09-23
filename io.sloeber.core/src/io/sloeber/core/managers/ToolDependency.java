@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.ui.Activator;
+import io.sloeber.core.Activator;
 
 public class ToolDependency {
 
@@ -49,7 +49,8 @@ public class ToolDependency {
     public IStatus install(IProgressMonitor monitor) {
 	Tool tool = getTool();
 	if (tool == null) {
-	    return new Status(IStatus.ERROR, Activator.getId(), String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
+	    return new Status(IStatus.ERROR, Activator.getId(),
+		    String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
 	}
 	return getTool().install(monitor);
     }

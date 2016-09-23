@@ -90,13 +90,12 @@ public class TxtFile {
      * 
      * @param menu
      *            the name of a menu not the ide
-     * @param boardName
-     *            the name of a board not the ide
+     * @param boardID
+     *            the id of a board not the ide
      * @return
      */
-    public String[] getMenuItemNames(String menuLabel, String boardName) {
+    public String[] getMenuItemNames(String menuLabel, String boardID) {
 	String menuID = null;
-	String boardID = getIDFromName(boardName);
 	HashSet<String> ret = new HashSet<>();
 	Map<String, String> menuInfo = this.fileContent.get(MENU);
 	if (menuInfo == null) {

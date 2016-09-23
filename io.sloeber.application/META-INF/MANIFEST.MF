@@ -5,7 +5,7 @@ Bundle-SymbolicName: io.sloeber.application;singleton:=true
 Bundle-Version: 3.1.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- io.sloeber.monitor,
  org.eclipse.ui.intro,
- io.sloeber.cdt.refactor
+ io.sloeber.core;bundle-version="3.1.0",
+ io.sloeber.ui;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

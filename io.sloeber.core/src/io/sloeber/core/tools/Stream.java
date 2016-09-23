@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.common.Common;
-import io.sloeber.core.ui.NewSketchWizard;
 
 /**
  * the Stream class is used to read the board.txt file
@@ -24,7 +23,8 @@ public class Stream {
     /**
      * Initialize the file contents to contents of the given resource.
      */
-    public static InputStream openContentStream(String title, String Include, String Resource, boolean isFile) throws CoreException {
+    public static InputStream openContentStream(String title, String Include, String Resource, boolean isFile)
+	    throws CoreException {
 
 	/* We want to be truly OS-agnostic */
 	final String newline = System.getProperty("line.separator"); //$NON-NLS-1$
@@ -37,7 +37,7 @@ public class Stream {
 	    if (isFile) {
 		input = new FileInputStream(Resource);
 	    } else {
-		input = NewSketchWizard.class.getResourceAsStream(Resource);
+		input = Stream.class.getResourceAsStream(Resource);
 	    }
 	    // "templates/index-xhtml-template.resource");
 

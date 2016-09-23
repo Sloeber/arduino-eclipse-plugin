@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Eclipse update site</name>
+	<name>website</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -30,7 +30,13 @@
 		<link>
 			<name>readme.md</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/readme.md</locationURI>
+			<locationURI>copy_PARENT/readme.md</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>file:/C:/Users/jan/git/arduino-eclipse-plugin</value>
+		</variable>
+	</variableList>
 </projectDescription>

@@ -54,12 +54,17 @@ import com.google.gson.Gson;
 import io.sloeber.common.Common;
 import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.common.Defaults;
-import io.sloeber.core.ui.Activator;
+import io.sloeber.core.Activator;
 
 public class Manager {
 
     static private List<PackageIndex> packageIndices;
     static private LibraryIndex libraryIndex;
+    private static boolean myIsReady = false;
+
+    public static boolean isReady() {
+	return myIsReady;
+    }
 
     private Manager() {
     }
@@ -111,6 +116,7 @@ public class Manager {
 	} catch (CoreException e) {
 	    e.printStackTrace();
 	}
+	myIsReady = true;
 
     }
 

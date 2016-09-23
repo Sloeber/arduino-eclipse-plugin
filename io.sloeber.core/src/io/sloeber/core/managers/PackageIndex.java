@@ -7,6 +7,7 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
+import java.io.File;
 import java.util.List;
 
 public class PackageIndex {
@@ -16,7 +17,7 @@ public class PackageIndex {
     private String jsonFileName;
 
     public String getJsonFileName() {
-	return jsonFileName;
+	return this.jsonFileName;
     }
 
     public void setJsonFileName(String jsonFileName) {
@@ -40,6 +41,10 @@ public class PackageIndex {
 	for (Package pkg : this.packages) {
 	    pkg.setOwner(manager);
 	}
+    }
+
+    public File getJsonFile() {
+	return new File(this.jsonFileName);
     }
 
 }

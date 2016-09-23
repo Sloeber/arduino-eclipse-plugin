@@ -14,7 +14,6 @@ import io.sloeber.common.Defaults;
 import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;
-import io.sloeber.core.ui.Messages;
 
 /**
  * A class to describe the code that needs to be attached to the project
@@ -82,34 +81,12 @@ public class CodeDescriptor {
     private static CodeTypes codeTypeFromDescription(String typeDescriptor) {
 
 	for (CodeTypes codeType : CodeTypes.values()) {
-	    if (getCodeTypeDescription(codeType).equals(typeDescriptor)) {
+	    if (codeType.toString().equals(typeDescriptor)) {
 		return codeType;
 	    }
 	}
 	return CodeTypes.defaultIno;
 
-    }
-
-    public static String getCodeTypeDescription(CodeTypes codeType) {
-	switch (codeType) {
-	case defaultIno:
-	    return Messages.ui_new_sketch_default_ino;
-	case defaultCPP:
-	    return Messages.ui_new_sketch_default_cpp;
-	case CustomTemplate:
-	    return Messages.ui_new_sketch_custom_template;
-	case sample:
-	    return Messages.ui_new_sketch_sample_sketch;
-	}
-	return null;
-    }
-
-    public static String[] getCodeTypeDescriptions() {
-	String[] ret = new String[CodeTypes.values().length];
-	for (CodeTypes codeType : CodeTypes.values()) {
-	    ret[codeType.ordinal()] = getCodeTypeDescription(codeType);
-	}
-	return ret;
     }
 
     /**
@@ -120,8 +97,7 @@ public class CodeDescriptor {
 	    InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
 		    this.myTemPlateFoldername.toString());
 	}
-	InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
-		getCodeTypeDescription(this.codeType));
+	InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
 	saveLastUsedExamples();
     }
 

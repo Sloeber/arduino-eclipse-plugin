@@ -44,7 +44,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
     public void indexChanged(IIndexerStateEvent event) {
 
 	if (event.indexerIsIdle()) {
-	    if (InstancePreferences.getAutomaticallyIncludeLibraries()) {
+	    if (InstancePreferences.getAutomaticallyImportLibraries()) {
 		if (this.installLibJob == null) {
 		    this.installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
 

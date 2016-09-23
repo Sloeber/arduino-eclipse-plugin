@@ -11,7 +11,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
-import io.sloeber.common.Serial;
+import io.sloeber.core.api.Serial;
 
 public class ArduinoSerial {
 
