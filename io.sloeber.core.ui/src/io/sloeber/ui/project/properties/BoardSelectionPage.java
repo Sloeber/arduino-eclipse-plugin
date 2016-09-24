@@ -157,6 +157,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     public void draw(Composite composite) {
 	// create the desired layout for this wizard page
 	ICConfigurationDescription confdesc = getConfdesc();
+	if (this.myBoardID == null) {
+	    this.myBoardID = new BoardDescriptor(confdesc);
+	}
 	GridLayout theGridLayout = new GridLayout();
 	theGridLayout.numColumns = this.ncol;
 	composite.setLayout(theGridLayout);
@@ -312,10 +315,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     private void setValues(ICConfigurationDescription confdesc) {
-
-	if (this.myBoardID == null) {
-	    this.myBoardID = new BoardDescriptor(confdesc);
-	}
 
 	this.mControlBoardsTxtFile.setText(this.myBoardID.getBoardsFile());
 	// // if no boards file is selected select the first

@@ -550,4 +550,12 @@ public class BoardsManager {
 	return status;
     }
 
+    public static boolean getAutoImportLibraries() {
+	return InstancePreferences.getAutomaticallyImportLibraries();
+    }
+
+    public static String getPrivateHardwarePathsString() {
+	return InstancePreferences.getPrivateHardwarePathsString();
+    }
+
 }

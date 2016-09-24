@@ -3,7 +3,7 @@ package io.sloeber.ui;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "io.sloeber.core.ui.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "io.sloeber.ui.messages"; //$NON-NLS-1$
 
     public static String error_adding_arduino_code;
     public static String error_no_platform_files_found;

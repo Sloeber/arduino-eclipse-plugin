@@ -113,15 +113,16 @@ public class CodeDescriptor {
 	switch (this.codeType) {
 	case defaultIno:
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.ino", false), monitor,
+		    Stream.openContentStream(project.getName(), Include, "../templates/sketch.ino", false), monitor,
 		    false);
 	    break;
 	case defaultCPP:
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"),
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.cpp", false), monitor,
+		    Stream.openContentStream(project.getName(), Include, "../templates/sketch.cpp", false), monitor,
 		    false);
 	    Helpers.addFileToProject(project, new Path(project.getName() + ".h"),
-		    Stream.openContentStream(project.getName(), Include, "templates/sketch.h", false), monitor, false);
+		    Stream.openContentStream(project.getName(), Include, "../templates/sketch.h", false), monitor,
+		    false);
 	    break;
 	case CustomTemplate:
 	    Path folderName = this.myTemPlateFoldername;

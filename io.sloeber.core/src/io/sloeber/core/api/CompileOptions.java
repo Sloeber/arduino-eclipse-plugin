@@ -91,7 +91,7 @@ public class CompileOptions {
 	    contribEnv.addVariable(var, configuration);
 	}
 
-	if (myAlternativeSizeCommand) {
+	if (this.myAlternativeSizeCommand) {
 	    IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
 		    + Const.ENV_KEY_JANTJE_SIZE_COMMAND + "}"); //$NON-NLS-1$
 	    contribEnv.addVariable(var, configuration);

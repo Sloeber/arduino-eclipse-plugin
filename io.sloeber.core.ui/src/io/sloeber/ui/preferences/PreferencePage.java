@@ -17,6 +17,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -87,18 +88,24 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	if (!testStatus()) {
 	    return false;
 	}
-
+	boolean ret = super.performOk();
 	String hardWarePaths[] = getPreferenceStore().getString(KEY_PRIVATE_HARDWARE_PATHS).split(File.pathSeparator);
 	String libraryPaths[] = getPreferenceStore().getString(KEY_PRIVATE_LIBRARY_PATHS).split(File.pathSeparator);
 	BoardsManager.setAutoImportLibraries(this.automaticallyImportLibrariesOption.getBooleanValue());
 	BoardsManager.setPrivateHardwarePaths(hardWarePaths);
 	BoardsManager.setPrivateLibraryPaths(libraryPaths);
-	return super.performOk();
+	return ret;
     }
 
     @Override
     public void init(IWorkbench workbench) {
-	// nothing to do
+	String hardWarePaths = BoardsManager.getPrivateHardwarePathsString();
+	String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
+	boolean autoImport = BoardsManager.getAutoImportLibraries();
+
+	getPreferenceStore().setValue(KEY_AUTO_IMPORT_LIBRARIES, autoImport);
+	getPreferenceStore().setValue(KEY_PRIVATE_HARDWARE_PATHS, hardWarePaths);
+	getPreferenceStore().setValue(KEY_PRIVATE_LIBRARY_PATHS, libraryPaths);
     }
 
     /**
@@ -144,14 +151,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	Label label = new Label(parent, SWT.LEFT);
 	label.setText("Your HashKey: " + Other.getSystemHash()); //$NON-NLS-1$
 	label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-
-	// StringFieldEditor hashKeyShower = new StringFieldEditor("Your
-	// HashKey", "Your HashKey", parent);
-	//
-	// addField(hashKeyShower);
-	// String text = ;
-	// hashKeyShower.getTextControl(parent).setText(text);
-	// // hashKeyShower. .setEnabled(false, parent);
 
     }
 

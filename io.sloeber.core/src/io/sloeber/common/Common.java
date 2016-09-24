@@ -23,6 +23,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.statushandlers.StatusManager;
 
+import io.sloeber.core.Activator;
+
 public class Common extends InstancePreferences {
 
     /**

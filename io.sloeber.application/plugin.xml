@@ -19,7 +19,7 @@
             class="io.sloeber.application.Perspective"
             icon="icons/logo_16.png"
             id="io.sloeber.application.perspective"
-            name="Sloeber">
+            name="Arduino">
       </perspective>
    </extension>
    <extension

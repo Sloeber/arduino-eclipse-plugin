@@ -104,7 +104,11 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateLibraryPaths() {
-	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath()).split(File.pathSeparator);
+	return getPrivateLibraryPathsString().split(File.pathSeparator);
+    }
+
+    public static String getPrivateLibraryPathsString() {
+	return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
     }
 
     public static void setPrivateLibraryPaths(String[] folderName) {
@@ -112,7 +116,7 @@ public class InstancePreferences extends Const {
     }
 
     public static String[] getPrivateHardwarePaths() {
-	return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath()).split(File.pathSeparator);
+	return getPrivateHardwarePathsString().split(File.pathSeparator);
     }
 
     public static String getPrivateHardwarePathsString() {

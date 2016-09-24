@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
-import io.sloeber.core.natures.ArduinoNature;
-import io.sloeber.core.tools.LaunchConfiguration;
+import io.sloeber.core.api.LaunchConfiguration;
+import io.sloeber.core.api.Sketch;
 
 // SWTFactory is a restricted class. Nontheless it is very usefull.
 @SuppressWarnings("restriction")
@@ -88,15 +88,15 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 		// possible selections.
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(parent.getShell(),
 			new LabelProvider() {
-		    @Override
-		    public String getText(Object element) {
-			IProject data = (IProject) element;
-			if (data != null) {
-			    return data.getName();
-			}
-			return ""; //$NON-NLS-1$
-		    }
-		});
+			    @Override
+			    public String getText(Object element) {
+				IProject data = (IProject) element;
+				if (data != null) {
+				    return data.getName();
+				}
+				return ""; //$NON-NLS-1$
+			    }
+			});
 		dialog.setTitle(Messages.MainTab_ProjectSelection);
 
 		// Set the selectable elements of the dialog.
@@ -105,12 +105,9 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 		// selection.
 		List<IProject> projects = new ArrayList<>();
 		for (IProject p : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-		    try {
-			if (p.isAccessible() && p.hasNature(ArduinoNature.NATURE_ID)) {
-			    projects.add(p);
-			}
-		    } catch (CoreException ex) {
-			// Just skip the project
+
+		    if (p.isAccessible() && Sketch.isSketch(p)) {
+			projects.add(p);
 		    }
 		}
 		dialog.setElements(projects.toArray());
@@ -157,12 +154,9 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	}
 
 	// Project has correct nature
-	try {
-	    if (!proj.hasNature(ArduinoNature.NATURE_ID)) {
-		return Messages.MainTab_ProjectWrongType;
-	    }
-	} catch (CoreException e) {
-	    // Just proceed
+
+	if (!Sketch.isSketch(proj)) {
+	    return Messages.MainTab_ProjectWrongType;
 	}
 
 	return null;

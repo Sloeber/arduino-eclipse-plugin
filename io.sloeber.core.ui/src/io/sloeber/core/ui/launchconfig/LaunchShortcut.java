@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ide.ResourceUtil;
 
-import io.sloeber.core.tools.LaunchConfiguration;
+import io.sloeber.core.api.LaunchConfiguration;
 
 public class LaunchShortcut implements ILaunchShortcut {
 

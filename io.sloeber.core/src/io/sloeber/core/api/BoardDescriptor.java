@@ -371,7 +371,10 @@ public class BoardDescriptor {
     }
 
     public String[] getUploadProtocols() {
-	return Programmers.getUploadProtocols(this.myBoardsFile.toString());
+	if (this.myBoardsFile.exists()) {
+	    return Programmers.getUploadProtocols(this.myBoardsFile.toString());
+	}
+	return new String[0];
     }
 
     public String[] getMenuItemNames(String menuName) {

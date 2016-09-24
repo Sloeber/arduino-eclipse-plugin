@@ -1,4 +1,4 @@
-package io.sloeber.core.tools;
+package io.sloeber.core.api;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
@@ -9,8 +9,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-
-import io.sloeber.core.api.Sketch;
 
 public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 

@@ -16,7 +16,7 @@ Import-Package: io.sloeber.common,
  org.eclipse.cdt.core.settings.model.util,
  org.eclipse.cdt.utils,
  org.eclipse.ui.dialogs
-Bundle-Activator: io.sloeber.core.ui.Activator
+Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
  lib/jmdns-3.4.1.jar,
@@ -34,6 +34,7 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.ui,
  org.eclipse.debug.ui,
  org.junit,
- org.eclipse.ui.console
+ org.eclipse.ui.console,
+ org.eclipse.ui.workbench
 Export-Package: io.sloeber.common,
  io.sloeber.core.api
