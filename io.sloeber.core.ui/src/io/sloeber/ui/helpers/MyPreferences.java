@@ -33,6 +33,7 @@ public class MyPreferences {
     private static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index"; //$NON-NLS-1$
     private static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_SCOPE_FILTER_MENU_OPTION = "Board scope filter on off"; //$NON-NLS-1$
+    private static final String KEY_HIDE_JSON_FILES = "Hide json files in preferences platform selection page"; //$NON-NLS-1$
 
     /***
      * get the stored option whether a build before the upload is wanted or not.
@@ -238,5 +239,13 @@ public class MyPreferences {
 
     public static String getLastUsedPort() {
 	return getGlobalString(KEY_SERIAL_PORT, ""); //$NON-NLS-1$
+    }
+
+    public static boolean getHideJson() {
+	return getGlobalBoolean(KEY_HIDE_JSON_FILES, true);
+    }
+
+    public static void setHideJson(boolean state) {
+	setGlobalValue(KEY_HIDE_JSON_FILES, state);
     }
 }

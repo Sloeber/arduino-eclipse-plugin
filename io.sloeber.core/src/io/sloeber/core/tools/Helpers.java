@@ -761,11 +761,11 @@ public class Helpers extends Common {
 	for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
 	    addPlatformFileTools(curPlatform, contribEnv, confDesc);
 	}
-	ArduinoPlatform platform = Manager.getPlatform(referencedPlatformFileName);
+	ArduinoPlatform platform = Manager.getPlatform(new File(referencedPlatformFileName));
 	if (platform != null) {
 	    addPlatformFileTools(platform, contribEnv, confDesc);
 	}
-	platform = Manager.getPlatform(platformFileName);
+	platform = Manager.getPlatform(new File(platformFileName));
 	if (platform != null) {
 	    addPlatformFileTools(platform, contribEnv, confDesc);
 	}
@@ -919,7 +919,7 @@ public class Helpers extends Common {
 		IPath coreReference = findReferencedPlatformFile(vendor, architecture);
 		if (coreReference == null) {
 		    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-			    Messages.Helpers_Core_refference_missing + core));
+			    Messages.Helpers_Core_refference_missing + core + " " + boardsFile + " " + boardID)); //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_REFERENCED_CORE,
 			    coreReference.append(ARDUINO_CORE_FOLDER_NAME).append(coreSplit[1]).toString());

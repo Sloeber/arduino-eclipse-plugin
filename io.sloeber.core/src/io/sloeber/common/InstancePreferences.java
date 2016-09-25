@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.api.Defaults;
+
 /**
  * ArduinoPreferences is a class containing only static methods that help
  * managing the preferences.

@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.common.Const;
-import io.sloeber.common.Defaults;
 import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;

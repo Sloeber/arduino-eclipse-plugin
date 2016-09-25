@@ -25,6 +25,8 @@ import io.sloeber.common.Common;
 import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.common.Const;
 import io.sloeber.common.InstancePreferences;
+import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
+import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Board;
 import io.sloeber.core.managers.Manager;
@@ -380,11 +382,20 @@ public class BoardsManager {
 	private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
 
 	public class Platform implements Comparable<Platform> {
+
 	    private String name;
 	    private String architecture;
 	    protected TreeSet<VersionNumber> versions = new TreeSet<>();
 	    protected TreeSet<VersionNumber> installedVersions = new TreeSet<>();
 	    protected String boards;
+
+	    public String getArchitecture() {
+		return this.architecture;
+	    }
+
+	    public String getBoards() {
+		return this.boards;
+	    }
 
 	    public Platform(String architecture, String name) {
 		this.architecture = architecture;
@@ -422,11 +433,19 @@ public class BoardsManager {
 
 	    @Override
 	    public int compareTo(Platform other) {
-		return this.name.compareTo(other.name);
+		return this.name.compareToIgnoreCase(other.name);
 	    }
 
 	    public boolean isInstalled(VersionNumber version) {
 		return this.installedVersions.contains(version);
+	    }
+
+	    public void setInstalled(VersionNumber versionNumber, boolean installed) {
+		if (installed) {
+		    this.installedVersions.add(versionNumber);
+		} else {
+		    this.installedVersions.remove(versionNumber);
+		}
 	    }
 
 	}
@@ -435,7 +454,7 @@ public class BoardsManager {
 	 * This class represents the json file on disk
 	 */
 	public class IndexFile implements Comparable<IndexFile> {
-	    File jsonFile;
+	    protected File jsonFile;
 	    protected TreeMap<String, Package> packages = new TreeMap<>();
 
 	    public IndexFile(File jsonFile) {
@@ -447,8 +466,12 @@ public class BoardsManager {
 		return this.jsonFile.compareTo(other.jsonFile);
 	    }
 
-	    public Collection<Package> getPackages() {
+	    public Collection<Package> getAllPackages() {
 		return this.packages.values();
+	    }
+
+	    public String getNiceName() {
+		return this.jsonFile.getName();
 	    }
 
 	}
@@ -486,7 +509,7 @@ public class BoardsManager {
 
 	    @Override
 	    public int compareTo(Package other) {
-		return this.name.compareTo(other.name);
+		return this.name.compareToIgnoreCase(other.name);
 	    }
 
 	}
@@ -512,41 +535,70 @@ public class BoardsManager {
 	    }
 	}
 
-	public Collection<IndexFile> getJsonFiles() {
+	public Collection<IndexFile> getAllIndexFiles() {
 	    return this.IndexFiles.values();
 	}
 
 	public Set<Package> getAllPackages() {
-	    Set<Package> all = new HashSet<>();
+	    Set<Package> all = new TreeSet<>();
 	    for (IndexFile indexFile : this.IndexFiles.values()) {
-		all.addAll(indexFile.getPackages());
+		all.addAll(indexFile.getAllPackages());
 	    }
 	    return all;
 	}
 
 	public Collection<Platform> getAllPlatforms() {
-	    Set<Platform> all = new HashSet<>();
+	    Set<Platform> all = new TreeSet<>();
 	    for (IndexFile curIndexFile : this.IndexFiles.values()) {
-		for (Package curPackage : curIndexFile.getPackages()) {
+		for (Package curPackage : curIndexFile.getAllPackages()) {
 		    all.addAll(curPackage.getPlatforms());
 		}
 	    }
 	    return all;
 	}
 
+	public IndexFile getIndexFile(PackageIndex packageIndex) {
+	    return this.IndexFiles.get(packageIndex.getJsonFileName());
+	}
+
+	@SuppressWarnings("static-method")
+	public Package getPackage(IndexFile indexFile, io.sloeber.core.managers.Package curInternalPackage) {
+	    return indexFile.packages.get(curInternalPackage.getName());
+	}
+
+	@SuppressWarnings("static-method")
+	public Platform getPlatform(Package curPackage, ArduinoPlatform curInternalPlatform) {
+	    // TODO Auto-generated method stub
+	    return curPackage.platforms.get(curInternalPlatform.getName());
+	}
+
     }
 
     public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
-	for (PlatformTree.Platform platform : platformTree.getAllPlatforms()) {
-	    for (VersionNumber curVersion : platform.versions) {
-		if (platform.installedVersions.contains(curVersion)) {
-		    // TODO make sure it is installed
-		} else {
-		    // TODO make sure it is not installed
+	if (!Manager.isReady()) {
+	    status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still Bussy", null)); //$NON-NLS-1$
+	    return status;
+	}
+	Manager.setReady(false);
+	List<PackageIndex> packageIndexes = Manager.getPackageIndices();
+	for (PackageIndex curPackageIndex : packageIndexes) {
+	    IndexFile curIndexFile = platformTree.getIndexFile(curPackageIndex);
+	    for (io.sloeber.core.managers.Package curInternalPackage : curPackageIndex.getPackages()) {
+		io.sloeber.core.api.BoardsManager.PlatformTree.Package curPackage = platformTree
+			.getPackage(curIndexFile, curInternalPackage);
+		for (ArduinoPlatform curInternalPlatform : curInternalPackage.getPlatforms()) {
+		    Platform curPlatform = platformTree.getPlatform(curPackage, curInternalPlatform);
+		    if (curPlatform.installedVersions.contains(new VersionNumber(curInternalPlatform.getVersion()))) {
+
+			status.add(curInternalPlatform.install(monitor));
+		    } else {
+
+			status.add(curInternalPlatform.remove(monitor));
+		    }
 		}
 	    }
-
 	}
+	Manager.setReady(true);
 	return status;
     }
 

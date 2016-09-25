@@ -29,6 +29,9 @@ public class VersionNumber implements Comparable<Object> {
 		return this.parts[level].compareTo(other[level]);
 	    }
 	}
+	if (this.parts.length == other.length) {
+	    return 0;
+	}
 	return this.parts.length > other.length ? 1 : -1;
     }
 

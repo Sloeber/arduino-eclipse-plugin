@@ -1,7 +1,9 @@
-package io.sloeber.common;
+package io.sloeber.core.api;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
+import io.sloeber.common.Const;
 
 @SuppressWarnings("nls")
 public class Defaults {

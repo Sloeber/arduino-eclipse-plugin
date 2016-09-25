@@ -17,6 +17,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
 import io.sloeber.ui.Messages;
@@ -40,7 +41,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
     private static final String KEY_AUTO_IMPORT_LIBRARIES = "Gui entry for import libraries"; //$NON-NLS-1$
     private static final String KEY_PRIVATE_HARDWARE_PATHS = "Gui entry for private hardware paths"; //$NON-NLS-1$
     private static final String KEY_PRIVATE_LIBRARY_PATHS = "Gui entry for private library paths"; //$NON-NLS-1$
-    private static final boolean AUTO_IMPORT_LIBRARIES = true;
+
     private PathEditor arduinoPrivateLibPath;
     private PathEditor arduinoPrivateHardwarePath;
     private ComboFieldEditor buildBeforeUploadOption;
@@ -56,7 +57,9 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		MyPreferences.NODE_ARDUINO);
 	preferences.setDefault(MyPreferences.KEY_OPEN_SERIAL_WITH_MONITOR,
 		MyPreferences.DEFAULT_OPEN_SERIAL_WITH_MONITOR);
-	preferences.setDefault(KEY_AUTO_IMPORT_LIBRARIES, AUTO_IMPORT_LIBRARIES);
+	preferences.setDefault(KEY_AUTO_IMPORT_LIBRARIES, true);
+	preferences.setDefault(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath());
+	preferences.setDefault(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
 	setPreferenceStore(preferences);
     }
 

@@ -446,7 +446,7 @@ public class CreateAndCompile {
 		"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
 		// redirected
 		// "http://digistump.com/package_digistump_index.json",
-		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_index.json",
+		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_avr_index.json",
 		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/PIC/package_olimex_pic_index.json",
 		"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/STM/package_olimex_stm_index.json",
 		"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
@@ -475,7 +475,8 @@ public class CreateAndCompile {
 		// redirected
 		// "https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json",
 		"https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json",
-		"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json" };
+		"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
+		"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json" };
 	BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 	BoardsManager.installAllLatestPlatforms();
 	BoardsManager.referenceLocallInstallation(teensyInstall);

@@ -53,8 +53,8 @@ import com.google.gson.Gson;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.common.Defaults;
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Defaults;
 
 public class Manager {
 
@@ -344,8 +344,14 @@ public class Manager {
 	return null;
     }
 
-    public static ArduinoPlatform getPlatform(String platformTxt) {
-	String searchString = new File(platformTxt).toString();
+    /**
+     * Given a platform.txt file find the platform in the platform manager
+     * 
+     * @param platformTxt
+     * @return the found platform otherwise null
+     */
+    public static ArduinoPlatform getPlatform(File platformTxt) {
+	String searchString = platformTxt.toString();
 	for (PackageIndex index : packageIndices) {
 	    for (Package pkg : index.getPackages()) {
 		for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
@@ -842,6 +848,11 @@ public class Manager {
 
     public static String getBoardsPackageURLs() {
 	return ConfigurationPreferences.getDefaultBoardsPackageURLs();
+    }
+
+    public static void setReady(boolean b) {
+	myIsReady = b;
+
     }
 
 }
