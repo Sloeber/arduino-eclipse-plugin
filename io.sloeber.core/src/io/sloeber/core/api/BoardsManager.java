@@ -610,4 +610,19 @@ public class BoardsManager {
 	return InstancePreferences.getPrivateHardwarePathsString();
     }
 
+    /**
+     * returns all the menu names for all installed platforms. The return is
+     * sorted and unique
+     * 
+     * @return
+     */
+    public static Set<String> getAllManuNames() {
+	Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+	for (ArduinoPlatform curPlatfor : Manager.getInstalledPlatforms()) {
+	    TxtFile txtFile = new TxtFile(curPlatfor.getBoardsFile());
+	    ret.addAll(txtFile.getMenuNames());
+	}
+	return ret;
+    }
+
 }

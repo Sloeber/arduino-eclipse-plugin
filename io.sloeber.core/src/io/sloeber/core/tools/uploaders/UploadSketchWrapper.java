@@ -19,6 +19,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.tools.Helpers;
 
@@ -168,7 +169,7 @@ public class UploadSketchWrapper {
 		comPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
 			Const.ENV_KEY_JANTJE_UPLOAD_PORT, Const.EMPTY_STRING);
 		String programmer = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
-			Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.DEFAULT);
+			Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Defaults.getDefaultUploadProtocol());
 
 		try {
 		    WeStoppedTheComPort = SerialManager.StopSerialMonitor(comPort);
@@ -177,8 +178,8 @@ public class UploadSketchWrapper {
 		}
 		IFile hexFile = this.myProject
 			.getFile(new Path(this.myCConf).append(this.myProject.getName() + ".hex")); //$NON-NLS-1$
-		if (this.myUploader.uploadUsingPreferences(hexFile, !programmer.equalsIgnoreCase(Const.DEFAULT),
-			monitor)) {
+		if (this.myUploader.uploadUsingPreferences(hexFile,
+			!programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol()), monitor)) {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_Done);
 		} else {
 		    UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_failed_upload);

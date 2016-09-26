@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +65,7 @@ import cc.arduino.packages.discoverers.NetworkDiscovery;
 import io.sloeber.common.Common;
 import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.common.Const;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Manager;
 import io.sloeber.core.managers.ToolDependency;
@@ -666,9 +668,8 @@ public class Helpers extends Common {
 	}
 
 	Map<String, String> menuSectionMap = boardsFile.getSection(MENU); // $NON-NLS-1$
-	String[] optionNames = boardsFile.getMenuNames();
-	for (int currentOption = 0; currentOption < optionNames.length; currentOption++) {
-	    String optionName = optionNames[currentOption];
+	Set<String> optionNames = boardsFile.getMenuNames();
+	for (String optionName : optionNames) {
 	    String optionValue = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_START + optionName,
 		    EMPTY_STRING);
 	    if (!optionValue.isEmpty()) {
@@ -1055,7 +1056,7 @@ public class Helpers extends Common {
 	}
 
 	String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
-	if (programmer.equalsIgnoreCase(Const.DEFAULT)) {
+	if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
 	    IEnvironmentVariable uploadToolVar = contribEnv.getVariable(get_ENV_KEY_TOOL(ACTION_UPLOAD), confDesc);
 	    IEnvironmentVariable comportVar = contribEnv.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, confDesc);
 	    if ((uploadToolVar == null) || (comportVar == null)) {
@@ -1075,7 +1076,7 @@ public class Helpers extends Common {
 		    setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
 
 		    try {
-			String key = ERASE_START + platform.toUpperCase() + DOT + NETWORK + DOT
+			String key = ERASE_START + platform.toUpperCase() + DOT + "NETWORK" + DOT //$NON-NLS-1$
 				+ ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
 			String networkUploadTool = contribEnv.getVariable(key, confDesc).getValue();
 			if (!networkUploadTool.isEmpty()) {

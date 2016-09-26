@@ -14,9 +14,7 @@ public class Defaults {
     public static final String PLATFORM_NAME = "Arduino AVR Boards";
     public static final String[] INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 	    "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi" };
-
-    private Defaults() {
-    }
+    private static final String DEFAULT = "Default";
 
     /**
      * Arduino has the default libraries in the user home directory in subfolder
@@ -33,5 +31,9 @@ public class Defaults {
     public static String getPrivateHardwarePath() {
 	IPath homPath = new Path(System.getProperty("user.home"));
 	return homPath.append("Arduino").append(Const.ARDUINO_HARDWARE_FOLDER_NAME).toString();
+    }
+
+    public static String getDefaultUploadProtocol() {
+	return DEFAULT;
     }
 }

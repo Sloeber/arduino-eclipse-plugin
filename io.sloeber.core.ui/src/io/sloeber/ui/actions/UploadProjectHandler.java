@@ -47,7 +47,6 @@ class UploadJobHandler extends Job {
 		    }
 		});
 	    }
-	    return Status.OK_STATUS;
 	}
 	Sketch.upload(UploadJobHandler.this.myBuildProject);
 	return Status.OK_STATUS;

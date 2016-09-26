@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -32,10 +33,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
-import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
@@ -49,8 +51,14 @@ public class BoardDescriptor {
     private Map<String, String> myOptions;
     private File myBoardsFile;
     private TxtFile myTxtFile;
+    private static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
+    private static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
+    private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
+    private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
+    private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
+    private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
     private QualifiedName optionsStorageQualifiedName = new QualifiedName(Const.CORE_PLUGIN_ID,
-	    Const.KEY_LAST_USED_BOARD_MENU_OPTIONS);
+	    KEY_LAST_USED_BOARD_MENU_OPTIONS);
 
     /*
      * Create a sketchProject. This class does not really create a sketch
@@ -64,17 +72,17 @@ public class BoardDescriptor {
     @SuppressWarnings("nls")
     public BoardDescriptor(ICConfigurationDescription confdesc) {
 	if (confdesc == null) {
-	    this.myBoardsFile = new File(InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARDS_FILE, ""));
+	    this.myBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, ""));
 	    this.myTxtFile = new TxtFile(this.myBoardsFile);
-	    this.myBoardID = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARD, "");
-	    this.myUploadPort = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_COM_PORT, "");
-	    this.myUploadProtocol = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_UPLOAD_PROTOCOL,
-		    Const.DEFAULT);
+	    this.myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, "");
+	    this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
+	    this.myUploadProtocol = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL,
+		    Defaults.getDefaultUploadProtocol());
 	    getLastUsedMenuOption();
 	} else {
 	    this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, "");
 	    this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
-		    Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), ""); //$NON-NLS-1$
+		    Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
 	    this.myBoardsFile = new File(
 		    Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
 	    this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
@@ -85,7 +93,7 @@ public class BoardDescriptor {
 
     public BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
 	this.myUploadPort = Const.EMPTY_STRING;
-	this.myUploadProtocol = Const.DEFAULT;
+	this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
 	this.myBoardID = boardID;
 	this.myOptions = options;
 	this.myBoardsFile = boardsFile;
@@ -202,7 +210,6 @@ public class BoardDescriptor {
 	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
 	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
 	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
-
 	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
 	    Common.setBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
 		    this.myUploadProtocol);
@@ -224,12 +231,10 @@ public class BoardDescriptor {
 	}
 
 	// Also save last used values
-	InstancePreferences.setLastUsedBoardsFile(getBoardsFile());
-
-	InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_BOARD, this.myBoardID);
-	InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_COM_PORT, this.myUploadPort);
-
-	InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
+	myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getBoardsFile());
+	myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
+	myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
+	myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
 	setLastUsedMenuOption();
 
     }
@@ -306,13 +311,13 @@ public class BoardDescriptor {
 		concat = "\n"; //$NON-NLS-1$
 	    }
 	}
-	InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_BOARD_MENU_OPTIONS, store);
+	myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, store);
 
     }
 
     private void getLastUsedMenuOption() {
 	this.myOptions = new HashMap<>();
-	String storedValue = InstancePreferences.getGlobalString(Const.KEY_LAST_USED_BOARD_MENU_OPTIONS, ""); //$NON-NLS-1$
+	String storedValue = myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, ""); //$NON-NLS-1$
 	String[] lines = storedValue.split("\n"); //$NON-NLS-1$
 	for (String curLine : lines) {
 	    String[] values = curLine.split("=", 2); //$NON-NLS-1$
@@ -378,12 +383,10 @@ public class BoardDescriptor {
     }
 
     public String[] getMenuItemNames(String menuName) {
-	// TODO Auto-generated method stub
 	return this.myTxtFile.getMenuItemNames(menuName, this.myBoardID);
     }
 
-    public String[] getAllMenuNames() {
-	// TODO Auto-generated method stub
+    public Set<String> getAllMenuNames() {
 	return this.myTxtFile.getMenuNames();
     }
 }

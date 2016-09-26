@@ -3,6 +3,7 @@ package io.sloeber.ui.project.properties;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
@@ -43,8 +45,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     private static final String TRUE = "TRUE"; //$NON-NLS-1$
 
     private static final String FALSE = "FALSE"; //$NON-NLS-1$
-
-    private static final String DEFAULT = "default"; //$NON-NLS-1$
 
     // global stuff to allow to communicate outside this class
     public Text mFeedbackControl;
@@ -97,8 +97,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	    BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 
 	    if (BoardSelectionPage.this.mControlUploadProtocol.getText().isEmpty()) {
-
-		BoardSelectionPage.this.mControlUploadProtocol.setText(DEFAULT);
+		myBoardID.setUploadProtocol(Defaults.getDefaultUploadProtocol());
+		BoardSelectionPage.this.mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 	    }
 
 	    BoardSelectionPage.this.BoardModifyListener.handleEvent(null);
@@ -225,12 +225,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	createLine(composite, this.ncol);
 
-	String[] menuNames = new String[30];
-	for (int curBoardsFile = 0; curBoardsFile < mAllBoardsFileNames.length; curBoardsFile++) {
-	    ArrayUtil.addAll(menuNames, this.myBoardID.getAllMenuNames());
-	}
-	menuNames = ArrayUtil.removeDuplicates(menuNames);
-	this.mBoardOptionCombos = new LabelCombo[menuNames.length];
+	Set<String> menuNames = BoardsManager.getAllManuNames();
+
+	this.mBoardOptionCombos = new LabelCombo[menuNames.size()];
 	int index = 0;
 	for (String curMenuName : menuNames) {
 	    this.mBoardOptionCombos[index] = new LabelCombo(composite, curMenuName, this.ncol - 1, true);
@@ -333,7 +330,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	if (getUpLoadProtocol().isEmpty()) {
 	    this.mControlUploadProtocol.setText(this.myBoardID.getUploadProtocol());
 	    if (this.mControlUploadProtocol.getText().isEmpty()) {
-		this.mControlUploadProtocol.setText(DEFAULT);
+		this.mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 	    }
 	}
 

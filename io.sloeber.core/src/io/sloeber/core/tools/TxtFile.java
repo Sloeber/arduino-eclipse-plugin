@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -68,7 +69,7 @@ public class TxtFile {
      * 
      * @return a list of all the menu option names
      */
-    public String[] getMenuNames() {
+    public Set<String> getMenuNames() {
 	HashSet<String> ret = new HashSet<>();
 	for (Entry<String, Map<String, String>> entry : this.fileContent.entrySet()) {
 	    if (entry.getKey().equals(MENU)) {
@@ -81,7 +82,7 @@ public class TxtFile {
 		}
 	    }
 	}
-	return ret.toArray(new String[ret.size()]);
+	return ret;
     }
 
     /**

@@ -22,7 +22,6 @@ public class Const {
     // General stuff
     public static final String PLUGIN_START = "io.sloeber.";
     public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
-    public static final String NETWORK = "NETWORK";
 
     // prefix to be added to the arduino environment
     protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\";
@@ -63,11 +62,6 @@ public class Const {
     public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
 
     // properties keys
-    public static final String KEY_LAST_USED_BOARD = "Board";
-    public static final String KEY_LAST_USED_COM_PORT = "Upload port";
-    public static final String KEY_LAST_USED_UPLOAD_PROTOCOL = ACTION_UPLOAD + DOT + ENV_PROTOCOL;
-    public static final String KEY_LAST_USED_BOARDS_FILE = "Boards file";
-    public static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "Board custom option selections";
 
     public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
 
@@ -77,7 +71,6 @@ public class Const {
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
     public static final String ARDUINO_CODE_FOLDER_NAME = "core";
     public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
-    public static final String DEFAULT = "Default";
     public static final String BOARDS_FILE_NAME = "boards.txt";
     public static final String PLATFORM_FILE_NAME = "platform.txt";
     public static final String VARIANTS_FOLDER_NAME = "variants";

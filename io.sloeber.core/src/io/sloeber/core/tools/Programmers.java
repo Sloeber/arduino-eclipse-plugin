@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.common.Const;
+import io.sloeber.core.api.Defaults;
 
 public class Programmers extends TxtFile {
     private static final String programmersFileName1 = "programmers.txt";//$NON-NLS-1$
@@ -52,7 +52,7 @@ public class Programmers extends TxtFile {
 
     public static String[] getUploadProtocols(String boardsFileName) {
 	String[] ret = new String[1];
-	ret[0] = Const.DEFAULT;
+	ret[0] = Defaults.getDefaultUploadProtocol();
 	Programmers allProgrammers[] = fromBoards(new File(boardsFileName));
 	for (Programmers curprogrammer : allProgrammers) {
 	    ret = curprogrammer.getAllNames(ret);

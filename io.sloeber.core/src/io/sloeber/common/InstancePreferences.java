@@ -100,11 +100,6 @@ public class InstancePreferences extends Const {
 	}
     }
 
-    public static void setLastUsedBoardsFile(String boardsFile) {
-	setGlobalValue(KEY_LAST_USED_BOARDS_FILE, boardsFile);
-
-    }
-
     public static String[] getPrivateLibraryPaths() {
 	return getPrivateLibraryPathsString().split(File.pathSeparator);
     }
