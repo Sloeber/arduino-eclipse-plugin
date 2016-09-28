@@ -34,7 +34,7 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
 		this.ChangedProjects.add(project);
 	    }
 	} catch (CoreException e) {
-	    // TODO Auto-generated catch block
+	    // ignore
 	    e.printStackTrace();
 	}
 

@@ -139,7 +139,6 @@ public class BoardsManager {
     }
 
     public static void referenceLocallInstallation(String newHardwarePath) {
-	// TODO Auto-generated method stub
 
 	String currentPaths[] = InstancePreferences.getPrivateHardwarePaths();
 	String newPaths[] = new String[currentPaths.length + 1];
@@ -569,7 +568,6 @@ public class BoardsManager {
 
 	@SuppressWarnings("static-method")
 	public Platform getPlatform(Package curPackage, ArduinoPlatform curInternalPlatform) {
-	    // TODO Auto-generated method stub
 	    return curPackage.platforms.get(curInternalPlatform.getName());
 	}
 

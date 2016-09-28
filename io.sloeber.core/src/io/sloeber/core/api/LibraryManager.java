@@ -182,7 +182,6 @@ public class LibraryManager {
     }
 
     public static String getPrivateLibraryPathsString() {
-	// TODO Auto-generated method stub
 	return InstancePreferences.getPrivateLibraryPathsString();
     }
 

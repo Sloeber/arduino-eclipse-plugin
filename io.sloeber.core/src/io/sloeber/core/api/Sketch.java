@@ -156,7 +156,7 @@ public class Sketch {
 	try {
 	    return proj.hasNature(Const.ARDUINO_NATURE_ID);
 	} catch (CoreException e) {
-	    // TODO Auto-generated catch block
+	    // ignore
 	    e.printStackTrace();
 	}
 	return false;

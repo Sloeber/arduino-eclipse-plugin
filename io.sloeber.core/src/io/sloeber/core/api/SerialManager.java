@@ -87,7 +87,6 @@ public class SerialManager {
     }
 
     public static String[] listNetworkPorts() {
-	// TODO Auto-generated method stub
 	return NetworkDiscovery.getList();
     }
 }

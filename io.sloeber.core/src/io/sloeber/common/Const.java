@@ -65,12 +65,7 @@ public class Const {
 
     public static final String ERASE_START = "A" + DOT;
 
-    // private static final String ENV_KEY_PROGRAMMERS_START = ERASE_START +
-    // "PROGRAMMERS.";
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
-    // private static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
-    // private static final String ENV_KEY_NAME = ERASE_START + "NAME";
-    // private static final String ENV_KEY_VERSION = ERASE_START + "VERSION";
 
     public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "UPLOAD.USE_1200BPS_TOUCH";
 

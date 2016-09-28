@@ -336,22 +336,6 @@ public class TxtFile {
 	return MENU + Messages.Boards_name + menuName + Messages.Boards_not_found;
     }
 
-    public String getMenuItemIDFromName(String boardID, String menuID, String menuItemName) {
-	// look in the pre 1.5.4 way "menu".menuid.boardid.menuitemid=name
-	Map<String, String> menuSectionMap = getSection(MENU);
-	for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
-	    if (curOption.getValue().equals(menuItemName)) {
-		String[] keySplit = curOption.getKey().split("\\."); //$NON-NLS-1$
-		if (keySplit.length == 3 && keySplit[0].equals(menuID) && keySplit[1].equals(boardID))
-		    return keySplit[2];
-	    }
-	}
-	// nothing found so look in the post 1.5.4 way
-	// boardid."menu".menuid.menuitemid=name
-	// TODO implement in 1.5.4 case
-	return "getMenuItemIDFromName not yet implemented in 1.5.4 way"; //$NON-NLS-1$
-    }
-
     public String getMenuItemNameFromID(String boardID, String menuID, String menuItemID) {
 	// look in the pre 1.5.4 way "menu".menuid.boardid.menuitemid=name
 	Map<String, String> menuSectionMap = getSection(MENU);
@@ -368,7 +352,6 @@ public class TxtFile {
 	    if (curOption.getKey().equalsIgnoreCase(loopupValue))
 		return curOption.getValue();
 	}
-	// TODO implement 1.5.4 way
 	return Messages.Boards_Get_menu_item_name_from_id_did_not_find + boardID + ' ' + menuID + ' ' + menuItemID;
     }
 

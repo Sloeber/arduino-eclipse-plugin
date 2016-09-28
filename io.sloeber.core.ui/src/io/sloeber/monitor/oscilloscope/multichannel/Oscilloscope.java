@@ -1109,7 +1109,6 @@ public class Oscilloscope extends Canvas {
 
     @Override
     public void dispose() {
-	// TODO Auto-generated method stub
 	super.dispose();
     }
 
@@ -1125,7 +1124,7 @@ public class Oscilloscope extends Canvas {
 		writer.println();
 	    }
 	} catch (FileNotFoundException | UnsupportedEncodingException e) {
-	    // TODO Auto-generated catch block
+	    // ignore
 	    e.printStackTrace();
 	}
     }

@@ -172,7 +172,6 @@ public class Library implements Comparable<Library> {
 	if (srcPath.toFile().isDirectory()) {
 	    return Collections.singletonList(srcPath);
 	}
-	// TODO do I need the 'utility' directory?
 	return Collections.singletonList(installPath);
 
     }

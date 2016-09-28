@@ -115,7 +115,7 @@ public class Activator extends AbstractUIPlugin {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-	// TODO Auto-generated method stub
+	// nothing to do here
 
     }
 }

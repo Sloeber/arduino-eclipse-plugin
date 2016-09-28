@@ -574,7 +574,7 @@ public class OscilloscopeDispatcher {
     }
 
     public void stop() {
-	// TODO Auto-generated method stub
+	// nothing to do here
 
     }
 }

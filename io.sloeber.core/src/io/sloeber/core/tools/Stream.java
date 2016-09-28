@@ -56,7 +56,7 @@ public class Stream {
 		try {
 		    input.close();
 		} catch (IOException e) {
-		    // TODO Auto-generated catch block
+		    // ignore
 		    e.printStackTrace();
 		}
 	    }
@@ -69,7 +69,7 @@ public class Stream {
 		try {
 		    input.close();
 		} catch (IOException e) {
-		    // TODO Auto-generated catch block
+		    // ignore
 		    e.printStackTrace();
 		}
 	    }
