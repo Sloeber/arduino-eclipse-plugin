@@ -1,6 +1,10 @@
 package io.sloeber.ui.wizard.newsketch;
 
 import java.io.File;
+import java.util.ArrayList;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -32,15 +36,31 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
     protected DirectoryFieldEditor mTemplateFolderEditor;
     protected SampleSelector mExampleEditor = null;
     protected Button mCheckBoxUseCurrentLinkSample;
-    private BoardDescriptor platformPath = null;
+    private BoardDescriptor myBoardDescriptor = null;
     private CodeDescriptor myCodedescriptor = CodeDescriptor.createLastUsed();
 
-    public void setPlatformPath(BoardDescriptor boardID) {
-	if (boardID.equals(this.platformPath))
-	    return; // this is needed as setting the examples will remove the
-		    // selection
-	this.platformPath = boardID;
-	AddAllExamples(this.myCodedescriptor.getMySamples());
+    public void setBoardDescriptor(BoardDescriptor boardDescriptor) {
+	if (this.myBoardDescriptor == null) {
+	    this.myBoardDescriptor = boardDescriptor;
+	    boardDescriptor.addChangeListener(new ChangeListener() {
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+		    handleBoarDescriptorChange();
+		}
+	    });
+	}
+	handleBoarDescriptorChange();
+    }
+
+    public void handleBoarDescriptorChange() {
+
+	if (this.mExampleEditor != null) {
+	    if (!this.myBoardDescriptor.getBoardsFile().isEmpty()) {
+		this.mExampleEditor.AddAllExamples(this.myBoardDescriptor, this.myCodedescriptor.getLastUsedExamples());
+	    }
+	}
+
 	validatePage();
     }
 
@@ -82,11 +102,6 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		composite);
 
 	this.mExampleEditor = new SampleSelector(composite, SWT.FILL, Messages.ui_new_sketch_select_example_code, 4);
-	// GridData theGriddata = new GridData();
-	// theGriddata.horizontalSpan = 4;// (ncol - 1);
-	// theGriddata.horizontalAlignment = SWT.FILL;
-	// this.mExampleEditor.setLayoutData(theGriddata);
-
 	this.mExampleEditor.addchangeListener(new Listener() {
 
 	    @Override
@@ -110,6 +125,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	SetControls();// set the controls according to the setting
 
 	validatePage();// validate the page
+	handleBoarDescriptorChange();
 
 	setControl(composite);
 
@@ -151,6 +167,9 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
      *       create the project. If so enable the finish button.
      */
     protected void validatePage() {
+	if (this.mCodeSourceOptionsCombo == null) {
+	    return;
+	}
 	switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
 	case defaultIno:
 	case defaultCPP:
@@ -188,13 +207,6 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	this.mCodeSourceOptionsCombo.mCombo.select(this.myCodedescriptor.getCodeType().ordinal());
     }
 
-    public void AddAllExamples(Path[] paths) {
-	if (this.mExampleEditor != null) {
-	    this.mExampleEditor.AddAllExamples(this.platformPath, paths);
-	}
-
-    }
-
     public CodeDescriptor getCodeDescription() {
 
 	switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
@@ -205,7 +217,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	case CustomTemplate:
 	    return CodeDescriptor.createCustomTemplate(new Path(this.mTemplateFolderEditor.getStringValue()));
 	case sample:
-	    Path sampleFolders[] = this.mExampleEditor.GetSampleFolders();
+	    ArrayList<Path> sampleFolders = this.mExampleEditor.GetSampleFolders();
 	    boolean link = this.mCheckBoxUseCurrentLinkSample.getSelection();
 	    return CodeDescriptor.createSample(link, sampleFolders);
 	}

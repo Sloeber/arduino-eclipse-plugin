@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+
+import javax.swing.event.ChangeListener;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -45,6 +48,10 @@ import io.sloeber.core.tools.TxtFile;
 
 public class BoardDescriptor {
 
+    /**
+     * 
+     */
+
     private String myUploadPort;
     private String myUploadProtocol;
     private String myBoardID;
@@ -59,6 +66,7 @@ public class BoardDescriptor {
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
     private QualifiedName optionsStorageQualifiedName = new QualifiedName(Const.CORE_PLUGIN_ID,
 	    KEY_LAST_USED_BOARD_MENU_OPTIONS);
+    private ChangeListener myChangeListeners = null;
 
     /*
      * Create a sketchProject. This class does not really create a sketch
@@ -281,16 +289,34 @@ public class BoardDescriptor {
     }
 
     public void setBoardID(String boardID) {
-	this.myBoardID = boardID;
+	if (!this.myBoardID.equals(boardID)) {
+	    this.myBoardID = boardID;
+	    informChangeListeners();
+	}
     }
 
     public void setBoardName(String boardName) {
-	this.myBoardID = this.myTxtFile.getIDFromName(boardName);
+	String newBoardID = this.myTxtFile.getIDFromName(boardName);
+	if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
+	    return;
+	}
+
+	this.myBoardID = newBoardID;
+	informChangeListeners();
+
     }
 
     public void setBoardsFile(File boardsFile) {
+	if (boardsFile == null) {
+	    return;// ignore
+	}
+	if (this.myBoardsFile.equals(boardsFile)) {
+	    return;
+	}
+
 	this.myBoardsFile = boardsFile;
 	this.myTxtFile = new TxtFile(this.myBoardsFile);
+	informChangeListeners();
     }
 
     public void setOptions(Map<String, String> options) {
@@ -388,5 +414,23 @@ public class BoardDescriptor {
 
     public Set<String> getAllMenuNames() {
 	return this.myTxtFile.getMenuNames();
+    }
+
+    public TreeMap<String, IPath> getAllExamples() {
+	return BoardsManager.getAllExamples(this);
+    }
+
+    public void addChangeListener(ChangeListener l) {
+	this.myChangeListeners = l;
+    }
+
+    public void removeChangeListener() {
+	this.myChangeListeners = null;
+    }
+
+    private void informChangeListeners() {
+	if (this.myChangeListeners != null) {
+	    this.myChangeListeners.stateChanged(null);
+	}
     }
 }

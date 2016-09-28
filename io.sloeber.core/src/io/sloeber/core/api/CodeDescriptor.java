@@ -2,8 +2,10 @@ package io.sloeber.core.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,15 +31,10 @@ public class CodeDescriptor {
     private CodeTypes codeType;
     private Path myTemPlateFoldername;
     private boolean myMakeLinks = false;
+    private ArrayList<Path> myLastUsedExamples = new ArrayList<>();
 
     public Path getTemPlateFoldername() {
 	return this.myTemPlateFoldername;
-    }
-
-    private Path mySamples[];
-
-    public Path[] getMySamples() {
-	return this.mySamples;
     }
 
     private CodeDescriptor(CodeTypes codeType) {
@@ -52,10 +49,10 @@ public class CodeDescriptor {
 	return new CodeDescriptor(CodeTypes.defaultCPP);
     }
 
-    public static CodeDescriptor createSample(boolean link, Path[] sampleFolders) {
+    public static CodeDescriptor createSample(boolean link, ArrayList<Path> sampleFolders) {
 	CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.sample);
 	codeDescriptor.myMakeLinks = link;
-	codeDescriptor.mySamples = sampleFolders;
+	codeDescriptor.myLastUsedExamples = sampleFolders;
 	return codeDescriptor;
     }
 
@@ -73,7 +70,7 @@ public class CodeDescriptor {
 	CodeDescriptor ret = new CodeDescriptor(codeType);
 	ret.myTemPlateFoldername = new Path(
 		InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, Const.EMPTY_STRING));
-	ret.getLastUsedExamples();
+	ret.loadLastUsedExamples();
 	return ret;
     }
 
@@ -142,7 +139,7 @@ public class CodeDescriptor {
 	    break;
 	case sample:
 	    try {
-		for (Path curPath : this.mySamples) {
+		for (Path curPath : this.myLastUsedExamples) {
 		    if (this.myMakeLinks) {
 			Helpers.linkDirectory(project, curPath, new Path("/"));
 		    } else {
@@ -160,24 +157,23 @@ public class CodeDescriptor {
     }
 
     @SuppressWarnings("nls")
-    private void getLastUsedExamples() {
+    private void loadLastUsedExamples() {
 	String examplePathNames[] = InstancePreferences
 		.getGlobalString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
-	this.mySamples = new Path[examplePathNames.length];
-	int index = 0;
+
 	for (String curpath : examplePathNames) {
-	    this.mySamples[index++] = new Path(curpath);
+	    this.myLastUsedExamples.add(new Path(curpath));
 	}
     }
 
+    public ArrayList<Path> getLastUsedExamples() {
+	return this.myLastUsedExamples;
+    }
+
     private void saveLastUsedExamples() {
-	if (this.mySamples != null) {
-	    String examplePathNames[] = new String[this.mySamples.length];
-	    int index = 0;
-	    for (Path curpath : this.mySamples) {
-		examplePathNames[index++] = curpath.toString();
-	    }
-	    InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, String.join("\n", examplePathNames)); //$NON-NLS-1$
+	if (this.myLastUsedExamples != null) {
+	    String toStore = StringUtils.join(this.myLastUsedExamples, "\n"); //$NON-NLS-1$
+	    InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, toStore);
 	} else {
 	    InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, Const.EMPTY_STRING);
 	}

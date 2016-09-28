@@ -57,7 +57,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     protected LabelCombo[] mBoardOptionCombos = null;
     private final int ncol = 2;
     protected Listener mBoardSelectionChangedListener = null;
-    protected BoardDescriptor myBoardID = null;
+    protected BoardDescriptor myBoardID = new BoardDescriptor(getConfdesc());
 
     /**
      * Get the configuration we are currently working in. The configuration is
@@ -97,7 +97,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	    BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 
 	    if (BoardSelectionPage.this.mControlUploadProtocol.getText().isEmpty()) {
-		myBoardID.setUploadProtocol(Defaults.getDefaultUploadProtocol());
+		BoardSelectionPage.this.myBoardID.setUploadProtocol(Defaults.getDefaultUploadProtocol());
 		BoardSelectionPage.this.mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 	    }
 
@@ -129,6 +129,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
     private int mNumBoardsFiles;
 
+    private Composite mComposite;
+
     @Override
     public void createControls(Composite parent, ICPropertyProvider provider) {
 	super.createControls(parent, provider);
@@ -157,9 +159,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     public void draw(Composite composite) {
 	// create the desired layout for this wizard page
 	ICConfigurationDescription confdesc = getConfdesc();
-	if (this.myBoardID == null) {
-	    this.myBoardID = new BoardDescriptor(confdesc);
-	}
+	this.mComposite = composite;
+
 	GridLayout theGridLayout = new GridLayout();
 	theGridLayout.numColumns = this.ncol;
 	composite.setLayout(theGridLayout);
@@ -200,6 +201,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	// ------
 	createLabel(composite, this.ncol, "Your Arduino board specifications"); //$NON-NLS-1$
+
 	new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
 	this.mcontrolBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 	theGriddata = new GridData();
@@ -287,6 +289,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 	    curLabelCombo.setVisible(true);
 	}
+	this.mComposite.getParent().pack(true);
+	// TOFIX something needs to be done here so a resizing of the page is
+	// not needed to show the items
+
     }
 
     @Override
@@ -338,12 +344,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	// set the options in the combo boxes before setting the value
 	Map<String, String> options = this.myBoardID.getOptions();
+
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 	    curLabelCombo.setItems(this.myBoardID.getMenuItemNames(curLabelCombo.getMenuName()));
-
-	    String value = options.get(curLabelCombo.getMenuName());
-	    if (value != null) {
-		curLabelCombo.setValue(value);
+	    if (options != null) {
+		String value = options.get(curLabelCombo.getMenuName());
+		if (value != null) {
+		    curLabelCombo.setValue(value);
+		}
 	    }
 	}
     }
@@ -395,53 +403,38 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	super.handleTabEvent(kind, data);
     }
 
-    // /*
-    // * Returns the package name based on the platformfile name Caters for the
-    // * packages (with version number and for the old way
-    // */
-    // public String getPackage() {
-    // IPath platformFile = new
-    // Path(this.mControlBoardsTxtFile.getText().trim());
-    // String architecture = platformFile.removeLastSegments(1).lastSegment();
-    // if (architecture.contains(Const.DOT)) { // This is a version number so
-    // // package
-    // return platformFile.removeLastSegments(4).lastSegment();
-    // }
-    // return platformFile.removeLastSegments(2).lastSegment();
-    // }
-
-    // /*
-    // * Returns the architecture based on the platfor file name Caters for the
-    // * packages (with version number and for the old way
-    // */
-    // public String getArchitecture() {
-    // IPath platformFile = new
-    // Path(this.mControlBoardsTxtFile.getText().trim());
-    // String architecture = platformFile.removeLastSegments(1).lastSegment();
-    // if (architecture.contains(Const.DOT)) { // This is a version number so
-    // // package
-    // architecture = platformFile.removeLastSegments(2).lastSegment();
-    // }
-    // return architecture;
-    // }
-
     protected File getSelectedBoardsFile() {
+	if (this.mControlBoardsTxtFile == null) {
+	    return null;
+	}
 	return new File(this.mControlBoardsTxtFile.getText().trim());
     }
 
     private String getUpLoadPort() {
+	if (this.mControlUploadPort == null) {
+	    return "";
+	}
 	return this.mControlUploadPort.getValue();
     }
 
     protected String getBoardName() {
+	if (this.mcontrolBoardName == null) {
+	    return null;
+	}
 	return this.mcontrolBoardName.getText().trim();
     }
 
     protected String getUpLoadProtocol() {
+	if (this.mControlUploadProtocol == null) {
+	    return Defaults.getDefaultUploadProtocol();
+	}
 	return this.mControlUploadProtocol.getText().trim();
     }
 
     private Map<String, String> getOptions() {
+	if (this.mBoardOptionCombos == null) {
+	    return null;
+	}
 	Map<String, String> options = new HashMap<>();
 	for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
 
@@ -451,11 +444,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
     }
 
     public BoardDescriptor getBoardID() {
-	this.myBoardID.setBoardsFile(getSelectedBoardsFile());
-	this.myBoardID.setBoardName(getBoardName());
-	this.myBoardID.setOptions(getOptions());
-	this.myBoardID.setUploadPort(getUpLoadPort());
-	this.myBoardID.setUploadProtocol(getUpLoadProtocol());
+	if (this.mBoardOptionCombos != null) {// only update the values if the
+					      // page has been drawn
+	    this.myBoardID.setBoardsFile(getSelectedBoardsFile());
+	    this.myBoardID.setBoardName(getBoardName());
+	    this.myBoardID.setOptions(getOptions());
+	    this.myBoardID.setUploadPort(getUpLoadPort());
+	    this.myBoardID.setUploadProtocol(getUpLoadProtocol());
+	}
 	return this.myBoardID;
     }
 

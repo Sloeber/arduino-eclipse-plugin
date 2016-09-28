@@ -22,7 +22,7 @@ public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCal
     public String[] getDependencyCommandOptions() {
 	if (this.getTool().getInputTypeById("io.sloeber.compiler.S.sketch.input") != null) { //$NON-NLS-1$
 	    // (this.)
-	    String assemblyCommand = Common.getBuildEnvironmentVariable(myproject,
+	    String assemblyCommand = Common.getBuildEnvironmentVariable(this.myproject,
 		    Const.get_ENV_KEY_RECIPE(Const.ACTION_S_to_O), ""); //$NON-NLS-1$
 	    if (!assemblyCommand.contains("assembler-with-cpp")) { //$NON-NLS-1$
 		String options[] = new String[0];

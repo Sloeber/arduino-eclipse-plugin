@@ -41,32 +41,11 @@ Trump211
    </requires>
 
    <plugin
-         id="io.sloeber.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="io.sloeber.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="io.sloeber.monitor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="io.sloeber.core.nl1"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
 
    <plugin
          id="io.sloeber.application"
@@ -76,14 +55,14 @@ Trump211
          unpack="false"/>
 
    <plugin
-         id="io.sloeber.cdt.refactor"
+         id="io.sloeber.ui.nl1"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
+         fragment="true"/>
 
    <plugin
-         id="io.sloeber.core.ui"
+         id="io.sloeber.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -169,11 +169,11 @@ public class BoardsManager {
 	return Manager.isReady();
     }
 
-    public static TreeMap<String, String> getAllExamples(BoardDescriptor boardID) {
-	TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardID) {
+	TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	// Get the examples of the library manager installed libraries
 	String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
-	File exampleLocation = new File(ConfigurationPreferences.getInstallationPathExamples().toString());
+	Path exampleLocation = new Path(ConfigurationPreferences.getInstallationPathExamples().toString());
 
 	IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
 	if (CommonLibLocation.toFile().exists()) {
@@ -191,7 +191,7 @@ public class BoardsManager {
 
 	// Get the examples from the example locations
 
-	if (exampleLocation.exists()) {
+	if (exampleLocation.toFile().exists()) {
 	    examples.putAll(getExamplesFromFolder("", exampleLocation)); //$NON-NLS-1$
 	}
 
@@ -214,8 +214,8 @@ public class BoardsManager {
      * @param location
      *            The parent folder of the libraries
      */
-    private static TreeMap<String, String> getLibExampleFolders(IPath LibRoot) {
-	TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static TreeMap<String, IPath> getLibExampleFolders(IPath LibRoot) {
+	TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	String[] Libs = LibRoot.toFile().list();
 	if (Libs == null) {
 	    // Either dir does not exist or is not a directory
@@ -257,16 +257,16 @@ public class BoardsManager {
      * @param iPath
      * @param pathVarName
      */
-    private static TreeMap<String, String> getExampleFolders(String libname, File location) {
+    private static TreeMap<String, IPath> getExampleFolders(String libname, File location) {
 	String[] children = location.list();
-	TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	if (children == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
 	    for (String curFolder : children) {
 		IPath LibFolder = new Path(location.toString()).append(curFolder);
 		if (LibFolder.toFile().isDirectory()) {
-		    examples.put(libname + '-' + curFolder, LibFolder.toString());
+		    examples.put(libname + '-' + curFolder, LibFolder);
 		}
 	    }
 	}
@@ -279,9 +279,9 @@ public class BoardsManager {
      * 
      * @param File
      */
-    private static TreeMap<String, String> getExamplesFromFolder(String prefix, File location) {
-	TreeMap<String, String> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-	File[] children = location.listFiles();
+    private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, Path location) {
+	TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	File[] children = location.toFile().listFiles();
 	if (children == null) {
 	    // Either dir does not exist or is not a directory
 	} else {
@@ -289,9 +289,10 @@ public class BoardsManager {
 		Path pt = new Path(exampleFolder.toString());
 		String extension = pt.getFileExtension();
 		if (exampleFolder.isDirectory()) {
-		    examples.putAll(getExamplesFromFolder(prefix + location.getName() + '-', exampleFolder));
+		    examples.putAll(getExamplesFromFolder(prefix + location.lastSegment() + '-',
+			    new Path(exampleFolder.toString())));
 		} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)) {
-		    examples.put(prefix + location.getName(), location.toString());
+		    examples.put(prefix + location.lastSegment(), location);
 		}
 	    }
 	}

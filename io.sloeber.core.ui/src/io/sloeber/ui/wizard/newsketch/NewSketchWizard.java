@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
@@ -34,19 +33,15 @@ import io.sloeber.ui.Messages;
  * 
  */
 public class NewSketchWizard extends Wizard implements INewWizard, IExecutableExtension {
-    private WizardNewProjectCreationPage mWizardPage;
-    protected NewSketchWizardBoardPage mArduinoPage;
-    protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage;
-    private BuildConfigurationsPage mBuildCfgPage;
+    private WizardNewProjectCreationPage mWizardPage = new WizardNewProjectCreationPage(Messages.ui_new_sketch_title);
+    protected NewSketchWizardBoardPage mArduinoPage = new NewSketchWizardBoardPage(
+	    Messages.ui_new_sketch_arduino_information);
+    protected NewSketchWizardCodeSelectionPage mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
+	    Messages.ui_new_sketch_sketch_template_location);
+    private BuildConfigurationsPage mBuildCfgPage = new BuildConfigurationsPage(
+	    Messages.ui_new_sketch_build_configurations);
     private IConfigurationElement mConfig;
     private IProject mProject;
-
-    @Override
-    public IWizardPage getNextPage(IWizardPage page) {
-	BoardDescriptor boardID = NewSketchWizard.this.mArduinoPage.getBoardID();
-	NewSketchWizard.this.mNewArduinoSketchWizardCodeSelectionPage.setPlatformPath(boardID);
-	return super.getNextPage(page);
-    }
 
     public NewSketchWizard() {
 	super();
@@ -63,27 +58,22 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	// create each page and fill in the title and description
 	// first page to fill in the project name
 	//
-	this.mWizardPage = new WizardNewProjectCreationPage(Messages.ui_new_sketch_title);
 	this.mWizardPage.setDescription(Messages.ui_new_sketch_title_help);
 	this.mWizardPage.setTitle(Messages.ui_new_sketch_title); // $NON-NLS-1$
 	//
 	// settings for Arduino board etc
 	//
-	this.mArduinoPage = new NewSketchWizardBoardPage(Messages.ui_new_sketch_arduino_information);
 	this.mArduinoPage.setTitle(Messages.ui_new_sketch_arduino_information_help);
 	this.mArduinoPage.setDescription(Messages.ui_new_sketch_these_settings_cn_be_changed_later);
 	//
 	// settings for template file location
 	//
-	this.mNewArduinoSketchWizardCodeSelectionPage = new NewSketchWizardCodeSelectionPage(
-		Messages.ui_new_sketch_sketch_template_location);
 	this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
 	this.mNewArduinoSketchWizardCodeSelectionPage
 		.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
 	//
 	// configuration page but I haven't seen it
 	//
-	this.mBuildCfgPage = new BuildConfigurationsPage(Messages.ui_new_sketch_build_configurations);
 	this.mBuildCfgPage.setTitle(Messages.ui_new_sketch_Select_additional_configurations);
 	this.mBuildCfgPage.setDescription(Messages.ui_new_sketch_Select_additional_configurations_help);
 	//
@@ -93,7 +83,8 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 	addPage(this.mArduinoPage);
 	addPage(this.mNewArduinoSketchWizardCodeSelectionPage);
 	addPage(this.mBuildCfgPage);
-
+	BoardDescriptor boardID = this.mArduinoPage.getBoardID();
+	this.mNewArduinoSketchWizardCodeSelectionPage.setBoardDescriptor(boardID);
     }
 
     @Override

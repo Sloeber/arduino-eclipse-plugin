@@ -221,6 +221,9 @@ public class TxtFile {
      * ID when given [nice name]
      */
     public String getIDFromName(String name) {
+	if ((name == null) || name.isEmpty()) {
+	    return null;
+	}
 	for (Entry<String, Map<String, String>> entry : this.fileContent.entrySet()) {
 	    for (Entry<String, String> e2 : entry.getValue().entrySet()) {
 		if (e2.getValue().equals(name))

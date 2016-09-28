@@ -11,18 +11,26 @@ import org.eclipse.swt.widgets.Listener;
  * a class containing a label and a combobox in one. This makes it easier to make both visible together
  */
 public class LabelCombo {
+    private GridData mComboGriddata;
+    private GridData mLabelGriddata;
+
     public LabelCombo(Composite composite, String menuName, int horSpan, boolean readOnly) {
+
 	this.mLabel = new Label(composite, SWT.NONE);
 	this.mLabel.setText(menuName + " :"); //$NON-NLS-1$
+	this.mLabelGriddata = new GridData();
+	this.mLabelGriddata.horizontalSpan = 1;// (ncol - 1);
+	this.mLabelGriddata.horizontalAlignment = SWT.FILL;
+	this.mLabel.setLayoutData(this.mLabelGriddata);
 	if (readOnly) {
 	    this.mCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 	} else {
 	    this.mCombo = new Combo(composite, SWT.BORDER);
 	}
-	GridData theGriddata = new GridData();
-	theGriddata.horizontalSpan = horSpan;// (ncol - 1);
-	theGriddata.horizontalAlignment = SWT.FILL;
-	this.mCombo.setLayoutData(theGriddata);
+	this.mComboGriddata = new GridData();
+	this.mComboGriddata.horizontalSpan = horSpan;// (ncol - 1);
+	this.mComboGriddata.horizontalAlignment = SWT.FILL;
+	this.mCombo.setLayoutData(this.mComboGriddata);
 	this.mMenuName = menuName;
 
     }
@@ -56,6 +64,8 @@ public class LabelCombo {
 	boolean newvisible = visible && (this.mCombo.getItemCount() > 0);
 	this.mLabel.setVisible(newvisible);
 	this.mCombo.setVisible(newvisible);
+	this.mComboGriddata.exclude = !newvisible;
+	this.mLabelGriddata.exclude = !newvisible;
     }
 
     public boolean isValid() {
