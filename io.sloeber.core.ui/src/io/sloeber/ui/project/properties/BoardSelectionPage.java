@@ -289,10 +289,16 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 	    curLabelCombo.setVisible(true);
 	}
-	this.mComposite.getParent().pack(true);
+	// this.mComposite.getParent().pack(true);
 	// TOFIX something needs to be done here so a resizing of the page is
 	// not needed to show the items
+	mComposite.layout(true, true);
 
+	// mComposite.getParent().layout(true, true);
+	mComposite.getShell().pack();
+	// mComposite.redraw();
+
+	// mComposite.update();
     }
 
     @Override
