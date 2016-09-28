@@ -17,7 +17,13 @@ import io.sloeber.core.api.Defaults;
  * @author Jan Baeyens
  * 
  */
-public class InstancePreferences extends Const {
+public class InstancePreferences {
+    // preference keys
+    private static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path"; //$NON-NLS-1$
+    private static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path"; //$NON-NLS-1$
+    public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries"; //$NON-NLS-1$
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
 
     /**
      * Give back the user option if the libraries need to be added or not
@@ -59,8 +65,8 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(
-		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+		    "failed to set global variable of type string " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -71,7 +77,8 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type int " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+		    "failed to set global variable of type int " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }
@@ -82,7 +89,7 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 		    "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
@@ -94,8 +101,8 @@ public class InstancePreferences extends Const {
 	try {
 	    myScope.flush();
 	} catch (BackingStoreException e) {
-	    Common.log(
-		    new Status(IStatus.WARNING, CORE_PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
+	    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+		    "failed to set global variable of type long " + key)); //$NON-NLS-1$
 	    e.printStackTrace();
 	}
     }

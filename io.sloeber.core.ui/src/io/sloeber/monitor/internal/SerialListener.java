@@ -62,7 +62,7 @@ public class SerialListener implements MessageConsumer {
 
     private void internalExtractAndRemoveScopeData() {
 
-	String monitorMessage = "";
+	String monitorMessage = ""; //$NON-NLS-1$
 	boolean doneSearching = false;
 	int length = this.myReceivedScopeData.position();
 	int searchPointer;

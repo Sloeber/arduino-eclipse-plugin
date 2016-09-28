@@ -47,7 +47,8 @@ import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
 public class BoardDescriptor {
-
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
     /**
      * 
      */
@@ -63,7 +64,7 @@ public class BoardDescriptor {
     private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+    private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
     private QualifiedName optionsStorageQualifiedName = new QualifiedName(Const.CORE_PLUGIN_ID,
 	    KEY_LAST_USED_BOARD_MENU_OPTIONS);
     private ChangeListener myChangeListeners = null;
@@ -77,6 +78,7 @@ public class BoardDescriptor {
      * the project the confdesc belongs to
      * 
      */
+
     @SuppressWarnings("nls")
     public BoardDescriptor(ICConfigurationDescription confdesc) {
 	if (confdesc == null) {

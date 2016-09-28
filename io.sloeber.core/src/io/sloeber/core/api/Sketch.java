@@ -33,6 +33,9 @@ import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class Sketch {
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+
     public static void upload(IProject project) {
 	Display.getDefault().asyncExec(new Runnable() {
 	    @Override
@@ -69,7 +72,7 @@ public class Sketch {
 				't', '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a',
 				'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',
 				'?', 'b', '=' };
-			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 			int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
 			myScope.putInt(buildflag, curFsiStatus);
 			URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));

@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbenchPage;
@@ -25,7 +24,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
-public class Common extends InstancePreferences {
+public class Common extends Const {
 
     /**
      * This method makes sure that a string can be used as a file or folder name
@@ -155,23 +154,6 @@ public class Common extends InstancePreferences {
 	} else {
 	    Activator.getDefault().getLog().log(status);
 	}
-    }
-
-    /**
-     * This method returns the avrdude upload port prefix which is dependent on
-     * the platform
-     * 
-     * @return avrdude upload port prefix
-     */
-    public static String UploadPortPrefix() {
-	if (Platform.getOS().equals(Platform.OS_WIN32))
-	    return UPLOAD_PORT_PREFIX_WIN;
-	if (Platform.getOS().equals(Platform.OS_LINUX))
-	    return UPLOAD_PORT_PREFIX_LINUX;
-	if (Platform.getOS().equals(Platform.OS_MACOSX))
-	    return UPLOAD_PORT_PREFIX_MAC;
-	Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Unsupported operating system", null)); //$NON-NLS-1$
-	return UPLOAD_PORT_PREFIX_WIN;
     }
 
     /**

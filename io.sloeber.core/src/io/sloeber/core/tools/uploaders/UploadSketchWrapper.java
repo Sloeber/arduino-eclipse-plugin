@@ -24,6 +24,8 @@ import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.tools.Helpers;
 
 public class UploadSketchWrapper {
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
 
     static UploadSketchWrapper myThis = null;
     MessageConsole myConsole = null;
@@ -119,7 +121,7 @@ public class UploadSketchWrapper {
 			    '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/',
 			    'u', 'p', 'l', 'o', 'a', 'd', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 'u',
 			    '=' };
-		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(uploadflag, 0) + 1;
 		    URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
 		    pluginStartInitiator.getContent();

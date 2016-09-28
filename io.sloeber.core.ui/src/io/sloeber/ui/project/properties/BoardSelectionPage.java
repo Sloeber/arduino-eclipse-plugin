@@ -289,16 +289,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 	    curLabelCombo.setVisible(true);
 	}
-	// this.mComposite.getParent().pack(true);
-	// TOFIX something needs to be done here so a resizing of the page is
-	// not needed to show the items
-	mComposite.layout(true, true);
 
-	// mComposite.getParent().layout(true, true);
-	mComposite.getShell().pack();
-	// mComposite.redraw();
-
-	// mComposite.update();
+	this.mComposite.layout(true, true);
+	this.mComposite.getShell().pack();
     }
 
     @Override
@@ -418,7 +411,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
     private String getUpLoadPort() {
 	if (this.mControlUploadPort == null) {
-	    return "";
+	    return ""; //$NON-NLS-1$
 	}
 	return this.mControlUploadPort.getValue();
     }

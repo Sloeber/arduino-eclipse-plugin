@@ -39,6 +39,8 @@ import io.sloeber.common.Const;
 public class TxtFile {
     private File mLastLoadedTxtFile = null;
     private static final String DOT = Const.DOT;
+
+    private static final String TXT_NAME_KEY_TAG = "name"; //$NON-NLS-1$
     private static final String MENU = Const.MENU;
     Map<String, String> settings = null;
     private LinkedHashMap<String, Map<String, String>> fileContent = new LinkedHashMap<>(); // all
@@ -155,7 +157,7 @@ public class TxtFile {
 	}
 	for (String s : this.fileContent.keySet()) {
 	    if (s != null) {
-		String theName = this.fileContent.get(s).get(Const.TXT_NAME_KEY_TAG);
+		String theName = this.fileContent.get(s).get(TXT_NAME_KEY_TAG);
 		if (theName != null) {
 		    allNames.add(theName);
 		}

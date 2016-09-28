@@ -17,7 +17,6 @@ import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class OpenSerialDialogBox extends Dialog {
-    private static final String EMPTY_STRING = "";
     private ComboViewer serialPorts;
     private ComboViewer baudRates;
     private Button dtrCheckbox;

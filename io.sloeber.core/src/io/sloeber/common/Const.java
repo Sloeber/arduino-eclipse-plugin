@@ -18,29 +18,16 @@ public class Const {
     public static final String TRUE = "TRUE";
     public static final String NEWLINE = "\n";
     public static final String RETURN = "\r";
+    public static final String MENU = "menu";
 
     // General stuff
     public static final String PLUGIN_START = "io.sloeber.";
     public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
-
-    // prefix to be added to the arduino environment
-    protected static final String UPLOAD_PORT_PREFIX_WIN = "-P\\\\.\\";
-    protected static final String UPLOAD_PORT_PREFIX_LINUX = "-P";
-    protected static final String UPLOAD_PORT_PREFIX_MAC = "-P";
-
-    // natures
-    public static final String CNATURE_ID = "org.eclipse.cdt.core.cnature";
-    public static final String CCNATURE_ID = "org.eclipse.cdt.core.ccnature";
-    public static final String BUILD_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.managedBuildNature";
-    public static final String SCANNER_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.ScannerConfigNature";
-    public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";
-
-    // preference nodes
-    public static final String NODE_ARDUINO = PLUGIN_START + "arduino";
+    protected static final String ENV_PATTERN = "PATTERN"; //$NON-NLS-1$
 
     // Actions
     public static final String ACTION_UPLOAD = "UPLOAD";
-    public static final String ACTION_PROGRAM = "PROGRAM";
+
     public static final String ACTION_C_to_O = "RECIPE.C.O";
     public static final String ACTION_CPP_to_O = "RECIPE.CPP.O";
     public static final String ACTION_S_to_O = "RECIPE.S.O";
@@ -53,13 +40,8 @@ public class Const {
     public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
     // Describers
-    public static final String ENV_PROTOCOL = "PROTOCOL";
-    public static final String ENV_TOOL = "TOOL";
-    public static final String ENV_PATTERN = "PATTERN";
-
-    // preference keys
-    public static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path";
-    public static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path";
+    private static final String ENV_PROTOCOL = "PROTOCOL";
+    protected static final String ENV_TOOL = "TOOL";
 
     // properties keys
 
@@ -70,59 +52,36 @@ public class Const {
 
     public static final String ARDUINO_HARDWARE_FOLDER_NAME = "hardware";
     public static final String ARDUINO_CODE_FOLDER_NAME = "core";
-    public static final String ARDUINO_CORE_FOLDER_NAME = "cores";
+
     public static final String BOARDS_FILE_NAME = "boards.txt";
     public static final String PLATFORM_FILE_NAME = "platform.txt";
     public static final String VARIANTS_FOLDER_NAME = "variants";
     public static final String PACKAGES_FOLDER_NAME = "packages";
 
     // tags to interpret the arduino txt config files
-    public static final String TXT_NAME_KEY_TAG = "name";
+
     public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot";
     public static final String UPLOAD_SSH = "ssh upload";
-    public static final String MENU = "menu";
-
-    public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries";
 
     public static final String ERASE_START = "A" + DOT;
 
-    public static final String ENV_KEY_PROGRAMMERS_START = ERASE_START + "PROGRAMMERS.";
+    // private static final String ENV_KEY_PROGRAMMERS_START = ERASE_START +
+    // "PROGRAMMERS.";
     public static final String WORKSPACE_LIB_FOLDER = LIBRARY_PATH_SUFFIX + "/";
-    public static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
-    public static final String ENV_KEY_NAME = ERASE_START + "NAME";
-    public static final String ENV_KEY_VERSION = ERASE_START + "VERSION";
+    // private static final String ARDUINO_IDE_VERSION = "ArduinoIDEVersion";
+    // private static final String ENV_KEY_NAME = ERASE_START + "NAME";
+    // private static final String ENV_KEY_VERSION = ERASE_START + "VERSION";
 
-    public static final String ENV_KEY_BUILD_VARIANT = ERASE_START + "BUILD.VARIANT";
-    public static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
-    public static final String ENV_KEY_BUILD_SYSTEM_PATH = ERASE_START + "BUILD.SYSTEM.PATH";
-    public static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
-    public static final String ENV_KEY_SOFTWARE = ERASE_START + "SOFTWARE";
-    public static final String ENV_KEY_ARCHITECTURE = ERASE_START + "ARCHITECTURE";
-    public static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
-    public static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
-    public static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
-
-    public static final String ENV_KEY_BUILD_PATH = ERASE_START + "BUILD.PATH";
-    public static final String ENV_KEY_BUILD_PROJECT_NAME = ERASE_START + "BUILD.PROJECT_NAME";
     public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "UPLOAD.USE_1200BPS_TOUCH";
-    public static final String ENV_KEY_UPLOAD_DISABLE_FLUSHING = ERASE_START + "UPLOAD.DISABLE_FLUSHING";
+
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
     public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
     public static final String ENV_KEY_NETWORK_PORT = ERASE_START + "NETWORK.PORT";
     public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "NETWORK.AUTH";
 
-    public static final String ENV_KEY_BUILD_CORE = ERASE_START + "BUILD.CORE";
-
     public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
     public static final String ENV_KEY_SERIAL_PORT = ERASE_START + "SERIAL.PORT";
     public static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "SERIAL.PORT.FILE";
-
-    public static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ERASE_START
-	    + "JANTJE.REFERENCED_PLATFORM_FILE";
-    public static final String ENV_KEY_JANTJE_REFERENCED_CORE = ERASE_START + "JANTJE.REFERENCED.CORE.FILE";
-    public static final String ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH = ERASE_START + "JANTJE.BUILD.VARIANT.PATH";
-    public static final String ENV_KEY_JANTJE_BUILD_CORE = ERASE_START + "JANTJE.BUILD_CORE";
-    public static final String ENV_KEY_JANTJE_BUILD_VARIANT = ERASE_START + "JANTJE.BUILD_VARIANT";
 
     public static final String ENV_KEY_JANTJE_START = "JANTJE.";
     public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
@@ -140,8 +99,7 @@ public class Const {
     public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "PACKAGE_ID";
     public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
     public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "BOARD_ID";
-    public static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME";
-    public static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
+
     //
     // template Sketch information
 
@@ -152,17 +110,16 @@ public class Const {
     public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
     public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
 
+    // TOFIX I think the fix below for unix users is no longer needed and we no
+    // longer use the rxtx dll
     public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
     public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
     // scope stuff
 
-    public static final String EXAMPLE_FOLDER_NAME = "examples";
+    static final String EXAMPLE_FOLDER_NAME = "examples";
 
     public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
-    public static final String INSTALLER_JOB_NAME = "Arduino installer job";
-
-    protected Const() {
-    }
+    public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";
 
     /**
      * given a action return the environment key that matches it's protocol
@@ -192,17 +149,6 @@ public class Const {
      */
     public static String get_ENV_KEY_RECIPE(String action) {
 	return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
-    }
-
-    /**
-     * given a action and a tool return the environment key that matches it's
-     * recipe
-     * 
-     * @param action
-     * @return he environment variable key to find the recipe
-     */
-    public static String get_ENV_KEY_RECIPE(String tool, String action) {
-	return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN;
     }
 
     public static String get_Jantje_KEY_PROTOCOL(String action) {

@@ -60,6 +60,8 @@ abstract class FamilyJob extends Job {
  * 
  */
 public class Activator extends AbstractUIPlugin {
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
 
     // The shared instance
     private static final String FLAGS_TART = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
@@ -159,7 +161,7 @@ public class Activator extends AbstractUIPlugin {
 	    protected IStatus run(IProgressMonitor monitor) {
 		try {
 
-		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+		    IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		    int curFsiStatus = myScope.getInt(Activator.this.flagStart, 0) + 1;
 		    myScope.putInt(Activator.this.flagStart, curFsiStatus);
 		    URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
@@ -351,7 +353,7 @@ public class Activator extends AbstractUIPlugin {
 	    @Override
 	    protected IStatus run(IProgressMonitor monitor) {
 
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
 			+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
 		int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);

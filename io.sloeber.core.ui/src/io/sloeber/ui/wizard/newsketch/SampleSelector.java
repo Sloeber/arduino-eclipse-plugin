@@ -70,7 +70,22 @@ public class SampleSelector {
 			if (SampleSelector.this.mylistener != null) {
 			    SampleSelector.this.mylistener.handleEvent(null);
 			}
+			setParentCheck(thechangeItem.getParentItem());
 
+		    }
+		}
+	    }
+
+	    private void setParentCheck(TreeItem parentItem) {
+		if (parentItem != null) {
+		    boolean isChecked = false;
+		    for (TreeItem curItem : parentItem.getItems()) {
+			isChecked = isChecked || curItem.getChecked();
+		    }
+		    if (isChecked != parentItem.getChecked()) {
+			parentItem.setChecked(isChecked);
+			parentItem.setGrayed(isChecked);
+			setParentCheck(parentItem.getParentItem());
 		    }
 		}
 	    }
@@ -199,6 +214,7 @@ public class SampleSelector {
 			while (parentTreeItem != null) {
 			    parentTreeItem.setExpanded(true);
 			    parentTreeItem.setChecked(true);
+			    parentTreeItem.setGrayed(true);
 			    parentTreeItem = parentTreeItem.getParentItem();
 			}
 			this.numSelected += 1;

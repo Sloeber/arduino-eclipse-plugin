@@ -84,6 +84,29 @@ public class Helpers extends Common {
     private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\""; //$NON-NLS-1$
     private static final String minusG = "-g "; //$NON-NLS-1$
     private static final String minusG2 = "-g2 "; //$NON-NLS-1$
+    private static final String ENV_KEY_ARCHITECTURE = ERASE_START + "ARCHITECTURE"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_VARIANT = ERASE_START + "BUILD.VARIANT"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_BUILD_VARIANT = ERASE_START + "JANTJE.BUILD_VARIANT"; //$NON-NLS-1$
+
+    private static final String ACTION_PROGRAM = "PROGRAM"; //$NON-NLS-1$
+
+    private static final String ARDUINO_CORE_FOLDER_NAME = "cores"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_CORE = ERASE_START + "BUILD.CORE"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH"; //$NON-NLS-1$
+    private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH"; //$NON-NLS-1$
+    private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH"; //$NON-NLS-1$
+
+    private static final String ENV_KEY_BUILD_PATH = ERASE_START + "BUILD.PATH"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_PROJECT_NAME = ERASE_START + "BUILD.PROJECT_NAME"; //$NON-NLS-1$
+    private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE = ERASE_START
+	    + "JANTJE.REFERENCED_PLATFORM_FILE"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_REFERENCED_CORE = ERASE_START + "JANTJE.REFERENCED.CORE.FILE"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH = ERASE_START + "JANTJE.BUILD.VARIANT.PATH"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_BUILD_CORE = ERASE_START + "JANTJE.BUILD_CORE"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION"; //$NON-NLS-1$
 
     /**
      * This method is the internal working class that adds the provided include
@@ -334,11 +357,12 @@ public class Helpers extends Common {
      * @throws CoreException
      */
     public static void addTheNatures(IProjectDescription description) throws CoreException {
+
 	String[] newnatures = new String[5];
-	newnatures[0] = Const.CNATURE_ID;
-	newnatures[1] = Const.CCNATURE_ID;
-	newnatures[2] = Const.BUILD_NATURE_ID;
-	newnatures[3] = Const.SCANNER_NATURE_ID;
+	newnatures[0] = "org.eclipse.cdt.core.cnature"; //$NON-NLS-1$
+	newnatures[1] = "org.eclipse.cdt.core.ccnature"; //$NON-NLS-1$
+	newnatures[2] = "org.eclipse.cdt.managedbuilder.core.managedBuildNature"; //$NON-NLS-1$
+	newnatures[3] = "org.eclipse.cdt.managedbuilder.core.ScannerConfigNature"; //$NON-NLS-1$
 	newnatures[4] = Const.ARDUINO_NATURE_ID;
 	description.setNatureIds(newnatures);
 
@@ -757,7 +781,7 @@ public class Helpers extends Common {
 	String platformFileName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
 		Const.EMPTY_STRING);
 	String referencedPlatformFileName = getBuildEnvironmentVariable(confDesc,
-		Const.ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, Const.EMPTY_STRING);
+		ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, Const.EMPTY_STRING);
 
 	for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
 	    addPlatformFileTools(curPlatform, contribEnv, confDesc);
@@ -841,8 +865,8 @@ public class Helpers extends Common {
 
 	// process the platform file that is referenced in the build.core of the
 	// boards.txt file
-	File referencedPlatformFilename = new File(Common.getBuildEnvironmentVariable(confDesc,
-		Const.ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, EMPTY_STRING));
+	File referencedPlatformFilename = new File(
+		Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, EMPTY_STRING));
 	if (referencedPlatformFilename.exists()) {
 	    setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, referencedPlatformFilename);
 	}
@@ -991,13 +1015,7 @@ public class Helpers extends Common {
 		return foundPath.append(versions[0]);
 	    }
 	}
-	// This section should probably be deleted
-	Path privateHardwareFolder = new Path(getPrivateHardwarePaths()[0]);
 
-	if (privateHardwareFolder.append(vendor).append(architecture).toFile().exists()) {
-	    return privateHardwareFolder.append(vendor).append(architecture);
-	}
-	// end of the section that probably should be deleted
 	return null;
     }
 
@@ -1378,4 +1396,16 @@ public class Helpers extends Common {
 	}
 
     }
+
+    /**
+     * given a action and a tool return the environment key that matches it's
+     * recipe
+     * 
+     * @param action
+     * @return he environment variable key to find the recipe
+     */
+    private static String get_ENV_KEY_RECIPE(String tool, String action) {
+	return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
+    }
+
 }

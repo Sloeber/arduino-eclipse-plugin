@@ -42,22 +42,24 @@ public class ConfigurationPreferences {
     private static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
     private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
 	    + System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
+    // preference nodes
+    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
 
     private ConfigurationPreferences() {
     }
 
     private static String getString(String key, String defaultValue) {
-	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
 	return myScope.get(key, defaultValue);
     }
 
     private static boolean getBoolean(String key, boolean defaultValue) {
-	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
 	return myScope.getBoolean(key, defaultValue);
     }
 
     private static void setString(String key, String value) {
-	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(Const.NODE_ARDUINO);
+	IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
 	myScope.put(key, value);
 	try {
 	    myScope.flush();

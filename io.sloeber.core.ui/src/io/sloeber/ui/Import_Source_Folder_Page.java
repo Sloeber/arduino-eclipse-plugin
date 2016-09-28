@@ -18,9 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
-//TODO: Should this be called Wizard_Source_Folder_Page to make consistent with the library import.....
-//TODO: Or Arduino_Source_Folder_Import_Page
-
 /**
  * Import_Source_Folder_Page is the one and only page in the source folder
  * import wizard. It controls a text field and a browse button.
@@ -29,7 +26,7 @@ import org.eclipse.ui.dialogs.WizardResourceImportPage;
  * 
  */
 public class Import_Source_Folder_Page extends WizardResourceImportPage {
-    protected static final String EMPTY_STRING = "";
+    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
     protected Text controlLibraryPath;
     private Button controlBrowseButton;
 
@@ -90,7 +87,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 
 	    @Override
 	    public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		// nothing to do here
 
 	    }
 	});
