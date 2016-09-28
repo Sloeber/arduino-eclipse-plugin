@@ -2,7 +2,7 @@
 <feature
       id="io.sloeber.feature"
       label="%featureName"
-      version="3.1.0.qualifier"
+      version="4.0.0.qualifier"
       provider-name="%provider">
 
    <description url="http://baeyens.it/eclipse/">
