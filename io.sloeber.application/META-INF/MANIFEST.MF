@@ -6,6 +6,6 @@ Bundle-Version: 3.1.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.intro,
- io.sloeber.core;bundle-version="3.1.0",
- io.sloeber.ui;bundle-version="1.0.0"
+ io.sloeber.core,
+ io.sloeber.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
