@@ -49,6 +49,7 @@
     <module>../io.sloeber.application</module>
 
     <module>../io.sloeber.ui.nl1</module>
+    <module>../io.sloeber.ui</module>
   </modules>
 
   <build>
