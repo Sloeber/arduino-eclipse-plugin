@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "io.sloeber.ui.messages"; //$NON-NLS-1$
 
+    public static String platformSelectionTip;
+
     public static String error_adding_arduino_code;
     public static String error_no_platform_files_found;
     public static String error_make_finder_failed;
@@ -118,6 +120,8 @@ public class Messages extends NLS {
     public static String pleaseWaitForInstallerJob;
     public static String buildBeforeUpload;
     public static String doYouWantToBuildBeforeUpload;
+
+    public static String packageTooltip;
 
     static {
 	// initialize resource bundle

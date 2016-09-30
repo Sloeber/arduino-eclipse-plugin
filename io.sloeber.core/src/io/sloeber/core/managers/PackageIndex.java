@@ -16,12 +16,10 @@ public class PackageIndex {
 
     private String jsonFileName;
 
+    private File jsonFile;
+
     public String getJsonFileName() {
 	return this.jsonFileName;
-    }
-
-    public void setJsonFileName(String jsonFileName) {
-	this.jsonFileName = jsonFileName;
     }
 
     public List<Package> getPackages() {
@@ -44,7 +42,12 @@ public class PackageIndex {
     }
 
     public File getJsonFile() {
-	return new File(this.jsonFileName);
+	return this.jsonFile;
+    }
+
+    public void setJsonFile(File packageFile) {
+	this.jsonFileName = packageFile.getName();
+	this.jsonFile = packageFile;
     }
 
 }

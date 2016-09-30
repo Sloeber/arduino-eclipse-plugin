@@ -238,7 +238,7 @@ public class Manager {
 	    try (Reader reader = new FileReader(packageFile)) {
 		PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
 		index.setOwners(null);
-		index.setJsonFileName(packageFile.getName());
+		index.setJsonFile(packageFile);
 		packageIndices.add(index);
 	    } catch (Exception e) {
 		Common.log(new Status(IStatus.ERROR, Activator.getId(),

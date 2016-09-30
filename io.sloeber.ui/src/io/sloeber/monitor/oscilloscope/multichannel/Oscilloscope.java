@@ -693,7 +693,7 @@ public class Oscilloscope extends Canvas {
 	for (int i = 0; i < numVerticalLines; i++) {
 	    gc.drawLine(10 + (step * i), 0, 10 + (step * i), height);
 	}
-	step = (int) Math.round(gc.getFont().getFontData()[0].height * 1.5);
+	step = (int) Math.round(gc.getFont().getFontData()[0].getHeight() * 1.5);
 	if (this.ShowLabels) {
 	    for (int i = 0; i < this.chan.length; i++) {
 		gc.setForeground(this.chan[i].fg);
