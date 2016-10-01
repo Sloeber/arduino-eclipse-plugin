@@ -38,7 +38,7 @@ import io.sloeber.core.api.BoardsManager.PlatformTree;
 import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.BoardsManager.PlatformTree.Package;
 import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
-import io.sloeber.core.api.BoardsManager.PlatformTree.installableVersion;
+import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -88,8 +88,8 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	    @Override
 	    protected boolean isLeafMatch(final Viewer viewer1, final Object element) {
 		boolean isMatch = false;
-		if (element instanceof installableVersion) {
-		    installableVersion ver = (installableVersion) element;
+		if (element instanceof InstallableVersion) {
+		    InstallableVersion ver = (InstallableVersion) element;
 		    isMatch |= wordMatches(ver.getVersion().toString());
 		    isMatch |= myWordMatches(ver.getPlatform());
 
@@ -143,8 +143,8 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		viewer1.setCheckStateProvider(new ICheckStateProvider() {
 		    @Override
 		    public boolean isChecked(Object element) {
-			if (element instanceof installableVersion) {
-			    return ((installableVersion) element).isInstalled();
+			if (element instanceof InstallableVersion) {
+			    return ((InstallableVersion) element).isInstalled();
 			}
 			if (element instanceof IndexFile) {
 			    return ((IndexFile) element).isInstalled();
@@ -160,7 +160,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 		    @Override
 		    public boolean isGrayed(Object element) {
-			if (element instanceof installableVersion) {
+			if (element instanceof InstallableVersion) {
 			    return false;
 			}
 			if (element instanceof IndexFile) {
@@ -181,8 +181,8 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		    public void checkStateChanged(CheckStateChangedEvent event) {
 
 			Object element = event.getElement();
-			if (element instanceof installableVersion) {
-			    installableVersion cur = (installableVersion) element;
+			if (element instanceof InstallableVersion) {
+			    InstallableVersion cur = (InstallableVersion) element;
 			    cur.setInstalled(event.getChecked());
 			}
 
@@ -223,7 +223,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 			    return platforms.toArray(new Object[platforms.size()]);
 			}
 			if (parentElement instanceof Platform) {
-			    Collection<installableVersion> versions = ((Platform) parentElement).getVersions();
+			    Collection<InstallableVersion> versions = ((Platform) parentElement).getVersions();
 			    return versions.toArray(new Object[versions.size()]);
 			}
 
@@ -237,7 +237,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 		    @Override
 		    public boolean hasChildren(Object element) {
-			return !(element instanceof installableVersion);
+			return !(element instanceof InstallableVersion);
 		    }
 		});
 
@@ -260,7 +260,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 			    return ((Platform) element).getBoards();
 
 			}
-			if (element instanceof installableVersion) {
+			if (element instanceof InstallableVersion) {
 			    return null;
 
 			}
@@ -296,8 +296,8 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 			    cell.setText(((Platform) cell.getElement()).getName());
 
 			}
-			if (cell.getElement() instanceof installableVersion) {
-			    cell.setText(((installableVersion) cell.getElement()).getVersion().toString());
+			if (cell.getElement() instanceof InstallableVersion) {
+			    cell.setText(((InstallableVersion) cell.getElement()).getVersion().toString());
 			}
 
 		    }

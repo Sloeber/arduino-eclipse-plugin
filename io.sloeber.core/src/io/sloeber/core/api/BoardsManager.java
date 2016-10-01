@@ -380,12 +380,12 @@ public class BoardsManager {
     public static class PlatformTree {
 	private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
 
-	public class installableVersion implements Comparable<installableVersion> {
+	public class InstallableVersion implements Comparable<InstallableVersion> {
 	    private VersionNumber version;
 	    private boolean isInstalled;
 	    private Platform platform;
 
-	    public installableVersion(String version2, boolean installed, Platform platform) {
+	    public InstallableVersion(String version2, boolean installed, Platform platform) {
 		this.version = new VersionNumber(version2);
 		this.isInstalled = installed;
 		this.platform = platform;
@@ -404,7 +404,7 @@ public class BoardsManager {
 	    }
 
 	    @Override
-	    public int compareTo(installableVersion o) {
+	    public int compareTo(InstallableVersion o) {
 		return getVersion().compareTo(o.getVersion());
 	    }
 
@@ -418,7 +418,7 @@ public class BoardsManager {
 
 	    private String name;
 	    private String architecture;
-	    protected TreeSet<installableVersion> versions = new TreeSet<>();
+	    protected TreeSet<InstallableVersion> versions = new TreeSet<>();
 	    protected String boards;
 	    private Package pac;
 
@@ -434,18 +434,18 @@ public class BoardsManager {
 		this.name = internalPlatformm.getName();
 		this.architecture = internalPlatformm.getArchitecture();
 		this.versions.add(
-			new installableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
+			new InstallableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
 		this.boards = String.join("\n", internalPlatformm.getBoardNames()); //$NON-NLS-1$
 		this.pac = pac;
 	    }
 
 	    public void addVersion(ArduinoPlatform internalPlatformm) {
 		this.versions.add(
-			new installableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
+			new InstallableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
 
 	    }
 
-	    public Collection<installableVersion> getVersions() {
+	    public Collection<InstallableVersion> getVersions() {
 		return this.versions;
 	    }
 
@@ -462,8 +462,8 @@ public class BoardsManager {
 		return this.name.compareToIgnoreCase(other.name);
 	    }
 
-	    public installableVersion getVersion(VersionNumber versionNumber) {
-		for (installableVersion curVersion : this.versions) {
+	    public InstallableVersion getVersion(VersionNumber versionNumber) {
+		for (InstallableVersion curVersion : this.versions) {
 		    if (curVersion.getVersion().compareTo(versionNumber) == 0) {
 			return curVersion;
 		    }
@@ -472,7 +472,7 @@ public class BoardsManager {
 	    }
 
 	    public boolean isInstalled() {
-		for (installableVersion curVersion : this.versions) {
+		for (InstallableVersion curVersion : this.versions) {
 		    if (curVersion.isInstalled()) {
 			return true;
 		    }
