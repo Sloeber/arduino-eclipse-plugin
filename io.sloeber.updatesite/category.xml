@@ -3,6 +3,9 @@
    <feature url="features/io.sloeber.feature_3.1.0.qualifier.jar" id="io.sloeber.feature" version="3.1.0.qualifier">
       <category name="Sloeber"/>
    </feature>
+   <feature url="features/io.sloeber.feature_4.0.0.qualifier.jar" id="io.sloeber.feature" version="4.0.0.qualifier">
+      <category name="Sloeber"/>
+   </feature>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
