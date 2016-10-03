@@ -63,8 +63,9 @@ Mac OSX and Linux
 
 ## Build Options
 
-You can control the maven build with the following profiles:
+You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediatly)
 
+* neon (builds against the neon repositories (4.6))
 * luna (builds agains the luna repositories (4.4))
 * mars (builds agains the mars repositories (4.5))
 * win32 (builds for 32 bit windows)
