@@ -44,124 +44,125 @@ import io.sloeber.common.Const;
 
 @SuppressWarnings("restriction")
 public class PdePreprocessor {
-    private static String tempFile = ".ino.cpp"; //$NON-NLS-1$
+	private static String tempFile = ".ino.cpp"; //$NON-NLS-1$
 
-    public static void processProject(IProject iProject) throws CoreException {
-	// first write some standard bla bla
-	final String NEWLINE = Const.NEWLINE;
-	String body = Const.EMPTY_STRING;
-	String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE; //$NON-NLS-1$
-	String includeCodePart = NEWLINE;
-	String header = "//This is a automatic generated file" + NEWLINE; //$NON-NLS-1$
-	header += "//Please do not modify this file" + NEWLINE; //$NON-NLS-1$
-	header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE; //$NON-NLS-1$
-	header += "//This file has been generated on "; //$NON-NLS-1$
-	header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()); //$NON-NLS-1$
-	header += NEWLINE;
-	header += NEWLINE;
-	ICProject tt = CoreModel.getDefault().create(iProject);
-	IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+	public static void processProject(IProject iProject) throws CoreException {
+		// first write some standard bla bla
+		final String NEWLINE = Const.NEWLINE;
+		String body = Const.EMPTY_STRING;
+		String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE; //$NON-NLS-1$
+		String includeCodePart = NEWLINE;
+		String header = "//This is a automatic generated file" + NEWLINE; //$NON-NLS-1$
+		header += "//Please do not modify this file" + NEWLINE; //$NON-NLS-1$
+		header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE; //$NON-NLS-1$
+		header += "//This file has been generated on "; //$NON-NLS-1$
+		header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()); //$NON-NLS-1$
+		header += NEWLINE;
+		header += NEWLINE;
+		ICProject tt = CoreModel.getDefault().create(iProject);
+		IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
 
-	try {
-	    try {
-		index.acquireReadLock();
-	    } catch (InterruptedException e) {
-		// ignore
-		e.printStackTrace();
-		return;
-	    }
+		try {
+			try {
+				index.acquireReadLock();
+			} catch (InterruptedException e) {
+				// ignore
+				e.printStackTrace();
+				return;
+			}
 
-	    // take all the files in the project
-	    IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
-	    int numInoFiles = 0;
-	    for (IResource curResource : allResources) {
-		String extension = curResource.getFileExtension();
-		// only process .pde and .ino files
-		if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) { //$NON-NLS-1$ //$NON-NLS-2$
-		    numInoFiles++;
-		    String addLine;
-		    if (curResource.isLinked()) {
-			addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
-		    } else {
-			addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
-		    }
-		    // if the name of the ino/pde file matches the project put
-		    // the file in front
-		    // Otherwise add it to the end
-		    if (curResource.getName().equals(iProject.getName() + "." + extension)) { //$NON-NLS-1$
-			includeCodePart = addLine + includeCodePart;
-		    } else {
-			includeCodePart += addLine;
-		    }
+			// take all the files in the project
+			IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
+			int numInoFiles = 0;
+			for (IResource curResource : allResources) {
+				String extension = curResource.getFileExtension();
+				// only process .pde and .ino files
+				if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) { //$NON-NLS-1$ //$NON-NLS-2$
+					numInoFiles++;
+					String addLine;
+					if (curResource.isLinked()) {
+						addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+					} else {
+						addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					// if the name of the ino/pde file matches the project put
+					// the file in front
+					// Otherwise add it to the end
+					if (curResource.getName().equals(iProject.getName() + "." + extension)) { //$NON-NLS-1$
+						includeCodePart = addLine + includeCodePart;
+					} else {
+						includeCodePart += addLine;
+					}
 
-		    IPath path = curResource.getFullPath();
+					IPath path = curResource.getFullPath();
 
-		    // check whether the indexer is properly configured.
-		    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-		    ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
-		    if (tu == null) {
-			// the indexer is not properly configured so drop a
-			// error in the file
-			body += NEWLINE;
-			body += "#error the file: " + curResource.getName() //$NON-NLS-1$
-				+ " is not found in the indexer though it exists on the file system." //$NON-NLS-1$
-				+ NEWLINE;
-			body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file." //$NON-NLS-1$
-				+ NEWLINE;
-			body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types." //$NON-NLS-1$
-				+ NEWLINE;
-		    } else {
-			// add declarations made in ino files.
-			IASTTranslationUnit asttu = tu.getAST(index,
-				ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
-			IASTNode astNodes[] = asttu.getChildren();
-			for (IASTNode astNode : astNodes) {
-			    if (astNode instanceof CPPASTFunctionDefinition) {
-				String addString = astNode.getRawSignature();
-				addString = addString.replaceAll("\r\n", NEWLINE); //$NON-NLS-1$
-				addString = addString.replaceAll("\r", NEWLINE); //$NON-NLS-1$
-				addString = addString.replaceAll("//[^\n]+\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
-				addString = addString.replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
-				addString = addString.replaceAll("\\{.+\\}", ""); //$NON-NLS-1$//$NON-NLS-2$
-				if (addString.contains("=")) { //$NON-NLS-1$
-				    // ignore when there are assignments in the
-				    // declaration
-				} else {
-				    body += addString + ';' + NEWLINE;
+					// check whether the indexer is properly configured.
+					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+					ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
+					if (tu == null) {
+						// the indexer is not properly configured so drop a
+						// error in the file
+						body += NEWLINE;
+						body += "#error the file: " + curResource.getName() //$NON-NLS-1$
+								+ " is not found in the indexer though it exists on the file system." //$NON-NLS-1$
+								+ NEWLINE;
+						body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file." //$NON-NLS-1$
+								+ NEWLINE;
+						body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types." //$NON-NLS-1$
+								+ NEWLINE;
+					} else {
+						// add declarations made in ino files.
+						IASTTranslationUnit asttu = tu.getAST(index,
+								ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
+						IASTNode astNodes[] = asttu.getChildren();
+						for (IASTNode astNode : astNodes) {
+							if (astNode instanceof CPPASTFunctionDefinition) {
+								String addString = astNode.getRawSignature();
+								addString = addString.replaceAll("\r\n", NEWLINE); //$NON-NLS-1$
+								addString = addString.replaceAll("\r", NEWLINE); //$NON-NLS-1$
+								addString = addString.replaceAll("//[^\n]+\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
+								addString = addString.replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
+								addString = addString.replaceAll("\\{.+\\}", ""); //$NON-NLS-1$//$NON-NLS-2$
+								if (addString.contains("=") || addString.contains("::")) { //$NON-NLS-1$ //$NON-NLS-2$
+									// ignore when there are assignments in the
+									// declaration
+									// or when it is a class function
+								} else {
+									body += addString + ';' + NEWLINE;
+								}
+
+							}
+						}
+						// list all includes found in the source files.
+						IInclude includes[] = tu.getIncludes();
+						for (IInclude include : includes) {
+							includeHeaderPart += include.getSource();
+							includeHeaderPart += NEWLINE;
+						}
+					}
 				}
-
-			    }
 			}
-			// list all includes found in the source files.
-			IInclude includes[] = tu.getIncludes();
-			for (IInclude include : includes) {
-			    includeHeaderPart += include.getSource();
-			    includeHeaderPart += NEWLINE;
+			body = body + NEWLINE;
+
+			// delete the generated .ino.cpp file this is to cope with people
+			// renaming the ino files to cpp files removing the need for
+			// .ino.cpp file
+			if (numInoFiles == 0) {
+				IResource inofile = iProject.findMember(tempFile);
+				if (inofile != null) {
+					inofile.delete(true, null);
+				}
+			} else {
+				// concatenate the parts and make the .ino.cpp file
+				String output = header + includeHeaderPart + body + includeCodePart;
+				// Make sure the file is not procesed by Arduino IDE
+				output = "#ifdef " + Const.DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+				Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
+						null, true);
 			}
-		    }
-		}
-	    }
-	    body = body + NEWLINE;
 
-	    // delete the generated .ino.cpp file this is to cope with people
-	    // renaming the ino files to cpp files removing the need for
-	    // .ino.cpp file
-	    if (numInoFiles == 0) {
-		IResource inofile = iProject.findMember(tempFile);
-		if (inofile != null) {
-		    inofile.delete(true, null);
+		} finally {
+			index.releaseReadLock();
 		}
-	    } else {
-		// concatenate the parts and make the .ino.cpp file
-		String output = header + includeHeaderPart + body + includeCodePart;
-		// Make sure the file is not procesed by Arduino IDE
-		output = "#ifdef " + Const.DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
-		Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
-			null, true);
-	    }
-
-	} finally {
-	    index.releaseReadLock();
 	}
-    }
 }
