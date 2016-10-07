@@ -32,6 +32,7 @@ public class Messages extends NLS {
     public static String Helpers_To_include_path;
     public static String Helpers_The_folder;
     public static String Helpers_No_command_for;
+	public static String Helpers_ProblemInProgrammerFie;
     public static String command_aborted;
     public static String command_finished;
     public static String command_interupted;
