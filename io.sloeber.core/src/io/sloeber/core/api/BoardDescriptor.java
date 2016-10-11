@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,404 +36,414 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
+import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
 public class BoardDescriptor {
-    // preference nodes
-    public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
-    /**
-     * 
-     */
+	// preference nodes
+	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+	/**
+	 * 
+	 */
 
-    private String myUploadPort;
-    private String myUploadProtocol;
-    private String myBoardID;
-    private Map<String, String> myOptions;
-    private File myBoardsFile;
-    private TxtFile myTxtFile;
-    private static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
-    private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-    private QualifiedName optionsStorageQualifiedName = new QualifiedName(Const.CORE_PLUGIN_ID,
-	    KEY_LAST_USED_BOARD_MENU_OPTIONS);
-    private ChangeListener myChangeListeners = null;
+	private String myUploadPort;
+	private String myUploadProtocol;
+	private String myBoardID;
+	private Map<String, String> myOptions;
+	private File myBoardsFile;
+	protected TxtFile myTxtFile;
+	private ChangeListener myChangeListeners = null;
+	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
-    /*
-     * Create a sketchProject. This class does not really create a sketch
-     * object. Nor does it look for existing (mapping) sketch projects This
-     * class represents the data passed between the UI and the core This class
-     * does contain a create to create the project When confdesc is null the
-     * data will be taken from the "last used " otherwise the data is taken from
-     * the project the confdesc belongs to
-     * 
-     */
+	private static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
+	private static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
+	private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
+	private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
+	private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
+	private static final String MENUSELECTION = Const.ENV_KEY_JANTJE_START + "MENU."; //$NON-NLS-1$
 
-    @SuppressWarnings("nls")
-    public BoardDescriptor(ICConfigurationDescription confdesc) {
-	if (confdesc == null) {
-	    this.myBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, ""));
-	    this.myTxtFile = new TxtFile(this.myBoardsFile);
-	    this.myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, "");
-	    this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
-	    this.myUploadProtocol = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL,
-		    Defaults.getDefaultUploadProtocol());
-	    getLastUsedMenuOption();
-	} else {
-	    this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, "");
-	    this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
-		    Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
-	    this.myBoardsFile = new File(
-		    Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
-	    this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
-	    this.myTxtFile = new TxtFile(this.myBoardsFile);
-	    getMenuOptions(confdesc);
+	/*
+	 * Create a sketchProject. This class does not really create a sketch
+	 * object. Nor does it look for existing (mapping) sketch projects This
+	 * class represents the data passed between the UI and the core This class
+	 * does contain a create to create the project When confdesc is null the
+	 * data will be taken from the "last used " otherwise the data is taken from
+	 * the project the confdesc belongs to
+	 * 
+	 */
+	public static BoardDescriptor makeBoardDescriptor(ICConfigurationDescription confdesc) {
+		return new InternalBoardDescriptor(confdesc);
 	}
-    }
 
-    public BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
-	this.myUploadPort = Const.EMPTY_STRING;
-	this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
-	this.myBoardID = boardID;
-	this.myOptions = options;
-	this.myBoardsFile = boardsFile;
-	this.myTxtFile = new TxtFile(this.myBoardsFile);
-    }
+	protected BoardDescriptor() {
 
-    /*
-     * Method to create a project based on the board
-     */
-    public IProject createProject(String projectName, URI projectURI,
-	    ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds, CodeDescriptor codeDescription,
-	    IProgressMonitor monitor) throws Exception {
-	IProject projectHandle;
-	projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(projectName));
+	}
 
+	@SuppressWarnings("nls")
+	protected BoardDescriptor(ICConfigurationDescription confdesc) {
+		if (confdesc == null) {
+			this.myBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, ""));
+			this.myTxtFile = new TxtFile(this.myBoardsFile);
+			this.myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, "");
+			this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
+			this.myUploadProtocol = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL,
+					Defaults.getDefaultUploadProtocol());
+			menuOptionsFromString(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, new String()));
+
+		} else {
+			this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, "");
+			this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
+					Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
+			this.myBoardsFile = new File(
+					Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
+			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
+			this.myTxtFile = new TxtFile(this.myBoardsFile);
+
+			this.myOptions = new HashMap<>();
+			IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+			IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+			IEnvironmentVariable[] curVariables = contribEnv.getVariables(confdesc);
+			for (IEnvironmentVariable curVariable : curVariables) {
+				if (curVariable.getName().startsWith(MENUSELECTION)) {
+					this.myOptions.put(curVariable.getName().substring(MENUSELECTION.length()), curVariable.getValue());
+				}
+			}
+		}
+	}
+
+	public static BoardDescriptor makeBoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
+		return new InternalBoardDescriptor(boardsFile, boardID, options);
+	}
+
+	protected BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
+		this.myUploadPort = Const.EMPTY_STRING;
+		this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
+		this.myBoardID = boardID;
+		this.myOptions = options;
+		this.myBoardsFile = boardsFile;
+		this.myTxtFile = new TxtFile(this.myBoardsFile);
+	}
+
+	/*
+	 * Method to create a project based on the board
+	 */
+	public IProject createProject(String projectName, URI projectURI,
+			ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds, CodeDescriptor codeDescription,
+			IProgressMonitor monitor) throws Exception {
+		IProject projectHandle;
+		projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(projectName));
+
+		// try {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
+		desc.setLocationURI(projectURI);
+
+		projectHandle.create(desc, monitor);
+
+		if (monitor.isCanceled()) {
+			throw new OperationCanceledException();
+		}
+
+		projectHandle.open(IResource.BACKGROUND_REFRESH, monitor);
+
+		// Creates the .cproject file with the configurations
+		ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(projectHandle, cfgNamesAndTCIds,
+				true, monitor);
+
+		// Add the C C++ AVR and other needed Natures to the project
+		Helpers.addTheNatures(desc);
+
+		// Add the Arduino folder
+
+		Helpers.createNewFolder(projectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
+
+		for (ConfigurationDescriptor curConfig : cfgNamesAndTCIds) {
+			ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.configName);
+			save(configurationDescription);
+		}
+
+		// Set the path variables
+		// ArduinoHelpers.setProjectPathVariables(prjCDesc.getActiveConfiguration());
+
+		// Intermediately save or the adding code will fail
+		// Release is the active config (as that is the "IDE" Arduino
+		// type....)
+		ICConfigurationDescription defaultConfigDescription = prjCDesc
+				.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
+		prjCDesc.setActiveConfiguration(defaultConfigDescription);
+
+		// Insert The Arduino Code
+		// NOTE: Not duplicated for debug (the release reference is just to
+		// get at some environment variables)
+		Helpers.addArduinoCodeToProject(projectHandle, defaultConfigDescription);
+
+		ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
+				true);
+		ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
+		if (entries.length == 1) {
+			Path exclusionPath[] = new Path[8];
+			exclusionPath[0] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xamples/**"); //$NON-NLS-1$
+			exclusionPath[1] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xtras/**"); //$NON-NLS-1$
+			exclusionPath[2] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/test*/**"); //$NON-NLS-1$
+			exclusionPath[3] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/third-party/**"); //$NON-NLS-1$
+			exclusionPath[4] = new Path(Const.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
+			exclusionPath[5] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/c*/?*"); //$NON-NLS-1$
+			exclusionPath[6] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/d*/?*"); //$NON-NLS-1$
+			exclusionPath[7] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/D*/?*"); //$NON-NLS-1$
+
+			ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
+					ICSettingEntry.VALUE_WORKSPACE_PATH);
+			ICSourceEntry[] out = null;
+			out = new ICSourceEntry[1];
+			out[0] = (ICSourceEntry) newSourceEntry;
+			try {
+				cfgd.getConfiguration().setSourceEntries(out);
+			} catch (CoreException e) {
+				// ignore
+			}
+
+		} else {
+			// this should not happen
+		}
+
+		// set warning levels default on
+		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
+				Const.ENV_KEY_WARNING_LEVEL_ON);
+		contribEnv.addVariable(var, cfgd.getConfiguration());
+
+		prjCDesc.setActiveConfiguration(defaultConfigDescription);
+		prjCDesc.setCdtProjectCreated();
+		CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,
+				null);
+		projectHandle.setDescription(desc, new NullProgressMonitor());
+		codeDescription.createFiles(projectHandle, monitor);
+		monitor.done();
+		return projectHandle;
+	}
+
+	public void save(ICConfigurationDescription confdesc) throws Exception {
+		if (confdesc != null) {
+
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, getPlatformFile());
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, getBoardsFile());
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
+			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
+			Common.setBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
+					this.myUploadProtocol);
+			if (this.myOptions != null) {
+				for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
+					Common.setBuildEnvironmentVariable(confdesc, MENUSELECTION + curoption.getKey(),
+							curoption.getValue());
+				}
+			}
+			IProject project = confdesc.getProjectDescription().getProject();
+
+			Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
+
+			Helpers.addArduinoCodeToProject(project, confdesc);
+
+			Helpers.removeInvalidIncludeFolders(confdesc);
+			Helpers.setDirtyFlag(project, confdesc);
+		}
+
+		// Also save last used values
+		myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getBoardsFile());
+		myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
+		myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
+		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
+		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, menuOptionsToString());
+	}
+
+	public String getPackage() {
+		return this.myTxtFile.getPackage();
+	}
+
+	public String getArchitecture() {
+		return this.myTxtFile.getArchitecture();
+	}
+
+	public String getBoardsFile() {
+		try {
+			return this.myBoardsFile.getCanonicalPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new String();
+	}
+
+	public String getBoardName() {
+		return this.myTxtFile.getNameFromID(this.myBoardID);
+	}
+
+	public String getUploadPort() {
+		return this.myUploadPort;
+	}
+
+	public String getUploadProtocol() {
+		return this.myUploadProtocol;
+	}
+
+	public IPath getPlatformPath() {
+		try {
+			return new Path(this.myBoardsFile.getParent());
+		} catch (Exception e) {
+			return new Path(new String());
+		}
+	}
+
+	public String getPlatformFile() {
+		return getPlatformPath().append(Const.PLATFORM_FILE_NAME).toString();
+	}
+
+	public void setUploadPort(String newUploadPort) {
+		this.myUploadPort = newUploadPort;
+	}
+
+	public void setUploadProtocol(String newUploadProtocol) {
+		this.myUploadProtocol = newUploadProtocol;
+
+	}
+
+	public void setBoardID(String boardID) {
+		if (!boardID.equals(this.myBoardID)) {
+			this.myBoardID = boardID;
+			informChangeListeners();
+		}
+	}
+
+	public void setBoardName(String boardName) {
+		String newBoardID = this.myTxtFile.getBoardIDFromBoardName(boardName);
+		if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
+			return;
+		}
+
+		this.myBoardID = newBoardID;
+		informChangeListeners();
+
+	}
+
+	public void setBoardsFile(File boardsFile) {
+		if (boardsFile == null) {
+			return;// ignore
+		}
+		if (this.myBoardsFile.equals(boardsFile)) {
+			return;
+		}
+
+		this.myBoardsFile = boardsFile;
+		this.myTxtFile = new TxtFile(this.myBoardsFile);
+		informChangeListeners();
+	}
+
+	public void setOptions(Map<String, String> options) {
+		this.myOptions = options;
+
+	}
+
+	public Map<String, String> getOptions() {
+		return this.myOptions;
+	}
+
+	// private void setMenuOptions(ICConfigurationDescription confdesc) {
+	// String store =menuOptionsToString();
 	// try {
-	IWorkspace workspace = ResourcesPlugin.getWorkspace();
-	final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
-	desc.setLocationURI(projectURI);
+	// confdesc.getProjectDescription().getProject().setPersistentProperty(this.optionsStorageQualifiedName,
+	// store);
+	// } catch (CoreException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
 
-	projectHandle.create(desc, monitor);
-
-	if (monitor.isCanceled()) {
-	    throw new OperationCanceledException();
+	public String getBoardID() {
+		return this.myBoardID;
 	}
 
-	projectHandle.open(IResource.BACKGROUND_REFRESH, monitor);
-
-	// Creates the .cproject file with the configurations
-	ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(projectHandle, cfgNamesAndTCIds,
-		true, monitor);
-
-	// Add the C C++ AVR and other needed Natures to the project
-	Helpers.addTheNatures(desc);
-
-	// Add the Arduino folder
-
-	Helpers.createNewFolder(projectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
-
-	for (ConfigurationDescriptor curConfig : cfgNamesAndTCIds) {
-	    ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.configName);
-	    save(configurationDescription);
-	    Helpers.setTheEnvironmentVariables(projectHandle, configurationDescription,
-		    curConfig.DebugCompilerSettings);
+	public String[] getCompatibleBoards() {
+		return this.myTxtFile.getAllNames();
 	}
 
-	// Set the path variables
-	// ArduinoHelpers.setProjectPathVariables(prjCDesc.getActiveConfiguration());
-
-	// Intermediately save or the adding code will fail
-	// Release is the active config (as that is the "IDE" Arduino
-	// type....)
-	ICConfigurationDescription defaultConfigDescription = prjCDesc
-		.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
-	prjCDesc.setActiveConfiguration(defaultConfigDescription);
-
-	// Insert The Arduino Code
-	// NOTE: Not duplicated for debug (the release reference is just to
-	// get at some environment variables)
-	Helpers.addArduinoCodeToProject(projectHandle, defaultConfigDescription);
-
-	ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
-		true);
-	ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
-	if (entries.length == 1) {
-	    Path exclusionPath[] = new Path[8];
-	    exclusionPath[0] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xamples/**"); //$NON-NLS-1$
-	    exclusionPath[1] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/?xtras/**"); //$NON-NLS-1$
-	    exclusionPath[2] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/test*/**"); //$NON-NLS-1$
-	    exclusionPath[3] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/**/third-party/**"); //$NON-NLS-1$
-	    exclusionPath[4] = new Path(Const.LIBRARY_PATH_SUFFIX + "**/._*"); //$NON-NLS-1$
-	    exclusionPath[5] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/c*/?*"); //$NON-NLS-1$
-	    exclusionPath[6] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/d*/?*"); //$NON-NLS-1$
-	    exclusionPath[7] = new Path(Const.LIBRARY_PATH_SUFFIX + "/?*/D*/?*"); //$NON-NLS-1$
-
-	    ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
-		    ICSettingEntry.VALUE_WORKSPACE_PATH);
-	    ICSourceEntry[] out = null;
-	    out = new ICSourceEntry[1];
-	    out[0] = (ICSourceEntry) newSourceEntry;
-	    try {
-		cfgd.getConfiguration().setSourceEntries(out);
-	    } catch (CoreException e) {
-		// ignore
-	    }
-
-	} else {
-	    // this should not happen
-	}
-
-	// set warning levels default on
-	IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-	IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-	IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
-		Const.ENV_KEY_WARNING_LEVEL_ON);
-	contribEnv.addVariable(var, cfgd.getConfiguration());
-
-	prjCDesc.setActiveConfiguration(defaultConfigDescription);
-	prjCDesc.setCdtProjectCreated();
-	CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,
-		null);
-	projectHandle.setDescription(desc, new NullProgressMonitor());
-	codeDescription.createFiles(projectHandle, monitor);
-	monitor.done();
-	return projectHandle;
-    }
-
-    public void save(ICConfigurationDescription confdesc) throws Exception {
-	if (confdesc != null) {
-
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, getPlatformFile());
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, getBoardsFile());
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
-	    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-	    Common.setBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
-		    this.myUploadProtocol);
-	    setMenuOptions(confdesc);
-	    if (this.myOptions != null) {
-		for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
-		    Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_START + curoption.getKey(),
-			    curoption.getValue());
+	public String[] getUploadProtocols() {
+		if (this.myBoardsFile.exists()) {
+			return Programmers.getUploadProtocols(this.myBoardsFile.toString());
 		}
-	    }
-	    IProject project = confdesc.getProjectDescription().getProject();
-
-	    Helpers.setTheEnvironmentVariables(project, confdesc, false);
-
-	    Helpers.addArduinoCodeToProject(project, confdesc);
-
-	    Helpers.removeInvalidIncludeFolders(confdesc);
-	    Helpers.setDirtyFlag(project, confdesc);
+		return new String[0];
 	}
 
-	// Also save last used values
-	myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getBoardsFile());
-	myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
-	myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
-	myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
-	setLastUsedMenuOption();
-
-    }
-
-    public String getPackage() {
-	return this.myTxtFile.getPackage();
-    }
-
-    public String getArchitecture() {
-	return this.myTxtFile.getArchitecture();
-    }
-
-    public String getBoardsFile() {
-	return new Path(this.myTxtFile.getTxtFile().toString()).toString();
-    }
-
-    public String getBoardName() {
-	return this.myTxtFile.getNameFromID(this.myBoardID);
-    }
-
-    public String getUploadPort() {
-	return this.myUploadPort;
-    }
-
-    public String getUploadProtocol() {
-	return this.myUploadProtocol;
-    }
-
-    public IPath getPlatformPath() {
-	return new Path(this.myTxtFile.getTxtFile().getParent());
-    }
-
-    public String getPlatformFile() {
-	return getPlatformPath().append(Const.PLATFORM_FILE_NAME).toString();
-    }
-
-    public void setUploadPort(String newUploadPort) {
-	this.myUploadPort = newUploadPort;
-    }
-
-    public void setUploadProtocol(String newUploadProtocol) {
-	this.myUploadProtocol = newUploadProtocol;
-
-    }
-
-    public void setBoardID(String boardID) {
-	if (!this.myBoardID.equals(boardID)) {
-	    this.myBoardID = boardID;
-	    informChangeListeners();
-	}
-    }
-
-    public void setBoardName(String boardName) {
-	String newBoardID = this.myTxtFile.getIDFromName(boardName);
-	if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
-	    return;
+	public String[] getMenuItemNamesFromMenuID(String menuID) {
+		return this.myTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
 	}
 
-	this.myBoardID = newBoardID;
-	informChangeListeners();
-
-    }
-
-    public void setBoardsFile(File boardsFile) {
-	if (boardsFile == null) {
-	    return;// ignore
-	}
-	if (this.myBoardsFile.equals(boardsFile)) {
-	    return;
+	public Set<String> getAllMenuNames() {
+		return this.myTxtFile.getMenuNames();
 	}
 
-	this.myBoardsFile = boardsFile;
-	this.myTxtFile = new TxtFile(this.myBoardsFile);
-	informChangeListeners();
-    }
-
-    public void setOptions(Map<String, String> options) {
-	this.myOptions = options;
-
-    }
-
-    public Map<String, String> getOptions() {
-	return this.myOptions;
-    }
-
-    private void setLastUsedMenuOption() {
-	String store = ""; //$NON-NLS-1$
-	String concat = ""; //$NON-NLS-1$
-	if (this.myOptions != null) {
-	    for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-		store = store + concat + curOption.getKey() + '=' + curOption.getValue();
-		concat = "\n"; //$NON-NLS-1$
-	    }
-	}
-	myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, store);
-
-    }
-
-    private void getLastUsedMenuOption() {
-	this.myOptions = new HashMap<>();
-	String storedValue = myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, ""); //$NON-NLS-1$
-	String[] lines = storedValue.split("\n"); //$NON-NLS-1$
-	for (String curLine : lines) {
-	    String[] values = curLine.split("=", 2); //$NON-NLS-1$
-	    if (values.length == 2) {
-		this.myOptions.put(values[0], values[1]);
-	    }
-	}
-    }
-
-    private void setMenuOptions(ICConfigurationDescription confdesc) {
-	String store = ""; //$NON-NLS-1$
-	String concat = ""; //$NON-NLS-1$
-	if (this.myOptions != null) {
-	    for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-		store = store + concat + curOption.getKey() + '=' + curOption.getValue();
-		concat = "\n"; //$NON-NLS-1$
-	    }
-	}
-	try {
-	    confdesc.getProjectDescription().getProject().setPersistentProperty(this.optionsStorageQualifiedName,
-		    store);
-	} catch (CoreException e) {
-	    e.printStackTrace();
+	public TreeMap<String, IPath> getAllExamples() {
+		return BoardsManager.getAllExamples(this);
 	}
 
-    }
-
-    private void getMenuOptions(ICConfigurationDescription confdesc) {
-	this.myOptions = new HashMap<>();
-	String storedValue;
-	try {
-	    storedValue = confdesc.getProjectDescription().getProject()
-		    .getPersistentProperty(this.optionsStorageQualifiedName);
-	} catch (CoreException e) {
-	    e.printStackTrace();
-	    return;
+	public void addChangeListener(ChangeListener l) {
+		this.myChangeListeners = l;
 	}
-	if (storedValue != null) {
-	    String[] lines = storedValue.split("\n"); //$NON-NLS-1$
-	    for (String curLine : lines) {
-		String[] values = curLine.split("=", 2); //$NON-NLS-1$
-		if (values.length == 2) {
-		    this.myOptions.put(values[0], values[1]);
+
+	public void removeChangeListener() {
+		this.myChangeListeners = null;
+	}
+
+	private void informChangeListeners() {
+		if (this.myChangeListeners != null) {
+			this.myChangeListeners.stateChanged(null);
 		}
-	    }
 	}
 
-    }
-
-    public String getBoardID() {
-	return this.myBoardID;
-    }
-
-    public String[] getCompatibleBoards() {
-	return this.myTxtFile.getAllNames();
-    }
-
-    public String[] getUploadProtocols() {
-	if (this.myBoardsFile.exists()) {
-	    return Programmers.getUploadProtocols(this.myBoardsFile.toString());
+	public String getMenuIdFromMenuName(String menuName) {
+		return this.myTxtFile.getMenuIDFromMenuName(menuName);
 	}
-	return new String[0];
-    }
 
-    public String[] getMenuItemNames(String menuName) {
-	return this.myTxtFile.getMenuItemNames(menuName, this.myBoardID);
-    }
-
-    public Set<String> getAllMenuNames() {
-	return this.myTxtFile.getMenuNames();
-    }
-
-    public TreeMap<String, IPath> getAllExamples() {
-	return BoardsManager.getAllExamples(this);
-    }
-
-    public void addChangeListener(ChangeListener l) {
-	this.myChangeListeners = l;
-    }
-
-    public void removeChangeListener() {
-	this.myChangeListeners = null;
-    }
-
-    private void informChangeListeners() {
-	if (this.myChangeListeners != null) {
-	    this.myChangeListeners.stateChanged(null);
+	public String getMenuItemNamedFromMenuItemID(String menuItemID, String menuID) {
+		return this.myTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
 	}
-    }
+
+	private String menuOptionsToString() {
+		String ret = new String();
+		String concat = new String();
+		if (this.myOptions != null) {
+			for (Entry<String, String> curOption : this.myOptions.entrySet()) {
+				ret += concat + curOption.getKey() + '=' + curOption.getValue();
+				concat = "\n"; //$NON-NLS-1$
+			}
+		}
+		return ret;
+	}
+
+	private void menuOptionsFromString(String options) {
+		this.myOptions = new HashMap<>();
+		if (options != null) {
+			String[] lines = options.split("\n"); //$NON-NLS-1$
+			for (String curLine : lines) {
+				String[] values = curLine.split("=", 2); //$NON-NLS-1$
+				if (values.length == 2) {
+					this.myOptions.put(values[0], values[1]);
+				}
+			}
+		}
+	}
+
+	public String getMenuItemIDFromMenuItemName(String menuItemName, String menuID) {
+		return this.myTxtFile.getMenuItemIDFromMenuItemName(this.myBoardID, menuID, menuItemName);
+	}
+
 }

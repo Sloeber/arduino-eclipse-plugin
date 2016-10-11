@@ -24,83 +24,86 @@ import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
+import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 
 public class ConfigurationChangeListener implements ICProjectDescriptionListener {
 
-    @Override
-    public void handleEvent(CProjectDescriptionEvent event) {
-	if (event.getEventType() != CProjectDescriptionEvent.ABOUT_TO_APPLY) {
-	    return;
-	}
-	ICProjectDescription projDesc = event.getNewCProjectDescription();
-
-	// only handle arduino nature projects
-	try {
-
-	    if (!event.getProject().hasNature(Const.ARDUINO_NATURE_ID)) {
-		if (event.getProject().hasNature("it.baeyens.arduinonature")) { //$NON-NLS-1$
-		    // this is the old nature so make necessary changes
-		    IProjectDescription desc = projDesc.getProject().getDescription();
-		    // replace the ino to cpp tool
-		    ICommand[] buildSpec = desc.getBuildSpec();
-		    for (ICommand curCommand : buildSpec) {
-			if (curCommand.getBuilderName().equals("it.baeyens.arduino.core.inoToCpp")) { //$NON-NLS-1$
-			    curCommand.setBuilderName("io.sloeber.arduino.core.inoToCpp"); //$NON-NLS-1$
-			}
-		    }
-		    desc.setBuildSpec(buildSpec);
-
-		    // set the correct natures
-		    Helpers.addTheNatures(desc);
-
-		    projDesc.getProject().setDescription(desc, null);
-		    // set the correct toolchain
-		    // Setting the toolchain by code seems to be a issue so I
-		    // report the issue and have the user set the toolchain
-		    // manually.
-		    class TheDialog implements Runnable {
-
-			@Override
-			public void run() {
-
-			    MessageDialog dialog = new MessageDialog(null, "Your action is needed.", null, //$NON-NLS-1$
-				    "Your project/sketch has partially been migrated from baeyens.it to sloeber.io.\nYou still need to change the toolchain!", //$NON-NLS-1$
-				    MessageDialog.QUESTION,
-				    new String[] { "Show me datailed instructions (opens browser)", //$NON-NLS-1$
-					    "I know the routine" }, //$NON-NLS-1$
-				    0);
-
-			    if (dialog.open() == 0) {
-				org.eclipse.swt.program.Program.launch("http://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
-			    }
-			}
-		    }
-		    TheDialog theDialog = new TheDialog();
-		    Display.getDefault().syncExec(theDialog);
-		} else {
-		    return;
+	@Override
+	public void handleEvent(CProjectDescriptionEvent event) {
+		if (event.getEventType() != CProjectDescriptionEvent.ABOUT_TO_APPLY) {
+			return;
 		}
-	    }
-	} catch (Exception e) {
-	    // don't care don't update
-	    return;
+		ICProjectDescription projDesc = event.getNewCProjectDescription();
+
+		// only handle arduino nature projects
+		try {
+
+			if (!event.getProject().hasNature(Const.ARDUINO_NATURE_ID)) {
+				if (event.getProject().hasNature("it.baeyens.arduinonature")) { //$NON-NLS-1$
+					// this is the old nature so make necessary changes
+					IProjectDescription desc = projDesc.getProject().getDescription();
+					// replace the ino to cpp tool
+					ICommand[] buildSpec = desc.getBuildSpec();
+					for (ICommand curCommand : buildSpec) {
+						if (curCommand.getBuilderName().equals("it.baeyens.arduino.core.inoToCpp")) { //$NON-NLS-1$
+							curCommand.setBuilderName("io.sloeber.arduino.core.inoToCpp"); //$NON-NLS-1$
+						}
+					}
+					desc.setBuildSpec(buildSpec);
+
+					// set the correct natures
+					Helpers.addTheNatures(desc);
+
+					projDesc.getProject().setDescription(desc, null);
+					// set the correct toolchain
+					// Setting the toolchain by code seems to be a issue so I
+					// report the issue and have the user set the toolchain
+					// manually.
+					class TheDialog implements Runnable {
+
+						@Override
+						public void run() {
+
+							MessageDialog dialog = new MessageDialog(null, "Your action is needed.", null, //$NON-NLS-1$
+									"Your project/sketch has partially been migrated from baeyens.it to sloeber.io.\nYou still need to change the toolchain!", //$NON-NLS-1$
+									MessageDialog.QUESTION,
+									new String[] { "Show me datailed instructions (opens browser)", //$NON-NLS-1$
+											"I know the routine" }, //$NON-NLS-1$
+									0);
+
+							if (dialog.open() == 0) {
+								org.eclipse.swt.program.Program.launch("http://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
+							}
+						}
+					}
+					TheDialog theDialog = new TheDialog();
+					Display.getDefault().syncExec(theDialog);
+				} else {
+					return;
+				}
+			}
+		} catch (Exception e) {
+			// don't care don't update
+			return;
+		}
+
+		// We have a arduino project so we are safe.
+
+		if (projDesc.getActiveConfiguration() != null) {
+
+			Helpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(),
+					(InternalBoardDescriptor) BoardDescriptor.makeBoardDescriptor(projDesc.getActiveConfiguration()));
+			try {
+
+				Helpers.addArduinoCodeToProject(projDesc.getProject(), projDesc.getActiveConfiguration());
+			} catch (Exception e) {
+				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
+			}
+			Libraries.reAttachLibrariesToProject(projDesc.getActiveConfiguration());
+		}
 	}
-
-	// We have a arduino project so we are safe.
-
-	if (projDesc.getActiveConfiguration() != null) {
-
-	    Helpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(), false);
-	    try {
-
-		Helpers.addArduinoCodeToProject(projDesc.getProject(), projDesc.getActiveConfiguration());
-	    } catch (Exception e) {
-		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
-	    }
-	    Libraries.reAttachLibrariesToProject(projDesc.getActiveConfiguration());
-	}
-    }
 
 }
