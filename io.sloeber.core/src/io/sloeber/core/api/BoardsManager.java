@@ -710,8 +710,9 @@ public class BoardsManager {
 	 */
 	public static Set<String> getAllManuNames() {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-		for (ArduinoPlatform curPlatfor : Manager.getInstalledPlatforms()) {
-			TxtFile txtFile = new TxtFile(curPlatfor.getBoardsFile());
+		String[] boardFiles = getAllBoardsFiles();
+		for (String curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(new File(curBoardFile));
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -719,8 +720,9 @@ public class BoardsManager {
 
 	public static TreeMap<String, String> getAllmenus() {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		for (ArduinoPlatform curPlatfor : Manager.getInstalledPlatforms()) {
-			TxtFile txtFile = new TxtFile(curPlatfor.getBoardsFile());
+		String[] boardFiles = getAllBoardsFiles();
+		for (String curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(new File(curBoardFile));
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;

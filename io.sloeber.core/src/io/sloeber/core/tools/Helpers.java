@@ -512,10 +512,10 @@ public class Helpers extends Common {
 		Path platformPath = new Path(boardDescriptor.getPlatformPath().toString());
 		String architecture = boardDescriptor.getArchitecture();
 		String packagename = boardDescriptor.getPackage();
-		int numSegmentsToSubtractForHardwarePath = 2;
+		int numSegmentsToSubtractForHardwarePath = 1;
 		if (architecture.contains(DOT)) { // in case there is a version in the
 			// path ignore the version
-			numSegmentsToSubtractForHardwarePath += 1;
+			numSegmentsToSubtractForHardwarePath = 3;
 			architecture = platformPath.removeLastSegments(2).lastSegment();
 			packagename = platformPath.removeLastSegments(4).lastSegment();
 		}

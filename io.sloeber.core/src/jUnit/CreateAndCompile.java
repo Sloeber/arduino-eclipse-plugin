@@ -66,7 +66,7 @@ public class CreateAndCompile {
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
 						"clock=16MHz_external\npinout=standard\nBOD=2v7\nvariant=modelP\nLTO=Os_flto" }, //
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "644",
-						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelA\nLTO=Os_flto" }, //
+						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelNonP\nLTO=Os_flto" }, //
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "324",
 						"clock=12MHz_external\npinout=bobuino\nBOD=1v8\nvariant=modelP\nLTO=Os" }, //
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "164",
@@ -126,16 +126,11 @@ public class CreateAndCompile {
 
 				// Teensy
 				// TOFIX Teensy does not show its options
-				{ "local", teensyBoards_txt, "", "teensy31",
-						"USB Type=Serial\nCPU Speed=96 MHz optimized (overclock)\nKeyboard Layout=US English" }, //
-				{ "local", teensyBoards_txt, "", "teensy30",
-						"USB Type=Serial\nCPU Speed=96 MHz (overclock)\nKeyboard Layout=US English" }, //
-				{ "local", teensyBoards_txt, "", "teensyLC",
-						"USB Type=Serial\nl\nCPU Speed=48 MHz\nKeyboard Layout=US English" }, //
-				{ "local", teensyBoards_txt, "", "teensypp2",
-						"USB Type=Serial\nCPU Speed=16 MHz\nKeyboard Layout=US English" }, //
-				{ "local", teensyBoards_txt, "", "teensy2",
-						"USB Type=Serial\nCPU Speed=16 MHz\nKeyboard Layout=US English" }, //
+				{ "local", teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
 
 				// Adafruit AVR
 				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "flora8", "" }, //
