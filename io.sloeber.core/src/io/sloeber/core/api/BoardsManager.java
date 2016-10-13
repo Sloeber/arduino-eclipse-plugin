@@ -26,6 +26,7 @@ import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.common.Const;
 import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
+import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Board;
@@ -381,18 +382,18 @@ public class BoardsManager {
 		private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
 
 		public class InstallableVersion implements Comparable<InstallableVersion> {
-			private VersionNumber version;
-			private boolean isInstalled;
 			private Platform platform;
+			private ArduinoPlatform myInternalPlatformm;
+			private boolean isInstalled;
 
-			public InstallableVersion(String version2, boolean installed, Platform platform) {
-				this.version = new VersionNumber(version2);
-				this.isInstalled = installed;
+			public InstallableVersion(ArduinoPlatform internalPlatformm, Platform platform) {
 				this.platform = platform;
+				this.myInternalPlatformm = internalPlatformm;
+				this.isInstalled = this.myInternalPlatformm.isInstalled();
 			}
 
 			public VersionNumber getVersion() {
-				return this.version;
+				return new VersionNumber(this.myInternalPlatformm.getVersion());
 			}
 
 			public boolean isInstalled() {
@@ -410,6 +411,10 @@ public class BoardsManager {
 
 			public Platform getPlatform() {
 				return this.platform;
+			}
+
+			public ArduinoPlatform getInternalPlatform() {
+				return this.myInternalPlatformm;
 			}
 
 		}
@@ -433,15 +438,13 @@ public class BoardsManager {
 			public Platform(ArduinoPlatform internalPlatformm, Package pac) {
 				this.name = internalPlatformm.getName();
 				this.architecture = internalPlatformm.getArchitecture();
-				this.versions.add(
-						new InstallableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
+				this.versions.add(new InstallableVersion(internalPlatformm, this));
 				this.boards = String.join("\n", internalPlatformm.getBoardNames()); //$NON-NLS-1$
 				this.pac = pac;
 			}
 
 			public void addVersion(ArduinoPlatform internalPlatformm) {
-				this.versions.add(
-						new InstallableVersion(internalPlatformm.getVersion(), internalPlatformm.isInstalled(), this));
+				this.versions.add(new InstallableVersion(internalPlatformm, this));
 
 			}
 
@@ -669,23 +672,22 @@ public class BoardsManager {
 		}
 		try {
 			Manager.setReady(false);
-			List<PackageIndex> packageIndexes = Manager.getPackageIndices();
-			for (PackageIndex curPackageIndex : packageIndexes) {
-				IndexFile curIndexFile = platformTree.getIndexFile(curPackageIndex);
-				for (io.sloeber.core.managers.Package curInternalPackage : curPackageIndex.getPackages()) {
-					io.sloeber.core.api.BoardsManager.PlatformTree.Package curPackage = platformTree
-							.getPackage(curIndexFile, curInternalPackage);
-					for (ArduinoPlatform curInternalPlatform : curInternalPackage.getPlatforms()) {
-						Platform curPlatform = platformTree.getPlatform(curPackage, curInternalPlatform);
-						if (curPlatform.getVersion(new VersionNumber(curInternalPlatform.getVersion())).isInstalled()) {
 
-							status.add(curInternalPlatform.install(monitor));
-						} else {
+			for (IndexFile curIndexFile : platformTree.getAllIndexFiles()) {
+				for (io.sloeber.core.api.BoardsManager.PlatformTree.Package curPackage : curIndexFile
+						.getAllPackages()) {
+					for (Platform curPlatform : curPackage.getPlatforms()) {
+						for (InstallableVersion curVersion : curPlatform.getVersions()) {
+							if (curVersion.isInstalled()) {
+								status.add(curVersion.getInternalPlatform().install(monitor));
+							} else {
 
-							status.add(curInternalPlatform.remove(monitor));
+								status.add(curVersion.getInternalPlatform().remove(monitor));
+							}
 						}
 					}
 				}
+
 			}
 		} catch (Exception e) {
 			// do nothing
