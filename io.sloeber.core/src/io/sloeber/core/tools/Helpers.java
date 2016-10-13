@@ -78,11 +78,14 @@ import io.sloeber.core.managers.ToolDependency;
  * 
  */
 public class Helpers extends Common {
-
+	private static final String ARDUINO_CORE_FOLDER_NAME = "cores"; //$NON-NLS-1$
+	private static final String ARDUINO_CORE_BUILD_FOLDER_NAME = "core"; //$NON-NLS-1$
 	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\""; //$NON-NLS-1$
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/arduino/syscalls_sam3.c.o\""; //$NON-NLS-1$
+	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME //$NON-NLS-1$
+			+ "/syscalls_sam3.c.o\""; //$NON-NLS-1$
 	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\""; //$NON-NLS-1$
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/arduino/syscalls_mtk.c.o\""; //$NON-NLS-1$
+	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME //$NON-NLS-1$
+			+ "/syscalls_mtk.c.o\""; //$NON-NLS-1$
 	private static final String minusG = "-g "; //$NON-NLS-1$
 	private static final String minusG2 = "-g2 "; //$NON-NLS-1$
 	private static final String ENV_KEY_ARCHITECTURE = ERASE_START + "ARCHITECTURE"; //$NON-NLS-1$
@@ -91,7 +94,6 @@ public class Helpers extends Common {
 
 	private static final String ACTION_PROGRAM = "PROGRAM"; //$NON-NLS-1$
 
-	private static final String ARDUINO_CORE_FOLDER_NAME = "cores"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_CORE = ERASE_START + "BUILD.CORE"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH"; //$NON-NLS-1$
@@ -433,7 +435,8 @@ public class Helpers extends Common {
 				ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, platformFile);
 		IPath corePath = new Path(redirectPlatformFile).removeLastSegments(1).append("cores").append(buildCoreFolder); //$NON-NLS-1$
 
-		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + "/core", configurationDescription); //$NON-NLS-1$
+		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
+				configurationDescription);
 		if (!boardVariant.isEmpty()) {
 			String redirectVariantPath = getBuildEnvironmentVariable(configurationDescription,
 					ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH, EMPTY_STRING);
@@ -988,7 +991,7 @@ public class Helpers extends Common {
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, EMPTY_STRING, false);
 
 			String recipeParts[] = recipe.split(
-					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")", //$NON-NLS-1$
+					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE_PATH}\")", //$NON-NLS-1$
 					3);
 			switch (recipeParts.length) {
 			case 0:

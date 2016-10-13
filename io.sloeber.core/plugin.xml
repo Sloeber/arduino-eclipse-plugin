@@ -366,7 +366,7 @@
            <tool
                  announcement="%tool.Arduino.archiver.announcement"
                  command="${A.RECIPE.AR.PATTERN}"
-                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
+                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE_PATH} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.ar"
                  name="%tool.name.1">
@@ -374,7 +374,7 @@
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.name.3"
-                    outputNames="${A.ARCHIVE_FILE}"
+                    outputNames="${A.ARCHIVE_FILE_PATH}"
                     outputs="ar"
                     primaryOutput="true">
               </outputType>
