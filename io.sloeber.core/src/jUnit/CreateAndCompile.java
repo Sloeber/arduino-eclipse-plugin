@@ -58,13 +58,13 @@ public class CreateAndCompile {
 	@Parameterized.Parameters
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
+				// STM32
+				{ "package_stm_index.json", "STM32", "STM32 F1 Boards", "NUCLEO-F103RB", "" }, //
+				{ "package_stm_index.json", "STM32", "STM32 L4 Boards", "NUCLEO-L476RG", "" }, //
 
 				// mighty core
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
 						"clock=16MHz_external\npinout=bobuino\nBOD=2v7\nvariant=modelP\nLTO=Os" }, //
-				// TOFIX LTO enabled gives error
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
-						"clock=16MHz_external\npinout=standard\nBOD=2v7\nvariant=modelP\nLTO=Os_flto" }, //
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "644",
 						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelNonP\nLTO=Os_flto" }, //
 				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "324",
@@ -79,19 +79,17 @@ public class CreateAndCompile {
 						"clock=1MHz_internal\npinout=bobuino\nLTO=Os" }, //
 
 				// digistump sam
-				// TOFIX some compiler shit. Might be same fix as LTO
 				{ "package_digistump_index.json", "digistump", "Digistump SAM Boards (32-bits ARM Cortex-M3)", "digix",
 						"" }, //
 
 				// redbear
 				/*
 				 * problems with linking see
-				 * https://github.com/jantje/arduino-eclipse-plugin/issues/546 {
-				 * "package_redbear_index.json", "RedBear", "RedBear Duo
-				 * (32-bits ARM Cortex-M3)", "RedBear_Duo_native", "" }, // {
-				 * "package_redbear_index.json", "RedBear", "RedBear Duo
-				 * (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
+				 * https://github.com/jantje/arduino-eclipse-plugin/issues/546
 				 */
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
+						"" }, //
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
 
 				// digistump AVR
 				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny", "" }, //
@@ -125,7 +123,6 @@ public class CreateAndCompile {
 				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "nixieclock", "" }, //
 
 				// Teensy
-				// TOFIX Teensy does not show its options
 				{ "local", teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
 				{ "local", teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
 				{ "local", teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
@@ -151,7 +148,7 @@ public class CreateAndCompile {
 				// alorium
 				// not yet adopted to LTO
 				// { "package_aloriumtech_index.json", "alorium", "Alorium XLR8
-				// Boards", "xlr8rev2", "Floating Point XB=Enable" }, //
+				// Boards", "xlr8rev2", "xbs=disable_none" }, //
 
 				// amel samd
 				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_atmel_ice", "" }, //
@@ -168,12 +165,10 @@ public class CreateAndCompile {
 				// not yet adopted to LTO
 				// { "package_ardhat_index.json", "ardhat", "Ardhat AVR Boards",
 				// "ardhat", "" }, //
+
 				// arduboy
-				// not yet adopted to LTO
-				// { "package_arduboy_index.json", "arduboy", "Arduboy",
-				// "arduboy", "" }, //
-				// { "package_arduboy_index.json", "arduboy", "Arduboy",
-				// "arduboy_devkit", "" }, //
+				{ "package_arduboy_index.json", "arduboy", "Arduboy", "arduboy", "" }, //
+				{ "package_arduboy_index.json", "arduboy", "Arduboy", "arduboy_devkit", "" }, //
 
 				// Arduino.cc AVR boards
 				{ "package_index.json", "arduino", "Arduino AVR Boards", "yun", "" }, //
@@ -323,8 +318,6 @@ public class CreateAndCompile {
 				{ "package_index.json", "emoro", "EMORO 2560", "emoro2560", "" }, //
 
 				// ESP8266 boards
-				// TOFIX replace menu name=menuitem name by menuid=menuitemid
-				// from here to end
 				{ "package_esp8266com_index.json", "esp8266", "esp8266", "generic",
 						".CpuFrequency=80\nFlashFreq=40\nFlashMode=dio\nUploadSpeed=115200\nFlashSize=512K64\nResetMethod=ck\nDebug=Disabled\nDebugLevel=None" },
 				{ "package_esp8266com_index.json", "esp8266", "esp8266", "esp8285",
@@ -418,7 +411,7 @@ public class CreateAndCompile {
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "FloraTeensyCore",
 						"UsbType=midi\nKeyLayout=fr-ca" }, //
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "CirPlayTeensyCore",
-						"UsbType=flightsim\nKeyLayout=usint" }, //
+						"UsbType=serial\nKeyLayout=usint" }, //
 																// Talk2
 				{ "package_talk2.wisen.com_index.json", "Talk2", "Talk2 AVR Boards", "whispernode", "mhz=16MHz" }, //
 
@@ -460,7 +453,6 @@ public class CreateAndCompile {
 				"https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json",
 				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 				"https://github.com/chipKIT32/chipKIT-core/raw/master/package_chipkit_index.json",
-				// redirected
 				"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json",
 				"https://raw.githubusercontent.com/ThamesValleyReprapUserGroup/Beta-TVRRUG-Mendel90/master/Added-Documents/OMC/package_omc_index.json",
 				"https://raw.githubusercontent.com/AloriumTechnology/Arduino_Boards/master/package_aloriumtech_index.json",
@@ -468,27 +460,23 @@ public class CreateAndCompile {
 				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.6_index.json",
 				"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
 				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
-				// redirected
 				"https://redbearlab.github.io/arduino/package_redbear_index.json",
 				"https://per1234.github.io/Ariadne-Bootloader/package_codebendercc_ariadne-bootloader_index.json",
 				"http://panstamp.org/arduino/package_panstamp_index.json",
 				"https://raw.githubusercontent.com/TKJElectronics/Balanduino/master/package_tkj_balanduino_index.json",
 				"https://raw.githubusercontent.com/Lauszus/Sanguino/master/package_lauszus_sanguino_index.json",
-				// redirected
 				"https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json",
 				"http://drazzy.com/package_drazzy.com_index.json",
 				"https://raw.githubusercontent.com/carlosefr/atmega/master/package_carlosefr_atmega_index.json",
 				"https://dl.dropboxusercontent.com/u/2807353/femtoCore/package_femtocow_attiny_index.json",
 				"https://raw.githubusercontent.com/RiddleAndCode/RnCAtmega256RFR2/master/Board_Manager/package_rnc_index.json",
 				"http://rfduino.com/package_rfduino_index.json",
-				// redirected
 				"https://raw.githubusercontent.com/akafugu/akafugu_core/master/package_akafugu_index.json",
 				"https://github.com/Ameba8195/Arduino/raw/master/release/package_realtek.com_ameba_index.json",
 				"https://raw.githubusercontent.com/Seeed-Studio/Seeeduino-Boards/master/package_seeeduino_index.json",
 				"http://download.labs.mediatek.com/package_mtk_linkit_index.json",
 				"http://download.labs.mediatek.com/package_mtk_linkit_smart_7688_index.json",
 				"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
-				// redirected
 				"http://digistump.com/package_digistump_index.json",
 				"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_avr_index.json",
 				"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/PIC/package_olimex_pic_index.json",
@@ -520,7 +508,8 @@ public class CreateAndCompile {
 				// "https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json",
 				"https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json",
 				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
-				"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json" };
+				"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json",
+				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.referenceLocallInstallation(teensyInstall);
