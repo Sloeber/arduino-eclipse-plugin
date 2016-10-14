@@ -722,8 +722,8 @@ public class Helpers extends Common {
 		String curversion = null;
 		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc);
-			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture())
-					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
+			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture()) //$NON-NLS-1$
+					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) { //$NON-NLS-1$
 				if (Manager.compareVersions(curPlatform.getVersion(), curversion) > 0) {
 					curversion = curPlatform.getVersion();
 					platform = curPlatform;
@@ -940,35 +940,8 @@ public class Helpers extends Common {
 	private static IPath findReferencedPlatformFile(String vendor, String architecture) {
 		// ask the boardsmanager for the platform file
 		IPath ret = Manager.getPlatformFile(vendor, architecture);
-		if (ret != null)
-			return ret;
-		// TOFIX confirm delete below is ok
-		//
-		// // all below this can probably be deleted
-		// IPath boardsManagerPackagesFolder =
-		// ConfigurationPreferences.getInstallationPath();
-		// if
-		// (boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME).append(architecture)
-		// .toFile().exists()) {
-		// // need to add version
-		// IPath foundPath =
-		// boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME)
-		// .append(architecture);
-		// String[] versions = foundPath.toFile().list();
-		// switch (versions.length) {
-		// case 0:
-		// break;
-		// case 1:
-		// return foundPath.append(versions[0]);
-		// default:
-		// Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-		// "Multiple versions found in: " + foundPath.toString() + " taking " +
-		// versions[0])); //$NON-NLS-1$ //$NON-NLS-2$
-		// return foundPath.append(versions[0]);
-		// }
-		// }
+		return ret;
 
-		return null;
 	}
 
 	/**
