@@ -336,8 +336,7 @@ public class Manager {
 				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getMaintainer()))) {
-						ArduinoPlatform latestPlatform = pkg.getLatestPlatform(curPlatform.getName());
-						return new org.eclipse.core.runtime.Path(latestPlatform.getPlatformFile().toString());
+						return new org.eclipse.core.runtime.Path(curPlatform.getPlatformFile().toString());
 					}
 				}
 			}
@@ -738,6 +737,15 @@ public class Manager {
 		}
 	}
 
+	/**
+	 * compares 2 strings as if they are version numbers if version1<version2
+	 * returns -1 if version1==version2(also if both are null) returns 0 else
+	 * return 1 This method caters for the null case
+	 * 
+	 * @param version1
+	 * @param version2
+	 * @return
+	 */
 	public static int compareVersions(String version1, String version2) {
 		if (version1 == null) {
 			return version2 == null ? 0 : -1;

@@ -108,7 +108,8 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_JANTJE_REFERENCED_CORE = ERASE_START + "JANTJE.REFERENCED.CORE.FILE"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH = ERASE_START + "JANTJE.BUILD.VARIANT.PATH"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_BUILD_CORE = ERASE_START + "JANTJE.BUILD_CORE"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_PACKAGE_NAME = ENV_KEY_JANTJE_START + "PACKAGE.NAME"; //$NON-NLS-1$
+	// private static final String ENV_KEY_JANTJE_PACKAGE_NAME =
+	// ENV_KEY_JANTJE_START + "PACKAGE.NAME"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION"; //$NON-NLS-1$
 
 	/**
@@ -514,13 +515,13 @@ public class Helpers extends Common {
 		// them
 		Path platformPath = new Path(boardDescriptor.getPlatformPath().toString());
 		String architecture = boardDescriptor.getArchitecture();
-		String packagename = boardDescriptor.getPackage();
+		// String packagename = boardDescriptor.getPackage();
 		int numSegmentsToSubtractForHardwarePath = 1;
 		if (architecture.contains(DOT)) { // in case there is a version in the
 			// path ignore the version
 			numSegmentsToSubtractForHardwarePath = 3;
 			architecture = platformPath.removeLastSegments(2).lastSegment();
-			packagename = platformPath.removeLastSegments(4).lastSegment();
+			// packagename = platformPath.removeLastSegments(4).lastSegment();
 		}
 
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, architecture.toUpperCase());
@@ -534,15 +535,6 @@ public class Helpers extends Common {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 					ConfigurationPreferences.getPathExtensionPath().toOSString() + '/');
 		}
-
-		// Teensy uses build.core.path
-		// setBuildEnvironmentVariable(contribEnv, confDesc,
-		// ENV_KEY_build_core_path, makeEnvironmentVar(ENV_KEY_PLATFORM_PATH) +
-		// "/cores/"
-		// + makeEnvironmentVar(ENV_KEY_build_core));
-		// setBuildEnvironmentVariable(contribEnv, confDesc,
-		// ENV_KEY_build_variant_path, buildVariantPath +
-		// makeEnvironmentVar(ENV_KEY_build_variant));
 
 		// Build Time
 		Date d = new Date();
@@ -584,7 +576,8 @@ public class Helpers extends Common {
 		}
 
 		// Save some info so we can find the tool paths
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PACKAGE_NAME, packagename);
+		// setBuildEnvironmentVariable(contribEnv, confDesc,
+		// ENV_KEY_JANTJE_PACKAGE_NAME, packagename);
 
 	}
 
@@ -713,16 +706,7 @@ public class Helpers extends Common {
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
 				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc); // writer.println("runtime.tools."
-				// +
-				// tool.getName()
-				// +
-				// ".path="
-				// +
-				// tool.getTool().getInstallPath());//$NON-NLS-1$ //$NON-NLS-2$
-				// writer.println("runtime.tools." + tool.getName() +
-				// tool.getVersion() + ".path=" //$NON-NLS-1$ //$NON-NLS-2$
-				// + tool.getTool().getInstallPath());
+				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 			}
 		}
 	}
@@ -734,18 +718,39 @@ public class Helpers extends Common {
 		String referencedPlatformFileName = getBuildEnvironmentVariable(confDesc,
 				ENV_KEY_JANTJE_REFERENCED_PLATFORM_FILE, Const.EMPTY_STRING);
 
+		ArduinoPlatform platform = null;
+		String curversion = null;
 		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc);
+			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture())
+					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
+				if (Manager.compareVersions(curPlatform.getVersion(), curversion) > 0) {
+					curversion = curPlatform.getVersion();
+					platform = curPlatform;
+				}
+			}
 		}
-		ArduinoPlatform platform = Manager.getPlatform(new File(referencedPlatformFileName));
-		if (platform != null) {
-			addPlatformFileTools(platform, contribEnv, confDesc);
-		}
-		platform = Manager.getPlatform(new File(platformFileName));
+		// add the newest arduino avr platform again for the idiots wanting to
+		// reference arduino without referencing it
 		if (platform != null) {
 			addPlatformFileTools(platform, contribEnv, confDesc);
 		}
 
+		// by adding the referencenced platform after the real platform
+		platform = Manager.getPlatform(new File(referencedPlatformFileName));
+		if (platform != null) {
+			addPlatformFileTools(platform, contribEnv, confDesc);
+		}
+		// and the real platform
+		platform = Manager.getPlatform(new File(platformFileName));
+		if (platform != null) {
+			// skip if this platform has no platform.txt. This is to fix
+			// problemw with arduboy that provide tooldependencies but no
+			// platform.txt
+			if (platform.getPlatformFile().exists()) {
+				addPlatformFileTools(platform, contribEnv, confDesc);
+			}
+		}
 	}
 
 	/**
@@ -937,26 +942,31 @@ public class Helpers extends Common {
 		IPath ret = Manager.getPlatformFile(vendor, architecture);
 		if (ret != null)
 			return ret;
-
-		// all below this can probably be deleted
-		IPath boardsManagerPackagesFolder = ConfigurationPreferences.getInstallationPath();
-		if (boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME).append(architecture)
-				.toFile().exists()) {
-			// need to add version
-			IPath foundPath = boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME)
-					.append(architecture);
-			String[] versions = foundPath.toFile().list();
-			switch (versions.length) {
-			case 0:
-				break;
-			case 1:
-				return foundPath.append(versions[0]);
-			default:
-				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-						"Multiple versions found in: " + foundPath.toString() + " taking " + versions[0])); //$NON-NLS-1$ //$NON-NLS-2$
-				return foundPath.append(versions[0]);
-			}
-		}
+		// TOFIX confirm delete below is ok
+		//
+		// // all below this can probably be deleted
+		// IPath boardsManagerPackagesFolder =
+		// ConfigurationPreferences.getInstallationPath();
+		// if
+		// (boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME).append(architecture)
+		// .toFile().exists()) {
+		// // need to add version
+		// IPath foundPath =
+		// boardsManagerPackagesFolder.append(vendor).append(ARDUINO_HARDWARE_FOLDER_NAME)
+		// .append(architecture);
+		// String[] versions = foundPath.toFile().list();
+		// switch (versions.length) {
+		// case 0:
+		// break;
+		// case 1:
+		// return foundPath.append(versions[0]);
+		// default:
+		// Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+		// "Multiple versions found in: " + foundPath.toString() + " taking " +
+		// versions[0])); //$NON-NLS-1$ //$NON-NLS-2$
+		// return foundPath.append(versions[0]);
+		// }
+		// }
 
 		return null;
 	}
