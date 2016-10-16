@@ -163,14 +163,15 @@ public class Manager {
 		// On Windows install make from equations.org
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			try {
-				File makePath = ConfigurationPreferences.getPathExtensionPath().append("make.exe").toFile(); //$NON-NLS-1$
-				if (!makePath.exists()) {
-					Files.createDirectories(makePath.getParentFile().toPath());
+				Path makePath = Paths
+						.get(ConfigurationPreferences.getPathExtensionPath().append("make.exe").toString()); //$NON-NLS-1$
+				if (!makePath.toFile().exists()) {
+					Files.createDirectories(makePath.getParent());
 					URL makeUrl = new URL("ftp://ftp.equation.com/make/32/make.exe"); //$NON-NLS-1$
-					myCopy(makeUrl, makePath);
-					makePath.setExecutable(true, false);
-				}
+					Files.copy(makeUrl.openStream(), makePath);
+					makePath.toFile().setExecutable(true, false);
 
+				}
 			} catch (IOException e) {
 				mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Downloading_make_exe, e));
 			}
@@ -891,7 +892,7 @@ public class Manager {
 				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
 		}
 	}
