@@ -58,76 +58,12 @@ public class CreateAndCompile {
 	@Parameterized.Parameters
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
-				// STM32
-				{ "package_stm_index.json", "STM32", "STM32 F1 Boards", "NUCLEO-F103RB", "" }, //
-				{ "package_stm_index.json", "STM32", "STM32 L4 Boards", "NUCLEO-L476RG", "" }, //
-
-				// mighty core
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
-						"clock=16MHz_external\npinout=bobuino\nBOD=2v7\nvariant=modelP\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "644",
-						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelNonP\nLTO=Os_flto" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "324",
-						"clock=12MHz_external\npinout=bobuino\nBOD=1v8\nvariant=modelP\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "164",
-						"clock=8MHz_external\npinout=bobuino\nBOD=Disabled\nvariant=modelA\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "32",
-						"clock=12MHz_external\npinout=standard\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "16",
-						"clock=8MHz_internal\npinout=bobuino\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "8535",
-						"clock=1MHz_internal\npinout=bobuino\nLTO=Os" }, //
-
-				// digistump sam
-				{ "package_digistump_index.json", "digistump", "Digistump SAM Boards (32-bits ARM Cortex-M3)", "digix",
-						"" }, //
-
-				// redbear
-				/*
-				 * problems with linking see
-				 * https://github.com/jantje/arduino-eclipse-plugin/issues/546
-				 */
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
-						"" }, //
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
-
-				// digistump AVR
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro32", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro64", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny16", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny8", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny1", "" }, //
-
-				// digistump oak (needs MSVCR100.dll to be added to tool
-				// esptool2 folder
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1",
-						"CpuFrequency=80\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Full" }, //
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1_noauto",
-						"CpuFrequency=80\nUploadTool=oak_ota\nFlashSize=OAK\nRomConfig=Full" },
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak",
-						"CpuFrequency=160\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Half1" }, //
 
 				// package_damellis_attiny_index
 				{ "package_damellis_attiny_index.json", "attiny", "attiny", "ATtinyX5",
 						"cpu=attiny25\nclock=internal1" }, //
 				{ "package_damellis_attiny_index.json", "attiny", "attiny", "ATtinyX4",
-						"cpu=attiny44\nclock=internal1" }, //
-
-				// package_akafugu_index.json
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread16", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafuinol", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "simpleclock", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "nixieclock", "" }, //
-
-				// Teensy
-				{ "local", teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+						"cpu=attiny24\nclock=internal1" }, //
 
 				// Adafruit AVR
 				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "flora8", "" }, //
@@ -145,6 +81,13 @@ public class CreateAndCompile {
 				// Adafruit SAMD
 				{ "package_adafruit_index.json", "adafruit", "Adafruit SAMD Boards", "adafruit_feather_m0", "" }, //
 
+				// akafugu
+				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread", "" }, //
+				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread16", "" }, //
+				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafuinol", "" }, //
+				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "simpleclock", "" }, //
+				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "nixieclock", "" }, //
+
 				// alorium
 				// not yet adopted to LTO
 				// { "package_aloriumtech_index.json", "alorium", "Alorium XLR8
@@ -156,7 +99,7 @@ public class CreateAndCompile {
 				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
 				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
 
-				// acore avr
+				// arcore avr
 				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo", "" }, //
 				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo2", "" }, //
 				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "micro", "" }, //
@@ -203,8 +146,6 @@ public class CreateAndCompile {
 				{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)",
 						"arduino_zero_native", "" }, //
 				{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)", "mkr1000", "" }, //
-
-				// arduino-tiny-841 depricated so not added
 
 				// arrow SAMD
 				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_atmel_ice", "" }, //
@@ -314,6 +255,29 @@ public class CreateAndCompile {
 				{ "package_cosa_index.json", "Cosa", "Cosa", "lilypad", "" }, //
 				{ "package_cosa_index.json", "Cosa", "Cosa", "lilypad-usb", "" }, //
 
+				// digistump sam
+				{ "package_digistump_index.json", "digistump", "Digistump SAM Boards (32-bits ARM Cortex-M3)", "digix",
+						"" }, //
+
+				// digistump AVR
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro32", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro64", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny16", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny8", "" }, //
+				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny1", "" }, //
+
+				// digistump oak (needs MSVCR100.dll to be added to
+				// tools/digistump/esptool2/[version]
+				// folder
+				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1",
+						"CpuFrequency=80\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Full" }, //
+				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1_noauto",
+						"CpuFrequency=80\nUploadTool=oak_ota\nFlashSize=OAK\nRomConfig=Full" },
+				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak",
+						"CpuFrequency=160\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Half1" }, //
+
 				// emoro AVR
 				{ "package_index.json", "emoro", "EMORO 2560", "emoro2560", "" }, //
 
@@ -373,24 +337,49 @@ public class CreateAndCompile {
 				// "w10iotcore", "Processor=arm" },
 				//
 
+				// mighty core
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
+						"clock=16MHz_external\npinout=bobuino\nBOD=2v7\nvariant=modelP\nLTO=Os" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "644",
+						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelNonP\nLTO=Os_flto" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "324",
+						"clock=12MHz_external\npinout=bobuino\nBOD=1v8\nvariant=modelP\nLTO=Os" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "164",
+						"clock=8MHz_external\npinout=bobuino\nBOD=Disabled\nvariant=modelA\nLTO=Os" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "32",
+						"clock=12MHz_external\npinout=standard\nLTO=Os" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "16",
+						"clock=8MHz_internal\npinout=bobuino\nLTO=Os" }, //
+				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "8535",
+						"clock=1MHz_internal\npinout=bobuino\nLTO=Os" }, //
+
 				// nucdino
 				{ "package_dfrobot_index.json", "nucDuino", "Bluno M0 MainBoard & DFRduino M0 MainBoard", "DFRDuino",
 						"" }, //
 				{ "package_dfrobot_index.json", "nucDuino", "Bluno M0 MainBoard & DFRduino M0 MainBoard", "BlunoM0",
 						"" }, //
 
+				// redbear
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
+						"" }, //
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
+
 				// RedBearLab
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blend", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blendmicro8", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab AVR Boards", "blendmicro16", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blend", "" }, //
+				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blendmicro8", "" }, //
+				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blendmicro16", "" }, //
+				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
 						"nRF51822", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
 						"nRF51822_NANO", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
 						"nRF51822_32KB", "" }, //
-				{ "package_redbearlab_index.json", "RedBearLab", "RedBearLab nRF51822 Boards (32-bits ARM Cortex-M0)",
+				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
 						"nRF51822_NANO_32KB", "" }, //
+
+				// STM32
+				{ "package_stm_index.json", "STM32", "STM32 F1 Boards", "NUCLEO-F103RB", "" }, //
+				{ "package_stm_index.json", "STM32", "STM32 L4 Boards", "NUCLEO-L476RG", "" }, //
 
 				// Sparkfun AVR
 				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "RedBoard", "" }, //
@@ -404,8 +393,14 @@ public class CreateAndCompile {
 				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "Serial7Seg", "" }, //
 				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "atmega128rfa1", "" }, //
 
-				// TeeOnArdu avr
+				// Teensy
+				{ "local", teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
 
+				// TeeOnArdu avr
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "TeeOnArdu",
 						"UsbType=serial\nKeyLayout=en-us" }, //
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "FloraTeensyCore",
