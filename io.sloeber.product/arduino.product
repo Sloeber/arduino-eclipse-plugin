@@ -297,59 +297,14 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
 
    <features>
       <feature id="io.sloeber.feature" installMode="root"/>
-      <feature id="org.eclipse.cdt" installMode="root"/>
-      <feature id="org.eclipse.cdt.autotools" installMode="root"/>
-      <feature id="org.eclipse.cdt.gdb" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.build" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.debug" installMode="root"/>
-      <feature id="org.eclipse.cdt.gnu.dsf" installMode="root"/>
-      <feature id="org.eclipse.cdt.platform" installMode="root"/>
-      <feature id="org.eclipse.e4.rcp" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.feature" installMode="root"/>
-      <feature id="org.eclipse.egit" installMode="root"/>
-      <feature id="org.eclipse.emf.common" installMode="root"/>
-      <feature id="org.eclipse.emf.ecore" installMode="root"/>
-      <feature id="org.eclipse.epp.mpc" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.core.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature" installMode="root"/>
-      <feature id="org.eclipse.equinox.p2.user.ui" installMode="root"/>
-      <feature id="org.eclipse.help" installMode="root"/>
-      <feature id="org.eclipse.jdt" installMode="root"/>
-      <feature id="org.eclipse.jgit" installMode="root"/>
-      <feature id="org.eclipse.mylyn.bugzilla_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.identity" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.notifications" installMode="root"/>
-      <feature id="org.eclipse.mylyn.commons.repositories" installMode="root"/>
-      <feature id="org.eclipse.mylyn.context_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.discovery" installMode="root"/>
-      <feature id="org.eclipse.mylyn.ide_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.monitor" installMode="root"/>
-      <feature id="org.eclipse.mylyn.team_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn.wikitext_feature" installMode="root"/>
-      <feature id="org.eclipse.mylyn_feature" installMode="root"/>
-      <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
-      <feature id="org.eclipse.platform" installMode="root"/>
-      <feature id="org.eclipse.rcp" installMode="root"/>
-      <feature id="org.eclipse.rse" installMode="root"/>
-      <feature id="org.eclipse.cdt.testsrunner.feature"/>
-      <feature id="org.eclipse.equinox.core.sdk"/>
-      <feature id="org.eclipse.pde"/>
-      <feature id="org.eclipse.rse.local"/>
-      <feature id="org.eclipse.mylyn.tasks.ide"/>
-      <feature id="org.eclipse.rse.dstore"/>
-      <feature id="org.eclipse.rse.ftp"/>
-      <feature id="org.eclipse.rse.telnet"/>
-      <feature id="org.eclipse.rse.ssh"/>
-      <feature id="org.eclipse.rse.core"/>
+      <feature id="org.eclipse.cdt"/>
+      <feature id="org.eclipse.cdt.platform"/>
+      <feature id="org.eclipse.cdt.gnu.dsf"/>
       <feature id="org.eclipse.cdt.native"/>
+      <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="org.eclipse.cdt.gnu.build"/>
+      <feature id="org.eclipse.cdt.gdb"/>
+       <feature id="org.eclipse.nebula.widgets.oscilloscope.feature" installMode="root"/>
    </features>
 
    <configurations>
