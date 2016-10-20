@@ -23,6 +23,8 @@ public class Package implements Comparable<Package> {
 	private List<Tool> tools;
 
 	void setOwner(Manager manager) {
+		// it happened that the list contained a null so I remove null platforms
+		this.platforms.remove(null);
 		for (ArduinoPlatform platform : this.platforms) {
 			platform.setOwner(this);
 		}
@@ -55,7 +57,7 @@ public class Package implements Comparable<Package> {
 
 	/**
 	 * Only the latest versions of the platforms.
-	 * 
+	 *
 	 * @return latest platforms
 	 */
 	public Collection<ArduinoPlatform> getLatestPlatforms() {
@@ -73,7 +75,7 @@ public class Package implements Comparable<Package> {
 	 * This method looks up the installed platforms with the highest version
 	 * number So if you have 2 arduino avr platform versions installed you will
 	 * only get back 1.
-	 * 
+	 *
 	 * @return the installed platforms but only one for each platform (the one
 	 *         with the highest version number)
 	 */
