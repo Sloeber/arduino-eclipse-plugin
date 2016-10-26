@@ -14,33 +14,33 @@
       </view>
       <view
             category="io.sloeber.monitor"
-            class="io.sloeber.monitor.views.ScopeView"
-            icon="icons/oscilloscope.png"
-            id="io.sloeber.monitor.views.ScopeView"
-            name="Scope"
+            class="io.sloeber.monitor.views.PlotterView"
+            icon="icons/plotter.png"
+            id="io.sloeber.monitor.views.PlotterView"
+            name="Plotter"
             restorable="true">
       </view>
 
 	</extension>
 
- <!-- 
-####################################################################################### 
-#   fonts and colors used by the plugin              
-# 
-####################################################################################### 
+ <!--
+#######################################################################################
+#   fonts and colors used by the plugin
+#
+#######################################################################################
 -->
- 
+
  <extension point="org.eclipse.ui.themes">
  <themeElementCategory
       id="io.sloeber.themeCategory"
       label="Sloeber">
 </themeElementCategory>
 <themeElementCategory
-      id="io.sloeber.scope.themeCategory"
-      label="Scope"
+      id="io.sloeber.plotter.themeCategory"
+      label="Plotter"
       parentId="io.sloeber.themeCategory">
 <description>
-Fonts and colors used by the arduino eclipse plugin scope view
+Fonts and colors used by the sloeber plotter view
 </description>
 </themeElementCategory>
 <themeElementCategory
@@ -51,54 +51,54 @@ Fonts and colors used by the arduino eclipse plugin scope view
 Fonts and colors used by the arduino eclipse plugin serial monitor view
 </description>
 </themeElementCategory>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.background" label="Background color" value="COLOR_BLACK">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.background" label="Background color" value="COLOR_BLACK">
 <description>
-The background color of the Arduino scope
+The background color of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.foreground" label="Foreground color" value="COLOR_WHITE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.foreground" label="Foreground color" value="COLOR_WHITE">
 <description>
-The foreground color of the Arduino scope
+The foreground color of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.grid" label="Grid color" value="COLOR_DARK_CYAN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.grid" label="Grid color" value="COLOR_DARK_CYAN">
 <description>
-The grid color of the Arduino scope
+The grid color of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.1" label="Channel 1 color" value="COLOR_BLUE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="Channel 1 color" value="COLOR_BLUE">
 <description>
-The color used by the first channel of the Arduino scope
+The color used by the first channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.2" label="Channel 2 color" value="COLOR_CYAN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.2" label="Channel 2 color" value="COLOR_CYAN">
 <description>
-The color used by the second channel of the Arduino scope
+The color used by the second channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.3" label="Channel 3 color" value="COLOR_DARK_GRAY">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="Channel 3 color" value="COLOR_DARK_GRAY">
 <description>
-The color used by the third channel of the Arduino scope
+The color used by the third channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.4" label="Channel 4 color" value="COLOR_DARK_GREEN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="Channel 4 color" value="COLOR_DARK_GREEN">
 <description>
-The color used by the fourth channel of the Arduino scope
+The color used by the fourth channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.5" label="Channel 5 color" value="COLOR_DARK_RED">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="Channel 5 color" value="COLOR_DARK_RED">
 <description>
-The color used by the fifth channel of the Arduino scope
+The color used by the fifth channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.scope.themeCategory" id="io.sloeber.scope.color.6" label="Channel 6 color" value="COLOR_DARK_YELLOW">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="Channel 6 color" value="COLOR_DARK_YELLOW">
 <description>
-The color used by the sixth channel of the Arduino scope
+The color used by the sixth channel of the plotter
 </description>
 </colorDefinition>
 <fontDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
 <description>
-The font for in the serial monitor
+The font used in the serial monitor
 </description>
 </fontDefinition>
 
@@ -309,10 +309,10 @@ The color used by the fourth serial connection of the serial monitor
     </command>
     <command
           categoryId="io.sloeber.commands"
-          defaultHandler="io.sloeber.ui.actions.OpenScopeHandler"
-          description="%OpenScope.description"
-          id="io.sloeber.actions.OpenScopeAction"
-          name="%OpenScope.label">
+          defaultHandler="io.sloeber.ui.actions.OpenPlotterHandler"
+          description="%OpenPlotter.description"
+          id="io.sloeber.actions.OpenPlotterAction"
+          name="%OpenPlotter.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
@@ -381,9 +381,9 @@ The color used by the fourth serial connection of the serial monitor
                 style="push">
           </command>
           <command
-                commandId="io.sloeber.actions.OpenScopeAction"
-                icon="icons/scope.png"
-                label="%OpenScope.label"
+                commandId="io.sloeber.actions.OpenPlotterAction"
+                icon="icons/toolbar_plotter.png"
+                label="%OpenPlotter.label"
                 style="push">
           </command>
        </toolbar>
@@ -416,8 +416,8 @@ The color used by the fourth serial connection of the serial monitor
                 id="OpenSerialMonitorAction">
           </command>
           <command
-                commandId="io.sloeber.actions.OpenScopeAction"
-                id="OpenScopeAction">
+                commandId="io.sloeber.actions.OpenPlotterAction"
+                id="OpenPlotterAction">
           </command>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"

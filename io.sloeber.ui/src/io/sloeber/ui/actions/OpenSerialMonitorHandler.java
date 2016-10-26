@@ -14,41 +14,42 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
 /**
  * This is a handler to connect the plugin.xml to the code for opening the
  * serial monitor
- * 
- * 
+ *
+ *
  * The code looks for all selected projects for the com port and the baudrate
  * and connects if they both are found
- * 
+ *
  * @author jan
- * 
+ *
  */
 public class OpenSerialMonitorHandler extends AbstractHandler {
 
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-	try {
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		try {
 
-	    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-		    .showView("io.sloeber.monitor.views.SerialMonitor"); //$NON-NLS-1$
-	    // find all projects
-	    IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
-	    // if there are project selected and the autoConnectScope feature is
-	    // on
-	    if ((SelectedProjects.length > 0) && (MyPreferences.getOpenSerialWithMonitor() == true)) {
-		for (IProject curproject : SelectedProjects) {
-		    int baud = Sketch.getCodeBaudRate(curproject);
-		    if (baud > 0) {
-			String comPort = Sketch.getComport(curproject);
-			if (!comPort.isEmpty()) {
-			    io.sloeber.monitor.SerialConnection.add(comPort, baud);
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+					.showView("io.sloeber.monitor.views.SerialMonitor"); //$NON-NLS-1$
+			// find all projects
+			IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
+			// if there are project selected and the autoConnectSerial feature
+			// is
+			// on
+			if ((SelectedProjects.length > 0) && (MyPreferences.getOpenSerialWithMonitor() == true)) {
+				for (IProject curproject : SelectedProjects) {
+					int baud = Sketch.getCodeBaudRate(curproject);
+					if (baud > 0) {
+						String comPort = Sketch.getComport(curproject);
+						if (!comPort.isEmpty()) {
+							io.sloeber.monitor.SerialConnection.add(comPort, baud);
+						}
+					}
+				}
 			}
-		    }
+		} catch (PartInitException e) {
+			e.printStackTrace();
 		}
-	    }
-	} catch (PartInitException e) {
-	    e.printStackTrace();
+		return null;
 	}
-	return null;
-    }
 
 }
