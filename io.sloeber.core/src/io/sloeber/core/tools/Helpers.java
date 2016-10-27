@@ -73,9 +73,9 @@ import io.sloeber.core.managers.ToolDependency;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
- * 
+ *
  * @author Jan Baeyens
- * 
+ *
  */
 public class Helpers extends Common {
 	private static final String ARDUINO_CORE_FOLDER_NAME = "cores"; //$NON-NLS-1$
@@ -115,7 +115,7 @@ public class Helpers extends Common {
 	/**
 	 * This method is the internal working class that adds the provided include
 	 * path to all configurations and languages.
-	 * 
+	 *
 	 * @param configurationDescription
 	 *            The configuration description of the project to add it to
 	 * @param IncludePath
@@ -150,7 +150,7 @@ public class Helpers extends Common {
 	/**
 	 * Removes include folders that are not valid. This method does not save the
 	 * configurationDescription description
-	 * 
+	 *
 	 * @param configurationDescription
 	 *            the configuration that is checked
 	 * @return true is a include path has been removed. False if the include
@@ -200,7 +200,7 @@ public class Helpers extends Common {
 	/**
 	 * This method adds the provided path to the include path of all
 	 * configurations and languages.
-	 * 
+	 *
 	 * @param project
 	 *            The project to add it to
 	 * @param IncludePath
@@ -238,7 +238,7 @@ public class Helpers extends Common {
 	 * Creates a folder and links the folder to an existing folder Parent
 	 * folders of the target folder are created if needed. In case this method
 	 * fails an error is logged.
-	 * 
+	 *
 	 * @param project
 	 *            the project the newly created folder will belong to
 	 * @param target
@@ -276,19 +276,19 @@ public class Helpers extends Common {
 	 * Forget about this. Arduino made this all so complicated I don't know
 	 * anymore what needs to be added to what<br/>
 	 * <br/>
-	 * 
+	 *
 	 * note Arduino has these subfolders in the libraries that need to be
 	 * include.<br/>
 	 * <br/>
-	 * 
+	 *
 	 * note that in the current eclipse version, there is no need to add the
 	 * subfolder as a code folder. This may change in the future as it looks
 	 * like a bug to me.<br/>
-	 * 
+	 *
 	 * @param project
 	 * @param Path
 	 * @throws CoreException
-	 * 
+	 *
 	 * @see addLibraryDependency
 	 *      {@link #addLibraryDependency(IProject, IProject)}
 	 */
@@ -322,6 +322,13 @@ public class Helpers extends Common {
 		}
 	}
 
+	public static void removeCodeFolder(IProject project, String LinkName) throws CoreException {
+		IFolder link = project.getFolder(LinkName);
+		if (link.exists()) {
+			link.delete(true, null);
+		}
+	}
+
 	/**
 	 * This method creates a link folder in the project and adds the folder as a
 	 * source path to the project it also adds the path to the include folder if
@@ -329,19 +336,19 @@ public class Helpers extends Common {
 	 * named "utility" this subfolder will be added to the include path as well
 	 * <br/>
 	 * <br/>
-	 * 
+	 *
 	 * note Arduino has these subfolders in the libraries that need to be
 	 * include.<br/>
 	 * <br/>
-	 * 
+	 *
 	 * note that in the current eclipse version, there is no need to add the
 	 * subfolder as a code folder. This may change in the future as it looks
 	 * like a bug to me.<br/>
-	 * 
+	 *
 	 * @param project
 	 * @param Path
 	 * @throws CoreException
-	 * 
+	 *
 	 * @see addLibraryDependency
 	 *      {@link #addLibraryDependency(IProject, IProject)}
 	 */
@@ -355,7 +362,7 @@ public class Helpers extends Common {
 	/**
 	 * addTheNatures replaces all existing natures by the natures needed for a
 	 * arduino project
-	 * 
+	 *
 	 * @param project
 	 *            The project where the natures need to be added to
 	 * @throws CoreException
@@ -375,7 +382,7 @@ public class Helpers extends Common {
 	/**
 	 * This method adds the content of a content stream to a file If the file
 	 * already exist the file remains untouched
-	 * 
+	 *
 	 * @param container
 	 *            used as a reference to the file
 	 * @param path
@@ -416,7 +423,7 @@ public class Helpers extends Common {
 	/**
 	 * This method adds the Arduino code in a subfolder named Arduino. 2 linked
 	 * subfolders named core and variant link to the real Arduino code note
-	 * 
+	 *
 	 * @param project
 	 *            The project to add the arduino code to
 	 * @param configurationDescription
@@ -438,7 +445,10 @@ public class Helpers extends Common {
 
 		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
 				configurationDescription);
-		if (!boardVariant.isEmpty()) {
+		if (boardVariant.isEmpty()) {
+			// remove the existing link
+			Helpers.removeCodeFolder(project, ARDUINO_CODE_FOLDER_NAME + "/variant"); //$NON-NLS-1$
+		} else {
 			String redirectVariantPath = getBuildEnvironmentVariable(configurationDescription,
 					ENV_KEY_JANTJE_REFERENCED_VARIANT_PATH, EMPTY_STRING);
 			IPath VariantFile;
@@ -456,7 +466,7 @@ public class Helpers extends Common {
 
 	/**
 	 * Creates a new folder resource as a link or local
-	 * 
+	 *
 	 * @param Project
 	 *            the project the folder is added to
 	 * @param newFolderName
@@ -465,7 +475,7 @@ public class Helpers extends Common {
 	 *            if null a local folder is created using newFolderName if not
 	 *            null a link folder is created with the name newFolderName and
 	 *            pointing to linklocation
-	 * 
+	 *
 	 * @return nothing
 	 * @throws CoreException
 	 */
@@ -482,7 +492,7 @@ public class Helpers extends Common {
 
 	/**
 	 * Remove all the arduino environment variables.
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 */
@@ -502,7 +512,7 @@ public class Helpers extends Common {
 	 * platform.txt file. Here I set these values. This method should be called
 	 * as first. This way the values in platform.txt and boards.txt will take
 	 * precedence of the default values declared here
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 * @param platformFile
@@ -589,7 +599,7 @@ public class Helpers extends Common {
 	/**
 	 * This method parses a file with environment variables like the
 	 * platform.txt file for values to be added to the environment variables
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 * @param envVarFile
@@ -638,7 +648,7 @@ public class Helpers extends Common {
 	 * the modifiers) Then it parses for the menu variables
 	 * menu.[menuID].[boardID].[selectionID].[key]=[value] results in
 	 * [key]=[value] (taking in account the modifiers)
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 * @param platformFilename
@@ -761,14 +771,14 @@ public class Helpers extends Common {
 	 * The project properties are used to identify the boards.txt and
 	 * platform.txt as well as the board id to select the settings in the
 	 * board.txt file At the end also the path variable is set
-	 * 
+	 *
 	 * from arduino IDE 1.6.5 an additional file generated by the arduino ide is
 	 * processed. This is the first file processed.
-	 * 
+	 *
 	 * To be able to quickly fix boards.txt and platform.txt problems I also
 	 * added a pre and post platform and boards files that are processed before
 	 * and after the arduino delivered boards.txt file.
-	 * 
+	 *
 	 * @param project
 	 *            the project for which the environment variables are set
 	 * @param arduinoProperties
@@ -856,20 +866,20 @@ public class Helpers extends Common {
 	 * Hardware-specification This method parses the boards.txt file for
 	 * myboard.build.core myboard.build.variant currently not supported
 	 * myboard.upload.tool myboard.bootloader.tool
-	 * 
+	 *
 	 * in case myboard.build.core is of type [vendor]:[value]
 	 * PATH_VARIABLE_NAME_ARDUINO_PLATFORM is changed to the correct value in
 	 * case myboard.build.variant is of type [vendor]:[value]
 	 * PATH_VARIABLE_NAME_ARDUINO_PINS is changed to the correct value
-	 * 
+	 *
 	 * this method also sets ENV_KEY_JANTJE_BUILD_CORE and
 	 * ENV_KEY_JANTJE_BUILD_VARIANT to [value] of respectively
 	 * myboard.build.core and myboard.build.variant
-	 * 
+	 *
 	 * This method relies on the post processing to set
 	 * A.BUILD.CORE=${ENV_KEY_JANTJE_BUILD_CORE}
 	 * A.BUILD.VARIANT=${ENV_KEY_JANTJE_BUILD_VARIANT}
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 * @param boardsFile
@@ -929,10 +939,10 @@ public class Helpers extends Common {
 	/**
 	 * This method looks for a referenced platformFile. Ask the boards manager
 	 * to find the latest installed vendor/architecture platform file
-	 * 
+	 *
 	 * If this is not found there is still sme old code that probably can be
 	 * deleted.
-	 * 
+	 *
 	 * @param vendor
 	 * @param architecture
 	 * @return
@@ -946,21 +956,21 @@ public class Helpers extends Common {
 
 	/**
 	 * Following post processing is done
-	 * 
+	 *
 	 * the macro expansion resolves the "file tag" Therefore I split the
 	 * "recipe" patterns in 2 parts (before and after the "file tag") the
 	 * pattern in the toolchain is then ${first part} ${files} ${second part}
-	 * 
+	 *
 	 * The handling of the upload variables is done differently in arduino than
 	 * here. This is taken care of here. for example the output of this input
 	 * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}"
 	 * {upload.verbose} is changed as if it were the output of this input
 	 * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
 	 * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
-	 * 
+	 *
 	 * if a programmer is selected different from default some extra actions are
 	 * done here so no special code is needed to handle programmers
-	 * 
+	 *
 	 * @param contribEnv
 	 * @param confDesc
 	 */
@@ -1116,7 +1126,7 @@ public class Helpers extends Common {
 	 * Converts the CPP and C compiler flags to not optimize for space/size and
 	 * to leave symbols in. These changes allow step through debugging with JTAG
 	 * and Dragon AVR
-	 * 
+	 *
 	 * @param confDesc
 	 * @param envManager
 	 * @param contribEnv
@@ -1157,7 +1167,7 @@ public class Helpers extends Common {
 	 * When parsing boards.txt and platform.txt some processing needs to be done
 	 * to get "acceptable environment variable values" This method does the
 	 * parsing
-	 * 
+	 *
 	 * @param inputString
 	 *            the value string as read from the file
 	 * @return the string to be stored as value for the environment variable
@@ -1184,11 +1194,11 @@ public class Helpers extends Common {
 	 * to get "acceptable environment variable keys" This method does the
 	 * parsing some examples on windows "test.windows" becomes "A.TEST"
 	 * "test.linux" becomes "A.TEST.LINUX"
-	 * 
+	 *
 	 * on Linux "test.windows" becomes "A.TEST.WINDOWS" "test.linux" becomes
 	 * "A.TEST"
-	 * 
-	 * 
+	 *
+	 *
 	 * @param inputString
 	 *            the key string as read from the file
 	 * @return the string to be used as key for the environment variable
@@ -1214,7 +1224,7 @@ public class Helpers extends Common {
 	 * this to work is by deleting the build folder Still then the "indexer
 	 * needs to recheck his includes from the language provider which still is
 	 * not working
-	 * 
+	 *
 	 * @param project
 	 */
 	public static void setDirtyFlag(IProject project, ICConfigurationDescription cfgDescription) {
@@ -1257,7 +1267,7 @@ public class Helpers extends Common {
 	 * So I keep it for now and we'll see how it goes The eclipse default
 	 * behavior is (starting from the project folder [configuration]/Source The
 	 * Arduino default behavior is all in 1 location (so no subfolders)
-	 * 
+	 *
 	 * @param Source
 	 *            The source file to find the
 	 * @return The base file name for the ouput if Source is "file.cpp" the
@@ -1276,7 +1286,7 @@ public class Helpers extends Common {
 	/**
 	 * Converts a name to a tagged environment variable if variableName ="this"
 	 * the output is "${this}"
-	 * 
+	 *
 	 * @param variableName
 	 * @return
 	 */
@@ -1288,7 +1298,7 @@ public class Helpers extends Common {
 	 * Give the string entered in the com port try to extract a host. If no host
 	 * is found return null yun.local at xxx.yyy.zzz (arduino yun) returns
 	 * yun.local
-	 * 
+	 *
 	 * @param mComPort
 	 * @return
 	 */
@@ -1301,7 +1311,7 @@ public class Helpers extends Common {
 
 	/**
 	 * creates links to the root files and folders of the source location
-	 * 
+	 *
 	 * @param source
 	 *            the location where the files are that need to be linked to
 	 * @param target
@@ -1334,7 +1344,7 @@ public class Helpers extends Common {
 	/**
 	 * given a action and a tool return the environment key that matches it's
 	 * recipe
-	 * 
+	 *
 	 * @param action
 	 * @return he environment variable key to find the recipe
 	 */
