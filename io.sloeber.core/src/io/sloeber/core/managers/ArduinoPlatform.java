@@ -177,8 +177,8 @@ public class ArduinoPlatform {
 
 	public Path getInstallPath() {
 		String stPath = ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
-				.append(this.pkg.getName()).append(Const.ARDUINO_HARDWARE_FOLDER_NAME) // $NON-NLS-1$
-				.append(this.architecture).append(this.version).toString();
+				.append(this.pkg.getName()).append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture)
+				.append(this.version).toString();
 		return Paths.get(stPath);
 	}
 
