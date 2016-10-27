@@ -16,69 +16,72 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.common.ConfigurationPreferences;
+import io.sloeber.common.Const;
 import io.sloeber.core.Activator;
 
 public class Tool {
 
-    private String name;
-    private String version;
-    private List<ToolSystem> systems;
+	private static final String TOOLS = "tools";
+	private String name;
+	private String version;
+	private List<ToolSystem> systems;
 
-    private transient Package pkg;
+	private transient Package pkg;
 
-    public void setOwner(Package pkg) {
-	this.pkg = pkg;
-	for (ToolSystem system : this.systems) {
-	    system.setOwner(this);
-	}
-    }
-
-    public Package getPackage() {
-	return this.pkg;
-    }
-
-    public String getName() {
-	return this.name;
-    }
-
-    public String getVersion() {
-	return this.version;
-    }
-
-    public List<ToolSystem> getSystems() {
-	return this.systems;
-    }
-
-    public Path getInstallPath() {
-	return Paths.get(ConfigurationPreferences.getInstallationPath().append("tools").append(this.pkg.getName()) //$NON-NLS-1$
-		.append(this.name).append(this.version).toString());
-    }
-
-    public boolean isInstalled() {
-	return getInstallPath().toFile().exists();
-    }
-
-    public IStatus install(IProgressMonitor monitor) {
-	if (isInstalled()) {
-	    return Status.OK_STATUS;
+	public void setOwner(Package pkg) {
+		this.pkg = pkg;
+		for (ToolSystem system : this.systems) {
+			system.setOwner(this);
+		}
 	}
 
-	for (ToolSystem system : this.systems) {
-	    if (system.isApplicable()) {
-		return system.install(monitor);
-	    }
+	public Package getPackage() {
+		return this.pkg;
 	}
 
-	// No valid system
-	return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
-    }
+	public String getName() {
+		return this.name;
+	}
 
-    // public Properties getToolProperties() {
-    // Properties properties = new Properties();
-    // properties.put("runtime.tools." + name + ".path",
-    // ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$
-    // //$NON-NLS-2$
-    // return properties;
-    // }
+	public String getVersion() {
+		return this.version;
+	}
+
+	public List<ToolSystem> getSystems() {
+		return this.systems;
+	}
+
+	public Path getInstallPath() {
+		return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
+				.append(this.pkg.getName()).append(TOOLS).append(this.name).append(this.version).toString());
+
+	}
+
+	public boolean isInstalled() {
+		return getInstallPath().toFile().exists();
+	}
+
+	public IStatus install(IProgressMonitor monitor) {
+		if (isInstalled()) {
+			return Status.OK_STATUS;
+		}
+
+		for (ToolSystem system : this.systems) {
+			if (system.isApplicable()) {
+				return system.install(monitor);
+			}
+		}
+
+		// No valid system
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
+	}
+
+	// public Properties getToolProperties() {
+	// Properties properties = new Properties();
+	// properties.put("runtime.tools." + name + ".path",
+	// ArduinoBuildConfiguration.pathString(getInstallPath())); // $NON-NLS-1$
+	// //$NON-NLS-2$
+	// return properties;
+	// }
 
 }
