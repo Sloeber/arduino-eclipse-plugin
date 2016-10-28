@@ -33,9 +33,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
@@ -51,7 +53,7 @@ public class BoardDescriptor {
 	// preference nodes
 	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
 	/**
-	 * 
+	 *
 	 */
 
 	private String myUploadPort;
@@ -77,7 +79,7 @@ public class BoardDescriptor {
 	 * does contain a create to create the project When confdesc is null the
 	 * data will be taken from the "last used " otherwise the data is taken from
 	 * the project the confdesc belongs to
-	 * 
+	 *
 	 */
 	public static BoardDescriptor makeBoardDescriptor(ICConfigurationDescription confdesc) {
 		return new InternalBoardDescriptor(confdesc);
@@ -130,6 +132,30 @@ public class BoardDescriptor {
 		this.myOptions = options;
 		this.myBoardsFile = boardsFile;
 		this.myTxtFile = new TxtFile(this.myBoardsFile);
+	}
+
+	/**
+	 * tries to set the project to the boarddescriptor
+	 *
+	 * @param project
+	 * @param monitor
+	 * @return true if success false if failed
+	 */
+	public boolean configureProject(IProject project, IProgressMonitor monitor) {
+		ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(project);
+		ICConfigurationDescription configurationDescription = prjCDesc.getActiveConfiguration();
+		try {
+			save(configurationDescription);
+			prjCDesc.setActiveConfiguration(configurationDescription);
+			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjCDesc, true, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
+					e));
+			return false;
+		}
+		return true;
 	}
 
 	/*

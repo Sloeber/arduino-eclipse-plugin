@@ -8,15 +8,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.ICModelMarker;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.Job;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +31,6 @@ public class CreateAndCompile {
 	private String mPlatform;
 	private String mJsonFileName;
 	private static int mCounter = 0;
-	private static String teensyInstall = "D:/arduino/arduino-1.6.9 - Teensy 1.29/hardware";
-	private static String teensyBoards_txt = teensyInstall + "/teensy/avr/boards.txt";
 
 	public CreateAndCompile(String jsonFileName, String packageName, String platform, String boardID, String options) {
 		this.mBoardID = boardID;
@@ -149,10 +142,16 @@ public class CreateAndCompile {
 
 				// arrow SAMD
 				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_sam_ice", "" }, //
 				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_native", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox3_atmel_ice", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox3_native", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Lion_atmel_ice", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Lion_native", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Dragonfly_atmel_ice", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Dragonfly_native", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "adi_atmel_ice", "" }, //
+				{ "package_index.json", "Arrow", "Arrow Boards", "adi_native", "" }, //
 				{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_sam_ice", "" }, //
 				{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_native", "" }, //
 
 				// atmel-avr-xminis
@@ -164,32 +163,31 @@ public class CreateAndCompile {
 
 				// ATTinyCore
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx41",
-						"chip=841\nclock=8internal\n=bod=disable)" }, //
+						"chip=841\nclock=8internal\nbod=disable\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny841opti",
-						"clock=8internal\n=bod=1v8" }, //
+						"clock=8internal\n=bod=1v8\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny1634",
-						"clock=8internal\n=bod=1v8" }, //
+						"clock=8internal\n=bod=1v8\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny1634opti",
-						"clock=8internal\nbod=2v7" }, //
+						"clock=8internal\nbod=2v7\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny828",
-						"clock=8internal\n=bod=2v7" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny828opti", "bod=2v7\nvcc=3v3" }, //
+						"clock=8internal\n=bod=2v7\nLTO=enable" }, //
+				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny828opti",
+						"bod=2v7\nvcc=3v3\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx5",
-						"chip=85\nclock=20external\nbod=2v7\nTimerClockSource=default" }, //
+						"chip=85\nclock=20external\nbod=2v7\nTimerClockSource=default\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx4",
-						"chip=44\nclock=6external\nbod=2v7\npinmapping=new" }, //
+						"chip=44\nclock=6external\nbod=2v7\npinmapping=new\nLTO=disable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx61",
-						"chip=261\nclock=1internal\nbod=2v7\nTimerClockSource=pll" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny167opti",
-						"clock=16external\nbod=2v7\npinmapping=new" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny87opti",
-						"clock=16external\nbod=2v7\npinmapping=new" }, //
+						"chip=261\nclock=1internal\nbod=2v7\nTimerClockSource=pll\nLTO=enable" }, //
+				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7opti",
+						"clock=16external\nbod=2v7\npinmapping=new\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7",
-						"chip=87\nclock=12external\nbod=2v7\npinmapping=new" }, //
+						"chip=87\nclock=12external\nbod=2v7\npinmapping=new\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx8",
-						"chip=88\nclock=1internal\nbod=2v7" }, //
+						"chip=88\nclock=1internal\nbod=2v7\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx313",
-						"chip=4313\nclock=5internal\nbod=2v7\nINITIALIZE_SECONDARY_TIMERS=1" }, //
+						"chip=4313\nclock=5internal\nbod=2v7\nINITIALIZE_SECONDARY_TIMERS=1\nLTO=enable" }, //
 
 				// chipKIT
 				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot32mx4", "" }, //
@@ -269,7 +267,7 @@ public class CreateAndCompile {
 				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny1", "" }, //
 
 				// digistump oak (needs MSVCR100.dll to be added to
-				// tools/digistump/esptool2/[version]
+				// digistump/tools/esptool2/[version]
 				// folder
 				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1",
 						"CpuFrequency=80\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Full" }, //
@@ -364,6 +362,9 @@ public class CreateAndCompile {
 						"" }, //
 
 				// redbear
+				// needs a workaround in platform.txt
+				// see
+				// https://github.com/jantje/arduino-eclipse-plugin/issues/546
 				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
 						"" }, //
 				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
@@ -398,11 +399,11 @@ public class CreateAndCompile {
 				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "atmega128rfa1", "" }, //
 
 				// Teensy
-				{ "local", teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
-				{ "local", teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", Shared.teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", Shared.teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", Shared.teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
+				{ "local", Shared.teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", Shared.teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
 
 				// TeeOnArdu avr
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "TeeOnArdu",
@@ -425,24 +426,7 @@ public class CreateAndCompile {
 	@BeforeClass
 	public static void WaitForInstallerToFinish() {
 		installAdditionalBoards();
-		waitForAllJobsToFinish();
-	}
-
-	public static void waitForAllJobsToFinish() {
-		try {
-			Thread.sleep(10000);
-
-			IJobManager jobMan = Job.getJobManager();
-
-			while (!jobMan.isIdle()) {
-				Thread.sleep(5000);
-			}
-			// As nothing is running now we can start installing
-
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			fail("can not find installerjob");
-		}
+		Shared.waitForAllJobsToFinish();
 	}
 
 	public static void installAdditionalBoards() {
@@ -514,7 +498,7 @@ public class CreateAndCompile {
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json", };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
-		BoardsManager.referenceLocallInstallation(teensyInstall);
+		BoardsManager.referenceLocallInstallation(Shared.teensyInstall);
 	}
 
 	@Test
@@ -540,7 +524,7 @@ public class CreateAndCompile {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
 					codeDescriptor, monitor);
-			waitForAllJobsToFinish(); // for the indexer
+			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
@@ -548,7 +532,7 @@ public class CreateAndCompile {
 		}
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (hasBuildErrors(theTestProject)) {
+			if (Shared.hasBuildErrors(theTestProject)) {
 				fail("Failed to compile the project:" + projectName + " build errors");
 			}
 		} catch (CoreException e) {
@@ -557,13 +541,4 @@ public class CreateAndCompile {
 		}
 	}
 
-	private static boolean hasBuildErrors(IProject project) throws CoreException {
-		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
-		for (IMarker marker : markers) {
-			if (marker.getAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR) {
-				return true;
-			}
-		}
-		return false;
-	}
 }
