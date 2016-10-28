@@ -402,7 +402,7 @@ public class Helpers extends Common {
 			file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
 
-		if (!file.exists()) {
+		if (!file.exists() && (contentStream != null)) {
 			file.create(contentStream, true, monitor);
 		}
 	}
