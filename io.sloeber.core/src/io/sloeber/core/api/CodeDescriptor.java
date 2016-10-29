@@ -18,7 +18,7 @@ import io.sloeber.core.tools.Stream;
 
 /**
  * A class to describe the code that needs to be attached to the project
- * 
+ *
  * @author jan
  *
  */
@@ -108,9 +108,8 @@ public class CodeDescriptor {
 
 		switch (this.codeType) {
 		case defaultIno:
-			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
-					Stream.openContentStream(project.getName(), Include, "../templates/sketch.ino", false), monitor,
-					false);
+			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), Stream.openContentStream(
+					project.getName(), Include, "/io/sloeber/core/templates/sketch.ino", false), monitor, false);
 			break;
 		case defaultCPP:
 			Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), Stream.openContentStream(
