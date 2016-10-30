@@ -9,11 +9,9 @@ public class Messages extends NLS {
 	public static String Boards_Get_menu_item_name_from_id_did_not_find;
 	public static String Boards_name;
 	public static String Boards_not_found;
-
 	public static String Helpers__in_boards_invalid;
 	public static String Helpers_boards_file;
 	public static String Helpers_Boards_id;
-	public static String Helpers_Core_refference_missing;
 	public static String Helpers_Create_folder_failed;
 	public static String Helpers_delete_folder_failed;
 	public static String Helpers_Error_parsing;
@@ -25,7 +23,7 @@ public class Messages extends NLS {
 	public static String Helpers_No_boards_txt_found;
 	public static String Helpers_The_project;
 	public static String Helpers_Value_for_key;
-	public static String Helpers_Variant_reference_missing;
+	public static String Helpers_tool_reference_missing;
 	public static String Helpers_link_folder;
 	public static String Helpers_is_empty;
 	public static String Helpers_Could_not_add_folder;
