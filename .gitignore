@@ -1,3 +1,4 @@
 */.settings/
 .log
 **/.settings/
+**/bin/*
