@@ -84,17 +84,14 @@ public class Manager {
 	/**
 	 * Loads all stuff needed and if this is the first time downloads the avr
 	 * boards and needed tools
-	 * 
+	 *
 	 * @param monitor
 	 */
 	public static void startup_Pluging(IProgressMonitor monitor) {
 		loadIndices(ConfigurationPreferences.getUpdateJasonFilesValue());
 		try {
 			List<Board> allBoards = getInstalledBoards();
-			if (allBoards.isEmpty()) { // we test for boards
-				// InformUserOfInstallationStart(monitor);
-				// so first do the libraries
-
+			if (allBoards.isEmpty()) { // If boards are installed do nothing
 				InstallDefaultLibraries(monitor);
 
 				// Downmload sample programs
@@ -137,7 +134,7 @@ public class Manager {
 	 * Given a platform description in a json file download and install all
 	 * needed stuff. All stuff is including all tools and core files and
 	 * hardware specific libraries. That is (on windows) inclusive the make.exe
-	 * 
+	 *
 	 * @param platform
 	 * @param monitor
 	 * @param object
@@ -195,7 +192,7 @@ public class Manager {
 	/**
 	 * convert a web url to a local file name. The local file name is the cache
 	 * of the web
-	 * 
+	 *
 	 * @param url
 	 *            url of the file we want a local cache
 	 * @return the file that represents the file that is the local cache. the
@@ -218,7 +215,7 @@ public class Manager {
 	/**
 	 * This method takes a json boards file url and downloads it and parses it
 	 * for usage in the boards manager
-	 * 
+	 *
 	 * @param url
 	 *            the url of the file to download and load
 	 * @param forceDownload
@@ -347,7 +344,7 @@ public class Manager {
 
 	/**
 	 * Given a platform.txt file find the platform in the platform manager
-	 * 
+	 *
 	 * @param platformTxt
 	 * @return the found platform otherwise null
 	 */
@@ -438,7 +435,7 @@ public class Manager {
 	 * will only be downloaded if the download file does not exists The
 	 * extraction is done with processArchive so only files types supported by
 	 * this method will be properly extracted
-	 * 
+	 *
 	 * @param pURL
 	 *            the url of the file to download
 	 * @param pArchiveFileName
@@ -742,7 +739,7 @@ public class Manager {
 	 * compares 2 strings as if they are version numbers if version1<version2
 	 * returns -1 if version1==version2(also if both are null) returns 0 else
 	 * return 1 This method caters for the null case
-	 * 
+	 *
 	 * @param version1
 	 * @param version2
 	 * @return
@@ -795,7 +792,7 @@ public class Manager {
 	/**
 	 * This method removes the json files from disk and removes memory
 	 * references to these files or their content
-	 * 
+	 *
 	 * @param packageUrlsToRemove
 	 */
 	public static void removeBoardsPackageURLs(Set<String> packageUrlsToRemove) {
@@ -828,7 +825,7 @@ public class Manager {
 
 	/**
 	 * Completely replace the list with jsons with a new list
-	 * 
+	 *
 	 * @param newBoardJsonUrls
 	 */
 	public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
@@ -866,7 +863,7 @@ public class Manager {
 
 	/**
 	 * copy a url locally taking into account redirections
-	 * 
+	 *
 	 * @param url
 	 * @param localFile
 	 */
