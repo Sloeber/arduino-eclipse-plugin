@@ -846,7 +846,7 @@ public class Helpers extends Common {
 		}
 		if (coreReferencedPlatformFilename.exists()
 				&& !coreReferencedPlatformFilename.equals(variantReferencedPlatformFilename)) {
-			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, variantReferencedPlatformFilename);
+			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, coreReferencedPlatformFilename);
 		}
 		File localPlatfrmFilename = new File(boardsDescriptor.getPlatformFile());
 		// process the platform file next to the selected boards.txt
