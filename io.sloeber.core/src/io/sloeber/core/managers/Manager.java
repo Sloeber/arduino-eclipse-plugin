@@ -47,9 +47,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.gson.Gson;
 
@@ -57,6 +57,7 @@ import io.sloeber.common.Common;
 import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.tools.MyMultiStatus;
 
 public class Manager {
 
@@ -93,24 +94,33 @@ public class Manager {
 			List<Board> allBoards = getInstalledBoards();
 			if (allBoards.isEmpty()) { // If boards are installed do nothing
 				InstallDefaultLibraries(monitor);
+				MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
 				// Downmload sample programs
-				downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
-						Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor);
+				mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
+						Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
 
-				// now add the boards
-				Package pkg = packageIndices.get(0).getPackages().get(0);
-				if (pkg != null) {
-					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
-					if (platform == null) {
-						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
-						pkg.getLatestPlatforms().toArray(platformList);
-						platform = platformList[0];
-					}
-					if (platform != null) {
-						downloadAndInstall(platform, false, monitor);
+				if (mstatus.isOK()) {
+					// if successfully installed the examples: add the boards
+
+					Package pkg = packageIndices.get(0).getPackages().get(0);
+					if (pkg != null) {
+						ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
+						if (platform == null) {
+							ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
+							pkg.getLatestPlatforms().toArray(platformList);
+							platform = platformList[0];
+						}
+						if (platform != null) {
+							mstatus.addErrors(downloadAndInstall(platform, false, monitor));
+						}
 					}
 				}
+				if (!mstatus.isOK()) {
+					StatusManager stMan = StatusManager.getManager();
+					stMan.handle(mstatus, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
+				}
+
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -143,38 +153,29 @@ public class Manager {
 	static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 			IProgressMonitor monitor) {
 
-		IStatus status = downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(), platform.getInstallPath(),
-				forceDownload, monitor);
-		if (!status.isOK()) {
-			return status;
+		MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platform.getName()); //$NON-NLS-1$
+		mstatus.addErrors(downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(),
+				platform.getInstallPath(), forceDownload, monitor));
+		if (!mstatus.isOK()) {
+			// no use going on installing tools if the boards failed installing
+			return mstatus;
 		}
-		MultiStatus mstatus = new MultiStatus(status.getPlugin(), status.getCode(), status.getMessage(),
-				status.getException());
 
 		if (platform.getToolsDependencies() != null) {
 			for (ToolDependency tool : platform.getToolsDependencies()) {
 				monitor.setTaskName(InstallProgress.getRandomMessage());
-				mstatus.add(tool.install(monitor));
+				mstatus.addErrors(tool.install(monitor));
 			}
 		}
-		// On Windows install make from equations.org
+		// On Windows install make
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			try {
-				Path makePath = Paths
-						.get(ConfigurationPreferences.getPathExtensionPath().append("make.exe").toString()); //$NON-NLS-1$
-				if (!makePath.toFile().exists()) {
-					Files.createDirectories(makePath.getParent());
-					URL makeUrl = new URL("ftp://ftp.equation.com/make/32/make.exe"); //$NON-NLS-1$
-					Files.copy(makeUrl.openStream(), makePath);
-					makePath.toFile().setExecutable(true, false);
-
-				}
-			} catch (IOException e) {
-				mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Downloading_make_exe, e));
-			}
+			Path localMakePath = Paths.get(ConfigurationPreferences.getPathExtensionPath().toString());
+			mstatus.addErrors(
+					downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
+							forceDownload, monitor));
 		}
 
-		return mstatus.getChildren().length == 0 ? Status.OK_STATUS : mstatus;
+		return mstatus;
 
 	}
 
