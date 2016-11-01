@@ -32,18 +32,17 @@ public class ArduinoSerial {
 		Serial serialPort;
 		try {
 			serialPort = new Serial(comPort, baudRate);
+			serialPort.setDTR(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 					Messages.ArduinoSerial_Unable_To_Open_Port + comPort, e));
 			return false;
 		}
-		if (!Platform.getOS().equals(Platform.OS_MACOSX)) {
-			try {
-				Thread.sleep(openTime);
-			} catch (InterruptedException e) {// Jaba is not going to write this
-				// code
-			}
+		try {
+			Thread.sleep(openTime);
+		} catch (InterruptedException e) {// Jaba is not going to write this
+			// code
 		}
 		serialPort.dispose();
 		return true;
@@ -201,9 +200,9 @@ public class ArduinoSerial {
 		}
 		if (use_1200bps_touch) {
 			// Get the list of the current com serial ports
-			console.println(Messages.ArduinoSerial_Using_12000bps_touch);
+			console.println(Messages.ArduinoSerial_Using_1200bps_touch + comPort);
 
-			if (!reset_Arduino_by_baud_rate(comPort, 1200, 300) /* || */) {
+			if (!reset_Arduino_by_baud_rate(comPort, 1200, 400) /* || */) {
 				console.println(Messages.ArduinoSerial_reset_failed);
 
 			} else {
