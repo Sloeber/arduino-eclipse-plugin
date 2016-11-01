@@ -21,7 +21,7 @@ import io.sloeber.core.Activator;
 
 public class Tool {
 
-	private static final String TOOLS = "tools";
+	private static final String TOOLS = "tools"; //$NON-NLS-1$
 	private String name;
 	private String version;
 	private List<ToolSystem> systems;
