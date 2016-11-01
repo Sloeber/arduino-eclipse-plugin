@@ -19,7 +19,7 @@ public class Messages extends NLS {
     public static String ArduinoSerial_reset_failed;
     public static String ArduinoSerial_Unable_To_Open_Port;
     public static String ArduinoSerial_unable_to_open_serial_port;
-    public static String ArduinoSerial_Using_12000bps_touch;
+    public static String ArduinoSerial_Using_1200bps_touch;
     public static String ArduinoSerial_Using_comport;
 
     static {
