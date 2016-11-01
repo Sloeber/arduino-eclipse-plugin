@@ -408,7 +408,7 @@
     <repository>
       <id>nebula</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/technology/nebula/snapshot</url>
+      <url>http://download.eclipse.org/nebula/snapshot</url>
     </repository>
   </repositories>
 

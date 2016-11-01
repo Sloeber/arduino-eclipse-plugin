@@ -297,7 +297,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
 
    <features>
       <feature id="io.sloeber.feature" installMode="root"/>
-
       <feature id="org.eclipse.cdt" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
@@ -351,8 +350,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.ssh"/>
       <feature id="org.eclipse.rse.core"/>
       <feature id="org.eclipse.cdt.native"/>
-
-         </features>
+   </features>
 
    <configurations>
       <plugin id="io.sloeber.application" autoStart="true" startLevel="4" />
@@ -365,10 +363,11 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://eclipse.baeyens.it/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/V3" enabled="true" />
       <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
       <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
    </repositories>
 
    <preferencesInfo>
