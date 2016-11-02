@@ -1,7 +1,6 @@
 package io.sloeber.core.api;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -39,7 +38,7 @@ import io.sloeber.core.tools.TxtFile;
 /**
  * This class groups both boards installed by the hardware manager and boards
  * installed locally.
- * 
+ *
  * @author jantje
  *
  */
@@ -56,7 +55,7 @@ public class BoardsManager {
 	 * jsonFileName="local" the board is assumend not to be installed by the
 	 * boards manager. Otherwise the boardsmanager is queried to find the board
 	 * ID. In this case the latest installed board will be returned
-	 * 
+	 *
 	 * @param jsonFileName
 	 *            equals to "local" or the name of the json file used by the
 	 *            boards manager to install the boards
@@ -210,7 +209,7 @@ public class BoardsManager {
 	/***
 	 * finds all the example folders for both the version including and without
 	 * version libraries
-	 * 
+	 *
 	 * @param location
 	 *            The parent folder of the libraries
 	 */
@@ -253,7 +252,7 @@ public class BoardsManager {
 	 * This method adds a folder of examples. There is no search. The provided
 	 * folder is assumed to be a tree where the parents of the leaves are
 	 * assumed examples
-	 * 
+	 *
 	 * @param iPath
 	 * @param pathVarName
 	 */
@@ -276,7 +275,7 @@ public class BoardsManager {
 	/**
 	 * This method adds a folder recursively examples. Leaves containing ino
 	 * files are assumed to be examples
-	 * 
+	 *
 	 * @param File
 	 */
 	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, Path location) {
@@ -317,7 +316,7 @@ public class BoardsManager {
 	/**
 	 * Searches for all boards.txt files from the hardware folders and the
 	 * boards manager
-	 * 
+	 *
 	 * @return all the boards.txt files with full path and in a case insensitive
 	 *         order
 	 */
@@ -348,11 +347,7 @@ public class BoardsManager {
 				if (f.isDirectory()) {
 					searchFiles(f, Hardwarelists, Filename, depth - 1);
 				} else if (f.getName().equals(Filename)) {
-					try {
-						Hardwarelists.add(f.getCanonicalPath());
-					} catch (IOException e) {
-						// e.printStackTrace();
-					}
+					Hardwarelists.add(new Path(f.toString()).toString());
 				}
 			}
 		}
@@ -360,7 +355,7 @@ public class BoardsManager {
 
 	/**
 	 * Gets all the folders that can contain hardware
-	 * 
+	 *
 	 * @return a list of all the folder locations that can contain hardware
 	 */
 	private static String[] getHardwarePaths() {
@@ -518,7 +513,7 @@ public class BoardsManager {
 
 			/**
 			 * is one ore more packages of this index file installed
-			 * 
+			 *
 			 * @return returns true if at least one version of one child
 			 *         platform of a child packageis installed
 			 */
@@ -586,7 +581,7 @@ public class BoardsManager {
 
 			/**
 			 * is one ore more platforms of this package installed
-			 * 
+			 *
 			 * @return returns true if at least one version of one child
 			 *         platform is installed
 			 */
@@ -707,7 +702,7 @@ public class BoardsManager {
 	/**
 	 * returns all the menu names for all installed platforms. The return is
 	 * sorted and unique
-	 * 
+	 *
 	 * @return
 	 */
 	public static Set<String> getAllManuNames() {

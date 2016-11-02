@@ -13,9 +13,9 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
@@ -209,7 +209,7 @@ public class Activator extends AbstractUIPlugin {
 			 */
 			@SuppressWarnings("boxing")
 			private boolean DownloadFolderConditionsOK() {
-				Path installPath = ConfigurationPreferences.getInstallationPath();
+				IPath installPath = ConfigurationPreferences.getInstallationPath();
 				installPath.toFile().mkdirs();
 				boolean cantWrite = !installPath.toFile().canWrite();
 				boolean windowsPathToLong = false;

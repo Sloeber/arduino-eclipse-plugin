@@ -1,7 +1,6 @@
 package io.sloeber.core.api;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -302,12 +301,7 @@ public class BoardDescriptor {
 	}
 
 	public String getBoardsFile() {
-		try {
-			return this.myBoardsFile.getCanonicalPath();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return new String();
+		return new Path(this.myBoardsFile.toString()).toString();
 	}
 
 	public String getBoardName() {
