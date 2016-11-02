@@ -181,7 +181,7 @@ public class CreateAndCompile {
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx61",
 						"chip=261\nclock=1internal\nbod=2v7\nTimerClockSource=pll\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7opti",
-						"clock=16external\nbod=2v7\npinmapping=new\nLTO=enable" }, //
+						"clock=16external\nbod=2v7\npinmapping=new\nLTO=enable\nchip=167" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7",
 						"chip=87\nclock=12external\nbod=2v7\npinmapping=new\nLTO=enable" }, //
 				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx8",
