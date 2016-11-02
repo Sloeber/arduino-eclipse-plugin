@@ -8,4 +8,5 @@
          Sloeber, Arduino development in the Eclipse IDE.
       </description>
    </category-def>
+   <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
 </site>
