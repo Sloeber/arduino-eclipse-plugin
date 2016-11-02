@@ -54,7 +54,7 @@ public class Common extends Const {
 	 * filenames containing spaces in Windows, see Note 1 < less than used to
 	 * redirect input, allowed in Unix filenames, see Note 1 > greater than used
 	 * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
-	 * 
+	 *
 	 * @param name
 	 *            the string that needs to be checked
 	 * @return a name safe to create files or folders
@@ -71,10 +71,10 @@ public class Common extends Const {
 
 	/**
 	 * Gets a persistent project property
-	 * 
+	 *
 	 * @param project
 	 *            The project for which the property is needed
-	 * 
+	 *
 	 * @param tag
 	 *            The tag identifying the property to read
 	 * @return returns the property when found. When not found returns an empty
@@ -112,10 +112,10 @@ public class Common extends Const {
 
 	/**
 	 * Sets a persistent project property
-	 * 
+	 *
 	 * @param project
 	 *            The project for which the property needs to be set
-	 * 
+	 *
 	 * @param tag
 	 *            The tag identifying the property to read
 	 * @return returns the property when found. When not found returns an empty
@@ -140,7 +140,7 @@ public class Common extends Const {
 
 	/**
 	 * Logs the status information
-	 * 
+	 *
 	 * @param status
 	 *            the status information to log
 	 */
@@ -156,7 +156,7 @@ public class Common extends Const {
 
 	/**
 	 * ToInt converts a string to a integer in a save way
-	 * 
+	 *
 	 * @param number
 	 *            is a String that will be converted to an integer. Number can
 	 *            be null or empty and can contain leading and trailing white
@@ -186,10 +186,10 @@ public class Common extends Const {
 	}
 
 	/**
-	 * 
+	 *
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
-	 * 
+	 *
 	 * @param project
 	 *            the project that contains the environment variable
 	 * @param configName
@@ -207,13 +207,13 @@ public class Common extends Const {
 	}
 
 	/**
-	 * 
+	 *
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
-	 * 
+	 *
 	 * @param project
 	 *            the project that contains the environment variable
-	 * 
+	 *
 	 * @param envName
 	 *            the key that describes the variable
 	 * @param defaultvalue
@@ -226,10 +226,10 @@ public class Common extends Const {
 	}
 
 	/**
-	 * 
+	 *
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
-	 * 
+	 *
 	 * @param project
 	 *            the project that contains the environment variable
 	 * @param envName
@@ -260,11 +260,20 @@ public class Common extends Const {
 		return myWorkspaceRoot.getLocation().toFile();
 	}
 
+	public static String makePathEnvironmentString(String path) {
+		String actualStoredValue = path;
+		String searchString = ConfigurationPreferences.getEclipseHome().toString();
+		if (path.startsWith(searchString)) {
+			actualStoredValue = "${eclipse_home}" + path.substring(searchString.length()); //$NON-NLS-1$
+		}
+		return actualStoredValue;
+	}
+
 	public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confdesc, String key, String value) {
-		IEnvironmentVariable var = new EnvironmentVariable(key, value);
-		contribEnv.addVariable(var, confdesc);
 
+		IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(value));
+		contribEnv.addVariable(var, confdesc);
 	}
 
 	public static void setBuildEnvironmentVariable(ICConfigurationDescription confdesc, String key, String value) {

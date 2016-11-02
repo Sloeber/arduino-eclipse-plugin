@@ -28,14 +28,14 @@ import io.sloeber.common.Const;
  * The is based on the code of Trump at
  * https://github.com/Trump211/ArduinoEclipsePlugin and later renamed from
  * Boards to TxtFile and adapted as needed.
- * 
+ *
  * This class is at the root of processing the boards.txt platform.txt and
  * programmers.txt from the Arduino eco system As this feature is available most
  * other configuration stuff is put in files with the same setup and processed
  * by this class
- * 
+ *
  * @author Jan Baeyens and trump
- * 
+ *
  */
 public class TxtFile {
 	private File mLastLoadedTxtFile = null;
@@ -62,7 +62,7 @@ public class TxtFile {
 
 	/**
 	 * This method returns the full section so custom processing can be done.
-	 * 
+	 *
 	 * @param SectionKey
 	 *            the first name on the line before the .
 	 * @return all entries that match the filter
@@ -73,7 +73,7 @@ public class TxtFile {
 
 	/**
 	 * Get all the menu option names in the .txt file
-	 * 
+	 *
 	 * @return a list of all the menu option names
 	 */
 	public Set<String> getMenuNames() {
@@ -94,7 +94,7 @@ public class TxtFile {
 
 	/**
 	 * Get all the menu option names in the .txt file
-	 * 
+	 *
 	 * @return a list of all the menu option key value pairs
 	 */
 	public TreeMap<String, String> getMenus() {
@@ -114,7 +114,7 @@ public class TxtFile {
 	/**
 	 * Get all the acceptable values for a option for a board The outcome of
 	 * this method can be used to fill a
-	 * 
+	 *
 	 * @param menu
 	 *            the id of a menu not the name
 	 * @param boardID
@@ -155,7 +155,7 @@ public class TxtFile {
 	/**
 	 * this is public String[] getAllNames(String[] toaddNames) with a empty
 	 * toaddnames
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] getAllNames() {
@@ -166,15 +166,15 @@ public class TxtFile {
 	 * getAllNames returns all the "names" that are in the currently loaded
 	 * *.txt file. The toaddNames are added to the end result toaddNames should
 	 * be a string array and can not be null
-	 * 
+	 *
 	 * For a boards.txt file that means all the board names. For a
 	 * programmers.txt file that means all the programmers For platform.txt the
 	 * outcome is not defined
-	 * 
+	 *
 	 * @return an empty list if no board file is loaded. In all other cases it
 	 *         returns the list of boards found in the file
 	 * @author Trump
-	 * 
+	 *
 	 */
 	public String[] getAllNames(String[] toaddNames) {
 		if (this.mLastLoadedTxtFile.equals(Const.EMPTY_STRING)) {
@@ -200,7 +200,7 @@ public class TxtFile {
 
 	/**
 	 * Load the board.txt file provided.
-	 * 
+	 *
 	 * @param BoardsFile
 	 *            the full name to the boards.txt file
 	 * @return true when the action was successful. else false.
@@ -216,7 +216,7 @@ public class TxtFile {
 
 	/**
 	 * Load loads the board.txt file based on the arduino path.
-	 * 
+	 *
 	 * @param NewArduinoPath
 	 *            the full path to the file board.txt (including board.txt)
 	 * @return true when the action was successful. else false.
@@ -268,7 +268,7 @@ public class TxtFile {
 	 * Loads the input stream to a Map, ignoring any lines that start with a #
 	 * <p>
 	 * Taken from preferences.java in the arduino source
-	 * 
+	 *
 	 * @param input
 	 *            the input stream to load
 	 * @param table
@@ -298,7 +298,7 @@ public class TxtFile {
 	/**
 	 * Loads an input stream into an array of strings representing each line of
 	 * the input stream
-	 * 
+	 *
 	 * @param input
 	 *            the input stream to load
 	 * @return the array of strings representing the inputStream
@@ -338,7 +338,7 @@ public class TxtFile {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the file name that is currently loaded
 	 */
 	public File getTxtFile() {

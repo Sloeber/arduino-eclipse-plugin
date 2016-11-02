@@ -552,7 +552,7 @@ public class Helpers extends Common {
 				makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
-					ConfigurationPreferences.getPathExtensionPath().toOSString() + '/');
+					ConfigurationPreferences.getPathExtensionPath().toString() + '/');
 		}
 
 		// Build Time
@@ -635,9 +635,8 @@ public class Helpers extends Common {
 						} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
 							value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 						}
-						IEnvironmentVariable envVar = new EnvironmentVariable(MakeKeyString(prefix, var[0]),
+						setBuildEnvironmentVariable(contribEnv, confDesc, MakeKeyString(prefix, var[0]),
 								MakeEnvironmentString(value, Const.ERASE_START));
-						contribEnv.addVariable(envVar, confDesc);
 					}
 				}
 			}
@@ -720,12 +719,12 @@ public class Helpers extends Common {
 		if (platform.getToolsDependencies() != null) {
 			for (ToolDependency tool : platform.getToolsDependencies()) {
 				String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				String valueString = tool.getTool().getInstallPath().toString();
-				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+				String valueString = new Path(tool.getTool().getInstallPath().toString()).toString();
+				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
+				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 			}
 		}
 	}
