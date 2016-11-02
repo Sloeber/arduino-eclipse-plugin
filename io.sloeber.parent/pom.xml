@@ -402,6 +402,33 @@
 
       </repositories>
     </profile>
+
+    <profile>
+      <id>oxygen</id>
+      <properties>
+        <platform-version-name>oxygen</platform-version-name>
+      </properties>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>platform_oxygen</id>
+          <layout>p2</layout>
+          <url>http://download.eclipse.org/eclipse/updates/4.7</url>
+        </repository>
+
+        <repository>
+          <id>release-train_oxygen</id>
+          <layout>p2</layout>
+          <url>http://download.eclipse.org/releases/oxygen</url>
+        </repository>
+
+      </repositories>
+    </profile>
+
+
   </profiles>
 
   <repositories>
