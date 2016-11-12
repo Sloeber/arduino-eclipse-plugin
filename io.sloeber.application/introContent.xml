@@ -2,7 +2,7 @@
 <introContent>
     <!-- Root page -->
     <page id="root" style="html/style.css"  style-id="page" >
-    <html text="hhh" id="my web site" src="http://eclipse.baeyens.it/product/V3_0.shtml" type="inline"  />	
-    </page> 
-  
+    <html text="hhh" id="my web site" src="http://eclipse.baeyens.it/product/V4_0.php" type="inline"  />
+    </page>
+
 </introContent>
