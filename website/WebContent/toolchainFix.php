@@ -42,14 +42,18 @@
 		Select "C/C++ build"<br>
 		select "toolchain editor"<br>
 		You should see errors (if not this is no fix for you)<br>
-		deselect "Display compatible toolchains only"<br> 
+		deselect "Display compatible toolchains only"<br>
 		select a toolchain different from "Arduino Toolchain"<br>
 		select "Arduino Toolchain" as toolchain<br>
+		select "C/C++ General"
+		select "Preprocessor, include paths,Macro etc"
+		select "Providers"
+		Make sure "Arduino Copiler Settings" is active
 		select "OK" <br>
 		Verify the project.</p>
 			<P>Note: You need to do this for all your projects and for all the configurations in these projects.</P>
-      
-		
+
+
     </div><!-- /container -->
 
     <div id="footer">
