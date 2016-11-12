@@ -158,7 +158,7 @@ public class ConfigurationPreferences {
 		setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
 	}
 
-	public static Path getPathExtensionPath() {
+	public static Path getMakePath() {
 		return new Path(getInstallationPath().append("tools/make").toString()); //$NON-NLS-1$
 
 	}

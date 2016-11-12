@@ -552,7 +552,7 @@ public class Helpers extends Common {
 				makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
-					ConfigurationPreferences.getPathExtensionPath().toString() + '/');
+					ConfigurationPreferences.getMakePath().toString() + '/');
 		}
 
 		// Build Time

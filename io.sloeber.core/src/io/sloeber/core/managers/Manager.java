@@ -169,10 +169,12 @@ public class Manager {
 		}
 		// On Windows install make
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			Path localMakePath = Paths.get(ConfigurationPreferences.getPathExtensionPath().toString());
-			mstatus.addErrors(
-					downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
-							forceDownload, monitor));
+			Path localMakePath = Paths.get(ConfigurationPreferences.getMakePath().toString());
+			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) {
+				mstatus.addErrors(
+						downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
+								forceDownload, monitor));
+			}
 		}
 
 		return mstatus;
