@@ -268,7 +268,7 @@ public class Helpers extends Common {
 
 		// create the actual link
 		try {
-			createNewFolder(project, target.toString(), URIUtil.toURI(source));
+			createNewFolder(project, target.toString(), source);
 		} catch (CoreException e) {
 			Common.log(
 					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Create_folder_failed + target, e));
@@ -488,11 +488,14 @@ public class Helpers extends Common {
 	 * @return nothing
 	 * @throws CoreException
 	 */
-	public static void createNewFolder(IProject Project, String newFolderName, URI linklocation) throws CoreException {
+	public static void createNewFolder(IProject Project, String newFolderName, IPath linklocation)
+			throws CoreException {
 		// IPath newFolderPath = Project.getFullPath().append(newFolderName);
 		final IFolder newFolderHandle = Project.getFolder(newFolderName);
 		if (linklocation != null) {
-			newFolderHandle.createLink(linklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
+			URI relativeLinklocation = Project.getPathVariableManager().convertToRelative(URIUtil.toURI(linklocation),
+					false, null);
+			newFolderHandle.createLink(relativeLinklocation, IResource.REPLACE | IResource.ALLOW_MISSING_LOCAL, null);
 		} else {
 			newFolderHandle.create(0, true, null);
 		}
