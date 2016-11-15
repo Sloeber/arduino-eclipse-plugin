@@ -60,23 +60,27 @@ if (isset ( $_GET ["OS"] ))
 			(they probably do) as the little gnome is not renowned for his
 			patience and he doesn't test the build extensively: actually he runs
 			away right after launching it!</p>
-			<P>And probably worse: The nightly is the playground of the contributors. 
+			<P>And probably worse: The nightly is the playground of the contributors.
 			No testing has been done, no validation has been done.</P>
-      
 
-              <?php 
+
+              <?php
         if ($os==linux)
         	echo "<p><strong>The product uses 100% CPU on Ubuntu 16.04. If you need to run on this OS install neon and the plugin version.</strong></p>";
         ?>
-        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
-      <?php 
+        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.<br>
+        <h2>Some recent changes:</h2>
+        <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
+        <p>This download is not the latest nightly. After downloading and opening the "latest version below", You will need to update (help->update) to get to the real latest/nightly version of sloeber.</p>
+
+      <?php
       echo "<h3>These are built for $OS 64 bits</h3>";
         $filetoRead="http://eclipse.baeyens.it/fragments/file-list.php?arch=${os}64.";
         readfile ($filetoRead);
         if($os!="mac"){
       echo "<h3>These are built for $OS 32 bits</h3>";
         $filetoRead="http://eclipse.baeyens.it/fragments/file-list.php?arch=${os}32.";
-        readfile ($filetoRead);  
+        readfile ($filetoRead);
         }
         ?>
 
@@ -93,7 +97,7 @@ if (isset ( $_GET ["OS"] ))
         <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/h-rz2FR3H6Y" frameborder="0" allowfullscreen></iframe>
-		
+
     </div><!-- /container -->
 
     <div id="footer">

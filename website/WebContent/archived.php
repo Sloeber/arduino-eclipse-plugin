@@ -1,3 +1,11 @@
+<?php
+require 'fragments/file-list.php';
+$version = "3.0";
+
+if (isset ( $_GET ["ver"] ))
+	$version = $_GET ["ver"];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,7 +16,7 @@
     <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse IDE - Archive ver 2.2</title>
+    <title>Arduino Eclipse IDE - Archive ver <?php echo $version;?></title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -34,16 +42,31 @@
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>Archive version 2.2 <small>in case you want to travel back in time</small></h1>
+        <h1>Archive version <?php echo $version;?> <small>in case you want to travel back in time</small></h1>
         <a name="top">&nbsp;</a>
       </div>
             <p  class="solid"><small>One of the major problems encountered in time travel is not that of becoming your own father or mother. There is no problem in becoming your own father or mother that a broad-minded and well-adjusted family can't cope with. There is no problem with changing the course of history—the course of history does not change because it all fits together like a jigsaw. All the important changes have happened before the things they were supposed to change and it all sorts itself out in the end.<br>
       The hitchhikers guide to the galaxy.</small></p>
       <h3>Before you start <small>don't skip this section, you will regret it!</small></h3>
-      <p>...installation instructions go here...</p>
+      <?php
+            if ($version=="2.2"){
+          echo "<p>This is so old I can't recall.</p>";
+      }
+            if ($version=="2.3" || $version=="2.1"){
+          echo "<p>$version got lost in the myst of time.</p>";
+      }
+      if ($version=="2.4"){
+          echo "<p>Only for ArduinoIDE 1.6.5 and earlier</p>";
+      }
+    if ($version=="3.0"){
+          echo "<p>The first version for which no Arduino IDE is needed</p>";
+      }
+      ?>
+
       <a href="#top" scroll-to="top">Back to top</a>
       <h3>Pick your OS architecture in the following list</h3>
-      		<?php include 'fragments/file-list.php?ver=2.2';?>
+      			<?php listFiles("V" . $version);
+		?>
 
       <a href="#top" scroll-to="top">Back to top</a>
       <h3>Troubleshooting <small>known solutions to common problems</small></h3>

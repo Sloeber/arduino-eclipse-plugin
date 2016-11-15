@@ -1,26 +1,20 @@
 <?php
+
 function listFiles($prefix) {
+
+echo '<table class="table table-striped table-hover">';
+	echo "<thead>";
+		echo "<tr>";
+echo '<th class="text-center col-md-2">Date</th>';
+			echo "<th>Filename</th>";
+			echo '<th class="text-right col-md-4">Size</th>';
+		echo "</tr>";
+	echo "</thead>";
+	echo "<tbody>";
+	  include "files.php";
+
 	date_default_timezone_set ( 'UTC' );
-	$location = "../download/product";
-	echo "<!-- listing files in $location with prefix $prefix -->";
-	if (false != ($dir = opendir ( $location ))) {
-		while ( false != ($file = readdir ( $dir )) ) {
-			if (($file != ".") and ($file != "..") and ($file != "index.php")) {
-				$files [] = $location . "/" . $file; // put in array.
-			}
-		}
-		closedir ( $dir );
-	} else {
-		$location = "../../download/product";
-		if (false != ($dir = opendir ( $location ))) {
-			while ( false != ($file = readdir ( $dir )) ) {
-				if (($file != ".") and ($file != "..") and ($file != "index.php")) {
-					$files [] = $location . "/" . $file; // put in array.
-				}
-			}
-			closedir ( $dir );
-		}
-	}
+
 	rsort ( $files );
 	$count = 0;
 	foreach ( $files as $file ) {
@@ -31,14 +25,24 @@ function listFiles($prefix) {
 				$stat = stat ( $file );
 				$date = date ( 'Y-m-d', $stat ['mtime'] );
 				$size = formatBytes ( $stat ['size'] );
+				$date = "unknown";
+				$size = "unknown";
 				echo "<tr class='clickable'>";
 				echo "<td class='text-center'>$date</td>";
-				echo "<td><a href='http://eclipse.baeyens.it/download/product/$refname' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
+				echo "<td><a href='$file' target='_blank'><i class='glyphicon glyphicon-cloud-download'></i> $refname</a></td>";
 				echo "<td class='text-right'>$size</td>";
 				echo "</tr>";
-			}
+				}
+
 		}
 	}
+ echo "</tbody>";
+echo "</table>";
+if($count==0){
+    echo "No files found with prefix ".$prefix;
+}
+
+
 }
 function formatBytes($bytes, $precision = 2) {
 	$units = array (
@@ -46,7 +50,7 @@ function formatBytes($bytes, $precision = 2) {
 			'KB',
 			'MB',
 			'GB',
-			'TB' 
+			'TB'
 	);
 	$bytes = max ( $bytes, 0 );
 	$pow = floor ( ($bytes ? log ( $bytes ) : 0) / log ( 1024 ) );
@@ -54,24 +58,8 @@ function formatBytes($bytes, $precision = 2) {
 	$bytes /= pow ( 1024, $pow );
 	return round ( $bytes, $precision ) . ' ' . $units [$pow];
 }
+
+
 ?>
 
-<table class="table table-striped table-hover">
-	<thead>
-		<tr>
-			<th class="text-center col-md-2">Date</th>
-			<th>Filename</th>
-			<th class="text-right col-md-4">Size</th>
-		</tr>
-	</thead>
-	<tbody>
-  <?php if(isset($_GET["arch"])) listFiles($_GET["arch"]); ?>
-  <?php if(isset($_GET["ver"])) listFiles("V" . $_GET["ver"] . '_'); ?>
-  </tbody>
-</table>
 
-<script>
-  $('tr.clickable').click(function() {
-    $(this).find('a')[0].click();
-  });
-</script>
