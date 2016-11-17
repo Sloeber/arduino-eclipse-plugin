@@ -1,6 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "3.0";
+$version = "4.0";
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];
@@ -21,7 +21,7 @@ if (isset ( $_GET ["OS"] ))
     <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <?php	echo "<title>Arduino Eclipse IDE - $OS Nightly Builds</title>"; ?>
+    <title>Arduino Eclipse IDE - Nightly Builds</title>";
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -47,7 +47,7 @@ if (isset ( $_GET ["OS"] ))
 
     <div class="container" role="main">
       <div class="page-header">
-        <?php	echo "<h1>$OS Nightly Builds <small>use only if you feel confident</small></h1>"; ?>
+        <h1>Nightly Builds <small>use only if you feel confident</small></h1>"
       </div>
       		<p>Every night, a little gnome called Jenkins walks around our servers looking for
 			changes occurred during the day and, when he finds any, he feels so
@@ -64,35 +64,28 @@ if (isset ( $_GET ["OS"] ))
 			No testing has been done, no validation has been done.</P>
 
 
-              <?php
-        if ($os==linux)
-        	echo "<p><strong>The product uses 100% CPU on Ubuntu 16.04. If you need to run on this OS install neon and the plugin version.</strong></p>";
-        ?>
+
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.<br>
         <h2>Some recent changes:</h2>
         <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
-        <p>This download is not the latest nightly. After downloading and opening the "latest version below", You will need to update (help->update) to get to the real latest/nightly version of sloeber.</p>
+        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.0.0-SNAPSHOT/" " target="_blank">This download page is the travis build. Download the tar.gz for your os.</a></p>
 
-      <?php
-      echo "<h3>These are built for $OS 64 bits</h3>";
-        $filetoRead="http://eclipse.baeyens.it/fragments/file-list.php?arch=${os}64.";
-        readfile ($filetoRead);
-        if($os!="mac"){
-      echo "<h3>These are built for $OS 32 bits</h3>";
-        $filetoRead="http://eclipse.baeyens.it/fragments/file-list.php?arch=${os}32.";
-        readfile ($filetoRead);
-        }
-        ?>
 
 
       <h3>Eclipse Update Site</h3>
       <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Eclipse CDT installation</p>
+      <p>There is a nightly for V4 and one for V3. You can not upgrade from V3 to V4!!!!</p>
+      <p>Even worse: you can install V3 and V4 in the same eclips installation causing all kind of wierd side effects. So don't do it</p>
+      <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+          <div class="well text-center">http://eclipse.baeyens.it/update/V4/nightly</div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
           <div class="well text-center">http://eclipse.baeyens.it/nightly</div>
         </div>
-      </div>
-       <p>Watch these movies to get a quick start:</p>
+      </div>       <p>Watch these movies to get a quick start:</p>
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>

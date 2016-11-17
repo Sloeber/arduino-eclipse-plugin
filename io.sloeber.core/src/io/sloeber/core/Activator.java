@@ -349,32 +349,33 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	static void remind() {
-		Job job = new FamilyJob("pluginReminder") { //$NON-NLS-1$
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
+		if (isInternetReachable()) {
+			Job job = new FamilyJob("pluginReminder") { //$NON-NLS-1$
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
 
-				IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-				int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
-						+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
-				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-				if ((curFsiStatus - lastFsiStatus) >= 50) {
-					myScope.putInt(LOCAL_FLAG, curFsiStatus);
-					if (isInternetReachable()) {
+					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+					int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
+							+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
+					int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
+					if ((curFsiStatus - lastFsiStatus) >= 50) {
+						myScope.putInt(LOCAL_FLAG, curFsiStatus);
+
 						try {
 							myScope.sync();
 						} catch (BackingStoreException e) {
 							// this should not happen
 						}
 						PleaseHelp.doHelp(HELP_LOC);
+						return Status.OK_STATUS;
 					}
+					remind();
 					return Status.OK_STATUS;
 				}
-				remind();
-				return Status.OK_STATUS;
-			}
-		};
-		job.setPriority(Job.DECORATE);
-		job.schedule(60000);
+			};
+			job.setPriority(Job.DECORATE);
+			job.schedule(60000);
+		}
 	}
 
 	static boolean isInternetReachable() {
