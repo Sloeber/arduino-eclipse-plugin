@@ -2888,8 +2888,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		IOutputType[] outTypes = tool.getOutputTypes();
 		if (outTypes != null && outTypes.length > 0) {
 			for (IOutputType type : outTypes) {
-				boolean primaryOutput = type.getPrimaryOutput(); // MODDED BY
-				// JABA
+				boolean primaryOutput = (type == tool.getPrimaryOutputType());
 				// if (primaryOutput && ignorePrimary) continue;
 				String outputPrefix = type.getOutputPrefix();
 				// Resolve any macros in the outputPrefix
@@ -3052,7 +3051,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 							if (outPath.segmentCount() == 1) {
 								outPath = Path.fromOSString(relativePath + outPath.toOSString());
 							}
-							if (primaryOutput) {
+							if (type.getPrimaryOutput()) {
 								ruleOutputs.add(j, outPath);
 								enumeratedPrimaryOutputs.add(j, resolvePercent(outPath, sourceLocation));
 							} else {
