@@ -3,10 +3,14 @@
    <feature url="features/io.sloeber.feature_4.0.0.qualifier.jar" id="io.sloeber.feature" version="4.0.0.qualifier">
       <category name="Sloeber"/>
    </feature>
+   <feature url="features/org.eclipse.nebula.widgets.oscilloscope.feature_0.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0">
+      <category name="Dependencies"/>
+   </feature>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
       </description>
    </category-def>
+   <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
 </site>
