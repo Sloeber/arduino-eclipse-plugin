@@ -37,7 +37,6 @@ import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.managers.Manager;
-import io.sloeber.core.tools.ExternalCommandLauncher;
 
 abstract class FamilyJob extends Job {
 	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
@@ -102,40 +101,48 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void testKnownIssues() {
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			String bashCommand = "where bash"; //$NON-NLS-1$
-			String shCommand = "where sh"; //$NON-NLS-1$
-			boolean bashFound = false;
-			ExternalCommandLauncher bashCommandLauncher = new ExternalCommandLauncher(bashCommand);
-			try {
-				bashFound = (bashCommandLauncher.launch(null) == 0);
-			} catch (IOException e) {
-				// nothing to do here
-			}
-			boolean shFound = false;
-			ExternalCommandLauncher shCommandLauncher = new ExternalCommandLauncher(shCommand);
-			try {
-				shFound = (shCommandLauncher.launch(null) == 0);
-			} catch (IOException e) {
-				// nothing to do here
-			}
-			String errorString = Const.EMPTY_STRING;
-			String addString = Const.EMPTY_STRING;
-			if (bashFound) {
-				errorString = errorString + addString + "bash"; //$NON-NLS-1$
-				addString = " and "; //$NON-NLS-1$
-			}
-			if (shFound) {
-				errorString = errorString + addString + "sh"; //$NON-NLS-1$
-				addString = " and "; //$NON-NLS-1$
-			}
-			if (!errorString.isEmpty()) {
-				errorString = "we have found programs in the path that might conflict with our external builder.\nThe conflicting programs are " //$NON-NLS-1$
-						+ errorString
-						+ ".\nThe program might still function but if you get strange build errors you know where to look\nRunning Sloeber.cmd may fix this issue."; //$NON-NLS-1$
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, errorString));
-			}
-		}
+		// currently no more issues are known
+		// if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		// String bashCommand = "where bash"; //$NON-NLS-1$
+		// String shCommand = "where sh"; //$NON-NLS-1$
+		// boolean bashFound = false;
+		// ExternalCommandLauncher bashCommandLauncher = new
+		// ExternalCommandLauncher(bashCommand);
+		// try {
+		// bashFound = (bashCommandLauncher.launch(null) == 0);
+		// } catch (IOException e) {
+		// // nothing to do here
+		// }
+		// boolean shFound = false;
+		// ExternalCommandLauncher shCommandLauncher = new
+		// ExternalCommandLauncher(shCommand);
+		// try {
+		// shFound = (shCommandLauncher.launch(null) == 0);
+		// } catch (IOException e) {
+		// // nothing to do here
+		// }
+		// String errorString = Const.EMPTY_STRING;
+		// String addString = Const.EMPTY_STRING;
+		// if (bashFound) {
+		// errorString = errorString + addString + "bash"; //$NON-NLS-1$
+		// addString = " and "; //$NON-NLS-1$
+		// }
+		// if (shFound) {
+		// errorString = errorString + addString + "sh"; //$NON-NLS-1$
+		// addString = " and "; //$NON-NLS-1$
+		// }
+		// if (!errorString.isEmpty()) {
+		// errorString = "we have found programs in the path that might conflict
+		// with our external builder.\nThe conflicting programs are "
+		// //$NON-NLS-1$
+		// + errorString
+		// + ".\nThe program might still function but if you get strange build
+		// errors you know where to look\nRunning Sloeber.cmd may fix this
+		// issue."; //$NON-NLS-1$
+		// Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+		// errorString));
+		// }
+		// }
 	}
 
 	private static void registerListeners() {
