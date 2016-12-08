@@ -188,7 +188,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 			compilerCommand = compilerCommand + ' ' + op2.getValue();
 		}
 
-		return compilerCommand;
+		return compilerCommand.replaceAll(" -o ", " ");
 	}
 
 }
