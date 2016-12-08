@@ -108,7 +108,6 @@ public class BoardsManager {
 		for (Board curBoard : boards) {
 			if (curBoard.getId().equals(boardID)) {
 				java.io.File boardsFile = curBoard.getPlatform().getBoardsFile();
-				System.out.println("Testing board: " + curBoard.getName()); //$NON-NLS-1$
 				BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, curBoard.getId(), options);
 
 				return boardid;
