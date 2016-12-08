@@ -381,6 +381,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		try {
 			this.myBoardID.save(confdesc);
+
 		} catch (Exception e) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
 		}
