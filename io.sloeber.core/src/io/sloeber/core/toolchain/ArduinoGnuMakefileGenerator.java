@@ -3584,8 +3584,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(map.get(macroName));
 		// escape whitespace in the filename
-		filename = escapeWhitespaces(filename);
-		buffer.append(filename).append(WHITESPACE).append(LINEBREAK);
+		buffer.append(escapeWhitespaces(filename)).append(WHITESPACE).append(LINEBREAK);
 		// re-insert string in the map
 		map.put(macroName, buffer.toString());
 	}
@@ -4479,26 +4478,4 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		return h;
 	}
 
-	private static String resolveCommand(boolean makeFormat, String inCommand, IPath inputLocation,
-			IPath outputLocation, IBuildObject tool) {
-		String returnedCommand = inCommand;
-		try {
-			if (makeFormat) {
-				returnedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(inCommand,
-						"", " ", IBuildMacroProvider.CONTEXT_FILE,
-						new FileContextData(inputLocation, outputLocation, null, tool));
-			} else {
-				returnedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(inCommand, "", " ",
-						IBuildMacroProvider.CONTEXT_FILE,
-						new FileContextData(inputLocation, outputLocation, null, tool));
-			}
-		} catch (BuildMacroException e) {// JABA is not going to write this
-			// code
-		}
-		returnedCommand = returnedCommand.replaceFirst(" -w ", " ").trim();
-		if (returnedCommand.isEmpty()) {
-			return inCommand;
-		}
-		return ArduinoLanguageProvider.adaptCompilerCommand(returnedCommand);
-	}
 }

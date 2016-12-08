@@ -52,6 +52,12 @@ public class CreateAndCompile {
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
 
+				// package_quirkbot.com_index.json
+				{ "package_quirkbot.com_index.json", "quirkbot", "Quirkbot AVR Boards", "quirkbot", "" }, //
+
+				// package_avdweb_nl_index.json
+				{ "package_avdweb_nl_index.json", "SAM15x15", "SAM15x15", "SAM15x15", "" }, //
+
 				// package_damellis_attiny_index
 				{ "package_damellis_attiny_index.json", "attiny", "attiny", "ATtinyX5",
 						"cpu=attiny25\nclock=internal1" }, //
@@ -489,6 +495,7 @@ public class CreateAndCompile {
 				"https://redbearlab.github.io/arduino/package_redbear_index.json",
 				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
+				"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
 				// "https://sourceforge.net does not work
 				// "https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json",
 				// "https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json",
