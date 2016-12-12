@@ -45,10 +45,14 @@
 		deselect "Display compatible toolchains only"<br>
 		select a toolchain different from "Arduino Toolchain"<br>
 		select "Arduino Toolchain" as toolchain<br>
-		select "C/C++ General"
-		select "Preprocessor, include paths,Macro etc"
-		select "Providers"
-		Make sure "Arduino Copiler Settings" is active
+		select "C/C++ General"<br>
+		select "Preprocessor, include paths,Macro etc"<br>
+		select "Providers"<br>
+		Make sure "Arduino Copiler Settings" is active<br>
+		If you can preSs the reset button pres it<br>
+		you should se following command <br>
+		${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"<br>
+		note the -D__IN_ECLISPE__<br>
 		select "OK" <br>
 		Verify the project.</p>
 			<P>Note: You need to do this for all your projects and for all the configurations in these projects.</P>
