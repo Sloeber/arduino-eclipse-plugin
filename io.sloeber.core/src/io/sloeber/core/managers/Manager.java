@@ -336,7 +336,7 @@ public class Manager {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
-							&& (vendor.equalsIgnoreCase(pkg.getMaintainer()))) {
+							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getPlatformFile().toString());
 					}
 				}
