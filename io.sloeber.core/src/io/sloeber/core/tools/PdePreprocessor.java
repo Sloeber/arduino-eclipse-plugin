@@ -4,18 +4,18 @@ package io.sloeber.core.tools;
  * the .ino.cpp file includes all include directives and definitions in all the ino and pde files
  * it also includes a include statement for all the ino and pde files themelves
  * This way compiling the ino.cpp file compiles all ino and pde files in 1 file with declarations on top just like arduino ide does
- * 
+ *
  * the custom managed build system delivered with the plugin ignores the ino and pde files
- * this way the ino and pde files are only build once 
- * 
+ * this way the ino and pde files are only build once
+ *
  * because I do not touch the ino and pde files the references returned by the toolchain
  * are still perfectly valid removing the need for post processing
- * 
+ *
  * Arduino ide ignores files starting with a . making the solution 100% compatible between arduino IDE and eclipse
- * 
+ *
  * in standard configuration eclipse does not show the .ino.cpp file in the project explorer making the solution nice and clean from a visual perspective.
- * 
- * I'm currently aware of 1 drawbacks of this solution 
+ *
+ * I'm currently aware of 1 drawbacks of this solution
  * If you have a file called .ino.cpp already in your project that file will be overwritten.
  */
 
@@ -45,11 +45,12 @@ import io.sloeber.common.Const;
 @SuppressWarnings("restriction")
 public class PdePreprocessor {
 	private static String tempFile = ".ino.cpp"; //$NON-NLS-1$
+	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__"; //$NON-NLS-1$
 
 	public static void processProject(IProject iProject) throws CoreException {
 		// first write some standard bla bla
 		final String NEWLINE = Const.NEWLINE;
-		String body = Const.EMPTY_STRING;
+		String body = new String();
 		String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE; //$NON-NLS-1$
 		String includeCodePart = NEWLINE;
 		String header = "//This is a automatic generated file" + NEWLINE; //$NON-NLS-1$
@@ -156,7 +157,7 @@ public class PdePreprocessor {
 				// concatenate the parts and make the .ino.cpp file
 				String output = header + includeHeaderPart + body + includeCodePart;
 				// Make sure the file is not procesed by Arduino IDE
-				output = "#ifdef " + Const.DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+				output = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
 				Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
 						null, true);
 			}
