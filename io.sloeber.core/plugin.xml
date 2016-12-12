@@ -16,7 +16,7 @@
       class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
       id="io.sloeber.languageSettingsProvider"
       name="Arduino Compiler Settings"
-      parameter='${COMMAND} -E -P -v -dD "${INPUTS}"'
+      parameter='${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"'
       prefer-non-shared="true">
 <language-scope id="org.eclipse.cdt.core.gcc"/>
 <language-scope id="org.eclipse.cdt.core.g++"/>

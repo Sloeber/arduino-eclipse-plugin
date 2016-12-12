@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
@@ -29,11 +30,11 @@ public class CodeDescriptor {
 	}
 
 	private CodeTypes codeType;
-	private Path myTemPlateFoldername;
+	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
 	private ArrayList<Path> myLastUsedExamples = new ArrayList<>();
 
-	public Path getTemPlateFoldername() {
+	public IPath getTemPlateFoldername() {
 		return this.myTemPlateFoldername;
 	}
 
@@ -56,7 +57,7 @@ public class CodeDescriptor {
 		return codeDescriptor;
 	}
 
-	public static CodeDescriptor createCustomTemplate(Path temPlateFoldername) {
+	public static CodeDescriptor createCustomTemplate(IPath temPlateFoldername) {
 		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.CustomTemplate);
 		codeDescriptor.myTemPlateFoldername = temPlateFoldername;
 		return codeDescriptor;
@@ -119,21 +120,17 @@ public class CodeDescriptor {
 					monitor, false);
 			break;
 		case CustomTemplate:
-			Path folderName = this.myTemPlateFoldername;
-			File cppTemplateFile = folderName.append("sketch.cpp").toFile();
-			File hTemplateFile = folderName.append("sketch.h").toFile();
-			File inoFile = folderName.append("sketch.ino").toFile();
-			if (inoFile.exists()) {
-				Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
-						Stream.openContentStream(project.getName(), Include, inoFile.toString(), true), monitor, false);
-			} else {
-				Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), //$NON-NLS-1$
-						Stream.openContentStream(project.getName(), Include, cppTemplateFile.toString(), true), monitor,
-						false);
-				Helpers.addFileToProject(project, new Path(project.getName() + ".h"), //$NON-NLS-1$
-						Stream.openContentStream(project.getName(), Include, hTemplateFile.toString(), true), monitor,
-						false);
+			IPath folderName = this.myTemPlateFoldername;
+			String files[] = folderName.toFile().list();
+			for (String file : files) {
+				if (!(file.equals(".") || file.equals(".."))) {
+					File sourceFile = folderName.append(file).toFile();
+					Helpers.addFileToProject(project, new Path(file),
+							Stream.openContentStream(project.getName(), Include, sourceFile.toString(), true), monitor,
+							false);
+				}
 			}
+
 			break;
 		case sample:
 			try {

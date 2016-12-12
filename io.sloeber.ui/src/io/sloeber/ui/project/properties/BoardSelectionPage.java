@@ -36,10 +36,10 @@ import io.sloeber.ui.Messages;
  * The ArduinoSelectionPage class is used in the new wizard and the project
  * properties. This class controls the gui and the data underneath the gui. This
  * class allows to select the arduino board and the port name
- * 
+ *
  * @author Jan Baeyens
  * @see ArduinoProperties ArduinoSettingsPage
- * 
+ *
  */
 public class BoardSelectionPage extends AbstractCPropertyTab {
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
@@ -62,7 +62,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	/**
 	 * Get the configuration we are currently working in. The configuration is
 	 * null if we are in the create sketch wizard.
-	 * 
+	 *
 	 * @return the configuration to save info into
 	 */
 	public ICConfigurationDescription getConfdesc() {
@@ -354,7 +354,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			if (options != null) {
 				String value = options.get(curLabelCombo.getID());
 				if (value != null) {
-					curLabelCombo.setValue(this.myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
+					try {
+						curLabelCombo
+								.setValue(this.myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
+					} catch (Exception e) {
+
+					}
 				}
 			}
 		}

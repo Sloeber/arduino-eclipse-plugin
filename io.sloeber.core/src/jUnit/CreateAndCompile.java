@@ -52,6 +52,10 @@ public class CreateAndCompile {
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
 
+				// UDOO to be deleted
+				{ "package_udoo_index.json", "UDOO", "UDOO QUAD/DUAL (Arduino Due)", "udooqdl", "" }, //
+				{ "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)", "udooneo", "" }, // fails
+
 				// package_quirkbot.com_index.json
 				{ "package_quirkbot.com_index.json", "quirkbot", "Quirkbot AVR Boards", "quirkbot", "" }, //
 
@@ -418,8 +422,13 @@ public class CreateAndCompile {
 						"UsbType=midi\nKeyLayout=fr-ca" }, //
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "CirPlayTeensyCore",
 						"UsbType=serial\nKeyLayout=usint" }, //
-																// Talk2
+
+				// Talk2
 				{ "package_talk2.wisen.com_index.json", "Talk2", "Talk2 AVR Boards", "whispernode", "mhz=16MHz" }, //
+
+				// UDOO
+				{ "package_udoo_index.json", "UDOO", "UDOO QUAD/DUAL (Arduino Due)", "udooqdl", "" }, //
+				{ "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)", "udooneo", "" }, //
 
 		});
 	}
@@ -502,7 +511,8 @@ public class CreateAndCompile {
 				// "https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json",
 				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
-				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json", };
+				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
+				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.referenceLocallInstallation(Shared.teensyInstall);

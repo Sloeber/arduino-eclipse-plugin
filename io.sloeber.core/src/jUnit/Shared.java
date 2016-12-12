@@ -7,6 +7,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -42,6 +44,11 @@ public class Shared {
 			e.printStackTrace();
 			fail("can not find installerjob");
 		}
+	}
+
+	public static IPath getTemplateFolder(String templateName) {
+		Path path = new Path("C:/Users/jan/git/arduino-eclipse-plugin/io.sloeber.core/src/jUnit/templates");
+		return path.append(templateName);
 	}
 
 }

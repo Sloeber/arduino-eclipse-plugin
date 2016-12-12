@@ -2,9 +2,9 @@ package io.sloeber.common;
 
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.
- * 
+ *
  * @author Jan Baeyens
- * 
+ *
  */
 @SuppressWarnings("nls")
 public class Const {
@@ -84,6 +84,8 @@ public class Const {
 	public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
 	public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
 	public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
+	public static final String ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM_FILE = ERASE_START + ENV_KEY_JANTJE_START
+			+ "REFERENCE.CORE.PLATFORM_FILE"; //$NON-NLS-1$
 	public static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
 	public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
 
@@ -112,12 +114,11 @@ public class Const {
 
 	static final String EXAMPLE_FOLDER_NAME = "examples";
 
-	public static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 	public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";
 
 	/**
 	 * given a action return the environment key that matches it's protocol
-	 * 
+	 *
 	 * @param action
 	 * @return the environment variable key to find the protocol
 	 */
@@ -127,7 +128,7 @@ public class Const {
 
 	/**
 	 * given a action return the environment key that matches it's tool
-	 * 
+	 *
 	 * @param action
 	 * @return the environment variable key to find the tool
 	 */
@@ -137,7 +138,7 @@ public class Const {
 
 	/**
 	 * given a action return the environment key that matches it's recipe
-	 * 
+	 *
 	 * @param action
 	 * @return he environment variable key to find the recipe
 	 */

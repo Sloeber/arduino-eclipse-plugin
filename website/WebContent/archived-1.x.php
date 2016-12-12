@@ -43,10 +43,10 @@
       <p>V1 Arduino eclipse IDE is only available as plugin.</p>
 
       <h3>Eclipse Update Site</h3>
-      <p>Install V1 of the plugin by setting the following update site within an existing Eclipse CDT installation</p>
+      <p>Install V1 of the plugin by setting the following update site within an existing Eclipse CDT installation.</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
-          <div class="well text-center">http://www.baeyens.it/eclipse/update</div>
+          <div class="well text-center">http://www.baeyens.it/eclipse/update site</div>
         </div>
       </div>
       <a href="#top" scroll-to="top">Back to top</a>

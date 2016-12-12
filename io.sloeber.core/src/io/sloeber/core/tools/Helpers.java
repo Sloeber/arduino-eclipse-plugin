@@ -104,8 +104,7 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_BUILD_PATH = ERASE_START + "BUILD.PATH"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_PROJECT_NAME = ERASE_START + "BUILD.PROJECT_NAME"; //$NON-NLS-1$
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM_FILE = ERASE_START
-			+ "JANTJE.REFERENCE.CORE.PLATFORM_FILE"; //$NON-NLS-1$
+
 	private static final String ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM_FILE = ERASE_START
 			+ "JANTJE.REFERENCE.VARIANT.PLATFORM_FILE"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_UPLOAD_REFERENCED_PLATFORM_FILE = ERASE_START
@@ -823,10 +822,6 @@ public class Helpers extends Common {
 		// add the stuff that comes with the plugin that are marked as pre
 		setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, pluginPreProcessingPlatformTxt);
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, false);
-
-		// // Then add the programmers file
-		// setTheEnvironmentVariablesAddAFile(ENV_KEY_PROGRAMMERS_START,
-		// contribEnv, confDesc, localProgrammers.getTxtFile());
 
 		// Do some magic for the arduino:arduino stuff
 		setTheEnvironmentVariablesRedirectToOtherVendors(contribEnv, confDesc, boardsDescriptor);

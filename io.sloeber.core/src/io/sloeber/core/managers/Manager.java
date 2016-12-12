@@ -170,7 +170,7 @@ public class Manager {
 		// On Windows install make
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			Path localMakePath = Paths.get(ConfigurationPreferences.getMakePath().toString());
-			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) {
+			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
 				mstatus.addErrors(
 						downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
 								forceDownload, monitor));
@@ -336,7 +336,7 @@ public class Manager {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
-							&& (vendor.equalsIgnoreCase(pkg.getMaintainer()))) {
+							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getPlatformFile().toString());
 					}
 				}
