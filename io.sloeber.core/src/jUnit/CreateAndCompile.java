@@ -52,10 +52,6 @@ public class CreateAndCompile {
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
 
-				// UDOO to be deleted
-				{ "package_udoo_index.json", "UDOO", "UDOO QUAD/DUAL (Arduino Due)", "udooqdl", "" }, //
-				{ "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)", "udooneo", "" }, // fails
-
 				// package_quirkbot.com_index.json
 				{ "package_quirkbot.com_index.json", "quirkbot", "Quirkbot AVR Boards", "quirkbot", "" }, //
 
@@ -428,7 +424,11 @@ public class CreateAndCompile {
 
 				// UDOO
 				{ "package_udoo_index.json", "UDOO", "UDOO QUAD/DUAL (Arduino Due)", "udooqdl", "" }, //
-				{ "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)", "udooneo", "" }, //
+				/*
+				 * { "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)",
+				 * "udooneo", "" }, fails because all object need to be provided
+				 * to linker but I don't see how they tell this to Arduino
+				 */
 
 		});
 	}
