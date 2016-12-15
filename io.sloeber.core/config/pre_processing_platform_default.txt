@@ -1,22 +1,31 @@
-software=baeyens
-RECIPE.OBJCOPY.HEX.PATTERN={RECIPE.OBJCOPY.BIN.PATTERN}
-ARCHIVE_FILE=arduino.ar
-ARCHIVE_FILE_PATH={build.path}/{archive_file}
-ALT_SIZE_COMMAND="{COMPILER.PATH}{COMPILER.SIZE.CMD}" --format=avr --mcu={BUILD.MCU} "{BUILD.PATH}/{BUILD.PROJECT_NAME}.elf"
-BUILD.VARIANT.PATH={RUNTIME.PLATFORM.PATH}/variants/{BUILD.VARIANT}
-BUILD.CORE.PATH={RUNTIME.PLATFORM.PATH}/cores/{BUILD.CORE}
-archive_file_path={build.path}/{archive_file}
-runtime.IDE.version=10609
-build.system.path={RUNTIME.PLATFORM.PATH}/system
+#this file is processed without the adding of A to enable referencing non arduino set variables
+A.software=baeyens
+A.RECIPE.OBJCOPY.HEX.PATTERN={A.RECIPE.OBJCOPY.BIN.PATTERN}
+A.ARCHIVE_FILE=arduino.ar
+A.ARCHIVE_FILE_PATH={A.BUILD.PATH}/{A.ARCHIVE_FILE}
+A.ALT_SIZE_COMMAND="{A.COMPILER.PATH}{A.COMPILER.SIZE.CMD}" --format=avr --mcu={A.BUILD.MCU} "{A.BUILD.PATH}/{A.BUILD.PROJECT_NAME}.elf"
+A.BUILD.VARIANT.PATH={A.RUNTIME.PLATFORM.PATH}/variants/{A.BUILD.VARIANT}
+A.BUILD.CORE.PATH={A.RUNTIME.PLATFORM.PATH}/cores/{A.BUILD.CORE}
+A.archive_file_path={A.BUILD.PATH}/{A.ARCHIVE_FILE}
+A.runtime.IDE.version=10609
+A.BUILD.SYSTEM.PATH={A.RUNTIME.PLATFORM.PATH}/system
+A.JANTJE.USED.BOARDS_FILE={JANTJE.BOARDS_FILE}
+A.JANTJE.CORE.REFERENCED.PLATFORM={JANTJE.SELECTED.PLATFORM}
+A.JANTJE.VARIANT.REFERENCED.PLATFORM={JANTJE.SELECTED.PLATFORM}
+A.SERIAL.PORT={JANTJE.COM_PORT}
+A.BUILD.PATH={ProjDirPath}/{ConfigName}
+A.BUILD.PROJECT_NAME={ProjName}
+A.PACKAGES={eclipse_home}/arduinoPlugin/packages
+
 
 #for esp8266 network upload
-tools.esp8266OTA={tools.esptool.network_cmd}
-tools.esp8266OTA.upload.pattern={tools.esptool.upload.network_pattern}
-esp8266.network.upload.tool=esp8266OTA
-TOOLS.ESPTOOL.NETWORK.PASSWORD={NETWORK.AUTH}
+A.tools.esp8266OTA={A.tools.esptool.network_cmd}
+A.tools.esp8266OTA.upload.pattern={A.tools.esptool.upload.network_pattern}
+A.esp8266.network.upload.tool=esp8266OTA
+A.TOOLS.ESPTOOL.NETWORK.PASSWORD={A.NETWORK.AUTH}
 
 #for yun shield to work
-TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
+A.TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
 
 #for due
-serial.port.file={serial.port} 
+A.SERIAL.PORT.FILE={A.SERIAL.PORT}
