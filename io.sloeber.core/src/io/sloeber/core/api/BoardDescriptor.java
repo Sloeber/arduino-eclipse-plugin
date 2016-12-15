@@ -205,10 +205,7 @@ public class BoardDescriptor {
 				.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
-		// Insert The Arduino Code
-		// NOTE: Not duplicated for debug (the release reference is just to
-		// get at some environment variables)
-		Helpers.addArduinoCodeToProject(projectHandle, defaultConfigDescription);
+
 
 		ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
 				true);
@@ -260,6 +257,7 @@ public class BoardDescriptor {
 		if (confdesc != null) {
 
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, getPlatformFile());
+			Common.setBuildEnvironmentVariable(confdesc, "JANTJE.SELECTED.PLATFORM", getPlatformPath().toString()); //$NON-NLS-1$
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, getBoardsFile());
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);

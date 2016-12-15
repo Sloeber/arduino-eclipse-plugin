@@ -330,14 +330,14 @@ public class Manager {
 		return platforms;
 	}
 
-	public static IPath getPlatformFile(String vendor, String architecture) {
+	public static IPath getPlatformInstallPath(String vendor, String architecture) {
 
 		for (PackageIndex index : packageIndices) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
-						return new org.eclipse.core.runtime.Path(curPlatform.getPlatformFile().toString());
+						return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
 					}
 				}
 			}
@@ -352,12 +352,10 @@ public class Manager {
 	 * @return the found platform otherwise null
 	 */
 	public static ArduinoPlatform getPlatform(File platformTxt) {
-		String searchString = platformTxt.toString();
 		for (PackageIndex index : packageIndices) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
-					String curFile = curPlatform.getPlatformFile().toString();
-					if (searchString.equals(curFile)) {
+					if (curPlatform.getPlatformFile().equals(platformTxt)) {
 						return curPlatform;
 					}
 				}

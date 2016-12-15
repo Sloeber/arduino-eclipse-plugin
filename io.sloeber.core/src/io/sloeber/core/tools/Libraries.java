@@ -72,13 +72,13 @@ public class Libraries {
 	private static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
 		String platformFile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
 				Const.EMPTY_STRING);
-		IPath platformFolder = new Path(platformFile).removeLastSegments(1);
-		Map<String, IPath> ret = findAllSubFolders(platformFolder.append(Const.LIBRARY_PATH_SUFFIX));
-		platformFile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM_FILE,
+		IPath LibraryFolder = new Path(platformFile).removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX);
+		Map<String, IPath> ret = findAllSubFolders(LibraryFolder);
+		String platform = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM,
 				null);
-		if (platformFile != null) {
-			platformFolder = new Path(platformFile).removeLastSegments(1);
-			ret.putAll(findAllSubFolders(platformFolder.append(Const.LIBRARY_PATH_SUFFIX)));
+		if (platform != null) {
+			LibraryFolder = new Path(platformFile).append(Const.LIBRARY_PATH_SUFFIX);
+			ret.putAll(findAllSubFolders(LibraryFolder));
 		}
 		return ret;
 	}

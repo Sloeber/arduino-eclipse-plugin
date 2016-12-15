@@ -81,7 +81,7 @@
     <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="io.sloeber.core.tools.LaunchConfiguration"
+            delegate="io.sloeber.core.api.LaunchConfiguration"
             id="io.sloeber.tools.arduinoLaunchConfiguration"
             modes="run, debug"
             name="Arduino Launch"
