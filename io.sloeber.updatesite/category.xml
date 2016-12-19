@@ -6,11 +6,22 @@
    <feature url="features/org.eclipse.nebula.widgets.oscilloscope.feature_0.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
+   <feature url="features/ilg.gnuarmeclipse.managedbuild.cross_2.2.1.201606210758.jar" id="ilg.gnuarmeclipse.managedbuild.cross" version="2.2.1.201606210758">
+      <category name="ARM Debugging"/>
+   </feature>
+   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.openocd_4.1.1.201606210758.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.openocd" version="4.1.1.201606210758">
+      <category name="ARM Debugging"/>
+   </feature>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
       </description>
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
+   <category-def name="ARM Debugging" label="ARM Debugging">
+      <description>
+         http://gnuarmeclipse.github.io/
+      </description>
+   </category-def>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
 </site>
