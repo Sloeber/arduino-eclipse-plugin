@@ -46,7 +46,6 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    <launcher name="sloeber-ide">
       <linux icon="launch/icon.xpm"/>
       <macosx icon="launch/icon.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="launch/icons.ico"/>
          <bmp/>
@@ -350,6 +349,8 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.ssh"/>
       <feature id="org.eclipse.rse.core"/>
       <feature id="org.eclipse.cdt.native"/>
+      <feature id="ilg.gnuarmeclipse.debug.gdbjtag.openocd"/>
+      <feature id="ilg.gnuarmeclipse.managedbuild.cross"/>
    </features>
 
    <configurations>

@@ -437,6 +437,12 @@
       <layout>p2</layout>
       <url>http://download.eclipse.org/nebula/snapshot</url>
     </repository>
+
+    <repository>
+      <id>gnuarm</id>
+      <layout>p2</layout>
+      <url>http://gnuarmeclipse.sourceforge.net/updates</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
