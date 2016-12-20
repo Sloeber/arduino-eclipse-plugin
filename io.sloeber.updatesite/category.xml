@@ -17,8 +17,11 @@
          Sloeber, Arduino development in the Eclipse IDE.
       </description>
    </category-def>
-   <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
+   <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)">
+      <category name="Sloeber"/>
+   </category-def>
    <category-def name="ARM Debugging" label="ARM Debugging">
+      <category name="Sloeber"/>
       <description>
          http://gnuarmeclipse.github.io/
       </description>
