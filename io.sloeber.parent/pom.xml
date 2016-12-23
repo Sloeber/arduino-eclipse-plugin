@@ -39,11 +39,11 @@
   </distributionManagement>
 
   <modules>
-    
+
     <module>../io.sloeber.feature</module>
-    
+
     <module>../io.sloeber.core</module>
-    
+
     <module>../io.sloeber.product</module>
     <module>../io.sloeber.updatesite</module>
     <module>../io.sloeber.application</module>
@@ -80,7 +80,7 @@
         <artifactId>tycho-versions-plugin</artifactId>
         <version>${tycho.version}</version>
       </plugin>
-      
+
       <!-- Maven release with PGP signing -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -441,7 +441,7 @@
     <repository>
       <id>gnuarm</id>
       <layout>p2</layout>
-      <url>http://gnuarmeclipse.sourceforge.net/updates</url>
+      <url>http://sloeber.io/gnuarmeclipse/stable</url>
     </repository>
   </repositories>
 
@@ -454,4 +454,4 @@
 
 </project>
 
- 
+

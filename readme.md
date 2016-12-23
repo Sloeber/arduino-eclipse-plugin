@@ -12,7 +12,7 @@ It works on MS Windows, Mac OSX and Linux.
 
 ## What if I am not a developer?
 
-If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://www.baeyens.it/eclipse/.
+If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://sloeber.io/.
 
 ## What if I am a developer?
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
@@ -63,7 +63,7 @@ Mac OSX and Linux
 
 ## Build Options
 
-You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediatly)
+You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediately)
 
 * neon (builds against the neon repositories (4.6))
 * luna (builds agains the luna repositories (4.4))
