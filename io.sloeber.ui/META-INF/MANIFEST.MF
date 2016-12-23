@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.forms,
  org.eclipse.ui.ide,
  org.eclipse.debug.ui,
- org.eclipse.wb.core.lib
+ org.apache.commons.lang;bundle-version="2.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.core.api,
