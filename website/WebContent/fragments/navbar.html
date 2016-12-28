@@ -1,0 +1,67 @@
+
+
+      <div class="container" ng-controller="NavBarCtrl" ng-init="init()">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <p class="navbar-brand">Sloeber</p>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+             <li ><a href="http://eclipse.baeyens.it/index.shtml">Home</a></li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Install <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://eclipse.baeyens.it/installAdvice.shtml">Start here</a></li>
+                <li><a href="http://eclipse.baeyens.it/getting-started.shtml">The components</a></li>
+
+                <li class="dropdown-header">Stable</li>
+                <li><a href="http://eclipse.baeyens.it/stable.php?OS=Linux">Linux</a></li>
+                <li><a href="http://eclipse.baeyens.it/stable.php?OS=Windows">Windows</a></li>
+                <li><a href="http://eclipse.baeyens.it/stable.php?OS=MacOS">MacOS</a></li>
+
+
+                <li class="dropdown-header">Nightly Builds</li>
+                <li><a href="http://eclipse.baeyens.it/nightly.php">Linux Windows MacOS</a></li>
+
+
+                <li class="dropdown-header">Archived Versions</li>
+                <li><a href="http://eclipse.baeyens.it/archived.php?ver=3.0">Plugin v3.0</a></li>
+                <li><a href="http://eclipse.baeyens.it/archived.php?ver=2.4">Plugin v2.4</a></li>
+                <li><a href="http://eclipse.baeyens.it/archived.php?ver=2.3">Plugin v2.3</a></li>
+                <li><a href="http://eclipse.baeyens.it/archived.php?ver=2.2">Plugin v2.2</a></li>
+                <li><a href="http://eclipse.baeyens.it/archived.php?ver=2.1">Plugin v2.1</a></li>
+                <li><a href="http://eclipse.baeyens.it/archived-1.x.php">Plugin v1.x</a></li>
+              </ul>
+            </li>
+
+            <li><a href="http://eclipse.baeyens.it/how_to.shtml">How To</a></li>
+            <li><a href="http://eclipse.baeyens.it/learn.shtml">Learn</a></li>
+            <li><a href="http://eclipse.baeyens.it/faq.shtml">FAQ</a></li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://forum.arduino.cc/index.php?topic=79595" target="_blank">Forum Discussion</a></li>
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin/issues" target="_blank">Report Issue</a></li>
+                <li><a href="https://github.com/jantje/arduino-eclipse-plugin" target="_blank"><img src="css/github.png" class="pull-right" height="20"/>Github</a></li>
+              </ul>
+            </li>
+          </ul>
+
+          <form class="navbar-form navbar-right" name="google-search" method="get" action="http://www.google.com/search">
+            <div class="form-group has-feedback">
+              <input name="q" type="text" class="form-control" id="inputSuccess4"/>
+              <span class="glyphicon glyphicon-search disabled form-control-feedback"></span>
+            </div>
+            <input type="hidden" name="sitesearch" value="http://eclipse.baeyens.it/" />
+            <input type="hidden" name="sa" value="Google" />
+          </form>
+
+        </div><!--/.nav-collapse -->
+      </div>

@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension point="org.eclipse.ui.views">
+	<category
+            name="Sloeber"
+            id="io.sloeber.monitor">
+      </category>
+      <view id="io.sloeber.monitor.views.SerialMonitor"
+            category="io.sloeber.monitor"
+            class="io.sloeber.monitor.views.SerialMonitor"
+            icon="icons/arduino.png"
+            name="Serial monitor view">
+      </view>
+      <view
+            category="io.sloeber.monitor"
+            class="io.sloeber.monitor.views.PlotterView"
+            icon="icons/plotter.png"
+            id="io.sloeber.monitor.views.PlotterView"
+            name="Plotter"
+            restorable="true">
+      </view>
+
+	</extension>
+
+ <!--
+#######################################################################################
+#   fonts and colors used by the plugin
+#
+#######################################################################################
+-->
+
+ <extension point="org.eclipse.ui.themes">
+ <themeElementCategory
+      id="io.sloeber.themeCategory"
+      label="Sloeber">
+</themeElementCategory>
+<themeElementCategory
+      id="io.sloeber.plotter.themeCategory"
+      label="Plotter"
+      parentId="io.sloeber.themeCategory">
+<description>
+Fonts and colors used by the sloeber plotter view
+</description>
+</themeElementCategory>
+<themeElementCategory
+      id="io.sloeber.serialMonitor.themeCategory"
+      label="Serial monitor"
+      parentId="io.sloeber.themeCategory">
+<description>
+Fonts and colors used by the arduino eclipse plugin serial monitor view
+</description>
+</themeElementCategory>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.background" label="Background color" value="COLOR_BLACK">
+<description>
+The background color of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.foreground" label="Foreground color" value="COLOR_WHITE">
+<description>
+The foreground color of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.grid" label="Grid color" value="COLOR_DARK_CYAN">
+<description>
+The grid color of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="Channel 1 color" value="COLOR_BLUE">
+<description>
+The color used by the first channel of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.2" label="Channel 2 color" value="COLOR_CYAN">
+<description>
+The color used by the second channel of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="Channel 3 color" value="COLOR_DARK_GRAY">
+<description>
+The color used by the third channel of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="Channel 4 color" value="COLOR_DARK_GREEN">
+<description>
+The color used by the fourth channel of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="Channel 5 color" value="COLOR_DARK_RED">
+<description>
+The color used by the fifth channel of the plotter
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="Channel 6 color" value="COLOR_DARK_YELLOW">
+<description>
+The color used by the sixth channel of the plotter
+</description>
+</colorDefinition>
+<fontDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
+<description>
+The font used in the serial monitor
+</description>
+</fontDefinition>
+
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.1" label="Channel 1 color" value="COLOR_BLACK">
+<description>
+The color used by the first serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.2" label="Channel 2 color" value="COLOR_RED">
+<description>
+The color used by the second serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.3" label="Channel 3 color" value="COLOR_GREEN">
+<description>
+The color used by the third serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.4" label="Channel 4 color" value="COLOR_BLUE">
+<description>
+The color used by the fourth serial connection of the serial monitor
+</description>
+</colorDefinition>
+<colorDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      id="io.sloeber.serial.color.5"
+      label=" Channel 5 color"
+      value="COLOR_DARK_RED">
+   <description>
+      The color used by the fifth serial connection of the serial monitor
+   </description>
+</colorDefinition>
+<colorDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      id="io.sloeber.serial.color.6"
+      label="Channel 6 color"
+      value="COLOR_DARK_YELLOW">
+   <description>
+      The color used by the sixth serial connection of the serial monitor
+   </description>
+</colorDefinition>
+</extension>
+ <extension
+       point="org.eclipse.ui.newWizards">
+    <category
+          id="io.sloeber.eclipse.newWizards"
+          name="Arduino">
+    </category>
+    <wizard
+          category="io.sloeber.eclipse.newWizards"
+          class="io.sloeber.ui.wizard.newsketch.NewSketchWizard"
+          finalPerspective="io.sloeber.application.perspective"
+          icon="icons/new.png"
+          id="io.sloeber.eclipse.NewArduinoSketchWizard"
+          name="%wizard.name"
+          project="true">
+       <description>
+          %wizard.description
+       </description>
+    </wizard>
+ </extension>
+ <extension
+       point="org.eclipse.ui.propertyPages">
+    <page
+          class="io.sloeber.ui.project.properties.PropertyPage"
+          id="io.sloeber.eclipse.propertypage.ArduinoProperty"
+          name="Arduino">
+       <filter
+             name="projectNature"
+             value="io.sloeber.arduinonature">
+       </filter>
+       <enabledWhen>
+          <or>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+             <instanceof
+                   value="org.eclipse.cdt.core.model.ICProject">
+             </instanceof>
+          </or>
+       </enabledWhen>
+    </page>
+ </extension>
+     <extension
+          point="org.eclipse.ui.importWizards">
+       <category
+             id="io.sloeber.eclipse.importWizards"
+             name="Arduino">
+       </category>
+       <wizard
+             category="io.sloeber.eclipse.importWizards"
+             class="io.sloeber.ui.ImportLibraries"
+             icon="icons/arduino.png"
+             id="io.sloeber.Import_Arduino_Libraries"
+             name="%wizard.name.0">
+          <description>
+             %wizard.description.0
+          </description>
+          <selection
+                class="org.eclipse.core.resources.IResource">
+          </selection>
+       </wizard>
+       <wizard
+             category="io.sloeber.eclipse.importWizards"
+             class="io.sloeber.ui.Import_Source_Folder"
+             icon="icons/arduino.png"
+             id="io.sloeber.Import_Source_Folder"
+             name="%wizard.name.1">
+          <description>
+             %wizard.description.1
+          </description>
+          <selection
+                class="org.eclipse.core.resources.IResource">
+          </selection>
+       </wizard>
+    </extension>
+     <extension
+       point="org.eclipse.ui.decorators">
+    <decorator
+          class="io.sloeber.ui.ExplorerLabelDecorator"
+          id="io.sloeber.core.decorator1"
+          label="embedded development"
+          state="true">
+       <description>
+          Arduino eclipse plugin projects ->Show "board : port : baut rate"
+       </description>
+       <enablement>
+          <objectClass
+                name="org.eclipse.core.resources.IProject">
+          </objectClass>
+       </enablement>
+    </decorator>
+ </extension>
+  <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          class="io.sloeber.ui.preferences.PreferencePage"
+          id="io.sloeber.eclipse.ArduinoPreferencePage"
+          name="Arduino">
+    </page>
+    <page
+          category="io.sloeber.eclipse.ArduinoPreferencePage"
+          class="io.sloeber.ui.preferences.PlatformSelectionPage"
+          id="io.sloeber.eclipse.loation_page"
+          name="Platforms and Boards">
+    </page>
+    <page
+          category="io.sloeber.eclipse.ArduinoPreferencePage"
+          class="io.sloeber.ui.preferences.ThirdPartyHardwareSelectionPage"
+          id="io.sloeber.eclipse.boards"
+          name="Third party index url&apos;s">
+    </page>
+    <page
+          category="io.sloeber.eclipse.ArduinoPreferencePage"
+          class="io.sloeber.ui.preferences.LibrarySelectionPage"
+          id="io.sloeber.eclipse.libraries"
+          name="Library Manager">
+    </page>
+ </extension>
+  <extension
+       point="org.eclipse.ui.commands">
+    <category
+          description="%category.arduino.description"
+          id="io.sloeber.commands"
+          name="Arduino">
+    </category>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.UploadProjectHandler"
+          description="%command.UploadprojectAction.description"
+          id="io.sloeber.actions.UploadprojectAction"
+          name="%command.UploadprojectAction.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.NewSketchHandler"
+          description="%command.NewSketchAction.description"
+          id="io.sloeber.actions.NewSketchAction"
+          name="%command.NewSketchAction.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.BuildHandler"
+          description="%command.ArduinoBuildAction.description"
+          id="io.sloeber.actions.ArduinoBuildAction"
+          name="%command.ArduinoBuildAction.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.OpenSerialMonitorHandler"
+          description="%command.OpenSerialMonitorAction.description"
+          id="io.sloeber.actions.OpenSerialMonitorAction"
+          name="%command.OpenSerialMonitorAction.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.AddLibraryAction"
+          description="%command.AddLibraryAction.description"
+          id="io.sloeber.actions.AddLibraryAction"
+          name="%command.AddLibraryAction.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.AddSourceFolderAction"
+          description="%command.AddSourceFolder.description"
+          id="io.sloeber.actions.AddSourceFolderAction"
+          name="%command.AddSourceFolder.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.OpenPlotterHandler"
+          description="%OpenPlotter.description"
+          id="io.sloeber.actions.OpenPlotterAction"
+          name="%OpenPlotter.label">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.ReattachLibraries"
+          description="%command.ReattachLibraries.description"
+          id="io.sloeber.actions.ReattachLibraries"
+          name="%command.ReattachLibraries.name">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.LinkCommandHandler"
+          id="io.sloeber.core.open.link"
+          name="open how To link">
+       <commandParameter
+             id="io.sloeber.core.link.parameter"
+             name="link url"
+             optional="true">
+       </commandParameter>
+    </command>
+ </extension>
+  <extension
+       point="org.eclipse.ui.menus">
+    <menuContribution
+          locationURI="toolbar:org.eclipse.ui.main.toolbar">
+       <toolbar
+             id="io.sloeber.toolbar.main"
+             label="Sloeber">
+          <visibleWhen
+                checkEnabled="false">
+             <reference
+                   definitionId="io.sloeber.definition.isArduinoPerspective">
+             </reference>
+          </visibleWhen>
+          <command
+                commandId="io.sloeber.actions.ArduinoBuildAction"
+                disabledIcon="icons/check_disabled.png"
+                icon="icons/check.png"
+                label="%command.label"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.UploadprojectAction"
+                disabledIcon="icons/arrow_disabled.png"
+                icon="icons/arrow.png"
+                label="%command.name"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.NewSketchAction"
+                disabledIcon="icons/new_disabled.png"
+                icon="icons/new.png"
+                label="%command.label.1"
+                style="push">
+          </command>
+          <command
+                commandId="org.eclipse.ui.file.save"
+                disabledIcon="icons/save_disabled.png"
+                icon="icons/save.png"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.OpenSerialMonitorAction"
+                disabledIcon="icons/ser_mon_disabled.png"
+                icon="icons/ser_mon.png"
+                label="%command.label.2"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.OpenPlotterAction"
+                icon="icons/toolbar_plotter.png"
+                label="%OpenPlotter.label"
+                style="push">
+          </command>
+       </toolbar>
+    </menuContribution>
+    <menuContribution
+          locationURI="menu:org.eclipse.ui.main.menu??after=Run">
+       <menu
+             label="A&amp;rduino">
+          <visibleWhen
+                checkEnabled="false">
+             <reference
+                   definitionId="io.sloeber.definition.isArduinoPerspective">
+             </reference>
+          </visibleWhen>
+          <command
+                commandId="io.sloeber.actions.ArduinoBuildAction"
+                id="buildProject">
+          </command>
+          <command
+                commandId="io.sloeber.actions.UploadprojectAction"
+                id="UploadprojectAction"
+                tooltip="%command.tooltip">
+          </command>
+          <command
+                commandId="io.sloeber.actions.NewSketchAction"
+                id="NewSketchAction">
+          </command>
+          <command
+                commandId="io.sloeber.actions.OpenSerialMonitorAction"
+                id="OpenSerialMonitorAction">
+          </command>
+          <command
+                commandId="io.sloeber.actions.OpenPlotterAction"
+                id="OpenPlotterAction">
+          </command>
+          <command
+                commandId="io.sloeber.actions.AddLibraryAction"
+                id="AddLibraryAction"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.AddSourceFolderAction"
+                id="AddSourceFolderAction"
+                style="push">
+          </command>
+          <command
+                commandId="io.sloeber.actions.ReattachLibraries"
+                id="ReattachLibrariesAction"
+                style="push">
+          </command>
+          <separator
+                name="io.sloeber.core.separator1"
+                visible="true">
+          </separator>
+          <command
+                commandId="io.sloeber.core.open.link"
+                id="open.how.toweb.page"
+                label="How To..."
+                style="push">
+             <parameter
+                   name="io.sloeber.core.link.parameter"
+                   value="http://eclipse.baeyens.it/how_to.shtml">
+             </parameter>
+          </command>
+          <command
+                commandId="io.sloeber.core.open.link"
+                id="open.how.toweb.page"
+                label="Learn..."
+                style="push">
+             <parameter
+                   name="io.sloeber.core.link.parameter"
+                   value="http://eclipse.baeyens.it/learn.shtml">
+             </parameter>
+          </command>
+          <command
+                commandId="io.sloeber.core.open.link"
+                id="open.youTube.page"
+                label="Videos..."
+                style="push">
+             <parameter
+                   name="io.sloeber.core.link.parameter"
+                   value="https://www.youtube.com/playlist?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF">
+             </parameter>
+          </command>
+       </menu>
+    </menuContribution>
+ </extension>
+  <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension
+          targetID="io.sloeber.application.perspective">
+       <newWizardShortcut
+             id="io.sloeber.eclipse.NewArduinoSketchWizard">
+       </newWizardShortcut>
+    </perspectiveExtension>
+ </extension>
+  <extension
+       point="org.eclipse.ui.navigator.navigatorContent">
+    <commonWizard
+          type="new"
+          wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
+       <enablement>
+          <or>
+             <adapt
+                   type="org.eclipse.core.resources.IProject">
+             </adapt>
+             <adapt
+                   type="org.eclipse.core.resources.IWorkspaceRoot">
+             </adapt>
+          </or>
+       </enablement>
+    </commonWizard>
+ </extension>
+   <extension
+        point="org.eclipse.cdt.ui.cPropertyTab">
+     <tab
+           class="io.sloeber.ui.project.properties.BoardSelectionPage"
+           icon="icons/arduino.png"
+           name="Arduino board selection"
+           parent="io.sloeber.ui.project.properties.PropertyPage"
+           weight="050">
+     </tab>
+     <tab
+           class="io.sloeber.ui.project.properties.CompileProperties"
+           icon="icons/verify.png"
+           name="Compile Options"
+           parent="io.sloeber.ui.project.properties.PropertyPage"
+           weight="050">
+     </tab>
+  </extension>
+      <extension
+          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+       <launchConfigurationTabGroup
+             class="io.sloeber.core.ui.launchconfig.LaunchConfigurationTabGroup"
+             id="io.sloeber.ui.launchconfig.arduinoLaunchConfigurationTabGroup"
+             type="io.sloeber.tools.arduinoLaunchConfiguration">
+          <launchMode
+                mode="run">
+          </launchMode>
+          <launchMode
+                mode="debug">
+          </launchMode>
+       </launchConfigurationTabGroup>
+    </extension>
+        <extension
+          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+       <launchConfigurationTypeImage
+             configTypeID="io.sloeber.tools.arduinoLaunchConfiguration"
+             icon="icons/16px-upload.png"
+             id="io.sloeber.tools.arduinoLaunchConfigurationTypeImages">
+       </launchConfigurationTypeImage>
+    </extension>
+        <extension
+          point="org.eclipse.debug.ui.launchShortcuts">
+       <shortcut
+             class="io.sloeber.core.ui.launchconfig.LaunchShortcut"
+             icon="icons/16px-upload.png"
+             id="io.sloeber.ui.launchconfig.launchShortcut"
+             label="Arduino Launch"
+             modes="run, debug">
+          <contextualLaunch>
+             <enablement>
+                <with
+                      variable="selection">
+                   <count
+                         value="1">
+                   </count>
+                   <iterate>
+                      <or>
+                         <test
+                               forcePluginActivation="false"
+                               property="org.eclipse.debug.ui.matchesPattern"
+                               value="*.ino">
+                         </test>
+                      </or>
+                   </iterate>
+                </with>
+             </enablement>
+          </contextualLaunch>
+       </shortcut>
+    </extension>
+</plugin>

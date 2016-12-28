@@ -34,6 +34,6 @@
     </distributionManagement>
   
   <modules>
-    <module>it.baeyens.arduino.parent</module>
+    <module>io.sloeber.parent</module>
   </modules>
 </project>

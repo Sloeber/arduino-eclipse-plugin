@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>io.sloeber.feature</name>
+	<comment></comment>
+	<projects>
+		<project>io.sloeber.common</project>
+		<project>io.sloeber.core</project>
+		<project>io.sloeber.avreclipse.core</project>
+		<project>io.sloeber.avreclipse.core.managedbuildsystem</project>
+		<project>io.sloeber.avreclipse.ui</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.pde.FeatureBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.pde.FeatureNature</nature>
+	</natures>
+</projectDescription>

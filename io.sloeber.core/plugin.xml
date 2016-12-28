@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.6"?>
+<plugin>
+<!-- 
+####################################################################################### 
+####################################################################################### 
+##                                                                                   ##
+##   Extension Points                                                                ## 
+##                                                                                   ##
+####################################################################################### 
+####################################################################################### 
+-->
+
+<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
+<provider
+      class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
+      id="io.sloeber.languageSettingsProvider"
+      name="Arduino Compiler Settings"
+      parameter='${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"'
+      prefer-non-shared="true">
+<language-scope id="org.eclipse.cdt.core.gcc"/>
+<language-scope id="org.eclipse.cdt.core.g++"/>
+</provider>
+</extension>
+
+
+
+
+	<!-- C++ Projects -->
+
+
+
+<!-- 
+####################################################################################### 
+#    Arduino Nature                                                                       # 
+####################################################################################### 
+-->
+ 	<extension point="org.eclipse.core.resources.natures"
+ 		id="io.sloeber.arduinonature" 
+ 		name="arduinoNature" >
+       <runtime>
+           <run class="io.sloeber.core.natures.ArduinoNature" />
+       </runtime>
+       <requires-nature id="org.eclipse.cdt.core.cnature"/>
+       <requires-nature
+             id="org.eclipse.cdt.core.ccnature">
+       </requires-nature>
+   </extension>
+<!--
+####################################################################################### 
+#    Property Pages                                                                   # 
+####################################################################################### 
+-->
+	
+  
+
+   
+<!--
+####################################################################################### 
+#    Wizard Pages                                                                     # 
+####################################################################################### 
+-->
+
+<!-- New sketch wizard -->
+
+<!-- Arduino Library import wizard -->
+
+
+<!--
+####################################################################################### 
+#    Preference Pages                                                                 # 
+####################################################################################### 
+-->
+
+<!--
+####################################################################################### 
+#    Launch Configuration                                                             #
+####################################################################################### 
+-->
+<!-- Arduino Launch Configuration -->
+    <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="io.sloeber.core.api.LaunchConfiguration"
+            id="io.sloeber.tools.arduinoLaunchConfiguration"
+            modes="run, debug"
+            name="Arduino Launch"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+
+<!-- Launch Configuration Tab Group -->
+   
+<!-- Launch Configuration Image -->
+   
+<!-- Launch Shortcut -->
+   
+<!--
+####################################################################################### 
+#    Arduino Plugin Commands                                                              # 
+####################################################################################### 
+-->
+
+<!-- Definition to know if the active perspective is Arduino -->
+<extension point="org.eclipse.core.expressions.definitions">
+  <definition id="io.sloeber.definition.isArduinoPerspective">
+    <with variable="activeWorkbenchWindow.activePerspective">
+       <or>
+          <equals
+                value="io.sloeber.application.perspective">
+          </equals>
+          <equals
+                value="org.eclipse.cdt.ui.CPerspective">
+          </equals></or>
+    </with>
+  </definition>
+</extension>
+
+
+<!--
+####################################################################################### 
+#    Action Sets (Toolbar & Main Menu)                                                # 
+####################################################################################### 
+-->
+
+<!-- Menu -->  	
+
+<!-- Toolbar --> 
+ <!-- ******************* -->
+<!-- ******************* -->
+<!-- ******************* -->
+ 
+ 
+<!-- 
+				icon="icons/upload.gif" 
+				icon="icons/newSketch.gif"
+				icon="icons/openSerial.gif"
+ 
+
+
+####################################################################################### 
+####################################################################################### 
+##                                                                                   ##
+##   BuildDef                                                                        ##
+##                                                                                   ## 
+####################################################################################### 
+####################################################################################### 
+-->
+ 
+	<extension id="io.sloeber.builddef"
+        point="org.eclipse.cdt.managedbuilder.core.buildDefinitions"
+		name="%extension.name.0" >
+		
+
+<!-- 
+####################################################################################### 
+#    AVR-GCC Compiler                                                                  # 
+####################################################################################### 
+-->
+		<builder
+        autoBuildTarget="all"
+        buildfileGenerator="io.sloeber.core.toolchain.ArduinoGnuMakefileGenerator"
+        cleanBuildTarget="clean"
+        command="${JANTJE.MAKE_LOCATION}make"
+        errorParsers="org.eclipse.cdt.core.MakeErrorParser"
+        id="io.sloeber.gnu.builder"
+        ignoreErrCmd="-k"
+        incrementalBuildTarget="all"
+        isAbstract="true"
+        isVariableCaseSensitive="false"
+        macroInputDirRelPathValue="$(dir $&lt;)"
+        macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
+        macroInputFileExtValue="$(suffix $(notdir $&lt;))"
+        macroInputFileNameValue="$(notdir $&lt;)"
+        macroInputFileRelPathValue="$&lt;"
+        macroOutputDirRelPathValue="$(dir $@)"
+        macroOutputFileBaseNameValue="$(basename (notdir $@))"
+        macroOutputFileExtValue="$(suffix $(notdir $@)"
+        macroOutputFileNameValue="$(notdir $@)"
+        macroOutputFileRelPathValue="$@"
+        name="%builder.name"
+        parallelBuildCmd="-j*"
+        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
+        variableFormat="${=}">
+  </builder>
+  <projectType
+        id="io.sloeber.core.sketch"
+        name="%projectType.name">
+     
+     <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
+     <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
+     <!-- TODO: Consider renaming as base. -->
+     <configuration
+           artifactExtension="hex"
+           cleanCommand="rm -f"
+           id="io.sloeber.core.configuration.release"
+           languageSettingsProviders="io.sloeber.languageSettingsProvider"
+           name="%configuration.name"
+           prebuildStep="io.sloeber.core.command.generate.cpp">
+        <toolChain
+              archList="all"
+              id="io.sloeber.core.toolChain.release"
+              isAbstract="false"
+              languageSettingsProviders="io.sloeber.languageSettingsProvider"
+              name="%toolChain.name"
+              osList="all"
+              targetTool="io.sloeber.tool.size">
+           <targetPlatform
+                 archList="all"
+                 binaryParser="org.eclipse.cdt.core.ELF"
+                 id="io.sloeber.targetplatform"
+                 name="%targetPlatform.name"
+                 osList="all">
+           </targetPlatform>
+           <builder
+                 id="io.sloeber.sketch.builder"
+                 name="%builder.name.0"
+                 superClass="io.sloeber.gnu.builder">
+           </builder>
+           <optionCategory
+                 id="io.sloeber.core.optionCategory.includePaths"
+                 name="%optionCategory.name">
+           </optionCategory>
+           <tool
+                 announcement="%tool.Arduino.CPP.announcement"
+                 command="${A.RECIPE.CPP.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="io.sloeber.tool.sketch.compiler.cpp"
+                 name="%tool.Arduino.CPP2O.name"
+                 natureFilter="both">
+              <optionCategory
+                    id="io.sloeber.core.cpp.optionCategory.includePaths"
+                    name="%optionCategory.include.name">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="io.sloeber.core.cpp.optionCategory.includePaths"
+                    command="-I"
+                    id="io.sloeber.compiler.cpp.sketch.option.incpath"
+                    name="%option.include.path.name"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
+              <inputType
+                    buildVariable="CPP_SKETCH_FILES"
+                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
+                    id="io.sloeber.compiler.cpp.sketch.input"
+                    name="%inputType.CPP.name"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.cxxSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="io.sloeber.compiler.cpp.sketch.link.output"
+                    name="%outputType.CPP.link.name"
+                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="io.sloeber.compiler.cpp.ar.output"
+                    name="%outputType.CPP.AR.name"
+                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.Arduino.C.announcement"
+                 command="${A.RECIPE.C.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="io.sloeber.tool.compiler.c"
+                 name="%tool.Arduino.C2O.name"
+                 natureFilter="both">
+              <optionCategory
+                    id="io.sloeber.core.c.optionCategory.includePaths"
+                    name="%optionCategory.include.name">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="io.sloeber.core.c.optionCategory.includePaths"
+                    command="-I"
+                    id="io.sloeber.compiler.c.sketch.option.incpath"
+                    name="%option.include.path.name"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
+              <inputType
+                    buildVariable="C_SKETCH_FILES"
+                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cHeader"
+                    id="io.sloeber.compiler.c.sketch.input"
+                    multipleOfType="false"
+                    name="%inputType.C.name"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.cSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="io.sloeber.compiler.c.link.output"
+                    name="%outputType.C.link.name"
+                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="io.sloeber.compiler.c.ar.output"
+                    name="%outputType.C.AR.name"
+                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.Arduino.S.announcement"
+                 command="${A.RECIPE.S.O.PATTERN}"
+                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.S.COMPILE}"
+                 errorParsers="org.eclipse.cdt.core.GCCErrorParser"
+                 id="io.sloeber.tool.sketch.compiler.s"
+                 name="%tool.Arduino.S20.name"
+                 natureFilter="both">
+              <optionCategory
+                    id="io.sloeber.core.asm.optionCategory.includePaths"
+                    name="%optionCategory.include.name">
+              </optionCategory>
+              <option
+                    browseType="directory"
+                    category="io.sloeber.core.asm.optionCategory.includePaths"
+                    command="-I"
+                    id="io.sloeber.compiler.asm.sketch.option.incpath"
+                    name="%option.include.path.name"
+                    resourceFilter="project"
+                    valueType="includePath">
+              </option>
+              <inputType
+                    buildVariable="S_SKETCH_FILES"
+                    dependencyCalculator="io.sloeber.core.toolchain.ArduinoDependencyCalculator"
+                    dependencyContentType="org.eclipse.cdt.core.cxxHeader"
+                    id="io.sloeber.compiler.S.sketch.input"
+                    name="%inputType.Asembly.name"
+                    primaryInput="true"
+                    sourceContentType="org.eclipse.cdt.core.asmSource">
+              </inputType>
+              <outputType
+                    buildVariable="LINK_OBJ"
+                    id="io.sloeber.compiler.S.sketch.link.output"
+                    name="%outputType.S.link.name"
+                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+              <outputType
+                    buildVariable="AR_OBJ"
+                    id="io.sloeber.compiler.S.ar.output"
+                    name="%outputType.S.AR.name"
+                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    outputs="o"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.Arduino.archiver.announcement"
+                 command="${A.RECIPE.AR.PATTERN}"
+                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE_PATH} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3}"
+                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
+                 id="io.sloeber.tool.ar"
+                 name="%tool.name.1">
+              <outputType
+                    buildVariable="AR"
+                    id="io.sloeber.tool.archiver.output"
+                    name="%outputType.name.3"
+                    outputNames="${A.ARCHIVE_FILE_PATH}"
+                    outputs="ar"
+                    primaryOutput="true">
+              </outputType>
+              <inputType
+                    assignToOption="A.OBJECT_FILE"
+                    buildVariable="AR_OBJ"
+                    id="io.sloeber.tool.archiver.input"
+                    multipleOfType="true"
+                    name="%inputType.name.1"
+                    primaryInput="false"
+                    sources="o">
+              </inputType>
+           </tool>
+           <tool
+                 announcement="%tool.Arduino.combiner.announcement"
+                 command="${A.RECIPE.C.COMBINE.PATTERN}"
+                 commandLinePattern="${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3}"
+                 errorParsers="org.eclipse.cdt.core.GLDErrorParser"
+                 id="io.sloeber.tool.combine"
+                 name="%tool.name.2"
+                 natureFilter="both">
+              <outputType
+                    buildVariable="ELF"
+                    id="io.sloeber.tool.combiner.output"
+                    name="%outputType.name.4"
+                    outputNames="${ProjName}.elf"
+                    outputs="elf"
+                    primaryOutput="true">
+              </outputType>
+              <inputType
+                    buildVariable="LINK_OBJ"
+                    id="io.sloeber.tool.combiner.ob.input"
+                    multipleOfType="true"
+                    name="%inputType.name.2"
+                    primaryInput="true"
+                    sources="O">
+              </inputType>
+              <inputType
+                    buildVariable="AR"
+                    id="io.sloeber.tool.combiner.archiver.input"
+                    multipleOfType="true"
+                    sourceContentType="io.sloeber.tool.archiver.output"
+                    sources="ar">
+              </inputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.3"
+                 command="all objcopy commands"
+                 commandLinePattern="${JANTJE.OBJCOPY}"
+                 id="io.sloeber.tool.objcopy.eep"
+                 isAbstract="false"
+                 name="%tool.name.3"
+                 natureFilter="both">
+              <inputType
+                    buildVariable="ELF"
+                    dependencyExtensions="elf"
+                    id="io.sloeber.tool.objcopy.eep.input"
+                    multipleOfType="true"
+                    name="%inputType.name.3"
+                    primaryInput="true"
+                    sourceContentType="io.sloeber.tool.combiner.output"
+                    sources="elf">
+              </inputType>
+              <outputType
+                    buildVariable="HEX"
+                    id="io.sloeber.tool.objcopy.output"
+                    multipleOfType="false"
+                    name="%outputType.name.5"
+                    outputNames="${ProjName}.hex"
+                    outputs="hex">
+              </outputType>
+           </tool>
+           <tool
+                 announcement="%tool.announcement.5"
+                 command="${JANTJE.SIZE.SWITCH} "
+                 commandLinePattern="${COMMAND}"
+                 id="io.sloeber.tool.size"
+                 name="%tool.name.5">
+              <inputType
+                    buildVariable="HEX"
+                    dependencyExtensions="hex"
+                    id="io.sloeber.tool.size.input"
+                    multipleOfType="true"
+                    primaryInput="true"
+                    sourceContentType="io.sloeber.tool.objcopy.output">
+              </inputType>
+              <outputType
+                    buildVariable="SIZEDUMMY"
+                    id="io.sloeber.tool.size.output"
+                    multipleOfType="false"
+                    outputNames="sizedummy"
+                    outputs="${project}.size"
+                    primaryOutput="true">
+              </outputType>
+           </tool>
+        </toolChain>
+     </configuration>
+  </projectType>
+
+	</extension>
+
+
+
+
+<!-- 
+####################################################################################### 
+#    Content Types                                                                    # 
+####################################################################################### 
+-->
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes">
+    <content-type
+          base-type="org.eclipse.core.runtime.text"
+          file-extensions="eep"
+          id="io.sloeber.contenttype.eeprom"
+          name="%content-type.name">
+    </content-type>
+		<content-type id="io.sloeber.contenttype.hex"
+			base-type="org.eclipse.core.runtime.text"
+			file-extensions="hex"
+			name="%content-type.name.0">
+		</content-type>
+	</extension>
+
+<!-- 
+####################################################################################### 
+#    ino and pde association  
+#   this makes that the *.ino and *.pde files are treated as cpp files                
+# 
+####################################################################################### 
+-->
+ <extension point="org.eclipse.core.contenttype.contentTypes">
+
+<!-- declares a content type for ino and pde source files -->
+<content-type id="cxxSource" name="%cxxSourceName"
+base-type="org.eclipse.cdt.core.cSource"
+file-extensions="ino,pde"
+priority="high"/>
+ </extension>
+ <extension
+       id="io.sloeber.core.inoToCpp"
+       name="Convert Ino to CPP files"
+       point="org.eclipse.core.resources.builders">
+    <builder
+          callOnEmptyDelta="true"
+          hasNature="false"
+          isConfigurable="false"
+          supportsConfigurations="true">
+       <run
+             class="io.sloeber.core.builder.inoToCpp">
+       </run>
+    </builder>
+ </extension>
+ 
+</plugin>
+
+
+
+		
+		
