@@ -32,12 +32,13 @@ Trump211
    </license>
 
    <url>
-      <update label="Sloeber V3 update site" url="http://eclipse.baeyens.it/V3/"/>
+      <update label="Sloeber V4 update site" url="http://sloeber.io/gnuarmeclipse/stable"/>
       <discovery label="jan&apos;s site with plenty of documentation" url="http://eclipse.baeyens.it/"/>
    </url>
 
    <requires>
       <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
+      <import plugin="ilg.gnuarmeclipse.debug.gdbjtag.openocd"/>
    </requires>
 
    <plugin
