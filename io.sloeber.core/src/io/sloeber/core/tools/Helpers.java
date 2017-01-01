@@ -86,8 +86,6 @@ public class Helpers extends Common {
 	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\""; //$NON-NLS-1$
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME //$NON-NLS-1$
 			+ "/syscalls_mtk.c.o\""; //$NON-NLS-1$
-	private static final String minusG = "-g "; //$NON-NLS-1$
-	private static final String minusG2 = "-g2 "; //$NON-NLS-1$
 	private static final String ENV_KEY_ARCHITECTURE = ERASE_START + "ARCHITECTURE"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_VARIANT = ERASE_START + "BUILD.VARIANT"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_BUILD_VARIANT = ERASE_START + "JANTJE.BUILD_VARIANT"; //$NON-NLS-1$
@@ -1189,47 +1187,6 @@ public class Helpers extends Common {
 		ret = ret.replaceAll("  ", " ");
 
 		return ret;
-	}
-
-	/**
-	 * Converts the CPP and C compiler flags to not optimize for space/size and
-	 * to leave symbols in. These changes allow step through debugging with JTAG
-	 * and Dragon AVR
-	 *
-	 * @param confDesc
-	 * @param envManager
-	 * @param contribEnv
-	 */
-	// TODO reimplement this debug code one way or another
-
-	private static void setTheEnvironmentVariablesModifyDebugCompilerSettings(ICConfigurationDescription confDesc,
-			IEnvironmentVariableManager envManager, IContributedEnvironment contribEnv) {
-
-		// Modify the compiler flags for the debug configuration
-		// Replace "-g" with "-g2"
-		// Replace "-Os" with ""
-		// TODO: This should move to another location eventually -- a bit hacky
-		// here (considering other env vars come from other -- a little bit
-		// magical -- places).
-		// I couldn't easily determine where that magic happened :(
-		IEnvironmentVariable original = null;
-		IEnvironmentVariable replacement = null;
-
-		original = envManager.getVariable(ERASE_START + "COMPILER.C.FLAGS", confDesc, true); //$NON-NLS-1$
-		if (original != null) {
-			replacement = new EnvironmentVariable(original.getName(),
-					original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
-					original.getOperation(), original.getDelimiter());
-			contribEnv.addVariable(replacement, confDesc);
-		}
-
-		original = envManager.getVariable(ERASE_START + "COMPILER.CPP.FLAGS", confDesc, true); //$NON-NLS-1$
-		if (original != null) {
-			replacement = new EnvironmentVariable(original.getName(),
-					original.getValue().replace(minusG, minusG2).replaceFirst("-O.? ", SPACE), //$NON-NLS-1$
-					original.getOperation(), original.getDelimiter());
-			contribEnv.addVariable(replacement, confDesc);
-		}
 	}
 
 	/**
