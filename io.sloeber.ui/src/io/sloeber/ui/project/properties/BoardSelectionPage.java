@@ -296,7 +296,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 
 		this.mComposite.layout(true, true);
-		this.mComposite.getShell().pack();
+		this.mComposite.requestLayout();
+		// this.mComposite.getShell().pack();
+		// this.mComposite.getShell().redraw();
+
 	}
 
 	@Override
