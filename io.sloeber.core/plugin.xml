@@ -319,7 +319,7 @@
            <tool
                  announcement="%tool.Arduino.S.announcement"
                  command="${A.RECIPE.S.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.S.COMPILE}"
+                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3} ${JANTJE.WARNING_LEVEL}  ${JANTJE.EXTRA.S.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"
