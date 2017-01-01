@@ -358,7 +358,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 						curLabelCombo
 								.setValue(this.myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
 					} catch (Exception e) {
-
+						// When this fails no default value will be set
+						// so nothing to do here
 					}
 				}
 			}
