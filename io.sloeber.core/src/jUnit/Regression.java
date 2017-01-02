@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -45,7 +44,7 @@ public class Regression {
 	}
 
 	/**
-	 * Test wether a json redirect is handled properly
+	 * Test wether a platform json redirect is handled properly
 	 * https://github.com/jantje/arduino-eclipse-plugin/issues/393
 	 */
 	@SuppressWarnings("static-method")
@@ -63,6 +62,10 @@ public class Regression {
 		CreateAndCompile.BuildAndVerify(boardid);
 	}
 
+	/**
+	 * make sure when switching between a board with variant file and without
+	 * the build still succeeds
+	 */
 	@SuppressWarnings("static-method")
 	@Test
 	public void issue555() {
@@ -82,7 +85,7 @@ public class Regression {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,9 +114,14 @@ public class Regression {
 		}
 	}
 
+	/**
+	 * This test will fail if the arduino compile option are not taken into
+	 * account To do sa a bunch of defines are added to the command line and the
+	 * code checks whether these defines are set properly
+	 */
 	@SuppressWarnings("static-method")
 	@Test
-	public void are_defines_found() {
+	public void are_jantjes_options_taken_into_account() {
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -125,18 +133,14 @@ public class Regression {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-
-			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
-			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
-			ICConfigurationDescription confDesc = prjCDesc.getActiveConfiguration();
-
-			CompileOptions compileOptions = new CompileOptions(confDesc);
+			CompileOptions compileOptions = new CompileOptions(null);
 			compileOptions.setMyAditional_C_andCPP_CompileOptions("-DTEST_C_CPP");
 			compileOptions.setMyAditional_C_CompileOptions("-DTEST_C");
 			compileOptions.setMyAditional_CPP_CompileOptions("-DTEST_CPP");
-			compileOptions.save(confDesc);
-			prjCDesc.setActiveConfiguration(confDesc);
+			theTestProject = unoBoardid.createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
+			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
+
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
 					null);
 			Shared.waitForAllJobsToFinish(); // for the indexer
@@ -144,6 +148,76 @@ public class Regression {
 			if (Shared.hasBuildErrors(theTestProject)) {
 				fail("Failed to compile the project:" + projectName
 						+ " The defines have not been taken into account properly");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to create the project:" + projectName);
+			return;
+		}
+	}
+
+	/**
+	 * If a .ino file is including a include using extern C is this handled
+	 * properly by the ino to cpp parser
+	 */
+	@SuppressWarnings("static-method")
+	@Test
+	public void are_defines_before_includes_taken_into_account() {
+		Map<String, String> unoOptions = new HashMap<>();
+		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"uno", unoOptions);
+
+		IProject theTestProject = null;
+		String projectName = "externc";
+		IPath templateFolder = Shared.getTemplateFolder(projectName);
+		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+
+		NullProgressMonitor monitor = new NullProgressMonitor();
+		try {
+
+			theTestProject = unoBoardid.createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+
+			Shared.waitForAllJobsToFinish(); // for the indexer
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+			if (Shared.hasBuildErrors(theTestProject)) {
+				fail("Failed to compile the project:" + projectName
+						+ " extern \"C\" has not been taken into account properly.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to create the project:" + projectName);
+			return;
+		}
+	}
+
+	/**
+	 * If a .ino file is defining defines before including a include this should
+	 * be handled properly by the ino to cpp parser
+	 */
+	@SuppressWarnings("static-method")
+	@Test
+	public void is_extern_C_taken_into_account() {
+		Map<String, String> unoOptions = new HashMap<>();
+		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"uno", unoOptions);
+
+		IProject theTestProject = null;
+		String projectName = "defines_and_includes";
+		IPath templateFolder = Shared.getTemplateFolder(projectName);
+		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+
+		NullProgressMonitor monitor = new NullProgressMonitor();
+		try {
+
+			theTestProject = unoBoardid.createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+
+			Shared.waitForAllJobsToFinish(); // for the indexer
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+			if (Shared.hasBuildErrors(theTestProject)) {
+				fail("Failed to compile the project:" + projectName
+						+ " defines have not been taken into account properly.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

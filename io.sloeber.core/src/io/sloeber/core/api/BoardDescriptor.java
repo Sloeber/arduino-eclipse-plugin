@@ -12,7 +12,6 @@ import java.util.TreeMap;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -162,7 +161,7 @@ public class BoardDescriptor {
 	 */
 	public IProject createProject(String projectName, URI projectURI,
 			ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds, CodeDescriptor codeDescription,
-			IProgressMonitor monitor) throws Exception {
+			CompileOptions compileOptions, IProgressMonitor monitor) throws Exception {
 		IProject projectHandle;
 		projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(projectName));
 
@@ -192,7 +191,9 @@ public class BoardDescriptor {
 
 		for (ConfigurationDescriptor curConfig : cfgNamesAndTCIds) {
 			ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.configName);
+			compileOptions.save(configurationDescription);
 			save(configurationDescription);
+
 		}
 
 		// Set the path variables
@@ -204,8 +205,6 @@ public class BoardDescriptor {
 		ICConfigurationDescription defaultConfigDescription = prjCDesc
 				.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
-
-
 
 		ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
 				true);
@@ -235,13 +234,6 @@ public class BoardDescriptor {
 		} else {
 			// this should not happen
 		}
-
-		// set warning levels default on
-		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_WARNING_LEVEL,
-				Const.ENV_KEY_WARNING_LEVEL_ON);
-		contribEnv.addVariable(var, cfgd.getConfiguration());
 
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 		prjCDesc.setCdtProjectCreated();

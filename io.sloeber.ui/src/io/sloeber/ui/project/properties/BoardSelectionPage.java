@@ -325,7 +325,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 
 		this.mComposite.layout(true, true);
-		this.mComposite.getShell().pack();
+		this.mComposite.requestLayout();
+		// this.mComposite.getShell().pack();
+		// this.mComposite.getShell().redraw();
+
 	}
 
 	@Override
@@ -387,7 +390,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 						curLabelCombo
 								.setValue(this.myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
 					} catch (Exception e) {
-
+						// When this fails no default value will be set
+						// so nothing to do here
 					}
 				}
 			}

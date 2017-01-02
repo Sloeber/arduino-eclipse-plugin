@@ -3,6 +3,7 @@ package io.sloeber.core.api;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICModelMarker;
@@ -173,7 +174,12 @@ public class Sketch {
 
 	public static Map<String, IPath> getAllAvailableLibraries(IProject project) {
 		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-		return Libraries.getAllInstalledLibraries(prjDesc.getActiveConfiguration());
+		if (prjDesc != null) {
+			return Libraries.getAllInstalledLibraries(prjDesc.getActiveConfiguration());
+		}
+		Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+				"Is the selected project a C/Cpp project? " + project.getName(), null)); //$NON-NLS-1$
+		return new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	}
 
 	public static Set<String> getAllImportedLibraries(IProject project) {
