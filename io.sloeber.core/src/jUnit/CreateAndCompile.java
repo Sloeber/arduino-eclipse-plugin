@@ -20,6 +20,7 @@ import org.junit.runners.Parameterized;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 
 @SuppressWarnings("nls")
@@ -505,10 +506,9 @@ public class CreateAndCompile {
 				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
 				"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
-				// "https://sourceforge.net does not work
-				// "https://sourceforge.net/projects/simba-arduino/files/avr/package_simba_avr_index.json",
-				// "https://sourceforge.net/projects/simba-arduino/files/esp/package_simba_esp_index.json",
-				// "https://sourceforge.net/projects/simba-arduino/files/sam/package_simba_sam_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
 				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
@@ -540,7 +540,7 @@ public class CreateAndCompile {
 		try {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
-					codeDescriptor, monitor);
+					codeDescriptor, new CompileOptions(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
