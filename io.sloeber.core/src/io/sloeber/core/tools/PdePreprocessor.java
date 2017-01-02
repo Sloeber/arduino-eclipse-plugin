@@ -140,6 +140,7 @@ public class PdePreprocessor {
 
 						// find all the macro's
 						List<ICElement> theMacros = tu.getChildrenOfType(ICElement.C_MACRO);
+						String fileContent = new String(tu.getContents());
 
 						// list all includes found in the source files.
 						IInclude includes[] = tu.getIncludes();
@@ -159,17 +160,19 @@ public class PdePreprocessor {
 							}
 
 							prefHeaderLine = curHeaderLine;
-
-							includeHeaderPart += include.getSource();
-							includeHeaderPart += NEWLINE;
-						}
-						if (includes.length > 0) {
-							String fileContent = new String(tu.getContents());
-							if (fileContent.contains("extern \"C\"")) {//$NON-NLS-1$
-								includeHeaderPart = "#warning \"extern \\\"C\\\" may cause issues in ino files.\"" //$NON-NLS-1$
-										+ NEWLINE + includeHeaderPart;
+							String regex = "extern\\s\"C\"\\s?\\{[^\\}]*" + include.getSource(); //$NON-NLS-1$
+							String[] parts = fileContent.split(regex);
+							if (parts.length > 1) {
+								includeHeaderPart += "extern \"C\" {" + NEWLINE; //$NON-NLS-1$
+								includeHeaderPart += include.getSource() + NEWLINE;
+								includeHeaderPart += "}" + NEWLINE; //$NON-NLS-1$
+							} else {
+								includeHeaderPart += include.getSource();
+								includeHeaderPart += NEWLINE;
 							}
+
 						}
+
 					}
 				}
 			}
