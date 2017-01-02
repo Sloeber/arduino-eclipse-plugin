@@ -1,8 +1,10 @@
 package io.sloeber.ui.project.properties;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
@@ -101,12 +103,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 				BoardSelectionPage.this.mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
 
-			BoardSelectionPage.this.BoardModifyListener.handleEvent(null);
+			BoardSelectionPage.this.boardModifyListener.handleEvent(null);
 		}
 
 	};
 
-	protected Listener BoardModifyListener = new Listener() {
+	protected Listener boardModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 
@@ -118,10 +120,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			}
 
 			isPageComplete();
-			EnableControls();
+			enableControls();
 		}
 	};
-	protected Listener labelcomboListener = new Listener() {
+	protected Listener labelComboListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 			isPageComplete();
@@ -131,6 +133,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	private int mNumBoardsFiles;
 
 	private Composite mComposite;
+
+	private String[] mAllBoardsFileNames;
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -170,7 +174,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		composite.setLayout(theGridLayout);
 
 		GridData theGriddata;
-		String[] mAllBoardsFileNames = BoardsManager.getAllBoardsFiles();
+		mAllBoardsFileNames = BoardsManager.getAllBoardsFiles();
 		this.mNumBoardsFiles = mAllBoardsFileNames.length;
 		if (mAllBoardsFileNames.length == 0) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
@@ -181,9 +185,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		case 0:
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
 			break;
-		case 1: {
-			break;
-		}
 		default: {
 			// create a combo to select the boards
 			createLabel(composite, this.ncol, "The boards.txt file you want to use"); //$NON-NLS-1$
@@ -198,7 +199,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		theGriddata.horizontalSpan = (this.ncol - 1);
 		this.mControlBoardsTxtFile.setLayoutData(theGriddata);
 		this.mControlBoardsTxtFile.setEnabled(false);
-		this.mControlBoardsTxtFile.setItems(mAllBoardsFileNames);
+		this.mControlBoardsTxtFile.setItems(tidyUpLength(mAllBoardsFileNames));
 
 		createLine(composite, this.ncol);
 		// -------
@@ -238,7 +239,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		for (Map.Entry<String, String> curMenu : menus.entrySet()) {
 			this.mBoardOptionCombos[index] = new LabelCombo(composite, curMenu.getValue(),
 					curMenu.getKey().toUpperCase(), this.ncol - 1, true);
-			this.mBoardOptionCombos[index++].addListener(this.labelcomboListener);
+			this.mBoardOptionCombos[index++].addListener(this.labelComboListener);
 
 		}
 
@@ -251,13 +252,42 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mFeedbackControl.setLayoutData(theGriddata);
 		// End of special controls
 
+		this.mControlBoardsTxtFile.select(0);
+		this.boardFileModifyListener.handleEvent(null);
 		setValues(confdesc);
 
-		this.mcontrolBoardName.addListener(SWT.Modify, this.BoardModifyListener);
+		this.mcontrolBoardName.addListener(SWT.Modify, this.boardModifyListener);
 		this.mControlBoardsTxtFile.addListener(SWT.Modify, this.boardFileModifyListener);
 
-		EnableControls();
+		// force update to first
+
+		enableControls();
 		Dialog.applyDialogFont(composite);
+	}
+
+	private String[] tidyUpLength(String[] pLongNames) {
+		ArrayList<String> shortNames = new ArrayList<>();
+		for(String longName : pLongNames) {
+			String[] pathParts = longName.split(File.separator);
+			if(pathParts.length > 10) {
+				StringJoiner sj = new StringJoiner(File.separator);
+				sj.add(pathParts[0]);
+				sj.add(pathParts[1]);
+				sj.add(pathParts[2]);
+				sj.add(pathParts[3]);
+				sj.add("...");
+				sj.add(pathParts[pathParts.length - 5]);
+				sj.add(pathParts[pathParts.length - 4]);
+				sj.add(pathParts[pathParts.length - 3]);
+				sj.add(pathParts[pathParts.length - 2]);
+				sj.add(pathParts[pathParts.length - 1]);
+				shortNames.add(sj.toString());
+			} else {
+				shortNames.add(longName);
+			}
+		}
+
+		return shortNames.toArray(new String[0]);
 	}
 
 	public boolean isPageComplete() {
@@ -285,12 +315,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return ret;
 	}
 
-	protected void EnableControls() {
+	protected void enableControls() {
 		this.mcontrolBoardName.setEnabled(true);
 		this.mControlUploadPort.setEnabled(true);
 		this.mControlUploadProtocol.setEnabled(true);
 		this.mControlBoardsTxtFile.setEnabled((this.mNumBoardsFiles > 1));
-		this.mControlBoardsTxtFile.setVisible(this.mNumBoardsFiles > 1);
 		for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 			curLabelCombo.setVisible(true);
 		}
@@ -417,7 +446,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		if (this.mControlBoardsTxtFile == null) {
 			return null;
 		}
-		return new File(this.mControlBoardsTxtFile.getText().trim());
+		int index = this.mControlBoardsTxtFile.getSelectionIndex();
+		return new File(this.mAllBoardsFileNames[index]);
+//		return new File(this.mControlBoardsTxtFile.getText().trim());
 	}
 
 	private String getUpLoadPort() {
