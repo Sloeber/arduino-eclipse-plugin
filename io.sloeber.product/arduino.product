@@ -46,7 +46,6 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    <launcher name="sloeber-ide">
       <linux icon="launch/icon.xpm"/>
       <macosx icon="launch/icon.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="launch/icons.ico"/>
          <bmp/>
@@ -363,56 +362,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
       <repository location="http://download.eclipse.org/eclipse/updates/4.6" enabled="true" />
       <repository location="http://download.eclipse.org/releases/neon" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/nightly" enabled="false" />
