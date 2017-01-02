@@ -20,7 +20,6 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    </aboutInfo>
 
    <configIni use="default">
-      <macosx>/io.sloeber.product/config/mac/config.ini</macosx>
    </configIni>
 
    <launcherArgs>
