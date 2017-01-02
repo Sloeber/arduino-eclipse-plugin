@@ -137,6 +137,7 @@ public class PdePreprocessor {
 
 							}
 						}
+
 						// find all the macro's
 						List<ICElement> theMacros = tu.getChildrenOfType(ICElement.C_MACRO);
 
@@ -165,8 +166,8 @@ public class PdePreprocessor {
 						if (includes.length > 0) {
 							String fileContent = new String(tu.getContents());
 							if (fileContent.contains("extern \"C\"")) {//$NON-NLS-1$
-								includeHeaderPart = "#error \"extern may cause issues in ino files.\"" + NEWLINE //$NON-NLS-1$
-										+ includeHeaderPart;
+								includeHeaderPart = "#warning \"extern \\\"C\\\" may cause issues in ino files.\"" //$NON-NLS-1$
+										+ NEWLINE + includeHeaderPart;
 							}
 						}
 					}

@@ -22,6 +22,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
@@ -122,7 +123,8 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		try {
 			this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
 					(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, new CompileOptions(null),
+					monitor);
 
 		} catch (Exception e) {
 			this.mProject = null;

@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -86,7 +85,7 @@ public class Regression {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -134,18 +133,14 @@ public class Regression {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-
-			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
-			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
-			ICConfigurationDescription confDesc = prjCDesc.getActiveConfiguration();
-
-			CompileOptions compileOptions = new CompileOptions(confDesc);
+			CompileOptions compileOptions = new CompileOptions(null);
 			compileOptions.setMyAditional_C_andCPP_CompileOptions("-DTEST_C_CPP");
 			compileOptions.setMyAditional_C_CompileOptions("-DTEST_C");
 			compileOptions.setMyAditional_CPP_CompileOptions("-DTEST_CPP");
-			compileOptions.save(confDesc);
-			prjCDesc.setActiveConfiguration(confDesc);
+			theTestProject = unoBoardid.createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
+			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
+
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
 					null);
 			Shared.waitForAllJobsToFinish(); // for the indexer
@@ -181,7 +176,7 @@ public class Regression {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -216,7 +211,7 @@ public class Regression {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);

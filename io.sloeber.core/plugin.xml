@@ -224,7 +224,7 @@
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
                  command="${A.RECIPE.CPP.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
+                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.cpp"
                  name="%tool.Arduino.CPP2O.name"
@@ -271,7 +271,7 @@
            <tool
                  announcement="%tool.Arduino.C.announcement"
                  command="${A.RECIPE.C.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.WARNING_LEVEL} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
+                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.compiler.c"
                  name="%tool.Arduino.C2O.name"
@@ -319,7 +319,7 @@
            <tool
                  announcement="%tool.Arduino.S.announcement"
                  command="${A.RECIPE.S.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3} ${JANTJE.WARNING_LEVEL}  ${JANTJE.EXTRA.S.COMPILE}"
+                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3}  ${JANTJE.EXTRA.S.COMPILE}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"

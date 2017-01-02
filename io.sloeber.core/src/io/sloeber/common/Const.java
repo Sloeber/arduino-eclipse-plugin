@@ -79,7 +79,7 @@ public class Const {
 	public static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "SERIAL.PORT.FILE";
 
 	public static final String ENV_KEY_JANTJE_START = "JANTJE.";
-	public static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "WARNING_LEVEL";
+
 	public static final String ENV_KEY_JANTJE_SIZE_COMMAND = ERASE_START + "ALT_SIZE_COMMAND";
 	public static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "SIZE.SWITCH";
 	public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "BOARDS_FILE";
@@ -103,9 +103,6 @@ public class Const {
 	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER";
 	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_JANTJE_START
 			+ "TEMPLATE_USE_DEFAULT";
-
-	public static final String ENV_KEY_WARNING_LEVEL_OFF = " -w ";
-	public static final String ENV_KEY_WARNING_LEVEL_ON = " -Wall ";
 
 	// TOFIX I think the fix below for unix users is no longer needed and we no
 	// longer use the rxtx dll
