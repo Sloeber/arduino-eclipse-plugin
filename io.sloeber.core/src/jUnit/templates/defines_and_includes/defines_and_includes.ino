@@ -4,7 +4,7 @@
 #include "include0.h"
 #define DEFINE_1
 #include "include1.h"
-#define DEFINE_2
+#define DEFINE_2 something
 #include "include2.h"
 #define DEFINE_3
 #include "include3.h"

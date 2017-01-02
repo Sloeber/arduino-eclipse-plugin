@@ -22,14 +22,17 @@ package io.sloeber.core.tools;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IInclude;
+import org.eclipse.cdt.core.model.IMacro;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionDefinition;
 import org.eclipse.core.resources.IFile;
@@ -134,11 +137,37 @@ public class PdePreprocessor {
 
 							}
 						}
+						// find all the macro's
+						List<ICElement> theMacros = tu.getChildrenOfType(ICElement.C_MACRO);
+
 						// list all includes found in the source files.
 						IInclude includes[] = tu.getIncludes();
+						int prefHeaderLine = 0;
 						for (IInclude include : includes) {
+
+							int curHeaderLine = include.getSourceRange().getStartLine();
+
+							for (ICElement curElement : theMacros) {
+								IMacro curMacro = (IMacro) curElement;
+								int curMacroLine = curMacro.getSourceRange().getStartLine();
+
+								if ((curMacroLine < curHeaderLine) && (prefHeaderLine < curMacroLine)) {
+									includeHeaderPart += curMacro.getSource() + NEWLINE;
+
+								}
+							}
+
+							prefHeaderLine = curHeaderLine;
+
 							includeHeaderPart += include.getSource();
 							includeHeaderPart += NEWLINE;
+						}
+						if (includes.length > 0) {
+							String fileContent = new String(tu.getContents());
+							if (fileContent.contains("extern \"C\"")) {//$NON-NLS-1$
+								includeHeaderPart = "#error \"extern may cause issues in ino files.\"" + NEWLINE //$NON-NLS-1$
+										+ includeHeaderPart;
+							}
 						}
 					}
 				}
