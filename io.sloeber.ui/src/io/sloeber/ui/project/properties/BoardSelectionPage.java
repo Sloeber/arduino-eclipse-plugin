@@ -174,14 +174,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		composite.setLayout(theGridLayout);
 
 		GridData theGriddata;
-		mAllBoardsFileNames = BoardsManager.getAllBoardsFiles();
-		this.mNumBoardsFiles = mAllBoardsFileNames.length;
-		if (mAllBoardsFileNames.length == 0) {
+		this.mAllBoardsFileNames = BoardsManager.getAllBoardsFiles();
+		this.mNumBoardsFiles = this.mAllBoardsFileNames.length;
+		if (this.mAllBoardsFileNames.length == 0) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
 					"ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed.")); //$NON-NLS-1$
 		}
 
-		switch (mAllBoardsFileNames.length) {
+		switch (this.mAllBoardsFileNames.length) {
 		case 0:
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
 			break;
@@ -199,7 +199,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		theGriddata.horizontalSpan = (this.ncol - 1);
 		this.mControlBoardsTxtFile.setLayoutData(theGriddata);
 		this.mControlBoardsTxtFile.setEnabled(false);
-		this.mControlBoardsTxtFile.setItems(tidyUpLength(mAllBoardsFileNames));
+		this.mControlBoardsTxtFile.setItems(tidyUpLength(this.mAllBoardsFileNames));
 
 		createLine(composite, this.ncol);
 		// -------
@@ -265,17 +265,17 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		Dialog.applyDialogFont(composite);
 	}
 
-	private String[] tidyUpLength(String[] pLongNames) {
+	private static String[] tidyUpLength(String[] pLongNames) {
 		ArrayList<String> shortNames = new ArrayList<>();
-		for(String longName : pLongNames) {
+		for (String longName : pLongNames) {
 			String[] pathParts = longName.split(File.separator);
-			if(pathParts.length > 10) {
+			if (pathParts.length > 10) {
 				StringJoiner sj = new StringJoiner(File.separator);
 				sj.add(pathParts[0]);
 				sj.add(pathParts[1]);
 				sj.add(pathParts[2]);
 				sj.add(pathParts[3]);
-				sj.add("...");
+				sj.add("..."); //$NON-NLS-1$
 				sj.add(pathParts[pathParts.length - 5]);
 				sj.add(pathParts[pathParts.length - 4]);
 				sj.add(pathParts[pathParts.length - 3]);
@@ -452,7 +452,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 		int index = this.mControlBoardsTxtFile.getSelectionIndex();
 		return new File(this.mAllBoardsFileNames[index]);
-//		return new File(this.mControlBoardsTxtFile.getText().trim());
+		// return new File(this.mControlBoardsTxtFile.getText().trim());
 	}
 
 	private String getUpLoadPort() {
