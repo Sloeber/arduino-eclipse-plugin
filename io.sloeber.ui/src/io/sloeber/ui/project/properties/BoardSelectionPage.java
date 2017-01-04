@@ -269,7 +269,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		final String separator = "/"; //$NON-NLS-1$
 		ArrayList<String> shortNames = new ArrayList<>();
 		for (String longName : pLongNames) {
-			System.err.println(longName);
 			String[] pathParts = longName.split(separator);
 			if (pathParts.length > 10) {
 				StringJoiner sj = new StringJoiner(separator);
