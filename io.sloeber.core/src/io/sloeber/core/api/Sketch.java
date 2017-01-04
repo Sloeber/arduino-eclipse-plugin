@@ -28,13 +28,14 @@ import org.eclipse.ui.console.MessageConsole;
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
 import io.sloeber.common.IndexHelper;
+import io.sloeber.core.Activator;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class Sketch {
 	// preference nodes
-	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
 	public static void upload(IProject project) {
 		Display.getDefault().asyncExec(new Runnable() {

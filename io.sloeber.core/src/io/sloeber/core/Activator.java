@@ -60,7 +60,7 @@ abstract class FamilyJob extends Job {
  */
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
-	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+	public static final String NODE_ARDUINO = "io.sloeber.arduino"; //$NON-NLS-1$
 
 	// The shared instance
 	private static final String FLAGS_TART = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$

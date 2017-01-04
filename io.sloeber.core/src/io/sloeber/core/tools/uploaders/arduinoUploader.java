@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.console.MessageConsole;
 
+import io.sloeber.common.Common;
 import io.sloeber.common.Const;
 import io.sloeber.common.IndexHelper;
 import io.sloeber.core.api.PasswordManager;
@@ -74,7 +75,7 @@ public class arduinoUploader implements IRealUpload {
 		String command = Const.EMPTY_STRING;
 		try {
 			command = envManager
-					.getVariable(Const.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
+					.getVariable(Common.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
 					.getValue();
 		} catch (Exception e) {// ignore all errors
 		}

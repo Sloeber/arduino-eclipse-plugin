@@ -16,14 +16,10 @@ public class Const {
 	public static final String SPACE = " ";
 	public static final String FALSE = "FALSE";
 	public static final String TRUE = "TRUE";
-	public static final String NEWLINE = "\n";
-	public static final String RETURN = "\r";
 	public static final String MENU = "menu";
 
 	// General stuff
-	public static final String PLUGIN_START = "io.sloeber.";
-	public static final String CORE_PLUGIN_ID = PLUGIN_START + "arduino.core";
-	protected static final String ENV_PATTERN = "PATTERN"; //$NON-NLS-1$
+	public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
 
 	// Actions
 	public static final String ACTION_UPLOAD = "UPLOAD";
@@ -38,10 +34,6 @@ public class Const {
 	public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
 	public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
 	public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
-
-	// Describers
-	private static final String ENV_PROTOCOL = "PROTOCOL";
-	protected static final String ENV_TOOL = "TOOL";
 
 	// properties keys
 
@@ -111,44 +103,6 @@ public class Const {
 
 	static final String EXAMPLE_FOLDER_NAME = "examples";
 
-	public static final String ARDUINO_NATURE_ID = PLUGIN_START + "arduinonature";
-
-	/**
-	 * given a action return the environment key that matches it's protocol
-	 *
-	 * @param action
-	 * @return the environment variable key to find the protocol
-	 */
-	public static String get_ENV_KEY_PROTOCOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
-	}
-
-	/**
-	 * given a action return the environment key that matches it's tool
-	 *
-	 * @param action
-	 * @return the environment variable key to find the tool
-	 */
-	public static String get_ENV_KEY_TOOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_TOOL;
-	}
-
-	/**
-	 * given a action return the environment key that matches it's recipe
-	 *
-	 * @param action
-	 * @return he environment variable key to find the recipe
-	 */
-	public static String get_ENV_KEY_RECIPE(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
-	}
-
-	public static String get_Jantje_KEY_PROTOCOL(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
-	}
-
-	public static String get_Jantje_KEY_RECIPE(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
-	}
+	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
 
 }

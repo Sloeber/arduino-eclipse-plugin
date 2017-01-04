@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.Activator;
+
 /**
  * Items on the Configuration level are linked to the ConfigurationScope
  * (=eclipse install base).
@@ -42,7 +44,7 @@ public class ConfigurationPreferences {
 	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
 			+ System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
 	// preference nodes
-	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
 	private ConfigurationPreferences() {
 	}
@@ -139,7 +141,7 @@ public class ConfigurationPreferences {
 	}
 
 	public static String[] getBoardsPackageURLList() {
-		return getBoardsPackageURLs().replaceAll(Const.RETURN, Const.EMPTY_STRING).split(stringSplitter);
+		return getBoardsPackageURLs().replace("\r", Const.EMPTY_STRING).split(stringSplitter); //$NON-NLS-1$
 	}
 
 	public static String getBoardsPackageKey() {

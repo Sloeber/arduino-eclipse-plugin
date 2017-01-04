@@ -159,10 +159,10 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		String recipeKey = new String();
 		String OptionKey = new String();
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
-			recipeKey = Const.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O);
+			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O);
 			OptionKey = Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS;
 		} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
-			recipeKey = Const.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O);
+			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O);
 			OptionKey = Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS;
 		} else {
 			ManagedBuilderCorePlugin.error(

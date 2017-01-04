@@ -20,7 +20,7 @@ public class ArduinoSerial {
 	/**
 	 * This method resets arduino based on setting the baud rate. Used for due,
 	 * Leonardo and others
-	 * 
+	 *
 	 * @param comPort
 	 *            The port to set the baud rate
 	 * @param bautrate
@@ -50,7 +50,7 @@ public class ArduinoSerial {
 	/**
 	 * Waits for a serial port to appear. It is assumed that the default comport
 	 * is not available on the system
-	 * 
+	 *
 	 * @param originalPorts
 	 *            The ports available on the system
 	 * @param defaultComPort
@@ -127,7 +127,7 @@ public class ArduinoSerial {
 
 	/**
 	 * Toggle DTR this is a way to reset an arduino board
-	 * 
+	 *
 	 * @param Port
 	 *            the port to toggle
 	 * @param delay
@@ -151,11 +151,11 @@ public class ArduinoSerial {
 
 	/**
 	 * reset the arduino
-	 * 
+	 *
 	 * This method takes into account all the setting to be able to reset all
 	 * different types of arduino If RXTXDisabled is set the method only return
 	 * the parameter Comport
-	 * 
+	 *
 	 * @param project
 	 *            The project related to the com port to reset
 	 * @param comPort
@@ -173,7 +173,7 @@ public class ArduinoSerial {
 		String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME,
 				Const.EMPTY_STRING);
 		String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName,
-				Const.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
+				Common.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
 
 		boolean bResetPortForUpload = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)

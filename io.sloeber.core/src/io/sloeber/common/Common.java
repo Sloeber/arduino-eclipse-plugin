@@ -24,7 +24,11 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
+@SuppressWarnings("nls")
 public class Common extends Const {
+	private static final String ENV_PATTERN = "PATTERN";
+	private static final String ENV_PROTOCOL = "PROTOCOL";
+	protected static final String ENV_TOOL = "TOOL";
 
 	/**
 	 * This method makes sure that a string can be used as a file or folder name
@@ -282,4 +286,52 @@ public class Common extends Const {
 		setBuildEnvironmentVariable(contribEnv, confdesc, key, value);
 	}
 
+	/**
+	 * given a action return the environment key that matches it's protocol
+	 *
+	 * @param action
+	 * @return the environment variable key to find the protocol
+	 */
+	public static String get_ENV_KEY_PROTOCOL(String action) {
+		return ERASE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+	}
+
+	/**
+	 * given a action return the environment key that matches it's tool
+	 *
+	 * @param action
+	 * @return the environment variable key to find the tool
+	 */
+	public static String get_ENV_KEY_TOOL(String action) {
+		return ERASE_START + action.toUpperCase() + DOT + ENV_TOOL;
+	}
+
+	/**
+	 * given a action return the environment key that matches it's recipe
+	 *
+	 * @param action
+	 * @return he environment variable key to find the recipe
+	 */
+	public static String get_ENV_KEY_RECIPE(String action) {
+		return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+	}
+
+	public static String get_Jantje_KEY_PROTOCOL(String action) {
+		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+	}
+
+	public static String get_Jantje_KEY_RECIPE(String action) {
+		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+	}
+
+	/**
+	 * given a action and a tool return the environment key that matches it's
+	 * recipe
+	 *
+	 * @param action
+	 * @return he environment variable key to find the recipe
+	 */
+	public static String get_ENV_KEY_RECIPE(String tool, String action) {
+		return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
+	}
 }
