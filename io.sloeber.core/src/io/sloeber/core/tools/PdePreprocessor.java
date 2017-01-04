@@ -22,11 +22,14 @@ package io.sloeber.core.tools;
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTLinkageSpecification;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICElement;
@@ -43,24 +46,22 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.common.Const;
-
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "nls", "restriction" })
 public class PdePreprocessor {
-	private static String tempFile = ".ino.cpp"; //$NON-NLS-1$
-	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__"; //$NON-NLS-1$
+	private static String tempFile = ".ino.cpp";
+	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 
 	public static void processProject(IProject iProject) throws CoreException {
 		// first write some standard bla bla
-		final String NEWLINE = Const.NEWLINE;
+		final String NEWLINE = "\n";
 		String body = new String();
-		String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE; //$NON-NLS-1$
+		String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE;
 		String includeCodePart = NEWLINE;
-		String header = "//This is a automatic generated file" + NEWLINE; //$NON-NLS-1$
-		header += "//Please do not modify this file" + NEWLINE; //$NON-NLS-1$
-		header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE; //$NON-NLS-1$
-		header += "//This file has been generated on "; //$NON-NLS-1$
-		header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()); //$NON-NLS-1$
+		String header = "//This is a automatic generated file" + NEWLINE;
+		header += "//Please do not modify this file" + NEWLINE;
+		header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE;
+		header += "//This file has been generated on ";
+		header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		header += NEWLINE;
 		header += NEWLINE;
 		ICProject tt = CoreModel.getDefault().create(iProject);
@@ -76,23 +77,23 @@ public class PdePreprocessor {
 			}
 
 			// take all the files in the project
-			IResource allResources[] = iProject.members(0);// .getFolder("").members(0);
+			IResource allResources[] = iProject.members(0);
 			int numInoFiles = 0;
 			for (IResource curResource : allResources) {
 				String extension = curResource.getFileExtension();
 				// only process .pde and .ino files
-				if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) { //$NON-NLS-1$ //$NON-NLS-2$
+				if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
 					numInoFiles++;
 					String addLine;
 					if (curResource.isLinked()) {
-						addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+						addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE;
 					} else {
-						addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+						addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE;
 					}
 					// if the name of the ino/pde file matches the project put
 					// the file in front
 					// Otherwise add it to the end
-					if (curResource.getName().equals(iProject.getName() + "." + extension)) { //$NON-NLS-1$
+					if (curResource.getName().equals(iProject.getName() + "." + extension)) {
 						includeCodePart = addLine + includeCodePart;
 					} else {
 						includeCodePart += addLine;
@@ -107,12 +108,11 @@ public class PdePreprocessor {
 						// the indexer is not properly configured so drop a
 						// error in the file
 						body += NEWLINE;
-						body += "#error the file: " + curResource.getName() //$NON-NLS-1$
-								+ " is not found in the indexer though it exists on the file system." //$NON-NLS-1$
+						body += "#error the file: " + curResource.getName()
+								+ " is not found in the indexer though it exists on the file system." + NEWLINE;
+						body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file."
 								+ NEWLINE;
-						body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file." //$NON-NLS-1$
-								+ NEWLINE;
-						body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types." //$NON-NLS-1$
+						body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types."
 								+ NEWLINE;
 					} else {
 						// add declarations made in ino files.
@@ -122,12 +122,12 @@ public class PdePreprocessor {
 						for (IASTNode astNode : astNodes) {
 							if (astNode instanceof CPPASTFunctionDefinition) {
 								String addString = astNode.getRawSignature();
-								addString = addString.replaceAll("\r\n", NEWLINE); //$NON-NLS-1$
-								addString = addString.replaceAll("\r", NEWLINE); //$NON-NLS-1$
-								addString = addString.replaceAll("//[^\n]+\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
-								addString = addString.replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
-								addString = addString.replaceAll("\\{.+\\}", ""); //$NON-NLS-1$//$NON-NLS-2$
-								if (addString.contains("=") || addString.contains("::")) { //$NON-NLS-1$ //$NON-NLS-2$
+								addString = addString.replaceAll("\r\n", NEWLINE);
+								addString = addString.replaceAll("\r", NEWLINE);
+								addString = addString.replaceAll("//[^\n]+\n", " ");
+								addString = addString.replaceAll("\n", " ");
+								addString = addString.replaceAll("\\{.+\\}", "");
+								if (addString.contains("=") || addString.contains("::")) {
 									// ignore when there are assignments in the
 									// declaration
 									// or when it is a class function
@@ -138,9 +138,30 @@ public class PdePreprocessor {
 							}
 						}
 
+						// Locate All lines that are extern "C"
+						HashMap<Integer, Integer> externCLines = new HashMap<>();
+						IASTTranslationUnit astTuTest = tu.getAST(index, 0);
+						IASTDeclaration[] topDeclaratons = astTuTest.getDeclarations();
+						for (IASTDeclaration curTopDeclaration : topDeclaratons) {
+
+							ICPPASTLinkageSpecification test = curTopDeclaration instanceof ICPPASTLinkageSpecification
+									? (ICPPASTLinkageSpecification) curTopDeclaration : null;
+							if (test != null) {
+								if (test.getLiteral().equals("\"C\"")) {
+									Path curFile = new Path(curTopDeclaration.getContainingFilename());
+									if (curFile.equals(file.getLocation())) {
+										int startLine = test.getFileLocation().getStartingLineNumber();
+										int endLine = test.getFileLocation().getEndingLineNumber();
+										for (int curline = startLine; curline <= endLine; curline++) {
+											externCLines.put(new Integer(curline), null);
+										}
+									}
+								}
+							}
+						}
+
 						// find all the macro's
 						List<ICElement> theMacros = tu.getChildrenOfType(ICElement.C_MACRO);
-						String fileContent = new String(tu.getContents());
 
 						// list all includes found in the source files.
 						IInclude includes[] = tu.getIncludes();
@@ -155,24 +176,19 @@ public class PdePreprocessor {
 
 								if ((curMacroLine < curHeaderLine) && (prefHeaderLine < curMacroLine)) {
 									includeHeaderPart += curMacro.getSource() + NEWLINE;
-
 								}
 							}
 
 							prefHeaderLine = curHeaderLine;
-							String regex = "extern\\s\"C\"\\s?\\{[^\\}]*" + include.getSource(); //$NON-NLS-1$
-							String[] parts = fileContent.split(regex);
-							if (parts.length > 1) {
-								includeHeaderPart += "extern \"C\" {" + NEWLINE; //$NON-NLS-1$
+							if (externCLines.containsKey(new Integer(curHeaderLine))) {
+								includeHeaderPart += "extern \"C\" {" + NEWLINE;
 								includeHeaderPart += include.getSource() + NEWLINE;
-								includeHeaderPart += "}" + NEWLINE; //$NON-NLS-1$
+								includeHeaderPart += "}" + NEWLINE;
 							} else {
 								includeHeaderPart += include.getSource();
 								includeHeaderPart += NEWLINE;
 							}
-
 						}
-
 					}
 				}
 			}
@@ -190,7 +206,7 @@ public class PdePreprocessor {
 				// concatenate the parts and make the .ino.cpp file
 				String output = header + includeHeaderPart + body + includeCodePart;
 				// Make sure the file is not procesed by Arduino IDE
-				output = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE; //$NON-NLS-1$ //$NON-NLS-2$
+				output = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE;
 				Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
 						null, true);
 			}
