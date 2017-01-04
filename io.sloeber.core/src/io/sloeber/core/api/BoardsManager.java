@@ -167,6 +167,17 @@ public class BoardsManager {
 		return Manager.isReady();
 	}
 
+	/**
+	 * find all examples for this type of board. That is the examples provided
+	 * by Arduino The examples provided by the common libraries The examples
+	 * provided by the private libraries The examples provided by the platform
+	 * the board belongs to
+	 *
+	 * If the boardID is null there will be no platform examples
+	 * 
+	 * @param boardID
+	 * @return
+	 */
 	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardID) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		// Get the examples of the library manager installed libraries
