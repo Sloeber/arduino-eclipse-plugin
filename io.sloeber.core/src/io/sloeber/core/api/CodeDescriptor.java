@@ -32,7 +32,7 @@ public class CodeDescriptor {
 	private CodeTypes codeType;
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
-	private ArrayList<Path> myLastUsedExamples = new ArrayList<>();
+	private ArrayList<Path> myExamples = new ArrayList<>();
 
 	public IPath getTemPlateFoldername() {
 		return this.myTemPlateFoldername;
@@ -50,10 +50,10 @@ public class CodeDescriptor {
 		return new CodeDescriptor(CodeTypes.defaultCPP);
 	}
 
-	public static CodeDescriptor createSample(boolean link, ArrayList<Path> sampleFolders) {
+	public static CodeDescriptor createExample(boolean link, ArrayList<Path> sampleFolders) {
 		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.sample);
 		codeDescriptor.myMakeLinks = link;
-		codeDescriptor.myLastUsedExamples = sampleFolders;
+		codeDescriptor.myExamples = sampleFolders;
 		return codeDescriptor;
 	}
 
@@ -134,7 +134,7 @@ public class CodeDescriptor {
 			break;
 		case sample:
 			try {
-				for (Path curPath : this.myLastUsedExamples) {
+				for (Path curPath : this.myExamples) {
 					if (this.myMakeLinks) {
 						Helpers.linkDirectory(project, curPath, new Path("/"));
 					} else {
@@ -157,17 +157,17 @@ public class CodeDescriptor {
 				.getGlobalString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
 
 		for (String curpath : examplePathNames) {
-			this.myLastUsedExamples.add(new Path(curpath));
+			this.myExamples.add(new Path(curpath));
 		}
 	}
 
-	public ArrayList<Path> getLastUsedExamples() {
-		return this.myLastUsedExamples;
+	public ArrayList<Path> getExamples() {
+		return this.myExamples;
 	}
 
 	private void saveLastUsedExamples() {
-		if (this.myLastUsedExamples != null) {
-			String toStore = StringUtils.join(this.myLastUsedExamples, "\n"); //$NON-NLS-1$
+		if (this.myExamples != null) {
+			String toStore = StringUtils.join(this.myExamples, "\n"); //$NON-NLS-1$
 			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, toStore);
 		} else {
 			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, Const.EMPTY_STRING);

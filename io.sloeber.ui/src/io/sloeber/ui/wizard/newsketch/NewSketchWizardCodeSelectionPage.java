@@ -57,7 +57,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 		if (this.mExampleEditor != null) {
 			if (!this.myBoardDescriptor.getBoardsFile().isEmpty()) {
-				this.mExampleEditor.AddAllExamples(this.myBoardDescriptor, this.myCodedescriptor.getLastUsedExamples());
+				this.mExampleEditor.AddAllExamples(this.myBoardDescriptor, this.myCodedescriptor.getExamples());
 			}
 		}
 
@@ -219,7 +219,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		case sample:
 			ArrayList<Path> sampleFolders = this.mExampleEditor.GetSampleFolders();
 			boolean link = this.mCheckBoxUseCurrentLinkSample.getSelection();
-			return CodeDescriptor.createSample(link, sampleFolders);
+			return CodeDescriptor.createExample(link, sampleFolders);
 		}
 		// make sure this never happens
 		return null;

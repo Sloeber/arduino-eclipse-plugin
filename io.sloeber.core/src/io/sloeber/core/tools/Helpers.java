@@ -1371,15 +1371,4 @@ public class Helpers extends Common {
 
 	}
 
-	/**
-	 * given a action and a tool return the environment key that matches it's
-	 * recipe
-	 *
-	 * @param action
-	 * @return he environment variable key to find the recipe
-	 */
-	private static String get_ENV_KEY_RECIPE(String tool, String action) {
-		return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
-	}
-
 }

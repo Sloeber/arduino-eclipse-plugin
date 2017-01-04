@@ -7,6 +7,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
+import io.sloeber.common.Common;
 import io.sloeber.common.Const;
 
 public class CompileOptions {
@@ -115,7 +116,7 @@ public class CompileOptions {
 			contribEnv.addVariable(var, configuration);
 		} else {
 			var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-					+ Const.get_ENV_KEY_RECIPE(Const.ACTION_SIZE) + "}"); //$NON-NLS-1$
+					+ Common.get_ENV_KEY_RECIPE(Const.ACTION_SIZE) + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, configuration);
 		}
 		var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,

@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.common.Common;
 import io.sloeber.common.Const;
+import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Programmers;
@@ -49,7 +50,7 @@ import io.sloeber.core.tools.TxtFile;
 
 public class BoardDescriptor {
 	// preference nodes
-	public static final String NODE_ARDUINO = Const.PLUGIN_START + "arduino"; //$NON-NLS-1$
+	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	/**
 	 *
 	 */
@@ -101,7 +102,7 @@ public class BoardDescriptor {
 		} else {
 			this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, "");
 			this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
-					Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
+					Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
 			this.myBoardsFile = new File(
 					Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
 			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
@@ -256,7 +257,7 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-			Common.setBuildEnvironmentVariable(confdesc, Const.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
+			Common.setBuildEnvironmentVariable(confdesc, Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
 					this.myUploadProtocol);
 			if (this.myOptions != null) {
 				for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
