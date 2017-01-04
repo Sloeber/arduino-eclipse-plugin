@@ -266,11 +266,13 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	private static String[] tidyUpLength(String[] pLongNames) {
+		final String separator = "/"; //$NON-NLS-1$
 		ArrayList<String> shortNames = new ArrayList<>();
 		for (String longName : pLongNames) {
-			String[] pathParts = longName.split(File.separator);
+			System.err.println(longName);
+			String[] pathParts = longName.split(separator);
 			if (pathParts.length > 10) {
-				StringJoiner sj = new StringJoiner(File.separator);
+				StringJoiner sj = new StringJoiner(separator);
 				sj.add(pathParts[0]);
 				sj.add(pathParts[1]);
 				sj.add(pathParts[2]);
