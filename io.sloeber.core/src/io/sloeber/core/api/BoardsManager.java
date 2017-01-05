@@ -174,7 +174,7 @@ public class BoardsManager {
 	 * the board belongs to
 	 *
 	 * If the boardID is null there will be no platform examples
-	 * 
+	 *
 	 * @param boardID
 	 * @return
 	 */
@@ -233,9 +233,9 @@ public class BoardsManager {
 				IPath Lib_examples = LibRoot.append(curLib).append("examples");//$NON-NLS-1$
 				IPath Lib_Examples = LibRoot.append(curLib).append("Examples");//$NON-NLS-1$
 				if (Lib_examples.toFile().isDirectory()) {
-					examples.putAll(getExampleFolders(curLib, Lib_examples.toFile()));
+					examples.putAll(getExamplesFromFolder(curLib, Lib_examples));
 				} else if (Lib_Examples.toFile().isDirectory()) {
-					examples.putAll(getExampleFolders(curLib, Lib_Examples.toFile()));
+					examples.putAll(getExamplesFromFolder(curLib, Lib_Examples));
 				} else // nothing found directly so maybe this is a version
 						// based lib
 				{
@@ -246,36 +246,12 @@ public class BoardsManager {
 							Lib_examples = LibRoot.append(curLib).append(versions[0]).append("examples");//$NON-NLS-1$
 							Lib_Examples = LibRoot.append(curLib).append(versions[0]).append("Examples");//$NON-NLS-1$
 							if (Lib_examples.toFile().isDirectory()) {
-								examples.putAll(getExampleFolders(curLib, Lib_examples.toFile()));
+								examples.putAll(getExamplesFromFolder(curLib, Lib_examples));
 							} else if (Lib_Examples.toFile().isDirectory()) {
-								examples.putAll(getExampleFolders(curLib, Lib_Examples.toFile()));
+								examples.putAll(getExamplesFromFolder(curLib, Lib_Examples));
 							}
 						}
 					}
-				}
-			}
-		}
-		return examples;
-	}
-
-	/**
-	 * This method adds a folder of examples. There is no search. The provided
-	 * folder is assumed to be a tree where the parents of the leaves are
-	 * assumed examples
-	 *
-	 * @param iPath
-	 * @param pathVarName
-	 */
-	private static TreeMap<String, IPath> getExampleFolders(String libname, File location) {
-		String[] children = location.list();
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		if (children == null) {
-			// Either dir does not exist or is not a directory
-		} else {
-			for (String curFolder : children) {
-				IPath LibFolder = new Path(location.toString()).append(curFolder);
-				if (LibFolder.toFile().isDirectory()) {
-					examples.put(libname + '-' + curFolder, LibFolder);
 				}
 			}
 		}
@@ -288,7 +264,7 @@ public class BoardsManager {
 	 *
 	 * @param File
 	 */
-	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, Path location) {
+	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, IPath location) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File[] children = location.toFile().listFiles();
 		if (children == null) {
