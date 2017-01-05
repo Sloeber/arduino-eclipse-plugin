@@ -1,10 +1,8 @@
 package io.sloeber.ui.project.properties;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
@@ -13,7 +11,9 @@ import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.AbstractPage;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -130,11 +130,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 	};
 
-	private int mNumBoardsFiles;
-
 	private Composite mComposite;
 
-	private String[] mAllBoardsFileNames;
+	private TreeMap<String, String> mAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -167,6 +165,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			this.myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 		}
 		ICConfigurationDescription confdesc = getConfdesc();
+
+		String[] allBoardsFileNames = BoardsManager.getAllBoardsFiles();
+		for (String curBoardFile : allBoardsFileNames) {
+			this.mAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
+		}
+
 		this.mComposite = composite;
 
 		GridLayout theGridLayout = new GridLayout();
@@ -174,24 +178,15 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		composite.setLayout(theGridLayout);
 
 		GridData theGriddata;
-		this.mAllBoardsFileNames = BoardsManager.getAllBoardsFiles();
-		this.mNumBoardsFiles = this.mAllBoardsFileNames.length;
-		if (this.mAllBoardsFileNames.length == 0) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					"ArduinoHelpers.getBoardsFiles() returns null.\nThis should not happen.\nIt looks like the download of the boards failed.")); //$NON-NLS-1$
-		}
 
-		switch (this.mAllBoardsFileNames.length) {
-		case 0:
+		if (this.mAllBoardsFiles.isEmpty()) {
+
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
-			break;
-		default: {
-			// create a combo to select the boards
-			createLabel(composite, this.ncol, "The boards.txt file you want to use"); //$NON-NLS-1$
-			new Label(composite, SWT.NONE).setText("Boards.txt file:"); //$NON-NLS-1$
 		}
 
-		}
+		// create a combo to select the boards
+		createLabel(composite, this.ncol, "The platform you want to use"); //$NON-NLS-1$
+		new Label(composite, SWT.NONE).setText("Platform folder:"); //$NON-NLS-1$
 
 		this.mControlBoardsTxtFile = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
@@ -199,7 +194,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		theGriddata.horizontalSpan = (this.ncol - 1);
 		this.mControlBoardsTxtFile.setLayoutData(theGriddata);
 		this.mControlBoardsTxtFile.setEnabled(false);
-		this.mControlBoardsTxtFile.setItems(tidyUpLength(this.mAllBoardsFileNames));
+		this.mControlBoardsTxtFile.setItems(this.mAllBoardsFiles.keySet().toArray(new String[0]));
 
 		createLine(composite, this.ncol);
 		// -------
@@ -252,43 +247,25 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mFeedbackControl.setLayoutData(theGriddata);
 		// End of special controls
 
-		this.mControlBoardsTxtFile.select(0);
-		this.boardFileModifyListener.handleEvent(null);
 		setValues(confdesc);
 
 		this.mcontrolBoardName.addListener(SWT.Modify, this.boardModifyListener);
 		this.mControlBoardsTxtFile.addListener(SWT.Modify, this.boardFileModifyListener);
 
-		// force update to first
-
 		enableControls();
 		Dialog.applyDialogFont(composite);
 	}
 
-	private static String[] tidyUpLength(String[] pLongNames) {
-		final String separator = "/"; //$NON-NLS-1$
-		ArrayList<String> shortNames = new ArrayList<>();
-		for (String longName : pLongNames) {
-			String[] pathParts = longName.split(separator);
-			if (pathParts.length > 10) {
-				StringJoiner sj = new StringJoiner(separator);
-				sj.add(pathParts[0]);
-				sj.add(pathParts[1]);
-				sj.add(pathParts[2]);
-				sj.add(pathParts[3]);
-				sj.add("..."); //$NON-NLS-1$
-				sj.add(pathParts[pathParts.length - 5]);
-				sj.add(pathParts[pathParts.length - 4]);
-				sj.add(pathParts[pathParts.length - 3]);
-				sj.add(pathParts[pathParts.length - 2]);
-				sj.add(pathParts[pathParts.length - 1]);
-				shortNames.add(sj.toString());
-			} else {
-				shortNames.add(longName);
-			}
+	private static String tidyUpLength(String longName) {
+		IPath longPath = new Path(longName).removeLastSegments(1);
+		IPath tidyPath = longPath;
+		int segments = longPath.segmentCount();
+		if (segments > 7) {
+			tidyPath = longPath.removeLastSegments(segments - 2);
+			tidyPath = tidyPath.append("..."); //$NON-NLS-1$
+			tidyPath = tidyPath.append(longPath.removeFirstSegments(segments - 4));
 		}
-
-		return shortNames.toArray(new String[0]);
+		return tidyPath.toString();
 	}
 
 	public boolean isPageComplete() {
@@ -320,7 +297,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mcontrolBoardName.setEnabled(true);
 		this.mControlUploadPort.setEnabled(true);
 		this.mControlUploadProtocol.setEnabled(true);
-		this.mControlBoardsTxtFile.setEnabled((this.mNumBoardsFiles > 1));
+		this.mControlBoardsTxtFile.setEnabled(true);
 		for (LabelCombo curLabelCombo : this.mBoardOptionCombos) {
 			curLabelCombo.setVisible(true);
 		}
@@ -356,8 +333,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	private void setValues(ICConfigurationDescription confdesc) {
 
-		this.mControlBoardsTxtFile.setText(this.myBoardID.getBoardsFile());
-		// // if no boards file is selected select the first
+		this.mControlBoardsTxtFile.setText(tidyUpLength(this.myBoardID.getBoardsFile()));
+		// if no boards file is selected select the first
 		// if (this.mControlBoardsTxtFile.getText().isEmpty()) {
 		// this.mControlBoardsTxtFile.setText(this.mControlBoardsTxtFile.getItem(0));
 		// this.myBoardID.setBoardsFile(this.mAllBoardsFiles[0]);
@@ -451,9 +428,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		if (this.mControlBoardsTxtFile == null) {
 			return null;
 		}
-		int index = this.mControlBoardsTxtFile.getSelectionIndex();
-		return new File(this.mAllBoardsFileNames[index]);
-		// return new File(this.mControlBoardsTxtFile.getText().trim());
+		String selectedText = this.mControlBoardsTxtFile.getText().trim();
+		String longText = this.mAllBoardsFiles.get(selectedText);
+		if (longText == null) {
+			return null;// this should not happen
+		}
+		return new File(longText);
 	}
 
 	private String getUpLoadPort() {
