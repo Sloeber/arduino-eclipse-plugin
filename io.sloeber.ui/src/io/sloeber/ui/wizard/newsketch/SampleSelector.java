@@ -22,7 +22,6 @@ import io.sloeber.ui.Messages;
 
 public class SampleSelector {
 	private static final String EXAMPLEPATH = "examplePath"; //$NON-NLS-1$
-	private static final String LIBNAME = "libName"; //$NON-NLS-1$
 
 	protected Tree sampleTree;
 	protected Label myLabel;
@@ -147,7 +146,6 @@ public class SampleSelector {
 			}
 
 			curItem.setData(EXAMPLEPATH, entry.getValue());
-			curItem.setData(LIBNAME, keys[keys.length - 2]);
 
 		}
 		// Mark the examples selected
