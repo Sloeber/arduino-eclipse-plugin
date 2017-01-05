@@ -76,7 +76,7 @@ public class CreateAndCompileExamples {
 	}
 
 	@Test
-	public void testUno() {
+	public void testLeonardo() {
 
 		Map<String, String> myOptions = new HashMap<>();
 		String[] lines = new String("").split("\n"); //$NON-NLS-1$
@@ -87,8 +87,8 @@ public class CreateAndCompileExamples {
 			}
 		}
 
-		BoardDescriptor boardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards", "uno",
-				myOptions);
+		BoardDescriptor boardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"leonardo", myOptions);
 		if (boardid == null) {
 			fail("Uno Board not found");
 			return;
