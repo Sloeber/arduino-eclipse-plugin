@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -47,8 +48,24 @@ public class Shared {
 	}
 
 	public static IPath getTemplateFolder(String templateName) {
-		Path path = new Path("C:/Users/jan/git/arduino-eclipse-plugin/io.sloeber.core/src/jUnit/templates");
-		return path.append(templateName);
+
+		String gitHome = System.getenv("HOME");
+
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			if (gitHome == null) {
+				System.err.println("Git HOME envvar is not define. Using default value");
+				gitHome = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH");
+			}
+			gitHome += "/git";
+		} else {
+			if (gitHome == null) {
+				System.err.println("Git HOME envvar is not define. Using default value");
+				gitHome = "~";
+			}
+			gitHome += "/.git";
+		}
+		Path path = new Path(gitHome + "/arduino-eclipse-plugin/io.sloeber.core/src/jUnit/templates/" + templateName);
+		return path;
 	}
 
 }
