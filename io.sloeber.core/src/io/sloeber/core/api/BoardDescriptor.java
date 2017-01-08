@@ -235,13 +235,12 @@ public class BoardDescriptor {
 		} else {
 			// this should not happen
 		}
-
+		codeDescription.createFiles(projectHandle, monitor);
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 		prjCDesc.setCdtProjectCreated();
 		CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,
 				null);
 		projectHandle.setDescription(desc, new NullProgressMonitor());
-		codeDescription.createFiles(projectHandle, monitor);
 		monitor.done();
 		return projectHandle;
 	}
