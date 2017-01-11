@@ -27,15 +27,12 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -196,35 +193,6 @@ public class Helpers extends Common {
 			}
 		}
 		return hasChange;
-	}
-
-	/**
-	 * This method adds the provided path to the include path of all
-	 * configurations and languages.
-	 *
-	 * @param project
-	 *            The project to add it to
-	 * @param IncludePath
-	 *            The path to add to the include folders
-	 * @see addLibraryDependency
-	 *      {@link #addLibraryDependency(IProject, IProject)}
-	 */
-	public static void addIncludeFolder(IProject project, IPath IncludePath) {
-		// find all languages
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		ICProjectDescription projectDescription = mngr.getProjectDescription(project, true);
-		ICConfigurationDescription configurationDescription = projectDescription.getDefaultSettingConfiguration();
-		addIncludeFolder(configurationDescription, IncludePath);
-
-		projectDescription.setActiveConfiguration(configurationDescription);
-		projectDescription.setCdtProjectCreated();
-		try {
-			mngr.setProjectDescription(project, projectDescription, true, null);
-		} catch (CoreException e) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Could_not_add_folder
-					+ IncludePath.toOSString() + Messages.Helpers_To_include_path + project.getName(), e));
-		}
-
 	}
 
 	public static void addCodeFolder(IProject project, Path toLinkFolder, String LinkName,
