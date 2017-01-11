@@ -145,7 +145,7 @@ public class BoardDescriptor {
 		ICConfigurationDescription configurationDescription = prjCDesc.getActiveConfiguration();
 		try {
 			save(configurationDescription);
-			prjCDesc.setActiveConfiguration(configurationDescription);
+			// prjCDesc.setActiveConfiguration(configurationDescription);
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjCDesc, true, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -205,7 +205,6 @@ public class BoardDescriptor {
 		// type....)
 		ICConfigurationDescription defaultConfigDescription = prjCDesc
 				.getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
-		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 
 		ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(Const.EMPTY_STRING),
 				true);
