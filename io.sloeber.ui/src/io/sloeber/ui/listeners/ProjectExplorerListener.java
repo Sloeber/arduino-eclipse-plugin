@@ -22,48 +22,52 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class ProjectExplorerListener implements ISelectionListener {
-    static IProject projects[] = new IProject[0];
+	static IProject projects[] = new IProject[0];
 
-    // public static IProject getActiveProject() {
-    // return project;
-    // }
+	// public static IProject getActiveProject() {
+	// return project;
+	// }
 
-    public static IProject[] getSelectedProjects() {
-	return projects;
-    }
-
-    public static void registerListener() {
-	IWorkbench wb = PlatformUI.getWorkbench();
-	IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
-	ISelectionService ss = awbw.getSelectionService();
-
-	ProjectExplorerListener selectionListener = new ProjectExplorerListener();
-	ss.addPostSelectionListener(IPageLayout.ID_PROJECT_EXPLORER, selectionListener);
-
-    }
-
-    @Override
-    public void selectionChanged(IWorkbenchPart part, ISelection newSelection) {
-	if (newSelection instanceof IStructuredSelection) {
-
-	    List<IProject> allSelectedprojects = new ArrayList<>();
-	    for (Object element : ((IStructuredSelection) newSelection).toList()) {
-		if (element instanceof IAdaptable) {
-		    @SuppressWarnings("cast") // this is needed for the oracle
-					      // sdk as it needs the cast and
-					      // otherwise I have a warning
-		    IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
-		    if (resource != null) {
-			allSelectedprojects.add(resource.getProject());
-		    }
-
-		}
-	    }
-	    projects = new IProject[allSelectedprojects.size()];
-	    allSelectedprojects.toArray(projects);
-	    return;
+	public static IProject[] getSelectedProjects() {
+		return projects;
 	}
 
-    }
+	public static void registerListener() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow awbw = wb.getActiveWorkbenchWindow();
+		ISelectionService ss = awbw.getSelectionService();
+
+		ProjectExplorerListener selectionListener = new ProjectExplorerListener();
+		ss.addPostSelectionListener(IPageLayout.ID_PROJECT_EXPLORER, selectionListener);
+
+	}
+
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection newSelection) {
+		if (!newSelection.isEmpty()) {
+			if (newSelection instanceof IStructuredSelection) {
+
+				List<IProject> allSelectedprojects = new ArrayList<>();
+				for (Object element : ((IStructuredSelection) newSelection).toList()) {
+					if (element instanceof IAdaptable) {
+						@SuppressWarnings("cast") // this is needed for the
+													// oracle
+						// sdk as it needs the cast and
+						// otherwise I have a warning
+						IResource resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
+						if (resource != null) {
+							allSelectedprojects.add(resource.getProject());
+						}
+
+					}
+				}
+				if (allSelectedprojects.size() > 0) {
+					projects = new IProject[allSelectedprojects.size()];
+					allSelectedprojects.toArray(projects);
+				}
+				return;
+			}
+		}
+	}
 
 }
