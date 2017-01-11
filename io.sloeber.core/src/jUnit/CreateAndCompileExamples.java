@@ -90,10 +90,17 @@ public class CreateAndCompileExamples {
 	}
 
 	private static boolean isExampleOkForUno(String key) {
-		final String[] notOkForUno = { "Esploraexamples-Beginners-EsploraAccelerometer",
-				"Esploraexamples-Beginners-EsploraBlink", "Esploraexamples-Beginners-EsploraJoystickMouse",
-				"Esploraexamples-Beginners-EsploraLedShow", "Esploraexamples-Beginners-EsploraLedShow2" };
+		final String[] notOkForUno = { "Firmataexamples-StandardFirmataWiFi", "examples-04.Communication-MultiSerial",
+				"examples-09.USB-Keyboard-KeyboardLogout", "examples-09.USB-Keyboard-KeyboardMessage",
+				"examples-09.USB-Keyboard-KeyboardReprogram", "examples-09.USB-Keyboard-KeyboardSerial",
+				"examples-09.USB-KeyboardAndMouseControl", "examples-09.USB-Mouse-ButtonMouseControl",
+				"examples-09.USB-Mouse-JoystickMouseControl", };
 		if (key.startsWith("Esploraexamples"))
+			return false;
+		if (key.startsWith("TFTexamples-Esplora-EsploraTFTTemp"))
+			return false;
+
+		if (key.contains("Firmata"))
 			return false;
 		if (Arrays.asList(notOkForUno).contains(key))
 			return false;
@@ -101,7 +108,13 @@ public class CreateAndCompileExamples {
 	}
 
 	private static boolean isExampleOkForLeonardo(String key) {
-		final String[] notOkForLeonardo = { "Esploraexamples-Beginners-EsploraJoystickMouse" };
+		final String[] notOkForLeonardo = { "Esploraexamples-Beginners-EsploraJoystickMouse",
+				"Esploraexamples-Experts-EsploraKart", "Esploraexamples-Experts-EsploraTable",
+				"Firmataexamples-StandardFirmataWiFi" };
+		if (key.contains("Firmata"))
+			return false;
+		if (key.startsWith("TFTexamples-Esplora-EsploraTFTTemp"))
+			return false;
 		if (Arrays.asList(notOkForLeonardo).contains(key))
 			return false;
 		return true; // default everything is fine
