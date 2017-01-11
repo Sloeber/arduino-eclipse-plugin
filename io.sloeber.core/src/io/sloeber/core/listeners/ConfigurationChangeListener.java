@@ -5,11 +5,11 @@ package io.sloeber.core.listeners;
  * for instance you can have a project with 2 configurations
  * one for teensy
  * one for arduino uno
- * 
- * 
+ *
+ *
  * when you use the spi library the library is a completely different library
  * this code takes care that you use the correct library when switching configuration
- * 
+ *
  */
 
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -91,8 +91,10 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 		}
 
 		// We have a arduino project so we are safe.
+		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
 
-		if (projDesc.getActiveConfiguration() != null) {
+		if (!projDesc.getName().equals(oldprojDesc.getName())) {
+			// only act upon switching configurations
 
 			Helpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(),
 					(InternalBoardDescriptor) BoardDescriptor.makeBoardDescriptor(projDesc.getActiveConfiguration()));
