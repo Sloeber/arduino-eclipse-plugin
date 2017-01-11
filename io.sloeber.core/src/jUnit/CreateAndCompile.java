@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
@@ -49,7 +50,7 @@ public class CreateAndCompile {
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Parameterized.Parameters
+	@Parameters(name = "{index}: {0} {1} {2} {3} {4}")
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
 

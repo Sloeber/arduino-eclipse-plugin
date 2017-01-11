@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
@@ -33,28 +34,77 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 public class CreateAndCompileExamples {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
+	private BoardDescriptor myBoardid;
 
-	public CreateAndCompileExamples(CodeDescriptor codeDescriptor) {
+	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+		this.myBoardid = boardid;
 		this.myCodeDescriptor = codeDescriptor;
 
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Parameterized.Parameters
+	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		LinkedList<CodeDescriptor> examples = new LinkedList<>();
+		Map<String, String> myOptions = new HashMap<>();
+		String[] lines = new String("").split("\n"); //$NON-NLS-1$
+		for (String curLine : lines) {
+			String[] values = curLine.split("=", 2); //$NON-NLS-1$
+			if (values.length == 2) {
+				myOptions.put(values[0], values[1]);
+			}
+		}
+		BoardDescriptor leonardoBoardid = BoardsManager.getBoardID("package_index.json", "arduino",
+				"Arduino AVR Boards", "leonardo", myOptions);
+		if (leonardoBoardid == null) {
+			fail("leonardo Board not found");
+			return null;
+		}
+		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"uno", myOptions);
+		if (unoBoardid == null) {
+			fail("uno Board not found");
+			return null;
+		}
+
+		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+			if (isExampleOkForLeonardo(curexample.getKey())) {
+				Object[] theData = new Object[] { "leonardo :" + curexample.getKey(), leonardoBoardid, codeDescriptor };
 
-			examples.add(codeDescriptor);
+				examples.add(theData);
+			}
+			if (isExampleOkForUno(curexample.getKey())) {
+				Object[] theData = new Object[] { "Uno :" + curexample.getKey(), unoBoardid, codeDescriptor };
+
+				examples.add(theData);
+			}
 		}
 
 		return examples;
 
+	}
+
+	private static boolean isExampleOkForUno(String key) {
+		final String[] notOkForUno = { "Esploraexamples-Beginners-EsploraAccelerometer",
+				"Esploraexamples-Beginners-EsploraBlink", "Esploraexamples-Beginners-EsploraJoystickMouse",
+				"Esploraexamples-Beginners-EsploraLedShow", "Esploraexamples-Beginners-EsploraLedShow2" };
+		if (key.startsWith("Esploraexamples"))
+			return false;
+		if (Arrays.asList(notOkForUno).contains(key))
+			return false;
+		return true; // default everything is fine
+	}
+
+	private static boolean isExampleOkForLeonardo(String key) {
+		final String[] notOkForLeonardo = { "Esploraexamples-Beginners-EsploraJoystickMouse" };
+		if (Arrays.asList(notOkForLeonardo).contains(key))
+			return false;
+		return true; // default everything is fine
 	}
 
 	/*
@@ -76,24 +126,8 @@ public class CreateAndCompileExamples {
 	}
 
 	@Test
-	public void testLeonardo() {
-
-		Map<String, String> myOptions = new HashMap<>();
-		String[] lines = new String("").split("\n"); //$NON-NLS-1$
-		for (String curLine : lines) {
-			String[] values = curLine.split("=", 2); //$NON-NLS-1$
-			if (values.length == 2) {
-				myOptions.put(values[0], values[1]);
-			}
-		}
-
-		BoardDescriptor boardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
-				"leonardo", myOptions);
-		if (boardid == null) {
-			fail("Uno Board not found");
-			return;
-		}
-		BuildAndVerify(boardid, this.myCodeDescriptor);
+	public void testExamples() {
+		BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
 
 	}
 
