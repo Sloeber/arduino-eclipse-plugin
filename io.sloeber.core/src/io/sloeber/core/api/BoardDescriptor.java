@@ -240,6 +240,7 @@ public class BoardDescriptor {
 		CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,
 				null);
 		projectHandle.setDescription(desc, new NullProgressMonitor());
+		projectHandle.refreshLocal(IResource.DEPTH_INFINITE, null);
 		monitor.done();
 		return projectHandle;
 	}
