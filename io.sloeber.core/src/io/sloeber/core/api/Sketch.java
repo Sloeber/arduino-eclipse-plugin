@@ -191,11 +191,8 @@ public class Sketch {
 		ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
 		ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
 
-		for (int curConfigurationDescription = 0; curConfigurationDescription < configurationDescriptions.length; curConfigurationDescription++) {
-			Helpers.addCodeFolder(project, path, configurationDescriptions[curConfigurationDescription]);
-
-			projectDescription.setActiveConfiguration(configurationDescriptions[curConfigurationDescription]);
-			projectDescription.setCdtProjectCreated();
+		for (ICConfigurationDescription curConfigurationDescription : configurationDescriptions) {
+			Helpers.addCodeFolder(project, path, curConfigurationDescription);
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, projectDescription,
 					true, null);
 		}
