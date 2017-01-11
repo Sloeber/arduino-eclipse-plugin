@@ -442,7 +442,6 @@ public class Helpers extends Common {
 	 */
 	public static void createNewFolder(IProject Project, String newFolderName, IPath linklocation)
 			throws CoreException {
-		// IPath newFolderPath = Project.getFullPath().append(newFolderName);
 		final IFolder newFolderHandle = Project.getFolder(newFolderName);
 		if (linklocation != null) {
 			URI relativeLinklocation = Project.getPathVariableManager().convertToRelative(URIUtil.toURI(linklocation),
