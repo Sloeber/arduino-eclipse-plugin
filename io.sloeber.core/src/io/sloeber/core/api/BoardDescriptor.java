@@ -3,7 +3,6 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -108,7 +107,7 @@ public class BoardDescriptor {
 			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
 			this.myTxtFile = new TxtFile(this.myBoardsFile);
 
-			this.myOptions = new HashMap<>();
+			this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 			IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 			IEnvironmentVariable[] curVariables = contribEnv.getVariables(confdesc);
@@ -128,7 +127,8 @@ public class BoardDescriptor {
 		this.myUploadPort = Const.EMPTY_STRING;
 		this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
 		this.myBoardID = boardID;
-		this.myOptions = options;
+		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		this.myOptions.putAll(options);
 		this.myBoardsFile = boardsFile;
 		this.myTxtFile = new TxtFile(this.myBoardsFile);
 	}
@@ -359,10 +359,16 @@ public class BoardDescriptor {
 	}
 
 	public void setOptions(Map<String, String> options) {
-		this.myOptions = options;
-
+		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		this.myOptions.putAll(options);
 	}
 
+	/**
+	 * Returns the options for this board This reflects the options selected
+	 * through the menu functionality in the boards.txt
+	 *
+	 * @return a map of case insensitive ordered key value pairs
+	 */
 	public Map<String, String> getOptions() {
 		return this.myOptions;
 	}
@@ -440,7 +446,7 @@ public class BoardDescriptor {
 	}
 
 	private void menuOptionsFromString(String options) {
-		this.myOptions = new HashMap<>();
+		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		if (options != null) {
 			String[] lines = options.split("\n"); //$NON-NLS-1$
 			for (String curLine : lines) {
