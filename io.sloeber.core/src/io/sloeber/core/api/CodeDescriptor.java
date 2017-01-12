@@ -10,8 +10,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 
+import io.sloeber.common.Common;
 import io.sloeber.common.Const;
 import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
@@ -122,12 +125,17 @@ public class CodeDescriptor {
 		case CustomTemplate:
 			IPath folderName = this.myTemPlateFoldername;
 			String files[] = folderName.toFile().list();
-			for (String file : files) {
-				if (!(file.equals(".") || file.equals(".."))) {
-					File sourceFile = folderName.append(file).toFile();
-					Helpers.addFileToProject(project, new Path(file),
-							Stream.openContentStream(project.getName(), Include, sourceFile.toString(), true), monitor,
-							false);
+			if (files == null) {
+				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+						"No files found in template folder :" + folderName, null));
+			} else {
+				for (String file : files) {
+					if (!(file.equals(".") || file.equals(".."))) {
+						File sourceFile = folderName.append(file).toFile();
+						Helpers.addFileToProject(project, new Path(file),
+								Stream.openContentStream(project.getName(), Include, sourceFile.toString(), true),
+								monitor, false);
+					}
 				}
 			}
 
