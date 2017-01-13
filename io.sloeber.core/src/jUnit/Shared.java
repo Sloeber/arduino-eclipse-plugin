@@ -15,8 +15,23 @@ import org.eclipse.core.runtime.jobs.Job;
 
 @SuppressWarnings("nls")
 public class Shared {
-	public static String teensyInstall = "D:/arduino/arduino-1.6.9 - Teensy 1.29/hardware";
-	public static String teensyBoards_txt = teensyInstall + "/teensy/avr/boards.txt";
+	private static String teensyInstall = "D:/arduino/arduino-1.6.9 - Teensy 1.29/hardware/teensy";
+	private static String teensyInstallLinux = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
+ 
+	public static String getTeensyPlatform(){
+		switch (Platform.getOS()){
+		case Platform.OS_WIN32:
+			return  teensyInstall;
+		case Platform.OS_LINUX:
+			return teensyInstallLinux ;
+		}
+		return null;
+	}
+
+	
+	public static String getTeensyBoard_txt(){
+			return  getTeensyPlatform() + "/avr/boards.txt";
+	}
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
