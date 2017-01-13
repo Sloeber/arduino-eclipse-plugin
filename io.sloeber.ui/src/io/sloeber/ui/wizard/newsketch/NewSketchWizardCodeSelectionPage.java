@@ -136,7 +136,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 *       Checkbox settings
 	 */
 	protected void SetControls() {
-		switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
+		switch (CodeTypes.values()[Math.max(0,this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
 		case defaultIno:
 			this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 			this.mExampleEditor.setEnabled(false);
@@ -170,7 +170,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		if (this.mCodeSourceOptionsCombo == null) {
 			return;
 		}
-		switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
+		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
 		case defaultIno:
 		case defaultCPP:
 			setPageComplete(true);// default always works
