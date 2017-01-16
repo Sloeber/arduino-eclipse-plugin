@@ -29,7 +29,7 @@
 
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <!--#include virtual="fragments/navbar.html" --> 
+      <!--#include virtual="fragments/navbar.html" -->
     </nav>
 
     <div class="container" role="main">
@@ -40,7 +40,7 @@
           This represents a completely <b>free and open</b> Arduino IDE alternative!<br>
           Download the product, unpack and play!<br>
         </p>
-        <h1>V3.1 Is out. Try it out now!!!</h1>
+        <h1>V4.0 Is out. Try it out now!!!</h1>
         <p>Welcome to a next stage for your Arduino projects!</p>
         <p>
         	<a href="learn.shtml" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a>
@@ -98,7 +98,7 @@
     </div> <!-- /container -->
 
     <div id="footer">
-      <!--#include virtual="fragments/footer.html" --> 
+      <!--#include virtual="fragments/footer.html" -->
     </div>
   </body>
 

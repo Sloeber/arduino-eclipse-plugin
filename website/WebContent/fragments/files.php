@@ -18,6 +18,12 @@
 	"https://github.com/jantje/arduino-eclipse-plugin/releases/download/V3.1/V3.1_linux64.2016-08-03_16-31-05.tar.gz",
 	"https://github.com/jantje/arduino-eclipse-plugin/releases/download/V3.1/V3.1_mac64.2016-08-03_16-31-05.tar.gz",
 	"https://github.com/jantje/arduino-eclipse-plugin/releases/download/V3.1/V3.1_win32.2016-08-03_16-31-05.tar.gz",
-	"https://github.com/jantje/arduino-eclipse-plugin/releases/download/V3.1/V3.1_win64.2016-08-03_16-31-05.tar.gz");
+	"https://github.com/jantje/arduino-eclipse-plugin/releases/download/V3.1/V3.1_win64.2016-08-03_16-31-05.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_linux32.2017-01-16_22-27-00.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_linux64.2017-01-16_22-27-00.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_mac64.2017-01-16_22-27-00.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_win32.2017-01-16_22-27-00.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_win64.2017-01-16_22-27-00.tar.gz"
+	);
 
 ?>

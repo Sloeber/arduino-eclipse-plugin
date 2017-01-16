@@ -1,6 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "4.0";
+$version = "4.1";
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];
@@ -68,24 +68,22 @@ if (isset ( $_GET ["OS"] ))
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.<br>
         <h2>Some recent changes:</h2>
         <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
-        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.0.0-SNAPSHOT/" " target="_blank">This download page is the travis build. Download the tar.gz for your os.</a></p>
+        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.0.0-SNAPSHOT/"  target="_blank">
+        This download page is the travis build. Download the tar.gz for your os.</a></p>
 
 
 
       <h3>Eclipse Update Site</h3>
       <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Eclipse CDT installation</p>
-      <p>There is a nightly for V4 and one for V3. You can not upgrade from V3 to V4!!!!</p>
+      <p>You can not upgrade from V3 to V4!!!!</p>
       <p>Even worse: you can install V3 and V4 in the same eclips installation causing all kind of wierd side effects. So don't do it</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
           <div class="well text-center">http://eclipse.baeyens.it/update/V4/nightly</div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-          <div class="well text-center">http://eclipse.baeyens.it/nightly</div>
-        </div>
-      </div>       <p>Watch these movies to get a quick start:</p>
+       <p>Watch these movies to get a quick start:</p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/MGAyIOC24lU" frameborder="0" allowfullscreen></iframe>
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>
