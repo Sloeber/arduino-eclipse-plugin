@@ -1,6 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "3.1";
+$version = "4.0";
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];
@@ -17,7 +17,7 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 <meta name="author" content="Roberto Lo Giacco">
 <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    
+
     <?php	echo "<title>Arduino Eclipse IDE - $OS Latest Stable</title>"; ?>
 
     <!-- Bootstrap core CSS and theme -->
@@ -59,10 +59,10 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
-         <?php 
+         <?php
         listFiles("V" . $version . '_' . $os);?>
         </div>
-        
+
 
 		<a href="#top" scroll-to="top">Back to top</a>
 		<h3>Plugin update site</h3>
@@ -72,16 +72,18 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 			Eclipse plugin to an existing installation this is the way to go.</p>
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
-				<div class="well text-center">http://www.baeyens.it/eclipse/V3</div>
+				<div class="well text-center">http://eclipse.baeyens.it/update/V4/stable</div>
 			</div>
 		</div>
 		        <div class="row">
-        <p>Watch these V3.0 new and noteworthy video's to get a quick start:</p>
+        <p>Watch these V3.x new and noteworthy video's to get a quick start: (V4 video's are not yet released)</p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/MGAyIOC24lU" frameborder="0" allowfullscreen></iframe>
+
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/x_JKcvqpxq8" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/quT-5SSj-Gg" frameborder="0" allowfullscreen></iframe>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/h-rz2FR3H6Y" frameborder="0" allowfullscreen></iframe>
-		
+
       </div>
 	</div>
 	<!-- /container -->

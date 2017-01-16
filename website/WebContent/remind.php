@@ -88,8 +88,7 @@ Click <a href="http://eclipse.baeyens.it/how_to.shtml#/n">here to see how to upg
       <img src="https://avatars3.githubusercontent.com/u/2698169?v=3&s=60" width=30 height=30><a href="https://github.com/amorellgarcia">amorellgarcia</a><br>
       <img src="https://avatars1.githubusercontent.com/u/10581272?v=3&s=460" width=30 height=30><a href="https://github.com/SuperOok">Hauke Fuhrmann</a><br>
       <img src="https://avatars1.githubusercontent.com/u/1100327?v=3&s=460" width=30 height=30><a href="https://github.com/alexandrezia">Alexandre Zia</a><br>
-    </td>
-    <td>
+      <img src="https://avatars1.githubusercontent.com/u/2027490?v=3&s=60" width=30 height=30><a href="https://github.com/mjmeijer">mjmeijer</a><br>
       <img src="https://avatars1.githubusercontent.com/u/5672365?v=3&s=60" width=30 height=30><a href="https://github.com/AhmedObaidi">AhmedObaidi</a><br>
       <img src="https://avatars1.githubusercontent.com/u/1614482?v=3&s=60" width=30 height=30><a href="https://github.com/paulvi">paulvi</a><br>
       <img src="https://avatars0.githubusercontent.com/u/111074?v=3&s=60" width=30 height=30><a href="https://github.com/tnarik">tnarik</a><br>
