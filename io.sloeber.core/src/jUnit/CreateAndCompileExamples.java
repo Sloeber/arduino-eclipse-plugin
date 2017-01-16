@@ -65,6 +65,12 @@ public class CreateAndCompileExamples {
 			fail("uno Board not found");
 			return null;
 		}
+		BoardDescriptor EsploraBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"esplora", myOptions);
+		if (EsploraBoardid == null) {
+			fail("Esplora Board not found");
+			return null;
+		}
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
@@ -83,6 +89,11 @@ public class CreateAndCompileExamples {
 
 				examples.add(theData);
 			}
+			if (isExampleOkForEsplora(curexample.getKey())) {
+				Object[] theData = new Object[] { "Esplora :" + curexample.getKey(), EsploraBoardid, codeDescriptor };
+
+				examples.add(theData);
+			}
 		}
 
 		return examples;
@@ -97,7 +108,7 @@ public class CreateAndCompileExamples {
 				"examples-09.USB-Mouse-JoystickMouseControl", };
 		if (key.startsWith("Esploraexamples"))
 			return false;
-		if (key.startsWith("TFTexamples-Esplora-EsploraTFTTemp"))
+		if (key.startsWith("TFTexamples-Esplora-Esplora"))
 			return false;
 
 		if (key.contains("Firmata"))
@@ -113,9 +124,20 @@ public class CreateAndCompileExamples {
 				"Firmataexamples-StandardFirmataWiFi" };
 		if (key.contains("Firmata"))
 			return false;
-		if (key.startsWith("TFTexamples-Esplora-EsploraTFTTemp"))
+		if (key.startsWith("TFTexamples-Esplora-Esplora"))
 			return false;
 		if (Arrays.asList(notOkForLeonardo).contains(key))
+			return false;
+		return true; // default everything is fine
+	}
+
+	private static boolean isExampleOkForEsplora(String key) {
+		final String[] notOkForEsplora = { "Firmataexamples-StandardFirmataBLE",
+				"Firmataexamples-StandardFirmataChipKIT", "Firmataexamples-StandardFirmataEthernet",
+				"Firmataexamples-StandardFirmataWiFi" };
+		if (key.startsWith("TFTexamples-Esplora-Esplora"))
+			return false;
+		if (Arrays.asList(notOkForEsplora).contains(key))
 			return false;
 		return true; // default everything is fine
 	}
