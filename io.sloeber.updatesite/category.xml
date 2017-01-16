@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/io.sloeber.feature_4.0.0.qualifier.jar" id="io.sloeber.feature" version="4.0.0.qualifier">
+      <feature url="features/io.sloeber.feature_4.0.1.qualifier.jar" id="io.sloeber.feature" version="4.0.1.qualifier">
       <category name="Sloeber"/>
    </feature>
    <feature url="features/org.eclipse.nebula.widgets.oscilloscope.feature_0.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0">
@@ -45,6 +45,7 @@
    <feature url="features/ilg.gnuarmeclipse.templates.stm_2.5.1.201606210758.jar" id="ilg.gnuarmeclipse.templates.stm" version="2.5.1.201606210758">
       <category name="Dependencies"/>
    </feature>
+
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
