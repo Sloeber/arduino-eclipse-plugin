@@ -407,11 +407,11 @@ public class CreateAndCompile {
 				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "atmega128rfa1", "" }, //
 
 				// Teensy
-				{ "local", Shared.teensyBoards_txt, "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", Shared.teensyBoards_txt, "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", Shared.teensyBoards_txt, "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
-				{ "local", Shared.teensyBoards_txt, "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
-				{ "local", Shared.teensyBoards_txt, "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", Shared.getTeensyBoard_txt(), "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", Shared.getTeensyBoard_txt(), "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
+				{ "local", Shared.getTeensyBoard_txt(), "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
+				{ "local", Shared.getTeensyBoard_txt(), "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
+				{ "local", Shared.getTeensyBoard_txt(), "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
 
 				// TeeOnArdu avr
 				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "TeeOnArdu",
@@ -516,7 +516,7 @@ public class CreateAndCompile {
 				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
-		BoardsManager.referenceLocallInstallation(Shared.teensyInstall);
+		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 	}
 
 	@Test

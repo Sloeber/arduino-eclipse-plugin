@@ -41,6 +41,7 @@ public class Regression {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class Regression {
 		teensyOptions.put("usb", "serial");
 		teensyOptions.put("speed", "96");
 		teensyOptions.put("keys", "en-us");
-		BoardDescriptor teensyBoardid = BoardsManager.getBoardID("local", Shared.teensyBoards_txt, "", "teensy31",
+		BoardDescriptor teensyBoardid = BoardsManager.getBoardID("local", Shared.getTeensyBoard_txt(), "", "teensy31",
 				teensyOptions);
 		IProject theTestProject = null;
 		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
