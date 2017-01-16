@@ -36,7 +36,9 @@ cd arduino-eclipse-plugin
 mvn clean verify
 ```
 
-Then the runnable application executable can be started, i.e. on a 64-bit mac, with:
+### Running the IDE/Plugin
+
+The runnable application executable can be started, i.e. on a 64-bit mac, with:
 
 ```bash
 open io.sloeber.product/target/products/io.sloeber.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
@@ -47,8 +49,6 @@ On Linux you can run start eclipse using provided shell script:
 ```bash
 ./build_then_launch_plugin.sh
 ```
-
-### Running the IDE/Plugin
 
 Windows
 
