@@ -74,12 +74,12 @@ You can control the maven build with the following profiles: (this list may not 
 * linux64
 * mac64
 
-##### Examples:
+##### Examples
     mvn verify -Plinux32 (builds for neon and linux 32 bits)
     mvn verify -Pwin32,mars,linux32
 
-
 To build for neon and the platform you are running on:
+
     mvn clean verify
 
 ### Setting up a repository
