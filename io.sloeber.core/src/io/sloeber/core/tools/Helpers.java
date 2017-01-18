@@ -58,13 +58,13 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
-import io.sloeber.common.Common;
-import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.common.Const;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Manager;
 import io.sloeber.core.managers.ToolDependency;

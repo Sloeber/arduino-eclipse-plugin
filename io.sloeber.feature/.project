@@ -3,7 +3,7 @@
 	<name>io.sloeber.feature</name>
 	<comment></comment>
 	<projects>
-		<project>io.sloeber.common</project>
+		<project>io.sloeber.core.common</project>
 		<project>io.sloeber.core</project>
 		<project>io.sloeber.avreclipse.core</project>
 		<project>io.sloeber.avreclipse.core.managedbuildsystem</project>

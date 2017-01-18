@@ -18,9 +18,9 @@ import com.jcraft.jsch.Session;
 import cc.arduino.packages.ssh.NoInteractionUserInfo;
 import cc.arduino.packages.ssh.SCP;
 import cc.arduino.packages.ssh.SSH;
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
 import io.sloeber.core.api.PasswordManager;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 public class SSHUpload implements IRealUpload {
 

@@ -44,7 +44,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.impl.DNSTaskStarter;
 
-import io.sloeber.common.Const;
+import io.sloeber.core.common.Const;
 
 public class NetworkDiscovery implements ServiceListener {
 

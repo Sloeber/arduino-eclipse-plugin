@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
-import io.sloeber.common.Const;
-import io.sloeber.common.InstancePreferences;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.Libraries;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {

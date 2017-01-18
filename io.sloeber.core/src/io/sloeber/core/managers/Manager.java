@@ -53,10 +53,10 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.gson.Gson;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.ConfigurationPreferences;
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.MyMultiStatus;
 
 public class Manager {

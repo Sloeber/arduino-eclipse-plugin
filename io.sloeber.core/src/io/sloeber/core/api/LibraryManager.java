@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 
-import io.sloeber.common.InstancePreferences;
+import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.LibraryIndex;
 import io.sloeber.core.managers.Manager;
 

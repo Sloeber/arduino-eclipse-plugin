@@ -25,10 +25,10 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
-import io.sloeber.common.IndexHelper;
 import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;

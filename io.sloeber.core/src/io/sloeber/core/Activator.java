@@ -30,10 +30,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
-import io.sloeber.common.Common;
-import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.common.Const;
-import io.sloeber.common.InstancePreferences;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.managers.Manager;

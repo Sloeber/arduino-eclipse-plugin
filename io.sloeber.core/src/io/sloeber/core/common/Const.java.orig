@@ -1,4 +1,4 @@
-package io.sloeber.common;
+package io.sloeber.core.common;
 
 /**
  * ArduinoConst only contains global strings used in the eclipse plugin.

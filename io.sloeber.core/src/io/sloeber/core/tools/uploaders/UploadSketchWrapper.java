@@ -17,11 +17,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 
 public class UploadSketchWrapper {

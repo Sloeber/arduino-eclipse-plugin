@@ -6,7 +6,7 @@ Bundle-Version: 4.0.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: Jan Baeyens
 Bundle-ActivationPolicy: lazy
-Import-Package: io.sloeber.common,
+Import-Package: io.sloeber.core.common,
  org.eclipse.cdt.core,
  org.eclipse.cdt.core.envvar,
  org.eclipse.cdt.core.language.settings.providers,
@@ -36,5 +36,5 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.junit,
  org.eclipse.ui.console,
  org.eclipse.ui.workbench
-Export-Package: io.sloeber.common,
- io.sloeber.core.api
+Export-Package: io.sloeber.core.api,
+ io.sloeber.core.common

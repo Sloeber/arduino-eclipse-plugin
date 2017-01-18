@@ -10,8 +10,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 
 public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands {

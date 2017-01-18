@@ -7,8 +7,8 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 public class CompileOptions {
 

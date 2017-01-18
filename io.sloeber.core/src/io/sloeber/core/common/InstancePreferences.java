@@ -1,4 +1,4 @@
-package io.sloeber.common;
+package io.sloeber.core.common;
 
 import java.io.File;
 
