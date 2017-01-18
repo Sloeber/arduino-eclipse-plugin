@@ -4,19 +4,19 @@
 <extension point="org.eclipse.ui.views">
 	<category
             name="Sloeber"
-            id="io.sloeber.monitor">
+            id="io.sloeber.ui.monitor">
       </category>
-      <view id="io.sloeber.monitor.views.SerialMonitor"
-            category="io.sloeber.monitor"
-            class="io.sloeber.monitor.views.SerialMonitor"
+      <view id="io.sloeber.ui.monitor.views.SerialMonitor"
+            category="io.sloeber.ui.monitor"
+            class="io.sloeber.ui.monitor.views.SerialMonitor"
             icon="icons/arduino.png"
             name="Serial monitor view">
       </view>
       <view
-            category="io.sloeber.monitor"
-            class="io.sloeber.monitor.views.PlotterView"
+            category="io.sloeber.ui.monitor"
+            class="io.sloeber.ui.monitor.views.PlotterView"
             icon="icons/plotter.png"
-            id="io.sloeber.monitor.views.PlotterView"
+            id="io.sloeber.ui.monitor.views.PlotterView"
             name="Plotter"
             restorable="true">
       </view>
@@ -517,7 +517,7 @@ The color used by the fourth serial connection of the serial monitor
       <extension
           point="org.eclipse.debug.ui.launchConfigurationTabGroups">
        <launchConfigurationTabGroup
-             class="io.sloeber.core.ui.launchconfig.LaunchConfigurationTabGroup"
+             class="io.sloeber.ui.core.launchconfig.LaunchConfigurationTabGroup"
              id="io.sloeber.ui.launchconfig.arduinoLaunchConfigurationTabGroup"
              type="io.sloeber.tools.arduinoLaunchConfiguration">
           <launchMode
@@ -539,7 +539,7 @@ The color used by the fourth serial connection of the serial monitor
         <extension
           point="org.eclipse.debug.ui.launchShortcuts">
        <shortcut
-             class="io.sloeber.core.ui.launchconfig.LaunchShortcut"
+             class="io.sloeber.ui.core.launchconfig.LaunchShortcut"
              icon="icons/16px-upload.png"
              id="io.sloeber.ui.launchconfig.launchShortcut"
              label="Arduino Launch"

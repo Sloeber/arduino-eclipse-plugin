@@ -1,4 +1,4 @@
-package io.sloeber.monitor.views;
+package io.sloeber.ui.monitor.views;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -48,9 +48,9 @@ import org.eclipse.ui.themes.IThemeManager;
 import io.sloeber.core.api.ISerialUser;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.monitor.internal.SerialListener;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.helpers.MyPreferences;
+import io.sloeber.ui.monitor.internal.SerialListener;
 
 /**
  * SerialMonitor implements the view that shows the serial monitor. Serial
@@ -65,7 +65,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * The ID of the view as specified by the extension.
 	 */
 	// public static final String ID =
-	// "io.sloeber.monitor.views.SerialMonitor";
+	// "io.sloeber.ui.monitor.views.SerialMonitor";
 	// If you increase this number you must also assign colors in plugin.xml
 	static private final int MY_MAX_SERIAL_PORTS = 6;
 

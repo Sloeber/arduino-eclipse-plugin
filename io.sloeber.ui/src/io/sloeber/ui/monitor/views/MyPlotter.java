@@ -1,4 +1,4 @@
-package io.sloeber.monitor.views;
+package io.sloeber.ui.monitor.views;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

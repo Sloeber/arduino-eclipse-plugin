@@ -29,7 +29,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 		try {
 
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-					.showView("io.sloeber.monitor.views.SerialMonitor"); //$NON-NLS-1$
+					.showView("io.sloeber.ui.monitor.views.SerialMonitor"); //$NON-NLS-1$
 			// find all projects
 			IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 			// if there are project selected and the autoConnectSerial feature
@@ -41,7 +41,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 					if (baud > 0) {
 						String comPort = Sketch.getComport(curproject);
 						if (!comPort.isEmpty()) {
-							io.sloeber.monitor.SerialConnection.add(comPort, baud);
+							io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);
 						}
 					}
 				}

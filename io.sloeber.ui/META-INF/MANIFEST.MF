@@ -22,4 +22,4 @@ Import-Package: io.sloeber.core.api,
  org.eclipse.nebula.widgets.oscilloscope.multichannel,
  org.eclipse.ui.dialogs
 Bundle-Vendor: Jan Baeyens
-Export-Package: io.sloeber.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework"
+Export-Package: io.sloeber.ui.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework"
