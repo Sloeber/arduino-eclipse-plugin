@@ -38,13 +38,13 @@ mvn clean verify
 
 ### Running the IDE/Plugin
 
-The runnable application executable can be started, i.e. on a 64-bit mac, with:
+Sloeber can be started, e.g. on a 64-bit mac, with:
 
 ```bash
 open io.sloeber.product/target/products/io.sloeber.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
 ```
 
-On Linux you can run start eclipse using provided shell script:
+On Linux you can start Sloeber using the provided shell script:
 
 ```bash
 ./build_then_launch_plugin.sh
@@ -75,17 +75,12 @@ You can control the maven build with the following profiles: (this list may not 
 * mac64
 
 ##### Examples:
+    mvn verify -Plinux32 (builds for neon and linux 32 bits)
+    mvn verify -Pwin32,mars,linux32
 
-```bash
-mvn verify -Plinux32 (builds for luna and linux 32 bits)
-mvn verify -Pwin32,mars,linux32
-```
 
-To build for mars and the platform you are running on:
-
-```bash
-mvn clean verify
-```
+To build for neon and the platform you are running on:
+    mvn clean verify
 
 ### Setting up a repository
 
