@@ -1,6 +1,6 @@
-package io.sloeber.monitor;
+package io.sloeber.ui.monitor;
 
-import io.sloeber.monitor.views.SerialMonitor;
+import io.sloeber.ui.monitor.views.SerialMonitor;
 
 public class SerialConnection {
     private SerialConnection() {}

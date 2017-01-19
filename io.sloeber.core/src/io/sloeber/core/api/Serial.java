@@ -38,8 +38,8 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;

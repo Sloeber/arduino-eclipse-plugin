@@ -15,10 +15,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.console.MessageConsole;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
-import io.sloeber.common.IndexHelper;
 import io.sloeber.core.api.PasswordManager;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.communication.ArduinoSerial;
 import io.sloeber.core.tools.Helpers;
 

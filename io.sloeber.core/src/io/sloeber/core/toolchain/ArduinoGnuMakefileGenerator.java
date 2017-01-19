@@ -84,8 +84,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 /**
  * This is a specialized makefile generator that takes advantage of the

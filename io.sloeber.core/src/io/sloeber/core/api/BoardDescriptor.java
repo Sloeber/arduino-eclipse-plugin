@@ -38,10 +38,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
 import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;

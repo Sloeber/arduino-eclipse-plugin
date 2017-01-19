@@ -1,9 +1,9 @@
-package io.sloeber.monitor.views;
+package io.sloeber.ui.monitor.views;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "io.sloeber.monitor.views.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "io.sloeber.ui.monitor.views.messages"; //$NON-NLS-1$
     public static String openSerialDialogBoxSelectTheBautRate;
     public static String openSerialDialogBoxSerialPortToConnectTo;
     public static String openSerialDialogBoxDtr;

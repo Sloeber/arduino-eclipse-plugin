@@ -1,4 +1,4 @@
-package io.sloeber.monitor.internal;
+package io.sloeber.ui.monitor.internal;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.core.api.MessageConsumer;
-import io.sloeber.monitor.views.Messages;
-import io.sloeber.monitor.views.MyPlotter;
 import io.sloeber.ui.Activator;
+import io.sloeber.ui.monitor.views.Messages;
+import io.sloeber.ui.monitor.views.MyPlotter;
 
 public class PlotterListener implements MessageConsumer {
 

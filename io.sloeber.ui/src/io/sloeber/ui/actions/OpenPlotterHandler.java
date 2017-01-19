@@ -19,7 +19,7 @@ public class OpenPlotterHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-					.showView("io.sloeber.monitor.views.PlotterView"); //$NON-NLS-1$
+					.showView("io.sloeber.ui.monitor.views.PlotterView"); //$NON-NLS-1$
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

@@ -14,9 +14,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
-import io.sloeber.common.InstancePreferences;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;
 

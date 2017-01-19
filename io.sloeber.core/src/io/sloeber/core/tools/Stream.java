@@ -11,8 +11,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.common.Common;
 import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
 
 /**
  * the Stream class is used to read the board.txt file

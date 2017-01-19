@@ -20,13 +20,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.ConfigurationPreferences;
-import io.sloeber.common.Const;
-import io.sloeber.common.InstancePreferences;
 import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Board;
 import io.sloeber.core.managers.Manager;

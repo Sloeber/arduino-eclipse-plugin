@@ -47,7 +47,7 @@
                relative="org.eclipse.ui.views.PropertySheet">
          </view>
          <view
-               id="io.sloeber.monitor.views.SerialMonitor"
+               id="io.sloeber.ui.monitor.views.SerialMonitor"
                minimized="false"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView">
@@ -66,7 +66,7 @@
                relative="org.eclipse.ui.editorss">
          </view>
          <view
-               id="io.sloeber.monitor.views.PlotterView"
+               id="io.sloeber.ui.monitor.views.PlotterView"
                minimized="false"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView">

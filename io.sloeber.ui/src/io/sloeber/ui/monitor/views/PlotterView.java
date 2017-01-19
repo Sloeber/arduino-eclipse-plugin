@@ -1,4 +1,4 @@
-package io.sloeber.monitor.views;
+package io.sloeber.ui.monitor.views;
 
 import java.net.URL;
 
@@ -29,9 +29,9 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 import io.sloeber.core.api.Serial;
-import io.sloeber.monitor.internal.PlotterListener;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.helpers.MyPreferences;
+import io.sloeber.ui.monitor.internal.PlotterListener;
 
 public class PlotterView extends ViewPart implements ServiceListener {
 

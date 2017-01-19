@@ -1,4 +1,4 @@
-package io.sloeber.core.ui.launchconfig;
+package io.sloeber.ui.core.launchconfig;
 
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;

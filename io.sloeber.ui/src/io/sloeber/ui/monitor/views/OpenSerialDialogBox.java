@@ -1,4 +1,4 @@
-package io.sloeber.monitor.views;
+package io.sloeber.ui.monitor.views;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;

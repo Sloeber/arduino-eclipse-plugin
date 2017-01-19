@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import io.sloeber.common.Common;
-import io.sloeber.common.Const;
 import io.sloeber.core.api.Serial;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 public class ArduinoSerial {
 

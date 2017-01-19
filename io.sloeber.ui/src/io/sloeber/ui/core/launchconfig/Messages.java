@@ -1,9 +1,9 @@
-package io.sloeber.core.ui.launchconfig;
+package io.sloeber.ui.core.launchconfig;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "io.sloeber.core.ui.launchconfig.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "io.sloeber.ui.core.launchconfig.messages"; //$NON-NLS-1$
     public static String MainTab_browse;
     public static String MainTab_Main;
     public static String MainTab_Project;
