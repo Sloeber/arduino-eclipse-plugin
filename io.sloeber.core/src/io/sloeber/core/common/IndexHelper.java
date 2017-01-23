@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class IndexHelper {
 	/**
 	 * given a list of names from the indexer. Find a function call and return
-	 * the parameter I assume there is only one parameter and it is a string so
-	 * there are quotes
+	 * the parameter I assume there is only one parameter The parameter is
+	 * considered everything between the ()
 	 *
 	 * @param names
 	 *            the names provided by the indexer
@@ -31,23 +31,36 @@ public class IndexHelper {
 	 */
 	private static String findParameterInFunction(IIndexName[] names, String function, String defaultValue) {
 		for (IIndexName name : names) {
-			String SetupFileName = name.getFileLocation().getFileName();
-			String SetupFileContent;
+			String codeFileName = name.getFileLocation().getFileName();
+			String rawCodeFileContent;
 			try {
-				SetupFileContent = FileUtils.readFileToString(new File(SetupFileName));
+				rawCodeFileContent = FileUtils.readFileToString(new File(codeFileName));
 			} catch (IOException e) {
 				return defaultValue;
 			}
-			SetupFileContent = SetupFileContent.replaceAll("//.*|/\\*((.|\\n)(?!=*/))+\\*/", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			int serialBeginStart = SetupFileContent.indexOf(function);
-			if (serialBeginStart != -1) {
-				int serialBeginStartbraket = SetupFileContent.indexOf("(", serialBeginStart); //$NON-NLS-1$
-				if (serialBeginStartbraket != -1) {
-					int serialBeginCloseBraket = SetupFileContent.indexOf(")", serialBeginStartbraket); //$NON-NLS-1$
-					if (serialBeginCloseBraket != -1) {
-						return SetupFileContent.substring(serialBeginStartbraket + 1, serialBeginCloseBraket).trim();
-
+			String codeFileContent = rawCodeFileContent.replaceAll("//.*|/\\*((.|\\n)(?!=*/))+\\*/", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			int functionStart = codeFileContent.indexOf(function);
+			if (functionStart != -1) {
+				int parameterStartQuote = codeFileContent.indexOf("(", functionStart); //$NON-NLS-1$
+				if (parameterStartQuote != -1) {
+					char[] functionParams = codeFileContent.substring(parameterStartQuote, parameterStartQuote + 30)
+							.toCharArray();
+					int curbrackets = 1;
+					int curchar = 1;
+					while ((curbrackets != 0) && (curchar < functionParams.length)) {
+						if (functionParams[curchar] == ')') {
+							curbrackets--;
+						} else {
+							if (functionParams[curchar] == '(') {
+								curbrackets++;
+							}
+						}
+						curchar++;
 					}
+					if (curbrackets == 0) {
+						return codeFileContent.substring(parameterStartQuote + 1, parameterStartQuote + curchar - 1);
+					}
+
 				}
 			}
 		}
