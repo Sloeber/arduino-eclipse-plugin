@@ -17,12 +17,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsole;
 
-import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.communication.ArduinoSerial;
-import io.sloeber.core.tools.Helpers;
 
 public class arduinoUploader implements IRealUpload {
 
@@ -93,11 +91,6 @@ public class arduinoUploader implements IRealUpload {
 		if (boardName.startsWith("Arduino Due ")) { //$NON-NLS-1$
 			ArduinoSerial.reset_Arduino_by_baud_rate(MComPort, 115200, 100);
 		}
-		// for web authorized upload
-		if (needsPassword) {
-			String passWord = getPasswordFromCode();
-			PasswordManager.setPwd(MComPort, myLogin, passWord);
-		}
 
 		return true;
 	}
@@ -111,20 +104,16 @@ public class arduinoUploader implements IRealUpload {
 	 */
 	@SuppressWarnings("nls")
 	private String getPasswordFromCode() {
-		return IndexHelper.findParameterInFunction(this.myProject, "setup", "ArduinoOTA.setPassword",
+		String parameter = IndexHelper.findParameterInFunction(this.myProject, "setup", "ArduinoOTA.setPassword",
 				"no_pwd_found_in_code");
+		return parameter.replaceAll("\\(.*\\)", "").trim();
 
 	}
 
 	private void setEnvironmentvarsForAutorizedUpload(IContributedEnvironment contribEnv,
 			ICConfigurationDescription configurationDescription, String host) {
-		String passWord;
-		PasswordManager pwdManager = new PasswordManager();
-		if (!pwdManager.setHost(Helpers.getHostFromComPort(host))) {
-			passWord = getPasswordFromCode();
-		} else {
-			passWord = pwdManager.getPassword();
-		}
+		String passWord = null;
+		passWord = getPasswordFromCode();
 		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_NETWORK_AUTH, passWord);
 		contribEnv.addVariable(var, configurationDescription);
 
