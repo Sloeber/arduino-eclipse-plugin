@@ -19,8 +19,8 @@ A.PACKAGES={eclipse_home}/arduinoPlugin/packages
 
 
 #for esp8266 network upload
-A.tools.esp8266OTA={A.tools.esptool.network_cmd}
-A.tools.esp8266OTA.upload.pattern={A.tools.esptool.upload.network_pattern}
+A.tools.esp8266OTA={A.TOOLS.ESPTOOL.NETWORK_CMD}
+A.tools.esp8266OTA.upload.pattern={A.TOOLS.ESPTOOL.UPLOAD.NETWORK_PATTERN}
 A.esp8266.network.upload.tool=esp8266OTA
 A.TOOLS.ESPTOOL.NETWORK.PASSWORD={A.NETWORK.AUTH}
 
