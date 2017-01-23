@@ -13,6 +13,8 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.api.PasswordManager;
@@ -77,14 +79,15 @@ public class arduinoUploader implements IRealUpload {
 			command = envManager
 					.getVariable(Common.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
 					.getValue();
-		} catch (Exception e) {// ignore all errors
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to get the Upload recipe ", e)); //$NON-NLS-1$
+			return false;
 		}
 
 		try {
 			GenericLocalUploader.RunConsoledCommand(this.myConsole, command, monitor);
 		} catch (IOException e1) {
-			e1.printStackTrace();
-
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to run the Upload recipe ", e1)); //$NON-NLS-1$
 			return false;
 		}
 		if (boardName.startsWith("Arduino Due ")) { //$NON-NLS-1$
