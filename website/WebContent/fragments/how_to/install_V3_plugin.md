@@ -8,7 +8,7 @@ If you are not sure what you want to install please see the
 Detailed installation instructions
 -----
  
-**install Eclipse Mars** 
+**install Eclipse Mars or neon** 
 
 You want the C++ version
 

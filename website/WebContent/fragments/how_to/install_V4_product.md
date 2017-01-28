@@ -1,4 +1,4 @@
-This page contains Detailed instructions on how to install the Arduino Eclipse version 3 product.
+This page contains Detailed instructions on how to install the Arduino Eclipse version 4 product.
 ===
 
 This is the most advised installation.
@@ -12,7 +12,7 @@ If you are not sure what you want to install please see the
 
  0. Make sure you have Java 8 on your system.
  1. Download the product version for your platform
- 2. Unpack the file downloaded in a folder (on windows use 7zip to unzip and untar )
+ 2. Unpack the file downloaded in a folder (on windows use 7zip to unzip and untar ) (on mac do not unzip in the download folder)
  3. start eclipse product
  4. wait for the product to download the Arduino AVR boards and tools
 
