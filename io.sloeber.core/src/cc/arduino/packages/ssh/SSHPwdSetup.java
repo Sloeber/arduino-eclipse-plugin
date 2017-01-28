@@ -29,45 +29,23 @@
 
 package cc.arduino.packages.ssh;
 
-import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
-@SuppressWarnings({ "unqualified-field-access" })
-public class NoInteractionUserInfo implements UserInfo {
+import cc.arduino.packages.BoardPort;
 
-	private final String password;
-
-	public NoInteractionUserInfo(String password) {
-		this.password = password;
-	}
+@SuppressWarnings({ "nls" })
+public class SSHPwdSetup implements SSHClientSetupChainRing {
 
 	@Override
-	public String getPassword() {
-		return password;
-	}
+	public Session setup(BoardPort port, JSch jSch) throws JSchException {
+		String ipAddress = port.getAddress();
 
-	@Override
-	public boolean promptYesNo(String str) {
-		return true;
-	}
+		Session session = jSch.getSession("root", ipAddress, 22);
+		// session.setPassword(PreferencesData.get("runtime.pwd." + ipAddress));
 
-	@Override
-	public String getPassphrase() {
-		return password;
-	}
-
-	@Override
-	public boolean promptPassphrase(String message) {
-		return true;
-	}
-
-	@Override
-	public boolean promptPassword(String message) {
-		return true;
-	}
-
-	@Override
-	public void showMessage(String message) {
-		//
+		return session;
 	}
 
 }
