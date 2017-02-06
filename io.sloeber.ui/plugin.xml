@@ -9,7 +9,7 @@
       <view id="io.sloeber.ui.monitor.views.SerialMonitor"
             category="io.sloeber.ui.monitor"
             class="io.sloeber.ui.monitor.views.SerialMonitor"
-            icon="icons/arduino.png"
+            icon="icons/serial.png"
             name="Serial monitor view">
       </view>
       <view
@@ -348,34 +348,30 @@ The color used by the fourth serial connection of the serial monitor
           </visibleWhen>
           <command
                 commandId="io.sloeber.actions.ArduinoBuildAction"
-                disabledIcon="icons/check_disabled.png"
                 icon="icons/check.png"
                 label="%command.label"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.UploadprojectAction"
-                disabledIcon="icons/arrow_disabled.png"
                 icon="icons/arrow.png"
                 label="%command.name"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.NewSketchAction"
-                disabledIcon="icons/new_disabled.png"
                 icon="icons/new.png"
                 label="%command.label.1"
                 style="push">
           </command>
           <command
                 commandId="org.eclipse.ui.file.save"
-                disabledIcon="icons/save_disabled.png"
+                disabledIcon="icons/save_dis.png"
                 icon="icons/save.png"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenSerialMonitorAction"
-                disabledIcon="icons/ser_mon_disabled.png"
                 icon="icons/ser_mon.png"
                 label="%command.label.2"
                 style="push">
