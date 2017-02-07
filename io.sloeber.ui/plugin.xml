@@ -159,6 +159,9 @@ The color used by the fourth serial connection of the serial monitor
           %wizard.description
        </description>
     </wizard>
+    <primaryWizard
+          id="io.sloeber.eclipse.NewArduinoSketchWizard">
+    </primaryWizard>
  </extension>
  <extension
        point="org.eclipse.ui.propertyPages">
@@ -561,4 +564,16 @@ The color used by the fourth serial connection of the serial monitor
           </contextualLaunch>
        </shortcut>
     </extension>
+        <extension
+              point="org.eclipse.ui.navigator.navigatorContent">
+           <commonWizard
+                 type="new"
+                 wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
+              <enablement>
+                 <count
+                       value="*">
+                 </count>
+              </enablement>
+           </commonWizard>
+        </extension>
 </plugin>
