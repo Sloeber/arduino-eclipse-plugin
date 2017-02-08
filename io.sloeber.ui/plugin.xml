@@ -537,14 +537,14 @@ The color used by the fourth serial connection of the serial monitor
         point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
            class="io.sloeber.ui.project.properties.BoardSelectionPage"
-           icon="icons/arduino.png"
+           icon="platform:/plugin/io.sloeber.application/icons/logo_16.png"
            name="Arduino board selection"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
      </tab>
      <tab
            class="io.sloeber.ui.project.properties.CompileProperties"
-           icon="icons/verify.png"
+           icon="icons/preferences.png"
            name="Compile Options"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
