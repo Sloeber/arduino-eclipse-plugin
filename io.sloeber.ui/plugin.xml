@@ -159,6 +159,9 @@ The color used by the fourth serial connection of the serial monitor
           %wizard.description
        </description>
     </wizard>
+    <primaryWizard
+          id="io.sloeber.eclipse.NewArduinoSketchWizard">
+    </primaryWizard>
  </extension>
  <extension
        point="org.eclipse.ui.propertyPages">
@@ -332,6 +335,18 @@ The color used by the fourth serial connection of the serial monitor
              optional="true">
        </commandParameter>
     </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.OpenPreferencesHandler"
+          description="Open Sloeber preferences"
+          id="io.sloeber.ui.actions.openPreferences"
+          name="Preferences">
+       <commandParameter
+             id="io.sloeber.ui.actions.openPreferences.pageId"
+             name="Page ID"
+             optional="false">
+       </commandParameter>
+    </command>
  </extension>
   <extension
        point="org.eclipse.ui.menus">
@@ -396,37 +411,45 @@ The color used by the fourth serial connection of the serial monitor
           </visibleWhen>
           <command
                 commandId="io.sloeber.actions.ArduinoBuildAction"
+                icon="icons/check.png"
                 id="buildProject">
           </command>
           <command
                 commandId="io.sloeber.actions.UploadprojectAction"
+                icon="icons/arrow.png"
                 id="UploadprojectAction"
                 tooltip="%command.tooltip">
           </command>
           <command
                 commandId="io.sloeber.actions.NewSketchAction"
+                icon="icons/new.png"
                 id="NewSketchAction">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenSerialMonitorAction"
+                icon="icons/ser_mon.png"
                 id="OpenSerialMonitorAction">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenPlotterAction"
+                icon="icons/toolbar_plotter.png"
                 id="OpenPlotterAction">
           </command>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"
+                icon="icons/library.png"
                 id="AddLibraryAction"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.AddSourceFolderAction"
+                icon="icons/folder.png"
                 id="AddSourceFolderAction"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.ReattachLibraries"
+                icon="icons/hammer.png"
                 id="ReattachLibrariesAction"
                 style="push">
           </command>
@@ -436,6 +459,7 @@ The color used by the fourth serial connection of the serial monitor
           </separator>
           <command
                 commandId="io.sloeber.core.open.link"
+                icon="icons/help.png"
                 id="open.how.toweb.page"
                 label="How To..."
                 style="push">
@@ -446,6 +470,7 @@ The color used by the fourth serial connection of the serial monitor
           </command>
           <command
                 commandId="io.sloeber.core.open.link"
+                icon="icons/learn.png"
                 id="open.how.toweb.page"
                 label="Learn..."
                 style="push">
@@ -456,12 +481,27 @@ The color used by the fourth serial connection of the serial monitor
           </command>
           <command
                 commandId="io.sloeber.core.open.link"
+                icon="icons/tape.png"
                 id="open.youTube.page"
                 label="Videos..."
                 style="push">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://www.youtube.com/playlist?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF">
+             </parameter>
+          </command>
+          <separator
+                name="io.sloeber.core.separator2"
+                visible="true">
+          </separator>
+          <command
+                commandId="io.sloeber.ui.actions.openPreferences"
+                icon="icons/preferences.png"
+                label="Preferences"
+                style="push">
+             <parameter
+                   name="io.sloeber.ui.actions.openPreferences.pageId"
+                   value="io.sloeber.eclipse.ArduinoPreferencePage">
              </parameter>
           </command>
        </menu>
@@ -497,14 +537,14 @@ The color used by the fourth serial connection of the serial monitor
         point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
            class="io.sloeber.ui.project.properties.BoardSelectionPage"
-           icon="icons/arduino.png"
+           icon="platform:/plugin/io.sloeber.application/icons/logo_16.png"
            name="Arduino board selection"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
      </tab>
      <tab
            class="io.sloeber.ui.project.properties.CompileProperties"
-           icon="icons/verify.png"
+           icon="icons/preferences.png"
            name="Compile Options"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
@@ -561,4 +601,16 @@ The color used by the fourth serial connection of the serial monitor
           </contextualLaunch>
        </shortcut>
     </extension>
+        <extension
+              point="org.eclipse.ui.navigator.navigatorContent">
+           <commonWizard
+                 type="new"
+                 wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
+              <enablement>
+                 <count
+                       value="*">
+                 </count>
+              </enablement>
+           </commonWizard>
+        </extension>
 </plugin>
