@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Text;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.common.Const;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
@@ -57,7 +59,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	protected Combo mControlUploadProtocol;
 	protected LabelCombo mControlUploadPort;
 	protected LabelCombo[] mBoardOptionCombos = null;
-	private final int ncol = 2;
+	private final int ncol = 3;
 	protected Listener mBoardSelectionChangedListener = null;
 	protected BoardDescriptor myBoardID = null;
 
@@ -133,6 +135,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	private Composite mComposite;
 
 	private TreeMap<String, String> mAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+	private org.eclipse.swt.widgets.Button mPwdButton;
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -220,11 +224,32 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mControlUploadProtocol.setEnabled(false);
 
 		// ----
-		this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, null, this.ncol - 1, false);
+		this.mControlUploadPort = new LabelCombo(composite, Messages.ui_port, null, this.ncol - 2, false);
 
 		this.mControlUploadPort
 				.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
-
+		this.mPwdButton = new org.eclipse.swt.widgets.Button(composite, SWT.PUSH | SWT.CENTER);
+		this.mPwdButton.setText("Set or remove password");
+		this.mPwdButton.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				switch (e.type) {
+				case SWT.Selection:
+					String host = getUpLoadPort().split(Const.SPACE)[0];
+					if (host.equals(getUpLoadPort())) {
+						Activator
+								.log(new Status(IStatus.INFO, Activator.getId(), Messages.port_is_not_a_computer_name));
+					} else {
+						PasswordManager passwordManager = new PasswordManager();
+						PasswordDialog dialog = new PasswordDialog(composite.getShell());
+						passwordManager.setHost(host);
+						dialog.setPasswordManager(passwordManager);
+						dialog.open();
+					}
+					break;
+				}
+			}
+		});
 		createLine(composite, this.ncol);
 
 		TreeMap<String, String> menus = BoardsManager.getAllmenus();
@@ -334,12 +359,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	private void setValues(ICConfigurationDescription confdesc) {
 
 		this.mControlBoardsTxtFile.setText(tidyUpLength(this.myBoardID.getBoardsFile()));
-		// if no boards file is selected select the first
-		// if (this.mControlBoardsTxtFile.getText().isEmpty()) {
-		// this.mControlBoardsTxtFile.setText(this.mControlBoardsTxtFile.getItem(0));
-		// this.myBoardID.setBoardsFile(this.mAllBoardsFiles[0]);
-		// }
-
 		this.mcontrolBoardName.setItems(this.myBoardID.getCompatibleBoards());
 		this.mcontrolBoardName.setText(this.myBoardID.getBoardName());
 
@@ -436,9 +455,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return new File(longText);
 	}
 
-	private String getUpLoadPort() {
+	public String getUpLoadPort() {
 		if (this.mControlUploadPort == null) {
-			return ""; //$NON-NLS-1$
+			return new String();
 		}
 		return this.mControlUploadPort.getValue();
 	}

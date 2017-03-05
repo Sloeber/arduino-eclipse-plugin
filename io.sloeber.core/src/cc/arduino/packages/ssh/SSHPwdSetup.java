@@ -29,21 +29,44 @@
 
 package cc.arduino.packages.ssh;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import cc.arduino.packages.BoardPort;
+import io.sloeber.core.api.PasswordManager;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.tools.uploaders.Messages;
 
-@SuppressWarnings({ "nls" })
+@SuppressWarnings({})
 public class SSHPwdSetup implements SSHClientSetupChainRing {
 
 	@Override
 	public Session setup(BoardPort port, JSch jSch) throws JSchException {
-		String ipAddress = port.getAddress();
+		String hostLogin = new String();
+		String hostPwd = new String();
+		String host = port.getBoardName();
+		PasswordManager pwdManager = new PasswordManager();
+		if (pwdManager.setHost(port.getBoardName())) {
+			hostLogin = pwdManager.getLogin();
+			hostPwd = pwdManager.getPassword();
 
-		Session session = jSch.getSession("root", ipAddress, 22);
-		// session.setPassword(PreferencesData.get("runtime.pwd." + ipAddress));
+		} else {
+			// The user should set the password in the project
+			// properties->arduino
+			Common.log(
+					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing + host));
+
+			return null;
+		}
+
+		Session session = jSch.getSession(hostLogin, host, 22);
+
+		session.setUserInfo(new NoInteractionUserInfo(hostPwd));
 
 		return session;
 	}

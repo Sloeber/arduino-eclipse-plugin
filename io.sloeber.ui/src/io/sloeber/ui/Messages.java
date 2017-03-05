@@ -61,7 +61,7 @@ public class Messages extends NLS {
 	public static String ui_private_lib_path;
 	public static String ui_private_lib_path_help;
 
-	public static String ui_sec_login;
+	public static String ui_sec_delete;
 	public static String ui_sec_login_and_password;
 	public static String ui_sec_password;
 	public static String ui_select;
@@ -104,6 +104,10 @@ public class Messages extends NLS {
 	public static String doYouWantToBuildBeforeUpload;
 
 	public static String packageTooltip;
+
+	public static String ui_sec_login;
+
+	public static String port_is_not_a_computer_name;
 
 	static {
 		// initialize resource bundle

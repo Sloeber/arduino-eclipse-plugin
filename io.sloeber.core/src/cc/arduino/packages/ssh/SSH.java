@@ -31,7 +31,8 @@ package cc.arduino.packages.ssh;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
+
+import org.eclipse.ui.console.MessageConsoleStream;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -52,8 +53,8 @@ public class SSH {
 	}
 
 	@SuppressWarnings("resource")
-	public boolean execSyncCommand(String command, PrintStream stdoutConsumer, PrintStream stderrConsumer)
-			throws JSchException, IOException {
+	public boolean execSyncCommand(String command, MessageConsoleStream stdoutConsumer,
+			MessageConsoleStream stderrConsumer) throws JSchException, IOException {
 		InputStream stdout = null;
 		InputStream stderr = null;
 		Channel channel = null;
@@ -68,7 +69,7 @@ public class SSH {
 
 			channel.connect();
 
-			int exitCode = consumeOutputSyncAndReturnExitCode(channel, stdout, stdoutConsumer, stderr, stderrConsumer);
+			int exitCode = consumeOutputSyncAndReturnExitCode(channel);
 
 			return exitCode == 0;
 
@@ -90,12 +91,8 @@ public class SSH {
 		}
 	}
 
-	private int consumeOutputSyncAndReturnExitCode(Channel channel, InputStream stdout, PrintStream stdoutConsumer,
-			InputStream stderr, PrintStream stderrConsumer) throws IOException {
-		byte[] tmp = new byte[102400];
+	private static int consumeOutputSyncAndReturnExitCode(Channel channel) {
 		while (true) {
-			consumeStream(tmp, stdout, stdoutConsumer);
-			consumeStream(tmp, stderr, stderrConsumer);
 
 			if (channel.isClosed()) {
 				return channel.getExitStatus();
@@ -108,17 +105,18 @@ public class SSH {
 		}
 	}
 
-	@SuppressWarnings("static-method")
-	private void consumeStream(byte[] buffer, InputStream in, PrintStream out) throws IOException {
-		while (in.available() > 0) {
-			int length = in.read(buffer, 0, buffer.length);
-			if (length < 0) {
-				break;
-			}
-			if (out != null) {
-				out.print(new String(buffer, 0, length));
-			}
-		}
-	}
+	// @SuppressWarnings("static-method")
+	// private void consumeStream(byte[] buffer, InputStream in, PrintStream
+	// out) throws IOException {
+	// while (in.available() > 0) {
+	// int length = in.read(buffer, 0, buffer.length);
+	// if (length < 0) {
+	// break;
+	// }
+	// if (out != null) {
+	// out.print(new String(buffer, 0, length));
+	// }
+	// }
+	// }
 
 }
