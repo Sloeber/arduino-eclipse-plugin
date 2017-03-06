@@ -136,7 +136,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 *       Checkbox settings
 	 */
 	protected void SetControls() {
-		switch (CodeTypes.values()[Math.max(0,this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
+		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
 		case defaultIno:
 			this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 			this.mExampleEditor.setEnabled(false);
@@ -177,9 +177,9 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			break;
 		case CustomTemplate:
 			IPath templateFolder = new Path(this.mTemplateFolderEditor.getStringValue());
-			File cppFile = templateFolder.append("sketch.cpp").toFile(); //$NON-NLS-1$
-			File headerFile = templateFolder.append("sketch.h").toFile(); //$NON-NLS-1$
-			File inoFile = templateFolder.append("sketch.ino").toFile(); //$NON-NLS-1$
+			File cppFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_CPP).toFile();
+			File headerFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_H).toFile();
+			File inoFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_INO).toFile();
 			boolean existFile = inoFile.isFile() || (cppFile.isFile() && headerFile.isFile());
 			setPageComplete(existFile);
 			break;
