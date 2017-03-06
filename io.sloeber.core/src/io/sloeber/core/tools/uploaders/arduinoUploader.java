@@ -27,7 +27,6 @@ public class arduinoUploader implements IRealUpload {
 	private IProject myProject;
 	private String mycConf;
 	private MessageConsole myConsole;
-	private static final String myLogin = "root"; //$NON-NLS-1$
 
 	arduinoUploader(IProject Project, String cConf, String UploadTool, MessageConsole Console) {
 		this.myProject = Project;

@@ -29,45 +29,18 @@
 
 package cc.arduino.packages.ssh;
 
-import com.jcraft.jsch.UserInfo;
+import cc.arduino.packages.BoardPort;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
-@SuppressWarnings({ "unqualified-field-access" })
-public class NoInteractionUserInfo implements UserInfo {
+import java.io.IOException;
 
-	private final String password;
+public interface SSHClientSetupChainRing {
 
-	public NoInteractionUserInfo(String password) {
-		this.password = password;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public boolean promptYesNo(String str) {
-		return true;
-	}
-
-	@Override
-	public String getPassphrase() {
-		return password;
-	}
-
-	@Override
-	public boolean promptPassphrase(String message) {
-		return true;
-	}
-
-	@Override
-	public boolean promptPassword(String message) {
-		return true;
-	}
-
-	@Override
-	public void showMessage(String message) {
-		//
-	}
+  /*
+  Chain is actually useless as default JSCH behaviour is to follow SSH Server authentication methods list
+   */
+  Session setup(BoardPort port, JSch jSch) throws JSchException, IOException;
 
 }

@@ -29,45 +29,46 @@
 
 package cc.arduino.packages.ssh;
 
-import com.jcraft.jsch.UserInfo;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
-@SuppressWarnings({ "unqualified-field-access" })
-public class NoInteractionUserInfo implements UserInfo {
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
-	private final String password;
+import cc.arduino.packages.BoardPort;
+import io.sloeber.core.api.PasswordManager;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+import io.sloeber.core.tools.uploaders.Messages;
 
-	public NoInteractionUserInfo(String password) {
-		this.password = password;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public boolean promptYesNo(String str) {
-		return true;
-	}
+@SuppressWarnings({})
+public class SSHPwdSetup implements SSHClientSetupChainRing {
 
 	@Override
-	public String getPassphrase() {
-		return password;
-	}
+	public Session setup(BoardPort port, JSch jSch) throws JSchException {
+		String hostLogin = new String();
+		String hostPwd = new String();
+		String host = port.getBoardName();
+		PasswordManager pwdManager = new PasswordManager();
+		if (pwdManager.setHost(port.getBoardName())) {
+			hostLogin = pwdManager.getLogin();
+			hostPwd = pwdManager.getPassword();
 
-	@Override
-	public boolean promptPassphrase(String message) {
-		return true;
-	}
+		} else {
+			// The user should set the password in the project
+			// properties->arduino
+			Common.log(
+					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing + host));
 
-	@Override
-	public boolean promptPassword(String message) {
-		return true;
-	}
+			return null;
+		}
 
-	@Override
-	public void showMessage(String message) {
-		//
+		Session session = jSch.getSession(hostLogin, host, 22);
+
+		session.setUserInfo(new NoInteractionUserInfo(hostPwd));
+
+		return session;
 	}
 
 }

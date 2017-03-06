@@ -10,7 +10,7 @@
     Also the tools are not tested by Arduino in 64 bit. This explains  for instance why the serial monitor does not work with Leonardo in 64 bit but it does in 32 bit.<br/>
     So unless you really need 64bit Eclipse I strongly advice 32 bit Eclipse.<br/>
     Update: Arduino started to support 64 bit on Linux so that may be an exception.<br/>
-    
+
   </accordion-group>
   <accordion-group heading="Are there any restrictions to the project name?">
     Because of the toolchain used folowing characters are changed to '_' when given as project name in the new project wizard : ' '; '(' ; ')'.<br/>
@@ -24,15 +24,19 @@
     You can have all your projects in the same Eclipse workspace. There is no benefit of splitting them over workspaces..
   </accordion-group>
   <accordion-group heading="What is the best way to work with multiple Arduino versions (0022 0023 1.0 1.01)?">
+    From V3 onwards you can have mutiple arduino versions in the same workspace.
+    This allows for a gradual upgrade process.
+    Pre V3:
     Each Arduino version should have its own Eclipse workspace. Changing Arduino version in the plugin may corrupt the plugin settings.
     In V2 I have experimented with creating hardwares that are actually Arduino versions. This works out fine but has the drawback that it is very easy to make mistakes.
-    
+
   </accordion-group>
   <accordion-group heading="How do you advice to use the Eclipse workspaces?">
     I keep all my Arduino projects in one Eclipse workspace. I make sure they al compile so there are no errors in the problem view.<br/>
     I work this way, and I'm not sure I would advice this way of working.<br/>
     I would advice starting with only one workspace. You may decide not to upgrade all you projects to the latest Arduino version.<br/>
-    At that point in time you will need an extra workspace. If you end up with plenty of projects in the same workspace you may find it is easier to split the workspace.<br/>
+    From V3 onwords even that can be done in one workspace. If you end up with plenty of projects in the same workspace you may find it is easier to split the workspace.<br/>
+    Note that eclipse supports closing projects which improves performance.<br/>
     Note that splitting a workspace does not involve plenty of work as Eclipse supports drag and drop.
   </accordion-group>
 </accordion>
