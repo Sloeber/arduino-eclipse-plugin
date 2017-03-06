@@ -237,8 +237,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 				case SWT.Selection:
 					String host = getUpLoadPort().split(Const.SPACE)[0];
 					if (host.equals(getUpLoadPort())) {
-						Activator
-								.log(new Status(IStatus.INFO, Activator.getId(), Messages.port_is_not_a_computer_name));
+						Activator.log(
+								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
 					} else {
 						PasswordManager passwordManager = new PasswordManager();
 						PasswordDialog dialog = new PasswordDialog(composite.getShell());
