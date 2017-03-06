@@ -264,10 +264,11 @@ public class Manager {
 	}
 
 	private static void loadLibraryIndex(boolean download) {
+		File librariesFile = null;
 		try {
 			URL librariesUrl = new URL(Defaults.LIBRARIES_URL);
 			String localFileName = Paths.get(librariesUrl.getPath()).getFileName().toString();
-			File librariesFile = ConfigurationPreferences.getInstallationPath().append(localFileName).toFile();
+			librariesFile = ConfigurationPreferences.getInstallationPath().append(localFileName).toFile();
 			if (!librariesFile.exists() || download) {
 				librariesFile.getParentFile().mkdirs();
 				myCopy(librariesUrl, librariesFile);
@@ -280,7 +281,8 @@ public class Manager {
 				}
 			}
 		} catch (IOException e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to load library index", e)); //$NON-NLS-1$
+			Common.log(
+					new Status(IStatus.ERROR, Activator.getId(), "Failed to load library index: " + librariesFile, e)); //$NON-NLS-1$
 		}
 
 	}
