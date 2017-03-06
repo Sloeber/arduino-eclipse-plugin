@@ -32,6 +32,11 @@ public class CodeDescriptor {
 		defaultIno, defaultCPP, CustomTemplate, sample
 	}
 
+	static public final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
+	static public final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
+	static public final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
+	static public final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
+
 	private CodeTypes codeType;
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
@@ -112,14 +117,19 @@ public class CodeDescriptor {
 
 		switch (this.codeType) {
 		case defaultIno:
-			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"), Stream.openContentStream(
-					project.getName(), Include, "/io/sloeber/core/templates/sketch.ino", false), monitor, false);
+			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
+					Stream.openContentStream(project.getName(), Include,
+							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false),
+					monitor, false);
 			break;
 		case defaultCPP:
-			Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"), Stream.openContentStream(
-					project.getName(), Include, "/io/sloeber/core/templates/sketch.cpp", false), monitor, false);
+			Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"),
+					Stream.openContentStream(project.getName(), Include,
+							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false),
+					monitor, false);
 			Helpers.addFileToProject(project, new Path(project.getName() + ".h"),
-					Stream.openContentStream(project.getName(), Include, "/io/sloeber/core/templates/sketch.h", false),
+					Stream.openContentStream(project.getName(), Include,
+							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false),
 					monitor, false);
 			break;
 		case CustomTemplate:
@@ -132,7 +142,11 @@ public class CodeDescriptor {
 				for (String file : files) {
 					if (!(file.equals(".") || file.equals(".."))) {
 						File sourceFile = folderName.append(file).toFile();
-						Helpers.addFileToProject(project, new Path(file),
+						String renamedFile = file;
+						if (DEFAULT_SKETCH_INO.equalsIgnoreCase(file)) {
+							renamedFile = project.getName() + ".ino";
+						}
+						Helpers.addFileToProject(project, new Path(renamedFile),
 								Stream.openContentStream(project.getName(), Include, sourceFile.toString(), true),
 								monitor, false);
 					}
