@@ -68,7 +68,7 @@ public class Sketch {
 				@Override
 				protected IStatus run(IProgressMonitor _monitor) {
 					try {
-						String buildflag = "FuStatub"; //$NON-NLS-1$
+						String buildflag = "FbStatus"; //$NON-NLS-1$
 						char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i',
 								't', '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a',
 								'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',

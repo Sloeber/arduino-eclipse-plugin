@@ -28,10 +28,6 @@ public class PleaseHelp extends Dialog {
 	}
 
 	@Override
-	protected void handleShellCloseEvent() {// JABA is not going to add code
-	}
-
-	@Override
 	protected Control createContents(Composite parent) {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
