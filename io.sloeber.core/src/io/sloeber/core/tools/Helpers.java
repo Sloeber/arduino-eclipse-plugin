@@ -475,6 +475,8 @@ public class Helpers extends Common {
 	 * platform.txt file. Here I set these values. This method should be called
 	 * as first. This way the values in platform.txt and boards.txt will take
 	 * precedence of the default values declared here
+	 * 
+	 * @param projectName
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -482,7 +484,7 @@ public class Helpers extends Common {
 	 *            Used to define the hardware as different settings are needed
 	 *            for avr and sam
 	 */
-	private static void setTheEnvironmentVariablesSetTheDefaults(IContributedEnvironment contribEnv,
+	private static void setTheEnvironmentVariablesSetTheDefaults(String projectName, IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, BoardDescriptor boardDescriptor) {
 		// Set some default values because the platform.txt does not contain
 		// them
@@ -538,7 +540,7 @@ public class Helpers extends Common {
 		} else {
 			sizeSwitch.toString();
 		}
-
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PROJECT_NAME, projectName);
 	}
 
 	private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
@@ -754,7 +756,7 @@ public class Helpers extends Common {
 		// first remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
 
-		setTheEnvironmentVariablesSetTheDefaults(contribEnv, confDesc, boardsDescriptor);
+		setTheEnvironmentVariablesSetTheDefaults(project.getName(), contribEnv, confDesc, boardsDescriptor);
 
 		// add the stuff that comes with the plugin that are marked as pre
 		setTheEnvironmentVariablesAddAFile(new String(), contribEnv, confDesc, pluginPreProcessingPlatformTxt, false);
@@ -1104,12 +1106,15 @@ public class Helpers extends Common {
 				makeEnvironmentVar(ENV_KEY_JANTJE_BUILD_VARIANT));
 	}
 
-	public static void setBuildEnvironmentVariableRecipe(IContributedEnvironment contribEnv,
+	private static void setBuildEnvironmentVariableRecipe(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confdesc, String key, String recipe) {
 
 		IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(recipe));
 		contribEnv.addVariable(var, confdesc);
 
+		// The expansion is needed because the adaptCompilerCommand can not
+		// handle
+		// noon extended environment variables
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		var = envManager.getVariable(key, confdesc, true);
 		var = new EnvironmentVariable(key, adaptCompilerCommand(var.getValue()));
@@ -1117,6 +1122,7 @@ public class Helpers extends Common {
 
 	}
 
+	@SuppressWarnings("nls")
 	/*
 	 * due to the way arduino and cdt work some conversions are needed her.
 	 * replaceAll(" -MMD ", " ") CDT adds -MMD so we delete them
@@ -1137,7 +1143,6 @@ public class Helpers extends Common {
 	 *
 	 * I also do some stuff for the warning settings
 	 */
-	@SuppressWarnings("nls")
 	private static String adaptCompilerCommand(String recipe) {
 		String ret = recipe.replaceAll(" -MMD ", " ");
 		ret = ret.replaceAll("[^\\\\]\"\"", "");

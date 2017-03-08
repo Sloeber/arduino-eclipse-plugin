@@ -13,9 +13,11 @@ package io.sloeber.core.listeners;
  */
 
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -92,20 +94,28 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
 		// We have a arduino project so we are safe.
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
+		ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
+		IProject activeProject = projDesc.getProject();
 
-		if (!projDesc.getName().equals(oldprojDesc.getName())) {
-			// only act upon switching configurations
+		InternalBoardDescriptor oldBoardDescriptor = (InternalBoardDescriptor) BoardDescriptor
+				.makeBoardDescriptor(oldprojDesc.getActiveConfiguration());
+		InternalBoardDescriptor newBoardDescriptor = (InternalBoardDescriptor) BoardDescriptor
+				.makeBoardDescriptor(activeConf);
 
-			Helpers.setTheEnvironmentVariables(projDesc.getProject(), projDesc.getActiveConfiguration(),
-					(InternalBoardDescriptor) BoardDescriptor.makeBoardDescriptor(projDesc.getActiveConfiguration()));
-			try {
-
-				Helpers.addArduinoCodeToProject(projDesc.getProject(), projDesc.getActiveConfiguration());
-			} catch (Exception e) {
-				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
+		if (oldBoardDescriptor.equals(newBoardDescriptor)) {
+			if (event.getProject().getName().equals(oldBoardDescriptor.getProjectName())) {
+				// only act when there is change
+				return;
 			}
-			Libraries.reAttachLibrariesToProject(projDesc.getActiveConfiguration());
 		}
+		Helpers.setTheEnvironmentVariables(activeProject, activeConf, newBoardDescriptor);
+		try {
+
+			Helpers.addArduinoCodeToProject(activeProject, activeConf);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
+		}
+		Libraries.reAttachLibrariesToProject(activeConf);
 	}
 
 }

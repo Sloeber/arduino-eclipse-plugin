@@ -48,6 +48,7 @@ import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
 public class BoardDescriptor {
+
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	/**
@@ -57,6 +58,7 @@ public class BoardDescriptor {
 	private String myUploadPort;
 	private String myUploadProtocol;
 	private String myBoardID;
+	private String myProjectName = new String();
 	private Map<String, String> myOptions;
 	private File myBoardsFile;
 	protected TxtFile myTxtFile;
@@ -69,6 +71,32 @@ public class BoardDescriptor {
 	private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
 	private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
 	private static final String MENUSELECTION = Const.ENV_KEY_JANTJE_START + "MENU."; //$NON-NLS-1$
+
+	public boolean equals(BoardDescriptor obj) {
+		if (!this.getUploadPort().equals(obj.getUploadPort())) {
+			return false;
+		}
+		if (!this.getUploadProtocol().equals(obj.getUploadProtocol())) {
+			return false;
+		}
+		if (!this.getBoardID().equals(obj.getBoardID())) {
+			return false;
+		}
+		if (!this.getBoardsFile().equals(obj.getBoardsFile())) {
+			return false;
+		}
+		if (!this.getOptions().equals(obj.getOptions())) {
+			return false;
+		}
+		if (!this.getProjectName().equals(obj.getProjectName())) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getProjectName() {
+		return this.myProjectName;
+	}
 
 	/*
 	 * Create a sketchProject. This class does not really create a sketch
@@ -105,6 +133,7 @@ public class BoardDescriptor {
 			this.myBoardsFile = new File(
 					Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARDS_FILE, ""));
 			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_BOARD_ID, "");
+			this.myProjectName = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PROJECT_NAME, "");
 			this.myTxtFile = new TxtFile(this.myBoardsFile);
 
 			this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

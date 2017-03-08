@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.prefs.BackingStoreException;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
 import io.sloeber.core.common.Common;
@@ -39,7 +38,7 @@ import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.managers.Manager;
 
 abstract class FamilyJob extends Job {
-	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
+	static final String MY_FAMILY = "myJobFamily";
 
 	public FamilyJob(String name) {
 		super(name);
@@ -58,25 +57,23 @@ abstract class FamilyJob extends Job {
  * @author Jan Baeyens
  *
  */
+@SuppressWarnings("nls")
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
-	public static final String NODE_ARDUINO = "io.sloeber.arduino"; //$NON-NLS-1$
+	public static final String NODE_ARDUINO = "io.sloeber.arduino";
 
 	// The shared instance
-	private static final String FLAGS_TART = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-	private static final String FLAG_MONITOR = "F" + "m" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-	private static final String UPLOAD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-	private static final String BUILD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "b"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-	private static final String LOCAL_FLAG = "l" + FLAGS_TART; //$NON-NLS-1$
-	private static final String HELP_LOC = "http://www.baeyens.it/eclipse/remind.php"; //$NON-NLS-1$
+	private static final String FLAG_START = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
+	private static final String UPLOAD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
+	private static final String BUILD_FLAG = "F" + "b" + "S" + "t" + "a" + "t" + "u" + "s";
+	private static final String LOCAL_FLAG = "l" + FLAG_START;
+	private static final String HELP_LOC = "http://www.baeyens.it/eclipse/remind.php";
 
 	private static Activator instance;
-
-	protected String flagStart = 'F' + 's' + 'S' + 't' + 'a' + 't' + 'u' + Const.EMPTY_STRING;
 	protected char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't', '/',
 			'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g',
 			'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
-	private static final String PLUGIN_ID = "io.sloeber.core"; //$NON-NLS-1$
+	private static final String PLUGIN_ID = "io.sloeber.core";
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -103,8 +100,8 @@ public class Activator extends AbstractUIPlugin {
 	private static void testKnownIssues() {
 		// currently no more issues are known
 		// if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		// String bashCommand = "where bash"; //$NON-NLS-1$
-		// String shCommand = "where sh"; //$NON-NLS-1$
+		// String bashCommand = "where bash";
+		// String shCommand = "where sh";
 		// boolean bashFound = false;
 		// ExternalCommandLauncher bashCommandLauncher = new
 		// ExternalCommandLauncher(bashCommand);
@@ -124,21 +121,21 @@ public class Activator extends AbstractUIPlugin {
 		// String errorString = Const.EMPTY_STRING;
 		// String addString = Const.EMPTY_STRING;
 		// if (bashFound) {
-		// errorString = errorString + addString + "bash"; //$NON-NLS-1$
-		// addString = " and "; //$NON-NLS-1$
+		// errorString = errorString + addString + "bash";
+		// addString = " and ";
 		// }
 		// if (shFound) {
-		// errorString = errorString + addString + "sh"; //$NON-NLS-1$
-		// addString = " and "; //$NON-NLS-1$
+		// errorString = errorString + addString + "sh";
+		// addString = " and ";
 		// }
 		// if (!errorString.isEmpty()) {
 		// errorString = "we have found programs in the path that might conflict
 		// with our external builder.\nThe conflicting programs are "
-		// //$NON-NLS-1$
+		//
 		// + errorString
 		// + ".\nThe program might still function but if you get strange build
 		// errors you know where to look\nRunning Sloeber.cmd may fix this
-		// issue."; //$NON-NLS-1$
+		// issue.";
 		// Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 		// errorString));
 		// }
@@ -163,14 +160,14 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private void runPluginCoreStartInstantiatorJob() {
-		Job job = new Job("pluginCoreStartInitiator") { //$NON-NLS-1$
+		Job job = new Job("pluginCoreStartInitiator") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-					int curFsiStatus = myScope.getInt(Activator.this.flagStart, 0) + 1;
-					myScope.putInt(Activator.this.flagStart, curFsiStatus);
+					int curFsiStatus = myScope.getInt(FLAG_START, 0) + 1;
+					myScope.putInt(FLAG_START, curFsiStatus);
 					URL pluginStartInitiator = new URL(new String(Activator.this.uri) + Integer.toString(curFsiStatus));
 					pluginStartInitiator.getContent();
 				} catch (Exception e) {
@@ -186,18 +183,18 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void runInstallJob() {
-		Job installJob = new Job("Finishing the installation ..") { //$NON-NLS-1$
+		Job installJob = new Job("Finishing the installation ..") {
 
 			@SuppressWarnings("synthetic-access")
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				if (DownloadFolderConditionsOK()) {
-					monitor.beginTask("Sit back, relax and watch us work for a little while ..", //$NON-NLS-1$
+					monitor.beginTask("Sit back, relax and watch us work for a little while ..",
 							IProgressMonitor.UNKNOWN);
 					addFileAssociations();
 					makeOurOwnCustomBoards_txt();
 					Manager.startup_Pluging(monitor);
-					monitor.setTaskName("Done!"); //$NON-NLS-1$
+					monitor.setTaskName("Done!");
 					NetworkDiscovery.start();
 					registerListeners();
 					return Status.OK_STATUS;
@@ -224,13 +221,13 @@ public class Activator extends AbstractUIPlugin {
 					windowsPathToLong = installPath.toString().length() > 100;
 				}
 				if (cantWrite || windowsPathToLong) {
-					String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString() //$NON-NLS-1$
+					String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString()
 							: Const.EMPTY_STRING;
 					errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : Const.EMPTY_STRING);
-					errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long" //$NON-NLS-1$ //$NON-NLS-2$
+					errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long"
 							: Const.EMPTY_STRING);
 
-					Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage)); // $NON-NLS-1$
+					Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage));
 					return false;
 				}
 				return true;
@@ -279,13 +276,13 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 */
 	private static void makeOurOwnCustomBoards_txt() {
-		makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt", //$NON-NLS-1$
+		makeOurOwnCustomBoard_txt("config/pre_processing_boards_-.txt",
 				ConfigurationPreferences.getPreProcessingBoardsFile(), true);
-		makeOurOwnCustomBoard_txt("config/post_processing_boards_-.txt", //$NON-NLS-1$
+		makeOurOwnCustomBoard_txt("config/post_processing_boards_-.txt",
 				ConfigurationPreferences.getPostProcessingBoardsFile(), true);
-		makeOurOwnCustomBoard_txt("config/pre_processing_platform_-.txt", //$NON-NLS-1$
+		makeOurOwnCustomBoard_txt("config/pre_processing_platform_-.txt",
 				ConfigurationPreferences.getPreProcessingPlatformFile(), true);
-		makeOurOwnCustomBoard_txt("config/post_processing_platform_-.txt", //$NON-NLS-1$
+		makeOurOwnCustomBoard_txt("config/post_processing_platform_-.txt",
 				ConfigurationPreferences.getPostProcessingPlatformFile(), true);
 	}
 
@@ -309,7 +306,7 @@ public class Activator extends AbstractUIPlugin {
 		outFile.getParentFile().mkdirs();
 		// String VersionSpecificFile = inRegEx.replaceFirst("-",
 		// mArduinoIdeVersion.getStringValue());
-		String DefaultFile = inRegEx.replaceFirst("-", "default"); //$NON-NLS-1$ //$NON-NLS-2$
+		String DefaultFile = inRegEx.replaceFirst("-", "default");
 		/*
 		 * Finding the file in the plugin as described here
 		 * :http://blog.vogella.com/2010/07/06/reading-resources-from-plugin/
@@ -320,7 +317,7 @@ public class Activator extends AbstractUIPlugin {
 
 		try (FileOutputStream to = new FileOutputStream(outFile.toString());) {
 			try {
-				URL defaultUrl = new URL("platform:/plugin/io.sloeber.core/" + DefaultFile); //$NON-NLS-1$
+				URL defaultUrl = new URL("platform:/plugin/io.sloeber.core/" + DefaultFile);
 				try (InputStream inputStreamDefault = defaultUrl.openConnection().getInputStream();) {
 					while ((bytes_read = inputStreamDefault.read(buffer)) != -1) {
 						to.write(buffer, 0, bytes_read); // write
@@ -346,43 +343,44 @@ public class Activator extends AbstractUIPlugin {
 		final IContentTypeManager ctm = Platform.getContentTypeManager();
 		final IContentType ctbin = ctm.getContentType(CCorePlugin.CONTENT_TYPE_CXXSOURCE);
 		try {
-			ctbin.addFileSpec("ino", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
-			ctbin.addFileSpec("pde", IContentTypeSettings.FILE_EXTENSION_SPEC); //$NON-NLS-1$
+			ctbin.addFileSpec("ino", IContentTypeSettings.FILE_EXTENSION_SPEC);
+			ctbin.addFileSpec("pde", IContentTypeSettings.FILE_EXTENSION_SPEC);
 		} catch (CoreException e) {
 			Common.log(new Status(IStatus.WARNING, Activator.getId(),
-					"Failed to add *.ino and *.pde as file extensions.", e)); //$NON-NLS-1$
+					"Failed to add *.ino and *.pde as file extensions.", e));
 		}
 
 	}
 
 	static void remind() {
-		if (isInternetReachable()) {
-			Job job = new FamilyJob("pluginReminder") { //$NON-NLS-1$
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
 
-					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-					int curFsiStatus = myScope.getInt(FLAGS_TART, 0) + myScope.getInt(FLAG_MONITOR, 0)
-							+ myScope.getInt(UPLOAD_FLAG, 0) + myScope.getInt(BUILD_FLAG, 0);
-					int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-					if ((curFsiStatus - lastFsiStatus) >= 50) {
-						myScope.putInt(LOCAL_FLAG, curFsiStatus);
+		Job job = new FamilyJob("pluginReminder") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
 
-						try {
-							myScope.sync();
-						} catch (BackingStoreException e) {
-							// this should not happen
-						}
+				IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+				int curFsStatus = myScope.getInt(FLAG_START, 0);
+				int curFuStatus = myScope.getInt(UPLOAD_FLAG, 0);
+				int curFbStatus = myScope.getInt(BUILD_FLAG, 0);
+				int curFsiStatus = curFsStatus + curFuStatus + curFbStatus;
+				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
+				if ((curFsiStatus - lastFsiStatus) >= 50) {
+					myScope.putInt(LOCAL_FLAG, curFsiStatus);
+					// try {
+					// myScope.flush();
+					// } catch (BackingStoreException e) {
+					// // this should not happen
+					// }
+					if (isInternetReachable()) {
 						PleaseHelp.doHelp(HELP_LOC);
-						return Status.OK_STATUS;
 					}
-					remind();
-					return Status.OK_STATUS;
 				}
-			};
-			job.setPriority(Job.DECORATE);
-			job.schedule(60000);
-		}
+				remind();
+				return Status.OK_STATUS;
+			}
+		};
+		job.setPriority(Job.DECORATE);
+		job.schedule(60000);
 	}
 
 	static boolean isInternetReachable() {
@@ -391,7 +389,7 @@ public class Activator extends AbstractUIPlugin {
 
 		try {
 			// make a URL to a known source
-			URL url = new URL(HELP_LOC + "?systemhash=" + ConfigurationPreferences.getSystemHash());//$NON-NLS-1$
+			URL url = new URL(HELP_LOC + "?systemhash=" + ConfigurationPreferences.getSystemHash());
 			// open a connection to that source
 			urlConnect = (HttpURLConnection) url.openConnection();
 			// trying to retrieve data from the source. If there is no
