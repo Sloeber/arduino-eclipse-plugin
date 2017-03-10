@@ -18,16 +18,12 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
 /**
  * This id a handler to connect the plugin.xml to the code for building the code
  * This method forces a save all before building
- * 
+ *
  * @author jan
- * 
+ *
  */
 class BuildJobHandler extends Job {
-    IProject myBuildProject = null;
-
-    public BuildJobHandler(String name) {
-	super(name);
-    }
+	IProject myBuildProject = null;
 
     public BuildJobHandler(IProject buildProject) {
 	super(Messages.BuildHandler_Build_Code_of_project + buildProject.getName());
@@ -39,6 +35,12 @@ class BuildJobHandler extends Job {
 	Sketch.verify(this.myBuildProject, monitor);
 	return Status.OK_STATUS;
     }
+
+    @Override
+    public boolean belongsTo(Object family) {
+    	return myBuildProject.equals(family);
+    }
+
 }
 
 public class BuildHandler extends AbstractHandler {
@@ -57,8 +59,9 @@ public class BuildHandler extends AbstractHandler {
 	    break;
 	default:
 	    PlatformUI.getWorkbench().saveAllEditors(false);
-	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		this.mBuildJob = new BuildJobHandler(SelectedProjects[curProject]);
+	    for (IProject selectedProject : SelectedProjects) {
+	    	Job.getJobManager().cancel(selectedProject);
+		this.mBuildJob = new BuildJobHandler(selectedProject);
 		this.mBuildJob.setPriority(Job.INTERACTIVE);
 		this.mBuildJob.schedule();
 	    }

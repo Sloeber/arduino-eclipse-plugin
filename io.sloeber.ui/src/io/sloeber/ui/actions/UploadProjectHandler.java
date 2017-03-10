@@ -51,14 +51,19 @@ class UploadJobHandler extends Job {
 	Sketch.upload(UploadJobHandler.this.myBuildProject);
 	return Status.OK_STATUS;
     }
+
+    @Override
+    public boolean belongsTo(Object family) {
+    	return myBuildProject.equals(family);
+    }
 }
 
 /**
  * This is a handler to connect the plugin.xml to the code for uploading code to
  * arduino teensy ..
- * 
+ *
  * @author jan
- * 
+ *
  */
 public class UploadProjectHandler extends AbstractHandler {
 
@@ -90,6 +95,7 @@ public class UploadProjectHandler extends AbstractHandler {
 
     public static void uploadProject(IProject project) {
 	PlatformUI.getWorkbench().saveAllEditors(false);
+	Job.getJobManager().cancel(project);
 	Job mBuildJob = new UploadJobHandler(project);
 	mBuildJob.setPriority(Job.INTERACTIVE);
 	mBuildJob.schedule();
