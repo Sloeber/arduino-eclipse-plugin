@@ -22,17 +22,17 @@ import io.sloeber.ui.preferences.PreferenceUtils;
 
 public class OpenPreferencesHandler extends AbstractHandler {
 
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-	Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-	String pageId = event.getParameter(PreferenceUtils.PREFERENCE_PARAMETER1);
-	String[] pages = PreferenceUtils.getPreferencePages("io.sloeber");
-	PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(shell, pageId, pages, null);
-	try {
-	    dialog.getTreeViewer().getTree().getItems()[0].setExpanded(true);}
-	catch (RuntimeException e) {
-	    /* swallow */}
-	dialog.open();
-	return null;
-    }
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		String pageId = event.getParameter(PreferenceUtils.PREFERENCE_PARAMETER1);
+		String[] pages = PreferenceUtils.getPreferencePages("io.sloeber"); //$NON-NLS-1$
+		PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(shell, pageId, pages, null);
+		try {
+			dialog.getTreeViewer().getTree().getItems()[1].setExpanded(true);
+		} catch (RuntimeException e) {
+			/* swallow */}
+		dialog.open();
+		return null;
+	}
 }

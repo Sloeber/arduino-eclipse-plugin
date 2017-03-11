@@ -24,44 +24,53 @@ import org.eclipse.core.runtime.Platform;
  */
 public class PreferenceUtils {
 
-    /**
-     * ID for the main preference page.
-     */
-    public static final String SLOEBER_MAIN = "io.sloeber.eclipse.ArduinoPreferencePage";
+	/**
+	 * ID for the main preference page.
+	 */
+	public static final String SLOEBER_MAIN = "io.sloeber.eclipse.ArduinoPreferencePage"; //$NON-NLS-1$
 
-    /**
-     * ID for the open preference page command parameter
-     */
-    public static final String PREFERENCE_PARAMETER1 = "io.sloeber.ui.actions.openPreferences.pageId";
+	/**
+	 * ID for the open preference page command parameter
+	 */
+	public static final String PREFERENCE_PARAMETER1 = "io.sloeber.ui.actions.openPreferences.pageId"; //$NON-NLS-1$
 
-    private static String[] fSloeberPreferencePageIds;
+	private static String[] fSloeberPreferencePageIds;
 
-    /**
-     * Finds all preference pages contributed by plugins in the passed name
-     * space.
-     *
-     * @return an array of preference pages.
-     * @since 4.1
-     */
-    public static String[] getPreferencePages(String nameSpace) {
-	if (fSloeberPreferencePageIds != null) {
-	    return fSloeberPreferencePageIds;
+	/**
+	 * Finds all preference pages contributed by plugins in the passed name
+	 * space.
+	 *
+	 * @return an array of preference pages.
+	 * @since 4.1
+	 */
+	public static String[] getPreferencePages(String nameSpace) {
+		if (fSloeberPreferencePageIds != null) {
+			return fSloeberPreferencePageIds;
+		}
+		fSloeberPreferencePageIds = loadRemainPreferencePages(nameSpace);
+		return fSloeberPreferencePageIds;
 	}
-	fSloeberPreferencePageIds = loadRemainPreferencePages(nameSpace);
-	return fSloeberPreferencePageIds;
-    }
 
-    private static String[] loadRemainPreferencePages(String nameSpace) {
-	ArrayList<String> result = new ArrayList<>();
-	IConfigurationElement[] elements = Platform.getExtensionRegistry()
-		.getConfigurationElementsFor("org.eclipse.ui.preferencePages");
-	for (IConfigurationElement element : elements) {
-	    String contributor = element.getContributor().getName();
-	    if (contributor.startsWith(nameSpace)) {
-		String pageId = element.getAttribute("id");
-		result.add(pageId);
-	    }
+	private static String[] loadRemainPreferencePages(String nameSpace) {
+		ArrayList<String> result = new ArrayList<>();
+		IConfigurationElement[] elements = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor("org.eclipse.ui.preferencePages"); //$NON-NLS-1$
+		for (IConfigurationElement element : elements) {
+			String contributor = element.getContributor().getName();
+			if (contributor.startsWith(nameSpace)) {
+				String pageId = element.getAttribute("id"); //$NON-NLS-1$
+				result.add(pageId);
+			} else {
+				String className = element.getAttribute("class"); //$NON-NLS-1$
+				if (className != null) {
+					if (className.toLowerCase().contains("colorsandfontspreferencepage")) { //$NON-NLS-1$
+						String pageId = element.getAttribute("id"); //$NON-NLS-1$
+						result.add(pageId);
+					}
+				}
+			}
+
+		}
+		return result.toArray(new String[0]);
 	}
-	return result.toArray(new String[0]);
-    }
 }

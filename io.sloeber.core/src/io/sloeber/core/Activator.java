@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.BackingStoreException;
 
 import cc.arduino.packages.discoverers.NetworkDiscovery;
 import io.sloeber.core.common.Common;
@@ -364,13 +365,16 @@ public class Activator extends AbstractUIPlugin {
 				int curFbStatus = myScope.getInt(BUILD_FLAG, 0);
 				int curFsiStatus = curFsStatus + curFuStatus + curFbStatus;
 				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
+				if ((curFsiStatus - lastFsiStatus) < 0) {
+					lastFsiStatus = curFsiStatus - 51;
+				}
 				if ((curFsiStatus - lastFsiStatus) >= 50) {
 					myScope.putInt(LOCAL_FLAG, curFsiStatus);
-					// try {
-					// myScope.flush();
-					// } catch (BackingStoreException e) {
-					// // this should not happen
-					// }
+					try {
+						myScope.flush();
+					} catch (BackingStoreException e) {
+						// this should not happen
+					}
 					if (isInternetReachable()) {
 						PleaseHelp.doHelp(HELP_LOC);
 					}

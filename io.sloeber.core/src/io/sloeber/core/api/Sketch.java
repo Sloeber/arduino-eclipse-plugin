@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
+import org.osgi.service.prefs.BackingStoreException;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
@@ -76,6 +77,11 @@ public class Sketch {
 						IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 						int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
 						myScope.putInt(buildflag, curFsiStatus);
+						try {
+							myScope.flush();
+						} catch (BackingStoreException e) {
+							// this should not happen
+						}
 						URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
 						pluginStartInitiator.getContent();
 					} catch (Exception e) {
