@@ -22,156 +22,156 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
  * when opened and on the perform finish. This import wizard uses 3 folders to
  * import: The arduino library folder Your 3rd party library folder and the
  * Arduino library folder of your hardware
- * 
+ *
  * @author Jan Baeyens
  * @see performFinish
- * 
+ *
  */
 public class ImportLibraries implements IImportWizard {
 
-    private Import_Libraries_Page mProjectSelectionPage;
-    private IWizardPage[] mPages;
-    private IWizardContainer mWizardContainer = null;
+	private Import_Libraries_Page mProjectSelectionPage;
+	private IWizardPage[] mPages;
+	private IWizardContainer mWizardContainer = null;
 
-    private static String mPageName = Messages.ui_select;
-    private static String mPageTitle = Messages.ui_select_Arduino_libraries;
+	private static String mPageName = Messages.ui_select;
+	private static String mPageTitle = Messages.ui_select_Arduino_libraries;
 
-    @Override
-    public void init(IWorkbench arg0, IStructuredSelection selection) {
-	// Entry point is here when right-click project and import -- as opposed
-	// to AddLibraryAction.execute() when done via Arduino menu
-    }
-
-    @Override
-    public void addPages() {
-
-	// Always create the pages like this at the last minute
-
-	IProject theProject = null;
-	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
-
-	if (SelectedProjects.length > 0) {
-	    theProject = SelectedProjects[0];
-	    this.mProjectSelectionPage = new Import_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
-	    this.mProjectSelectionPage.setWizard(this);
-	    this.mPages = new IWizardPage[1];
-	    this.mPages[0] = this.mProjectSelectionPage;
-	} else {
-
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_Arduino_project_selected));
+	@Override
+	public void init(IWorkbench arg0, IStructuredSelection selection) {
+		// Entry point is here when right-click project and import -- as opposed
+		// to AddLibraryAction.execute() when done via Arduino menu
 	}
-    }
 
-    @Override
-    public boolean canFinish() {
-	return true;
-    }
+	@Override
+	public void addPages() {
 
-    @Override
-    public void createPageControls(Composite pageContainer) {// no code needed
+		// Always create the pages like this at the last minute
 
-    }
+		IProject theProject = null;
+		IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 
-    @Override
-    public void dispose() {// no code needed
-    }
+		if (SelectedProjects.length > 0) {
+			theProject = SelectedProjects[0];
+			this.mProjectSelectionPage = new Import_Libraries_Page(theProject, mPageName, StructuredSelection.EMPTY);
+			this.mProjectSelectionPage.setWizard(this);
+			this.mPages = new IWizardPage[1];
+			this.mPages[0] = this.mProjectSelectionPage;
+		} else {
 
-    @Override
-    public IWizardContainer getContainer() {
-	return this.mWizardContainer;
-    }
-
-    @Override
-    public Image getDefaultPageImage() {
-	return null;
-    }
-
-    @Override
-    public IDialogSettings getDialogSettings() {
-	return null;
-    }
-
-    @Override
-    public IWizardPage getNextPage(IWizardPage arg0) {
-	for (int i = 0; i < (this.mPages.length - 1); i++) {
-	    if (arg0 == this.mPages[i]) {
-		return this.mPages[i + 1];
-	    }
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+		}
 	}
-	return null;
-    }
 
-    @Override
-    public IWizardPage getPage(String pageName) {
-	for (int i = 0; i < this.mPages.length; i++) {
-	    if (pageName == this.mPages[i].getName())
-		return this.mPages[i];
+	@Override
+	public boolean canFinish() {
+		return true;
 	}
-	return null;
-    }
 
-    @Override
-    public int getPageCount() {
-	return this.mPages.length;
-    }
+	@Override
+	public void createPageControls(Composite pageContainer) {// no code needed
 
-    @Override
-    public IWizardPage[] getPages() {
-	return this.mPages;
-    }
-
-    @Override
-    public IWizardPage getPreviousPage(IWizardPage arg0) {
-	for (int i = 1; i < this.mPages.length; i++) {
-	    if (arg0 == this.mPages[i])
-		return this.mPages[i - 1];
 	}
-	return null;
-    }
 
-    @Override
-    public IWizardPage getStartingPage() {
-	return this.mPages[0];
-    }
+	@Override
+	public void dispose() {// no code needed
+	}
 
-    @Override
-    public RGB getTitleBarColor() {
-	return null;
-    }
+	@Override
+	public IWizardContainer getContainer() {
+		return this.mWizardContainer;
+	}
 
-    @Override
-    public String getWindowTitle() {
-	return mPageTitle;
-    }
+	@Override
+	public Image getDefaultPageImage() {
+		return null;
+	}
 
-    @Override
-    public boolean isHelpAvailable() {
-	return false;
-    }
+	@Override
+	public IDialogSettings getDialogSettings() {
+		return null;
+	}
 
-    @Override
-    public boolean needsPreviousAndNextButtons() {
-	return false;
-    }
+	@Override
+	public IWizardPage getNextPage(IWizardPage arg0) {
+		for (int i = 0; i < (this.mPages.length - 1); i++) {
+			if (arg0 == this.mPages[i]) {
+				return this.mPages[i + 1];
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public boolean needsProgressMonitor() {
-	return false;
-    }
+	@Override
+	public IWizardPage getPage(String pageName) {
+		for (int i = 0; i < this.mPages.length; i++) {
+			if (pageName == this.mPages[i].getName())
+				return this.mPages[i];
+		}
+		return null;
+	}
 
-    @Override
-    public boolean performCancel() {
-	return true;
-    }
+	@Override
+	public int getPageCount() {
+		return this.mPages.length;
+	}
 
-    @Override
-    public boolean performFinish() {
-	return this.mProjectSelectionPage.PerformFinish();
-    }
+	@Override
+	public IWizardPage[] getPages() {
+		return this.mPages;
+	}
 
-    @Override
-    public void setContainer(IWizardContainer wizardContainer) {
-	this.mWizardContainer = wizardContainer;
-    }
+	@Override
+	public IWizardPage getPreviousPage(IWizardPage arg0) {
+		for (int i = 1; i < this.mPages.length; i++) {
+			if (arg0 == this.mPages[i])
+				return this.mPages[i - 1];
+		}
+		return null;
+	}
+
+	@Override
+	public IWizardPage getStartingPage() {
+		return this.mPages[0];
+	}
+
+	@Override
+	public RGB getTitleBarColor() {
+		return null;
+	}
+
+	@Override
+	public String getWindowTitle() {
+		return mPageTitle;
+	}
+
+	@Override
+	public boolean isHelpAvailable() {
+		return false;
+	}
+
+	@Override
+	public boolean needsPreviousAndNextButtons() {
+		return false;
+	}
+
+	@Override
+	public boolean needsProgressMonitor() {
+		return false;
+	}
+
+	@Override
+	public boolean performCancel() {
+		return true;
+	}
+
+	@Override
+	public boolean performFinish() {
+		return this.mProjectSelectionPage.PerformFinish();
+	}
+
+	@Override
+	public void setContainer(IWizardContainer wizardContainer) {
+		this.mWizardContainer = wizardContainer;
+	}
 
 }

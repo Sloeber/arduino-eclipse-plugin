@@ -116,6 +116,7 @@ public class SCP extends SSH {
 		out.write(("C0644 " + localFile.length() + " " + remoteFile + "\n").getBytes());
 		ensureAcknowledged();
 
+		@SuppressWarnings("resource")
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(localFile);

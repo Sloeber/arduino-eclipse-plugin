@@ -72,7 +72,7 @@ public class UploadProjectHandler extends AbstractHandler {
 	switch (SelectedProjects.length) {
 	case 0:
 	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-		    Messages.ArduinoUploadProjectHandler_No_project_found));
+		    Messages.Handler_No_project_found));
 	    break;
 	case 1:
 	    IProject project = SelectedProjects[0];

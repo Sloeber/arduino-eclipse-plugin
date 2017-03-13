@@ -4,7 +4,6 @@ import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -50,17 +49,6 @@ public class UploadSketchWrapper {
 	}
 
 	public void internalUpload(IProject Project, String cConf) {
-
-		// Check that we have a AVR Project
-		try {
-			if (Project == null || !Project.hasNature(Const.ARDUINO_NATURE_ID)) {
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null));
-				return;
-			}
-		} catch (CoreException e) {
-			// Log the Exception
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e));
-		}
 
 		String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf,
 				Common.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);

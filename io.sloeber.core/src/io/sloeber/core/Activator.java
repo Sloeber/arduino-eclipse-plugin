@@ -39,7 +39,7 @@ import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.managers.Manager;
 
 abstract class FamilyJob extends Job {
-	static final String MY_FAMILY = "myJobFamily";
+	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
 
 	public FamilyJob(String name) {
 		super(name);

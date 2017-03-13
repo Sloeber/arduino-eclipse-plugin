@@ -32,6 +32,7 @@ import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
+import io.sloeber.core.tools.uploaders.Messages;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class Sketch {
@@ -39,6 +40,15 @@ public class Sketch {
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
 	public static void upload(IProject project) {
+		try {
+			if (project == null || !project.hasNature(Const.ARDUINO_NATURE_ID)) {
+				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null));
+				return;
+			}
+		} catch (CoreException e) {
+			// Log the Exception
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e));
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {

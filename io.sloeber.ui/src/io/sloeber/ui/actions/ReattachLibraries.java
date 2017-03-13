@@ -15,22 +15,22 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
 
 public class ReattachLibraries extends AbstractHandler {
 
-    @Override
-    public Object execute(ExecutionEvent arg0) throws ExecutionException {
-	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
-	switch (SelectedProjects.length) {
-	case 0:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.ReattachLibraries_no_project_found));
-	    break;
-	default:
-	    PlatformUI.getWorkbench().saveAllEditors(false);
-	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		Sketch.reAttachLibrariesToProject(SelectedProjects[curProject]);
+	@Override
+	public Object execute(ExecutionEvent arg0) throws ExecutionException {
+		IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
+		switch (SelectedProjects.length) {
+		case 0:
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+			break;
+		default:
+			PlatformUI.getWorkbench().saveAllEditors(false);
+			for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
+				Sketch.reAttachLibrariesToProject(SelectedProjects[curProject]);
 
-	    }
+			}
+		}
+		return null;
+
 	}
-	return null;
-
-    }
 
 }

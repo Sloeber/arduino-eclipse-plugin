@@ -2193,6 +2193,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 * @param enumeratedOutputs
 	 *            vector of the filenames that are the output of this rule
 	 */
+	@SuppressWarnings("null")
 	protected void addRuleForSource(String relativePath, StringBuffer buffer, IResource resource, IPath sourceLocation,
 			IResourceInfo rcInfo, boolean generatedSource, List<IPath> generatedDepFiles,
 			List<IPath> enumeratedOutputs) {

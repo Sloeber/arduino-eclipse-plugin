@@ -18,52 +18,52 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
 /**
  * This id a handler to connect the plugin.xml to the code for building the code
  * This method forces a save all before building
- * 
+ *
  * @author jan
- * 
+ *
  */
 class BuildJobHandler extends Job {
-    IProject myBuildProject = null;
+	IProject myBuildProject = null;
 
-    public BuildJobHandler(String name) {
-	super(name);
-    }
+	public BuildJobHandler(String name) {
+		super(name);
+	}
 
-    public BuildJobHandler(IProject buildProject) {
-	super(Messages.BuildHandler_Build_Code_of_project + buildProject.getName());
-	this.myBuildProject = buildProject;
-    }
+	public BuildJobHandler(IProject buildProject) {
+		super(Messages.BuildHandler_Build_Code_of_project + buildProject.getName());
+		this.myBuildProject = buildProject;
+	}
 
-    @Override
-    protected IStatus run(IProgressMonitor monitor) {
-	Sketch.verify(this.myBuildProject, monitor);
-	return Status.OK_STATUS;
-    }
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		Sketch.verify(this.myBuildProject, monitor);
+		return Status.OK_STATUS;
+	}
 }
 
 public class BuildHandler extends AbstractHandler {
-    private Job mBuildJob = null;
+	private Job mBuildJob = null;
 
-    public Job getJob() {
-	return this.mBuildJob;
-    }
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
-	switch (SelectedProjects.length) {
-	case 0:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.BuildHandler_No_Project_found));
-	    break;
-	default:
-	    PlatformUI.getWorkbench().saveAllEditors(false);
-	    for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
-		this.mBuildJob = new BuildJobHandler(SelectedProjects[curProject]);
-		this.mBuildJob.setPriority(Job.INTERACTIVE);
-		this.mBuildJob.schedule();
-	    }
+	public Job getJob() {
+		return this.mBuildJob;
 	}
-	return null;
-    }
+
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
+		switch (SelectedProjects.length) {
+		case 0:
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+			break;
+		default:
+			PlatformUI.getWorkbench().saveAllEditors(false);
+			for (int curProject = 0; curProject < SelectedProjects.length; curProject++) {
+				this.mBuildJob = new BuildJobHandler(SelectedProjects[curProject]);
+				this.mBuildJob.setPriority(Job.INTERACTIVE);
+				this.mBuildJob.schedule();
+			}
+		}
+		return null;
+	}
 
 }

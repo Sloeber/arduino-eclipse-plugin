@@ -9,7 +9,7 @@ public class Messages extends NLS {
 
 	public static String error_adding_arduino_code;
 	public static String error_no_platform_files_found;
-	public static String error_no_Arduino_project_selected;
+
 	public static String error_no_host_name;
 	public static String error_failed_to_import_library_in_project;
 
@@ -90,14 +90,10 @@ public class Messages extends NLS {
 	public static String ArduinoUploadProjectHandler_Build_failed;
 	public static String ArduinoUploadProjectHandler_Build_failed_so_no_upload;
 	public static String ArduinoUploadProjectHandler_Multiple_projects_found;
-	public static String ArduinoUploadProjectHandler_No_project_found;
+	public static String Handler_No_project_found;
 	public static String ArduinoUploadProjectHandler_The_Names_Are;
 	public static String ArduinoUploadProjectHandler_Upload_for_project;
 	public static String BuildHandler_Build_Code_of_project;
-
-	public static String BuildHandler_No_Project_found;
-
-	public static String ReattachLibraries_no_project_found;
 
 	public static String pleaseWaitForInstallerJob;
 	public static String buildBeforeUpload;
@@ -108,6 +104,8 @@ public class Messages extends NLS {
 	public static String ui_sec_login;
 
 	public static String port_is_not_a_computer_name;
+
+	public static String Set_or_Remove_password;
 
 	static {
 		// initialize resource bundle
