@@ -584,7 +584,7 @@ public class Helpers extends Common {
 					String var[] = realData[0].split("=", 2); // look
 					// for assignment
 					if (var.length == 2) {
-						String value = var[1];
+						String value = var[1].trim();
 						if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
 							value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
 						} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
