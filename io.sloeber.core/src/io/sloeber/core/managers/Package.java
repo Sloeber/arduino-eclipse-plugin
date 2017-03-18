@@ -126,7 +126,7 @@ public class Package implements Comparable<Package> {
 
 	public Tool getTool(String toolName, String version) {
 		for (Tool tool : this.tools) {
-			if (tool.getName().equals(toolName) && tool.getVersion().equals(version)) {
+			if (tool.getName().trim().equals(toolName) && tool.getVersion().equals(version)) {
 				return tool;
 			}
 		}
