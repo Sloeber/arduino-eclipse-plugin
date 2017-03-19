@@ -67,6 +67,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
 @SuppressWarnings("nls")
@@ -674,7 +675,14 @@ public class Helpers extends Common {
 		if (platform.getToolsDependencies() != null) {
 			for (ToolDependency tool : platform.getToolsDependencies()) {
 				String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path");
-				String valueString = new Path(tool.getTool().getInstallPath().toString()).toString();
+				Tool theTool = tool.getTool();
+				if (theTool == null) {
+					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+							"Error adding platformFileTools while processing tool " + tool.getName()
+									+ "Installpath is null"));
+					return;
+				}
+				String valueString = new Path(theTool.getInstallPath().toString()).toString();
 				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
 				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
