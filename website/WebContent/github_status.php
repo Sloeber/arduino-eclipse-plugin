@@ -27,6 +27,11 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+<style>
+table, th, td {
+	border: 1px solid black;
+}
+</style>
 </head>
 
 <body>
@@ -35,41 +40,96 @@
       <?php include 'fragments/navbar.html';?>
     </nav>
 
+
 <?php
-// read data from local file
-$filter = "nightly";
-$githubCacheFile = "githubdata_" . $filter . "_cache.tmp";
-$githubUrl = "https://api.github.com/repos/jantje/arduino-eclipse-plugin/issues?labels=status:%20fixed%20in%20" . $filter;
-$issuesJson = "";
-// echo "Testing existance of ".$githubCacheFile."<br/>\n";
-if (file_exists ( $githubCacheFile )) {
-	// echo $githubCacheFile." exists<br/>\n";
-	$GithubCacheFileDate = filectime ( $githubCacheFile );
-	if (time () <= $GithubCacheFileDate + (60 * 2)) {
-		$issuesJson = file_get_contents ( $githubCacheFile );
-		// echo "using cache<br/>\n";
+function cachedGithubJson($cachefile, $url) {
+//	echo "geting cached data from url: <a href=" . $url . ">" . $url . "</a><br>\n";
+//	echo "Testing existance of " . $cachefile . "<br/>\n";
+	if (file_exists ( $cachefile )) {
+//		echo $cachefile . " exists<br/>\n";
+		$CacheFileDate = filectime ( $cachefile );
+		if (time () <= $CacheFileDate + (60 * 20)) {
+			$ret = file_get_contents ( $cachefile );
+			if (strlen ( $ret ) > 10) {
+//				echo "using cache<br/>\n";
+			} else {
+//				echo "Local cache is empty<br/>\n";
+				$ret = "";
+			}
+		} else {
+//			echo $cachefile . " Is old<br/>\n";
+		}
+	} else {
+//		echo $cachefile . " does not exists<br/>\n";
 	}
-	// else{
-	// echo $githubCacheFile." Is old<br/>\n";
-	// }
+	if ($ret == "") {
+		$ret = file_get_contents ( $url );
+		if ($ret === false) {
+//			echo "<strong>failed</strong><br>\n";
+			$ret = file_get_contents ( $cachefile );
+		} else {
+			file_put_contents ( $cachefile, $ret );
+		}
+	}
+	return $ret;
 }
-// else{
-// echo $githubCacheFile." does not exists<br/>\n";
-// }
-if ($issuesJson == "") {
-	$issuesJson = file_get_contents ( $githubUrl );
-	file_put_contents ( $githubCacheFile, $issuesJson );
-	// echo "refreshing cache<br/>\n";
-}
-$issues = json_decode ( $issuesJson, true );
-// var_dump($issues);
+
+function dumpIssues($issues){
+    echo "<table>\n";
+echo "<tr><th>title</th><th>domain</th><th>importance</th><th>os</th><th>other</th></tr>";
 foreach ( $issues as $issue ) {
-	echo "<div><a href=" . $issue ["html_url"] . ">" . $issue ["title"] . "</a> ";
+	$title = "<a href=" . $issue ["html_url"] . ">" . $issue ["title"] . "</a> ";
+	$domain_label = "";
+	$importance_label = "";
+	$os_label = "";
+	$rest_label = "";
+	$importance_inbetween = "";
+		$domain_inbetween = "";
+	$os_inbetween = "";
+	$rest_inbetween = "";
+
 	foreach ( $issue ["labels"] as $label ) {
-		echo '<SPAN style="background-color: #' . $label ["color"] . ';"> ' . $label ["name"] . " </SPAN>&ensp;";
+		if (0 === strpos ( $label ["name"], "domain: " )) {
+			$domain_label = $domain_label . $domain_inbetween . '<SPAN style="background-color: #' . $label ["color"] . ';"> <b>' . substr ( $label ["name"], 8 ) . " </b></SPAN>&ensp;";
+			$domain_inbetween = "<br>";
+		} elseif (0 === strpos ( $label ["name"], "importance: " )) {
+			$importance_label = $importance_label . $importance_inbetween . '<SPAN style="background-color: #' . $label ["color"] . ';"> <b>' . substr ( $label ["name"], 12 ) . " </b></SPAN>&ensp;";
+			$importance_inbetween = "<br>";
+		} elseif (0 === strpos ( $label ["name"], "OS: " )) {
+			$os_label = $os_label . $os_inbetween .'<SPAN style="background-color: #' . $label ["color"] . ';"> <b>' . substr ( $label ["name"], 4 ) . " </b></SPAN>&ensp;";
+			$os_inbetween = "<br>";
+		}   elseif (0 === strpos($label["name"], "status: fixed in")){
+		  // ignore fixed status as this is per table
+		   }
+		else {
+			$rest_label = $rest_label . $rest_inbetween . '<SPAN style="background-color: #' . $label ["color"] . ';"> <b>' . $label ["name"] . " </b></SPAN>&ensp;";
+			$rest_inbetween = "<br>";
+		}
 	}
-	echo "</div><br />\n";
+	echo "<tr><td>" . $title . "</td>";
+	echo "<td>" . $domain_label . "</td>";
+	echo "<td>" . $importance_label . "</td>";
+	echo "<td>" . $os_label . "</td>";
+	echo "<td>" . $rest_label . "</td>";
+	echo "</tr>\n";
 }
+echo "</table>";
+}
+
+// read data from local file
+$labelsJson = cachedGithubJson ( "githubdata_labels_cache.tmp", "https://api.github.com/repos/Sloeber/arduino-eclipse-plugin/labels?per_page=100" );
+$labels = json_decode ( $labelsJson, true );
+$fixedLabels="";
+foreach ( $labels as $label ) {
+    if (0 === strpos ( $label ["name"], "status: fixed in " )) {
+        $curLabelversion=substr ( $label ["name"], 17 ) ;
+        echo "fixed in " . $label["name"] ."<br>";
+        $CurIssuesJson = cachedGithubJson ( "githubdata_".$curLabelversion."_cache.tmp", "https://api.github.com/repos/Sloeber/arduino-eclipse-plugin/issues?state=all&labels=" . urlencode($label ["name"]));
+        $CurIssues = json_decode ( $CurIssuesJson, true );
+        dumpIssues($CurIssues);
+    }
+}
+
 
 ?>
 
