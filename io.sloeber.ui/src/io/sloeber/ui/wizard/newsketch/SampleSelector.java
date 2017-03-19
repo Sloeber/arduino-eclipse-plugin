@@ -125,7 +125,7 @@ public class SampleSelector {
 
 		// Add the examples to the tree
 		for (Map.Entry<String, IPath> entry : this.examples.entrySet()) {
-			String keys[] = entry.getKey().split("-"); //$NON-NLS-1$
+			String keys[] = entry.getKey().split("\\?"); //$NON-NLS-1$
 			TreeItem curItems[] = this.sampleTree.getItems();
 			TreeItem curItem = findItem(curItems, keys[0]);
 			if (curItem == null) {

@@ -678,8 +678,8 @@ public class Helpers extends Common {
 				Tool theTool = tool.getTool();
 				if (theTool == null) {
 					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							"Error adding platformFileTools while processing tool " + tool.getName()
-									+ "Installpath is null"));
+							"Error adding platformFileTools while processing tool " + tool.getName() + " version "
+									+ tool.getVersion() + " Installpath is null"));
 					return;
 				}
 				String valueString = new Path(theTool.getInstallPath().toString()).toString();

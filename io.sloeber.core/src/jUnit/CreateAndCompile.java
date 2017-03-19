@@ -53,6 +53,9 @@ public class CreateAndCompile {
 	@Parameters(name = "{index}: {0} {1} {2} {3} {4}")
 	public static Collection boards() {
 		return Arrays.asList(new Object[][] {
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
+						"" }, //
+				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
 
 				// package_quirkbot.com_index.json
 				{ "package_quirkbot.com_index.json", "quirkbot", "Quirkbot AVR Boards", "quirkbot", "" }, //

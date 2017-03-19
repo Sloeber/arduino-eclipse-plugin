@@ -45,6 +45,8 @@ import io.sloeber.core.tools.TxtFile;
 public class BoardsManager {
 	private static final String INO = "ino"; //$NON-NLS-1$
 	private static final String PDE = "pde";//$NON-NLS-1$
+	private static final String CPP = "cpp";//$NON-NLS-1$
+	private static final String C = "c";//$NON-NLS-1$
 
 	public static String getUpdateJasonFilesKey() {
 		return ConfigurationPreferences.getUpdateJasonFilesKey();
@@ -274,9 +276,10 @@ public class BoardsManager {
 				Path pt = new Path(exampleFolder.toString());
 				String extension = pt.getFileExtension();
 				if (exampleFolder.isDirectory()) {
-					examples.putAll(getExamplesFromFolder(prefix + location.lastSegment() + '-',
+					examples.putAll(getExamplesFromFolder(prefix + ' ' + location.lastSegment() + '?',
 							new Path(exampleFolder.toString())));
-				} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)) {
+				} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)
+						|| CPP.equalsIgnoreCase(extension) || C.equalsIgnoreCase(extension)) {
 					examples.put(prefix + location.lastSegment(), location);
 				}
 			}
