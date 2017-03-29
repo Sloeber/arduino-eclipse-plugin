@@ -275,6 +275,24 @@ public class BoardDescriptor {
 	}
 
 	public void save(ICConfigurationDescription confdesc) throws Exception {
+		saveConfiguration(confdesc);
+		if (confdesc != null) {
+			IProject project = confdesc.getProjectDescription().getProject();
+
+			Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
+
+			Helpers.addArduinoCodeToProject(project, confdesc);
+
+			Helpers.removeInvalidIncludeFolders(confdesc);
+			Helpers.setDirtyFlag(project, confdesc);
+		}
+	}
+
+	public void saveConfiguration() {
+		saveConfiguration(null);
+	}
+
+	public void saveConfiguration(ICConfigurationDescription confdesc) {
 		if (confdesc != null) {
 
 			Common.setBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE, getPlatformFile());
@@ -293,14 +311,6 @@ public class BoardDescriptor {
 							curoption.getValue());
 				}
 			}
-			IProject project = confdesc.getProjectDescription().getProject();
-
-			Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
-
-			Helpers.addArduinoCodeToProject(project, confdesc);
-
-			Helpers.removeInvalidIncludeFolders(confdesc);
-			Helpers.setDirtyFlag(project, confdesc);
 		}
 
 		// Also save last used values

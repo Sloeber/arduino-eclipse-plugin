@@ -11,14 +11,16 @@ import io.sloeber.core.tools.TxtFile;
 /**
  * This class exists solely for the purpose of having access to the
  * boardDescriptor API class and have some extra access
- * 
+ *
  * @author jan
  *
  */
 public class InternalBoardDescriptor extends BoardDescriptor {
+	private ICConfigurationDescription mConfdesc = null;
 
 	public InternalBoardDescriptor(ICConfigurationDescription confdesc) {
 		super(confdesc);
+		this.mConfdesc = confdesc;
 
 	}
 
@@ -34,6 +36,11 @@ public class InternalBoardDescriptor extends BoardDescriptor {
 
 	public TxtFile getTxtFile() {
 		return this.myTxtFile;
+	}
+
+	@Override
+	public void saveConfiguration() {
+		saveConfiguration(this.mConfdesc);
 	}
 
 }
