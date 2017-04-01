@@ -116,6 +116,36 @@ public class Regression {
 	}
 
 	/**
+	 * support void loop{};
+	 */
+	@SuppressWarnings("static-method")
+	@Test
+	public void issue687() {
+		Map<String, String> unoOptions = new HashMap<>();
+		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+				"uno", unoOptions);
+
+		IProject theTestProject = null;
+		String projectName = "issue687";
+		IPath templateFolder = Shared.getTemplateFolder(projectName);
+		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		try {
+			theTestProject = unoBoardid.createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null),
+					new NullProgressMonitor());
+			Shared.waitForAllJobsToFinish(); // for the indexer
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+			if (Shared.hasBuildErrors(theTestProject)) {
+				fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
+			}
+		} catch (Exception e) {
+			fail("Failed to create the project:" + projectName + " issue687 is not tested");
+			return;
+		}
+
+	}
+
+	/**
 	 * This test will fail if the arduino compile option are not taken into
 	 * account To do sa a bunch of defines are added to the command line and the
 	 * code checks whether these defines are set properly

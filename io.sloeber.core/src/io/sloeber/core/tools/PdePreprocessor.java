@@ -126,7 +126,7 @@ public class PdePreprocessor {
 								addString = addString.replaceAll("\r", NEWLINE);
 								addString = addString.replaceAll("//[^\n]+\n", " ");
 								addString = addString.replaceAll("\n", " ");
-								addString = addString.replaceAll("\\{.+\\}", "");
+								addString = addString.replaceAll("\\{.*\\}", "");
 								if (addString.contains("=") || addString.contains("::")) {
 									// ignore when there are assignments in the
 									// declaration
