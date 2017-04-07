@@ -219,14 +219,14 @@ public class Activator extends AbstractUIPlugin {
 				boolean cantWrite = !installPath.toFile().canWrite();
 				boolean windowsPathToLong = false;
 				if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					windowsPathToLong = installPath.toString().length() > 100;
+					windowsPathToLong = installPath.toString().length() > 40;
 				}
 				if (cantWrite || windowsPathToLong) {
 					String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString()
-							: Const.EMPTY_STRING;
-					errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : Const.EMPTY_STRING);
+							: new String();
+					errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : new String());
 					errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long"
-							: Const.EMPTY_STRING);
+							: new String());
 
 					Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage));
 					return false;
