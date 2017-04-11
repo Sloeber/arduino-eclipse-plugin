@@ -43,7 +43,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -90,40 +89,36 @@ public class Manager {
 	 */
 	public static void startup_Pluging(IProgressMonitor monitor) {
 		loadIndices(ConfigurationPreferences.getUpdateJasonFilesValue());
-		try {
-			List<Board> allBoards = getInstalledBoards();
-			if (allBoards.isEmpty()) { // If boards are installed do nothing
-				InstallDefaultLibraries(monitor);
-				MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
+		List<Board> allBoards = getInstalledBoards();
+		if (allBoards.isEmpty()) { // If boards are installed do nothing
+			InstallDefaultLibraries(monitor);
+			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
-				// Downmload sample programs
-				mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
-						Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
+			// Downnload sample programs
+			mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
+					Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
 
-				if (mstatus.isOK()) {
-					// if successfully installed the examples: add the boards
+			if (mstatus.isOK()) {
+				// if successfully installed the examples: add the boards
 
-					Package pkg = packageIndices.get(0).getPackages().get(0);
-					if (pkg != null) {
-						ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
-						if (platform == null) {
-							ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
-							pkg.getLatestPlatforms().toArray(platformList);
-							platform = platformList[0];
-						}
-						if (platform != null) {
-							mstatus.addErrors(downloadAndInstall(platform, false, monitor));
-						}
+				Package pkg = getPackageIndices().get(0).getPackages().get(0);
+				if (pkg != null) {
+					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
+					if (platform == null) {
+						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
+						pkg.getLatestPlatforms().toArray(platformList);
+						platform = platformList[0];
+					}
+					if (platform != null) {
+						mstatus.addErrors(downloadAndInstall(platform, false, monitor));
 					}
 				}
-				if (!mstatus.isOK()) {
-					StatusManager stMan = StatusManager.getManager();
-					stMan.handle(mstatus, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
-				}
-
 			}
-		} catch (CoreException e) {
-			e.printStackTrace();
+			if (!mstatus.isOK()) {
+				StatusManager stMan = StatusManager.getManager();
+				stMan.handle(mstatus, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
+			}
+
 		}
 		myIsReady = true;
 
@@ -294,8 +289,8 @@ public class Manager {
 		return libraryIndex;
 	}
 
-	static public Board getBoard(String boardName, String platformName, String packageName) throws CoreException {
-		for (PackageIndex index : packageIndices) {
+	static public Board getBoard(String boardName, String platformName, String packageName) {
+		for (PackageIndex index : getPackageIndices()) {
 			Package pkg = index.getPackage(packageName);
 			if (pkg != null) {
 				ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
@@ -310,9 +305,9 @@ public class Manager {
 		return null;
 	}
 
-	static public List<Board> getBoards() throws CoreException {
+	static public List<Board> getBoards() {
 		List<Board> boards = new ArrayList<>();
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform platform : pkg.getLatestPlatforms()) {
 					boards.addAll(platform.getBoards());
@@ -324,7 +319,7 @@ public class Manager {
 
 	public static List<ArduinoPlatform> getPlatforms() {
 		List<ArduinoPlatform> platforms = new ArrayList<>();
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				platforms.addAll(pkg.getPlatforms());
 			}
@@ -334,7 +329,7 @@ public class Manager {
 
 	public static IPath getPlatformInstallPath(String vendor, String architecture) {
 
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
@@ -354,7 +349,7 @@ public class Manager {
 	 * @return the found platform otherwise null
 	 */
 	public static ArduinoPlatform getPlatform(File platformTxt) {
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
 					if (curPlatform.getPlatformFile().equals(platformTxt)) {
@@ -368,7 +363,7 @@ public class Manager {
 
 	static public List<ArduinoPlatform> getInstalledPlatforms() {
 		List<ArduinoPlatform> platforms = new ArrayList<>();
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 
 				platforms.addAll(pkg.getInstalledPlatforms());
@@ -378,9 +373,9 @@ public class Manager {
 		return platforms;
 	}
 
-	static public List<Board> getInstalledBoards() throws CoreException {
+	static public List<Board> getInstalledBoards() {
 		List<Board> boards = new ArrayList<>();
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform platform : pkg.getInstalledPlatforms()) {
 					boards.addAll(platform.getBoards());
@@ -392,14 +387,14 @@ public class Manager {
 
 	static public List<Package> getPackages() {
 		List<Package> packages = new ArrayList<>();
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			packages.addAll(index.getPackages());
 		}
 		return packages;
 	}
 
 	static public Package getPackage(String JasonName, String packageName) {
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			if (index.getJsonFileName().equals(JasonName)) {
 				return index.getPackage(packageName);
 			}
@@ -408,7 +403,7 @@ public class Manager {
 	}
 
 	static public Package getPackage(String packageName) {
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			Package pkg = index.getPackage(packageName);
 			if (pkg != null) {
 				return pkg;
@@ -418,7 +413,7 @@ public class Manager {
 	}
 
 	static public Tool getTool(String packageName, String toolName, String version) {
-		for (PackageIndex index : packageIndices) {
+		for (PackageIndex index : getPackageIndices()) {
 			Package pkg = index.getPackage(packageName);
 			if (pkg != null) {
 				Tool tool = pkg.getTool(toolName, version);
@@ -666,7 +661,10 @@ public class Manager {
 			if (entry.getKey().exists() && overwrite) {
 				entry.getKey().delete();
 			}
-			symlink(entry.getValue(), entry.getKey());
+			// do not make symlinks in windows
+			if (!Platform.getOS().equals(Platform.OS_WIN32)) {
+				symlink(entry.getValue(), entry.getKey());
+			}
 			entry.getKey().setLastModified(symLinksModifiedTimes.get(entry.getKey()).longValue());
 		}
 
@@ -855,7 +853,7 @@ public class Manager {
 		loadIndices(false);
 	}
 
-	public static String getBoardsPackageURLs() {
+	public static String getDefaultBoardsPackageURLs() {
 		return ConfigurationPreferences.getDefaultBoardsPackageURLs();
 	}
 
