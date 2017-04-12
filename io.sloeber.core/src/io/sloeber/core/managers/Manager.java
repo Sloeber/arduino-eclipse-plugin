@@ -661,10 +661,8 @@ public class Manager {
 			if (entry.getKey().exists() && overwrite) {
 				entry.getKey().delete();
 			}
-			// do not make symlinks in windows
-			if (!Platform.getOS().equals(Platform.OS_WIN32)) {
-				symlink(entry.getValue(), entry.getKey());
-			}
+
+			symlink(entry.getValue(), entry.getKey());
 			entry.getKey().setLastModified(symLinksModifiedTimes.get(entry.getKey()).longValue());
 		}
 
@@ -677,10 +675,19 @@ public class Manager {
 
 	}
 
-	private static void symlink(String something, File somewhere) throws IOException, InterruptedException {
-		Process process = Runtime.getRuntime().exec(new String[] { "ln", "-s", something, somewhere.getAbsolutePath() }, //$NON-NLS-1$ //$NON-NLS-2$
-				null, somewhere.getParentFile());
-		process.waitFor();
+	private static void symlink(String from, File to) throws IOException, InterruptedException {
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			// needs special rights only one board seems to fail due to this
+			// Process process = Runtime.getRuntime().exec(new String[] {
+			// "mklink", from, to.getAbsolutePath() }, //$NON-NLS-1$
+			// null, to.getParentFile());
+			// process.waitFor();
+		} else {
+			Process process = Runtime.getRuntime().exec(new String[] { "ln", "-s", from, to.getAbsolutePath() }, //$NON-NLS-1$ //$NON-NLS-2$
+					null, to.getParentFile());
+			process.waitFor();
+		}
+
 	}
 
 	private static void link(File something, File somewhere) throws IOException, InterruptedException {
