@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 
@@ -96,14 +97,14 @@ public class ArduinoPlatform {
 		return this.size;
 	}
 
-	public List<Board> getBoards() throws CoreException {
+	public List<Board> getBoards() {
 		if (isInstalled() && this.boardsFile == null) {
 			Properties boardProps = new Properties();
 			try (Reader reader = new FileReader(getBoardsFile())) {
 				boardProps.load(reader);
 			} catch (IOException e) {
-				throw new CoreException(
-						new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_boards, e));
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_boards, e));
+				return this.boards;
 			}
 
 			this.boardsFile = new HierarchicalProperties(boardProps);
@@ -120,7 +121,7 @@ public class ArduinoPlatform {
 		return this.boards;
 	}
 
-	public Board getBoard(String boardName) throws CoreException {
+	public Board getBoard(String boardName) {
 		for (Board board : getBoards()) {
 			if (boardName.equals(board.getName())) {
 				return board;
