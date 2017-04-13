@@ -158,15 +158,11 @@ public class Sketch {
 	 * @return
 	 */
 	public static String getComport(IProject project) {
-		return Common.getBuildEnvironmentVariable(project, Const.ENV_KEY_JANTJE_UPLOAD_PORT, Const.EMPTY_STRING);
+		return BoardDescriptor.getUploadPort(project);
 	}
 
 	public static void reAttachLibrariesToProject(IProject iProject) {
 		Libraries.reAttachLibrariesToProject(iProject);
-	}
-
-	public static String getBoardName(IProject proj) {
-		return Common.getBuildEnvironmentVariable(proj, Const.ENV_KEY_JANTJE_BOARD_NAME, Const.EMPTY_STRING);
 	}
 
 	public static boolean isSketch(IProject proj) {
