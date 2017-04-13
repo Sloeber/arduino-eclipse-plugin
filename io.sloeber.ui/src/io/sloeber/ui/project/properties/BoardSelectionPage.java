@@ -119,6 +119,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
 				curLabelCombo
 						.setItems(BoardSelectionPage.this.myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
+				curLabelCombo.setLabel(BoardSelectionPage.this.myBoardID.getMenuNameFromMenuID(curLabelCombo.getID()));
 			}
 
 			isPageComplete();
