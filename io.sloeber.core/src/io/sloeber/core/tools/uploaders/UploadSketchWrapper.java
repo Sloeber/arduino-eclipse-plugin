@@ -2,6 +2,9 @@ package io.sloeber.core.tools.uploaders;
 
 import java.net.URL;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,6 +20,7 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.common.Common;
@@ -48,14 +52,16 @@ public class UploadSketchWrapper {
 		getUploadSketchWrapper().internalUpload(Project, cConf);
 	}
 
-	public void internalUpload(IProject Project, String cConf) {
+	public void internalUpload(IProject project, String configName) {
+		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+		ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(configName);
 
-		String UpLoadTool = Common.getBuildEnvironmentVariable(Project, cConf,
-				Common.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
-		String MComPort = Common.getBuildEnvironmentVariable(Project, cConf, Const.ENV_KEY_JANTJE_UPLOAD_PORT,
-				Const.EMPTY_STRING);
-		String uploadClass = Common.getBuildEnvironmentVariable(Project, cConf,
-				Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS), Const.EMPTY_STRING);
+		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(confDesc);
+		String UpLoadTool = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD),
+				new String());
+		String MComPort = boardDescriptor.getUploadPort();
+		String uploadClass = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
+				new String());
 
 		this.myConsole = Helpers.findConsole(Messages.Upload_console);
 		this.myConsole.clearConsole();
@@ -75,27 +81,27 @@ public class UploadSketchWrapper {
 		if (host != null) {
 			if (Const.UPLOAD_CLASS_DEFAULT.equals(uploadClass)) {
 				this.myHighLevelConsoleStream.println(Messages.Upload_arduino);
-				realUploader = new arduinoUploader(Project, cConf, UpLoadTool, this.myConsole);
+				realUploader = new arduinoUploader(project, configName, UpLoadTool, this.myConsole);
 				uploadJobName = UpLoadTool;
 			} else {
 				this.myHighLevelConsoleStream.println(Messages.Upload_ssh);
 
-				realUploader = new SSHUpload(Project, UpLoadTool, this.myHighLevelConsoleStream,
+				realUploader = new SSHUpload(project, UpLoadTool, this.myHighLevelConsoleStream,
 						this.myOutconsoleStream, this.myErrconsoleStream, host);
 				uploadJobName = Const.UPLOAD_SSH;
 			}
 		} else if (UpLoadTool.equalsIgnoreCase(Const.UPLOAD_TOOL_TEENSY)) {
 			this.myHighLevelConsoleStream.println(Messages.Upload_generic);
-			realUploader = new GenericLocalUploader(UpLoadTool, Project, cConf, this.myConsole, this.myErrconsoleStream,
-					this.myOutconsoleStream);
+			realUploader = new GenericLocalUploader(UpLoadTool, project, configName, this.myConsole,
+					this.myErrconsoleStream, this.myOutconsoleStream);
 			uploadJobName = UpLoadTool;
 		} else {
 			this.myHighLevelConsoleStream.println(Messages.Upload_arduino);
-			realUploader = new arduinoUploader(Project, cConf, UpLoadTool, this.myConsole);
+			realUploader = new arduinoUploader(project, configName, UpLoadTool, this.myConsole);
 			uploadJobName = UpLoadTool;
 		}
 
-		Job uploadjob = new UploadJobWrapper(uploadJobName, Project, cConf, realUploader);
+		Job uploadjob = new UploadJobWrapper(uploadJobName, project, configName, realUploader, MComPort);
 		uploadjob.setRule(null);
 		uploadjob.setPriority(Job.LONG);
 		uploadjob.setUser(true);
@@ -138,32 +144,31 @@ public class UploadSketchWrapper {
 		String myCConf;
 		String myNAmeTag;
 		IRealUpload myUploader;
+		String myComPort = new String();
 
-		public UploadJobWrapper(String name, IProject project, String cConf, IRealUpload uploader) {
+		public UploadJobWrapper(String name, IProject project, String cConf, IRealUpload uploader, String comPort) {
 			super(name);
 			this.myNAmeTag = name.toUpperCase();
 			this.myProject = project;
 			this.myCConf = cConf;
 			this.myUploader = uploader;
+			this.myComPort = comPort;
 		}
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			boolean WeStoppedTheComPort = false;
-			String comPort = Const.EMPTY_STRING;
 			try {
 				String message = Messages.Upload_uploading;
 				message += " \"" + this.myProject.getName() + "\" "; //$NON-NLS-1$//$NON-NLS-2$
 				message += this.myNAmeTag + Const.SPACE;
 				// message+= this.+Const.SPACE;
 				monitor.beginTask(message, 2);
-				comPort = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
-						Const.ENV_KEY_JANTJE_UPLOAD_PORT, Const.EMPTY_STRING);
 				String programmer = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
 						Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Defaults.getDefaultUploadProtocol());
 
 				try {
-					WeStoppedTheComPort = SerialManager.StopSerialMonitor(comPort);
+					WeStoppedTheComPort = SerialManager.StopSerialMonitor(this.myComPort);
 				} catch (Exception e) {
 					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e));
 				}
@@ -181,7 +186,7 @@ public class UploadSketchWrapper {
 			} finally {
 				try {
 					if (WeStoppedTheComPort) {
-						SerialManager.StartSerialMonitor(comPort);
+						SerialManager.StartSerialMonitor(this.myComPort);
 					}
 				} catch (Exception e) {
 					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,

@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -163,17 +164,17 @@ public class ArduinoSerial {
 	 * @return The com port to upload to
 	 */
 	public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName,
-			String comPort) {
+			BoardDescriptor boardDescriptor) {
 		boolean use_1200bps_touch = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);
 		boolean bWaitForUploadPort = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);
-		String boardName = Common.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_JANTJE_BOARD_NAME,
-				Const.EMPTY_STRING);
+		String comPort = boardDescriptor.getUploadPort();
+		String boardName = boardDescriptor.getBoardName();
 		String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName,
-				Common.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), Const.EMPTY_STRING);
+				Common.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), new String());
 
 		boolean bResetPortForUpload = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)

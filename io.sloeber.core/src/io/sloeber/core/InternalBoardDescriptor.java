@@ -40,7 +40,7 @@ public class InternalBoardDescriptor extends BoardDescriptor {
 
 	@Override
 	public void saveConfiguration() {
-		saveConfiguration(this.mConfdesc);
+		saveConfiguration(this.mConfdesc, null);
 	}
 
 }

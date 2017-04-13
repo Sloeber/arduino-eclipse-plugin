@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsole;
 
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
@@ -36,20 +37,17 @@ public class arduinoUploader implements IRealUpload {
 
 	@Override
 	public boolean uploadUsingPreferences(IFile hexFile, boolean usingProgrammer, IProgressMonitor monitor) {
-		String MComPort = Const.EMPTY_STRING;
-		String boardName = Const.EMPTY_STRING;
+		String MComPort = new String();
+		String boardName = new String();
 		boolean needsPassword = false;
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.myProject);
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
+		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
 
 		try {
-			MComPort = envManager.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, configurationDescription, true)
-					.getValue();
-			boardName = envManager.getVariable(Const.ENV_KEY_JANTJE_BOARD_NAME, configurationDescription, true)
-					.getValue();
 			needsPassword = envManager.getVariable(Const.ENV_KEY_NETWORK_AUTH, configurationDescription, true)
 					.getValue().equalsIgnoreCase(Const.TRUE);
 		} catch (Exception e) {// ignore all errors
@@ -57,13 +55,12 @@ public class arduinoUploader implements IRealUpload {
 		String NewSerialPort = MComPort;
 		if (!usingProgrammer) {
 			NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
-					this.mycConf, MComPort);
+					this.mycConf, boardDescriptor);
 		}
 
-		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, NewSerialPort);
-		contribEnv.addVariable(var, configurationDescription);
-		var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE,
-				NewSerialPort.replace("/dev/", Const.EMPTY_STRING)); //$NON-NLS-1$
+		BoardDescriptor.storeUploadPort(this.myProject, NewSerialPort);
+		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE,
+				NewSerialPort.replace("/dev/", new String())); //$NON-NLS-1$
 		contribEnv.addVariable(var, configurationDescription);
 
 		// for web authorized upload
@@ -71,7 +68,7 @@ public class arduinoUploader implements IRealUpload {
 			setEnvironmentvarsForAutorizedUpload(contribEnv, configurationDescription, MComPort);
 		}
 
-		String command = Const.EMPTY_STRING;
+		String command = new String();
 		try {
 			command = envManager
 					.getVariable(Common.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
