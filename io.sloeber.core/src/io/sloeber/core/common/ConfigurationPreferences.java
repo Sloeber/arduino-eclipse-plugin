@@ -141,7 +141,7 @@ public class ConfigurationPreferences {
 	}
 
 	public static String[] getBoardsPackageURLList() {
-		return getBoardsPackageURLs().replace("\r", Const.EMPTY_STRING).split(stringSplitter); //$NON-NLS-1$
+		return getBoardsPackageURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
 	}
 
 	public static String getBoardsPackageKey() {

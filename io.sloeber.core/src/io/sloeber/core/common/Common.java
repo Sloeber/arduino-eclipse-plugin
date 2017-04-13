@@ -88,16 +88,16 @@ public class Common extends Const {
 		try {
 			String sret = project.getPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, tag));
 			if (sret == null) {
-				sret = project.getPersistentProperty(new QualifiedName(EMPTY_STRING, tag)); // for
+				sret = project.getPersistentProperty(new QualifiedName(new String(), tag)); // for
 				// downwards
 				// compatibility
 				if (sret == null)
-					sret = EMPTY_STRING;
+					sret = new String();
 			}
 			return sret;
 		} catch (CoreException e) {
 			log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to read persistent setting " + tag, e)); //$NON-NLS-1$
-			return EMPTY_STRING;
+			return new String();
 		}
 	}
 
@@ -128,7 +128,7 @@ public class Common extends Const {
 	public static void setPersistentProperty(IProject project, String tag, String value) {
 		try {
 			project.setPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, tag), value);
-			project.setPersistentProperty(new QualifiedName(EMPTY_STRING, tag), value); // for
+			project.setPersistentProperty(new QualifiedName(new String(), tag), value); // for
 			// downwards
 			// compatibility
 		} catch (CoreException e) {
@@ -278,6 +278,11 @@ public class Common extends Const {
 
 		IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(value));
 		contribEnv.addVariable(var, confdesc);
+	}
+
+	static public void setBuildEnvironmentVariable(IProject project, String envName, String value) {
+		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+		setBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), envName, value);
 	}
 
 	public static void setBuildEnvironmentVariable(ICConfigurationDescription confdesc, String key, String value) {

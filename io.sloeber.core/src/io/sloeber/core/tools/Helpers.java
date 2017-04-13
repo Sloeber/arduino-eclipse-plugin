@@ -405,11 +405,11 @@ public class Helpers extends Common {
 			throws CoreException {
 
 		String boardVariant = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_BUILD_VARIANT,
-				EMPTY_STRING);
+				new String());
 		String buildCoreFolder = getBuildEnvironmentVariable(configurationDescription, ENV_KEY_BUILD_CORE,
-				EMPTY_STRING);
+				new String());
 		String redirectCorePlatform = getBuildEnvironmentVariable(configurationDescription,
-				ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, EMPTY_STRING);
+				ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, new String());
 		IPath corePath = new Path(redirectCorePlatform).append(ARDUINO_CORE_FOLDER_NAME).append(buildCoreFolder);
 
 		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
@@ -419,7 +419,7 @@ public class Helpers extends Common {
 			Helpers.removeCodeFolder(project, ARDUINO_CODE_FOLDER_NAME + "/variant");
 		} else {
 			String redirectVariantPath = getBuildEnvironmentVariable(configurationDescription,
-					ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM, EMPTY_STRING);
+					ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM, new String());
 			IPath VariantFile = new Path(redirectVariantPath).append(VARIANTS_FOLDER_NAME).append(boardVariant);
 			Helpers.addCodeFolder(project, VariantFile, ARDUINO_CODE_FOLDER_NAME + "/variant",
 					configurationDescription);
@@ -502,6 +502,7 @@ public class Helpers extends Common {
 			// packagename = platformPath.removeLastSegments(4).lastSegment();
 		}
 
+		boardDescriptor.saveConfiguration(confDesc, contribEnv);
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_ARCHITECTURE, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
@@ -546,14 +547,14 @@ public class Helpers extends Common {
 		}
 
 		// if (firstTime)
-		String sizeSwitch = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, EMPTY_STRING, false);
+		String sizeSwitch = getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_SIZE_SWITCH, new String(), false);
 		if (sizeSwitch.isEmpty()) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_SIZE_SWITCH,
 					makeEnvironmentVar(get_ENV_KEY_RECIPE(ACTION_SIZE)));
 		} else {
 			sizeSwitch.toString();
 		}
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PROJECT_NAME, projectName);
+
 	}
 
 	private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
@@ -695,9 +696,9 @@ public class Helpers extends Common {
 	private static void setTheEnvironmentVariablesAddThePlatformInfo(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc) {
 		String platformFileName = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
-				Const.EMPTY_STRING);
+				new String());
 		String referenceCoredPlatformFileName = getBuildEnvironmentVariable(confDesc,
-				ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, Const.EMPTY_STRING);
+				ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, new String());
 
 		ArduinoPlatform platform = null;
 		String curversion = null;
@@ -788,11 +789,11 @@ public class Helpers extends Common {
 		// process the platform file that is referenced in the build.core of the
 		// boards.txt file
 		Path coreReferencedPlatform = new Path(
-				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, EMPTY_STRING));
+				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM, new String()));
 		Path upLoadreferencedPlatform = new Path(
-				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_UPLOAD_REFERENCED_PLATFORM, EMPTY_STRING));
+				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_UPLOAD_REFERENCED_PLATFORM, new String()));
 		Path variantReferencedPlatform = new Path(
-				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM, EMPTY_STRING));
+				Common.getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM, new String()));
 		if (upLoadreferencedPlatform.toFile().exists()) {
 			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc,
 					upLoadreferencedPlatform.append(PLATFORM_FILE_NAME).toFile());
@@ -831,7 +832,7 @@ public class Helpers extends Common {
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, false);
 
 		// Do some coded post processing
-		setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc);
+		setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc, boardsDescriptor);
 
 	}
 
@@ -970,9 +971,10 @@ public class Helpers extends Common {
 	 *
 	 * @param contribEnv
 	 * @param confDesc
+	 * @param boardsDescriptor
 	 */
 	private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv,
-			ICConfigurationDescription confDesc) {
+			ICConfigurationDescription confDesc, InternalBoardDescriptor boardsDescriptor) {
 
 		CompileOptions compileOptions = new CompileOptions(confDesc);
 		// a save will overwrite the warning settings set by arduino
@@ -981,7 +983,7 @@ public class Helpers extends Common {
 				ACTION_OBJCOPY_to_EEP, ACTION_SIZE, ACTION_AR, ACTION_C_COMBINE };
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
-			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, EMPTY_STRING, false);
+			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
 			//
 
 			recipe = adaptCompilerCommand(recipe);
@@ -1015,14 +1017,13 @@ public class Helpers extends Common {
 		String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
 		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
 			IEnvironmentVariable uploadToolVar = contribEnv.getVariable(ENV_KEY_JANTJE_UPLOAD_TOOL, confDesc);
-			IEnvironmentVariable comportVar = contribEnv.getVariable(Const.ENV_KEY_JANTJE_UPLOAD_PORT, confDesc);
-			if ((uploadToolVar == null) || (comportVar == null)) {
+			String MComPort = boardsDescriptor.getUploadPort();
+			if ((uploadToolVar == null) || (MComPort.isEmpty())) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 						"Upload will fail due to missing upload parameters"));
 			} else {
 				String uploadTool = uploadToolVar.getValue();
 
-				String MComPort = comportVar.getValue();
 				String host = getHostFromComPort(MComPort);
 				if (host != null) {
 					String platform = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ARCITECTURE_ID, confDesc).getValue();
@@ -1236,7 +1237,7 @@ public class Helpers extends Common {
 		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			osString = "\\.WINDOWS";
 		}
-		return prefix + string.toUpperCase().replaceAll(osString, EMPTY_STRING);
+		return prefix + string.toUpperCase().replaceAll(osString, new String());
 	}
 
 	/**

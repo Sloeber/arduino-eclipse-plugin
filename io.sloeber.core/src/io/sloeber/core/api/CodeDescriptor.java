@@ -74,11 +74,11 @@ public class CodeDescriptor {
 	public static CodeDescriptor createLastUsed() {
 
 		String typeDescriptor = InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
-				Const.EMPTY_STRING);
+				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescriptor ret = new CodeDescriptor(codeType);
 		ret.myTemPlateFoldername = new Path(
-				InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, Const.EMPTY_STRING));
+				InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();
 		return ret;
 	}
@@ -192,7 +192,7 @@ public class CodeDescriptor {
 			String toStore = StringUtils.join(this.myExamples, "\n"); //$NON-NLS-1$
 			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, toStore);
 		} else {
-			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, Const.EMPTY_STRING);
+			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, new String());
 		}
 
 	}
