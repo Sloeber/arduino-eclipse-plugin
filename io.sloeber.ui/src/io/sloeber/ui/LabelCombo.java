@@ -98,4 +98,9 @@ public class LabelCombo {
 	public boolean isVisible() {
 		return (this.mCombo.getItemCount() > 0);
 	}
+
+	public void setLabel(String newLabel) {
+		this.mLabel.setText(newLabel);
+
+	}
 }

@@ -2,17 +2,17 @@ package jUnit;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -27,430 +27,38 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompile {
-	private String mBoardID;
-	private Map<String, String> myOptions = new HashMap<>();
-	private String mPackageName;
-	private String mPlatform;
-	private String mJsonFileName;
+	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
 
-	public CreateAndCompile(String jsonFileName, String packageName, String platform, String boardID, String options) {
-		this.mBoardID = boardID;
-		this.mPackageName = packageName;
-		this.mPlatform = platform;
-		this.mJsonFileName = jsonFileName;
-		String[] lines = options.split("\n"); //$NON-NLS-1$
-		for (String curLine : lines) {
-			String[] values = curLine.split("=", 2); //$NON-NLS-1$
-			if (values.length == 2) {
-				this.myOptions.put(values[0], values[1]);
-			}
-		}
-
+	public CreateAndCompile(BoardDescriptor board) {
+		this.mBoard = board;
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Parameters(name = "{index}: {0} {1} {2} {3} {4}")
+	@Parameters(name = "{index}: {0} ")
 	public static Collection boards() {
-		return Arrays.asList(new Object[][] {
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
-						"" }, //
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
-
-				// package_quirkbot.com_index.json
-				{ "package_quirkbot.com_index.json", "quirkbot", "Quirkbot AVR Boards", "quirkbot", "" }, //
-
-				// package_avdweb_nl_index.json
-				{ "package_avdweb_nl_index.json", "SAM15x15", "SAM15x15", "SAM15x15", "" }, //
-
-				// package_damellis_attiny_index
-				{ "package_damellis_attiny_index.json", "attiny", "attiny", "ATtinyX5",
-						"cpu=attiny25\nclock=internal1" }, //
-				{ "package_damellis_attiny_index.json", "attiny", "attiny", "ATtinyX4",
-						"cpu=attiny24\nclock=internal1" }, //
-
-				// Adafruit AVR
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "flora8", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "bluefruitmicro", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "gemma", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "feather32u4", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "trinket3", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "trinket5", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "protrinket5", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "protrinket3", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "protrinket5ftdi", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "protrinket3ftdi", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "adafruit32u4", "" }, //
-				{ "package_adafruit_index.json", "adafruit", "Adafruit AVR Boards", "circuitplay32u4cat", "" }, //
-				// Adafruit SAMD
-				{ "package_adafruit_index.json", "adafruit", "Adafruit SAMD Boards", "adafruit_feather_m0", "" }, //
-
-				// akafugu
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafugubread16", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "akafuinol", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "simpleclock", "" }, //
-				{ "package_akafugu_index.json", "akafugu", "Akafugu Boards", "nixieclock", "" }, //
-
-				// alorium
-				// not yet adopted to LTO
-				// { "package_aloriumtech_index.json", "alorium", "Alorium XLR8
-				// Boards", "xlr8rev2", "xbs=disable_none" }, //
-
-				// amel samd
-				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_atmel_ice", "" }, //
-				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_sam_ice", "" }, //
-				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
-				{ "package_index.json", "AMEL", "AMEL-Tech Boards", "AMEL_SmartEverything_native", "" }, //
-
-				// arcore avr
-				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo", "" }, //
-				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "leonardo2", "" }, //
-				{ "package_adafruit_index.json", "arcore", "Leonardo & Micro MIDI-USB (arcore)", "micro", "" }, //
-
-				// ardhat
-				// not yet adopted to LTO
-				// { "package_ardhat_index.json", "ardhat", "Ardhat AVR Boards",
-				// "ardhat", "" }, //
-
-				// arduboy
-				{ "package_arduboy_index.json", "arduboy", "Arduboy", "arduboy", "" }, //
-				{ "package_arduboy_index.json", "arduboy", "Arduboy", "arduboy_devkit", "" }, //
-
-				// Arduino.cc AVR boards
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "yun", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "uno", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "diecimila", "cpu=atmega328" },
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "nano", "cpu=atmega328" },
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "mega", "cpu=atmega2560" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "megaADK", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "leonardo", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "micro", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "esplora", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "mini", "cpu=atmega328" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "ethernet", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "fio", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "bt", "cpu=atmega328" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "LilyPadUSB", "" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "lilypad", "cpu=atmega328" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "pro", "cpu=16MHzatmega328" }, // comment
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "atmegang", "cpu=atmega8" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "robotControl", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "robotMotor", "" }, //
-				{ "package_index.json", "arduino", "Arduino AVR Boards", "gemma", "" },
-
-				// Arduino SAM
-				{ "package_index.json", "arduino", "Arduino SAM Boards (32-bits ARM Cortex-M3)", "arduino_due_x_dbg",
-						"" }, //
-				{ "package_index.json", "arduino", "Arduino SAM Boards (32-bits ARM Cortex-M3)", "arduino_due_x", "" }, //
-
-				// Arduino SAMD
-				{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)", "arduino_zero_edbg",
-						"" }, //
-				{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)",
-						"arduino_zero_native", "" }, //
-				{ "package_index.json", "arduino", "Arduino SAMD Boards (32-bits ARM Cortex-M0+)", "mkr1000", "" }, //
-
-				// arrow SAMD
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox_native", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox3_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Fox3_native", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Lion_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Lion_native", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Dragonfly_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "SmartEverything_Dragonfly_native", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "adi_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "adi_native", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_atmel_ice", "" }, //
-				{ "package_index.json", "Arrow", "Arrow Boards", "NetTrotter_native", "" }, //
-
-				// atmel-avr-xminis
-				{ "package_index.json", "atmel-avr-xminis", "Atmel AVR Xplained-minis", "atmega328p_xplained_mini",
-						"" }, //
-				{ "package_index.json", "atmel-avr-xminis", "Atmel AVR Xplained-minis", "atmega168pb_xplained_mini",
-						"" }, //
-				{ "package_index.json", "emoro", "EMORO 2560", "emoro2560", "" }, //
-
-				// ATTinyCore
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx41",
-						"chip=841\nclock=8internal\nbod=disable\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny841opti",
-						"clock=8internal\n=bod=1v8\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny1634",
-						"clock=8internal\n=bod=1v8\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny1634opti",
-						"clock=8internal\nbod=2v7\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny828",
-						"clock=8internal\n=bod=2v7\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attiny828opti",
-						"bod=2v7\nvcc=3v3\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx5",
-						"chip=85\nclock=20external\nbod=2v7\nTimerClockSource=default\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx4",
-						"chip=44\nclock=6external\nbod=2v7\npinmapping=new\nLTO=disable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx61",
-						"chip=261\nclock=1internal\nbod=2v7\nTimerClockSource=pll\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7opti",
-						"clock=16external\nbod=2v7\npinmapping=new\nLTO=enable\nchip=167" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx7",
-						"chip=87\nclock=12external\nbod=2v7\npinmapping=new\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx8",
-						"chip=88\nclock=1internal\nbod=2v7\nLTO=enable" }, //
-				{ "package_drazzy.com_index.json", "ATTinyCore", "ATTinyCore", "attinyx313",
-						"chip=4313\nclock=5internal\nbod=2v7\nINITIALIZE_SECONDARY_TIMERS=1\nLTO=enable" }, //
-
-				// chipKIT
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot32mx4", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot32mx7", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot_mx3ck", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_mx3", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot_mx3ck_512", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot_mx4ck", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_pro_mx4", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cerebot_mx7ck", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_pro_mx7", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_Pi", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_Pi_USB_Serial", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cmod", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "CUI32stem", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "ubw32_mx460", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "ubw32_mx795", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "cui32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "usbono_pic32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_DP32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "fubarino_mini_dev", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "fubarino_mini", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "fubarino_sd_seeed", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "fubarino_sd", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "Fubarino_SDZ", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "mega_pic32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "mega_usb_pic32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "Olimex_Pinguino32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "picadillo_35t", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "quick240_usb_pic32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_uc32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "uc32_pmod", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "uno_pic32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "uno_pmod", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_WF32", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_WiFire", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_WiFire_AB", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "chipkit_WiFire_80MHz", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "OpenScope", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "openbci", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "lenny", "" }, //
-				{ "package_chipkit_index.json", "chipKIT", "chipKIT", "clicker2", "" }, //
-
-				// Cosa
-				{ "package_cosa_index.json", "Cosa", "Cosa", "diecimila", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "duemilanove", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "leonardo", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "mega1280", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "mega2560", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "micro", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "nano", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "pro-micro", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "pro-micro-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "pro-mini", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "pro-mini-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "uno", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "attiny84-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "attiny85-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "attiny861-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "atmega328-8", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "mighty", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "mighty-opt", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "lilypad", "" }, //
-				{ "package_cosa_index.json", "Cosa", "Cosa", "lilypad-usb", "" }, //
-
-				// digistump sam
-				{ "package_digistump_index.json", "digistump", "Digistump SAM Boards (32-bits ARM Cortex-M3)", "digix",
-						"" }, //
-
-				// digistump AVR
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro32", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-pro64", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny16", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny8", "" }, //
-				{ "package_digistump_index.json", "digistump", "Digistump AVR Boards", "digispark-tiny1", "" }, //
-
-				// digistump oak (needs MSVCR100.dll to be added to
-				// digistump/tools/esptool2/[version]
-				// folder
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1",
-						"CpuFrequency=80\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Full" }, //
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak1_noauto",
-						"CpuFrequency=80\nUploadTool=oak_ota\nFlashSize=OAK\nRomConfig=Full" },
-				{ "package_digistump_index.json", "digistump", "Oak by Digistump", "oak",
-						"CpuFrequency=160\nUploadTool=oak\nFlashSize=OAK\nRomConfig=Half1" }, //
-
-				// emoro AVR
-				{ "package_index.json", "emoro", "EMORO 2560", "emoro2560", "" }, //
-
-				// ESP8266 boards
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "generic",
-						".CpuFrequency=80\nFlashFreq=40\nFlashMode=dio\nUploadSpeed=115200\nFlashSize=512K64\nResetMethod=ck\nDebug=Disabled\nDebugLevel=None" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "esp8285",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=1M512" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "espduino",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "huzzah",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "espresso_lite_v1",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "espresso_lite_v2",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "phoenix_v1",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "phoenix_v2",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "nodemcu",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "nodemcuv2",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "modwifi",
-						"CpuFrequency=80\nUploadSpeed=115200" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "thing",
-						"CpuFrequency=80\nUploadSpeed=115200" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "thingdev",
-						"CpuFrequency=80\nUploadSpeed=115200" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "esp210",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "d1_mini",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "d1",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "espino",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nFlashMode=dio\nResetMethod=ck" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "espinotee",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "wifinfo",
-						"CpuFrequency=80\nUploadSpeed=115200\nESPModule=ESP07192\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None\nFlashFreq=40\nFlashMode=qio" },
-				{ "package_esp8266com_index.json", "esp8266", "esp8266", "coredev",
-						"CpuFrequency=80\nUploadSpeed=115200\nFlashSize=4M3M\nResetMethod=nodemcu\nDebug=Disabled\nDebugLevel=None\nFlashFreq=40\nFlashMode=qio\nLwIPVariant=Espressif" },
-
-				// intel
-				{ "package_index.json", "Intel", "Intel Curie Boards", "arduino_101", "" }, //
-				{ "package_index.json", "Intel", "Intel i586 Boards", "izmir_fd", "" }, //
-				{ "package_index.json", "Intel", "Intel i586 Boards", "izmir_fg", "" }, //
-				{ "package_index.json", "Intel", "Intel i686 Boards", "izmir_ec", "" }, //
-
-				// littleBits AVR
-				{ "package_index.json", "littleBits", "littleBits Arduino AVR Modules", "w6_arduino", "" }, //
-
-				// package_MCUdude_MicroCore_index.json
-				{ "package_MCUdude_MicroCore_index.json", "MicroCore", "MicroCore", "attiny13",
-						"BOD=4v3\nclock=9M6\nflag=Os" }, //
-
-				// package_MCUdude_MightyCore_index
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "1284",
-						"clock=16MHz_external\npinout=bobuino\nBOD=2v7\nvariant=modelP\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "644",
-						"clock=20MHz_external\npinout=standard\nBOD=2v7\nvariant=modelNonP\nLTO=Os_flto" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "324",
-						"clock=12MHz_external\npinout=bobuino\nBOD=1v8\nvariant=modelP\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "164",
-						"clock=8MHz_external\npinout=bobuino\nBOD=Disabled\nvariant=modelA\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "32",
-						"clock=12MHz_external\npinout=standard\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "16",
-						"clock=8MHz_internal\npinout=bobuino\nLTO=Os" }, //
-				{ "package_MCUdude_MightyCore_index.json", "MightyCore", "MightyCore", "8535",
-						"clock=1MHz_internal\npinout=bobuino\nLTO=Os" }, //
-
-				// Microsoft win10
-				// { "package_index.json", "Microsoft", "Windows 10 Iot Core",
-				// "w10iotcore", "Processor=arm" },
-				//
-
-				// nucdino
-				{ "package_dfrobot_index.json", "nucDuino", "Bluno M0 MainBoard & DFRduino M0 MainBoard", "DFRDuino",
-						"" }, //
-				{ "package_dfrobot_index.json", "nucDuino", "Bluno M0 MainBoard & DFRduino M0 MainBoard", "BlunoM0",
-						"" }, //
-
-				// redbear
-				// needs a workaround in platform.txt
-				// see
-				// https://github.com/jantje/arduino-eclipse-plugin/issues/546
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo_native",
-						"" }, //
-				{ "package_redbear_index.json", "RedBear", "RedBear Duo (32-bits ARM Cortex-M3)", "RedBear_Duo", "" }, //
-
-				// RedBearLab
-				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blend", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blendmicro8", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear AVR Boards", "blendmicro16", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
-						"nRF51822", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
-						"nRF51822_NANO", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
-						"nRF51822_32KB", "" }, //
-				{ "package_redbearlab_index.json", "RedBear", "RedBear nRF51822 Boards (32-bits ARM Cortex-M0)",
-						"nRF51822_NANO_32KB", "" }, //
-
-				// STM32
-				{ "package_stm_index.json", "STM32", "STM32 F1 Boards", "NUCLEO-F103RB", "" }, //
-				{ "package_stm_index.json", "STM32", "STM32 L4 Boards", "NUCLEO-L476RG", "" }, //
-
-				// Sparkfun AVR
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "RedBoard", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "makeymakey", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "promicro", "cpu=8MHzatmega32U4" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "fiov3", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "qduinomini", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "digitalsandbox", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "megapro", "cpu=atmega25603V3" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "RedBot", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "Serial7Seg", "" }, //
-				{ "package_sparkfun_index.json", "SparkFun", "SparkFun AVR Boards", "atmega128rfa1", "" }, //
-
-				// Teensy
-				{ "local", Shared.getTeensyBoard_txt(), "", "teensy31", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", Shared.getTeensyBoard_txt(), "", "teensy30", "usb=serial\nspeed=96\nkeys=en-us" }, //
-				{ "local", Shared.getTeensyBoard_txt(), "", "teensyLC", "usb=serial\nl\nspeed=48\nkeys=en-us" }, //
-				{ "local", Shared.getTeensyBoard_txt(), "", "teensypp2", "usb=serial\nspeed=16\nkeys=en-us" }, //
-				{ "local", Shared.getTeensyBoard_txt(), "", "teensy2", "usb=serial\nspeed=16\nkeys=en-us" }, //
-
-				// TeeOnArdu avr
-				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "TeeOnArdu",
-						"UsbType=serial\nKeyLayout=en-us" }, //
-				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "FloraTeensyCore",
-						"UsbType=midi\nKeyLayout=fr-ca" }, //
-				{ "package_adafruit_index.json", "TeeOnArdu", "Adafruit TeeOnArdu", "CirPlayTeensyCore",
-						"UsbType=serial\nKeyLayout=usint" }, //
-
-				// Talk2
-				{ "package_talk2.wisen.com_index.json", "Talk2", "Talk2 AVR Boards", "whispernode", "mhz=16MHz" }, //
-
-				// UDOO
-				{ "package_udoo_index.json", "UDOO", "UDOO QUAD/DUAL (Arduino Due)", "udooqdl", "" }, //
-				/*
-				 * { "package_udoo_index.json", "UDOO", "UDOO NEO (iMX6 SoloX)",
-				 * "udooneo", "" }, fails because all object need to be provided
-				 * to linker but I don't see how they tell this to Arduino
-				 */
-
-		});
+		installAdditionalBoards();
+		List<BoardDescriptor> boards = new ArrayList<>();
+		for (String curBoardFile : BoardsManager.getAllBoardsFiles()) {
+			boards.addAll(BoardDescriptor.makeBoardDescriptors(new File(curBoardFile)));
+		}
+		// to avoid warnings set the upload port to some value
+		for (BoardDescriptor curBoard : boards) {
+			curBoard.setUploadPort("none");
+		}
+		return boards;
 	}
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we
+	 * installer job will trigger downloads These mmst have finished before we
 	 * can start testing
 	 */
-	@BeforeClass
-	public static void WaitForInstallerToFinish() {
-		installAdditionalBoards();
-		Shared.waitForAllJobsToFinish();
-	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+		String[] packageUrlsToAdd = { "https://sandeepmistry.github.io/arduino-nRF5/package_nRF5_boards_index.json",
+				"https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
+				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
 				"http://clkdiv8.com/download/package_clkdiv8_index.json",
 				"http://digistump.com/package_digistump_index.json",
 				"http://download.labs.mediatek.com/package_mtk_linkit_index.json",
@@ -520,18 +128,13 @@ public class CreateAndCompile {
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		BoardsManager.onlyKeepLatestPlatforms();
+		Shared.waitForAllJobsToFinish();
 	}
 
 	@Test
 	public void testBoard() {
-		BoardDescriptor boardid = BoardsManager.getBoardID(this.mJsonFileName, this.mPackageName, this.mPlatform,
-				this.mBoardID, this.myOptions);
-		if (boardid == null) {
-			fail("Board " + this.mJsonFileName + " " + " " + this.mPackageName + " " + this.mPlatform + " "
-					+ this.mBoardID + " not found");
-			return;
-		}
-		BuildAndVerify(boardid);
+		BuildAndVerify(this.mBoard);
 
 	}
 
@@ -559,6 +162,12 @@ public class CreateAndCompile {
 		} catch (CoreException e) {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + boardid.getBoardName() + " exception");
+		}
+		try {
+			theTestProject.delete(false, true, null);// close(null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

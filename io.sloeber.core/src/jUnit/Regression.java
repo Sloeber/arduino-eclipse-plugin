@@ -54,7 +54,7 @@ public class Regression {
 
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
-		BoardDescriptor boardid = BoardsManager.getBoardID("package_talk2.wisen.com_index.json", "Talk2",
+		BoardDescriptor boardid = BoardsManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
 				"Talk2 AVR Boards", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");
@@ -71,13 +71,13 @@ public class Regression {
 	@Test
 	public void issue555() {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 		Map<String, String> teensyOptions = new HashMap<>();
 		teensyOptions.put("usb", "serial");
 		teensyOptions.put("speed", "96");
 		teensyOptions.put("keys", "en-us");
-		BoardDescriptor teensyBoardid = BoardsManager.getBoardID("local", Shared.getTeensyBoard_txt(), "", "teensy31",
+		BoardDescriptor teensyBoardid = BoardsManager.getBoardDescriptor("local", Shared.getTeensyBoard_txt(), "", "teensy31",
 				teensyOptions);
 		IProject theTestProject = null;
 		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
@@ -122,7 +122,7 @@ public class Regression {
 	@Test
 	public void issue687() {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -154,7 +154,7 @@ public class Regression {
 	@Test
 	public void are_jantjes_options_taken_into_account() {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -195,7 +195,7 @@ public class Regression {
 	@Test
 	public void are_defines_before_includes_taken_into_account() {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -230,7 +230,7 @@ public class Regression {
 	@Test
 	public void is_extern_C_taken_into_account() {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;

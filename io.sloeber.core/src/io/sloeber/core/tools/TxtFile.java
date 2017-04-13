@@ -128,25 +128,47 @@ public class TxtFile {
 			return new String[0];
 		}
 
-		String SearchKey = menuID + DOT + boardID + DOT;
-		SearchKey = SearchKey.toUpperCase();
-		for (Entry<String, String> e2 : menuInfo.entrySet()) {
-			int numsubkeys = e2.getKey().split("\\.").length; //$NON-NLS-1$
-			boolean startOk = e2.getKey().toUpperCase().startsWith(SearchKey);
-			if ((numsubkeys == 3) && (startOk))
-				ret.add(e2.getValue());
-		}
-		// from Arduino IDE 1.5.4 menu is subset of the board. The previous code
-		// will not return a result
 		Map<String, String> boardInfo = this.fileContent.get(boardID);
 		if (boardInfo != null) {
-			SearchKey = MENU + DOT + menuID + DOT;
+			String SearchKey = MENU + DOT + menuID + DOT;
 			SearchKey = SearchKey.toUpperCase();
 			for (Entry<String, String> e2 : boardInfo.entrySet()) {
 				int numsubkeys = e2.getKey().split("\\.").length; //$NON-NLS-1$
 				boolean startOk = e2.getKey().toUpperCase().startsWith(SearchKey);
 				if ((numsubkeys == 3) && (startOk))
 					ret.add(e2.getValue());
+			}
+		}
+		return ret.toArray(new String[ret.size()]);
+	}
+
+	/**
+	 * Get all the acceptable values for a option for a board The outcome of
+	 * this method can be used to fill a
+	 *
+	 * @param menu
+	 *            the id of a menu not the name
+	 * @param boardID
+	 *            the id of a board not the name
+	 * @return The IDs that are the possible selections
+	 */
+	public String[] getMenuItemIDsFromMenuID(String menuID, String boardID) {
+		HashSet<String> ret = new HashSet<>();
+		Map<String, String> menuInfo = this.fileContent.get(MENU);
+		if (menuInfo == null) {
+			return new String[0];
+		}
+
+		Map<String, String> boardInfo = this.fileContent.get(boardID);
+		if (boardInfo != null) {
+			String SearchKey = MENU + DOT + menuID + DOT;
+			SearchKey = SearchKey.toUpperCase();
+			for (Entry<String, String> e2 : boardInfo.entrySet()) {
+				String[] subKeys = e2.getKey().split("\\.");//$NON-NLS-1$
+				int numsubkeys = subKeys.length;
+				boolean startOk = e2.getKey().toUpperCase().startsWith(SearchKey);
+				if ((numsubkeys == 3) && (startOk))
+					ret.add(subKeys[2]);
 			}
 		}
 		return ret.toArray(new String[ret.size()]);
@@ -177,7 +199,7 @@ public class TxtFile {
 	 *
 	 */
 	public String[] getAllNames(String[] toaddNames) {
-		if (this.mLastLoadedTxtFile.equals(Const.EMPTY_STRING)) {
+		if (this.mLastLoadedTxtFile.equals(new String())) {
 			return toaddNames;
 		}
 		HashSet<String> allNames = new HashSet<>();
@@ -347,9 +369,11 @@ public class TxtFile {
 
 	public String getMenuNameFromID(String menuID) {
 		Map<String, String> menuSectionMap = getSection(MENU);
-		for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
-			if (curOption.getKey().equalsIgnoreCase(menuID)) {
-				return curOption.getValue();
+		if (menuSectionMap != null) {
+			for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
+				if (curOption.getKey().equalsIgnoreCase(menuID)) {
+					return curOption.getValue();
+				}
 			}
 		}
 		return MENU + " ID " + menuID + Messages.Boards_not_found; //$NON-NLS-1$
@@ -378,7 +402,7 @@ public class TxtFile {
 	public String getNameFromID(String myBoardID) {
 		Map<String, String> boardSection = getSection(myBoardID);
 		if (boardSection == null) {
-			return Const.EMPTY_STRING;
+			return new String();
 		}
 		return boardSection.get("name"); //$NON-NLS-1$
 	}

@@ -53,24 +53,27 @@ public class CreateAndCompileExamples {
 				myOptions.put(values[0], values[1]);
 			}
 		}
-		BoardDescriptor leonardoBoardid = BoardsManager.getBoardID("package_index.json", "arduino",
+		BoardDescriptor leonardoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
 				"Arduino AVR Boards", "leonardo", myOptions);
 		if (leonardoBoardid == null) {
 			fail("leonardo Board not found");
 			return null;
 		}
-		BoardDescriptor unoBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		leonardoBoardid.setUploadPort("none");
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", myOptions);
 		if (unoBoardid == null) {
 			fail("uno Board not found");
 			return null;
 		}
-		BoardDescriptor EsploraBoardid = BoardsManager.getBoardID("package_index.json", "arduino", "Arduino AVR Boards",
+		unoBoardid.setUploadPort("none");
+		BoardDescriptor EsploraBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"esplora", myOptions);
 		if (EsploraBoardid == null) {
 			fail("Esplora Board not found");
 			return null;
 		}
+		EsploraBoardid.setUploadPort("none");
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
@@ -101,43 +104,43 @@ public class CreateAndCompileExamples {
 	}
 
 	private static boolean isExampleOkForUno(String key) {
-		final String[] notOkForUno = { "Firmataexamples-StandardFirmataWiFi", "examples-04.Communication-MultiSerial",
-				"examples-09.USB-Keyboard-KeyboardLogout", "examples-09.USB-Keyboard-KeyboardMessage",
-				"examples-09.USB-Keyboard-KeyboardReprogram", "examples-09.USB-Keyboard-KeyboardSerial",
-				"examples-09.USB-KeyboardAndMouseControl", "examples-09.USB-Mouse-ButtonMouseControl",
-				"examples-09.USB-Mouse-JoystickMouseControl", };
+		final String[] notOkForUno = { "Firmataexamples?StandardFirmataWiFi", "examples?04.Communication?MultiSerial",
+				"examples?09.USB?Keyboard?KeyboardLogout", "examples?09.USB?Keyboard?KeyboardMessage",
+				"examples?09.USB?Keyboard?KeyboardReprogram", "examples?09.USB?Keyboard?KeyboardSerial",
+				"examples?09.USB?KeyboardAndMouseControl", "examples?09.USB?Mouse?ButtonMouseControl",
+				"examples?09.USB?Mouse?JoystickMouseControl", };
 		if (key.startsWith("Esploraexamples"))
 			return false;
-		if (key.startsWith("TFTexamples-Esplora-Esplora"))
+		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
 
 		if (key.contains("Firmata"))
 			return false;
-		if (Arrays.asList(notOkForUno).contains(key))
+		if (Arrays.asList(notOkForUno).contains(key.replace(" ", "")))
 			return false;
 		return true; // default everything is fine
 	}
 
 	private static boolean isExampleOkForLeonardo(String key) {
-		final String[] notOkForLeonardo = { "Esploraexamples-Beginners-EsploraJoystickMouse",
-				"Esploraexamples-Experts-EsploraKart", "Esploraexamples-Experts-EsploraTable",
-				"Firmataexamples-StandardFirmataWiFi" };
+		final String[] notOkForLeonardo = { "Esploraexamples?Beginners?EsploraJoystickMouse",
+				"Esploraexamples?Experts?EsploraKart", "Esploraexamples?Experts?EsploraTable",
+				"Firmataexamples?StandardFirmataWiFi" };
 		if (key.contains("Firmata"))
 			return false;
-		if (key.startsWith("TFTexamples-Esplora-Esplora"))
+		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
-		if (Arrays.asList(notOkForLeonardo).contains(key))
+		if (Arrays.asList(notOkForLeonardo).contains(key.replace(" ", "")))
 			return false;
 		return true; // default everything is fine
 	}
 
 	private static boolean isExampleOkForEsplora(String key) {
-		final String[] notOkForEsplora = { "Firmataexamples-StandardFirmataBLE",
-				"Firmataexamples-StandardFirmataChipKIT", "Firmataexamples-StandardFirmataEthernet",
-				"Firmataexamples-StandardFirmataWiFi" };
-		if (key.startsWith("TFTexamples-Esplora-Esplora"))
+		final String[] notOkForEsplora = { "Firmataexamples?StandardFirmataBLE",
+				"Firmataexamples?StandardFirmataChipKIT", "Firmataexamples?StandardFirmataEthernet",
+				"Firmataexamples?StandardFirmataWiFi" };
+		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
-		if (Arrays.asList(notOkForEsplora).contains(key))
+		if (Arrays.asList(notOkForEsplora).contains(key.replace(" ", "")))
 			return false;
 		return true; // default everything is fine
 	}
