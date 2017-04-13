@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -53,10 +52,10 @@ public class BoardsManager {
 	}
 
 	/**
-	 * Gets the board id based on the information provided. If
-	 * jsonFileName="local" the board is assumend not to be installed by the
+	 * Gets the board descriptor based on the information provided. If
+	 * jsonFileName="local" the board is assumed not to be installed by the
 	 * boards manager. Otherwise the boardsmanager is queried to find the board
-	 * ID. In this case the latest installed board will be returned
+	 * descriptor. In this case the latest installed board will be returned
 	 *
 	 * @param jsonFileName
 	 *            equals to "local" or the name of the json file used by the
@@ -75,7 +74,7 @@ public class BoardsManager {
 	 *            boards.txt file)
 	 * @return The class BoardDescriptor or null
 	 */
-	static public BoardDescriptor getBoardID(String jsonFileName, String packageName, String platformName,
+	static public BoardDescriptor getBoardDescriptor(String jsonFileName, String packageName, String platformName,
 			String boardID, Map<String, String> options) {
 		if (jsonFileName.equals("local")) { //$NON-NLS-1$
 			return BoardDescriptor.makeBoardDescriptor(new File(packageName), boardID, options);
@@ -87,22 +86,18 @@ public class BoardsManager {
 			String platformName, String boardID, Map<String, String> options) {
 
 		List<Board> boards = null;
-		try {
-			Package thePackage = Manager.getPackage(jsonFileName, packageName);
-			if (thePackage == null) {
-				// fail("failed to find package:" + this.mPackageName);
-				return null;
-			}
-			ArduinoPlatform platform = thePackage.getLatestPlatform(platformName);
-			if (platform == null) {
-				// fail("failed to find platform " + this.mPlatform + " in
-				// package:" + this.mPackageName);
-				return null;
-			}
-			boards = platform.getBoards();
-		} catch (CoreException e1) {
-			e1.printStackTrace();
+		Package thePackage = Manager.getPackage(jsonFileName, packageName);
+		if (thePackage == null) {
+			// fail("failed to find package:" + this.mPackageName);
+			return null;
 		}
+		ArduinoPlatform platform = thePackage.getLatestPlatform(platformName);
+		if (platform == null) {
+			// fail("failed to find platform " + this.mPlatform + " in
+			// package:" + this.mPackageName);
+			return null;
+		}
+		boards = platform.getBoards();
 		if (boards == null) {
 			// fail("No boards found");
 			return null;
@@ -161,8 +156,8 @@ public class BoardsManager {
 		Manager.setBoardsPackageURL(newBoardJsonUrls);
 	}
 
-	public static String getBoardsPackageURLs() {
-		return Manager.getBoardsPackageURLs();
+	public static String getDefaultBoardsPackageURLs() {
+		return Manager.getDefaultBoardsPackageURLs();
 	}
 
 	public static boolean isReady() {
@@ -694,7 +689,7 @@ public class BoardsManager {
 	 *
 	 * @return
 	 */
-	public static Set<String> getAllManuNames() {
+	public static Set<String> getAllMenuNames() {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		String[] boardFiles = getAllBoardsFiles();
 		for (String curBoardFile : boardFiles) {
@@ -712,6 +707,14 @@ public class BoardsManager {
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;
+	}
+
+	/**
+	 * Remove all packages that have a more recent version
+	 */
+	public static void onlyKeepLatestPlatforms() {
+		Manager.onlyKeepLatestPlatforms();
+
 	}
 
 }

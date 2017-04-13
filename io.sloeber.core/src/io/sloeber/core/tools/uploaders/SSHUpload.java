@@ -20,7 +20,6 @@ import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 
 public class SSHUpload implements IRealUpload {
 
@@ -87,7 +86,7 @@ public class SSHUpload implements IRealUpload {
 
 		} catch (JSchException e) {
 			String message = e.getMessage();
-			String errormessage = Const.EMPTY_STRING;
+			String errormessage = new String();
 			if (Messages.Upload_auth_cancel.equals(message) || Messages.Upload_auth_fail.equals(message)) {
 				errormessage = new String(Messages.Upload_error_auth_fail) + this.myHost;
 				// TODO add to ask if if the user wants to remove the password

@@ -9,7 +9,6 @@ package io.sloeber.core.common;
 @SuppressWarnings("nls")
 public class Const {
 	// java stuff so I do not have to add all the time $NON-NLS-1$
-	public static final String EMPTY_STRING = "";
 	public static final String DOT = ".";
 	public static final String SLACH = "/";
 	public static final String COLON = ":";
@@ -78,9 +77,6 @@ public class Const {
 	public static final String ENV_KEY_JANTJE_PLATFORM_FILE = ENV_KEY_JANTJE_START + "PLATFORM_FILE";
 	public static final String ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM = ERASE_START + ENV_KEY_JANTJE_START
 			+ "CORE.REFERENCED.PLATFORM"; //$NON-NLS-1$
-	public static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + "COM_PORT";
-	public static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "BOARD_NAME";
-	public static final String ENV_KEY_JANTJE_PROJECT_NAME = ENV_KEY_JANTJE_START + "PROJECT_NAME";
 
 	public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.COMPILE";
 	public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "EXTRA.C.COMPILE";

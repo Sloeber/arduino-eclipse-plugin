@@ -163,4 +163,13 @@ public class Package implements Comparable<Package> {
 		return this.name.compareTo(other.name);
 	}
 
+	public void onlyKeepLatestPlatforms() {
+		Collection<ArduinoPlatform> latestPlatforms = getLatestPlatforms();
+		for (ArduinoPlatform curplatform : this.platforms) {
+			if (!latestPlatforms.contains(curplatform)) {
+				curplatform.remove(null);
+			}
+		}
+	}
+
 }

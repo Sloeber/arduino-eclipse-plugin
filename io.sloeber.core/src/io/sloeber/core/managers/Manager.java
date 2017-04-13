@@ -902,4 +902,11 @@ public class Manager {
 		}
 	}
 
+	public static void onlyKeepLatestPlatforms() {
+		List<Package> allPackages = getPackages();
+		for (Package curPackage : allPackages) {
+			curPackage.onlyKeepLatestPlatforms();
+		}
+	}
+
 }
