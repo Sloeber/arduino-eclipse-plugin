@@ -47,10 +47,6 @@ public class BoardsManager {
 	private static final String CPP = "cpp";//$NON-NLS-1$
 	private static final String C = "c";//$NON-NLS-1$
 
-	public static String getUpdateJasonFilesKey() {
-		return ConfigurationPreferences.getUpdateJasonFilesKey();
-	}
-
 	/**
 	 * Gets the board descriptor based on the information provided. If
 	 * jsonFileName="local" the board is assumed not to be installed by the
@@ -714,6 +710,11 @@ public class BoardsManager {
 	 */
 	public static void onlyKeepLatestPlatforms() {
 		Manager.onlyKeepLatestPlatforms();
+
+	}
+
+	public static void setUpdateJsonFilesFlag(boolean flag) {
+		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
 
 	}
 

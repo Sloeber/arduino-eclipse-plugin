@@ -88,7 +88,7 @@ public class Manager {
 	 * @param monitor
 	 */
 	public static void startup_Pluging(IProgressMonitor monitor) {
-		loadIndices(ConfigurationPreferences.getUpdateJasonFilesValue());
+		loadIndices(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
 			InstallDefaultLibraries(monitor);

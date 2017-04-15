@@ -59,6 +59,16 @@ public class ConfigurationPreferences {
 		return myScope.getBoolean(key, defaultValue);
 	}
 
+	private static void setBoolean(String key, boolean value) {
+		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.putBoolean(key, value);
+		try {
+			myScope.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static void setString(String key, String value) {
 		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
 		myScope.put(key, value);
@@ -165,12 +175,12 @@ public class ConfigurationPreferences {
 
 	}
 
-	public static String getUpdateJasonFilesKey() {
-		return KEY_UPDATE_JASONS;
+	public static boolean getUpdateJasonFilesFlag() {
+		return getBoolean(KEY_UPDATE_JASONS, false);
 	}
 
-	public static boolean getUpdateJasonFilesValue() {
-		return getBoolean(KEY_UPDATE_JASONS, false);
+	public static void setUpdateJasonFilesFlag(boolean newFlag) {
+		setBoolean(KEY_UPDATE_JASONS, newFlag);
 	}
 
 	private static String systemHash = null;

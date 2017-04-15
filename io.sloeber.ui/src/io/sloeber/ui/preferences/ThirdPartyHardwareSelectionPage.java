@@ -25,68 +25,69 @@ import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
+	private Text urlsText;
+	BooleanFieldEditor upDateJsons;
 
-    private Text urlsText;
-    BooleanFieldEditor upDateJsons;
+	public ThirdPartyHardwareSelectionPage() {
+		super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
+		setDescription(Messages.json_maintain);
+		setPreferenceStore(new ScopedPreferenceStore(ConfigurationScope.INSTANCE, MyPreferences.NODE_ARDUINO));
+	}
 
-    public ThirdPartyHardwareSelectionPage() {
-	super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
-	setDescription(Messages.json_maintain);
-	setPreferenceStore(new ScopedPreferenceStore(ConfigurationScope.INSTANCE, MyPreferences.NODE_ARDUINO));
-    }
+	@Override
+	public boolean performOk() {
+		BoardsManager.setBoardsPackageURL(this.urlsText.getText().split(System.lineSeparator()));
+		BoardsManager.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
+		return super.performOk();
+	}
 
-    @Override
-    public boolean performOk() {
-	BoardsManager.setBoardsPackageURL(this.urlsText.getText().split(System.lineSeparator()));
-	return super.performOk();
-    }
+	@Override
+	protected void performDefaults() {
+		super.performDefaults();
+		this.urlsText.setText(BoardsManager.getDefaultBoardsPackageURLs());
+	}
 
-    @Override
-    protected void performDefaults() {
-	super.performDefaults();
-	this.urlsText.setText(BoardsManager.getDefaultBoardsPackageURLs());
-    }
+	@Override
+	protected void createFieldEditors() {
+		String selectedJsons[] = BoardsManager.getBoardsPackageURLList();
+		final Composite parent = getFieldEditorParent();
+		// Composite control = new Composite(parent, SWT.NONE);
+		Label title = new Label(parent, SWT.UP);
+		title.setFont(parent.getFont());
 
-    @Override
-    protected void createFieldEditors() {
-	String selectedJsons[] = BoardsManager.getBoardsPackageURLList();
-	final Composite parent = getFieldEditorParent();
-	// Composite control = new Composite(parent, SWT.NONE);
-	Label title = new Label(parent, SWT.UP);
-	title.setFont(parent.getFont());
+		title.setText(Messages.ui_url_for_package_index_file);
+		title.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
-	title.setText(Messages.ui_url_for_package_index_file);
-	title.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+		this.urlsText = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
+		GridData gd = new GridData(GridData.FILL_BOTH);
+		this.urlsText.setLayoutData(gd);
+		this.urlsText.setText(StringUtil.join(selectedJsons, System.lineSeparator()));
 
-	this.urlsText = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);
-	GridData gd = new GridData(GridData.FILL_BOTH);
-	this.urlsText.setLayoutData(gd);
-	this.urlsText.setText(StringUtil.join(selectedJsons, System.lineSeparator()));
+		this.upDateJsons = new BooleanFieldEditor(KEY_UPDATE_JASONS, Messages.json_update, BooleanFieldEditor.DEFAULT,
+				parent);
+		addField(this.upDateJsons);
+		final Hyperlink link = new Hyperlink(parent, SWT.NONE);
+		link.setText(Messages.json_find);
+		link.setHref("https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls"); //$NON-NLS-1$
+		link.setUnderlined(true);
+		link.addHyperlinkListener(new HyperlinkAdapter() {
+			@Override
+			public void linkActivated(HyperlinkEvent he) {
+				try {
+					org.eclipse.swt.program.Program.launch(link.getHref().toString());
+				} catch (IllegalArgumentException e) {
+					Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.json_browser_fail, e));
+				}
+			}
+		});
 
-	this.upDateJsons = new BooleanFieldEditor(BoardsManager.getUpdateJasonFilesKey(), Messages.json_update,
-		BooleanFieldEditor.DEFAULT, parent);
-	addField(this.upDateJsons);
-	final Hyperlink link = new Hyperlink(parent, SWT.NONE);
-	link.setText(Messages.json_find);
-	link.setHref("https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls"); //$NON-NLS-1$
-	link.setUnderlined(true);
-	link.addHyperlinkListener(new HyperlinkAdapter() {
-	    @Override
-	    public void linkActivated(HyperlinkEvent he) {
-		try {
-		    org.eclipse.swt.program.Program.launch(link.getHref().toString());
-		} catch (IllegalArgumentException e) {
-		    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.json_browser_fail, e));
-		}
-	    }
-	});
+	}
 
-    }
+	@Override
+	public void init(IWorkbench arg0) {
+		// Nothing to do here
 
-    @Override
-    public void init(IWorkbench arg0) {
-	// Nothing to do here
-
-    }
+	}
 
 }
