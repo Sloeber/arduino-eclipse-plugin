@@ -211,9 +211,11 @@ public class BoardDescriptor {
 		TxtFile txtFile = new TxtFile(boardFile);
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curboardName : txtFile.getAllNames()) {
-			Map<String, String> boardSection = txtFile.getSection(curboardName);
-			if (!"true".equalsIgnoreCase(boardSection.get("hide"))) {
-				boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), null));
+			Map<String, String> boardSection = txtFile.getSection(txtFile.getBoardIDFromBoardName(curboardName));
+			if (boardSection != null) {
+				if (!"true".equalsIgnoreCase(boardSection.get("hide"))) {
+					boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), null));
+				}
 			}
 		}
 		return boards;

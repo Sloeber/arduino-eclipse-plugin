@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +44,7 @@ public class CreateAndCompileExamples {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
+		WaitForInstallerToFinish();
 		Map<String, String> myOptions = new HashMap<>();
 		String[] lines = new String("").split("\n"); //$NON-NLS-1$
 		for (String curLine : lines) {
@@ -60,15 +60,15 @@ public class CreateAndCompileExamples {
 			return null;
 		}
 		leonardoBoardid.setUploadPort("none");
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", myOptions);
+		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
+				"Arduino AVR Boards", "uno", myOptions);
 		if (unoBoardid == null) {
 			fail("uno Board not found");
 			return null;
 		}
 		unoBoardid.setUploadPort("none");
-		BoardDescriptor EsploraBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"esplora", myOptions);
+		BoardDescriptor EsploraBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
+				"Arduino AVR Boards", "esplora", myOptions);
 		if (EsploraBoardid == null) {
 			fail("Esplora Board not found");
 			return null;
@@ -150,7 +150,7 @@ public class CreateAndCompileExamples {
 	 * installer job will trigger downloads These mmust have finished before we
 	 * can start testing
 	 */
-	@BeforeClass
+
 	public static void WaitForInstallerToFinish() {
 		installAdditionalBoards();
 		Shared.waitForAllJobsToFinish();

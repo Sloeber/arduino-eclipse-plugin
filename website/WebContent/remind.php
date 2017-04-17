@@ -14,7 +14,7 @@
 
 			if ($result->num_rows > 0) {
 				$default = 0;
-				header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found", true, 404 );
+				echo $secretMessage;
 				// output data of each row
 				while ( $row = $result->fetch_assoc () ) {
 					echo "Patron: " . $row ["patronIDE"] . " key:" . $KEY . "<br>";

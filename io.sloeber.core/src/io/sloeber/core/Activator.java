@@ -75,6 +75,7 @@ public class Activator extends AbstractUIPlugin {
 			'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u', 'g',
 			'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 	private static final String PLUGIN_ID = "io.sloeber.core";
+	private static Boolean isPatron = null;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -375,7 +376,7 @@ public class Activator extends AbstractUIPlugin {
 					} catch (BackingStoreException e) {
 						// this should not happen
 					}
-					if (isInternetReachable()) {
+					if (!isPatron()) {
 						PleaseHelp.doHelp(HELP_LOC);
 					}
 				}
@@ -387,17 +388,15 @@ public class Activator extends AbstractUIPlugin {
 		job.schedule(60000);
 	}
 
-	static boolean isInternetReachable() {
-		boolean ret = false;
+	static boolean isPatron() {
+		if (isPatron != null) {
+			return isPatron.booleanValue();
+		}
 		HttpURLConnection urlConnect = null;
-
 		try {
-			// make a URL to a known source
-			URL url = new URL(HELP_LOC + "?systemhash=" + ConfigurationPreferences.getSystemHash());
-			// open a connection to that source
+			String systemhash = ConfigurationPreferences.getSystemHash();
+			URL url = new URL(HELP_LOC + "?systemhash=" + systemhash);
 			urlConnect = (HttpURLConnection) url.openConnection();
-			// trying to retrieve data from the source. If there is no
-			// connection, this line will fail
 			urlConnect.getContent();
 		} catch (UnknownHostException e) {
 			return false;
@@ -406,14 +405,19 @@ public class Activator extends AbstractUIPlugin {
 		} finally {
 			if (urlConnect != null) {
 				try {
-					ret = (urlConnect.getResponseCode() != 404);
+					urlConnect.getContent();
 				} catch (IOException e) {
-					// ignore
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				int length = urlConnect.getContentLength();
+				isPatron = new Boolean(length < 200);
 				urlConnect.disconnect();
 			}
-
 		}
-		return ret;
+		if (isPatron != null) {
+			return isPatron.booleanValue();
+		}
+		return false;
 	}
 }
