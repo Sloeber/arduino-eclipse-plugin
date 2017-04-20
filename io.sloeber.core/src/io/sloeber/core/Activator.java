@@ -213,7 +213,6 @@ public class Activator extends AbstractUIPlugin {
 			 *
 			 * @return true is installation can be done else false
 			 */
-			@SuppressWarnings("boxing")
 			private boolean DownloadFolderConditionsOK() {
 				IPath installPath = ConfigurationPreferences.getInstallationPath();
 				installPath.toFile().mkdirs();
@@ -223,12 +222,19 @@ public class Activator extends AbstractUIPlugin {
 					windowsPathToLong = installPath.toString().length() > 40;
 				}
 				if (cantWrite || windowsPathToLong) {
-					String errorMessage = cantWrite ? "The plugin Needs write access to " + installPath.toString()
-							: new String();
-					errorMessage += ((windowsPathToLong && cantWrite) ? '\n' : new String());
-					errorMessage += (windowsPathToLong ? "The path " + installPath.toString() + " is to long"
-							: new String());
-
+					String errorMessage = new String();
+					if (cantWrite) {
+						errorMessage = "The plugin Needs write access to " + installPath.toString();
+					}
+					if (windowsPathToLong) {
+						if (cantWrite) {
+							errorMessage += '\n';
+						}
+						errorMessage += "Due to issues with long pathnames on Windows, the plugin installation path must less than 40 characters. \n";
+						errorMessage += "Your current path: " + installPath.toString();
+						errorMessage += " is too long and the plugin will no longer function correctly for all packages.";
+						errorMessage += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
+					}
 					Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage));
 					return false;
 				}
@@ -407,7 +413,6 @@ public class Activator extends AbstractUIPlugin {
 				try {
 					urlConnect.getContent();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				int length = urlConnect.getContentLength();
