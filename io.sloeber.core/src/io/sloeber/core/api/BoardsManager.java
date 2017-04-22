@@ -642,7 +642,7 @@ public class BoardsManager {
 
 	public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
 		if (!Manager.isReady()) {
-			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still Bussy", null)); //$NON-NLS-1$
+			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still busy", null)); //$NON-NLS-1$
 			return status;
 		}
 		try {
