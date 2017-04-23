@@ -19,6 +19,7 @@ public class Package implements Comparable<Package> {
 	private String maintainer;
 	private String websiteURL;
 	private String email;
+	private Help help;
 	private List<ArduinoPlatform> platforms;
 	private List<Tool> tools;
 
@@ -49,6 +50,10 @@ public class Package implements Comparable<Package> {
 
 	public String getEmail() {
 		return this.email;
+	}
+	
+	public Help getHelp() {
+		return this.help;
 	}
 
 	public List<ArduinoPlatform> getPlatforms() {

@@ -158,7 +158,7 @@ public class Activator extends AbstractUIPlugin {
 		InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
 		InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
 		InstancePreferences.setAutomaticallyImportLibraries(InstancePreferences.getAutomaticallyImportLibraries());
-		ConfigurationPreferences.setBoardsPackageURLs(ConfigurationPreferences.getBoardsPackageURLs());
+		ConfigurationPreferences.setJsonURLs(ConfigurationPreferences.getJsonURLs());
 	}
 
 	private void runPluginCoreStartInstantiatorJob() {

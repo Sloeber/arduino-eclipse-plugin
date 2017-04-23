@@ -7,8 +7,6 @@ import io.sloeber.core.common.Const;
 
 @SuppressWarnings("nls")
 public class Defaults {
-
-	public static final String LIBRARIES_URL = "http://downloads.arduino.cc/libraries/library_index.json";
 	public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip";
 	public static final String EXAMPLES_URL = "http://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE;
 	public static final String PLATFORM_NAME = "Arduino AVR Boards";

@@ -42,7 +42,8 @@ public class ConfigurationPreferences {
 	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
 	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
-			+ System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
+			+ System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json" //$NON-NLS-1$
+			+ System.lineSeparator() + "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
@@ -142,31 +143,31 @@ public class ConfigurationPreferences {
 		return getInstallationPath().append(POST_PROCESSING_BOARDS_TXT).toFile();
 	}
 
-	public static String getBoardsPackageURLs() {
+	public static String getJsonURLs() {
 		return getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
 	}
 
-	public static String getDefaultBoardsPackageURLs() {
+	public static String getDefaultJsonURLs() {
 		return DEFAULT_JSON_URLS;
 	}
 
-	public static String[] getBoardsPackageURLList() {
-		return getBoardsPackageURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
+	public static String[] getJsonURLList() {
+		return getJsonURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
 	}
 
-	public static String getBoardsPackageKey() {
+	public static String getJsonUrlsKey() {
 		return KEY_MANAGER_JSON_URLS;
 	}
 
-	public static void setBoardsPackageURLs(String urls) {
+	public static void setJsonURLs(String urls) {
 		setString(KEY_MANAGER_JSON_URLS, urls);
 	}
 
-	public static void setBoardsPackageURLs(String urls[]) {
+	public static void setJsonURLs(String urls[]) {
 		setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
 	}
 
-	public static void setBoardsPackageURLs(HashSet<String> urls) {
+	public static void setJsonURLs(HashSet<String> urls) {
 		setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
 	}
 

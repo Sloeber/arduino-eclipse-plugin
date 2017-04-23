@@ -39,10 +39,11 @@ public class Library implements Comparable<Library> {
     public String getName() {
 	return this.name;
     }
-
+    
     public void setName(String name) {
 	this.name = name;
     }
+   
 
     public String getVersion() {
 	return this.version;

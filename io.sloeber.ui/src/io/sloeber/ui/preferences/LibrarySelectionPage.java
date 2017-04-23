@@ -4,10 +4,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -93,125 +95,124 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	return true;
     }
 
-    public void createTree(Composite parent) {
-	// filtering applied to all columns
-	PatternFilter filter = new PatternFilter() {
-	    @Override
-	    protected boolean isLeafMatch(final Viewer viewer1, final Object element) {
-
-		int numberOfColumns = ((TreeViewer) viewer1).getTree().getColumnCount();
-		boolean isMatch = false;
-		for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
-		    String labelText = LibraryLabelProvider.getColumnText(element, columnIndex);
-		    isMatch |= wordMatches(labelText);
-		}
-		return isMatch;
-	    }
-	};
-
-	this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true) {
-	    @SuppressWarnings("synthetic-access")
-	    @Override
-	    protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
-		CheckboxTreeViewer viewer1 = new CheckboxTreeViewer(composite);
-		viewer1.setCheckStateProvider(new LibraryCheckProvider());
-		viewer1.setLabelProvider(new LibraryLabelProvider());
-		viewer1.setContentProvider(new LibraryContentProvider());
-		return viewer1;
-	    }
-
-	};
-	this.viewer = this.tree.getViewer();
-	this.viewer.setInput(this.libs);
-
-	TreeColumn name = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
-	name.setWidth(300);
-
-	TreeColumn version = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
-	version.setWidth(100);
-
-	// create the editor and set its attributes
-	this.editor = new TreeEditor(this.viewer.getTree());
-	this.editor.horizontalAlignment = SWT.LEFT;
-	this.editor.grabHorizontal = true;
-	this.editor.setColumn(1);
-
-	// this ensures the tree labels are displayed correctly
-	this.viewer.refresh(true);
-
-	// enable tooltips
-	ColumnViewerToolTipSupport.enableFor(this.viewer);
-
-	// tree interactions listener
-	this.viewer.getTree().addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent event) {
-		if (LibrarySelectionPage.this.editor.getEditor() != null) {
-		    LibrarySelectionPage.this.editor.getEditor().dispose();
-		}
-		final TreeItem item = event.item instanceof TreeItem ? (TreeItem) event.item : null;
-		if (item != null && event.detail == SWT.CHECK) {
-		    if (item.getData() instanceof LibraryTree.Category) {
-			item.setGrayed(false);
-			for (LibraryTree.Library child : ((LibraryTree.Category) item.getData()).getLibraries()) {
-			    if (item.getChecked()) {
-				child.setVersion(child.getLatest());
-			    } else {
-				child.setVersion(null);
-			    }
-			}
-			for (TreeItem child : item.getItems()) {
-			    child.setChecked(item.getChecked());
-			    if (item.getChecked()) {
-				child.setText(1, ((LibraryTree.Library) child.getData()).getLatest());
-			    } else {
-				child.setText(1, emptyString);
-			    }
-			}
-		    } else {
-			if (item.getChecked()) {
-			    ((LibraryTree.Library) item.getData())
-				    .setVersion(((LibraryTree.Library) item.getData()).getLatest());
-			    item.setText(1, ((LibraryTree.Library) item.getData()).getLatest());
-			} else {
-			    ((LibraryTree.Library) item.getData()).setVersion(null);
-			    item.setText(1, emptyString);
-			}
-			verifySubtreeCheckStatus(item.getParentItem());
-		    }
-		}
-		if (item != null && item.getItemCount() == 0 && item.getChecked()) {
-		    // Create the dropdown and add data to it
-		    final CCombo combo = new CCombo(LibrarySelectionPage.this.viewer.getTree(), SWT.READ_ONLY);
-		    for (VersionNumber version1 : ((LibraryTree.Library) item.getData()).getVersions()) {
-			combo.add(version1.toString());
-		    }
-
-		    // Select the previously selected item from the cell
-		    combo.select(combo.indexOf(item.getText(1)));
-
-		    // Compute the width for the editor
-		    // Also, compute the column width, so that the dropdown fits
-
-		    // Set the focus on the dropdown and set into the editor
-		    combo.setFocus();
-		    LibrarySelectionPage.this.editor.setEditor(combo, item, 1);
-
-		    // Add a listener to set the selected item back into the
-		    // cell
-		    combo.addSelectionListener(new SelectionAdapter() {
+	public void createTree(Composite parent) {
+		// filtering applied to all columns
+		PatternFilter filter = new PatternFilter() {
 			@Override
-			public void widgetSelected(SelectionEvent event1) {
-			    ((LibraryTree.Library) item.getData()).setVersion(combo.getText());
-			    item.setText(1, combo.getText());
-			    // Item selected: end the editing session
-			    combo.dispose();
+			protected boolean isLeafMatch(final Viewer viewer1, final Object element) {
+				int numberOfColumns = ((TreeViewer) viewer1).getTree().getColumnCount();
+				boolean isMatch = false;
+				for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
+					String labelText = LibraryLabelProvider.getColumnText(element, columnIndex);
+					isMatch |= wordMatches(labelText);
+				}
+				return isMatch;
 			}
-		    });
-		}
-	    }
-	});
-    }
+		};
+
+		this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true) {
+			@SuppressWarnings("synthetic-access")
+			@Override
+			protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
+				CheckboxTreeViewer viewer1 = new CheckboxTreeViewer(composite);
+				viewer1.setCheckStateProvider(new LibraryCheckProvider());
+				viewer1.setLabelProvider(new LibraryLabelProvider());
+				viewer1.setContentProvider(new LibraryContentProvider());
+				return viewer1;
+			}
+		};
+		
+		this.viewer = this.tree.getViewer();
+		this.viewer.setInput(this.libs);
+
+		TreeColumn name = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
+		name.setWidth(400);
+
+		TreeColumn version = new TreeColumn(this.viewer.getTree(), SWT.LEFT);
+		version.setWidth(100);
+
+		// create the editor and set its attributes
+		this.editor = new TreeEditor(this.viewer.getTree());
+		this.editor.horizontalAlignment = SWT.LEFT;
+		this.editor.grabHorizontal = true;
+		this.editor.setColumn(1);
+
+		// this ensures the tree labels are displayed correctly
+		this.viewer.refresh(true);
+
+		// enable tooltips
+		ColumnViewerToolTipSupport.enableFor(this.viewer);
+
+		// tree interactions listener
+		this.viewer.getTree().addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				if (LibrarySelectionPage.this.editor.getEditor() != null) {
+					LibrarySelectionPage.this.editor.getEditor().dispose();
+				}
+				final TreeItem item = event.item instanceof TreeItem ? (TreeItem) event.item : null;
+				if (item != null && event.detail == SWT.CHECK) {
+					if (item.getData() instanceof LibraryTree.Category) {
+						item.setGrayed(false);
+						for (LibraryTree.Library child : ((LibraryTree.Category) item.getData()).getLibraries()) {
+							if (item.getChecked()) {
+								child.setVersion(child.getLatest());
+							} else {
+								child.setVersion(null);
+							}
+						}
+						for (TreeItem child : item.getItems()) {
+							child.setChecked(item.getChecked());
+							if (item.getChecked()) {
+								child.setText(1, ((LibraryTree.Library) child.getData()).getLatest());
+							} else {
+								child.setText(1, emptyString);
+							}
+						}
+					} else {
+						if (item.getChecked()) {
+							((LibraryTree.Library) item.getData())
+							.setVersion(((LibraryTree.Library) item.getData()).getLatest());
+							item.setText(1, ((LibraryTree.Library) item.getData()).getLatest());
+						} else {
+							((LibraryTree.Library) item.getData()).setVersion(null);
+							item.setText(1, emptyString);
+						}
+						verifySubtreeCheckStatus(item.getParentItem());
+					}
+				}
+				if (item != null && item.getItemCount() == 0 && item.getChecked()) {
+					// Create the dropdown and add data to it
+					final CCombo combo = new CCombo(LibrarySelectionPage.this.viewer.getTree(), SWT.READ_ONLY);
+					for (VersionNumber version1 : ((LibraryTree.Library) item.getData()).getVersions()) {
+						combo.add(version1.toString());
+					}
+
+					// Select the previously selected item from the cell
+					combo.select(combo.indexOf(item.getText(1)));
+
+					// Compute the width for the editor
+					// Also, compute the column width, so that the dropdown fits
+
+					// Set the focus on the dropdown and set into the editor
+					combo.setFocus();
+					LibrarySelectionPage.this.editor.setEditor(combo, item, 1);
+
+					// Add a listener to set the selected item back into the
+					// cell
+					combo.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent event1) {
+							((LibraryTree.Library) item.getData()).setVersion(combo.getText());
+							item.setText(1, combo.getText());
+							// Item selected: end the editing session
+							combo.dispose();
+						}
+					});
+				}
+			}
+		});
+	}
 
     /**
      * Ensures the correct checked/unchecked/greyed attributes are set on the
@@ -252,7 +253,10 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	public static String getColumnText(Object element, int col) {
 	    switch (col) {
 	    case 0:
-		return ((Node) element).getName();
+	    	if (element instanceof LibraryTree.Library) {
+	    		return ((LibraryTree.Library) element).getName() + " (" + ((LibraryTree.Library) element).getIndexName() + ")"; 
+	    	}
+			return ((Node) element).getName();
 	    case 1:
 		if (element instanceof LibraryTree.Library) {
 		    return ((LibraryTree.Library) element).getVersion();
@@ -282,11 +286,16 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	@Override
 	public void update(ViewerCell cell) {
 	    if (cell.getColumnIndex() == 0) {
-		cell.setText(((Node) cell.getElement()).getName());
+	    	if (cell.getElement() instanceof LibraryTree.Library) {
+	    		cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " (" + ((LibraryTree.Library) cell.getElement()).getIndexName() + ")"); 
+	    	} else {
+	    		cell.setText(((Node) cell.getElement()).getName());
+	    	}
+	    	//cell.setText(((Node) cell.getElement()).getName());
 	    } else if (cell.getElement() instanceof LibraryTree.Library) {
-		cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
+	    	cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
 	    } else {
-		cell.setText(null);
+	    	cell.setText(null);
 	    }
 	}
     }
