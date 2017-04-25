@@ -68,7 +68,7 @@ public class Messages extends NLS {
 	public static String ui_select_Arduino_libraries;
 	public static String ui_select_folder;
 	public static String ui_show_all_warnings;
-	public static String ui_url_for_package_index_file;
+	public static String ui_url_for_index_file;
 
 	public static String ui_workspace_settings;
 

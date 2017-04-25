@@ -63,15 +63,17 @@ public class LibraryManager {
 
 	public class Library implements Comparable<Library>, Node {
 	    private String name;
+	    private String indexName;
 	    private Category category;
 	    protected TreeSet<VersionNumber> versions = new TreeSet<>();
 	    protected String version;
 	    private String tooltip;
 
-	    public Library(Category category, String name, String tooltip) {
+	    public Library(Category category, String name, String indexName, String tooltip) {
 		this.category = category;
 		this.name = name;
 		this.tooltip = tooltip;
+		this.indexName = indexName;
 	    }
 
 	    public Collection<VersionNumber> getVersions() {
@@ -95,6 +97,10 @@ public class LibraryManager {
 		return this.version;
 	    }
 
+	    public String getIndexName() {
+	    	return this.indexName;
+	    }
+	    
 	    public void setVersion(String version) {
 		this.version = version;
 	    }
@@ -121,26 +127,28 @@ public class LibraryManager {
 	}
 
 	public LibraryTree() {
-	    LibraryIndex libraryIndex = Manager.getLibraryIndex();
-
-	    for (String categoryName : libraryIndex.getCategories()) {
-		Category category = new Category(categoryName);
-		for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
-		    Library lib = category.libraries.get(library.getName());
-		    if (lib == null) {
-			StringBuilder builder = new StringBuilder("Architectures:") //$NON-NLS-1$
-				.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
-				.append(library.getSentence());
-			lib = new Library(category, library.getName(), builder.toString());
-			category.libraries.put(lib.getName(), lib);
-		    }
-		    lib.versions.add(new VersionNumber(library.getVersion()));
-		    if (library.isInstalled()) {
-			lib.version = library.getVersion();
-		    }
-		}
-
-		this.categories.put(category.getName(), category);
+		for (LibraryIndex libraryIndex : Manager.getLibraryIndices()) {
+			for (String categoryName : libraryIndex.getCategories()) {
+				Category category = this.categories.get(categoryName);
+				if (category == null) {
+					category = new Category(categoryName);
+					this.categories.put(category.getName(), category);
+				}
+				for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
+					Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")");
+					if (lib == null) {
+						StringBuilder builder = new StringBuilder("Architectures:") //$NON-NLS-1$
+	    					.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
+	    					.append(library.getSentence());
+						lib = new Library(category, library.getName(), libraryIndex.getName(), builder.toString());
+						category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib);
+					}
+					lib.versions.add(new VersionNumber(library.getVersion()));
+					if (library.isInstalled()) {
+						lib.version = library.getVersion();
+					}
+				}
+	    	}
 	    }
 	}
 
@@ -156,32 +164,54 @@ public class LibraryManager {
 	    return all;
 	}
 
+	private static LibraryIndex findLibraryIndex(String name) {
+		for (LibraryIndex libraryIndex : Manager.getLibraryIndices()) {
+    		if (libraryIndex.getName().equals(name))
+    			return libraryIndex;
+    	}
+		return null;
+	}
+	
 	public void reset() {
-	    LibraryIndex libraryIndex = Manager.getLibraryIndex();
 	    for (Library library : this.getAllLibraries()) {
-		io.sloeber.core.managers.Library installed = libraryIndex.getInstalledLibrary(library.getName());
-		library.setVersion(installed != null ? installed.getVersion() : null);
+	    	LibraryIndex libraryIndex = findLibraryIndex(library.getIndexName());
+	    	
+	    	if (libraryIndex != null) {
+	    		io.sloeber.core.managers.Library installed = libraryIndex.getInstalledLibrary(library.getName());
+	    		library.setVersion(installed != null ? installed.getVersion() : null);
+	    	}
 	    }
 	}
 
     }
 
     public static IStatus setLibraryTree(LibraryTree libs, IProgressMonitor monitor, MultiStatus status) {
-	for (LibraryTree.Library lib : libs.getAllLibraries()) {
-	    io.sloeber.core.managers.Library toRemove = Manager.getLibraryIndex().getInstalledLibrary(lib.getName());
-	    if (toRemove != null && !toRemove.getVersion().equals(lib.getVersion())) {
-		status.add(toRemove.remove(monitor));
-	    }
-	    io.sloeber.core.managers.Library toInstall = Manager.getLibraryIndex().getLibrary(lib.getName(),
-		    lib.getVersion());
-	    if (toInstall != null && !toInstall.isInstalled()) {
-		status.add(toInstall.install(monitor));
-	    }
-	}
-	return status;
+    	for (LibraryTree.Library lib : libs.getAllLibraries()) {
+    		LibraryIndex libraryIndex = findLibraryIndex(lib.getIndexName());
+    		
+    		if (libraryIndex != null) {
+    			io.sloeber.core.managers.Library toRemove = libraryIndex.getInstalledLibrary(lib.getName());
+    			if (toRemove != null && !toRemove.getVersion().equals(lib.getVersion())) {
+    				status.add(toRemove.remove(monitor));
+    			}
+    			io.sloeber.core.managers.Library toInstall = libraryIndex.getLibrary(lib.getName(), lib.getVersion());
+    			if (toInstall != null && !toInstall.isInstalled()) {
+    				status.add(toInstall.install(monitor));
+    			}
+    		}
+    	}
+    	return status;
     }
 
-    public static String getPrivateLibraryPathsString() {
+    private static LibraryIndex findLibraryIndex(String indexName) {
+    	for (LibraryIndex libraryIndex : Manager.getLibraryIndices()) {
+    		if (libraryIndex.getName().equals(indexName))
+    			return libraryIndex;
+    	}
+		return null;
+	}
+
+	public static String getPrivateLibraryPathsString() {
 	return InstancePreferences.getPrivateLibraryPathsString();
     }
 

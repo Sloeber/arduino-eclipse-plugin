@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -61,7 +63,7 @@ import io.sloeber.core.tools.MyMultiStatus;
 public class Manager {
 
 	static private List<PackageIndex> packageIndices;
-	static private LibraryIndex libraryIndex;
+	static private List<LibraryIndex> libraryIndices;
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {
@@ -71,13 +73,13 @@ public class Manager {
 	private Manager() {
 	}
 
-	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-		HashSet<String> originalBoardUrls = new HashSet<>(
-				Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
-		packageUrlsToAdd.addAll(originalBoardUrls);
+	public static void addJsonURLs(HashSet<String> jsonUrlsToAdd, boolean forceDownload) {
+		HashSet<String> originalJsonUrls = new HashSet<>(
+				Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+		jsonUrlsToAdd.addAll(originalJsonUrls);
 
-		ConfigurationPreferences.setBoardsPackageURLs(packageUrlsToAdd);
-		loadIndices(forceDownload);
+		ConfigurationPreferences.setJsonURLs(jsonUrlsToAdd);
+		loadJsons(forceDownload);
 
 	}
 
@@ -88,10 +90,10 @@ public class Manager {
 	 * @param monitor
 	 */
 	public static void startup_Pluging(IProgressMonitor monitor) {
-		loadIndices(ConfigurationPreferences.getUpdateJasonFilesFlag());
+		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
-			InstallDefaultLibraries(monitor);
+//			InstallDefaultLibraries(monitor);
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
 			// Downnload sample programs
@@ -124,7 +126,7 @@ public class Manager {
 
 	}
 
-	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
+/*	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
 		LibraryIndex libindex = getLibraryIndex();
 
 		for (String library : Defaults.INSTALLED_LIBRARIES) {
@@ -133,7 +135,7 @@ public class Manager {
 				toInstalLib.install(monitor);
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Given a platform description in a json file download and install all
@@ -176,15 +178,14 @@ public class Manager {
 
 	}
 
-	static private void loadIndices(boolean forceDownload) {
-		String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
-		packageIndices = new ArrayList<>(boardUrls.length);
-		for (String boardUrl : boardUrls) {
-			loadPackageIndex(boardUrl, forceDownload);
+	static private void loadJsons(boolean forceDownload) {
+		packageIndices = new ArrayList<>();
+		libraryIndices = new ArrayList<>();
+		
+		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
+		for (String jsonUrl : jsonUrls) {
+			loadJson(jsonUrl, forceDownload);
 		}
-
-		loadLibraryIndex(false);
-
 	}
 
 	/**
@@ -220,73 +221,67 @@ public class Manager {
 	 *            set true if you want to download the file even if it is
 	 *            already available locally
 	 */
-	static private void loadPackageIndex(String url, boolean forceDownload) {
-		File packageFile = getLocalFileName(url);
-		if (packageFile == null) {
+	static private void loadJson(String url, boolean forceDownload) {
+		File jsonFile = getLocalFileName(url);
+		if (jsonFile == null) {
 			return;
 		}
-		if (!packageFile.exists() || forceDownload) {
-			packageFile.getParentFile().mkdirs();
+		if (!jsonFile.exists() || forceDownload) {
+			jsonFile.getParentFile().mkdirs();
 			try {
-				myCopy(new URL(url.trim()), packageFile);
+				myCopy(new URL(url.trim()), jsonFile);
 			} catch (IOException e) {
 				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
 			}
 		}
-		if (packageFile.exists()) {
-			try (Reader reader = new FileReader(packageFile)) {
-				PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-				index.setOwners(null);
-				index.setJsonFile(packageFile);
-				packageIndices.add(index);
-			} catch (Exception e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(),
-						"Unable to parse " + packageFile.getAbsolutePath(), e)); //$NON-NLS-1$
-				packageFile.delete();// Delete the file so it stops damaging
+		if (jsonFile.exists()) {
+			if (jsonFile.getName().startsWith("package_")) {
+				loadPackage(jsonFile);
+			} else if (jsonFile.getName().startsWith("library_")) {
+				loadLibrary(jsonFile);
 			}
+		}
+	}
+		
+	static private void loadPackage(File jsonFile) {
+		try (Reader reader = new FileReader(jsonFile)) {
+			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
+			index.setOwners(null);
+			index.setJsonFile(jsonFile);
+			packageIndices.add(index);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					"Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
+			jsonFile.delete();// Delete the file so it stops damaging
+		}
+	}
+	
+	static private void loadLibrary(File jsonFile) {
+		try (Reader reader = new FileReader(jsonFile)) {
+			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
+			index.resolve();
+//			index.setOwners(null);
+			index.setJsonFile(jsonFile);
+			libraryIndices.add(index);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					"Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
+			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
 
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
-			String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
-			packageIndices = new ArrayList<>(boardUrls.length);
-			for (String boardUrl : boardUrls) {
-				loadPackageIndex(boardUrl, false);
-			}
+			loadJsons(false);
 		}
 		return packageIndices;
 	}
 
-	private static void loadLibraryIndex(boolean download) {
-		File librariesFile = null;
-		try {
-			URL librariesUrl = new URL(Defaults.LIBRARIES_URL);
-			String localFileName = Paths.get(librariesUrl.getPath()).getFileName().toString();
-			librariesFile = ConfigurationPreferences.getInstallationPath().append(localFileName).toFile();
-			if (!librariesFile.exists() || download) {
-				librariesFile.getParentFile().mkdirs();
-				myCopy(librariesUrl, librariesFile);
-			}
-			if (librariesFile.exists()) {
-				try (InputStreamReader reader = new InputStreamReader(new FileInputStream(librariesFile),
-						Charset.forName("UTF8"))) { //$NON-NLS-1$
-					libraryIndex = new Gson().fromJson(reader, LibraryIndex.class);
-					libraryIndex.resolve();
-				}
-			}
-		} catch (IOException e) {
-			Common.log(
-					new Status(IStatus.ERROR, Activator.getId(), "Failed to load library index: " + librariesFile, e)); //$NON-NLS-1$
+	static public List<LibraryIndex> getLibraryIndices() {
+		if (libraryIndices == null) {
+			loadJsons(false);
 		}
-
-	}
-
-	static public LibraryIndex getLibraryIndex() {
-		if (libraryIndex == null) {
-			loadLibraryIndex(false);
-		}
-		return libraryIndex;
+		return libraryIndices;
 	}
 
 	static public Board getBoard(String boardName, String platformName, String packageName) {
@@ -803,13 +798,13 @@ public class Manager {
 	 *
 	 * @param packageUrlsToRemove
 	 */
-	public static void removeBoardsPackageURLs(Set<String> packageUrlsToRemove) {
+	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
 		// remove the files from memory
-		Set<String> activeBoardUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
+		Set<String> activeUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
 
-		activeBoardUrls.removeAll(packageUrlsToRemove);
+		activeUrls.removeAll(packageUrlsToRemove);
 
-		ConfigurationPreferences.setBoardsPackageURLs(activeBoardUrls.toArray(null));
+		ConfigurationPreferences.setJsonURLs(activeUrls.toArray(null));
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {
@@ -819,28 +814,26 @@ public class Manager {
 			}
 		}
 
-		// reload the indices (this will remove all potential remaining
-		// references
-		// existing files do not need to be refreshed as they have been
-		// refreshed at startup
-		loadIndices(false);
+		// reload the indices (this will remove all potential remaining references
+		// existing files do not need to be refreshed as they have been refreshed at startup
+		loadJsons(false);
 
 	}
 
-	public static String[] getBoardsPackageURLList() {
-		return ConfigurationPreferences.getBoardsPackageURLList();
+	public static String[] getJsonURLList() {
+		return ConfigurationPreferences.getJsonURLList();
 	}
 
 	/**
 	 * Completely replace the list with jsons with a new list
 	 *
-	 * @param newBoardJsonUrls
+	 * @param newJsonUrls
 	 */
-	public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
+	public static void setJsonURL(String[] newJsonUrls) {
 
-		String curJsons[] = getBoardsPackageURLList();
+		String curJsons[] = getJsonURLList();
 		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
-		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newBoardJsonUrls));
+		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
 		currentSelectedJsons.removeAll(origJsons);
 		// remove the files from disk which were in the old lst but not in the
 		// new one
@@ -851,17 +844,11 @@ public class Manager {
 			}
 		}
 		// save to configurationsettings before calling LoadIndices
-		ConfigurationPreferences.setBoardsPackageURLs(newBoardJsonUrls);
-		// reload the indices (this will remove all potential remaining
-		// references
-		// existing files do not need to be refreshed as they have been
-		// refreshed at startup
+		ConfigurationPreferences.setJsonURLs(newJsonUrls);
+		// reload the indices (this will remove all potential remaining references
+		// existing files do not need to be refreshed as they have been refreshed at startup
 		// new files will be added
-		loadIndices(false);
-	}
-
-	public static String getDefaultBoardsPackageURLs() {
-		return ConfigurationPreferences.getDefaultBoardsPackageURLs();
+		loadJsons(false);
 	}
 
 	public static void setReady(boolean b) {
@@ -874,9 +861,10 @@ public class Manager {
 	 *
 	 * @param url
 	 * @param localFile
+	 * @throws IOException 
 	 */
 	@SuppressWarnings("nls")
-	private static void myCopy(URL url, File localFile) {
+	private static void myCopy(URL url, File localFile) throws IOException {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(5000);
@@ -887,18 +875,22 @@ public class Manager {
 			// normally, 3xx is redirect
 			int status = conn.getResponseCode();
 
-			if (status != HttpURLConnection.HTTP_OK) {
-				if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-						|| status == HttpURLConnection.HTTP_SEE_OTHER)
-
-					Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(),
-							REPLACE_EXISTING);
-			} else {
+			if (status == HttpURLConnection.HTTP_OK) {
 				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
+			}
+			
+			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
+					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
+				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
 			}
 
+			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url + " error code is: " + status, null));
+			throw new IOException("Failed to download url " + url + " error code is: " + status);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			throw e;
 		}
 	}
 

@@ -1,5 +1,6 @@
 package io.sloeber.core.managers;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,9 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class LibraryIndex {
-
+	private String indexName;
 	private List<Library> libraries;
 
 	// category name to library name
@@ -99,4 +101,16 @@ public class LibraryIndex {
 		return libs;
 	}
 
+	public void setJsonFile(File packageFile) {
+		String fileName = packageFile.getName().toLowerCase();
+		if (fileName.matches("(?i)library_index.json")) {
+			this.indexName = "Default";
+		} else {
+			this.indexName = fileName.replaceAll("(?i)"+Pattern.quote("library_"), "").replaceAll("(?i)"+Pattern.quote("_index.json"), "");
+		}
+	}
+	
+	public String getName() {
+		return this.indexName;
+	}
 }

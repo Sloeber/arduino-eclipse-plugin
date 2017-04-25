@@ -111,11 +111,11 @@ public class BoardsManager {
 	}
 
 	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-		Manager.addPackageURLs(packageUrlsToAdd, forceDownload);
+		Manager.addJsonURLs(packageUrlsToAdd, forceDownload);
 	}
 
 	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
-		Manager.removeBoardsPackageURLs(packageUrlsToRemove);
+		Manager.removePackageURLs(packageUrlsToRemove);
 
 	}
 
@@ -142,18 +142,6 @@ public class BoardsManager {
 		}
 		newPaths[currentPaths.length] = newHardwarePath;
 		InstancePreferences.setPrivateHardwarePaths(newPaths);
-	}
-
-	public static String[] getBoardsPackageURLList() {
-		return Manager.getBoardsPackageURLList();
-	}
-
-	public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
-		Manager.setBoardsPackageURL(newBoardJsonUrls);
-	}
-
-	public static String getDefaultBoardsPackageURLs() {
-		return Manager.getDefaultBoardsPackageURLs();
 	}
 
 	public static boolean isReady() {
@@ -712,10 +700,4 @@ public class BoardsManager {
 		Manager.onlyKeepLatestPlatforms();
 
 	}
-
-	public static void setUpdateJsonFilesFlag(boolean flag) {
-		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
-
-	}
-
 }
