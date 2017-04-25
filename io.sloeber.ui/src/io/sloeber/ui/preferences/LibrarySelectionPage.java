@@ -42,64 +42,65 @@ import io.sloeber.ui.Messages;
 
 public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 
-    private FilteredTree tree;
-    protected TreeViewer viewer;
-    protected TreeEditor editor;
-    protected LibraryTree libs = LibraryManager.getLibraryTree();
-    final static String emptyString = ""; //$NON-NLS-1$
+	private FilteredTree tree;
+	protected TreeViewer viewer;
+	protected TreeEditor editor;
+	protected LibraryTree libs = LibraryManager.getLibraryTree();
+	final static String emptyString = ""; //$NON-NLS-1$
 
-    @Override
-    public void init(IWorkbench workbench) {
-	// nothing needed here
-    }
-
-    @Override
-    protected void performDefaults() {
-	this.libs.reset();
-	this.viewer.refresh();
-	if (this.editor != null && this.editor.getEditor() != null) {
-	    this.editor.getEditor().dispose();
+	@Override
+	public void init(IWorkbench workbench) {
+		// nothing needed here
 	}
-	super.performDefaults();
-    }
 
-    @Override
-    protected Control createContents(Composite parent) {
-	Composite control = new Composite(parent, SWT.NONE);
-	control.setLayout(new GridLayout());
+	@Override
+	protected void performDefaults() {
+		this.libs.reset();
+		this.viewer.refresh();
+		if (this.editor != null && this.editor.getEditor() != null) {
+			this.editor.getEditor().dispose();
+		}
+		super.performDefaults();
+	}
 
-	Text desc = new Text(control, SWT.READ_ONLY);
-	GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-	desc.setLayoutData(layoutData);
-	desc.setBackground(parent.getBackground());
-	desc.setText(Messages.LibraryPreferencePage_add_remove);
-	this.createTree(control);
+	@Override
+	protected Control createContents(Composite parent) {
+		Composite control = new Composite(parent, SWT.NONE);
+		control.setLayout(new GridLayout());
 
-	return control;
-    }
+		Text desc = new Text(control, SWT.READ_ONLY);
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		desc.setLayoutData(layoutData);
+		desc.setBackground(parent.getBackground());
+		desc.setText(Messages.LibraryPreferencePage_add_remove);
+		this.createTree(control);
 
-    @Override
-    public boolean performOk() {
+		return control;
+	}
 
-	new Job(Messages.ui_Adopting_arduino_libraries) {
+	@Override
+	public boolean performOk() {
 
-	    @Override
-	    protected IStatus run(IProgressMonitor monitor) {
-		MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
-			null);
-		return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
+		new Job(Messages.ui_Adopting_arduino_libraries) {
 
-	    }
-	}.schedule();
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
+						null);
+				return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
 
-	return true;
-    }
+			}
+		}.schedule();
+
+		return true;
+	}
 
 	public void createTree(Composite parent) {
 		// filtering applied to all columns
 		PatternFilter filter = new PatternFilter() {
 			@Override
 			protected boolean isLeafMatch(final Viewer viewer1, final Object element) {
+
 				int numberOfColumns = ((TreeViewer) viewer1).getTree().getColumnCount();
 				boolean isMatch = false;
 				for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
@@ -120,8 +121,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				viewer1.setContentProvider(new LibraryContentProvider());
 				return viewer1;
 			}
+
 		};
-		
 		this.viewer = this.tree.getViewer();
 		this.viewer.setInput(this.libs);
 
@@ -172,7 +173,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					} else {
 						if (item.getChecked()) {
 							((LibraryTree.Library) item.getData())
-							.setVersion(((LibraryTree.Library) item.getData()).getLatest());
+									.setVersion(((LibraryTree.Library) item.getData()).getLatest());
 							item.setText(1, ((LibraryTree.Library) item.getData()).getLatest());
 						} else {
 							((LibraryTree.Library) item.getData()).setVersion(null);
@@ -214,168 +215,166 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		});
 	}
 
-    /**
-     * Ensures the correct checked/unchecked/greyed attributes are set on the
-     * category.
-     * 
-     * @param item
-     *            the tree item representing the category
-     */
-    protected static void verifySubtreeCheckStatus(TreeItem item) {
-	boolean grayed = false;
-	boolean checked = false;
-	for (TreeItem child : item.getItems()) {
-	    if (child.getChecked()) {
-		checked = true;
-	    } else {
-		grayed = true;
-	    }
-	}
-	item.setChecked(checked);
-	item.setGrayed(grayed);
-    }
-
-    /**
-     * 
-     * Displays the tree labels for both columns: name and version
-     *
-     */
-    private static class LibraryLabelProvider extends CellLabelProvider {
-
-	@Override
-	public String getToolTipText(Object element) {
-	    if (element instanceof LibraryTree.Library) {
-		return ((LibraryTree.Library) element).getTooltip();
-	    }
-	    return null;
+	/**
+	 * Ensures the correct checked/unchecked/greyed attributes are set on the
+	 * category.
+	 *
+	 * @param item
+	 *            the tree item representing the category
+	 */
+	protected static void verifySubtreeCheckStatus(TreeItem item) {
+		boolean grayed = false;
+		boolean checked = false;
+		for (TreeItem child : item.getItems()) {
+			if (child.getChecked()) {
+				checked = true;
+			} else {
+				grayed = true;
+			}
+		}
+		item.setChecked(checked);
+		item.setGrayed(grayed);
 	}
 
-	public static String getColumnText(Object element, int col) {
-	    switch (col) {
-	    case 0:
-	    	if (element instanceof LibraryTree.Library) {
+	/**
+	 *
+	 * Displays the tree labels for both columns: name and version
+	 *
+	 */
+	private static class LibraryLabelProvider extends CellLabelProvider {
+
+		@Override
+		public String getToolTipText(Object element) {
+			if (element instanceof LibraryTree.Library) {
+				return ((LibraryTree.Library) element).getTooltip();
+			}
+			return null;
+		}
+
+		public static String getColumnText(Object element, int col) {
+			switch (col) {
+			case 0:
+				if (element instanceof LibraryTree.Library) {
 	    		return ((LibraryTree.Library) element).getName() + " (" + ((LibraryTree.Library) element).getIndexName() + ")"; 
 	    	}
-			return ((Node) element).getName();
-	    case 1:
-		if (element instanceof LibraryTree.Library) {
-		    return ((LibraryTree.Library) element).getVersion();
+			case 1:
+				if (element instanceof LibraryTree.Library) {
+					return ((LibraryTree.Library) element).getVersion();
+				}
+				return emptyString;
+			default:
+				break;
+			}
+			return null;
 		}
-		return emptyString;
-	    default:
-		break;
-	    }
-	    return null;
-	}
 
-	@Override
-	public Point getToolTipShift(Object object) {
-	    return new Point(5, 5);
-	}
+		@Override
+		public Point getToolTipShift(Object object) {
+			return new Point(5, 5);
+		}
 
-	@Override
-	public int getToolTipDisplayDelayTime(Object object) {
-	    return 500;
-	}
+		@Override
+		public int getToolTipDisplayDelayTime(Object object) {
+			return 500;
+		}
 
-	@Override
-	public int getToolTipTimeDisplayed(Object object) {
-	    return 0;
-	}
+		@Override
+		public int getToolTipTimeDisplayed(Object object) {
+			return 0;
+		}
 
-	@Override
-	public void update(ViewerCell cell) {
-	    if (cell.getColumnIndex() == 0) {
-	    	if (cell.getElement() instanceof LibraryTree.Library) {
+		@Override
+		public void update(ViewerCell cell) {
+			if (cell.getColumnIndex() == 0) {
+				if (cell.getElement() instanceof LibraryTree.Library) {
 	    		cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " (" + ((LibraryTree.Library) cell.getElement()).getIndexName() + ")"); 
 	    	} else {
 	    		cell.setText(((Node) cell.getElement()).getName());
 	    	}
-	    	//cell.setText(((Node) cell.getElement()).getName());
-	    } else if (cell.getElement() instanceof LibraryTree.Library) {
-	    	cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
-	    } else {
-	    	cell.setText(null);
-	    }
-	}
-    }
-
-    /**
-     * Provides the correct checked status for installed libraries
-     *
-     */
-    private static class LibraryCheckProvider implements ICheckStateProvider {
-	@Override
-	public boolean isChecked(Object element) {
-	    if (element instanceof LibraryTree.Library) {
-		return ((LibraryTree.Library) element).getVersion() != null;
-	    } else if (element instanceof LibraryTree.Category) {
-		for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
-		    if (library.getVersion() != null) {
-			return true;
-		    }
+			} else if (cell.getElement() instanceof LibraryTree.Library) {
+				cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
+			} else {
+				cell.setText(null);
+			}
 		}
-	    }
-	    return false;
 	}
 
-	@Override
-	public boolean isGrayed(Object element) {
-	    if (element instanceof LibraryTree.Category && isChecked(element)) {
-		for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
-		    if (library.getVersion() == null) {
-			return true;
-		    }
+	/**
+	 * Provides the correct checked status for installed libraries
+	 *
+	 */
+	private static class LibraryCheckProvider implements ICheckStateProvider {
+		@Override
+		public boolean isChecked(Object element) {
+			if (element instanceof LibraryTree.Library) {
+				return ((LibraryTree.Library) element).getVersion() != null;
+			} else if (element instanceof LibraryTree.Category) {
+				for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
+					if (library.getVersion() != null) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
-	    }
-	    return false;
-	}
-    }
 
-    /**
-     * Provides the tree content data
-     *
-     */
-    private static class LibraryContentProvider implements ITreeContentProvider {
-
-	@Override
-	public Object[] getChildren(Object node) {
-	    return ((Node) node).getChildren();
+		@Override
+		public boolean isGrayed(Object element) {
+			if (element instanceof LibraryTree.Category && isChecked(element)) {
+				for (LibraryTree.Library library : ((LibraryTree.Category) element).getLibraries()) {
+					if (library.getVersion() == null) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 
-	@Override
-	public Object getParent(Object node) {
-	    if (node instanceof Node) {
-		return ((Node) node).getParent();
-	    }
-	    return null;
-	}
+	/**
+	 * Provides the tree content data
+	 *
+	 */
+	private static class LibraryContentProvider implements ITreeContentProvider {
 
-	@Override
-	public boolean hasChildren(Object node) {
-	    if (node instanceof LibraryTree) {
-		return !((LibraryTree) node).getCategories().isEmpty();
-	    }
-	    return ((Node) node).hasChildren();
-	}
+		@Override
+		public Object[] getChildren(Object node) {
+			return ((Node) node).getChildren();
+		}
 
-	@Override
-	public Object[] getElements(Object node) {
-	    if (node instanceof LibraryTree) {
-		return ((LibraryTree) node).getCategories().toArray();
-	    }
-	    return getChildren(node);
-	}
+		@Override
+		public Object getParent(Object node) {
+			if (node instanceof Node) {
+				return ((Node) node).getParent();
+			}
+			return null;
+		}
 
-	@Override
-	public void dispose() {
-	    // no code needed here
-	}
+		@Override
+		public boolean hasChildren(Object node) {
+			if (node instanceof LibraryTree) {
+				return !((LibraryTree) node).getCategories().isEmpty();
+			}
+			return ((Node) node).hasChildren();
+		}
 
-	@Override
-	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
-	    // no code needed here
+		@Override
+		public Object[] getElements(Object node) {
+			if (node instanceof LibraryTree) {
+				return ((LibraryTree) node).getCategories().toArray();
+			}
+			return getChildren(node);
+		}
+
+		@Override
+		public void dispose() {
+			// no code needed here
+		}
+
+		@Override
+		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
+			// no code needed here
+		}
 	}
-    }
 
 }
