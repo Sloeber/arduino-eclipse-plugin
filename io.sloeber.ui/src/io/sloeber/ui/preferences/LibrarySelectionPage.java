@@ -255,9 +255,10 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			switch (col) {
 			case 0:
 				if (element instanceof LibraryTree.Library) {
-					return ((LibraryTree.Library) element).getName() + " ("
-							+ ((LibraryTree.Library) element).getIndexName() + ")";
+					return ((LibraryTree.Library) element).getName() + " (" //$NON-NLS-1$
+							+ ((LibraryTree.Library) element).getIndexName() + ")"; //$NON-NLS-1$
 				}
+				return emptyString;
 			case 1:
 				if (element instanceof LibraryTree.Library) {
 					return ((LibraryTree.Library) element).getVersion();
@@ -288,8 +289,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		public void update(ViewerCell cell) {
 			if (cell.getColumnIndex() == 0) {
 				if (cell.getElement() instanceof LibraryTree.Library) {
-					cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " ("
-							+ ((LibraryTree.Library) cell.getElement()).getIndexName() + ")");
+					cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " (" //$NON-NLS-1$
+							+ ((LibraryTree.Library) cell.getElement()).getIndexName() + ")"); //$NON-NLS-1$
 				} else {
 					cell.setText(((Node) cell.getElement()).getName());
 				}
