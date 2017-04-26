@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import io.sloeber.core.api.Defaults;
+
 public class LibraryIndex {
 	private String indexName;
 	private List<Library> libraries;
@@ -104,7 +106,7 @@ public class LibraryIndex {
 	public void setJsonFile(File packageFile) {
 		String fileName = packageFile.getName().toLowerCase();
 		if (fileName.matches("(?i)library_index.json")) {
-			this.indexName = "Default";
+			this.indexName = Defaults.DEFAULT;
 		} else {
 			this.indexName = fileName.replaceAll("(?i)"+Pattern.quote("library_"), "").replaceAll("(?i)"+Pattern.quote("_index.json"), "");
 		}

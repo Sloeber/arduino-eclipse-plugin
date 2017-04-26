@@ -19,12 +19,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,8 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -93,7 +89,7 @@ public class Manager {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
-//			InstallDefaultLibraries(monitor);
+			InstallDefaultLibraries(monitor);
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
 			// Downnload sample programs
@@ -126,8 +122,10 @@ public class Manager {
 
 	}
 
-/*	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
-		LibraryIndex libindex = getLibraryIndex();
+	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
+		LibraryIndex libindex = getLibraryIndex(Defaults.DEFAULT);
+		if (libindex == null)
+			return;
 
 		for (String library : Defaults.INSTALLED_LIBRARIES) {
 			Library toInstalLib = libindex.getLatestLibrary(library);
@@ -135,7 +133,7 @@ public class Manager {
 				toInstalLib.install(monitor);
 			}
 		}
-	}*/
+	}
 
 	/**
 	 * Given a platform description in a json file download and install all
@@ -260,7 +258,6 @@ public class Manager {
 		try (Reader reader = new FileReader(jsonFile)) {
 			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
 			index.resolve();
-//			index.setOwners(null);
 			index.setJsonFile(jsonFile);
 			libraryIndices.add(index);
 		} catch (Exception e) {
@@ -282,6 +279,15 @@ public class Manager {
 			loadJsons(false);
 		}
 		return libraryIndices;
+	}
+	
+	static public LibraryIndex getLibraryIndex(String name) {
+		for (LibraryIndex index : getLibraryIndices()) {
+			if (index.getName().equals(name)) {
+				return index;
+			}
+		}
+		return null;
 	}
 
 	static public Board getBoard(String boardName, String platformName, String packageName) {
