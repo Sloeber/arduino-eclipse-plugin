@@ -142,7 +142,7 @@ public class LibraryManager {
 									.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
 									.append(library.getSentence());
 							lib = new Library(category, library.getName(), libraryIndex.getName(), builder.toString());
-							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib); //$NON-NLS-1$ //$NON-NLS-2$
+							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib);  //$NON-NLS-1$//$NON-NLS-2$
 						}
 						lib.versions.add(new VersionNumber(library.getVersion()));
 						if (library.isInstalled()) {

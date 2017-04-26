@@ -90,7 +90,7 @@ public class Manager {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
-			// InstallDefaultLibraries(monitor);
+			InstallDefaultLibraries(monitor);
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
 			// Downnload sample programs
@@ -123,14 +123,18 @@ public class Manager {
 
 	}
 
-	/*
-	 * private static void InstallDefaultLibraries(IProgressMonitor monitor) {
-	 * LibraryIndex libindex = getLibraryIndex();
-	 *
-	 * for (String library : Defaults.INSTALLED_LIBRARIES) { Library toInstalLib
-	 * = libindex.getLatestLibrary(library); if (toInstalLib != null) {
-	 * toInstalLib.install(monitor); } } }
-	 */
+	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
+		LibraryIndex libindex = getLibraryIndex(Defaults.DEFAULT);
+		if (libindex == null)
+			return;
+
+		for (String library : Defaults.INSTALLED_LIBRARIES) {
+			Library toInstalLib = libindex.getLatestLibrary(library);
+			if (toInstalLib != null) {
+				toInstalLib.install(monitor);
+			}
+		}
+	}
 
 	/**
 	 * Given a platform description in a json file download and install all
@@ -230,9 +234,9 @@ public class Manager {
 			}
 		}
 		if (jsonFile.exists()) {
-			if (jsonFile.getName().startsWith("package_")) { //$NON-NLS-1$
+			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
 				loadPackage(jsonFile);
-			} else if (jsonFile.getName().startsWith("library_")) { //$NON-NLS-1$
+			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
 				loadLibrary(jsonFile);
 			}
 		}
@@ -255,7 +259,6 @@ public class Manager {
 		try (Reader reader = new FileReader(jsonFile)) {
 			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
 			index.resolve();
-			// index.setOwners(null);
 			index.setJsonFile(jsonFile);
 			libraryIndices.add(index);
 		} catch (Exception e) {
@@ -277,6 +280,15 @@ public class Manager {
 			loadJsons(false);
 		}
 		return libraryIndices;
+	}
+	
+	static public LibraryIndex getLibraryIndex(String name) {
+		for (LibraryIndex index : getLibraryIndices()) {
+			if (index.getName().equals(name)) {
+				return index;
+			}
+		}
+		return null;
 	}
 
 	static public Board getBoard(String boardName, String platformName, String packageName) {
@@ -772,7 +784,7 @@ public class Manager {
 				if (vi1 > vi2) {
 					return 1;
 				}
-			} catch (NumberFormatException e) {
+			} catch (@SuppressWarnings("unused") NumberFormatException e) {
 				// not numbers, do string compares
 				int c = v1[i].compareTo(v2[i]);
 				if (c < 0) {
