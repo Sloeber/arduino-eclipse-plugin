@@ -16,7 +16,7 @@ public class LibraryIndex {
 
 	// category name to library name
 	private Map<String, Set<String>> categories = new HashMap<>();
-	
+
 	// library name to latest version of library
 	private Map<String, Library> latestLibs = new HashMap<>();
 
@@ -103,13 +103,14 @@ public class LibraryIndex {
 
 	public void setJsonFile(File packageFile) {
 		String fileName = packageFile.getName().toLowerCase();
-		if (fileName.matches("(?i)library_index.json")) {
-			this.indexName = "Default";
+		if (fileName.matches("(?i)library_index.json")) { //$NON-NLS-1$
+			this.indexName = "Default"; //$NON-NLS-1$
 		} else {
-			this.indexName = fileName.replaceAll("(?i)"+Pattern.quote("library_"), "").replaceAll("(?i)"+Pattern.quote("_index.json"), "");
+			this.indexName = fileName.replaceAll("(?i)" + Pattern.quote("library_"), "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					.replaceAll("(?i)" + Pattern.quote("_index.json"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
-	
+
 	public String getName() {
 		return this.indexName;
 	}

@@ -136,13 +136,13 @@ public class LibraryManager {
 						this.categories.put(category.getName(), category);
 					}
 					for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
-						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")");
+						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 						if (lib == null) {
 							StringBuilder builder = new StringBuilder("Architectures:") //$NON-NLS-1$
 									.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
 									.append(library.getSentence());
 							lib = new Library(category, library.getName(), libraryIndex.getName(), builder.toString());
-							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib);
+							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						lib.versions.add(new VersionNumber(library.getVersion()));
 						if (library.isInstalled()) {
@@ -200,7 +200,7 @@ public class LibraryManager {
 					status.add(toInstall.install(monitor));
 				}
 			}
-			
+
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 		}
@@ -219,4 +219,27 @@ public class LibraryManager {
 		return InstancePreferences.getPrivateLibraryPathsString();
 	}
 
+	public static void installAllLatestLibraries(String category) {
+		Manager.installAllLatestLibraries(category);
+	}
+
+	public static void installAllLatestLibraries() {
+		Set<String> allcategories = getAllCategories();
+		for (String categorieName : allcategories) {
+			Manager.installAllLatestLibraries(categorieName);
+		}
+
+	}
+
+	public static Set<String> getAllCategories() {
+
+		Set<String> ret = new TreeSet<>();
+
+		for (LibraryIndex libraryIndex : Manager.getLibraryIndices()) {
+			for (String categoryName : libraryIndex.getCategories()) {
+				ret.add(categoryName);
+			}
+		}
+		return ret;
+	}
 }
