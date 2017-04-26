@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.LibraryIndex;
@@ -199,6 +200,9 @@ public class LibraryManager {
 					status.add(toInstall.install(monitor));
 				}
 			}
+			
+			if (monitor.isCanceled())
+				return Status.CANCEL_STATUS;
 		}
 		return status;
 	}
