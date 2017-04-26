@@ -41,6 +41,7 @@ import io.sloeber.ui.Messages;
 public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	private FilteredTree tree;
+	private boolean isJobRunning = false;
 	protected TreeViewer viewer;
 	protected TreeEditor editor;
 	protected LibraryTree libs = LibraryManager.getLibraryTree();
@@ -78,19 +79,20 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 	@Override
 	public boolean performOk() {
-
-		new Job(Messages.ui_Adopting_arduino_libraries) {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
-						null);
-				return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
-
-			}
-		}.schedule();
-
-		return true;
+		if (isJobRunning == false) {
+			isJobRunning = true;
+			new Job(Messages.ui_Adopting_arduino_libraries) {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
+							null);
+					return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
+				}
+			}.schedule();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void createTree(Composite parent) {
