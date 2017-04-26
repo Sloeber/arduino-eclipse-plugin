@@ -27,6 +27,7 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.LibraryManager;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -157,9 +158,11 @@ public class CreateAndCompileExamples {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json" };
+		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+				"http://www.lmt.sk/arduino/library_mikula_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
+		LibraryManager.installAllLatestLibraries();
 
 	}
 

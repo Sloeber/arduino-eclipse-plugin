@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
@@ -70,8 +72,7 @@ public class Manager {
 	}
 
 	public static void addJsonURLs(HashSet<String> jsonUrlsToAdd, boolean forceDownload) {
-		HashSet<String> originalJsonUrls = new HashSet<>(
-				Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+		HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
 		jsonUrlsToAdd.addAll(originalJsonUrls);
 
 		ConfigurationPreferences.setJsonURLs(jsonUrlsToAdd);
@@ -179,7 +180,7 @@ public class Manager {
 	static private void loadJsons(boolean forceDownload) {
 		packageIndices = new ArrayList<>();
 		libraryIndices = new ArrayList<>();
-		
+
 		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
 		for (String jsonUrl : jsonUrls) {
 			loadJson(jsonUrl, forceDownload);
@@ -240,7 +241,7 @@ public class Manager {
 			}
 		}
 	}
-		
+
 	static private void loadPackage(File jsonFile) {
 		try (Reader reader = new FileReader(jsonFile)) {
 			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
@@ -248,12 +249,12 @@ public class Manager {
 			index.setJsonFile(jsonFile);
 			packageIndices.add(index);
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					"Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
+			Common.log(
+					new Status(IStatus.ERROR, Activator.getId(), "Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
-	
+
 	static private void loadLibrary(File jsonFile) {
 		try (Reader reader = new FileReader(jsonFile)) {
 			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
@@ -261,8 +262,8 @@ public class Manager {
 			index.setJsonFile(jsonFile);
 			libraryIndices.add(index);
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					"Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
+			Common.log(
+					new Status(IStatus.ERROR, Activator.getId(), "Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
@@ -820,8 +821,10 @@ public class Manager {
 			}
 		}
 
-		// reload the indices (this will remove all potential remaining references
-		// existing files do not need to be refreshed as they have been refreshed at startup
+		// reload the indices (this will remove all potential remaining
+		// references
+		// existing files do not need to be refreshed as they have been
+		// refreshed at startup
 		loadJsons(false);
 
 	}
@@ -851,8 +854,10 @@ public class Manager {
 		}
 		// save to configurationsettings before calling LoadIndices
 		ConfigurationPreferences.setJsonURLs(newJsonUrls);
-		// reload the indices (this will remove all potential remaining references
-		// existing files do not need to be refreshed as they have been refreshed at startup
+		// reload the indices (this will remove all potential remaining
+		// references
+		// existing files do not need to be refreshed as they have been
+		// refreshed at startup
 		// new files will be added
 		loadJsons(false);
 	}
@@ -867,7 +872,7 @@ public class Manager {
 	 *
 	 * @param url
 	 * @param localFile
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@SuppressWarnings("nls")
 	private static void myCopy(URL url, File localFile) throws IOException {
@@ -885,14 +890,15 @@ public class Manager {
 				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
 				return;
 			}
-			
+
 			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
 					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
 				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
 				return;
 			}
 
-			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url + " error code is: " + status, null));
+			Common.log(new Status(IStatus.WARNING, Activator.getId(),
+					"Failed to download url " + url + " error code is: " + status, null));
 			throw new IOException("Failed to download url " + url + " error code is: " + status);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
@@ -904,6 +910,18 @@ public class Manager {
 		List<Package> allPackages = getPackages();
 		for (Package curPackage : allPackages) {
 			curPackage.onlyKeepLatestPlatforms();
+		}
+	}
+
+	public static void installAllLatestLibraries(String category) {
+		List<LibraryIndex> libraryIndices1 = getLibraryIndices();
+		for (LibraryIndex libraryIndex : libraryIndices1) {
+			Collection<Library> libraries = libraryIndex.getLatestLibraries(category);
+			for (Library library : libraries) {
+				if (!library.isInstalled()) {
+					library.install(new NullProgressMonitor());
+				}
+			}
 		}
 	}
 

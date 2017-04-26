@@ -200,7 +200,7 @@ public class LibraryManager {
 					status.add(toInstall.install(monitor));
 				}
 			}
-			
+
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 		}
@@ -219,4 +219,27 @@ public class LibraryManager {
 		return InstancePreferences.getPrivateLibraryPathsString();
 	}
 
+	public static void installAllLatestLibraries(String category) {
+		Manager.installAllLatestLibraries(category);
+	}
+
+	public static void installAllLatestLibraries() {
+		Set<String> allcategories = getAllCategories();
+		for (String categorieName : allcategories) {
+			Manager.installAllLatestLibraries(categorieName);
+		}
+
+	}
+
+	public static Set<String> getAllCategories() {
+
+		Set<String> ret = new TreeSet<>();
+
+		for (LibraryIndex libraryIndex : Manager.getLibraryIndices()) {
+			for (String categoryName : libraryIndex.getCategories()) {
+				ret.add(categoryName);
+			}
+		}
+		return ret;
+	}
 }
