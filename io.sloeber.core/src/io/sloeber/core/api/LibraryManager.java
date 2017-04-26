@@ -136,13 +136,13 @@ public class LibraryManager {
 						this.categories.put(category.getName(), category);
 					}
 					for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
-						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")");
+						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 						if (lib == null) {
 							StringBuilder builder = new StringBuilder("Architectures:") //$NON-NLS-1$
 									.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
 									.append(library.getSentence());
 							lib = new Library(category, library.getName(), libraryIndex.getName(), builder.toString());
-							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib);
+							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib);  //$NON-NLS-1$//$NON-NLS-2$
 						}
 						lib.versions.add(new VersionNumber(library.getVersion()));
 						if (library.isInstalled()) {

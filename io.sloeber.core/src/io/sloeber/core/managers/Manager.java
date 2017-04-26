@@ -233,9 +233,9 @@ public class Manager {
 			}
 		}
 		if (jsonFile.exists()) {
-			if (jsonFile.getName().startsWith("package_")) {
+			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
 				loadPackage(jsonFile);
-			} else if (jsonFile.getName().startsWith("library_")) {
+			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
 				loadLibrary(jsonFile);
 			}
 		}
@@ -783,7 +783,7 @@ public class Manager {
 				if (vi1 > vi2) {
 					return 1;
 				}
-			} catch (NumberFormatException e) {
+			} catch (@SuppressWarnings("unused") NumberFormatException e) {
 				// not numbers, do string compares
 				int c = v1[i].compareTo(v2[i]);
 				if (c < 0) {
