@@ -4,12 +4,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -255,8 +253,9 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			switch (col) {
 			case 0:
 				if (element instanceof LibraryTree.Library) {
-	    		return ((LibraryTree.Library) element).getName() + " (" + ((LibraryTree.Library) element).getIndexName() + ")"; 
-	    	}
+					return ((LibraryTree.Library) element).getName() + " ("
+							+ ((LibraryTree.Library) element).getIndexName() + ")";
+				}
 			case 1:
 				if (element instanceof LibraryTree.Library) {
 					return ((LibraryTree.Library) element).getVersion();
@@ -287,10 +286,11 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		public void update(ViewerCell cell) {
 			if (cell.getColumnIndex() == 0) {
 				if (cell.getElement() instanceof LibraryTree.Library) {
-	    		cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " (" + ((LibraryTree.Library) cell.getElement()).getIndexName() + ")"); 
-	    	} else {
-	    		cell.setText(((Node) cell.getElement()).getName());
-	    	}
+					cell.setText(((LibraryTree.Library) cell.getElement()).getName() + " ("
+							+ ((LibraryTree.Library) cell.getElement()).getIndexName() + ")");
+				} else {
+					cell.setText(((Node) cell.getElement()).getName());
+				}
 			} else if (cell.getElement() instanceof LibraryTree.Library) {
 				cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
 			} else {
