@@ -281,7 +281,7 @@ public class Manager {
 		}
 		return libraryIndices;
 	}
-	
+
 	static public LibraryIndex getLibraryIndex(String name) {
 		for (LibraryIndex index : getLibraryIndices()) {
 			if (index.getName().equals(name)) {
@@ -743,60 +743,6 @@ public class Manager {
 				leftToWrite -= length;
 			}
 		}
-	}
-
-	/**
-	 * compares 2 strings as if they are version numbers if version1<version2
-	 * returns -1 if version1==version2(also if both are null) returns 0 else
-	 * return 1 This method caters for the null case
-	 *
-	 * @param version1
-	 * @param version2
-	 * @return
-	 */
-	public static int compareVersions(String version1, String version2) {
-		if (version1 == null) {
-			return version2 == null ? 0 : -1;
-		}
-
-		if (version2 == null) {
-			return 1;
-		}
-
-		String[] v1 = version1.split("\\."); //$NON-NLS-1$
-		String[] v2 = version2.split("\\."); //$NON-NLS-1$
-		for (int i = 0; i < Math.max(v1.length, v2.length); ++i) {
-			if (v1.length <= i) {
-				return v2.length < i ? 0 : -1;
-			}
-
-			if (v2.length <= i) {
-				return 1;
-			}
-
-			try {
-				int vi1 = Integer.parseInt(v1[i]);
-				int vi2 = Integer.parseInt(v2[i]);
-				if (vi1 < vi2) {
-					return -1;
-				}
-
-				if (vi1 > vi2) {
-					return 1;
-				}
-			} catch (@SuppressWarnings("unused") NumberFormatException e) {
-				// not numbers, do string compares
-				int c = v1[i].compareTo(v2[i]);
-				if (c < 0) {
-					return -1;
-				}
-				if (c > 0) {
-					return 1;
-				}
-			}
-		}
-
-		return 0;
 	}
 
 	/**

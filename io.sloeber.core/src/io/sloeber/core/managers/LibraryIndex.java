@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.tools.Version;
 
 public class LibraryIndex {
 	private String indexName;
@@ -40,7 +41,7 @@ public class LibraryIndex {
 
 			Library current = this.latestLibs.get(name);
 			if (current != null) {
-				if (Manager.compareVersions(library.getVersion(), current.getVersion()) > 0) {
+				if (Version.compare(library.getVersion(), current.getVersion()) > 0) {
 					this.latestLibs.put(name, library);
 				}
 			} else {

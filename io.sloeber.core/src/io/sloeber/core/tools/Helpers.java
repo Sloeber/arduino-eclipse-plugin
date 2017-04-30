@@ -706,7 +706,7 @@ public class Helpers extends Common {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc);
 			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture())
 					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
-				if (Manager.compareVersions(curPlatform.getVersion(), curversion) > 0) {
+				if (Version.compare(curPlatform.getVersion(), curversion) > 0) {
 					curversion = curPlatform.getVersion();
 					platform = curPlatform;
 				}

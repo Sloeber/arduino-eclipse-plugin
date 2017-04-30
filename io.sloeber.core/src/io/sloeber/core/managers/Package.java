@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.sloeber.core.tools.Version;
+
 public class Package implements Comparable<Package> {
 
 	private String name;
@@ -51,7 +53,7 @@ public class Package implements Comparable<Package> {
 	public String getEmail() {
 		return this.email;
 	}
-	
+
 	public Help getHelp() {
 		return this.help;
 	}
@@ -69,7 +71,7 @@ public class Package implements Comparable<Package> {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
 			ArduinoPlatform p = platformMap.get(platform.getName());
-			if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+			if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
 				platformMap.put(platform.getName(), platform);
 			}
 		}
@@ -89,7 +91,7 @@ public class Package implements Comparable<Package> {
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.isInstalled()) {
 				ArduinoPlatform p = platformMap.get(platform.getName());
-				if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+				if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
 					platformMap.put(platform.getName(), platform);
 				}
 			}
@@ -104,7 +106,7 @@ public class Package implements Comparable<Package> {
 				if (foundPlatform == null) {
 					foundPlatform = platform;
 				} else {
-					if (Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+					if (Version.compare(platform.getVersion(), foundPlatform.getVersion()) > 0) {
 						foundPlatform = platform;
 					}
 				}
@@ -117,7 +119,7 @@ public class Package implements Comparable<Package> {
 
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.getName().equals(platformName)) {
-				if (Manager.compareVersions(platform.getVersion(), version) == 0) {
+				if (Version.compare(platform.getVersion(), version) == 0) {
 					return platform;
 				}
 			}
@@ -142,7 +144,7 @@ public class Package implements Comparable<Package> {
 		Tool latestTool = null;
 		for (Tool tool : this.tools) {
 			if (tool.getName().equals(toolName)) {
-				if (latestTool == null || Manager.compareVersions(tool.getVersion(), latestTool.getVersion()) > 0) {
+				if (latestTool == null || Version.compare(tool.getVersion(), latestTool.getVersion()) > 0) {
 					latestTool = tool;
 				}
 			}
