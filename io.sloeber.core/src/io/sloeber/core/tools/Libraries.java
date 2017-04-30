@@ -108,9 +108,15 @@ public class Libraries {
 
 					String[] versions = Lib_root.toFile().list();
 					if (versions != null) {
-						if (versions.length == 1) {// There can only be 1
+						if (versions.length == 1) {// There should only be 1
 							// version of a lib
 							ret.put(curLib, Lib_root.append(versions[0]));
+						} else {// If there is more than 1 take the latest and
+								// drop a warning
+							int highestVersion = Version.getHighestVersionn(versions);
+							ret.put(curLib, Lib_root.append(versions[highestVersion]));
+							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+									Messages.MultipleVersionsOfLib.replace("${LIB}", curLib))); //$NON-NLS-1$
 						}
 					}
 				}
