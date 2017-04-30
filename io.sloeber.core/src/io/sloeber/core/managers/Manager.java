@@ -871,11 +871,11 @@ public class Manager {
 		for (LibraryIndex libraryIndex : libraryIndices1) {
 			Collection<Library> libraries = libraryIndex.getLatestLibraries(category);
 			for (Library library : libraries) {
+				Library previousVersion = libraryIndex.getInstalledLibrary(library.getName());
+				if ((previousVersion != null) && (previousVersion != library)) {
+					previousVersion.remove(new NullProgressMonitor());
+				}
 				if (!library.isInstalled()) {
-					Library previousVersion = libraryIndex.getInstalledLibrary(library.getName());
-					if (previousVersion != null) {
-						previousVersion.remove(new NullProgressMonitor());
-					}
 					library.install(new NullProgressMonitor());
 				}
 			}
