@@ -89,6 +89,11 @@ public class LibraryIndex {
 		return libs;
 	}
 
+	public Collection<Library> getLatestLibraries() {
+
+		return this.latestLibs.values();
+	}
+
 	public Collection<Library> getLibraries(String category) {
 		Set<String> categoryLibs = this.categories.get(category);
 		if (categoryLibs == null) {

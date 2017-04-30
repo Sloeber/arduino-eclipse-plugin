@@ -220,24 +220,12 @@ public class LibraryManager {
 	}
 
 	/**
-	 * Wrapper method for Manager. installAllLatestLibraries(String category)
-	 * 
+	 * Wrapper method for Manager. installAllLatestLibraries()
+	 *
 	 * @param category
 	 */
-	public static void installAllLatestLibraries(String category) {
-		Manager.installAllLatestLibraries(category);
-	}
-
-	/**
-	 * Convenience method for installAllLatestLibraries(String category) calling
-	 * it for all categories
-	 */
 	public static void installAllLatestLibraries() {
-		Set<String> allcategories = getAllCategories();
-		for (String categorieName : allcategories) {
-			Manager.installAllLatestLibraries(categorieName);
-		}
-
+		Manager.installAllLatestLibraries();
 	}
 
 	/**

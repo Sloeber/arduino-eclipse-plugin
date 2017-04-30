@@ -866,10 +866,10 @@ public class Manager {
 	 *
 	 * @param category
 	 */
-	public static void installAllLatestLibraries(String category) {
+	public static void installAllLatestLibraries() {
 		List<LibraryIndex> libraryIndices1 = getLibraryIndices();
 		for (LibraryIndex libraryIndex : libraryIndices1) {
-			Collection<Library> libraries = libraryIndex.getLatestLibraries(category);
+			Collection<Library> libraries = libraryIndex.getLatestLibraries();
 			for (Library library : libraries) {
 				Library previousVersion = libraryIndex.getInstalledLibrary(library.getName());
 				if ((previousVersion != null) && (previousVersion != library)) {
