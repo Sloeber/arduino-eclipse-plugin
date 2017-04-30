@@ -55,4 +55,25 @@ public class Version {
 		return 0;
 	}
 
+	/**
+	 * Given a list of version strings returns the index of the highest version
+	 * If the highest version is multiple times in the list the result will
+	 * point to one of those but the result may be different for each call
+	 *
+	 * @param versions
+	 *            a string list of version numbers
+	 *
+	 * @return the index to the highest version
+	 */
+	public static int getHighestVersionn(String[] versions) {
+		int returnIndex = 0;
+		for (int curVersion = 1; curVersion < versions.length; curVersion++) {
+			if (compare(versions[returnIndex], versions[curVersion]) == -1) {
+				returnIndex = curVersion;
+			}
+
+		}
+		return returnIndex;
+	}
+
 }
