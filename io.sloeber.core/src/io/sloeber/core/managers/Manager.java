@@ -859,12 +859,23 @@ public class Manager {
 		}
 	}
 
+	/**
+	 * Install the latest version of all the libraries belonging to this
+	 * category If a earlier version is installed this version will be removed
+	 * before installation of the newer version
+	 *
+	 * @param category
+	 */
 	public static void installAllLatestLibraries(String category) {
 		List<LibraryIndex> libraryIndices1 = getLibraryIndices();
 		for (LibraryIndex libraryIndex : libraryIndices1) {
 			Collection<Library> libraries = libraryIndex.getLatestLibraries(category);
 			for (Library library : libraries) {
 				if (!library.isInstalled()) {
+					Library previousVersion = libraryIndex.getInstalledLibrary(library.getName());
+					if (previousVersion != null) {
+						previousVersion.remove(new NullProgressMonitor());
+					}
 					library.install(new NullProgressMonitor());
 				}
 			}
