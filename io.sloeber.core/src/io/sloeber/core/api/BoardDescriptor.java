@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -46,6 +45,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
+import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
@@ -167,7 +167,7 @@ public class BoardDescriptor {
 			this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
 			this.myUploadProtocol = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL,
 					Defaults.getDefaultUploadProtocol());
-			menuOptionsFromString(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, new String()));
+			this.myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, new String()));
 
 		} else {
 			this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_UPLOAD_PORT, "");
@@ -418,7 +418,7 @@ public class BoardDescriptor {
 		myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
-		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, menuOptionsToString());
+		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
 	}
 
 	public String getPackage() {
@@ -574,42 +574,6 @@ public class BoardDescriptor {
 
 	public String getMenuItemNamedFromMenuItemID(String menuItemID, String menuID) {
 		return this.myTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
-	}
-
-	/**
-	 * convert the options to a string so it can be stored
-	 *
-	 * @return a string representation of the options
-	 */
-	private String menuOptionsToString() {
-		String ret = new String();
-		String concat = new String();
-		if (this.myOptions != null) {
-			for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-				ret += concat + curOption.getKey() + '=' + curOption.getValue();
-				concat = "\n";
-			}
-		}
-		return ret;
-	}
-
-	/**
-	 * convert a string to a options so it can be read from a string based
-	 * storage
-	 *
-	 * @param options
-	 */
-	private void menuOptionsFromString(String options) {
-		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		if (options != null) {
-			String[] lines = options.split("\n");
-			for (String curLine : lines) {
-				String[] values = curLine.split("=", 2);
-				if (values.length == 2) {
-					this.myOptions.put(values[0], values[1]);
-				}
-			}
-		}
 	}
 
 	public String getMenuItemIDFromMenuItemName(String menuItemName, String menuID) {
