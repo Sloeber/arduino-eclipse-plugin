@@ -20,6 +20,7 @@ public class Messages extends NLS {
 	public static String Platform_loading_platform;
 	public static String Tool_no_valid_system;
 	public static String ToolDependency_Tool_not_found;
+	public static String Manager_Failed_to_parse;
 
 	static {
 		// initialize resource bundle
