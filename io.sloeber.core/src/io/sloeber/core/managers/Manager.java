@@ -28,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +44,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
@@ -54,6 +52,7 @@ import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.MyMultiStatus;
@@ -61,7 +60,7 @@ import io.sloeber.core.tools.MyMultiStatus;
 public class Manager {
 
 	static private List<PackageIndex> packageIndices;
-	static private List<LibraryIndex> libraryIndices;
+
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {
@@ -90,10 +89,10 @@ public class Manager {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
-			InstallDefaultLibraries(monitor);
+			LibraryManager.InstallDefaultLibraries(monitor);
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
-			// Downnload sample programs
+			// Download sample programs
 			mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
 					Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
 
@@ -121,19 +120,6 @@ public class Manager {
 		}
 		myIsReady = true;
 
-	}
-
-	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
-		LibraryIndex libindex = getLibraryIndex(Defaults.DEFAULT);
-		if (libindex == null)
-			return;
-
-		for (String library : Defaults.INSTALLED_LIBRARIES) {
-			Library toInstalLib = libindex.getLatestLibrary(library);
-			if (toInstalLib != null) {
-				toInstalLib.install(monitor);
-			}
-		}
 	}
 
 	/**
@@ -179,7 +165,7 @@ public class Manager {
 
 	static private void loadJsons(boolean forceDownload) {
 		packageIndices = new ArrayList<>();
-		libraryIndices = new ArrayList<>();
+		LibraryManager.flushIndices();
 
 		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
 		for (String jsonUrl : jsonUrls) {
@@ -237,7 +223,7 @@ public class Manager {
 			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
 				loadPackage(jsonFile);
 			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
-				loadLibrary(jsonFile);
+				LibraryManager.loadJson(jsonFile);
 			}
 		}
 	}
@@ -249,21 +235,8 @@ public class Manager {
 			index.setJsonFile(jsonFile);
 			packageIndices.add(index);
 		} catch (Exception e) {
-			Common.log(
-					new Status(IStatus.ERROR, Activator.getId(), "Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
-			jsonFile.delete();// Delete the file so it stops damaging
-		}
-	}
-
-	static private void loadLibrary(File jsonFile) {
-		try (Reader reader = new FileReader(jsonFile)) {
-			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
-			index.resolve();
-			index.setJsonFile(jsonFile);
-			libraryIndices.add(index);
-		} catch (Exception e) {
-			Common.log(
-					new Status(IStatus.ERROR, Activator.getId(), "Unable to parse " + jsonFile.getAbsolutePath(), e)); //$NON-NLS-1$
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
@@ -273,22 +246,6 @@ public class Manager {
 			loadJsons(false);
 		}
 		return packageIndices;
-	}
-
-	static public List<LibraryIndex> getLibraryIndices() {
-		if (libraryIndices == null) {
-			loadJsons(false);
-		}
-		return libraryIndices;
-	}
-
-	static public LibraryIndex getLibraryIndex(String name) {
-		for (LibraryIndex index : getLibraryIndices()) {
-			if (index.getName().equals(name)) {
-				return index;
-			}
-		}
-		return null;
 	}
 
 	static public Board getBoard(String boardName, String platformName, String packageName) {
@@ -856,29 +813,6 @@ public class Manager {
 		List<Package> allPackages = getPackages();
 		for (Package curPackage : allPackages) {
 			curPackage.onlyKeepLatestPlatforms();
-		}
-	}
-
-	/**
-	 * Install the latest version of all the libraries belonging to this
-	 * category If a earlier version is installed this version will be removed
-	 * before installation of the newer version
-	 *
-	 * @param category
-	 */
-	public static void installAllLatestLibraries() {
-		List<LibraryIndex> libraryIndices1 = getLibraryIndices();
-		for (LibraryIndex libraryIndex : libraryIndices1) {
-			Collection<Library> libraries = libraryIndex.getLatestLibraries();
-			for (Library library : libraries) {
-				Library previousVersion = libraryIndex.getInstalledLibrary(library.getName());
-				if ((previousVersion != null) && (previousVersion != library)) {
-					previousVersion.remove(new NullProgressMonitor());
-				}
-				if (!library.isInstalled()) {
-					library.install(new NullProgressMonitor());
-				}
-			}
 		}
 	}
 

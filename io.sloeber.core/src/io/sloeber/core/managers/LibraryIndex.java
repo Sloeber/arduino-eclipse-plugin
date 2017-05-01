@@ -14,7 +14,7 @@ import io.sloeber.core.api.Defaults;
 import io.sloeber.core.tools.Version;
 
 public class LibraryIndex {
-	private String indexName;
+	private String jsonFileName;
 	private List<Library> libraries;
 
 	// category name to library name
@@ -89,9 +89,8 @@ public class LibraryIndex {
 		return libs;
 	}
 
-	public Collection<Library> getLatestLibraries() {
-
-		return this.latestLibs.values();
+	public Map<String, Library> getLatestLibraries() {
+		return this.latestLibs;
 	}
 
 	public Collection<Library> getLibraries(String category) {
@@ -112,14 +111,14 @@ public class LibraryIndex {
 	public void setJsonFile(File packageFile) {
 		String fileName = packageFile.getName().toLowerCase();
 		if (fileName.matches("(?i)library_index.json")) { //$NON-NLS-1$
-			this.indexName = Defaults.DEFAULT;
+			this.jsonFileName = Defaults.DEFAULT;
 		} else {
-			this.indexName = fileName.replaceAll("(?i)" + Pattern.quote("library_"), "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			this.jsonFileName = fileName.replaceAll("(?i)" + Pattern.quote("library_"), "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					.replaceAll("(?i)" + Pattern.quote("_index.json"), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
 	public String getName() {
-		return this.indexName;
+		return this.jsonFileName;
 	}
 }
