@@ -397,7 +397,8 @@ public class BoardDescriptor {
 					getArchitecture());
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, Const.ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PROJECT_NAME, getProjectName());
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PROJECT_NAME,
+					confDesc.getProjectDescription().getProject().getName());
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_OS, this.myOSName);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION,
 					this.myWorkSpaceLocation);
