@@ -214,8 +214,7 @@ public class PdePreprocessor {
 					currentFileContent = FileUtils
 							.readFileToString(iProject.getFile(new Path(tempFile)).getLocation().toFile());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// This happens when the .ino.cpp file does not yet exist
 				}
 
 				if (!output.equals(currentFileContent)) {
