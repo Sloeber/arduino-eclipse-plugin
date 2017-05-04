@@ -187,7 +187,7 @@ public class CreateAndCompileExamples {
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%03d_", new Integer(mCounter++)) + boardid.getBoardID()
+		String projectName = String.format("%05d_", new Integer(mCounter++)) + boardid.getBoardID()
 				+ codeDescriptor.getExamples().get(0).lastSegment();
 		try {
 
