@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.tools.FileModifiers;
 
 public class Library implements Comparable<Library> {
 
@@ -163,8 +164,9 @@ public class Library implements Comparable<Library> {
 		if (isInstalled()) {
 			return Status.OK_STATUS;
 		}
-
-		return Manager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
+		IStatus ret = Manager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
+		FileModifiers.addPragmaOnce(getInstallPath());
+		return ret;
 	}
 
 	public Collection<Path> getIncludePath() {

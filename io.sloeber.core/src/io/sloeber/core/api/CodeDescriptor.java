@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;
 
@@ -161,6 +162,7 @@ public class CodeDescriptor {
 						Helpers.linkDirectory(project, curPath, new Path("/"));
 					} else {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
+						FileModifiers.addPragmaOnce(curPath);
 					}
 				}
 			} catch (IOException e) {
