@@ -85,14 +85,16 @@ public class CreateAndCompileExamples {
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			// with the current amount of examples only do one
 
-			if (isExampleOkForUno(curexample.getKey())) {
-				Object[] theData = new Object[] { "Uno :" + curexample.getKey(), unoBoardid, codeDescriptor };
+			// first do leonardo as this has a serial1 which will help with lots
+			// of examples
+			if (isExampleOkForLeonardo(curexample.getKey())) {
+				Object[] theData = new Object[] { "leonardo :" + curexample.getKey(), leonardoBoardid, codeDescriptor };
 
 				examples.add(theData);
+
 			} else {
-				if (isExampleOkForLeonardo(curexample.getKey())) {
-					Object[] theData = new Object[] { "leonardo :" + curexample.getKey(), leonardoBoardid,
-							codeDescriptor };
+				if (isExampleOkForUno(curexample.getKey())) {
+					Object[] theData = new Object[] { "Uno :" + curexample.getKey(), unoBoardid, codeDescriptor };
 
 					examples.add(theData);
 				} else {
@@ -168,6 +170,8 @@ public class CreateAndCompileExamples {
 				"http://www.lmt.sk/arduino/library_mikula_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
+		// deal with removal of json files or libs from json files
+		LibraryManager.removeAllLibs();
 		LibraryManager.installAllLatestLibraries();
 
 	}
