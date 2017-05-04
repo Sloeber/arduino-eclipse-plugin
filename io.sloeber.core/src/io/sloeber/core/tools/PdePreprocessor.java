@@ -20,11 +20,13 @@ package io.sloeber.core.tools;
  */
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
@@ -207,8 +209,21 @@ public class PdePreprocessor {
 				String output = header + includeHeaderPart + body + includeCodePart;
 				// Make sure the file is not procesed by Arduino IDE
 				output = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE;
-				Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
-						null, true);
+				String currentFileContent = null;
+				try {
+					currentFileContent = FileUtils
+							.readFileToString(iProject.getFile(new Path(tempFile)).getLocation().toFile());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (!output.equals(currentFileContent)) {
+					Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
+							null, true);
+				} else {
+					System.out.println(".ino.cpp has not changed");
+				}
 			}
 
 		} finally {
