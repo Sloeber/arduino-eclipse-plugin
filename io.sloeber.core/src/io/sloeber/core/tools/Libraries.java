@@ -2,6 +2,7 @@ package io.sloeber.core.tools;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -30,6 +31,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.managers.Library;
 
 public class Libraries {
 	/**
@@ -290,6 +292,7 @@ public class Libraries {
 	}
 
 	public static void checkLibraries(IProject affectedProject) {
+		Map<String, String> includeHeaderReplacement = getIncludeHeaderReplacement();
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		if (mngr != null) {
 			ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
@@ -301,6 +304,12 @@ public class Libraries {
 					Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
 					Map<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
 					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
+					for (Map.Entry<String, String> entry : includeHeaderReplacement.entrySet()) {
+						if (UnresolvedIncludedHeaders.contains(entry.getKey())) {
+							UnresolvedIncludedHeaders.add(entry.getValue());
+						}
+					}
+
 					availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
 					if (!availableLibs.isEmpty()) {
 						// there are possible libraries to add
@@ -318,4 +327,71 @@ public class Libraries {
 		}
 	}
 
+	private static Map<String, String> myIncludeHeaderReplacement;
+
+	private static Map<String, String> getIncludeHeaderReplacement() {
+		if (myIncludeHeaderReplacement == null) {
+			myIncludeHeaderReplacement = buildincludeHeaderReplacementMap();
+		}
+		return myIncludeHeaderReplacement;
+	}
+
+	/**
+	 * Builds a map of includes->libraries foe all headers not mapping
+	 * libraryname.h If a include is found more than once in the libraries it is
+	 * not added to the list
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("nls")
+	private static Map<String, String> buildincludeHeaderReplacementMap() {
+
+		Map<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		LinkedList<String> doubleHeaders = new LinkedList<>();
+		TreeMap<String, IPath> libraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+		libraries.putAll(findAllArduinoManagerLibraries());
+		libraries.putAll(findAllPrivateLibraries());
+		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
+			IPath sourcePath = CurItem.getValue();
+			String curLibName = CurItem.getKey();
+			if (sourcePath.append(Library.LIBRARY_SOURCE_FODER).toFile().exists()) {
+				sourcePath = sourcePath.append(Library.LIBRARY_SOURCE_FODER);
+			}
+			for (String CurFile : sourcePath.toFile().list()) {
+				// only look at header files
+				if (CurFile.endsWith(".h")) {//$NON-NLS-1$
+					String curInclude = CurFile.substring(0, CurFile.length() - 2);
+
+					if (curInclude.equals(curLibName)) {
+						// We found a one to one match make sure others do not
+						// overrule
+						doubleHeaders.add(curLibName);
+						map.remove(curInclude);
+					} else {
+						// here we have a lib using includes that do not map the
+						// folder name
+						if ((map.get(curInclude) == null) && (!doubleHeaders.contains(curInclude))) {
+							map.put(curInclude, curLibName);
+						} else {
+							doubleHeaders.add(curInclude);
+							map.remove(curInclude);
+						}
+					}
+				}
+			}
+		}
+		// return KeyValue.makeMap(
+		// "AFMotor=Adafruit_Motor_Shield_library\nAdafruit_MotorShield=Adafruit_Motor_Shield_V2_Library\nAdafruit_Simple_AHRS=Adafruit_AHRS\nAdafruit_ADS1015=Adafruit_ADS1X15\nAdafruit_ADXL345_U=Adafruit_ADXL345\n\nAdafruit_LSM303_U=Adafruit_LSM303DLHC\nAdafruit_BMP085_U=Adafruit_BMP085_Unified\nAdafruit_BLE=Adafruit_BluefruitLE_nRF51");
+		// //$NON-NLS-1$
+		// add adrfruit sensor as this lib is highly used and the header is in
+		// libs
+		map.put("Adafruit_Sensor", "Adafruit_Unified_Sensor");
+		// remove the common hardware libraries so they will never be redirected
+		map.remove("SPI");
+		map.remove("SoftwareSerial");
+		map.remove("HID");
+		map.remove("EEPROM");
+		return map;
+	}
 }
