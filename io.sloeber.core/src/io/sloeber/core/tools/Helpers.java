@@ -66,6 +66,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
+import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Manager;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
@@ -279,7 +280,7 @@ public class Helpers extends Common {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 		}
 
-		possibleIncludeFolder = "src";
+		possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
 		file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
