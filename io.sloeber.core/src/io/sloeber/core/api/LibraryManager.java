@@ -316,6 +316,8 @@ public class LibraryManager {
 				}
 			}
 		}
+		// Base64 is a 1.0.0 version replaced with base64 So Don't install it
+		latestLibs.remove("Base64"); //$NON-NLS-1$
 		for (Map.Entry<String, Library> entry : latestLibs.entrySet()) {
 			String curLibName = entry.getKey();
 			Library curLibrary = entry.getValue();
