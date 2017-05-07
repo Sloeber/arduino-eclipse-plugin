@@ -174,9 +174,11 @@ public class PdePreprocessor {
 
 							for (ICElement curElement : theMacros) {
 								IMacro curMacro = (IMacro) curElement;
+
 								int curMacroLine = curMacro.getSourceRange().getStartLine();
 
-								if ((curMacroLine < curHeaderLine) && (prefHeaderLine < curMacroLine)) {
+								if (curMacro.isActive() && (curMacroLine < curHeaderLine)
+										&& (prefHeaderLine < curMacroLine)) {
 									includeHeaderPart += curMacro.getSource() + NEWLINE;
 								}
 							}
