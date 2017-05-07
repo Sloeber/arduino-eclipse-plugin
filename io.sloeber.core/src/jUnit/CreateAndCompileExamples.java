@@ -35,6 +35,7 @@ public class CreateAndCompileExamples {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
+	private static int totalFails = 0;
 
 	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
@@ -76,6 +77,14 @@ public class CreateAndCompileExamples {
 		}
 		EsploraBoardid.setUploadPort("none");
 
+		BoardDescriptor adafruitnRF52id = BoardsManager.getBoardDescriptor("package_adafruit_index.json", "adafruit",
+				"Adafruit nRF52", "feather52", myOptions);
+		if (adafruitnRF52id == null) {
+			fail("Adafruit nRF52 Board not found");
+			return null;
+		}
+		adafruitnRF52id.setUploadPort("none");
+
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
@@ -83,26 +92,51 @@ public class CreateAndCompileExamples {
 
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
-			// with the current amount of examples only do one
+			String inoName = curexample.getKey();
+			String libName = "";
+			if (examples.size() == 82) {
+				// use this to put breakpoint
+				int a = 0;
+				a = a + 1;
+			}
+			try {
+				libName = inoName.split(" ")[0].trim();
+			} catch (Exception e) {
+				// ignore error
+			}
+			if (isExampleOk(inoName, libName)) {
+				// with the current amount of examples only do one
 
-			// first do leonardo as this has a serial1 which will help with lots
-			// of examples
-			if (isExampleOkForLeonardo(curexample.getKey())) {
-				Object[] theData = new Object[] { "leonardo :" + curexample.getKey(), leonardoBoardid, codeDescriptor };
-
-				examples.add(theData);
-
-			} else {
-				if (isExampleOkForUno(curexample.getKey())) {
-					Object[] theData = new Object[] { "Uno :" + curexample.getKey(), unoBoardid, codeDescriptor };
+				// first do leonardo as this has a serial1 which will help with
+				// lots
+				// of examples
+				if (isExampleOkForLeonardo(inoName, libName)) {
+					Object[] theData = new Object[] { libName + ":" + inoName + ":leonardo", leonardoBoardid,
+							codeDescriptor };
 
 					examples.add(theData);
+
 				} else {
-					if (isExampleOkForEsplora(curexample.getKey())) {
-						Object[] theData = new Object[] { "Esplora :" + curexample.getKey(), EsploraBoardid,
+					if (isExampleOkForUno(inoName, libName)) {
+						Object[] theData = new Object[] { libName + ":" + inoName + ":Uno :", unoBoardid,
 								codeDescriptor };
 
 						examples.add(theData);
+					} else {
+						if (isExampleOkForEsplora(inoName, libName)) {
+							Object[] theData = new Object[] { libName + ":" + inoName + ":Esplora :", EsploraBoardid,
+									codeDescriptor };
+
+							examples.add(theData);
+						} else {
+							if (isExampleOkForAdafruitBle(inoName, libName)) {
+								Object[] theData = new Object[] { libName + ":" + inoName + ":Adafruit Ble :",
+										adafruitnRF52id, codeDescriptor };
+
+								examples.add(theData);
+							}
+
+						}
 					}
 				}
 			}
@@ -112,48 +146,96 @@ public class CreateAndCompileExamples {
 
 	}
 
-	private static boolean isExampleOkForUno(String key) {
+	/**
+	 * if the example fails it will not compile (under sloeber?)
+	 *
+	 * @param inoName
+	 * @param libName
+	 * @return
+	 */
+	private static boolean isExampleOk(String inoName, String libName) {
+		final String[] inoNotOK = { "AD7193_VoltageMeasurePsuedoDifferential_Example" };
+		final String[] libNotOk = { "ACROBOTIC_SSD1306" };
+		if (Arrays.asList(libNotOk).contains(libName)) {
+			return false;
+		}
+		if (Arrays.asList(inoNotOK).contains(inoName.replace(" ", "")))
+			return false;
+		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
+			return false;
+		return true; // default everything is fine
+	}
+
+	private static boolean isExampleOkForUno(String inoName, String libName) {
 		final String[] notOkForUno = { "Firmataexamples?StandardFirmataWiFi", "examples?04.Communication?MultiSerial",
 				"examples?09.USB?Keyboard?KeyboardLogout", "examples?09.USB?Keyboard?KeyboardMessage",
 				"examples?09.USB?Keyboard?KeyboardReprogram", "examples?09.USB?Keyboard?KeyboardSerial",
 				"examples?09.USB?KeyboardAndMouseControl", "examples?09.USB?Mouse?ButtonMouseControl",
 				"examples?09.USB?Mouse?JoystickMouseControl", };
-		if (key.startsWith("Esploraexamples"))
+		// final String[] libNotOk = { "ACROBOTIC_SSD1306"};
+		// if (Arrays.asList(libNotOk).contains(libName)){
+		// return false;
+		// }
+		if (inoName.startsWith("Esploraexamples"))
 			return false;
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
+		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
 
-		if (key.contains("Firmata"))
+		if (inoName.contains("Firmata"))
 			return false;
-		if (Arrays.asList(notOkForUno).contains(key.replace(" ", "")))
+		if (Arrays.asList(notOkForUno).contains(inoName.replace(" ", "")))
 			return false;
 		return true; // default everything is fine
 	}
 
-	private static boolean isExampleOkForLeonardo(String key) {
-		final String[] notOkForLeonardo = { "Esploraexamples?Beginners?EsploraJoystickMouse",
+	private static boolean isExampleOkForLeonardo(String inoName, String libName) {
+		final String[] inoNotOk = { "Esploraexamples?Beginners?EsploraJoystickMouse",
 				"Esploraexamples?Experts?EsploraKart", "Esploraexamples?Experts?EsploraTable",
 				"Firmataexamples?StandardFirmataWiFi" };
-		if (key.contains("Firmata"))
+		final String[] libNotOk = { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
+				"AccelStepper" };
+		if (Arrays.asList(libNotOk).contains(libName)) {
 			return false;
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
+		}
+		if (inoName.contains("Firmata"))
 			return false;
-		if (Arrays.asList(notOkForLeonardo).contains(key.replace(" ", "")))
+		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForEsplora(String key) {
-		final String[] notOkForEsplora = { "Firmataexamples?StandardFirmataBLE",
-				"Firmataexamples?StandardFirmataChipKIT", "Firmataexamples?StandardFirmataEthernet",
-				"Firmataexamples?StandardFirmataWiFi" };
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-		if (Arrays.asList(notOkForEsplora).contains(key.replace(" ", "")))
+		if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
 			return false;
 		return true; // default everything is fine
 	}
 
+	private static boolean isExampleOkForEsplora(String inoName, String libName) {
+		final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE", "Firmataexamples?StandardFirmataChipKIT",
+				"Firmataexamples?StandardFirmataEthernet", "Firmataexamples?StandardFirmataWiFi" };
+		// final String[] libNotOk = { "ACROBOTIC_SSD1306"};
+		// if (Arrays.asList(libNotOk).contains(libName)){
+		// return false;
+		// }
+		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
+			return false;
+		if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
+			return false;
+		return true; // default everything is fine
+	}
+
+	private static boolean isExampleOkForAdafruitBle(String inoName, String libName) {
+		// final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE",
+		// "Firmataexamples?StandardFirmataChipKIT",
+		// "Firmataexamples?StandardFirmataEthernet",
+		// "Firmataexamples?StandardFirmataWiFi" };
+		// // final String[] libNotOk = { "ACROBOTIC_SSD1306"};
+		// // if (Arrays.asList(libNotOk).contains(libName)){
+		// // return false;
+		// // }
+		// if (inoName.replace(" ",
+		// "").startsWith("TFTexamples?Esplora?Esplora"))
+		// return false;
+		// if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
+		// return false;
+		return true; // default everything is fine
+	}
 	/*
 	 * In new new installations (of the Sloeber development environment) the
 	 * installer job will trigger downloads These mmust have finished before we
@@ -167,7 +249,8 @@ public class CreateAndCompileExamples {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
-				"http://www.lmt.sk/arduino/library_mikula_index.json" };
+				"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
+				"https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/Better_library_support/io.sloeber.core/src/jUnit/library_sloeber_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
 		// deal with removal of json files or libs from json files
@@ -178,7 +261,16 @@ public class CreateAndCompileExamples {
 
 	@Test
 	public void testExamples() {
-		BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
+		// Stop after X fails because
+		// the fails stays open in eclipse and it becomes really slow
+		// There are only a number of issues you can handle
+		// best is to focus on the first ones and then rerun starting with the
+		// failures
+		if (totalFails < 30) {
+			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
+		} else {
+			fail("To many fails. Stopping test");
+		}
 
 	}
 
@@ -197,6 +289,7 @@ public class CreateAndCompileExamples {
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
+			totalFails++;
 			return;
 		}
 		try {
@@ -208,6 +301,7 @@ public class CreateAndCompileExamples {
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
 					fail("Failed to compile the project:" + projectName + " build errors");
+					totalFails++;
 				} else {
 					theTestProject.delete(true, null);
 				}
@@ -217,6 +311,7 @@ public class CreateAndCompileExamples {
 		} catch (CoreException e) {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + projectName + " exception");
+			totalFails++;
 		}
 	}
 
