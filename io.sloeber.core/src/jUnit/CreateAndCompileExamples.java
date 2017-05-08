@@ -279,8 +279,8 @@ public class CreateAndCompileExamples {
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_", new Integer(mCounter++)) + boardid.getBoardID()
-				+ codeDescriptor.getExamples().get(0).lastSegment();
+		String projectName = String.format("%05d_:%s:%s:%s", new Integer(mCounter++), codeDescriptor.getExampleName(),
+				codeDescriptor.getLibraryName(), boardid.getBoardID());
 		try {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
@@ -288,8 +288,8 @@ public class CreateAndCompileExamples {
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
 			totalFails++;
+			fail("Failed to create the project:" + projectName);
 			return;
 		}
 		try {
@@ -300,8 +300,8 @@ public class CreateAndCompileExamples {
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
-					fail("Failed to compile the project:" + projectName + " build errors");
 					totalFails++;
+					fail("Failed to compile the project:" + projectName + " build errors");
 				} else {
 					theTestProject.delete(true, null);
 				}
@@ -310,8 +310,8 @@ public class CreateAndCompileExamples {
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
-			fail("Failed to compile the project:" + projectName + " exception");
 			totalFails++;
+			fail("Failed to compile the project:" + projectName + " exception");
 		}
 	}
 
