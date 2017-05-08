@@ -189,8 +189,10 @@ public class PdePreprocessor {
 								includeHeaderPart += include.getSource() + NEWLINE;
 								includeHeaderPart += "}" + NEWLINE;
 							} else {
-								includeHeaderPart += include.getSource();
-								includeHeaderPart += NEWLINE;
+								if (include.isActive()) {
+									includeHeaderPart += include.getSource();
+									includeHeaderPart += NEWLINE;
+								}
 							}
 						}
 					}
@@ -222,8 +224,8 @@ public class PdePreprocessor {
 				if (!output.equals(currentFileContent)) {
 					Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
 							null, true);
-				} else {
-					System.out.println(".ino.cpp has not changed");
+					// } else {
+					// System.out.println(".ino.cpp has not changed");
 				}
 			}
 
