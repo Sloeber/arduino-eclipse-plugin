@@ -279,8 +279,8 @@ public class CreateAndCompileExamples {
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_:%s:%s:%s", new Integer(mCounter++), codeDescriptor.getExampleName(),
-				codeDescriptor.getLibraryName(), boardid.getBoardID());
+		String projectName = String.format("%05d_:%s:%s:%s", new Integer(mCounter++), codeDescriptor.getLibraryName(),
+				codeDescriptor.getExampleName(), boardid.getBoardID());
 		try {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
