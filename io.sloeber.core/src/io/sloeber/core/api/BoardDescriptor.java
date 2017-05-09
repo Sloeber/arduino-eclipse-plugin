@@ -46,6 +46,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
+import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
@@ -350,7 +351,8 @@ public class BoardDescriptor {
 		} else {
 			// this should not happen
 		}
-		codeDescription.createFiles(projectHandle, monitor);
+		Set<String> librariesToInstall = codeDescription.createFiles(projectHandle, monitor);
+		Libraries.addLibrariesToProject(projectHandle, defaultConfigDescription, librariesToInstall);
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 		prjCDesc.setCdtProjectCreated();
 		CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,

@@ -3,6 +3,8 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -108,10 +110,12 @@ public class CodeDescriptor {
 	}
 
 	/*
-	 * given the source descriptor, add the sources to the project
+	 * given the source descriptor, add the sources to the project returns a set
+	 * of libraries that need to be installed
 	 */
 	@SuppressWarnings("nls")
-	public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+	public Set<String> createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+		Set<String> libraries = new TreeSet<>();
 
 		this.save();
 		String Include = "Arduino.h";
@@ -164,15 +168,14 @@ public class CodeDescriptor {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
 						FileModifiers.addPragmaOnce(curPath);
 					}
+					libraries.add(getLibraryName(curPath));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			break;
-		default:
-
-			break;
 		}
+		return libraries;
 	}
 
 	@SuppressWarnings("nls")
@@ -203,4 +206,49 @@ public class CodeDescriptor {
 		return this.codeType;
 	}
 
+	/**
+	 * Get the name of the example for this project descriptor This is only
+	 * "known in case of examples" as in all other cases the name will be
+	 * project related which is unknown in this case. This method only exists to
+	 * support unit testing where one knows only 1 example is selected
+	 *
+	 * @return the name of the first selected example in case of sample in all
+	 *         other cases null
+	 */
+	public String getExampleName() {
+		switch (this.codeType) {
+		case sample:
+			return this.myExamples.get(0).lastSegment();
+		default:
+			break;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the name of the library for this project descriptor This is only
+	 * "known in case of examples" as in all other cases the name will be
+	 * project related which is unknown in this case. This method only exists to
+	 * support unit testing where one knows only 1 example is selected
+	 *
+	 * @return the name of the first selected example in case of sample in all
+	 *         other cases null
+	 */
+	public String getLibraryName() {
+		switch (this.codeType) {
+		case sample:
+			return getLibraryName(this.myExamples.get(0));
+		default:
+			break;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("nls")
+	public static String getLibraryName(Path examplePath) {
+		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
+			return examplePath.removeLastSegments(3).lastSegment();
+		}
+		return examplePath.removeLastSegments(2).lastSegment();
+	}
 }
