@@ -110,11 +110,16 @@ public class Libraries {
 
 					String[] versions = Lib_root.toFile().list();
 					if (versions != null) {
-						if (versions.length == 1) {// There should only be 1
-							// version of a lib
+						switch (versions.length) {
+						case 0:// A empty lib folder is hanging around
+							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+									Messages.EmptyLibFolder.replace("${LIB}", curLib))); //$NON-NLS-1$
+							break;
+						case 1:// There should only be 1
 							ret.put(curLib, Lib_root.append(versions[0]));
-						} else {// If there is more than 1 take the latest and
-								// drop a warning
+							break;
+						default:// multiple lib versions are installed take the
+								// latest
 							int highestVersion = Version.getHighestVersionn(versions);
 							ret.put(curLib, Lib_root.append(versions[highestVersion]));
 							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
