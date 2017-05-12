@@ -24,7 +24,7 @@ Which version
 ===
 If you want to use Arduino IDE 1.0.x you need V1.
 If you want to use Arduino IDE 1.5.x till 1.6.3 you need V2.
-**Everybody else should go for V3 or V44** (which should be about everybody).
+**Everybody else should go for V3 or V4** (which should be about everybody).
 The only reason you to hold of for V4 is that it is still to new.
 Unless advised differently (by a more advanced Sloeber user than you): Only go for the nightly if you feel comfortable with Sloeber and eclipse.
 
@@ -34,6 +34,10 @@ V1 needs java 6
 V2 needs jave 7
 V3 needs java 8
 V4 needs java 8
+
+32 or 64 bit
+===
+If you are not sure take the 32 bit version. If the Arduino IDE is working on your system you have 32 bit java on your system and you are good to go. If you install the 64 bit version you also may have to install a 64 bit java.
 
 
  **Party success**

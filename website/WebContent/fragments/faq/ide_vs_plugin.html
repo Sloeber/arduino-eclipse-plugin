@@ -2,9 +2,10 @@
 <accordion close-others="true">
   <accordion-group heading="Why would I want to use this plugin?">
 	This plugin is not meant to replace the Arduino IDE.</br>
-	I think the Arduino IDE is the place to get started with Arduino, no matter what is your background. 
-	However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE. 
+	I think the Arduino IDE is the place to get started with Arduino, no matter what is your background.
+	However when you are growing in writing code, or when you come from a software development background you will feel restrained by the Arduino IDE.
 	In that case the Eclipse plugin may be an alternative.</br>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/zc2JLbtbI7Q?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF" frameborder="0" allowfullscreen></iframe>
   </accordion-group>
   <accordion-group heading="What is the benefit of the Arduino IDE to the Eclipse plugin?">
 	The Arduino IDE does a great job in introducing people to Arduino. This is so for hardware people writing their first C++ code and for software developers
@@ -14,23 +15,23 @@
 	</br>
 	Since the plugin supports .ino files the C++ code complexity is similar in both tools.
 	</br>
-	The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by the Eclipse plugin.
+	The hardware complexity is hidden in the libraries/compiler/winAVR which are also used by Sloeber.
 	So there is no &quot;real&quot; difference there.</br>
 	</br>
-	Arduino IDE build the build path for you. Tha Arduino eclipse plugin does not do so. This means that you will have to add libraries manually to your project in a very similar way as you can "add" libraries in the arduino ide. (A simple #include "library.h" will not do)</br>
+	Arduino IDE build the build path for you. Tha Arduino eclipse plugin does not do so. This means that you will have to add libraries manually to your project in a very similar way as you can "add" libraries in the arduino ide. (A simple #include "library.h" may not do it)</br>
 	This is typically something a real developer wants to take ownership off.</br>
 
 	This because the way the Arduino IDE is set up it hides or avoids the need of these
 	functionalities. There are plenty of good C/C++ documents on the web that
 	explain these things, so I won't.</br>
   </accordion-group>
-  <accordion-group heading="What is the benefit of the Eclipse plugin to the Arduino IDE?">
+  <accordion-group heading="What is the benefit of Sloeber to the Arduino IDE?">
 	With the Eclipseplugin you have a environment that is fully focused on the development of source code. It
-	provides plenty of features. The ones I like the most are: 
+	provides plenty of features. The ones I like the most are:
 
 	<ul  type=disc>
-	 <li > context sensitive coloring (read the color of the text changes because it is code or non active code or comment or ..) </li><li > 
-	 Immediate documentation (When you hover over a function you get the documentation of the function or even the implementation)</li><li > 
+	 <li > context sensitive coloring (read the color of the text changes because it is code or non active code or comment or ..) </li><li >
+	 Immediate documentation (When you hover over a function you get the documentation of the function or even the implementation)</li><li >
 	 Link through (ctrl clicking on a method sends you to the implementation of definition of the method)</li> <li >
 	 Auto complete (pressing CTRL space when typing a name you get a list of â€œknown namesâ€ that start with these letters)</li><li>
 	 Integration with version control tools.</li><li>

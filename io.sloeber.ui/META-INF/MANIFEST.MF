@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ui
 Bundle-SymbolicName: io.sloeber.ui;singleton:=true
-Bundle-Version: 4.0.1.qualifier
+Bundle-Version: 4.1.0.qualifier
 Bundle-Activator: io.sloeber.ui.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
