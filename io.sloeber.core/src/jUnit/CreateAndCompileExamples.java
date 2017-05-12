@@ -94,7 +94,8 @@ public class CreateAndCompileExamples {
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			String inoName = curexample.getKey();
 			String libName = "";
-			if (examples.size() == 82) {
+			if (examples.size() == 82) {// use this for debugging based on the
+										// project number
 				// use this to put breakpoint
 				int a = 0;
 				a = a + 1;
@@ -129,8 +130,8 @@ public class CreateAndCompileExamples {
 
 							examples.add(theData);
 						} else {
-							if (isExampleOkForAdafruitBle(inoName, libName)) {
-								Object[] theData = new Object[] { libName + ":" + inoName + ":Adafruit Ble :",
+							if (isExampleOkForAdafruitBlueFruit(inoName, libName)) {
+								Object[] theData = new Object[] { libName + ":" + inoName + ":Adafruit Bluefruit :",
 										adafruitnRF52id, codeDescriptor };
 
 								examples.add(theData);
@@ -163,6 +164,12 @@ public class CreateAndCompileExamples {
 			return false;
 		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
 			return false;
+		// following examples also fail in Arduino IDE at the time of writing
+		// these unit tests
+		if (inoName.endsWith("ahrs_mahony")
+				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
+			return false;
+		}
 		return true; // default everything is fine
 	}
 
@@ -172,10 +179,10 @@ public class CreateAndCompileExamples {
 				"examples?09.USB?Keyboard?KeyboardReprogram", "examples?09.USB?Keyboard?KeyboardSerial",
 				"examples?09.USB?KeyboardAndMouseControl", "examples?09.USB?Mouse?ButtonMouseControl",
 				"examples?09.USB?Mouse?JoystickMouseControl", };
-		// final String[] libNotOk = { "ACROBOTIC_SSD1306"};
-		// if (Arrays.asList(libNotOk).contains(libName)){
-		// return false;
-		// }
+		final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51" };
+		if (Arrays.asList(libNotOk).contains(libName)) {
+			return false;
+		}
 		if (inoName.startsWith("Esploraexamples"))
 			return false;
 		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
@@ -209,10 +216,10 @@ public class CreateAndCompileExamples {
 	private static boolean isExampleOkForEsplora(String inoName, String libName) {
 		final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE", "Firmataexamples?StandardFirmataChipKIT",
 				"Firmataexamples?StandardFirmataEthernet", "Firmataexamples?StandardFirmataWiFi" };
-		// final String[] libNotOk = { "ACROBOTIC_SSD1306"};
-		// if (Arrays.asList(libNotOk).contains(libName)){
-		// return false;
-		// }
+		final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51" };
+		if (Arrays.asList(libNotOk).contains(libName)) {
+			return false;
+		}
 		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
 			return false;
 		if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
@@ -220,15 +227,15 @@ public class CreateAndCompileExamples {
 		return true; // default everything is fine
 	}
 
-	private static boolean isExampleOkForAdafruitBle(String inoName, String libName) {
+	private static boolean isExampleOkForAdafruitBlueFruit(String inoName, String libName) {
 		// final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE",
 		// "Firmataexamples?StandardFirmataChipKIT",
 		// "Firmataexamples?StandardFirmataEthernet",
 		// "Firmataexamples?StandardFirmataWiFi" };
-		// // final String[] libNotOk = { "ACROBOTIC_SSD1306"};
-		// // if (Arrays.asList(libNotOk).contains(libName)){
-		// // return false;
-		// // }
+		// final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51"};
+		// if (Arrays.asList(libNotOk).contains(libName)){
+		// return false;
+		// }
 		// if (inoName.replace(" ",
 		// "").startsWith("TFTexamples?Esplora?Esplora"))
 		// return false;
@@ -236,6 +243,7 @@ public class CreateAndCompileExamples {
 		// return false;
 		return true; // default everything is fine
 	}
+
 	/*
 	 * In new new installations (of the Sloeber development environment) the
 	 * installer job will trigger downloads These mmust have finished before we
@@ -266,7 +274,7 @@ public class CreateAndCompileExamples {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (totalFails < 30) {
+		if (totalFails < 20) {
 			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
 		} else {
 			fail("To many fails. Stopping test");
