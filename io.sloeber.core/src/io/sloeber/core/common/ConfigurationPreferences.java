@@ -40,14 +40,23 @@ public class ConfigurationPreferences {
 	private static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
 	private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
-	private static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
 	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
-			+ System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json" //$NON-NLS-1$
-			+ System.lineSeparator() + "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+			// + System.lineSeparator() +
+			// "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
+			// //$NON-NLS-1$
+			+ System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
 	private ConfigurationPreferences() {
+	}
+
+	private static void removeKey(String key) {
+		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.remove(key);
 	}
 
 	private static String getString(String key, String defaultValue) {
@@ -144,7 +153,24 @@ public class ConfigurationPreferences {
 	}
 
 	public static String getJsonURLs() {
-		return getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
+		// TODO I added some code here to get easier from V3 to V4
+		// the library json url is now managed as the boards url's so it also
+		// needs to be added to the json url's
+		// this is doen in the default but people who have installed other
+		// boards or do not move to the default (which is by default)
+		// wil not see libraries
+		// to fix this I changed the storage name and if the new storage name is
+		// empty I read the ol one and add the lib
+		String ret = getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
+		if (DEFAULT_JSON_URLS.equals(ret)) {
+			ret = getString(KEY_MANAGER_JSON_URLS_V3, DEFAULT_JSON_URLS);
+			if (!DEFAULT_JSON_URLS.equals(ret)) {
+				ret += System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
+				setString(KEY_MANAGER_JSON_URLS, ret);
+				removeKey(KEY_MANAGER_JSON_URLS_V3);
+			}
+		}
+		return ret;
 	}
 
 	public static String getDefaultJsonURLs() {
