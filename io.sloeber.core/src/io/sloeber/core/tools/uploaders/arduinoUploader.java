@@ -52,7 +52,7 @@ public class arduinoUploader implements IRealUpload {
 					.getValue().equalsIgnoreCase(Const.TRUE);
 		} catch (Exception e) {// ignore all errors
 		}
-		String NewSerialPort = MComPort;
+		String NewSerialPort = boardDescriptor.getUploadPort();
 		if (!usingProgrammer) {
 			NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
 					this.mycConf, boardDescriptor);
