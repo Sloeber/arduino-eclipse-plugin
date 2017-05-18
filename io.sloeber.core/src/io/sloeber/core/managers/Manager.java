@@ -197,6 +197,18 @@ public class Manager {
 	}
 
 	/**
+	 * convert a local file name to a baeyens it alternative download name There
+	 * is no check wether the file exists only a conversion
+	 *
+	 * @param url
+	 *            url of the file we want a local
+	 * @return the file that represents the file on Baeyens.it
+	 */
+	private static String getBaeyensItAlternativeDownload(String localFileName) {
+		return "http://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
+	}
+
+	/**
 	 * This method takes a json boards file url and downloads it and parses it
 	 * for usage in the boards manager
 	 *
@@ -213,10 +225,15 @@ public class Manager {
 		}
 		if (!jsonFile.exists() || forceDownload) {
 			jsonFile.getParentFile().mkdirs();
+			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
 			try {
-				myCopy(new URL(url.trim()), jsonFile);
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile);
+			} catch (IOException e0) {
+				try {
+					myCopy(new URL(url.trim()), jsonFile);
+				} catch (IOException e) {
+					Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+				}
 			}
 		}
 		if (jsonFile.exists()) {
