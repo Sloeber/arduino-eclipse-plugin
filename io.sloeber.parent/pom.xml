@@ -441,7 +441,7 @@
     <repository>
       <id>gnuarm</id>
       <layout>p2</layout>
-      <url>http://sloeber.io/gnuarmeclipse/stable</url>
+      <url>http://gnuarmeclipse.sourceforge.net/updates</url>
     </repository>
   </repositories>
 
