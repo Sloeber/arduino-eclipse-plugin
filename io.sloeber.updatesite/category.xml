@@ -52,7 +52,6 @@
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-   <repository-reference location="http://sloeber.io/gnuarmeclipse/stable" enabled="false" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.2" enabled="true" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
    <repository-reference location="http://gnuarmeclipse.sourceforge.net/updates" enabled="true" />
