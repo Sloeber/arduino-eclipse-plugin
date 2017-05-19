@@ -39,7 +39,7 @@
    <feature url="features/ilg.gnuarmeclipse.templates.freescale_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.freescale" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.stm_2.5.1.201606210758.jar" id="ilg.gnuarmeclipse.templates.stm" version="0.0.0">
+   <feature url="features/ilg.gnuarmeclipse.templates.stm_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.stm" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
    <feature url="features/io.sloeber.feature_4.1.0.qualifier.jar" id="io.sloeber.feature" version="4.1.0.qualifier">
