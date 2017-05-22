@@ -79,8 +79,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 	@Override
 	public boolean performOk() {
-		if (isJobRunning == false) {
-			isJobRunning = true;
+		if (this.isJobRunning == false) {
+			this.isJobRunning = true;
 			new Job(Messages.ui_Adopting_arduino_libraries) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -90,9 +90,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				}
 			}.schedule();
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	public void createTree(Composite parent) {
