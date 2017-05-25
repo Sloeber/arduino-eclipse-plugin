@@ -27,7 +27,13 @@
 	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_linux64.2017-01-17_15-14-48.tar.gz",
 	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_mac64.2017-01-17_15-14-48.tar.gz",
 	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_win32.2017-01-17_15-14-48.tar.gz",
-	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_win64.2017-01-17_15-14-48.tar.gz"
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.0/V4.0_win64.2017-01-17_15-14-48.tar.gz",
+
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.1/V4.1_linux32.2017-05-25_16-52-16.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.1/V4.1_linux64.2017-05-25_16-52-16.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.1/V4.1_mac64.2017-05-25_16-52-16.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.1/V4.1_win32.2017-05-25_16-52-16.tar.gz",
+	"https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4.1/V4.1_win64.2017-05-25_16-52-16.tar.gz"
 	);
 
 ?>

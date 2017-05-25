@@ -6,6 +6,12 @@ The down-loaded file for the product is a tar file. On windows you can uncompres
 **spaces**
 Windows users keep in mind that spaces cause problems. So do not install the arduino IDE eclipse or Sloeber in "program files". Don't create the workspace in "my documents".
 
+**Path limitation**
+Windows has path limitations. Install Sloeber as close to the root as possible.
+
+**Java**
+Java is included in the download file of the stable release. If you want to use your system installed version remove the sloeeber/jre folder.
+
 
  **Below this line is for older versions**
 
