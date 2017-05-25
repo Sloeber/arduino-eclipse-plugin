@@ -15,6 +15,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
+import io.sloeber.core.common.InstancePreferences;
+
 public class FileModifiers {
 	/**
 	 * method to add at the top of a file copied from
@@ -42,10 +44,13 @@ public class FileModifiers {
 	}
 
 	/**
-	 * Add pragma once to all .h files from this path recursively
+	 * Add pragma once to all .h files from this path recursively if the option
+	 * is set
 	 */
 	public static void addPragmaOnce(Path startingDir) {
-
+		if (!InstancePreferences.getPragmaOnceHeaders()) {
+			return;
+		}
 		class Finder extends SimpleFileVisitor<Path> {
 
 			// Compares the glob pattern against

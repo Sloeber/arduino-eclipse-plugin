@@ -700,4 +700,13 @@ public class BoardsManager {
 		Manager.onlyKeepLatestPlatforms();
 
 	}
+
+	public static void setPragmaOnceHeaders(boolean booleanValue) {
+		InstancePreferences.setPragmaOnceHeaders(booleanValue);
+
+	}
+
+	public static boolean getPragmaOnceHeaders() {
+		return InstancePreferences.getPragmaOnceHeaders();
+	}
 }
