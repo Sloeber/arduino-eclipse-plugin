@@ -718,7 +718,7 @@ public class Helpers extends Common {
 			addPlatformFileTools(platform, contribEnv, confDesc);
 		}
 
-		// by adding the referencenced platform after the real platform
+		// add the referenced platform before the real platform
 		platform = Manager.getPlatform(new Path(referenceCoredPlatformFileName).append(PLATFORM_FILE_NAME).toFile());
 		if (platform != null) {
 			addPlatformFileTools(platform, contribEnv, confDesc);
