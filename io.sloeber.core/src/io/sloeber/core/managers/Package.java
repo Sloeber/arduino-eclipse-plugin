@@ -10,6 +10,7 @@ package io.sloeber.core.managers;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class Package implements Comparable<Package> {
 	 * @return the installed platforms but only one for each platform (the one
 	 *         with the highest version number)
 	 */
-	public Collection<ArduinoPlatform> getInstalledPlatforms() {
+	public Collection<ArduinoPlatform> getLatestInstalledPlatforms() {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.isInstalled()) {
@@ -97,6 +98,22 @@ public class Package implements Comparable<Package> {
 			}
 		}
 		return Collections.unmodifiableCollection(platformMap.values());
+	}
+
+	/**
+	 * This method looks up the installed platforms So if you have 2 arduino avr
+	 * platform versions installed you will get back 2.
+	 *
+	 * @return all the installed platforms
+	 */
+	public List<ArduinoPlatform> getInstalledPlatforms() {
+		List<ArduinoPlatform> platformMap = new LinkedList<>();
+		for (ArduinoPlatform platform : this.platforms) {
+			if (platform.isInstalled()) {
+				platformMap.add(platform);
+			}
+		}
+		return platformMap;
 	}
 
 	public ArduinoPlatform getLatestPlatform(String platformName) {

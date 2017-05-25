@@ -307,7 +307,7 @@ public class Manager {
 
 		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
-				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
+				for (ArduinoPlatform curPlatform : pkg.getLatestInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
@@ -337,6 +337,18 @@ public class Manager {
 		return null;
 	}
 
+	static public List<ArduinoPlatform> getLatestInstalledPlatforms() {
+		List<ArduinoPlatform> platforms = new ArrayList<>();
+		for (PackageIndex index : getPackageIndices()) {
+			for (Package pkg : index.getPackages()) {
+
+				platforms.addAll(pkg.getLatestInstalledPlatforms());
+
+			}
+		}
+		return platforms;
+	}
+
 	static public List<ArduinoPlatform> getInstalledPlatforms() {
 		List<ArduinoPlatform> platforms = new ArrayList<>();
 		for (PackageIndex index : getPackageIndices()) {
@@ -353,7 +365,7 @@ public class Manager {
 		List<Board> boards = new ArrayList<>();
 		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
-				for (ArduinoPlatform platform : pkg.getInstalledPlatforms()) {
+				for (ArduinoPlatform platform : pkg.getLatestInstalledPlatforms()) {
 					boards.addAll(platform.getBoards());
 				}
 			}
