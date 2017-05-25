@@ -1,7 +1,9 @@
 package io.sloeber.core.tools;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -18,6 +20,8 @@ import org.apache.commons.io.LineIterator;
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {
+	static final String PRAGMA_ONCE = "#pragma once"; //$NON-NLS-1$
+
 	/**
 	 * method to add at the top of a file copied from
 	 * http://stackoverflow.com/questions/6127648/writing-in-the-beginning-of-a-text-file-java
@@ -61,12 +65,15 @@ public class FileModifiers {
 					String fileName = filePath.toString();
 					if (fileName.length() > 2) {
 						if (".h".equals(fileName.substring(fileName.length() - 2))) { //$NON-NLS-1$
-							try {
-								prependPrefix(file.toFile(), "#pragma once\n"); //$NON-NLS-1$
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
+								String line = reader.readLine();
+								if (!PRAGMA_ONCE.equals(line)) {
+									prependPrefix(file.toFile(), PRAGMA_ONCE + '\n');
+								}
+							} catch (Exception e1) {
+								// ignore
 							}
+
 						}
 					}
 				}
