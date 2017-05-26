@@ -28,6 +28,11 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
+import jUnit.boards.AdafruitnRF52idBoard;
+import jUnit.boards.EsploraBoard;
+import jUnit.boards.IBoard;
+import jUnit.boards.UnoBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -36,6 +41,37 @@ public class CreateAndCompileExamples {
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
 	private static int totalFails = 0;
+
+	public static class leonardoBoard extends IBoard {
+		public leonardoBoard(Map<String, String> options) {
+			this.myBoardDescriptor = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
+					"Arduino AVR Boards", "leonardo", options);
+			if (this.myBoardDescriptor == null) {
+				fail("leonardo Board not found");
+			}
+			this.myBoardDescriptor.setUploadPort("none");
+		}
+
+		@Override
+		public boolean isExampleOk(String inoName, String libName) {
+			final String[] inoNotOk = { "Esploraexamples?Beginners?EsploraJoystickMouse",
+					"Esploraexamples?Experts?EsploraKart", "Esploraexamples?Experts?EsploraTable",
+					"Firmataexamples?StandardFirmataWiFi", "cplay_neopixel_picker" };
+			final String[] libNotOk = { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
+					"AccelStepper" };
+			if (Arrays.asList(libNotOk).contains(libName)) {
+				return false;
+			}
+			if (inoName.contains("Firmata"))
+				return false;
+			if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
+				return false;
+			if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
+				return false;
+			return true; // default everything is fine
+		}
+
+	}
 
 	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
@@ -55,35 +91,8 @@ public class CreateAndCompileExamples {
 				myOptions.put(values[0], values[1]);
 			}
 		}
-		BoardDescriptor leonardoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "leonardo", myOptions);
-		if (leonardoBoardid == null) {
-			fail("leonardo Board not found");
-			return null;
-		}
-		leonardoBoardid.setUploadPort("none");
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "uno", myOptions);
-		if (unoBoardid == null) {
-			fail("uno Board not found");
-			return null;
-		}
-		unoBoardid.setUploadPort("none");
-		BoardDescriptor EsploraBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "esplora", myOptions);
-		if (EsploraBoardid == null) {
-			fail("Esplora Board not found");
-			return null;
-		}
-		EsploraBoardid.setUploadPort("none");
-
-		BoardDescriptor adafruitnRF52id = BoardsManager.getBoardDescriptor("package_adafruit_index.json", "adafruit",
-				"Adafruit nRF52", "feather52", myOptions);
-		if (adafruitnRF52id == null) {
-			fail("Adafruit nRF52 Board not found");
-			return null;
-		}
-		adafruitnRF52id.setUploadPort("none");
+		IBoard myBoards[] = { new leonardoBoard(myOptions), new UnoBoard(myOptions), new EsploraBoard(myOptions),
+				new AdafruitnRF52idBoard(myOptions), new AdafruitnCirquitPlaygroundBoard(myOptions) };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
@@ -107,39 +116,16 @@ public class CreateAndCompileExamples {
 			}
 			if (isExampleOk(inoName, libName)) {
 				// with the current amount of examples only do one
-
-				// first do leonardo as this has a serial1 which will help with
-				// lots
-				// of examples
-				if (isExampleOkForLeonardo(inoName, libName)) {
-					Object[] theData = new Object[] { libName + ":" + inoName + ":leonardo", leonardoBoardid,
-							codeDescriptor };
-
-					examples.add(theData);
-
-				} else {
-					if (isExampleOkForUno(inoName, libName)) {
-						Object[] theData = new Object[] { libName + ":" + inoName + ":Uno :", unoBoardid,
-								codeDescriptor };
-
+				for (IBoard curBoard : myBoards) {
+					if (curBoard.isExampleOk(inoName, libName)) {
+						Object[] theData = new Object[] { libName + ":" + inoName + ":leonardo",
+								curBoard.getBoardDescriptor(), codeDescriptor };
 						examples.add(theData);
-					} else {
-						if (isExampleOkForEsplora(inoName, libName)) {
-							Object[] theData = new Object[] { libName + ":" + inoName + ":Esplora :", EsploraBoardid,
-									codeDescriptor };
-
-							examples.add(theData);
-						} else {
-							if (isExampleOkForAdafruitBlueFruit(inoName, libName)) {
-								Object[] theData = new Object[] { libName + ":" + inoName + ":Adafruit Bluefruit :",
-										adafruitnRF52id, codeDescriptor };
-
-								examples.add(theData);
-							}
-
-						}
+						break; // TODO check if this exits the for (IBoard
+						// curBoard : myBoards) loop
 					}
 				}
+
 			}
 		}
 
@@ -148,7 +134,7 @@ public class CreateAndCompileExamples {
 	}
 
 	/**
-	 * if the example fails it will not compile (under sloeber?)
+	 * if the example fails it is known not to compile(under sloeber?)
 	 *
 	 * @param inoName
 	 * @param libName
@@ -170,77 +156,6 @@ public class CreateAndCompileExamples {
 				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
 			return false;
 		}
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForUno(String inoName, String libName) {
-		final String[] notOkForUno = { "Firmataexamples?StandardFirmataWiFi", "examples?04.Communication?MultiSerial",
-				"examples?09.USB?Keyboard?KeyboardLogout", "examples?09.USB?Keyboard?KeyboardMessage",
-				"examples?09.USB?Keyboard?KeyboardReprogram", "examples?09.USB?Keyboard?KeyboardSerial",
-				"examples?09.USB?KeyboardAndMouseControl", "examples?09.USB?Mouse?ButtonMouseControl",
-				"examples?09.USB?Mouse?JoystickMouseControl", };
-		final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51" };
-		if (Arrays.asList(libNotOk).contains(libName)) {
-			return false;
-		}
-		if (inoName.startsWith("Esploraexamples"))
-			return false;
-		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-
-		if (inoName.contains("Firmata"))
-			return false;
-		if (Arrays.asList(notOkForUno).contains(inoName.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForLeonardo(String inoName, String libName) {
-		final String[] inoNotOk = { "Esploraexamples?Beginners?EsploraJoystickMouse",
-				"Esploraexamples?Experts?EsploraKart", "Esploraexamples?Experts?EsploraTable",
-				"Firmataexamples?StandardFirmataWiFi" };
-		final String[] libNotOk = { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
-				"AccelStepper" };
-		if (Arrays.asList(libNotOk).contains(libName)) {
-			return false;
-		}
-		if (inoName.contains("Firmata"))
-			return false;
-		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-		if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForEsplora(String inoName, String libName) {
-		final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE", "Firmataexamples?StandardFirmataChipKIT",
-				"Firmataexamples?StandardFirmataEthernet", "Firmataexamples?StandardFirmataWiFi" };
-		final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51" };
-		if (Arrays.asList(libNotOk).contains(libName)) {
-			return false;
-		}
-		if (inoName.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-		if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForAdafruitBlueFruit(String inoName, String libName) {
-		// final String[] inoNotOk = { "Firmataexamples?StandardFirmataBLE",
-		// "Firmataexamples?StandardFirmataChipKIT",
-		// "Firmataexamples?StandardFirmataEthernet",
-		// "Firmataexamples?StandardFirmataWiFi" };
-		// final String[] libNotOk = { "Adafruit_BluefruitLE_nRF51"};
-		// if (Arrays.asList(libNotOk).contains(libName)){
-		// return false;
-		// }
-		// if (inoName.replace(" ",
-		// "").startsWith("TFTexamples?Esplora?Esplora"))
-		// return false;
-		// if (Arrays.asList(inoNotOk).contains(inoName.replace(" ", "")))
-		// return false;
 		return true; // default everything is fine
 	}
 
