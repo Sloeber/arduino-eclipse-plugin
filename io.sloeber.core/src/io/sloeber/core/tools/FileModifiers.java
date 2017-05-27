@@ -1,9 +1,7 @@
 package io.sloeber.core.tools;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -65,13 +63,12 @@ public class FileModifiers {
 					String fileName = filePath.toString();
 					if (fileName.length() > 2) {
 						if (".h".equals(fileName.substring(fileName.length() - 2))) { //$NON-NLS-1$
-							try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
-								String line = reader.readLine();
-								if (!PRAGMA_ONCE.equals(line)) {
-									prependPrefix(file.toFile(), PRAGMA_ONCE + '\n');
-								}
-							} catch (Exception e1) {
-								// ignore
+
+							try {
+								prependPrefix(file.toFile(), PRAGMA_ONCE + '\n');
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
 
 						}
