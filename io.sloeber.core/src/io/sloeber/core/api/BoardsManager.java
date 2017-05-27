@@ -81,7 +81,6 @@ public class BoardsManager {
 	static private BoardDescriptor getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
 			String platformName, String boardID, Map<String, String> options) {
 
-		List<Board> boards = null;
 		Package thePackage = Manager.getPackage(jsonFileName, packageName);
 		if (thePackage == null) {
 			// fail("failed to find package:" + this.mPackageName);
@@ -93,7 +92,7 @@ public class BoardsManager {
 			// package:" + this.mPackageName);
 			return null;
 		}
-		boards = platform.getBoards();
+		List<Board> boards = platform.getBoards();
 		if (boards == null) {
 			// fail("No boards found");
 			return null;
@@ -163,7 +162,6 @@ public class BoardsManager {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		// Get the examples of the library manager installed libraries
 		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
-		Path exampleLocation = new Path(ConfigurationPreferences.getInstallationPathExamples().toString());
 
 		IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
 		if (CommonLibLocation.toFile().exists()) {
@@ -179,11 +177,7 @@ public class BoardsManager {
 			}
 		}
 
-		// Get the examples from the example locations
-
-		if (exampleLocation.toFile().exists()) {
-			examples.putAll(getExamplesFromFolder("", exampleLocation)); //$NON-NLS-1$
-		}
+		examples.putAll(getAllArduinoIDEExamples());
 
 		// Get the examples of the libraries from the selected hardware
 		// This one should be the last as hasmap overwrites doubles. This way
@@ -193,6 +187,21 @@ public class BoardsManager {
 			if (platformPath.toFile().exists()) {
 				examples.putAll(getLibExampleFolders(platformPath.append(Const.LIBRARY_PATH_SUFFIX)));
 			}
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples that are delivered with the Arduino IDE
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllArduinoIDEExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		Path exampleLocation = new Path(ConfigurationPreferences.getInstallationPathExamples().toString());
+
+		if (exampleLocation.toFile().exists()) {
+			examples.putAll(getExamplesFromFolder(new String(), exampleLocation));
 		}
 		return examples;
 	}
@@ -709,4 +718,5 @@ public class BoardsManager {
 	public static boolean getPragmaOnceHeaders() {
 		return InstancePreferences.getPragmaOnceHeaders();
 	}
+
 }
