@@ -227,10 +227,10 @@ public class Manager {
 			jsonFile.getParentFile().mkdirs();
 			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
 			try {
-				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile);
+				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
 			} catch (IOException e0) {
 				try {
-					myCopy(new URL(url.trim()), jsonFile);
+					myCopy(new URL(url.trim()), jsonFile, false);
 				} catch (IOException e) {
 					Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
 				}
@@ -440,7 +440,7 @@ public class Manager {
 			dlDir.toFile().mkdir();
 			if (!archivePath.toFile().exists() || pForceDownload) {
 				pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
-				myCopy(dl, archivePath.toFile());
+				myCopy(dl, archivePath.toFile(), true);
 			}
 		} catch (IOException e) {
 			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download + pURL, e);
@@ -807,7 +807,7 @@ public class Manager {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("nls")
-	private static void myCopy(URL url, File localFile) throws IOException {
+	private static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(5000);
@@ -828,13 +828,18 @@ public class Manager {
 				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
 				return;
 			}
-
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),
-					"Failed to download url " + url + " error code is: " + status, null));
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(),
+						"Failed to download url " + url + " error code is: " + status, null));
+			}
 			throw new IOException("Failed to download url " + url + " error code is: " + status);
+
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			}
 			throw e;
+
 		}
 	}
 
