@@ -324,7 +324,8 @@ public class Libraries {
 						try {
 							mngr.setProjectDescription(affectedProject, projectDescription, true, null);
 						} catch (CoreException e) {
-							e.printStackTrace();
+							// this can fail because the project may already be
+							// deleted
 						}
 					}
 				}
