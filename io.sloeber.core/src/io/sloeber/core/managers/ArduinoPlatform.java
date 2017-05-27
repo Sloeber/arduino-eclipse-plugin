@@ -261,4 +261,12 @@ public class ArduinoPlatform {
 		return ret;
 	}
 
+	public List<String> getBoardIDs() {
+		List<String> ret = new ArrayList<>();
+		for (Board curBoar : this.boards) {
+			ret.add(curBoar.getId());
+		}
+		return ret;
+	}
+
 }
