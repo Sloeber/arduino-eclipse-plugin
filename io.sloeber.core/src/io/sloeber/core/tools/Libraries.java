@@ -3,6 +3,7 @@ package io.sloeber.core.tools;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -18,6 +19,9 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -172,9 +176,20 @@ public class Libraries {
 		addLibrariesToProject(project, confdesc, libraries);
 	}
 
+	/**
+	 * Adds one or more libraries to a project in a configuration
+	 *
+	 * @param project
+	 *            the project to add the libraries to
+	 * @param confdesc
+	 *            the confdesc of the project
+	 * @param libraries
+	 *            the list of libraries to add
+	 * @return true if the configuration description has changed
+	 */
 	private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
 			Map<String, IPath> libraries) {
-
+		List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
 		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 			try {
 
@@ -183,7 +198,40 @@ public class Libraries {
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 			}
+			// Check the libraries to see if there are "unwanted subfolders"
+			File subFolders[] = CurItem.getValue().toFile().listFiles();
+			for (File file : subFolders) {
+				if (file.isDirectory() && !"src".equals(file.getName()) && !"utility".equals(file.getName()) //$NON-NLS-1$ //$NON-NLS-2$
+						&& !"examples".equalsIgnoreCase(file.getName())) { //$NON-NLS-1$
+					IPath excludePath = new Path("/" + project.getName()).append(Const.WORKSPACE_LIB_FOLDER) //$NON-NLS-1$
+							.append(CurItem.getKey()).append(file.getName());
+					foldersToRemoveFromBuildPath.add(excludePath);
+
+				}
+			}
 		}
+		if (!foldersToRemoveFromBuildPath.isEmpty()) {
+
+			ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
+			ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
+			for (IPath curFile : foldersToRemoveFromBuildPath) {
+
+				try {
+
+					sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
+
+				} catch (CoreException e1) {
+					// ignore
+				}
+			}
+			try {
+				cfgd.getConfiguration().setSourceEntries(sourceEntries);
+			} catch (Exception e) {
+				// ignore
+			}
+
+		}
+
 	}
 
 	// public static void removeLibrariesFromProject(Set<String> libraries) {
@@ -307,13 +355,15 @@ public class Libraries {
 
 					Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
 					Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
-					Map<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
-					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
+
 					for (Map.Entry<String, String> entry : includeHeaderReplacement.entrySet()) {
 						if (UnresolvedIncludedHeaders.contains(entry.getKey())) {
+							UnresolvedIncludedHeaders.remove(entry.getKey());
 							UnresolvedIncludedHeaders.add(entry.getValue());
 						}
 					}
+					Map<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
+					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
 
 					availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
 					if (!availableLibs.isEmpty()) {
@@ -324,9 +374,11 @@ public class Libraries {
 						try {
 							mngr.setProjectDescription(affectedProject, projectDescription, true, null);
 						} catch (CoreException e) {
-							// this can fail because the project may already be
+							// this can fail because the project may already
+							// be
 							// deleted
 						}
+
 					}
 				}
 			}
