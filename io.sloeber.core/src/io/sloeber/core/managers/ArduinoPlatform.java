@@ -48,6 +48,7 @@ public class ArduinoPlatform {
 	private Package pkg;
 	private HierarchicalProperties boardsFile;
 	private Properties platformProperties;
+	private static final String PLATFORM_FILE_NAME = "platform.txt"; //$NON-NLS-1$
 
 	void setOwner(Package pkg) {
 		this.pkg = pkg;
@@ -173,13 +174,12 @@ public class ArduinoPlatform {
 	}
 
 	public File getPlatformFile() {
-		return getInstallPath().resolve(Const.PLATFORM_FILE_NAME).toFile();
+		return getInstallPath().resolve(PLATFORM_FILE_NAME).toFile();
 	}
 
 	public Path getInstallPath() {
-		String stPath = ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
-				.append(this.pkg.getName()).append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture)
-				.append(this.version).toString();
+		String stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
+				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version).toString();
 		return Paths.get(stPath);
 	}
 

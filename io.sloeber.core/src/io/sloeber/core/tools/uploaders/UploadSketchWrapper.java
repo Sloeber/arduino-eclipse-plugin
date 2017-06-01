@@ -30,6 +30,8 @@ import io.sloeber.core.tools.Helpers;
 public class UploadSketchWrapper {
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot"; //$NON-NLS-1$
+	public static final String UPLOAD_SSH = "ssh upload"; //$NON-NLS-1$
 
 	static UploadSketchWrapper myThis = null;
 	MessageConsole myConsole = null;
@@ -88,9 +90,9 @@ public class UploadSketchWrapper {
 
 				realUploader = new SSHUpload(project, UpLoadTool, this.myHighLevelConsoleStream,
 						this.myOutconsoleStream, this.myErrconsoleStream, host);
-				uploadJobName = Const.UPLOAD_SSH;
+				uploadJobName = UPLOAD_SSH;
 			}
-		} else if (UpLoadTool.equalsIgnoreCase(Const.UPLOAD_TOOL_TEENSY)) {
+		} else if (UpLoadTool.equalsIgnoreCase(UPLOAD_TOOL_TEENSY)) {
 			this.myHighLevelConsoleStream.println(Messages.Upload_generic);
 			realUploader = new GenericLocalUploader(UpLoadTool, project, configName, this.myConsole,
 					this.myErrconsoleStream, this.myOutconsoleStream);

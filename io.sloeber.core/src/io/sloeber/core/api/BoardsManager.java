@@ -46,6 +46,7 @@ public class BoardsManager {
 	private static final String PDE = "pde";//$NON-NLS-1$
 	private static final String CPP = "cpp";//$NON-NLS-1$
 	private static final String C = "c";//$NON-NLS-1$
+	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 
 	/**
 	 * Gets the board descriptor based on the information provided. If
@@ -155,37 +156,32 @@ public class BoardsManager {
 	 *
 	 * If the boardID is null there will be no platform examples
 	 *
-	 * @param boardID
+	 * @param boardDescriptor
 	 * @return
 	 */
-	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardID) {
+	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardDescriptor) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		// Get the examples of the library manager installed libraries
-		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
 
-		IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
-		if (CommonLibLocation.toFile().exists()) {
-			examples.putAll(getLibExampleFolders(CommonLibLocation));
-		}
-
-		// get the examples from the user provide library locations
-		if (libLocations != null) {
-			for (String curLibLocation : libLocations) {
-				if (new File(curLibLocation).exists()) {
-					examples.putAll(getLibExampleFolders(new Path(curLibLocation)));
-				}
-			}
-		}
-
+		examples.putAll(getAllLibraryExamples());
 		examples.putAll(getAllArduinoIDEExamples());
-
-		// Get the examples of the libraries from the selected hardware
 		// This one should be the last as hasmap overwrites doubles. This way
 		// hardware libraries are preferred to others
-		if (boardID != null) {
-			IPath platformPath = boardID.getPlatformPath();
+		examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
+
+		return examples;
+	}
+
+	/*
+	 * Get the examples of the libraries from the selected hardware These may be
+	 * referenced libraries
+	 */
+	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescriptor boardDescriptor) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		if (boardDescriptor != null) {
+			IPath platformPath = boardDescriptor.getreferencingPlatformPath();
 			if (platformPath.toFile().exists()) {
-				examples.putAll(getLibExampleFolders(platformPath.append(Const.LIBRARY_PATH_SUFFIX)));
+				examples.putAll(getLibExampleFolders(platformPath.append(LIBRARY_PATH_SUFFIX)));
 			}
 		}
 		return examples;
@@ -202,6 +198,32 @@ public class BoardsManager {
 
 		if (exampleLocation.toFile().exists()) {
 			examples.putAll(getExamplesFromFolder(new String(), exampleLocation));
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples that are delivered with a library This does not include
+	 * the libraries delivered with hardware
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllLibraryExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
+
+		IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
+		if (CommonLibLocation.toFile().exists()) {
+			examples.putAll(getLibExampleFolders(CommonLibLocation));
+		}
+
+		// get the examples from the user provide library locations
+		if (libLocations != null) {
+			for (String curLibLocation : libLocations) {
+				if (new File(curLibLocation).exists()) {
+					examples.putAll(getLibExampleFolders(new Path(curLibLocation)));
+				}
+			}
 		}
 		return examples;
 	}
@@ -337,7 +359,7 @@ public class BoardsManager {
 	 */
 	private static String[] getHardwarePaths() {
 		return (InstancePreferences.getPrivateHardwarePathsString() + File.pathSeparator
-				+ ConfigurationPreferences.getInstallationPath()).split(File.pathSeparator);
+				+ ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
 	}
 
 	public static void setPrivateHardwarePaths(String[] hardWarePaths) {

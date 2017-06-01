@@ -39,6 +39,12 @@ public class CodeDescriptor {
 	static public final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
 	static public final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
 	static public final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
+	//
+	// template Sketch information
+
+	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = Const.ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
+			+ "TEMPLATE_USE_DEFAULT"; //$NON-NLS-1$
 
 	private CodeTypes codeType;
 	private IPath myTemPlateFoldername;
@@ -76,12 +82,12 @@ public class CodeDescriptor {
 
 	public static CodeDescriptor createLastUsed() {
 
-		String typeDescriptor = InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
+		String typeDescriptor = InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
 				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescriptor ret = new CodeDescriptor(codeType);
 		ret.myTemPlateFoldername = new Path(
-				InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
+				InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();
 		return ret;
 	}
@@ -102,10 +108,10 @@ public class CodeDescriptor {
 	 */
 	public void save() {
 		if (this.myTemPlateFoldername != null) {
-			InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
+			InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
 					this.myTemPlateFoldername.toString());
 		}
-		InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
+		InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
 		saveLastUsedExamples();
 	}
 
@@ -118,7 +124,7 @@ public class CodeDescriptor {
 		Set<String> libraries = new TreeSet<>();
 
 		this.save();
-		String Include = "Arduino.h";
+		String Include = "Arduino.h"; //$NON-NLS-1$
 
 		switch (this.codeType) {
 		case defaultIno:
@@ -163,7 +169,7 @@ public class CodeDescriptor {
 			try {
 				for (Path curPath : this.myExamples) {
 					if (this.myMakeLinks) {
-						Helpers.linkDirectory(project, curPath, new Path("/"));
+						Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
 					} else {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
 						FileModifiers.addPragmaOnce(curPath);

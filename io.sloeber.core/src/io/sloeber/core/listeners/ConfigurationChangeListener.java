@@ -114,8 +114,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 		}
 		Helpers.setTheEnvironmentVariables(activeProject, activeConf, newBoardDescriptor);
 		try {
-
-			Helpers.addArduinoCodeToProject(activeProject, activeConf);
+			Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
 		}

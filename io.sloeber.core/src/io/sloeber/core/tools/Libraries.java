@@ -31,6 +31,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -38,6 +40,8 @@ import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.Library;
 
 public class Libraries {
+	public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
+
 	/**
 	 * for a given folder return all subfolders
 	 *
@@ -72,19 +76,20 @@ public class Libraries {
 	 *
 	 * @param project
 	 *            the project to find all hardware libraries for
-	 * @return all the library folder names. May contain empty values. This
-	 *         method does not return the full path only the leaves.
+	 * @return all the library folder names. May contain empty values.
 	 */
 	private static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
-		String platformFile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
-				new String());
-		IPath LibraryFolder = new Path(platformFile).removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX);
-		Map<String, IPath> ret = findAllSubFolders(LibraryFolder);
-		String platform = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM,
-				null);
-		if (platform != null) {
-			LibraryFolder = new Path(platformFile).append(Const.LIBRARY_PATH_SUFFIX);
-			ret.putAll(findAllSubFolders(LibraryFolder));
+		Map<String, IPath> ret = new HashMap<>();
+		BoardDescriptor boardDescriptor = new InternalBoardDescriptor(confdesc);
+		// first add the referenced
+		IPath libPath = boardDescriptor.getReferencedLibraryPath();
+		if (libPath != null) {
+			ret.putAll(findAllSubFolders(libPath));
+		}
+		// then add the referencing
+		libPath = boardDescriptor.getReferencingLibraryPath();
+		if (libPath != null) {
+			ret.putAll(findAllSubFolders(libPath));
 		}
 		return ret;
 	}
@@ -151,7 +156,7 @@ public class Libraries {
 			Set<String> libraries) {
 		for (String CurItem : libraries) {
 			try {
-				final IFolder folderHandle = project.getFolder(Const.WORKSPACE_LIB_FOLDER + CurItem);
+				final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
 				folderHandle.delete(true, null);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
@@ -193,8 +198,7 @@ public class Libraries {
 		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 			try {
 
-				Helpers.addCodeFolder(project, CurItem.getValue(), Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(),
-						confdesc);
+				Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 			}
@@ -203,7 +207,7 @@ public class Libraries {
 			for (File file : subFolders) {
 				if (file.isDirectory() && !"src".equals(file.getName()) && !"utility".equals(file.getName()) //$NON-NLS-1$ //$NON-NLS-2$
 						&& !"examples".equalsIgnoreCase(file.getName())) { //$NON-NLS-1$
-					IPath excludePath = new Path("/" + project.getName()).append(Const.WORKSPACE_LIB_FOLDER) //$NON-NLS-1$
+					IPath excludePath = new Path("/" + project.getName()).append(WORKSPACE_LIB_FOLDER) //$NON-NLS-1$
 							.append(CurItem.getKey()).append(file.getName());
 					foldersToRemoveFromBuildPath.add(excludePath);
 
@@ -239,7 +243,7 @@ public class Libraries {
 	// }
 
 	public static Set<String> getAllLibrariesFromProject(IProject project) {
-		IFolder link = project.getFolder(Const.WORKSPACE_LIB_FOLDER);
+		IFolder link = project.getFolder(WORKSPACE_LIB_FOLDER);
 		Set<String> ret = new TreeSet<>();
 		try {
 			if (link.exists()) {
@@ -355,6 +359,8 @@ public class Libraries {
 
 					Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
 					Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
+					// remove pgmspace as it gives a problem
+					UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
 
 					for (Map.Entry<String, String> entry : includeHeaderReplacement.entrySet()) {
 						if (UnresolvedIncludedHeaders.contains(entry.getKey())) {

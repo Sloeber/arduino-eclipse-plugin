@@ -13,6 +13,7 @@ public class Defaults {
 	public static final String[] INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 			"LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
 	public static final String DEFAULT = "Default";
+	private static final String LIBRARY_PATH_SUFFIX = "libraries";
 
 	/**
 	 * Arduino has the default libraries in the user home directory in subfolder
@@ -23,7 +24,7 @@ public class Defaults {
 	 */
 	public static String getPrivateLibraryPath() {
 		IPath homPath = new Path(System.getProperty("user.home"));
-		return homPath.append("Arduino").append(Const.LIBRARY_PATH_SUFFIX).toString();
+		return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString();
 	}
 
 	public static String getPrivateHardwarePath() {
