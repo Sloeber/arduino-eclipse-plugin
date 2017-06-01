@@ -29,6 +29,10 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 public class CreateAndCompile {
 	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
+	// TODO boards to investigate
+	// tinyx313 tinyx4
+	// tinyx5
+	// atmegax4 atmegax8
 
 	public CreateAndCompile(BoardDescriptor board) {
 		this.mBoard = board;

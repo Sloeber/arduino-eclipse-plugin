@@ -30,27 +30,24 @@ import io.sloeber.core.api.LibraryManager;
 import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
 import jUnit.boards.AdafruitnRF52idBoard;
 import jUnit.boards.EsploraBoard;
-import jUnit.boards.GenericArduinoAvrBoard;
 import jUnit.boards.IBoard;
 import jUnit.boards.NodeMCUBoard;
-import jUnit.boards.Primo;
 import jUnit.boards.UnoBoard;
 import jUnit.boards.leonardoBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileExamples {
+public class CreateAndCompileLibraryExamples {
 	private static final boolean reinstall_boards_and_examples = false;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
 	private static int totalFails = 0;
-	private String myName;
 
-	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public CreateAndCompileLibraryExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
 		this.myCodeDescriptor = codeDescriptor;
-		this.myName = name;
+
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -59,11 +56,10 @@ public class CreateAndCompileExamples {
 		WaitForInstallerToFinish();
 
 		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
-				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(),
-				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma") };
+				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
+		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
@@ -82,14 +78,15 @@ public class CreateAndCompileExamples {
 			} catch (Exception e) {
 				// ignore error
 			}
-
-			// with the current amount of examples only do one
-			for (IBoard curBoard : myBoards) {
-				if (curBoard.isExampleOk(inoName, libName)) {
-					Object[] theData = new Object[] { inoName + ":" + curBoard.getName(), curBoard.getBoardDescriptor(),
-							codeDescriptor };
-					examples.add(theData);
-					break;
+			if (isExampleOk(inoName, libName)) {
+				// with the current amount of examples only do one
+				for (IBoard curBoard : myBoards) {
+					if (curBoard.isExampleOk(inoName, libName)) {
+						Object[] theData = new Object[] { libName + ":" + inoName + ":" + curBoard.getName(),
+								curBoard.getBoardDescriptor(), codeDescriptor };
+						examples.add(theData);
+						break;
+					}
 				}
 
 			}
@@ -97,6 +94,33 @@ public class CreateAndCompileExamples {
 
 		return examples;
 
+	}
+
+	/**
+	 * if the example fails it is known not to compile(under sloeber?)
+	 *
+	 * @param inoName
+	 * @param libName
+	 * @return
+	 */
+	private static boolean isExampleOk(String inoName, String libName) {
+		final String[] inoNotOK = { "AD7193_VoltageMeasurePsuedoDifferential_Example", "bunny_cuberotate?cuberotate",
+				"XPT2046_Touchscreen?ILI9341Test" };
+		final String[] libNotOk = { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library" };
+		if (Arrays.asList(libNotOk).contains(libName)) {
+			return false;
+		}
+		if (Arrays.asList(inoNotOK).contains(inoName.replace(" ", "")))
+			return false;
+		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
+			return false;
+		// following examples also fail in Arduino IDE at the time of writing
+		// these unit tests
+		if (inoName.endsWith("ahrs_mahony")
+				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
+			return false;
+		}
+		return true; // default everything is fine
 	}
 
 	/*
@@ -141,12 +165,13 @@ public class CreateAndCompileExamples {
 
 	}
 
-	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public static void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%s", new Integer(mCounter++), this.myName);
+		String projectName = String.format("%05d_:%s:%s:%s", new Integer(mCounter++), codeDescriptor.getLibraryName(),
+				codeDescriptor.getExampleName(), boardid.getBoardID());
 		try {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
