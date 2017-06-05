@@ -35,7 +35,9 @@ import jUnit.boards.IBoard;
 import jUnit.boards.NodeMCUBoard;
 import jUnit.boards.Primo;
 import jUnit.boards.UnoBoard;
+import jUnit.boards.Zero;
 import jUnit.boards.leonardoBoard;
+import jUnit.boards.mkrfox1200;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -60,7 +62,7 @@ public class CreateAndCompileExamples {
 
 		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
 				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(),
-				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma") };
+				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
@@ -86,8 +88,7 @@ public class CreateAndCompileExamples {
 			// with the current amount of examples only do one
 			for (IBoard curBoard : myBoards) {
 				if (curBoard.isExampleOk(inoName, libName)) {
-					Object[] theData = new Object[] { inoName + ":" + curBoard.getName(), curBoard.getBoardDescriptor(),
-							codeDescriptor };
+					Object[] theData = new Object[] { inoName, curBoard.getBoardDescriptor(), codeDescriptor };
 					examples.add(theData);
 					break;
 				}
@@ -133,7 +134,7 @@ public class CreateAndCompileExamples {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (totalFails < 20) {
+		if (totalFails < 40) {
 			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
 		} else {
 			fail("To many fails. Stopping test");

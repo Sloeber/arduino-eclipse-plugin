@@ -57,7 +57,6 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
-import cc.arduino.packages.discoverers.NetworkDiscovery;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
@@ -86,8 +85,6 @@ public class Helpers extends Common {
 	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
 			+ "/syscalls_mtk.c.o\"";
-
-	private static final String ENV_KEY_JANTJE_UPLOAD_TOOL = ERASE_START + "JANTJE.UPLOAD.TOOL";
 
 	private static final String ACTION_PROGRAM = "PROGRAM";
 
@@ -184,7 +181,6 @@ public class Helpers extends Common {
 		}
 		return hasChange;
 	}
-
 
 	/**
 	 * Creates a folder and links the folder to an existing folder Parent
@@ -864,40 +860,49 @@ public class Helpers extends Common {
 
 		String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
 		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
-			IEnvironmentVariable uploadToolVar = contribEnv.getVariable(ENV_KEY_JANTJE_UPLOAD_TOOL, confDesc);
 			String MComPort = boardsDescriptor.getUploadPort();
-			if ((uploadToolVar == null) || (MComPort.isEmpty())) {
+			if (MComPort.isEmpty()) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-						"Upload will fail due to missing upload parameters"));
+						"Upload will fail due to missing upload port"));
 			} else {
-				String uploadTool = uploadToolVar.getValue();
-
-				String host = getHostFromComPort(MComPort);
-				if (host != null) {
-					setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_PORT,
-							NetworkDiscovery.getPort(host));
-					setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_NETWORK_AUTH,
-							NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
-					setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, host);
-
-					try {
-						String key = ERASE_START + boardsDescriptor.getArchitecture().toUpperCase() + DOT + "NETWORK"
-								+ DOT + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
-						String networkUploadTool = contribEnv.getVariable(key, confDesc).getValue();
-						if (!networkUploadTool.isEmpty()) {
-							uploadTool = networkUploadTool;
-							setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(UPLOAD_CLASS),
-									UPLOAD_CLASS_DEFAULT);
-							setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_RESET_BEFORE_UPLOAD, FALSE);
-						}
-					} catch (Exception e) {
-						// simply ignore
-					}
-				}
-				setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
-						makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_UPLOAD)));
-				setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM),
-						makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
+				//
+				// String host = getHostFromComPort(MComPort);
+				// if (host != null) {
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// ENV_KEY_NETWORK_PORT,
+				// NetworkDiscovery.getPort(host));
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// ENV_KEY_NETWORK_AUTH,
+				// NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// ENV_KEY_SERIAL_PORT, host);
+				//
+				// try {
+				// String key = ERASE_START +
+				// boardsDescriptor.getArchitecture().toUpperCase() + DOT +
+				// "NETWORK"
+				// + DOT + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
+				// String networkUploadTool = contribEnv.getVariable(key,
+				// confDesc).getValue();
+				// if (!networkUploadTool.isEmpty()) {
+				// uploadTool = networkUploadTool;
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// get_ENV_KEY_TOOL(UPLOAD_CLASS),
+				// UPLOAD_CLASS_DEFAULT);
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// ENV_KEY_RESET_BEFORE_UPLOAD, FALSE);
+				// }
+				// } catch (Exception e) {
+				// // simply ignore
+				// }
+				// }
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
+				// makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool,
+				// ACTION_UPLOAD)));
+				// setBuildEnvironmentVariable(contribEnv, confDesc,
+				// get_ENV_KEY_TOOL(ACTION_PROGRAM),
+				// makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 			}
 		} else {
 			String uploadTool = new String();
