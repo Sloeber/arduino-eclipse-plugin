@@ -113,8 +113,8 @@ public class ArduinoPlatform {
 			// Replace the boards with a real ones
 			this.boards = new ArrayList<>();
 			for (Map.Entry<String, HierarchicalProperties> entry : this.boardsFile.getChildren().entrySet()) {
-				if (entry.getValue().getChild("name") != null) { //$NON-NLS-1$
-					// assume things with names are boards
+				if ((entry.getValue().getChild("name") != null) && (entry.getKey() != null)) { //$NON-NLS-1$
+					// assume things with name and id are boards
 					this.boards.add(new Board(entry.getKey(), entry.getValue()).setOwners(this));
 				}
 			}
