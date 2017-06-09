@@ -119,6 +119,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
 		}
 		Libraries.reAttachLibrariesToProject(activeConf);
+		projDesc.setActiveConfiguration(activeConf);
 	}
 
 }

@@ -25,8 +25,6 @@ import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -36,7 +34,6 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.language.settings.providers.AbstractBuiltinSpecsDetector;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -1101,21 +1098,23 @@ public class Helpers extends Common {
 			}
 		}
 
-		List<ILanguageSettingsProvider> providers;
-		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-			providers = new ArrayList<>(
-					((ILanguageSettingsProvidersKeeper) cfgDescription).getLanguageSettingProviders());
-			for (ILanguageSettingsProvider provider : providers) {
-				if ((provider instanceof AbstractBuiltinSpecsDetector)) { // basically
-					// check
-					// for
-					// working
-					// copy
-					// clear and reset isExecuted flag
-					((AbstractBuiltinSpecsDetector) provider).clear();
-				}
-			}
-		}
+		// List<ILanguageSettingsProvider> providers;
+		// if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+		// providers = new ArrayList<>(
+		// ((ILanguageSettingsProvidersKeeper)
+		// cfgDescription).getLanguageSettingProviders());
+		// for (ILanguageSettingsProvider provider : providers) {
+		// if ((provider instanceof AbstractBuiltinSpecsDetector)) { //
+		// basically
+		// // check
+		// // for
+		// // working
+		// // copy
+		// // clear and reset isExecuted flag
+		// ((AbstractBuiltinSpecsDetector) provider).clear();
+		// }
+		// }
+		// }
 	}
 
 	/**
