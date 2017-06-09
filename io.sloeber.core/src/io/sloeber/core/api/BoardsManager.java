@@ -87,7 +87,7 @@ public class BoardsManager {
 			// fail("failed to find package:" + this.mPackageName);
 			return null;
 		}
-		ArduinoPlatform platform = thePackage.getLatestPlatform(platformName);
+		ArduinoPlatform platform = thePackage.getLatestPlatform(platformName, true);
 		if (platform == null) {
 			// fail("failed to find platform " + this.mPlatform + " in
 			// package:" + this.mPackageName);

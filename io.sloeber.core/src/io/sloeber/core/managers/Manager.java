@@ -101,7 +101,7 @@ public class Manager {
 
 				Package pkg = getPackageIndices().get(0).getPackages().get(0);
 				if (pkg != null) {
-					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
+					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME, false);
 					if (platform == null) {
 						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
 						pkg.getLatestPlatforms().toArray(platformList);
@@ -265,11 +265,11 @@ public class Manager {
 		return packageIndices;
 	}
 
-	static public Board getBoard(String boardName, String platformName, String packageName) {
+	static public Board getBoard(String boardName, String platformName, String packageName, boolean mustBeInstalled) {
 		for (PackageIndex index : getPackageIndices()) {
 			Package pkg = index.getPackage(packageName);
 			if (pkg != null) {
-				ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
+				ArduinoPlatform platform = pkg.getLatestPlatform(platformName, mustBeInstalled);
 				if (platform != null) {
 					Board board = platform.getBoard(boardName);
 					if (board != null) {

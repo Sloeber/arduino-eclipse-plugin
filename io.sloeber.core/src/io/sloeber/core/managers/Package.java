@@ -116,15 +116,17 @@ public class Package implements Comparable<Package> {
 		return platformMap;
 	}
 
-	public ArduinoPlatform getLatestPlatform(String platformName) {
+	public ArduinoPlatform getLatestPlatform(String platformName, boolean mustBeInstalled) {
 		ArduinoPlatform foundPlatform = null;
 		for (ArduinoPlatform platform : this.platforms) {
-			if (platform.getName().equals(platformName)) {
-				if (foundPlatform == null) {
-					foundPlatform = platform;
-				} else {
-					if (Version.compare(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+			if (!mustBeInstalled || platform.isInstalled()) {
+				if (platform.getName().equals(platformName)) {
+					if (foundPlatform == null) {
 						foundPlatform = platform;
+					} else {
+						if (Version.compare(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+							foundPlatform = platform;
+						}
 					}
 				}
 			}
