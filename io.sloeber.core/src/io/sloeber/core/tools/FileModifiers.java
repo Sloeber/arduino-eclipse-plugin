@@ -1,8 +1,6 @@
 package io.sloeber.core.tools;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -12,13 +10,11 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
 
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {
-	static final String PRAGMA_ONCE = "#pragma once"; //$NON-NLS-1$
+	static final String PRAGMA_ONCE = "\n//Added by Sloeber \n#pragma once\n"; //$NON-NLS-1$
 
 	/**
 	 * method to add at the top of a file copied from
@@ -29,20 +25,8 @@ public class FileModifiers {
 	 * @throws IOException
 	 */
 	public static void prependPrefix(File input, String prefix) throws IOException {
-		LineIterator li = FileUtils.lineIterator(input);
-		File tempFile = File.createTempFile("prependPrefix", ".tmp"); //$NON-NLS-1$ //$NON-NLS-2$
-
-		try (BufferedWriter w = new BufferedWriter(new FileWriter(tempFile))) {
-			w.write(prefix);
-			while (li.hasNext()) {
-				w.write(li.next());
-				w.write("\n"); //$NON-NLS-1$
-			}
-			IOUtils.closeQuietly(w);
-			LineIterator.closeQuietly(li);
-		}
-		FileUtils.deleteQuietly(input);
-		FileUtils.moveFile(tempFile, input);
+		String fileString = FileUtils.readFileToString(input) + prefix;
+		FileUtils.write(input, fileString);
 	}
 
 	/**
@@ -65,7 +49,7 @@ public class FileModifiers {
 						if (".h".equals(fileName.substring(fileName.length() - 2))) { //$NON-NLS-1$
 
 							try {
-								prependPrefix(file.toFile(), PRAGMA_ONCE + '\n');
+								prependPrefix(file.toFile(), PRAGMA_ONCE + System.lineSeparator());
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
