@@ -62,7 +62,10 @@ public abstract class IBoard {
 				"aREST examples?BLE", "aREST examples?ESP32", "aREST examples?ESP32_cloud",
 				"ArduinoHttpClient examples?DweetGet", "ArduinoMenu_library examples? adafruitGfx? lcdMono?lcdMono",
 				"ArduinoMenu_library examples? adafruitGfx? tft?tft", "ArduinoMqtt examples?ConnectEthernetClient",
-				"ArduinoMqtt examples?PubSub", "ArdVoice examples?Sample2-Complex" });
+				"ArduinoMqtt examples?PubSub", "ArdVoice examples?Sample2-Complex", "Aspen_SIM800 examples?Access_HTTP",
+				"Awesome examples? advanced?how_fast", "Awesome examples? advanced?lie_detector",
+				"AzureIoTUtility examples?simplesample_http", "BLEPeripheral examples?ir_bridge",
+				"BLEPeripheral examples?temp_sensor" });
 
 		runSketchOnBoard.put("nodeMCU",
 				new String[] { "YouMadeIt examples?basic_example", "ArduinoIRC examples?BasicESP8266",
@@ -77,15 +80,22 @@ public abstract class IBoard {
 				new String[] { "Adafruit_MiniMLX90614 examples?templight",
 						"Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma",
 						"Arduino_Low_Power examples?PrimoDeepSleep" });
-		runSketchOnBoard.put("primo", new String[] { "Arduino_Low_Power examples?PrimoDeepSleep" });
+		runSketchOnBoard.put("primo",
+				new String[] { "Arduino_Low_Power examples?PrimoDeepSleep", "BLEPeripheral examples?iBeacon" });
 		runSketchOnBoard.put("trinket",
 				new String[] { "Adafruit_SoftServo examples?TrinketKnob",
 						"Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma",
 						"Adafruit_TinyFlash examples?TrinketPlayer" });
-		runSketchOnBoard.put("arduino_zero_edbg", new String[] { "ArduinoCloud examples?ReadAndWrite",
-				"ArduinoCloud examples?SimpleCloudButton_", "ArduinoThread examples?SensorThread" });
+		runSketchOnBoard.put("zero", new String[] { "ArduinoCloud examples?ReadAndWrite",
+				"ArduinoCloud examples?SimpleCloudButton", "AudioFrequencyMeter examples?SimpleAudioFrequencyMeter" });
+		runSketchOnBoard.put("due", new String[] { "ArduinoThread examples?SensorThread" });
 		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000" });
 		runSketchOnBoard.put("wildfire", new String[] { "aREST_UI examples?WildFire" });
+		runSketchOnBoard.put("circuitplay32u4catexpress",
+				new String[] { "Adafruit_Circuit_Playground examples?Infrared_NeoPixel",
+						"Adafruit_Circuit_Playground examples?Infrared_Read,",
+						"Adafruit_Circuit_Playground examples?Infrared_Record",
+						"Adafruit_Circuit_Playground examples?Infrared_Testpattern" });
 
 		for (Entry<String, String[]> curEntry : runSketchOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -102,18 +112,22 @@ public abstract class IBoard {
 				new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library", "Adafruit_HX8340B",
 						"Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash", "Adafruit_SSD1325",
 						"ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil", "ArduinoMenu_library",
-						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80" });
-		runLibOnBoard.put("uno", new String[] { "A4963", "Adafruit_Motor_Shield_library",
-				"Adafruit_Motor_Shield_library_V2", "AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno" });
+						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80",
+						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk" });
+		runLibOnBoard.put("uno",
+				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
+						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
-		runLibOnBoard.put("nodeMCU", new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino" });
+		runLibOnBoard.put("nodeMCU", new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266",
+				"AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library" });
-		runLibOnBoard.put("arduino_zero_edbg", new String[] { "Arduino_Low_Power", "ArduinoSound" });
+		runLibOnBoard.put("zero", new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
+		runLibOnBoard.put("due", new String[] { "Audio", "AutoAnalogAudio" });
 
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {

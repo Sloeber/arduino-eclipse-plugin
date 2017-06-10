@@ -29,6 +29,7 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
 import jUnit.boards.AdafruitnRF52idBoard;
+import jUnit.boards.Due;
 import jUnit.boards.EsploraBoard;
 import jUnit.boards.GenericArduinoAvrBoard;
 import jUnit.boards.IBoard;
@@ -42,7 +43,7 @@ import jUnit.boards.mkrfox1200;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamples {
-	private static final boolean reinstall_boards_and_examples = false;
+	private static final boolean reinstall_boards_and_examples = true;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
@@ -62,7 +63,8 @@ public class CreateAndCompileExamples {
 
 		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
 				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(),
-				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200() };
+				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200(),
+				new Due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
@@ -88,7 +90,7 @@ public class CreateAndCompileExamples {
 			// with the current amount of examples only do one
 			for (IBoard curBoard : myBoards) {
 				if (curBoard.isExampleOk(inoName, libName)) {
-					Object[] theData = new Object[] { inoName, curBoard.getBoardDescriptor(), codeDescriptor };
+					Object[] theData = new Object[] { inoName.trim(), curBoard.getBoardDescriptor(), codeDescriptor };
 					examples.add(theData);
 					break;
 				}
