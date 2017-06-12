@@ -83,8 +83,6 @@ public class Helpers extends Common {
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
 			+ "/syscalls_mtk.c.o\"";
 
-	private static final String ACTION_PROGRAM = "PROGRAM";
-
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
