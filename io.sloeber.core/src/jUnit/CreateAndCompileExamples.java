@@ -43,7 +43,7 @@ import jUnit.boards.mkrfox1200;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamples {
-	private static final boolean reinstall_boards_and_examples = true;
+	private static final boolean reinstall_boards_and_examples = false;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
