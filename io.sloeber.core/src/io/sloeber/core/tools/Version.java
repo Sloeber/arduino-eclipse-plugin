@@ -63,7 +63,8 @@ public class Version {
 	 * @param versions
 	 *            a string list of version numbers
 	 *
-	 * @return the index to the highest version
+	 * @return the index to the highest version or 0 in case of an empty
+	 *         versions
 	 */
 	public static int getHighestVersion(String[] versions) {
 		int returnIndex = 0;
