@@ -65,7 +65,7 @@ public class Version {
 	 *
 	 * @return the index to the highest version
 	 */
-	public static int getHighestVersionn(String[] versions) {
+	public static int getHighestVersion(String[] versions) {
 		int returnIndex = 0;
 		for (int curVersion = 1; curVersion < versions.length; curVersion++) {
 			if (compare(versions[returnIndex], versions[curVersion]) == -1) {

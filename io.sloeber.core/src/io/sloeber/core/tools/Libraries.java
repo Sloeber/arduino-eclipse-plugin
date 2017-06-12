@@ -129,7 +129,7 @@ public class Libraries {
 							break;
 						default:// multiple lib versions are installed take the
 								// latest
-							int highestVersion = Version.getHighestVersionn(versions);
+							int highestVersion = Version.getHighestVersion(versions);
 							ret.put(curLib, Lib_root.append(versions[highestVersion]));
 							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 									Messages.MultipleVersionsOfLib.replace("${LIB}", curLib))); //$NON-NLS-1$
