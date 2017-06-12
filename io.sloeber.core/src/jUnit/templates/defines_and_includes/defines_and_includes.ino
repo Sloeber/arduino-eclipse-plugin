@@ -7,6 +7,7 @@
 #define DEFINE_2 something
 #include "include2.h"
 #define DEFINE_3
+int t=3;
 #include "include3.h"
 #ifdef NOT_DEFINED
 //test #736

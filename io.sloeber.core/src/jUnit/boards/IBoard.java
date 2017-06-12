@@ -65,7 +65,13 @@ public abstract class IBoard {
 				"ArduinoMqtt examples?PubSub", "ArdVoice examples?Sample2-Complex", "Aspen_SIM800 examples?Access_HTTP",
 				"Awesome examples? advanced?how_fast", "Awesome examples? advanced?lie_detector",
 				"AzureIoTUtility examples?simplesample_http", "BLEPeripheral examples?ir_bridge",
-				"BLEPeripheral examples?temp_sensor" });
+				"BLEPeripheral examples?temp_sensor", "Brasilino examples? Basicos?controleGradual",
+				"ClosedCube_HDC1010 examples?hdc1010demo" });
+		runSketchOnBoard.put("fix case Sensitive include first",
+				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
+						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
+						"AutoAnalogAudio examples?AudioRadioRelay", "AutoAnalogAudio examples?WirelessMicrophone",
+						"AutoAnalogAudio examples?WirelessSpeaker", "AutoAnalogAudio examples?WirelessTx_RPi" });
 
 		runSketchOnBoard.put("nodeMCU",
 				new String[] { "YouMadeIt examples?basic_example", "ArduinoIRC examples?BasicESP8266",
@@ -93,9 +99,10 @@ public abstract class IBoard {
 		runSketchOnBoard.put("wildfire", new String[] { "aREST_UI examples?WildFire" });
 		runSketchOnBoard.put("circuitplay32u4catexpress",
 				new String[] { "Adafruit_Circuit_Playground examples?Infrared_NeoPixel",
-						"Adafruit_Circuit_Playground examples?Infrared_Read,",
+						"Adafruit_Circuit_Playground examples?Infrared_Read",
 						"Adafruit_Circuit_Playground examples?Infrared_Record",
 						"Adafruit_Circuit_Playground examples?Infrared_Testpattern" });
+		runSketchOnBoard.put("unowifi", new String[] { "Braccio examples?braccioOfUnoWiFi" });
 
 		for (Entry<String, String[]> curEntry : runSketchOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -113,15 +120,19 @@ public abstract class IBoard {
 						"Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash", "Adafruit_SSD1325",
 						"ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil", "ArduinoMenu_library",
 						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80",
-						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk" });
+						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief",
+						"Brzo_I2Cexamples", "BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library",
+						"Comp6DOF_n0m1 examples?Tilt_comp_6dof_example" });
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
-		runLibOnBoard.put("nodeMCU", new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266",
-				"AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT" });
+		runLibOnBoard.put("nodeMCU",
+				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "AzureIoTHub",
+						"AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "CMMC_Easy",
+						"CMMC_MQTT_Connector examples? ibm bluemix?bluemix_authentication" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library" });
