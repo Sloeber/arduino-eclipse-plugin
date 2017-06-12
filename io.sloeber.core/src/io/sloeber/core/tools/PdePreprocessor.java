@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -39,6 +38,7 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IInclude;
 import org.eclipse.cdt.core.model.IMacro;
 import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.core.model.IVariable;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTFunctionDefinition;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -50,15 +50,18 @@ import org.eclipse.core.runtime.Path;
 
 @SuppressWarnings({ "nls", "restriction" })
 public class PdePreprocessor {
-	private static String tempFile = ".ino.cpp";
+	private static String oldGeneratedFile = ".ino.cpp";// somethimes having the
+														// file hidden is
+														// annoying
+	private static String generatedFile = "sloeber.ino.cpp";
 	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
+	private static final String NEWLINE = "\n";
 
 	public static void processProject(IProject iProject) throws CoreException {
-		// first write some standard bla bla
-		final String NEWLINE = "\n";
-		String body = new String();
-		String includeHeaderPart = "#include \"Arduino.h\"" + NEWLINE;
-		String includeCodePart = NEWLINE;
+		deleteTheGeneratedFileInPreviousBersionsOfSloeber(iProject);
+		boolean projectHasNoInoFiles = true;
+		String methodDeclarations = new String();
+		String includeInoPart = NEWLINE;
 		String header = "//This is a automatic generated file" + NEWLINE;
 		header += "//Please do not modify this file" + NEWLINE;
 		header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE;
@@ -66,6 +69,8 @@ public class PdePreprocessor {
 		header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		header += NEWLINE;
 		header += NEWLINE;
+		header += "#include \"Arduino.h\"" + NEWLINE;
+
 		ICProject tt = CoreModel.getDefault().create(iProject);
 		IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
 
@@ -78,159 +83,214 @@ public class PdePreprocessor {
 				return;
 			}
 
-			// take all the files in the project
+			// loop through all the files in the project
 			IResource allResources[] = iProject.members(0);
-			int numInoFiles = 0;
 			for (IResource curResource : allResources) {
 				String extension = curResource.getFileExtension();
 				// only process .pde and .ino files
 				if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
-					numInoFiles++;
-					String addLine;
-					if (curResource.isLinked()) {
-						addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE;
-					} else {
-						addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE;
-					}
-					// if the name of the ino/pde file matches the project put
-					// the file in front
-					// Otherwise add it to the end
-					if (curResource.getName().equals(iProject.getName() + "." + extension)) {
-						includeCodePart = addLine + includeCodePart;
-					} else {
-						includeCodePart += addLine;
-					}
-
-					IPath path = curResource.getFullPath();
+					projectHasNoInoFiles = false;
 
 					// check whether the indexer is properly configured.
+					IPath path = curResource.getFullPath();
 					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 					ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
 					if (tu == null) {
-						// the indexer is not properly configured so drop a
-						// error in the file
-						body += NEWLINE;
-						body += "#error the file: " + curResource.getName()
-								+ " is not found in the indexer though it exists on the file system." + NEWLINE;
-						body += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file."
-								+ NEWLINE;
-						body += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types."
-								+ NEWLINE;
+						methodDeclarations = extendBodyWithFileNotFund(methodDeclarations, curResource);
 					} else {
-						// add declarations made in ino files.
-						IASTTranslationUnit asttu = tu.getAST(index,
-								ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
-						IASTNode astNodes[] = asttu.getChildren();
-						for (IASTNode astNode : astNodes) {
-							if (astNode instanceof CPPASTFunctionDefinition) {
-								String addString = astNode.getRawSignature();
-								addString = addString.replaceAll("\r\n", NEWLINE);
-								addString = addString.replaceAll("\r", NEWLINE);
-								addString = addString.replaceAll("//[^\n]+\n", " ");
-								addString = addString.replaceAll("\n", " ");
-								addString = addString.replaceAll("\\{.*\\}", "");
-								if (addString.contains("=") || addString.contains("::")) {
-									// ignore when there are assignments in the
-									// declaration
-									// or when it is a class function
-								} else {
-									body += addString + ';' + NEWLINE;
-								}
+						includeInoPart = extendIncludedInoPartForFile(includeInoPart, curResource);
+						methodDeclarations = extendMethodDeclarationsForFile(methodDeclarations, index, tu);
+						header = extendHeaderForFile(header, index, tu);
+					}
+				}
+			}
+			// delete the generated .ino.cpp file this is to cope with
+			// people
+			// renaming the ino files to cpp files removing the need for
+			// .ino.cpp file
+			if (projectHasNoInoFiles) {
+				deleteTheGeneratedFile(iProject);
+			} else {
+				writeTheGeneratedFile(iProject, header + NEWLINE + methodDeclarations + NEWLINE + includeInoPart);
 
-							}
-						}
+			}
+		} finally {
+			index.releaseReadLock();
+		}
+	}
 
-						// Locate All lines that are extern "C"
-						HashMap<Integer, Integer> externCLines = new HashMap<>();
-						IASTTranslationUnit astTuTest = tu.getAST(index, 0);
-						IASTDeclaration[] topDeclaratons = astTuTest.getDeclarations();
-						for (IASTDeclaration curTopDeclaration : topDeclaratons) {
+	/**
+	 * Add some operational stuff and write the file if changed
+	 *
+	 * @param iProject
+	 *            the project for which the ino files have been parsed
+	 * @param content
+	 *            the ouput of the ino file parsing
+	 * @throws CoreException
+	 */
+	private static void writeTheGeneratedFile(IProject iProject, String content) throws CoreException {
 
-							ICPPASTLinkageSpecification test = curTopDeclaration instanceof ICPPASTLinkageSpecification
-									? (ICPPASTLinkageSpecification) curTopDeclaration : null;
-							if (test != null) {
-								if (test.getLiteral().equals("\"C\"")) {
-									Path curFile = new Path(curTopDeclaration.getContainingFilename());
-									if (curFile.equals(file.getLocation())) {
-										int startLine = test.getFileLocation().getStartingLineNumber();
-										int endLine = test.getFileLocation().getEndingLineNumber();
-										for (int curline = startLine; curline <= endLine; curline++) {
-											externCLines.put(new Integer(curline), null);
-										}
-									}
-								}
-							}
-						}
+		// Make sure the file is not processed by Arduino IDE
+		String newFileContent = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + content + NEWLINE + "#endif" + NEWLINE;
+		String currentFileContent = null;
+		try {
+			currentFileContent = FileUtils
+					.readFileToString(iProject.getFile(new Path(generatedFile)).getLocation().toFile());
+		} catch (IOException e) {
+			// This happens when the generated file does not yet exist
+		}
 
-						// find all the macro's
-						List<ICElement> theMacros = tu.getChildrenOfType(ICElement.C_MACRO);
+		if (!newFileContent.equals(currentFileContent)) {
+			Helpers.addFileToProject(iProject, new Path(generatedFile),
+					new ByteArrayInputStream(newFileContent.getBytes()), null, true);
+			// } else {
+			// System.out.println(".ino.cpp has not changed");
+		}
 
-						// list all includes found in the source files.
-						IInclude includes[] = tu.getIncludes();
-						int prefHeaderLine = 0;
-						for (IInclude include : includes) {
+	}
 
-							int curHeaderLine = include.getSourceRange().getStartLine();
+	private static String extendHeaderForFile(String header, IIndex index, ITranslationUnit tu) throws CoreException {
+		String localHeader = header;
+		// Locate All lines that are extern "C"
+		HashMap<Integer, Integer> externCLines = new HashMap<>();
+		IASTTranslationUnit astTuTest = tu.getAST(index, 0);
+		IASTDeclaration[] topDeclaratons = astTuTest.getDeclarations();
+		for (IASTDeclaration curTopDeclaration : topDeclaratons) {
 
-							for (ICElement curElement : theMacros) {
-								IMacro curMacro = (IMacro) curElement;
-
-								int curMacroLine = curMacro.getSourceRange().getStartLine();
-
-								if (curMacro.isActive() && (curMacroLine < curHeaderLine)
-										&& (prefHeaderLine < curMacroLine)) {
-									includeHeaderPart += curMacro.getSource() + NEWLINE;
-								}
-							}
-
-							prefHeaderLine = curHeaderLine;
-							if (externCLines.containsKey(new Integer(curHeaderLine))) {
-								includeHeaderPart += "extern \"C\" {" + NEWLINE;
-								includeHeaderPart += include.getSource() + NEWLINE;
-								includeHeaderPart += "}" + NEWLINE;
-							} else {
-								if (include.isActive()) {
-									includeHeaderPart += include.getSource();
-									includeHeaderPart += NEWLINE;
-								}
-							}
+			ICPPASTLinkageSpecification test = curTopDeclaration instanceof ICPPASTLinkageSpecification
+					? (ICPPASTLinkageSpecification) curTopDeclaration : null;
+			if (test != null) {
+				if (test.getLiteral().equals("\"C\"")) {
+					Path curFile = new Path(curTopDeclaration.getContainingFilename());
+					if (curFile.equals(tu.getFile().getLocation())) {
+						int startLine = test.getFileLocation().getStartingLineNumber();
+						int endLine = test.getFileLocation().getEndingLineNumber();
+						for (int curline = startLine; curline <= endLine; curline++) {
+							externCLines.put(new Integer(curline), null);
 						}
 					}
 				}
 			}
-			body = body + NEWLINE;
+		}
 
-			// delete the generated .ino.cpp file this is to cope with people
-			// renaming the ino files to cpp files removing the need for
-			// .ino.cpp file
-			if (numInoFiles == 0) {
-				IResource inofile = iProject.findMember(tempFile);
-				if (inofile != null) {
-					inofile.delete(true, null);
-				}
-			} else {
-				// concatenate the parts and make the .ino.cpp file
-				String output = header + includeHeaderPart + body + includeCodePart;
-				// Make sure the file is not procesed by Arduino IDE
-				output = "#ifdef " + DEFINE_IN_ECLIPSE + NEWLINE + output + NEWLINE + "#endif" + NEWLINE;
-				String currentFileContent = null;
-				try {
-					currentFileContent = FileUtils
-							.readFileToString(iProject.getFile(new Path(tempFile)).getLocation().toFile());
-				} catch (IOException e) {
-					// This happens when the .ino.cpp file does not yet exist
-				}
+		// find the last line containing a include
+		IInclude includes[] = tu.getIncludes();
+		int lastHeaderLine = 0;
+		for (IInclude include : includes) {
+			int curHeaderLine = include.getSourceRange().getEndLine();
+			lastHeaderLine = Math.max(lastHeaderLine, curHeaderLine);
+		}
 
-				if (!output.equals(currentFileContent)) {
-					Helpers.addFileToProject(iProject, new Path(tempFile), new ByteArrayInputStream(output.getBytes()),
-							null, true);
-					// } else {
-					// System.out.println(".ino.cpp has not changed");
+		// parse line by line until all includes have been parsed
+		for (int curline = 1; curline <= lastHeaderLine; curline++) {
+			ICElement curElement = tu.getElementAtLine(curline);
+			if (curElement != null) {
+				switch (curElement.getElementType()) {
+				case ICElement.C_MACRO:
+					IMacro curMacro = (IMacro) curElement;
+					if (curMacro.isActive()) {
+						localHeader += curMacro.getSource() + NEWLINE;
+					}
+					break;
+				case ICElement.C_VARIABLE:
+					IVariable curVardeclar = (IVariable) curElement;
+					if (curVardeclar.isActive()) {
+						localHeader += "extern " + curVardeclar.getTypeName() + " " + curVardeclar.getElementName()
+								+ ";" + NEWLINE;
+					}
+					break;
+				case ICElement.C_INCLUDE:
+					IInclude curInclude = (IInclude) curElement;
+
+					int curHeaderLine = curInclude.getSourceRange().getStartLine();
+					if (curInclude.isActive()) {
+						if (externCLines.containsKey(new Integer(curHeaderLine))) {
+							localHeader += "extern \"C\" {" + NEWLINE;
+							localHeader += curInclude.getSource() + NEWLINE;
+							localHeader += "}" + NEWLINE;
+						} else {
+
+							localHeader += curInclude.getSource();
+							localHeader += NEWLINE;
+						}
+					}
+					break;
 				}
 			}
+		}
+		return localHeader;
+	}
 
-		} finally {
-			index.releaseReadLock();
+	// the indexer is not properly configured so drop a
+	// error in the file
+	private static String extendBodyWithFileNotFund(String body, IResource curResource) {
+		String localBody = body + NEWLINE;
+		localBody += "#error the file: " + curResource.getName()
+				+ " is not found in the indexer though it exists on the file system." + NEWLINE;
+		localBody += "#error this is probably due to a bad eclipse configuration : ino and pde are not marked as c++ file."
+				+ NEWLINE;
+		localBody += "#error please check whether *.ino and *.pde are marked as C++ source code in windows->preferences->C/C++->file types."
+				+ NEWLINE;
+		return localBody;
+	}
+
+	private static String extendMethodDeclarationsForFile(String body, IIndex index, ITranslationUnit tu)
+			throws CoreException {
+		// add declarations made in ino files.
+		String localBody = body;
+		IASTTranslationUnit asttu = tu.getAST(index,
+				ITranslationUnit.AST_SKIP_FUNCTION_BODIES | ITranslationUnit.AST_SKIP_ALL_HEADERS);
+		IASTNode astNodes[] = asttu.getChildren();
+		for (IASTNode astNode : astNodes) {
+			if (astNode instanceof CPPASTFunctionDefinition) {
+				String addString = astNode.getRawSignature();
+				addString = addString.replaceAll("\r\n", NEWLINE);
+				addString = addString.replaceAll("\r", NEWLINE);
+				addString = addString.replaceAll("//[^\n]+\n", " ");
+				addString = addString.replaceAll("\n", " ");
+				addString = addString.replaceAll("\\{.*\\}", "");
+				if (addString.contains("=") || addString.contains("::")) {
+					// ignore when there are assignments in the
+					// declaration
+					// or when it is a class function
+				} else {
+					localBody += addString + ';' + NEWLINE;
+				}
+
+			}
+		}
+		return localBody;
+
+	}
+
+	private static String extendIncludedInoPartForFile(String existingIncludeCodePart, IResource curResource) {
+		String addLine;
+		if (curResource.isLinked()) {
+			addLine = "#include \"" + curResource.getLocation() + "\"" + NEWLINE;
+		} else {
+			addLine = "#include \"" + curResource.getName() + "\"" + NEWLINE;
+		}
+		// if the name of the ino/pde file matches the project put
+		// the file in front
+		// Otherwise add it to the end
+		if (curResource.getName().equals(curResource.getProject().getName() + "." + curResource.getFileExtension())) {
+			return addLine + existingIncludeCodePart;
+		}
+		return existingIncludeCodePart + addLine;
+
+	}
+
+	private static void deleteTheGeneratedFileInPreviousBersionsOfSloeber(IProject iProject) throws CoreException {
+		IResource inofile = iProject.findMember(oldGeneratedFile);
+		if (inofile != null) {
+			inofile.delete(true, null);
+		}
+	}
+
+	private static void deleteTheGeneratedFile(IProject iProject) throws CoreException {
+		IResource inofile = iProject.findMember(generatedFile);
+		if (inofile != null) {
+			inofile.delete(true, null);
 		}
 	}
 }
