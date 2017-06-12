@@ -775,7 +775,7 @@ public class Helpers extends Common {
 		// add the boards file
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsDescriptor, true);
 
-		String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
+		String programmer = boardsDescriptor.getUploadProtocol();
 		for (Programmers curProgrammer : localProgrammers) {
 			String programmerID = curProgrammer.getBoardIDFromBoardName(programmer);
 			if (programmerID != null) {
@@ -855,7 +855,7 @@ public class Helpers extends Common {
 			}
 		}
 
-		String programmer = contribEnv.getVariable(get_Jantje_KEY_PROTOCOL(ACTION_UPLOAD), confDesc).getValue();
+		String programmer = boardsDescriptor.getUploadProtocol();
 		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
 			String MComPort = boardsDescriptor.getUploadPort();
 			if (MComPort.isEmpty()) {
@@ -901,18 +901,6 @@ public class Helpers extends Common {
 				// get_ENV_KEY_TOOL(ACTION_PROGRAM),
 				// makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 			}
-		} else {
-			String uploadTool = new String();
-			try {
-				uploadTool = contribEnv.getVariable("A.PROGRAM.TOOL", confDesc).getValue();
-			} catch (Exception e) {
-				Common.log(
-						new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Helpers_ProblemInProgrammerFie, e));
-			}
-			setBuildEnvironmentVariable(contribEnv, confDesc, get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
-					makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool, ACTION_PROGRAM)));
-			setBuildEnvironmentVariable(contribEnv, confDesc, get_ENV_KEY_TOOL(ACTION_PROGRAM), uploadTool);
-
 		}
 
 		ArrayList<String> objcopyCommand = new ArrayList<>();

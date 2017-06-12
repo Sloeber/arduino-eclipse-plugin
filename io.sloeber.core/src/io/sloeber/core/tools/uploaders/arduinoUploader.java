@@ -36,7 +36,7 @@ public class arduinoUploader implements IRealUpload {
 	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, boolean usingProgrammer, IProgressMonitor monitor) {
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor) {
 		String MComPort = new String();
 		String boardName = new String();
 		boolean needsPassword = false;
@@ -45,7 +45,6 @@ public class arduinoUploader implements IRealUpload {
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.myProject);
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
-		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
 
 		try {
 			needsPassword = envManager.getVariable(Const.ENV_KEY_NETWORK_AUTH, configurationDescription, true)
@@ -53,7 +52,7 @@ public class arduinoUploader implements IRealUpload {
 		} catch (Exception e) {// ignore all errors
 		}
 		String NewSerialPort = boardDescriptor.getUploadPort();
-		if (!usingProgrammer) {
+		if (!boardDescriptor.usesProgrammer()) {
 			NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
 					this.mycConf, boardDescriptor);
 		}
@@ -68,13 +67,9 @@ public class arduinoUploader implements IRealUpload {
 			setEnvironmentvarsForAutorizedUpload(contribEnv, configurationDescription, MComPort);
 		}
 
-		String command = new String();
-		try {
-			command = envManager
-					.getVariable(Common.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
-					.getValue();
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to get the Upload recipe ", e)); //$NON-NLS-1$
+		String command = boardDescriptor.getUploadCommand(configurationDescription);
+		if (command == null) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to get the Upload recipe ")); //$NON-NLS-1$
 			return false;
 		}
 

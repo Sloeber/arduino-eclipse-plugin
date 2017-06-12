@@ -20,8 +20,6 @@ public class Const {
 	public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
 
 	// Actions
-	public static final String ACTION_UPLOAD = "UPLOAD";
-
 	public static final String ACTION_C_to_O = "RECIPE.C.O";
 	public static final String ACTION_CPP_to_O = "RECIPE.CPP.O";
 	public static final String ACTION_S_to_O = "RECIPE.S.O";

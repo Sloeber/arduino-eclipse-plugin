@@ -21,7 +21,6 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -59,8 +58,7 @@ public class UploadSketchWrapper {
 		ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(configName);
 
 		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(confDesc);
-		String UpLoadTool = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.ACTION_UPLOAD),
-				new String());
+		String UpLoadTool = boardDescriptor.getActualUploadProtocol();
 		String MComPort = boardDescriptor.getUploadPort();
 		String uploadClass = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 				new String());
@@ -103,7 +101,8 @@ public class UploadSketchWrapper {
 			uploadJobName = UpLoadTool;
 		}
 
-		Job uploadjob = new UploadJobWrapper(uploadJobName, project, configName, realUploader, MComPort);
+		Job uploadjob = new UploadJobWrapper(uploadJobName, project, configName, realUploader, MComPort,
+				boardDescriptor);
 		uploadjob.setRule(null);
 		uploadjob.setPriority(Job.LONG);
 		uploadjob.setUser(true);
@@ -147,14 +146,17 @@ public class UploadSketchWrapper {
 		String myNAmeTag;
 		IRealUpload myUploader;
 		String myComPort = new String();
+		BoardDescriptor myBoardDescriptor;
 
-		public UploadJobWrapper(String name, IProject project, String cConf, IRealUpload uploader, String comPort) {
+		public UploadJobWrapper(String name, IProject project, String cConf, IRealUpload uploader, String comPort,
+				BoardDescriptor boardDescriptor) {
 			super(name);
 			this.myNAmeTag = name.toUpperCase();
 			this.myProject = project;
 			this.myCConf = cConf;
 			this.myUploader = uploader;
 			this.myComPort = comPort;
+			this.myBoardDescriptor = boardDescriptor;
 		}
 
 		@Override
@@ -166,9 +168,6 @@ public class UploadSketchWrapper {
 				message += this.myNAmeTag + Const.SPACE;
 				// message+= this.+Const.SPACE;
 				monitor.beginTask(message, 2);
-				String programmer = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf,
-						Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), Defaults.getDefaultUploadProtocol());
-
 				try {
 					WeStoppedTheComPort = SerialManager.StopSerialMonitor(this.myComPort);
 				} catch (Exception e) {
@@ -176,8 +175,7 @@ public class UploadSketchWrapper {
 				}
 				IFile hexFile = this.myProject
 						.getFile(new Path(this.myCConf).append(this.myProject.getName() + ".hex")); //$NON-NLS-1$
-				if (this.myUploader.uploadUsingPreferences(hexFile,
-						!programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol()), monitor)) {
+				if (this.myUploader.uploadUsingPreferences(hexFile, this.myBoardDescriptor, monitor)) {
 					UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_Done);
 				} else {
 					UploadSketchWrapper.this.myHighLevelConsoleStream.println(Messages.Upload_failed_upload);

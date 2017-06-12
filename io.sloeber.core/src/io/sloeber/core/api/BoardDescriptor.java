@@ -66,6 +66,7 @@ public class BoardDescriptor {
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String PLATFORM_FILE_NAME = "platform.txt";
 	private static final String LIBRARY_PATH_SUFFIX = "libraries";
+	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";
 
 	/*
 	 * This is the basic info contained in the descriptor
@@ -296,8 +297,7 @@ public class BoardDescriptor {
 
 		} else {
 			this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_UPLOAD_PORT, "");
-			this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc,
-					Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD), "");
+			this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc, JANTJE_ACTION_UPLOAD, "");
 			this.myreferencingBoardsFile = new File(
 					Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARDS_FILE, ""));
 			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARD_ID, "");
@@ -545,8 +545,7 @@ public class BoardDescriptor {
 					this.myWorkSpaceLocation);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					this.myWorkEclipseLocation);
-			Common.setBuildEnvironmentVariable(confDesc, Common.get_Jantje_KEY_PROTOCOL(Const.ACTION_UPLOAD),
-					this.myUploadProtocol);
+			Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myUploadProtocol);
 			if (this.myOptions != null) {
 				for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
 					Common.setBuildEnvironmentVariable(contribEnv, confDesc, MENUSELECTION + curoption.getKey(),
@@ -822,8 +821,21 @@ public class BoardDescriptor {
 	}
 
 	public IPath getReferencingLibraryPath() {
-		// TODO Auto-generated method stub
 		return this.getreferencingPlatformPath().append(LIBRARY_PATH_SUFFIX);
+	}
+
+	public String getUploadCommand(ICConfigurationDescription confdesc) {
+		String upLoadProtocol = getActualUploadProtocol();
+		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadProtocol + ".UPLOAD.PATTERN",
+				upLoadProtocol);
+	}
+
+	public String getActualUploadProtocol() {
+		return this.myUploadTool;
+	}
+
+	public boolean usesProgrammer() {
+		return !this.myUploadProtocol.equals(Defaults.getDefaultUploadProtocol());
 	}
 
 }

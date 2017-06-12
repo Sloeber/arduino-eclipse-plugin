@@ -173,8 +173,7 @@ public class ArduinoSerial {
 				.equalsIgnoreCase(Const.TRUE);
 		String comPort = boardDescriptor.getUploadPort();
 		String boardName = boardDescriptor.getBoardName();
-		String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName,
-				Common.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), new String());
+		String uploadProtocol = boardDescriptor.getActualUploadProtocol();
 
 		boolean bResetPortForUpload = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)
