@@ -214,13 +214,21 @@ public class Library implements Comparable<Library> {
 		return this.name.compareTo(other.name);
 	}
 
+	/**
+	 * delete the library This will delete all installed versions of the
+	 * library. Normally only 1 version can be installed so deleting all
+	 * versions should be delete 1 version
+	 *
+	 * @param monitor
+	 * @return Status.OK_STATUS if delete is successful otherwise IStatus.ERROR
+	 */
 	public IStatus remove(IProgressMonitor monitor) {
 		if (!isInstalled()) {
 			return Status.OK_STATUS;
 		}
 
 		try {
-			FileUtils.deleteDirectory(getInstallPath().toFile());
+			FileUtils.deleteDirectory(getInstallPath().getParent().toFile());
 		} catch (IOException e) {
 			return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
 					e);
