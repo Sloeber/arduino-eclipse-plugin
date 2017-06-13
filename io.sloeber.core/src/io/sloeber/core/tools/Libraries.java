@@ -437,8 +437,8 @@ public class Libraries {
 				// overrule
 				doubleHeaders.add(curLibName);
 				map.remove(curLibName + ".h");
-			} else if (allHeaderFiles.length < 6) { // Ignore libraries with to
-													// many headers
+			} else if (allHeaderFiles.length <= 10) { // Ignore libraries with
+														// to many headers
 				for (File CurFile : allHeaderFiles) {
 					String curInclude = CurFile.getName().substring(0, CurFile.getName().length() - 2);
 
