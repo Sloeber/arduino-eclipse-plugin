@@ -1,6 +1,7 @@
 package io.sloeber.core.tools;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexFile;
@@ -401,9 +403,9 @@ public class Libraries {
 	}
 
 	/**
-	 * Builds a map of includes->libraries foe all headers not mapping
+	 * Builds a map of includes->libraries for all headers not mapping
 	 * libraryname.h If a include is found more than once in the libraries it is
-	 * not added to the list
+	 * not added to the list If a library has to many includes it is ignored
 	 *
 	 * @return
 	 */
@@ -422,25 +424,29 @@ public class Libraries {
 			if (sourcePath.append(Library.LIBRARY_SOURCE_FODER).toFile().exists()) {
 				sourcePath = sourcePath.append(Library.LIBRARY_SOURCE_FODER);
 			}
-			for (String CurFile : sourcePath.toFile().list()) {
-				// only look at header files
-				if (CurFile.endsWith(".h")) {//$NON-NLS-1$
-					String curInclude = CurFile.substring(0, CurFile.length() - 2);
+			File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".h");
+				}
+			});
+			if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) {
+				// We found a one to one match make sure others do not
+				// overrule
+				doubleHeaders.add(curLibName);
+				map.remove(curLibName + ".h");
+			} else if (allHeaderFiles.length < 6) { // Ignore libraries with to
+													// many headers
+				for (File CurFile : allHeaderFiles) {
+					String curInclude = CurFile.getName().substring(0, CurFile.getName().length() - 2);
 
-					if (curInclude.equals(curLibName)) {
-						// We found a one to one match make sure others do not
-						// overrule
-						doubleHeaders.add(curLibName);
-						map.remove(curInclude);
+					// here we have a lib using includes that do not map the
+					// folder name
+					if ((map.get(curInclude) == null) && (!doubleHeaders.contains(curInclude))) {
+						map.put(curInclude, curLibName);
 					} else {
-						// here we have a lib using includes that do not map the
-						// folder name
-						if ((map.get(curInclude) == null) && (!doubleHeaders.contains(curInclude))) {
-							map.put(curInclude, curLibName);
-						} else {
-							doubleHeaders.add(curInclude);
-							map.remove(curInclude);
-						}
+						doubleHeaders.add(curInclude);
+						map.remove(curInclude);
 					}
 				}
 			}
