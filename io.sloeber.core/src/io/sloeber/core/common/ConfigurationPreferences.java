@@ -34,6 +34,7 @@ import io.sloeber.core.Activator;
 public class ConfigurationPreferences {
 
 	private static String stringSplitter = "\n";//$NON-NLS-1$
+	private static final String EXAMPLE_FOLDER_NAME = "examples"; //$NON-NLS-1$
 	private static final String DOWNLOADS_FOLDER = "downloads"; //$NON-NLS-1$
 	private static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
 	private static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt"; //$NON-NLS-1$
@@ -49,7 +50,9 @@ public class ConfigurationPreferences {
 			// //$NON-NLS-1$
 			+ System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
-	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
+	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
 	private ConfigurationPreferences() {
 	}
@@ -115,15 +118,19 @@ public class ConfigurationPreferences {
 	}
 
 	public static IPath getInstallationPathLibraries() {
-		return getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX);
+		return getInstallationPath().append(LIBRARY_PATH_SUFFIX);
 	}
 
 	public static IPath getInstallationPathExamples() {
-		return getInstallationPath().append(Const.EXAMPLE_FOLDER_NAME);
+		return getInstallationPath().append(EXAMPLE_FOLDER_NAME);
 	}
 
 	public static IPath getInstallationPathDownload() {
 		return getInstallationPath().append(DOWNLOADS_FOLDER);
+	}
+
+	public static IPath getInstallationPathPackages() {
+		return getInstallationPath().append(PACKAGES_FOLDER_NAME);
 	}
 
 	/**

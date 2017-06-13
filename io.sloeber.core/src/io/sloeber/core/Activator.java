@@ -32,7 +32,6 @@ import org.osgi.service.prefs.BackingStoreException;
 import cc.arduino.packages.discoverers.NetworkDiscovery;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
@@ -62,6 +61,10 @@ abstract class FamilyJob extends Job {
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
+	// TOFIX I think the fix below for unix users is no longer needed and we no
+	// longer use the rxtx dll
+	public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
+	public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
 
 	// The shared instance
 	private static final String FLAG_START = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
@@ -88,8 +91,8 @@ public class Activator extends AbstractUIPlugin {
 
 		// add required properties for Arduino serial port on linux, if not
 		// defined
-		if (Platform.getOS().equals(Platform.OS_LINUX) && System.getProperty(Const.ENV_KEY_GNU_SERIAL_PORTS) == null) {
-			System.setProperty(Const.ENV_KEY_GNU_SERIAL_PORTS, Const.ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
+		if (Platform.getOS().equals(Platform.OS_LINUX) && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
+			System.setProperty(ENV_KEY_GNU_SERIAL_PORTS, ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
 		}
 		remind();
 

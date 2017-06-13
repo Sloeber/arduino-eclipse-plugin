@@ -2,6 +2,7 @@ package io.sloeber.core.api;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -22,6 +24,7 @@ import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
+import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.LibraryIndex;
@@ -313,6 +316,8 @@ public class LibraryManager {
 				}
 			}
 		}
+		// Base64 is a 1.0.0 version replaced with base64 So Don't install it
+		latestLibs.remove("Base64"); //$NON-NLS-1$
 		for (Map.Entry<String, Library> entry : latestLibs.entrySet()) {
 			String curLibName = entry.getKey();
 			Library curLibrary = entry.getValue();
@@ -332,6 +337,15 @@ public class LibraryManager {
 
 	public static void flushIndices() {
 		libraryIndices = new ArrayList<>();
+	}
+
+	public static void removeAllLibs() {
+		try {
+			FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathLibraries().toFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

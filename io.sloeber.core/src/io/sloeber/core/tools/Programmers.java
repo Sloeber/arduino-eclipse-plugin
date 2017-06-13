@@ -63,7 +63,7 @@ public class Programmers extends TxtFile {
 	}
 
 	public static Programmers[] fromBoards(BoardDescriptor boardsDescriptor) {
-		return fromBoards(boardsDescriptor.getBoardsFile());
+		return fromBoards(boardsDescriptor.getReferencingBoardsFile());
 	}
 
 }

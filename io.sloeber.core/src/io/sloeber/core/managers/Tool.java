@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 
 public class Tool {
 
@@ -52,8 +51,8 @@ public class Tool {
 	}
 
 	public Path getInstallPath() {
-		return Paths.get(ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
-				.append(this.pkg.getName()).append(TOOLS).append(this.name).append(this.version).toString());
+		return Paths.get(ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
+				.append(this.name).append(this.version).toString());
 
 	}
 

@@ -30,8 +30,8 @@ public class InternalBoardDescriptor extends BoardDescriptor {
 	}
 
 	public InternalBoardDescriptor(TxtFile txtFile, String boardID) {
-		this.myTxtFile = txtFile;
-		setBoardID(boardID);
+		super(txtFile, boardID);
+
 	}
 
 	public TxtFile getTxtFile() {

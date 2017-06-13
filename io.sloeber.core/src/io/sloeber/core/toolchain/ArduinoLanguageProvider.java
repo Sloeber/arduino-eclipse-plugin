@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsEditableProvider;
 import org.eclipse.cdt.core.language.settings.providers.IWorkingDirectoryTracker;
@@ -19,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -156,14 +156,16 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 			}
 		}
 		// End of Bug fix for CDT 8.1 fixed in 8.2
+
 		String recipeKey = new String();
-		String OptionKey = new String();
+		String extraOptions = new String();
+		CompileOptions compileOptions = new CompileOptions(confDesc);
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
 			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O);
-			OptionKey = Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS;
+			extraOptions = compileOptions.getMyAditional_C_CompileOptions();
 		} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
 			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O);
-			OptionKey = Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS;
+			extraOptions = compileOptions.getMyAditional_CPP_CompileOptions();
 		} else {
 			ManagedBuilderCorePlugin.error(
 					"Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId());
@@ -178,15 +180,8 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		} catch (Exception e) {
 			compilerCommand = new String();
 		}
-		IEnvironmentVariable op1 = envManager.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc,
-				true);
-		IEnvironmentVariable op2 = envManager.getVariable(OptionKey, confDesc, true);
-		if (op1 != null) {
-			compilerCommand = compilerCommand + ' ' + op1.getValue();
-		}
-		if (op2 != null) {
-			compilerCommand = compilerCommand + ' ' + op2.getValue();
-		}
+
+		compilerCommand = compilerCommand + ' ' + extraOptions;
 
 		return compilerCommand.replaceAll(" -o ", " ");
 	}

@@ -29,6 +29,10 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 public class CreateAndCompile {
 	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
+	// TODO boards to investigate
+	// tinyx313 tinyx4
+	// tinyx5
+	// atmegax4 atmegax8
 
 	public CreateAndCompile(BoardDescriptor board) {
 		this.mBoard = board;
@@ -124,7 +128,9 @@ public class CreateAndCompile {
 				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
-				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json" };
+				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
+				"http://downloads.sodaq.net/package_samd_sodaq_index.json",
+				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());

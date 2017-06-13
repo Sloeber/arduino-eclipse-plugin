@@ -18,55 +18,63 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.managers.Messages;
 import io.sloeber.core.tools.Libraries;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {
-    protected Set<IProject> ChangedProjects = new HashSet<>();
-    Job installLibJob = null;
+	protected Set<IProject> ChangedProjects = new HashSet<>();
+	Job installLibJob = null;
 
-    @Override
-    public void indexChanged(IIndexChangeEvent event) {
-	IProject project = event.getAffectedProject().getProject();
-	try {
-	    if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
-		this.ChangedProjects.add(project);
-	    }
-	} catch (CoreException e) {
-	    // ignore
-	    e.printStackTrace();
-	}
-
-    }
-
-    @Override
-    public void indexChanged(IIndexerStateEvent event) {
-
-	if (event.indexerIsIdle()) {
-	    if (InstancePreferences.getAutomaticallyImportLibraries()) {
-		if (this.installLibJob == null) {
-		    this.installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-			    for (IProject curProject : IndexerListener.this.ChangedProjects) {
-				Libraries.checkLibraries(curProject);
-			    }
-			    IndexerListener.this.ChangedProjects.clear();
-			    IndexerListener.this.installLibJob = null;
-			    return Status.OK_STATUS;
+	@Override
+	public void indexChanged(IIndexChangeEvent event) {
+		IProject project = event.getAffectedProject().getProject();
+		try {
+			if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
+				this.ChangedProjects.add(project);
 			}
-
-		    };
-
-		    this.installLibJob.setPriority(Job.DECORATE);
-		    this.installLibJob.schedule();
+		} catch (CoreException e) {
+			// ignore
+			e.printStackTrace();
 		}
 
-	    }
-
 	}
-    }
+
+	@Override
+	public void indexChanged(IIndexerStateEvent event) {
+
+		if (event.indexerIsIdle()) {
+			if (InstancePreferences.getAutomaticallyImportLibraries()) {
+				if ((this.installLibJob == null) || (this.installLibJob.getState() == Job.NONE)) {
+					this.installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
+
+						@Override
+						protected IStatus run(IProgressMonitor monitor) {
+							try {
+								for (IProject curProject : IndexerListener.this.ChangedProjects) {
+									Libraries.checkLibraries(curProject);
+								}
+								IndexerListener.this.ChangedProjects.clear();
+							} catch (Exception e) {
+								Common.log(new Status(IStatus.WARNING, Activator.getId(),
+										Messages.Failed_To_Add_Libraries, e));
+							}
+							IndexerListener.this.installLibJob = null;
+							return Status.OK_STATUS;
+						}
+
+					};
+
+					this.installLibJob.setPriority(Job.DECORATE);
+					this.installLibJob.schedule();
+				}
+
+			}
+
+		}
+	}
 
 }

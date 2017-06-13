@@ -107,6 +107,8 @@ public class Messages extends NLS {
 
 	public static String Set_or_Remove_password;
 
+	public static String ui_pragma_once_headers;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

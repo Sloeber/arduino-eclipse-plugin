@@ -18,6 +18,7 @@ import cc.arduino.packages.ssh.SSH;
 import cc.arduino.packages.ssh.SSHClientSetupChainRing;
 import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
 
@@ -44,9 +45,9 @@ public class SSHUpload implements IRealUpload {
 	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, boolean usingProgrammer, IProgressMonitor monitor) {
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor) {
 		boolean ret = true;
-		if (usingProgrammer) {
+		if (boardDescriptor.usesProgrammer()) {
 			this.myHighLevelConsoleStream.println(Messages.Upload_error_network);
 			return false;
 		}

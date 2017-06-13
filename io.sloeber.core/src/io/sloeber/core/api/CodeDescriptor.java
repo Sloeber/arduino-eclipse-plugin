@@ -3,6 +3,8 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Stream;
 
@@ -36,6 +39,12 @@ public class CodeDescriptor {
 	static public final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
 	static public final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
 	static public final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
+	//
+	// template Sketch information
+
+	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = Const.ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
+			+ "TEMPLATE_USE_DEFAULT"; //$NON-NLS-1$
 
 	private CodeTypes codeType;
 	private IPath myTemPlateFoldername;
@@ -73,12 +82,12 @@ public class CodeDescriptor {
 
 	public static CodeDescriptor createLastUsed() {
 
-		String typeDescriptor = InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
+		String typeDescriptor = InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
 				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescriptor ret = new CodeDescriptor(codeType);
 		ret.myTemPlateFoldername = new Path(
-				InstancePreferences.getGlobalString(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
+				InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();
 		return ret;
 	}
@@ -99,21 +108,23 @@ public class CodeDescriptor {
 	 */
 	public void save() {
 		if (this.myTemPlateFoldername != null) {
-			InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
+			InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
 					this.myTemPlateFoldername.toString());
 		}
-		InstancePreferences.setGlobalValue(Const.ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
+		InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
 		saveLastUsedExamples();
 	}
 
 	/*
-	 * given the source descriptor, add the sources to the project
+	 * given the source descriptor, add the sources to the project returns a set
+	 * of libraries that need to be installed
 	 */
 	@SuppressWarnings("nls")
-	public void createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+	public Set<String> createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+		Set<String> libraries = new TreeSet<>();
 
 		this.save();
-		String Include = "Arduino.h";
+		String Include = "Arduino.h"; //$NON-NLS-1$
 
 		switch (this.codeType) {
 		case defaultIno:
@@ -158,19 +169,19 @@ public class CodeDescriptor {
 			try {
 				for (Path curPath : this.myExamples) {
 					if (this.myMakeLinks) {
-						Helpers.linkDirectory(project, curPath, new Path("/"));
+						Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
 					} else {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
+						FileModifiers.addPragmaOnce(curPath);
 					}
+					libraries.add(getLibraryName(curPath));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			break;
-		default:
-
-			break;
 		}
+		return libraries;
 	}
 
 	@SuppressWarnings("nls")
@@ -201,4 +212,49 @@ public class CodeDescriptor {
 		return this.codeType;
 	}
 
+	/**
+	 * Get the name of the example for this project descriptor This is only
+	 * "known in case of examples" as in all other cases the name will be
+	 * project related which is unknown in this case. This method only exists to
+	 * support unit testing where one knows only 1 example is selected
+	 *
+	 * @return the name of the first selected example in case of sample in all
+	 *         other cases null
+	 */
+	public String getExampleName() {
+		switch (this.codeType) {
+		case sample:
+			return this.myExamples.get(0).lastSegment();
+		default:
+			break;
+		}
+		return null;
+	}
+
+	/**
+	 * Get the name of the library for this project descriptor This is only
+	 * "known in case of examples" as in all other cases the name will be
+	 * project related which is unknown in this case. This method only exists to
+	 * support unit testing where one knows only 1 example is selected
+	 *
+	 * @return the name of the first selected example in case of sample in all
+	 *         other cases null
+	 */
+	public String getLibraryName() {
+		switch (this.codeType) {
+		case sample:
+			return getLibraryName(this.myExamples.get(0));
+		default:
+			break;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("nls")
+	public static String getLibraryName(Path examplePath) {
+		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
+			return examplePath.removeLastSegments(3).lastSegment();
+		}
+		return examplePath.removeLastSegments(2).lastSegment();
+	}
 }

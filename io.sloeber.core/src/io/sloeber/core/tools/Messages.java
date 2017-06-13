@@ -37,6 +37,7 @@ public class Messages extends NLS {
 	public static String security_login;
 	public static String security_password;
 	public static String getMenuItemIDFromMenuItemName;
+	public static String EmptyLibFolder;
 
 	static {
 		// initialize resource bundle

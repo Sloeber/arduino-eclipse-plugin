@@ -1,13 +1,17 @@
 package io.sloeber.core.tools;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.index.IIndexFile;
@@ -17,6 +21,9 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.core.settings.model.ICResourceDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -26,12 +33,17 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.managers.Library;
 
 public class Libraries {
+	public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
+
 	/**
 	 * for a given folder return all subfolders
 	 *
@@ -66,19 +78,20 @@ public class Libraries {
 	 *
 	 * @param project
 	 *            the project to find all hardware libraries for
-	 * @return all the library folder names. May contain empty values. This
-	 *         method does not return the full path only the leaves.
+	 * @return all the library folder names. May contain empty values.
 	 */
 	private static Map<String, IPath> findAllHarwareLibraries(ICConfigurationDescription confdesc) {
-		String platformFile = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_PLATFORM_FILE,
-				new String());
-		IPath LibraryFolder = new Path(platformFile).removeLastSegments(1).append(Const.LIBRARY_PATH_SUFFIX);
-		Map<String, IPath> ret = findAllSubFolders(LibraryFolder);
-		String platform = Common.getBuildEnvironmentVariable(confdesc, Const.ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM,
-				null);
-		if (platform != null) {
-			LibraryFolder = new Path(platformFile).append(Const.LIBRARY_PATH_SUFFIX);
-			ret.putAll(findAllSubFolders(LibraryFolder));
+		Map<String, IPath> ret = new HashMap<>();
+		BoardDescriptor boardDescriptor = new InternalBoardDescriptor(confdesc);
+		// first add the referenced
+		IPath libPath = boardDescriptor.getReferencedLibraryPath();
+		if (libPath != null) {
+			ret.putAll(findAllSubFolders(libPath));
+		}
+		// then add the referencing
+		libPath = boardDescriptor.getReferencingLibraryPath();
+		if (libPath != null) {
+			ret.putAll(findAllSubFolders(libPath));
 		}
 		return ret;
 	}
@@ -108,19 +121,22 @@ public class Libraries {
 
 					String[] versions = Lib_root.toFile().list();
 					if (versions != null) {
-						if (versions.length == 1) {// There should only be 1
-							// version of a lib
+						switch (versions.length) {
+						case 0:// A empty lib folder is hanging around
+							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+									Messages.EmptyLibFolder.replace("${LIB}", curLib))); //$NON-NLS-1$
+							break;
+						case 1:// There should only be 1
 							ret.put(curLib, Lib_root.append(versions[0]));
-						} else {
-							if (versions != null && versions.length > 0) {
 
-								// If there is more than 1 take the latest and
-								// drop a warning
-								int highestVersion = Version.getHighestVersionn(versions);
-								ret.put(curLib, Lib_root.append(versions[highestVersion]));
-								Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-										Messages.MultipleVersionsOfLib.replace("${LIB}", curLib))); //$NON-NLS-1$
-							}
+							break;
+						default:// multiple lib versions are installed take the
+								// latest
+							int highestVersion = Version.getHighestVersion(versions);
+							ret.put(curLib, Lib_root.append(versions[highestVersion]));
+							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+									Messages.MultipleVersionsOfLib.replace("${LIB}", curLib))); //$NON-NLS-1$
+
 						}
 					}
 				}
@@ -144,7 +160,7 @@ public class Libraries {
 			Set<String> libraries) {
 		for (String CurItem : libraries) {
 			try {
-				final IFolder folderHandle = project.getFolder(Const.WORKSPACE_LIB_FOLDER + CurItem);
+				final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
 				folderHandle.delete(true, null);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.failed_to_remove_lib, e));
@@ -169,18 +185,61 @@ public class Libraries {
 		addLibrariesToProject(project, confdesc, libraries);
 	}
 
+	/**
+	 * Adds one or more libraries to a project in a configuration
+	 *
+	 * @param project
+	 *            the project to add the libraries to
+	 * @param confdesc
+	 *            the confdesc of the project
+	 * @param libraries
+	 *            the list of libraries to add
+	 * @return true if the configuration description has changed
+	 */
 	private static void addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
 			Map<String, IPath> libraries) {
-
+		List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
 		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 			try {
 
-				Helpers.addCodeFolder(project, CurItem.getValue(), Const.WORKSPACE_LIB_FOLDER + CurItem.getKey(),
-						confdesc);
+				Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 			}
+			// Check the libraries to see if there are "unwanted subfolders"
+			File subFolders[] = CurItem.getValue().toFile().listFiles();
+			for (File file : subFolders) {
+				if (file.isDirectory() && !"src".equals(file.getName()) && !"utility".equals(file.getName()) //$NON-NLS-1$ //$NON-NLS-2$
+						&& !"examples".equalsIgnoreCase(file.getName())) { //$NON-NLS-1$
+					IPath excludePath = new Path("/" + project.getName()).append(WORKSPACE_LIB_FOLDER) //$NON-NLS-1$
+							.append(CurItem.getKey()).append(file.getName());
+					foldersToRemoveFromBuildPath.add(excludePath);
+
+				}
+			}
 		}
+		if (!foldersToRemoveFromBuildPath.isEmpty()) {
+
+			ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
+			ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
+			for (IPath curFile : foldersToRemoveFromBuildPath) {
+
+				try {
+
+					sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
+
+				} catch (CoreException e1) {
+					// ignore
+				}
+			}
+			try {
+				cfgd.getConfiguration().setSourceEntries(sourceEntries);
+			} catch (Exception e) {
+				// ignore
+			}
+
+		}
+
 	}
 
 	// public static void removeLibrariesFromProject(Set<String> libraries) {
@@ -188,7 +247,7 @@ public class Libraries {
 	// }
 
 	public static Set<String> getAllLibrariesFromProject(IProject project) {
-		IFolder link = project.getFolder(Const.WORKSPACE_LIB_FOLDER);
+		IFolder link = project.getFolder(WORKSPACE_LIB_FOLDER);
 		Set<String> ret = new TreeSet<>();
 		try {
 			if (link.exists()) {
@@ -294,6 +353,7 @@ public class Libraries {
 	}
 
 	public static void checkLibraries(IProject affectedProject) {
+		Map<String, String> includeHeaderReplacement = getIncludeHeaderReplacement();
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		if (mngr != null) {
 			ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
@@ -303,8 +363,18 @@ public class Libraries {
 
 					Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
 					Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
+					// remove pgmspace as it gives a problem
+					UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
+
+					for (Map.Entry<String, String> entry : includeHeaderReplacement.entrySet()) {
+						if (UnresolvedIncludedHeaders.contains(entry.getKey())) {
+							UnresolvedIncludedHeaders.remove(entry.getKey());
+							UnresolvedIncludedHeaders.add(entry.getValue());
+						}
+					}
 					Map<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
 					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
+
 					availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
 					if (!availableLibs.isEmpty()) {
 						// there are possible libraries to add
@@ -314,12 +384,86 @@ public class Libraries {
 						try {
 							mngr.setProjectDescription(affectedProject, projectDescription, true, null);
 						} catch (CoreException e) {
-							e.printStackTrace();
+							// this can fail because the project may already
+							// be
+							// deleted
 						}
+
 					}
 				}
 			}
 		}
 	}
 
+	private static Map<String, String> myIncludeHeaderReplacement;
+
+	private static Map<String, String> getIncludeHeaderReplacement() {
+		if (myIncludeHeaderReplacement == null) {
+			myIncludeHeaderReplacement = buildincludeHeaderReplacementMap();
+		}
+		return myIncludeHeaderReplacement;
+	}
+
+	/**
+	 * Builds a map of includes->libraries for all headers not mapping
+	 * libraryname.h If a include is found more than once in the libraries it is
+	 * not added to the list If a library has to many includes it is ignored
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("nls")
+	private static Map<String, String> buildincludeHeaderReplacementMap() {
+
+		Map<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		LinkedList<String> doubleHeaders = new LinkedList<>();
+		TreeMap<String, IPath> libraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+		libraries.putAll(findAllArduinoManagerLibraries());
+		libraries.putAll(findAllPrivateLibraries());
+		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
+			IPath sourcePath = CurItem.getValue();
+			String curLibName = CurItem.getKey();
+			if (sourcePath.append(Library.LIBRARY_SOURCE_FODER).toFile().exists()) {
+				sourcePath = sourcePath.append(Library.LIBRARY_SOURCE_FODER);
+			}
+			File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".h");
+				}
+			});
+			if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) {
+				// We found a one to one match make sure others do not
+				// overrule
+				doubleHeaders.add(curLibName);
+				map.remove(curLibName + ".h");
+			} else if (allHeaderFiles.length < 6) { // Ignore libraries with to
+													// many headers
+				for (File CurFile : allHeaderFiles) {
+					String curInclude = CurFile.getName().substring(0, CurFile.getName().length() - 2);
+
+					// here we have a lib using includes that do not map the
+					// folder name
+					if ((map.get(curInclude) == null) && (!doubleHeaders.contains(curInclude))) {
+						map.put(curInclude, curLibName);
+					} else {
+						doubleHeaders.add(curInclude);
+						map.remove(curInclude);
+					}
+				}
+			}
+		}
+		// return KeyValue.makeMap(
+		// "AFMotor=Adafruit_Motor_Shield_library\nAdafruit_MotorShield=Adafruit_Motor_Shield_V2_Library\nAdafruit_Simple_AHRS=Adafruit_AHRS\nAdafruit_ADS1015=Adafruit_ADS1X15\nAdafruit_ADXL345_U=Adafruit_ADXL345\n\nAdafruit_LSM303_U=Adafruit_LSM303DLHC\nAdafruit_BMP085_U=Adafruit_BMP085_Unified\nAdafruit_BLE=Adafruit_BluefruitLE_nRF51");
+		// //$NON-NLS-1$
+		// add adrfruit sensor as this lib is highly used and the header is in
+		// libs
+		map.put("Adafruit_Sensor", "Adafruit_Unified_Sensor");
+		// remove the common hardware libraries so they will never be redirected
+		map.remove("SPI");
+		map.remove("SoftwareSerial");
+		map.remove("HID");
+		map.remove("EEPROM");
+		return map;
+	}
 }
