@@ -128,6 +128,7 @@ public class Libraries {
 							break;
 						case 1:// There should only be 1
 							ret.put(curLib, Lib_root.append(versions[0]));
+
 							break;
 						default:// multiple lib versions are installed take the
 								// latest
@@ -135,6 +136,7 @@ public class Libraries {
 							ret.put(curLib, Lib_root.append(versions[highestVersion]));
 							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 									Messages.MultipleVersionsOfLib.replace("${LIB}", curLib))); //$NON-NLS-1$
+
 						}
 					}
 				}
