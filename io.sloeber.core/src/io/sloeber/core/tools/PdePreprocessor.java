@@ -195,8 +195,14 @@ public class PdePreprocessor {
 				case ICElement.C_VARIABLE:
 					IVariable curVardeclar = (IVariable) curElement;
 					if (curVardeclar.isActive()) {
-						localHeader += "extern " + curVardeclar.getTypeName() + " " + curVardeclar.getElementName()
-								+ ";" + NEWLINE;
+						String fullTypeName = curVardeclar.getTypeName();
+						// ignore double arrays
+						if (fullTypeName.indexOf('[') == fullTypeName.lastIndexOf('[')) {
+							String typeName = fullTypeName.replace('[', ' ').replace(']', ' ').trim();
+							String typeExtensions = fullTypeName.replace(typeName, "");
+							localHeader += "extern " + typeName + " " + curVardeclar.getElementName() + typeExtensions
+									+ ";" + NEWLINE;
+						}
 					}
 					break;
 				case ICElement.C_INCLUDE:
