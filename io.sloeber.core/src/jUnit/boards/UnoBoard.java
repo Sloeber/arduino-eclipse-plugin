@@ -4,6 +4,8 @@ package jUnit.boards;
 public class UnoBoard extends GenericArduinoAvrBoard {
 	public UnoBoard() {
 		super("uno");
+		this.myBoardDescriptor.setUploadPort("COM6");
+
 	}
 
 }

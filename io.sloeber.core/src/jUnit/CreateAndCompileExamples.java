@@ -38,6 +38,7 @@ import jUnit.boards.Primo;
 import jUnit.boards.UnoBoard;
 import jUnit.boards.Zero;
 import jUnit.boards.leonardoBoard;
+import jUnit.boards.megaBoard;
 import jUnit.boards.mkrfox1200;
 
 @SuppressWarnings("nls")
@@ -62,9 +63,8 @@ public class CreateAndCompileExamples {
 		WaitForInstallerToFinish();
 
 		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
-				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(),
-				new GenericArduinoAvrBoard("mega"), new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200(),
-				new Due() };
+				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(), new megaBoard(),
+				new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200(), new Due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();

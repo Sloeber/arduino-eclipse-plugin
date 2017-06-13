@@ -66,7 +66,9 @@ public abstract class IBoard {
 				"Awesome examples? advanced?how_fast", "Awesome examples? advanced?lie_detector",
 				"AzureIoTUtility examples?simplesample_http", "BLEPeripheral examples?ir_bridge",
 				"BLEPeripheral examples?temp_sensor", "Brasilino examples? Basicos?controleGradual",
-				"ClosedCube_HDC1010 examples?hdc1010demo" });
+				"ClosedCube_HDC1010 examples?hdc1010demo", "Chrono examples?Resolutions", "Chrono examples?StopResume",
+				"ConfigurableFirmata examples?ConfigurableFirmataWiFi", "ControleForno examples?configuravel",
+				"CopyThreads examples?c" });
 		runSketchOnBoard.put("fix case Sensitive include first",
 				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
 						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
@@ -79,7 +81,8 @@ public abstract class IBoard {
 						"ArduinoMenu_library examples? esp8266? XmlServer?XmlServer",
 						"ArduinoMqtt examples?ConnectEsp8266WiFiClient", "aREST examples?ESP8266",
 						"aREST examples?ESP8266_cloud", "aREST examples?ESP8266_cloud_and_local",
-						"aREST examples?ESP8266_cloud_pro", "aREST examples?ESP8266_softAP", "aREST_UI examples?ESP8266"
+						"aREST examples?ESP8266_cloud_pro", "aREST examples?ESP8266_softAP",
+						"aREST_UI examples?ESP8266", "ConfigManagerexamples"
 
 				});
 		runSketchOnBoard.put("gemma",
@@ -115,14 +118,12 @@ public abstract class IBoard {
 	private void createDoNotTestTheseLibs() {
 		this.doNotTestTheseLibs = new ArrayList<>();
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
-		runLibOnBoard.put("no Board",
-				new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library", "Adafruit_HX8340B",
-						"Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash", "Adafruit_SSD1325",
-						"ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil", "ArduinoMenu_library",
-						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80",
-						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief",
-						"Brzo_I2Cexamples", "BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library",
-						"Comp6DOF_n0m1 examples?Tilt_comp_6dof_example" });
+		runLibOnBoard.put("no Board", new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library",
+				"Adafruit_HX8340B", "Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash",
+				"Adafruit_SSD1325", "ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil",
+				"ArduinoMenu_library", "ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC",
+				"ArduZ80", "AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
+				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation" });
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library" });
@@ -131,8 +132,8 @@ public abstract class IBoard {
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
 		runLibOnBoard.put("nodeMCU",
 				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "AzureIoTHub",
-						"AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "CMMC_Easy",
-						"CMMC_MQTT_Connector examples? ibm bluemix?bluemix_authentication" });
+						"AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "CMMC_Easy", "CMMC_MQTT_Connector",
+						"CMMC_OTA", "CMMC_WiFi_Connector" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library" });

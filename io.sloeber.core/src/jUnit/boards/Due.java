@@ -13,7 +13,7 @@ public class Due extends IBoard {
 		if (this.myBoardDescriptor == null) {
 			fail("Due Board not found");
 		}
-		this.myBoardDescriptor.setUploadPort("none");
+		this.myBoardDescriptor.setUploadPort("COM8");
 	}
 
 	@Override
