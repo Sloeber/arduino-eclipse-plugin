@@ -773,7 +773,7 @@ public class Helpers extends Common {
 		// add the boards file
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, boardsDescriptor, true);
 
-		String programmer = boardsDescriptor.getUploadProtocol();
+		String programmer = boardsDescriptor.getProgrammer();
 		for (Programmers curProgrammer : localProgrammers) {
 			String programmerID = curProgrammer.getBoardIDFromBoardName(programmer);
 			if (programmerID != null) {
@@ -853,7 +853,7 @@ public class Helpers extends Common {
 			}
 		}
 
-		String programmer = boardsDescriptor.getUploadProtocol();
+		String programmer = boardsDescriptor.getProgrammer();
 		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
 			String MComPort = boardsDescriptor.getUploadPort();
 			if (MComPort.isEmpty()) {

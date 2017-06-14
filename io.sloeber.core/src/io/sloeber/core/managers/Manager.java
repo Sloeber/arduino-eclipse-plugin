@@ -154,7 +154,7 @@ public class Manager {
 			Path localMakePath = Paths.get(ConfigurationPreferences.getMakePath().toString());
 			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
 				mstatus.addErrors(
-						downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
+						downloadAndInstall("https://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
 								forceDownload, monitor));
 			}
 		}
@@ -205,7 +205,7 @@ public class Manager {
 	 * @return the file that represents the file on Baeyens.it
 	 */
 	private static String getBaeyensItAlternativeDownload(String localFileName) {
-		return "http://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
+		return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
 	}
 
 	/**

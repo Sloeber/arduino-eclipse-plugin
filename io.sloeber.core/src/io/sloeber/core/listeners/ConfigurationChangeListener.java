@@ -77,7 +77,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 									0);
 
 							if (dialog.open() == 0) {
-								org.eclipse.swt.program.Program.launch("http://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
+								org.eclipse.swt.program.Program.launch("https://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
 							}
 						}
 					}

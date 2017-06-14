@@ -68,7 +68,9 @@ public abstract class IBoard {
 				"BLEPeripheral examples?temp_sensor", "Brasilino examples? Basicos?controleGradual",
 				"ClosedCube_HDC1010 examples?hdc1010demo", "Chrono examples?Resolutions", "Chrono examples?StopResume",
 				"ConfigurableFirmata examples?ConfigurableFirmataWiFi", "ControleForno examples?configuravel",
-				"CopyThreads examples?c" });
+				"CopyThreads examples?c", "ArduinoCloud examples?SimpleCloudButtonYun", "Brzo_I2Cexamples",
+				"CopyThreads examples?ExamplesFromReadme", "DallasTemperature examples?Multibus_simple",
+				"DecodeIR examples?InfraredDecode" });
 		runSketchOnBoard.put("fix case Sensitive include first",
 				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
 						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
@@ -123,10 +125,12 @@ public abstract class IBoard {
 				"Adafruit_SSD1325", "ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil",
 				"ArduinoMenu_library", "ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC",
 				"ArduZ80", "AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
-				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation" });
+				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation",
+				"CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "dcf77_xtal examples?DCF77_Scope" });
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
-						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library" });
+						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
+						"DCF77 examples?DCFBinaryStream", "DDS examples?SimpleSin" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });

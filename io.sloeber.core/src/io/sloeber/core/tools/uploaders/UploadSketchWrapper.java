@@ -58,7 +58,7 @@ public class UploadSketchWrapper {
 		ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(configName);
 
 		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(confDesc);
-		String UpLoadTool = boardDescriptor.getActualUploadProtocol();
+		String UpLoadTool = boardDescriptor.getActualUploadTool(confDesc);
 		String MComPort = boardDescriptor.getUploadPort();
 		String uploadClass = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 				new String());
