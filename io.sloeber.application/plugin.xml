@@ -112,7 +112,7 @@
          </property>
          <property
                name="aboutText"
-               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: http://eclipse.baeyens.it/&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0A;Binaries: http://eclipse.baeyens.it/download.php&#x0A;&#x0A;Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler, &#x0A;darcade, amorellgarcia, MarceloLimori&#x0A;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
+               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://eclipse.baeyens.it/&#x0A;Source: https://github.com/jantje/arduino-eclipse-plugin&#x0A;Binaries: https://eclipse.baeyens.it/download.php&#x0A;&#x0A;Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler, &#x0A;darcade, amorellgarcia, MarceloLimori&#x0A;&#x0A;https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors">
          </property>
          <property
                name="aboutImage"

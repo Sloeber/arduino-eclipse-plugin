@@ -465,7 +465,7 @@ The color used by the fourth serial connection of the serial monitor
                 style="push">
              <parameter
                    name="io.sloeber.core.link.parameter"
-                   value="http://eclipse.baeyens.it/how_to.shtml">
+                   value="https://eclipse.baeyens.it/how_to.shtml">
              </parameter>
           </command>
           <command
@@ -476,7 +476,7 @@ The color used by the fourth serial connection of the serial monitor
                 style="push">
              <parameter
                    name="io.sloeber.core.link.parameter"
-                   value="http://eclipse.baeyens.it/learn.shtml">
+                   value="https://eclipse.baeyens.it/learn.shtml">
              </parameter>
           </command>
           <command
@@ -497,7 +497,7 @@ The color used by the fourth serial connection of the serial monitor
                 style="push">
              <parameter
                    name="io.sloeber.core.link.parameter"
-                   value="http://baeyens.it/eclipse/github_status.php?majorVersion=${MAJOR_VERSION}&amp;minorVersion=${MINOR_VERSION}&amp;microVersion=${MICRO_VERSION}&amp;qualifierVersion=${QUALIFIER_VERSION}">
+                   value="https://baeyens.it/eclipse/github_status.php?majorVersion=${MAJOR_VERSION}&amp;minorVersion=${MINOR_VERSION}&amp;microVersion=${MICRO_VERSION}&amp;qualifierVersion=${QUALIFIER_VERSION}">
              </parameter>
           </command>
           <separator
