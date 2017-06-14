@@ -255,6 +255,9 @@ public class CodeDescriptor {
 		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
 			return examplePath.removeLastSegments(3).lastSegment();
 		}
+		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(5).lastSegment())) {
+			return examplePath.removeLastSegments(4).lastSegment();
+		}
 		return examplePath.removeLastSegments(2).lastSegment();
 	}
 }
