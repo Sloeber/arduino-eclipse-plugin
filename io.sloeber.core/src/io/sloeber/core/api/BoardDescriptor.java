@@ -72,7 +72,7 @@ public class BoardDescriptor {
 	 * This is the basic info contained in the descriptor
 	 */
 	private String myUploadPort;
-	private String myUploadProtocol;
+	private String myProgrammer;
 	private String myBoardID;
 	private Map<String, String> myOptions;
 
@@ -144,7 +144,7 @@ public class BoardDescriptor {
 		if (!this.getUploadPort().equals(obj.getUploadPort())) {
 			return false;
 		}
-		if (!this.getUploadProtocol().equals(obj.getUploadProtocol())) {
+		if (!this.getProgrammer().equals(obj.getProgrammer())) {
 			return false;
 		}
 		if (!this.getBoardID().equals(obj.getBoardID())) {
@@ -291,13 +291,12 @@ public class BoardDescriptor {
 			this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
 			this.myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, "");
 			this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
-			this.myUploadProtocol = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL,
-					Defaults.getDefaultUploadProtocol());
+			this.myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
 			this.myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, new String()));
 
 		} else {
 			this.myUploadPort = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_UPLOAD_PORT, "");
-			this.myUploadProtocol = Common.getBuildEnvironmentVariable(confdesc, JANTJE_ACTION_UPLOAD, "");
+			this.myProgrammer = Common.getBuildEnvironmentVariable(confdesc, JANTJE_ACTION_UPLOAD, "");
 			this.myreferencingBoardsFile = new File(
 					Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARDS_FILE, ""));
 			this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARD_ID, "");
@@ -357,7 +356,7 @@ public class BoardDescriptor {
 	 */
 	protected BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
 		this.myUploadPort = new String();
-		this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
+		this.myProgrammer = Defaults.getDefaultUploadProtocol();
 		this.myBoardID = boardID;
 		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myreferencingBoardsFile = boardsFile;
@@ -373,7 +372,7 @@ public class BoardDescriptor {
 
 	protected BoardDescriptor(TxtFile txtFile, String boardID) {
 		this.myUploadPort = new String();
-		this.myUploadProtocol = Defaults.getDefaultUploadProtocol();
+		this.myProgrammer = Defaults.getDefaultUploadProtocol();
 		this.myBoardID = boardID;
 		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myreferencingBoardsFile = txtFile.getTxtFile();
@@ -545,7 +544,7 @@ public class BoardDescriptor {
 					this.myWorkSpaceLocation);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					this.myWorkEclipseLocation);
-			Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myUploadProtocol);
+			Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myProgrammer);
 			if (this.myOptions != null) {
 				for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
 					Common.setBuildEnvironmentVariable(contribEnv, confDesc, MENUSELECTION + curoption.getKey(),
@@ -558,7 +557,7 @@ public class BoardDescriptor {
 		myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getReferencingBoardsFile().toString());
 		myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
-		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myUploadProtocol);
+		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
 		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
 	}
 
@@ -582,8 +581,8 @@ public class BoardDescriptor {
 		return this.myUploadPort;
 	}
 
-	public String getUploadProtocol() {
-		return this.myUploadProtocol;
+	public String getProgrammer() {
+		return this.myProgrammer;
 	}
 
 	public void setUploadPort(String newUploadPort) {
@@ -591,7 +590,7 @@ public class BoardDescriptor {
 	}
 
 	public void setUploadProtocol(String newUploadProtocol) {
-		this.myUploadProtocol = newUploadProtocol;
+		this.myProgrammer = newUploadProtocol;
 
 	}
 
@@ -825,17 +824,29 @@ public class BoardDescriptor {
 	}
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
-		String upLoadProtocol = getActualUploadProtocol();
+		String upLoadProtocol = getActualUploadTool(confdesc);
 		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadProtocol + ".UPLOAD.PATTERN",
 				upLoadProtocol);
 	}
 
-	public String getActualUploadProtocol() {
+	public String getActualUploadTool(ICConfigurationDescription confdesc) {
+		if (this.myUploadTool == null && confdesc != null) {
+			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", this.myUploadTool);
+		}
 		return this.myUploadTool;
 	}
 
-	public boolean usesProgrammer() {
-		return !this.myUploadProtocol.equals(Defaults.getDefaultUploadProtocol());
+	public String getActualUploadTool() {
+		return getActualUploadTool(null);
 	}
+
+	public boolean usesProgrammer() {
+		return !this.myProgrammer.equals(Defaults.getDefaultUploadProtocol());
+	}
+
+	// public String getActualUploadProtocol() {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 }
