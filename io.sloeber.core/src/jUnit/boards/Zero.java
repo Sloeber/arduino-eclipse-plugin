@@ -9,6 +9,6 @@ public class Zero extends GenericArduinoSamdBoard {
 
 	public Zero() {
 		super("arduino_zero_edbg");
-		this.myBoardDescriptor.setUploadPort("COM9");
+		this.myBoardDescriptor.setUploadPort("COM14");
 	}
 }
