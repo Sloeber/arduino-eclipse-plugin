@@ -411,13 +411,10 @@
                     name="%inputType.name.2"
                     primaryInput="true"
                     sources="O">
-              </inputType>
-              <inputType
-                    buildVariable="AR"
-                    id="io.sloeber.tool.combiner.archiver.input"
-                    multipleOfType="true"
-                    sourceContentType="io.sloeber.tool.archiver.output"
-                    sources="ar">
+                 <additionalInput
+                       kind="additionaldependency"
+                       paths="$(AR)">
+                 </additionalInput>
               </inputType>
            </tool>
            <tool
