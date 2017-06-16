@@ -70,7 +70,9 @@ public abstract class IBoard {
 				"ConfigurableFirmata examples?ConfigurableFirmataWiFi", "ControleForno examples?configuravel",
 				"CopyThreads examples?c", "ArduinoCloud examples?SimpleCloudButtonYun", "Brzo_I2Cexamples",
 				"CopyThreads examples?ExamplesFromReadme", "DallasTemperature examples?Multibus_simple",
-				"DecodeIR examples?InfraredDecode" });
+				"DecodeIR examples?InfraredDecode", "AutoAnalogAudio examples?SimpleSine",
+				"dcf77_xtal examples?DCF77_Scope", "DimSwitch examples?DimSwitchTester-ESP-MQTT",
+				"DS3231 examples?echo_time", "Easy_NeoPixelsexamples" });
 		runSketchOnBoard.put("fix case Sensitive include first",
 				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
 						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
@@ -84,7 +86,7 @@ public abstract class IBoard {
 						"ArduinoMqtt examples?ConnectEsp8266WiFiClient", "aREST examples?ESP8266",
 						"aREST examples?ESP8266_cloud", "aREST examples?ESP8266_cloud_and_local",
 						"aREST examples?ESP8266_cloud_pro", "aREST examples?ESP8266_softAP",
-						"aREST_UI examples?ESP8266", "ConfigManagerexamples"
+						"aREST_UI examples?ESP8266", "ConfigManagerexamples", "DimSwitch examples?DimSwitchTester-ESP"
 
 				});
 		runSketchOnBoard.put("gemma",
@@ -120,30 +122,37 @@ public abstract class IBoard {
 	private void createDoNotTestTheseLibs() {
 		this.doNotTestTheseLibs = new ArrayList<>();
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
-		runLibOnBoard.put("no Board", new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library",
-				"Adafruit_HX8340B", "Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash",
-				"Adafruit_SSD1325", "ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil",
-				"ArduinoMenu_library", "ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC",
-				"ArduZ80", "AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
-				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation",
-				"CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "dcf77_xtal examples?DCF77_Scope" });
+		runLibOnBoard.put("no Board",
+				new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library", "Adafruit_HX8340B",
+						"Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash", "Adafruit_SSD1325",
+						"ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil", "ArduinoMenu_library",
+						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80",
+						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
+						"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1",
+						"Constellation", "CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector",
+						"DCF77", "DW1000", "EDB", "eBtn" });
+
+		runLibOnBoard.put("fix case Sensitive include first", new String[] { "DS1307RTC" });
+
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
-						"DCF77 examples?DCFBinaryStream", "DDS examples?SimpleSin" });
+						"DDS", "EducationShield examples" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
 		runLibOnBoard.put("nodeMCU",
 				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "AzureIoTHub",
 						"AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "CMMC_Easy", "CMMC_MQTT_Connector",
-						"CMMC_OTA", "CMMC_WiFi_Connector" });
+						"CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
-		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library" });
-		runLibOnBoard.put("zero", new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero" });
+		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo" });
+		runLibOnBoard.put("zero",
+				new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero", "Dimmer_class_for_SAMD21" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
-		runLibOnBoard.put("due", new String[] { "Audio", "AutoAnalogAudio" });
+		runLibOnBoard.put("due",
+				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
 
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
