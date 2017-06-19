@@ -824,14 +824,13 @@ public class BoardDescriptor {
 	}
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
-		String upLoadProtocol = getActualUploadTool(confdesc);
-		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadProtocol + ".UPLOAD.PATTERN",
-				upLoadProtocol);
+		String upLoadTool = getActualUploadTool(confdesc);
+		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool + ".UPLOAD.PATTERN", upLoadTool);
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
 		if (this.myUploadTool == null && confdesc != null) {
-			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", this.myUploadTool);
+			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", this.myUploadTool.toUpperCase());
 		}
 		return this.myUploadTool;
 	}
