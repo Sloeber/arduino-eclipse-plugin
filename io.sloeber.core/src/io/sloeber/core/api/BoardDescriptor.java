@@ -825,7 +825,8 @@ public class BoardDescriptor {
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
 		String upLoadTool = getActualUploadTool(confdesc);
-		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool + ".UPLOAD.PATTERN", upLoadTool);
+		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + ".UPLOAD.PATTERN",
+				upLoadTool.toUpperCase());
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
