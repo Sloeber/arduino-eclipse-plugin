@@ -14,4 +14,6 @@ public class megaBoard extends GenericArduinoAvrBoard {
 		this.myBoardDescriptor.setOptions(options);
 	}
 
+
+
 }

@@ -24,7 +24,15 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
+import jUnit.boards.EsploraBoard;
 import jUnit.boards.GenericArduinoAvrBoard;
+import jUnit.boards.IBoard;
+import jUnit.boards.MegaADKBoard;
+import jUnit.boards.UnoBoard;
+import jUnit.boards.YunBoard;
+import jUnit.boards.leonardoBoard;
+import jUnit.boards.megaBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -32,18 +40,84 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
+	private boolean myUsesSerial1;
+	private boolean myUsesKeyboard;
+	private boolean myUsesSerial;
 	private static int totalFails = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnAVRHardware(String name, CodeDescriptor codeDescriptor) {
+	public CreateAndCompileArduinoIDEExamplesOnAVRHardware(String name, CodeDescriptor codeDescriptor,
+			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
 
 		this.myCodeDescriptor = codeDescriptor;
 		this.myName = name;
+		myUsesSerial = usesSerial;
+		myUsesSerial1 = usesSerial1;
+		myUsesKeyboard = usesKeyboard;
 
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
+		LinkedList<String> usesSerialExampleList = new LinkedList<String>();
+		LinkedList<String> usesSerial1ExampleList = new LinkedList<String>();
+		LinkedList<String> usesKeyboardExampleList = new LinkedList<String>();
+		usesSerial1ExampleList.add("examples? 04.Communication?MultiSerial");
+		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardLogout");
+		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardMessage");
+		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardReprogram");
+		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardSerial");
+		usesKeyboardExampleList.add("examples? 09.USB? Mouse?ButtonMouseControl");
+		usesKeyboardExampleList.add("examples? 09.USB? Mouse?JoystickMouseControl");
+		usesKeyboardExampleList.add("examples? 09.USB?KeyboardAndMouseControl");
+		usesSerialExampleList.add("examples? 01.Basics?AnalogReadSerial");
+		usesSerialExampleList.add("examples? 01.Basics?DigitalReadSerial");
+		usesSerialExampleList.add("examples? 01.Basics?ReadAnalogVoltage");
+		usesSerialExampleList.add("examples? 02.Digital?DigitalInputPullup");
+		usesSerialExampleList.add("examples? 02.Digital?StateChangeDetection");
+		usesSerialExampleList.add("examples? 02.Digital?tonePitchFollower");
+		usesSerialExampleList.add("examples? 03.Analog?AnalogInOutSerial");
+		usesSerialExampleList.add("examples? 03.Analog?Smoothing");
+		usesSerialExampleList.add("examples? 04.Communication?ASCIITable");
+		usesSerialExampleList.add("examples? 04.Communication?Dimmer");
+		usesSerialExampleList.add("examples? 04.Communication?Graph");
+		usesSerialExampleList.add("examples? 04.Communication?Midi");
+		usesSerialExampleList.add("examples? 04.Communication?PhysicalPixel");
+		usesSerialExampleList.add("examples? 04.Communication?ReadASCIIString");
+		usesSerialExampleList.add("examples? 04.Communication?SerialCallResponse");
+		usesSerialExampleList.add("examples? 04.Communication?SerialCallResponseASCII");
+		usesSerialExampleList.add("examples? 04.Communication?SerialEvent");
+		usesSerialExampleList.add("examples? 04.Communication?VirtualColorMixer");
+		usesSerialExampleList.add("examples? 05.Control?IfStatementConditional");
+		usesSerialExampleList.add("examples? 05.Control?switchCase");
+		usesSerialExampleList.add("examples? 05.Control?switchCase2");
+		usesSerialExampleList.add("examples? 06.Sensors?ADXL3xx");
+		usesSerialExampleList.add("examples? 06.Sensors?Knock");
+		usesSerialExampleList.add("examples? 06.Sensors?Memsic2125");
+		usesSerialExampleList.add("examples? 06.Sensors?Ping");
+		usesSerialExampleList.add("examples? 08.Strings?CharacterAnalysis");
+		usesSerialExampleList.add("examples? 08.Strings?StringAdditionOperator");
+		usesSerialExampleList.add("examples? 08.Strings?StringAppendOperator");
+		usesSerialExampleList.add("examples? 08.Strings?StringCaseChanges");
+		usesSerialExampleList.add("examples? 08.Strings?StringCharacters");
+		usesSerialExampleList.add("examples? 08.Strings?StringComparisonOperators");
+		usesSerialExampleList.add("examples? 08.Strings?StringConstructors");
+		usesSerialExampleList.add("examples? 08.Strings?StringIndexOf");
+		usesSerialExampleList.add("examples? 08.Strings?StringLength");
+		usesSerialExampleList.add("examples? 08.Strings?StringLengthTrim");
+		usesSerialExampleList.add("examples? 08.Strings?StringReplace");
+		usesSerialExampleList.add("examples? 08.Strings?StringStartsWithEndsWith");
+		usesSerialExampleList.add("examples? 08.Strings?StringSubstring");
+		usesSerialExampleList.add("examples? 08.Strings?StringToInt");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p03_LoveOMeter");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p04_ColorMixingLamp");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p05_ServoMoodIndicator");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p07_Keyboard");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p12_KnockLock");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p13_TouchSensorLamp");
+		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p14_TweakTheArduinoLogo");
+		usesSerialExampleList.add("examples? 11.ArduinoISP?ArduinoISP");
+
 		Shared.waitForAllJobsToFinish();
 
 		LinkedList<Object[]> examples = new LinkedList<>();
@@ -53,9 +127,13 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
-			String inoName = curexample.getKey();
+			String inoName = curexample.getKey().trim();
+			boolean usesSerial = usesSerialExampleList.contains(inoName);
+			boolean usesSerial1 = usesSerial1ExampleList.contains(inoName);
+			boolean usesKeyboard = usesKeyboardExampleList.contains(inoName);
 
-			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor };
+			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, usesSerial, usesSerial1,
+					usesKeyboard };
 			examples.add(theData);
 		}
 
@@ -63,14 +141,25 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 
 	}
 
-	public void testExample(String boardID) {
+	public void testExample(IBoard board) {
 		// Stop after X fails because
 		// the fails stays open in eclipse and it becomes really slow
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (totalFails < 20) {
-			GenericArduinoAvrBoard board = new GenericArduinoAvrBoard(boardID);
+		if (myUsesSerial && !board.supportsSerial()) {
+			System.out.println("!TEST SKIPPED due to Serial " + myName + " " + board.getName());
+			return;
+		}
+		if (myUsesSerial1 && !board.supportsSerial1()) {
+			System.out.println("!TEST SKIPPED due to Serial1 " + myName + " " + board.getName());
+			return;
+		}
+		if (myUsesKeyboard && !board.supportsKeyboard()) {
+			System.out.println("!TEST SKIPPED due to keyboard " + myName + " " + board.getName());
+			return;
+		}
+		if (totalFails < 40) {
 			BuildAndVerify(board.getBoardDescriptor());
 		} else {
 			fail("To many fails. Stopping test");
@@ -80,134 +169,134 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 
 	@Test
 	public void testArduinoIDEExamplesOnUno() {
-		testExample("uno");
+		testExample(new UnoBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLeonardo() {
-		testExample("leonardo");
+		testExample(new leonardoBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnEsplora() {
-		testExample("esplora");
+		testExample(new EsploraBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnYun() {
-		testExample("yun");
+		testExample(new YunBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnDiecimila() {
-		testExample("diecimila");
+		testExample(new GenericArduinoAvrBoard("diecimila"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnMega() {
-		testExample("mega");
+		testExample(new megaBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMegaADK() {
-		testExample("megaADK");
+		testExample(new MegaADKBoard());
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLeonardoEth() {
 
-		testExample("leonardoeth");
+		testExample(new GenericArduinoAvrBoard("leonardoeth"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMicro() {
 
-		testExample("micro");
+		testExample(new GenericArduinoAvrBoard("micro"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMini() {
-		testExample("mini");
+		testExample(new GenericArduinoAvrBoard("mini"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnEthernet() {
-		testExample("ethernet");
+		testExample(new GenericArduinoAvrBoard("ethernet"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnFio() {
-		testExample("fio");
+		testExample(new GenericArduinoAvrBoard("fio"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnBt() {
-		testExample("bt");
+		testExample(new GenericArduinoAvrBoard("bt"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLilyPadUSB() {
-		testExample("LilyPadUSB");
+		testExample(new GenericArduinoAvrBoard("LilyPadUSB"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnlilypad() {
-		testExample("lilypad");
+		testExample(new GenericArduinoAvrBoard("lilypad"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnPro() {
-		testExample("pro");
+		testExample(new GenericArduinoAvrBoard("pro"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnatmegang() {
-		testExample("atmegang");
+		testExample(new GenericArduinoAvrBoard("atmegang"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnrobotControl() {
-		testExample("robotControl");
+		testExample(new GenericArduinoAvrBoard("robotControl"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnrobotMotor() {
-		testExample("robotMotor");
+		testExample(new GenericArduinoAvrBoard("robotMotor"));
 	}
-	// Don,'t test gemma as it fails on all examples using serial
-	// @Test
-	// public void testArduinoIDEExamplesOngemma() {
-	// testExample("gemma");
-	// }
+
+	@Test
+	public void testArduinoIDEExamplesOngemma() {
+		testExample(new GenericArduinoAvrBoard("gemma"));
+	}
 
 	@Test
 	public void testArduinoIDEExamplesOncircuitplay32u4cat() {
-		testExample("circuitplay32u4cat");
+		testExample(new AdafruitnCirquitPlaygroundBoard());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnyunmini() {
-		testExample("yunmini");
+		testExample(new GenericArduinoAvrBoard("yunmini"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnchiwawa() {
-		testExample("chiwawa");
+		testExample(new GenericArduinoAvrBoard("chiwawa"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnone() {
-		testExample("one");
+		testExample(new GenericArduinoAvrBoard("one"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnunowifi() {
-		testExample("unowifi");
+		testExample(new GenericArduinoAvrBoard("unowifi"));
 	}
 
 	public void BuildAndVerify(BoardDescriptor boardDescriptor) {

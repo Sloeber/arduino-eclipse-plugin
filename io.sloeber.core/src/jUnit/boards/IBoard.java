@@ -15,9 +15,53 @@ public abstract class IBoard {
 	protected BoardDescriptor myBoardDescriptor = null;
 	protected List<String> doNotTestTheseSketches;
 	protected List<String> doNotTestTheseLibs;
+	private boolean mySupportSerial=true;
+	private boolean mySupportSerial1=false;
+	private boolean mySupportKeyboard=false;
+	void setSupportSerial(boolean supportSerial){
+		mySupportSerial=supportSerial;
+	}
+	void setSupportSerial1(boolean supportSerial1){
+		mySupportSerial1=supportSerial1;
+	}
+	void setSupportKeyboard(boolean supportKeyboard){
+		mySupportKeyboard=supportKeyboard;
+	}
 
 	public BoardDescriptor getBoardDescriptor() {
 		return this.myBoardDescriptor;
+	}
+	/**
+	 * Does this board support Serial object
+	 * This method is made final to disable overloading
+	 * To change use the set method
+	 * The only board I know that doesn't is the gemma
+	 * 
+	 * @return true if it does otherwise false
+	 */
+	public final boolean supportsSerial(){
+		return mySupportSerial;
+	}
+	
+	/**
+	 * Does this board support Serial1 object
+	 * This method is made final to disable overloading
+	 * To change use the set method
+	 * 
+	 * @return true if it does otherwise false
+	 */
+	public final boolean supportsSerial1(){
+		return mySupportSerial1;
+	}
+	/**
+	 * Does this board support keyboard.h
+	 * This method is made final to disable overloading
+	 * To change use the set method
+	 * 
+	 * @return true if inclusion of keyboard.h compiles otherwise false
+	 */
+	public final boolean supportsKeyboard(){
+		return mySupportKeyboard;
 	}
 
 	public boolean isExampleOk(String inoName, String libName) {
