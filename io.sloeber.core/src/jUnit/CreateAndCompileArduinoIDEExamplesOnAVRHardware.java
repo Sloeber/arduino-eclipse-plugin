@@ -50,18 +50,18 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 
 		this.myCodeDescriptor = codeDescriptor;
 		this.myName = name;
-		myUsesSerial = usesSerial;
-		myUsesSerial1 = usesSerial1;
-		myUsesKeyboard = usesKeyboard;
+		this.myUsesSerial = usesSerial;
+		this.myUsesSerial1 = usesSerial1;
+		this.myUsesKeyboard = usesKeyboard;
 
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		LinkedList<String> usesSerialExampleList = new LinkedList<String>();
-		LinkedList<String> usesSerial1ExampleList = new LinkedList<String>();
-		LinkedList<String> usesKeyboardExampleList = new LinkedList<String>();
+		LinkedList<String> usesSerialExampleList = new LinkedList<>();
+		LinkedList<String> usesSerial1ExampleList = new LinkedList<>();
+		LinkedList<String> usesKeyboardExampleList = new LinkedList<>();
 		usesSerial1ExampleList.add("examples? 04.Communication?MultiSerial");
 		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardLogout");
 		usesKeyboardExampleList.add("examples? 09.USB? Keyboard?KeyboardMessage");
@@ -128,9 +128,9 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			String inoName = curexample.getKey().trim();
-			boolean usesSerial = usesSerialExampleList.contains(inoName);
-			boolean usesSerial1 = usesSerial1ExampleList.contains(inoName);
-			boolean usesKeyboard = usesKeyboardExampleList.contains(inoName);
+			Boolean usesSerial = new Boolean(usesSerialExampleList.contains(inoName));
+			Boolean usesSerial1 = new Boolean(usesSerial1ExampleList.contains(inoName));
+			Boolean usesKeyboard = new Boolean(usesKeyboardExampleList.contains(inoName));
 
 			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, usesSerial, usesSerial1,
 					usesKeyboard };
@@ -147,16 +147,16 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (myUsesSerial && !board.supportsSerial()) {
-			System.out.println("!TEST SKIPPED due to Serial " + myName + " " + board.getName());
+		if (this.myUsesSerial && !board.supportsSerial()) {
+			System.out.println("!TEST SKIPPED due to Serial " + this.myName + " " + board.getName());
 			return;
 		}
-		if (myUsesSerial1 && !board.supportsSerial1()) {
-			System.out.println("!TEST SKIPPED due to Serial1 " + myName + " " + board.getName());
+		if (this.myUsesSerial1 && !board.supportsSerial1()) {
+			System.out.println("!TEST SKIPPED due to Serial1 " + this.myName + " " + board.getName());
 			return;
 		}
-		if (myUsesKeyboard && !board.supportsKeyboard()) {
-			System.out.println("!TEST SKIPPED due to keyboard " + myName + " " + board.getName());
+		if (this.myUsesKeyboard && !board.supportsKeyboard()) {
+			System.out.println("!TEST SKIPPED due to keyboard " + this.myName + " " + board.getName());
 			return;
 		}
 		if (totalFails < 40) {

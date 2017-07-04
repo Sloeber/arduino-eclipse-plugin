@@ -302,11 +302,6 @@ public class BoardsManager {
 
 	}
 
-	public static boolean getAutoImportLibraries(boolean booleanValue) {
-		return InstancePreferences.getAutomaticallyImportLibraries();
-
-	}
-
 	public static String[] getBoardNames(String boardFile) {
 		TxtFile theBoardsFile = new TxtFile(new File(boardFile));
 		return theBoardsFile.getAllNames();

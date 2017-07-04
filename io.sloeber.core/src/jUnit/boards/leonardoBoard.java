@@ -4,7 +4,7 @@ package jUnit.boards;
 public class leonardoBoard extends GenericArduinoAvrBoard {
 	public leonardoBoard() {
 		super("leonardo");
-		this.myBoardDescriptor.setUploadPort("COM6");
+		this.myBoardDescriptor.setUploadPort("COM7");
 	}
 
 }

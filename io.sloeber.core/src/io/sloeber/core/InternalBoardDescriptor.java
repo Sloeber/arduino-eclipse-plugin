@@ -34,6 +34,10 @@ public class InternalBoardDescriptor extends BoardDescriptor {
 
 	}
 
+	public InternalBoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
+		super(sourceBoardDescriptor);
+	}
+
 	public TxtFile getTxtFile() {
 		return this.myTxtFile;
 	}

@@ -128,13 +128,12 @@ public class Sketch {
 	}
 
 	/**
-	 * given a project look in the source code for the line of code that sets
-	 * the baud rate on the board Serial.begin([baudRate]);
+	 * given a project look in the source code for the line of code that sets the
+	 * baud rate on the board Serial.begin([baudRate]);
 	 *
 	 *
 	 *
-	 * return the integer value of [baudrate] or in case of error a negative
-	 * value
+	 * return the integer value of [baudrate] or in case of error a negative value
 	 *
 	 * @param iProject
 	 * @return
@@ -148,17 +147,6 @@ public class Sketch {
 		}
 		return Integer.parseInt(baudRate);
 
-	}
-
-	/**
-	 * given a project provide the com port that is needed to upload or connect
-	 * the serial monitor to
-	 *
-	 * @param project
-	 * @return
-	 */
-	public static String getComport(IProject project) {
-		return BoardDescriptor.getUploadPort(project);
 	}
 
 	public static void reAttachLibrariesToProject(IProject iProject) {

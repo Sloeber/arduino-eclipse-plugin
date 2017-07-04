@@ -15,53 +15,55 @@ public abstract class IBoard {
 	protected BoardDescriptor myBoardDescriptor = null;
 	protected List<String> doNotTestTheseSketches;
 	protected List<String> doNotTestTheseLibs;
-	private boolean mySupportSerial=true;
-	private boolean mySupportSerial1=false;
-	private boolean mySupportKeyboard=false;
-	void setSupportSerial(boolean supportSerial){
-		mySupportSerial=supportSerial;
+	private boolean mySupportSerial = true;
+	private boolean mySupportSerial1 = false;
+	private boolean mySupportKeyboard = false;
+
+	void setSupportSerial(boolean supportSerial) {
+		this.mySupportSerial = supportSerial;
 	}
-	void setSupportSerial1(boolean supportSerial1){
-		mySupportSerial1=supportSerial1;
+
+	void setSupportSerial1(boolean supportSerial1) {
+		this.mySupportSerial1 = supportSerial1;
 	}
-	void setSupportKeyboard(boolean supportKeyboard){
-		mySupportKeyboard=supportKeyboard;
+
+	void setSupportKeyboard(boolean supportKeyboard) {
+		this.mySupportKeyboard = supportKeyboard;
 	}
 
 	public BoardDescriptor getBoardDescriptor() {
 		return this.myBoardDescriptor;
 	}
+
 	/**
-	 * Does this board support Serial object
-	 * This method is made final to disable overloading
-	 * To change use the set method
-	 * The only board I know that doesn't is the gemma
-	 * 
+	 * Does this board support Serial object This method is made final to disable
+	 * overloading To change use the set method The only board I know that doesn't
+	 * is the gemma
+	 *
 	 * @return true if it does otherwise false
 	 */
-	public final boolean supportsSerial(){
-		return mySupportSerial;
+	public final boolean supportsSerial() {
+		return this.mySupportSerial;
 	}
-	
+
 	/**
-	 * Does this board support Serial1 object
-	 * This method is made final to disable overloading
-	 * To change use the set method
-	 * 
+	 * Does this board support Serial1 object This method is made final to disable
+	 * overloading To change use the set method
+	 *
 	 * @return true if it does otherwise false
 	 */
-	public final boolean supportsSerial1(){
-		return mySupportSerial1;
+	public final boolean supportsSerial1() {
+		return this.mySupportSerial1;
 	}
+
 	/**
-	 * Does this board support keyboard.h
-	 * This method is made final to disable overloading
-	 * To change use the set method
-	 * 
+	 * Does this board support keyboard.h This method is made final to disable
+	 * overloading To change use the set method
+	 *
 	 * @return true if inclusion of keyboard.h compiles otherwise false
 	 */
-	public final boolean supportsKeyboard(){
-		return mySupportKeyboard;
+	public final boolean supportsKeyboard() {
+		return this.mySupportKeyboard;
 	}
 
 	public boolean isExampleOk(String inoName, String libName) {
@@ -105,29 +107,28 @@ public abstract class IBoard {
 				"arduino-menusystem examples?led_matrix_animated", "Arduino_Low_Power examples?TianStandby",
 				"aREST examples?BLE", "aREST examples?ESP32", "aREST examples?ESP32_cloud",
 				"ArduinoHttpClient examples?DweetGet", "ArduinoMenu_library examples? adafruitGfx? lcdMono?lcdMono",
-				"ArduinoMenu_library examples? adafruitGfx? tft?tft", "ArduinoMqtt examples?ConnectEthernetClient",
-				"ArduinoMqtt examples?PubSub", "ArdVoice examples?Sample2-Complex", "Aspen_SIM800 examples?Access_HTTP",
-				"Awesome examples? advanced?how_fast", "Awesome examples? advanced?lie_detector",
-				"AzureIoTUtility examples?simplesample_http", "BLEPeripheral examples?ir_bridge",
-				"BLEPeripheral examples?temp_sensor", "Brasilino examples? Basicos?controleGradual",
-				"ClosedCube_HDC1010 examples?hdc1010demo", "Chrono examples?Resolutions", "Chrono examples?StopResume",
+				"ArduinoMenu_library examples? adafruitGfx? tft?tft", "ArdVoice examples?Sample2-Complex",
+				"Aspen_SIM800 examples?Access_HTTP", "Awesome examples? advanced?how_fast",
+				"Awesome examples? advanced?lie_detector", "AzureIoTUtility examples?simplesample_http",
+				"BLEPeripheral examples?ir_bridge", "BLEPeripheral examples?temp_sensor",
+				"Brasilino examples? Basicos?controleGradual", "ClosedCube_HDC1010 examples?hdc1010demo",
+				"Chrono examples?Resolutions", "Chrono examples?StopResume",
 				"ConfigurableFirmata examples?ConfigurableFirmataWiFi", "ControleForno examples?configuravel",
 				"CopyThreads examples?c", "ArduinoCloud examples?SimpleCloudButtonYun", "Brzo_I2Cexamples",
 				"CopyThreads examples?ExamplesFromReadme", "DallasTemperature examples?Multibus_simple",
 				"DecodeIR examples?InfraredDecode", "AutoAnalogAudio examples?SimpleSine",
-				"dcf77_xtal examples?DCF77_Scope", "DimSwitch examples?DimSwitchTester-ESP-MQTT",
-				"DS3231 examples?echo_time", "Easy_NeoPixelsexamples" });
+				"DimSwitch examples?DimSwitchTester-ESP-MQTT", "DS3231 examples?echo_time", "Easy_NeoPixelsexamples",
+				"DallasTemperature examples?AlarmHandler" });
 		runSketchOnBoard.put("fix case Sensitive include first",
 				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
 						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
 						"AutoAnalogAudio examples?AudioRadioRelay", "AutoAnalogAudio examples?WirelessMicrophone",
 						"AutoAnalogAudio examples?WirelessSpeaker", "AutoAnalogAudio examples?WirelessTx_RPi" });
 
-		runSketchOnBoard.put("nodeMCU",
+		runSketchOnBoard.put("nodemcu",
 				new String[] { "YouMadeIt examples?basic_example", "ArduinoIRC examples?BasicESP8266",
 						"ArduinoIRC examples?BasicESP8266Reply",
-						"ArduinoMenu_library examples? esp8266? XmlServer?XmlServer",
-						"ArduinoMqtt examples?ConnectEsp8266WiFiClient", "aREST examples?ESP8266",
+						"ArduinoMenu_library examples? esp8266? XmlServer?XmlServer", "aREST examples?ESP8266",
 						"aREST examples?ESP8266_cloud", "aREST examples?ESP8266_cloud_and_local",
 						"aREST examples?ESP8266_cloud_pro", "aREST examples?ESP8266_softAP",
 						"aREST_UI examples?ESP8266", "ConfigManagerexamples", "DimSwitch examples?DimSwitchTester-ESP"
@@ -174,26 +175,27 @@ public abstract class IBoard {
 						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
 						"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1",
 						"Constellation", "CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector",
-						"DCF77", "DW1000", "EDB", "eBtn" });
+						"DCF77", "dcf77_xtal", "DW1000", "EDB", "eBtn", "AJSP", "EducationShield", "ArduinoMqtt",
+						"Embedded_Template_Library", "Embedis", "EMoRo_2560" });
 
 		runLibOnBoard.put("fix case Sensitive include first", new String[] { "DS1307RTC" });
 
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
-						"DDS", "EducationShield examples" });
+						"DDS" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
-		runLibOnBoard.put("nodeMCU",
-				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "AzureIoTHub",
-						"AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "CMMC_Easy", "CMMC_MQTT_Connector",
-						"CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS" });
+		runLibOnBoard.put("nodemcu",
+				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "CMMC_Easy",
+						"CMMC_MQTT_Connector", "CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS",
+						"CoinMarketCapApi" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo" });
-		runLibOnBoard.put("zero",
-				new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero", "Dimmer_class_for_SAMD21" });
+		runLibOnBoard.put("zero", new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero",
+				"Dimmer_class_for_SAMD21", "AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
 		runLibOnBoard.put("due",
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });

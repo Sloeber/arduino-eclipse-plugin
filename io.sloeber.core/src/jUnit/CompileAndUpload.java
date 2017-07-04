@@ -24,9 +24,10 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Sketch;
 import jUnit.boards.Due;
 import jUnit.boards.IBoard;
-import jUnit.boards.NodeMCUBoard;
 import jUnit.boards.UnoBoard;
 import jUnit.boards.Zero;
+import jUnit.boards.arduino101Board;
+import jUnit.boards.leonardoBoard;
 import jUnit.boards.megaBoard;
 
 @SuppressWarnings("nls")
@@ -36,6 +37,7 @@ public class CompileAndUpload {
 	private static int mCounter = 0;
 	private IBoard myBoard;
 	private String myName;
+	private static final String interval = "1500";// change between 1500 and 100
 
 	public CompileAndUpload(String name, IBoard board) {
 		this.myBoard = board;
@@ -48,27 +50,22 @@ public class CompileAndUpload {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 
-		IBoard unoBoard = new UnoBoard();
-		IBoard nodeMCUBoard = new NodeMCUBoard();
-		IBoard megaBoard = new megaBoard();
-		IBoard zeroBoard = new Zero();
-		IBoard dueBoard = new Due();
+		IBoard[] boards = { new UnoBoard(), new megaBoard(), new Zero(), new Due(), new leonardoBoard(),
+				new arduino101Board() };
+		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();
 
-		examples.add(new Object[] { "uno", unoBoard });
-		examples.add(new Object[] { "mega", megaBoard });
-		examples.add(new Object[] { "zero", zeroBoard });
-		examples.add(new Object[] { "due", dueBoard });
+		for (IBoard curBoard : boards) {
+			examples.add(new Object[] { curBoard.getName(), curBoard });
+		}
 
 		return examples;
-		// new leonardoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
-		// new AdafruitnCirquitPlaygroundBoard(), new Primo(),
 	}
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we
-	 * can start testing
+	 * installer job will trigger downloads These mmust have finished before we can
+	 * start testing
 	 */
 
 	public static void WaitForInstallerToFinish() {
@@ -91,11 +88,13 @@ public class CompileAndUpload {
 	@Test
 	public void testExamples() {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
-		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder));
+		CompileOptions compileOptions = new CompileOptions(null);
+		compileOptions.setMyAditional_C_andCPP_CompileOptions("-DINTERVAL=" + interval);
+		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder), compileOptions);
 
 	}
 
-	public void Build_Verify_upload(CodeDescriptor codeDescriptor) {
+	public void Build_Verify_upload(CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
 
 		IProject theTestProject = null;
 
@@ -104,7 +103,7 @@ public class CompileAndUpload {
 		try {
 
 			theTestProject = this.myBoard.getBoardDescriptor().createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
