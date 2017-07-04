@@ -118,7 +118,7 @@ public class CreateAndCompileExamples {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
 				"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
-				"https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/Better_library_support/io.sloeber.core/src/jUnit/library_sloeber_index.json" };
+				"https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/master/io.sloeber.core/src/jUnit/library_sloeber_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_examples) {
 			BoardsManager.installAllLatestPlatforms();
