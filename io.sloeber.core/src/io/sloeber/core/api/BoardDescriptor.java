@@ -57,50 +57,6 @@ import io.sloeber.core.tools.TxtFile;
 @SuppressWarnings("nls")
 public class BoardDescriptor {
 
-	@Override
-	public String toString() {
-		return getReferencingBoardsFile() + " \"" + getBoardName() + "\" " + getUploadPort(); //$NON-NLS-2$
-	}
-
-	// preference nodes
-	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-	private static final String PLATFORM_FILE_NAME = "platform.txt";
-	private static final String LIBRARY_PATH_SUFFIX = "libraries";
-	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";
-
-	/*
-	 * This is the basic info contained in the descriptor
-	 */
-	private String myUploadPort;
-	private String myProgrammer;
-	private String myBoardID;
-	private Map<String, String> myOptions;
-
-	/*
-	 * the following data is stored to detect changes that will make the equal
-	 * fail so os changes, workspace changes, eclipse install changes will force
-	 * a update on the stored data
-	 */
-	private String myProjectName = new String();
-	private String myOSName = Platform.getOS();
-	private String myWorkSpaceLocation = Common.getWorkspaceRoot().toString();
-	private String myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome().toString();
-
-	/*
-	 * Stuff to make things work
-	 */
-	private File myreferencingBoardsFile;
-	protected TxtFile myTxtFile;
-	private ChangeListener myChangeListener = null;
-
-	private String myBoardsVariant;
-	private IPath myReferencedBoardVariantPlatformPath;
-	private String myBoardsCore;
-	private IPath myReferencedCorePlatformPath;
-	private IPath myReferencedUploadToolPlatformPath;
-	private String myUploadTool;
-	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-
 	/*
 	 * Some constants
 	 */
@@ -122,6 +78,52 @@ public class BoardDescriptor {
 	public static final String ENV_KEY_JANTJE_PACKAGE_ID = Const.ENV_KEY_JANTJE_START + "PACKAGE_ID";
 	public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = Const.ENV_KEY_JANTJE_START + "ARCHITECTURE_ID";
 	public static final String ENV_KEY_JANTJE_BOARD_ID = Const.ENV_KEY_JANTJE_START + "BOARD_ID";
+	public static final String ENV_KEY_SERIAL_PORT = Const.ERASE_START + "SERIAL.PORT";
+	public static final String ENV_KEY_SERIAL_PORT_FILE = Const.ERASE_START + "SERIAL.PORT.FILE";
+
+	// preference nodes
+	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	private static final String PLATFORM_FILE_NAME = "platform.txt";
+	private static final String LIBRARY_PATH_SUFFIX = "libraries";
+	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";
+	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+
+	/*
+	 * This is the basic info contained in the descriptor
+	 */
+	private String myUploadPort;
+	private String myProgrammer;
+	private String myBoardID;
+	private Map<String, String> myOptions;
+
+	/*
+	 * the following data is stored to detect changes that will make the equal fail
+	 * so os changes, workspace changes, eclipse install changes will force a update
+	 * on the stored data
+	 */
+	private String myProjectName = new String();
+	private String myOSName = Platform.getOS();
+	private String myWorkSpaceLocation = Common.getWorkspaceRoot().toString();
+	private String myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome().toString();
+
+	/*
+	 * Stuff to make things work
+	 */
+	private File myreferencingBoardsFile;
+	protected TxtFile myTxtFile;
+	private ChangeListener myChangeListener = null;
+
+	private String myBoardsVariant;
+	private IPath myReferencedBoardVariantPlatformPath;
+	private String myBoardsCore;
+	private IPath myReferencedCorePlatformPath;
+	private IPath myReferencedUploadToolPlatformPath;
+	private String myUploadTool;
+
+	@Override
+	public String toString() {
+		return getReferencingBoardsFile() + " \"" + getBoardName() + "\" " + getUploadPort(); //$NON-NLS-2$
+	}
 
 	// private static final String ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM =
 	// Const.ERASE_START
@@ -133,9 +135,9 @@ public class BoardDescriptor {
 	// ERASE_START + ENV_KEY_JANTJE_START
 	// + "CORE.REFERENCED.PLATFORM"; //$NON-NLS-1$
 	/**
-	 * Compare 2 descriptors and return true is they are equal. This method
-	 * detects - OS changes - project name changes - moves of workspace -
-	 * changed runtine eclipse install
+	 * Compare 2 descriptors and return true is they are equal. This method detects
+	 * - OS changes - project name changes - moves of workspace - changed runtine
+	 * eclipse install
 	 *
 	 * @param obj
 	 * @return true if equal otherwise false
@@ -172,12 +174,12 @@ public class BoardDescriptor {
 	}
 
 	/*
-	 * Create a sketchProject. This class does not really create a sketch
-	 * object. Nor does it look for existing (mapping) sketch projects This
-	 * class represents the data passed between the UI and the core This class
-	 * does contain a create to create the project When confdesc is null the
-	 * data will be taken from the "last used " otherwise the data is taken from
-	 * the project the confdesc belongs to
+	 * Create a sketchProject. This class does not really create a sketch object.
+	 * Nor does it look for existing (mapping) sketch projects This class represents
+	 * the data passed between the UI and the core This class does contain a create
+	 * to create the project When confdesc is null the data will be taken from the
+	 * "last used " otherwise the data is taken from the project the confdesc
+	 * belongs to
 	 *
 	 */
 	public static BoardDescriptor makeBoardDescriptor(ICConfigurationDescription confdesc) {
@@ -326,8 +328,8 @@ public class BoardDescriptor {
 	}
 
 	/**
-	 * make a board descriptor for each board in the board.txt file with the
-	 * default options
+	 * make a board descriptor for each board in the board.txt file with the default
+	 * options
 	 *
 	 * @param boardFile
 	 * @return a list of board descriptors
@@ -380,6 +382,37 @@ public class BoardDescriptor {
 		setDefaultOptions();
 
 		calculateDerivedFields();
+	}
+
+	public static BoardDescriptor makeBoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
+		return new InternalBoardDescriptor(sourceBoardDescriptor);
+	}
+
+	protected BoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
+
+		this.myUploadPort = sourceBoardDescriptor.getUploadPort();
+		this.myProgrammer = sourceBoardDescriptor.getProgrammer();
+		this.myBoardID = sourceBoardDescriptor.getBoardID();
+		this.myOptions = sourceBoardDescriptor.getOptions();
+		this.myProjectName = sourceBoardDescriptor.getProjectName();
+		this.myreferencingBoardsFile = sourceBoardDescriptor.getReferencingBoardsFile();
+		this.myTxtFile = sourceBoardDescriptor.myTxtFile;
+		this.myChangeListener = null;
+
+		this.myBoardsVariant = sourceBoardDescriptor.getBoardVariant();
+		this.myReferencedBoardVariantPlatformPath = sourceBoardDescriptor.getReferencedVariantPlatformPath();
+		this.myBoardsCore = sourceBoardDescriptor.getBoardsCore();
+		this.myReferencedCorePlatformPath = sourceBoardDescriptor.getReferencedCorePlatformPath();
+		this.myReferencedUploadToolPlatformPath = sourceBoardDescriptor.getReferencedUploadPlatformPath();
+		this.myUploadTool = sourceBoardDescriptor.getuploadTool();
+	}
+
+	private String getuploadTool() {
+		return this.myUploadTool;
+	}
+
+	private String getBoardsCore() {
+		return this.myBoardsCore;
 	}
 
 	private void setDefaultOptions() {
@@ -551,6 +584,9 @@ public class BoardDescriptor {
 							curoption.getValue());
 				}
 			}
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
+					this.myUploadPort.replace("/dev/", new String()));
 		}
 
 		// Also save last used values
@@ -632,8 +668,8 @@ public class BoardDescriptor {
 	}
 
 	/**
-	 * Returns the options for this board This reflects the options selected
-	 * through the menu functionality in the boards.txt
+	 * Returns the options for this board This reflects the options selected through
+	 * the menu functionality in the boards.txt
 	 *
 	 * @return a map of case insensitive ordered key value pairs
 	 */
@@ -703,10 +739,6 @@ public class BoardDescriptor {
 		return Common.getBuildEnvironmentVariable(project, ENV_KEY_JANTJE_UPLOAD_PORT, new String());
 	}
 
-	public static void storeUploadPort(IProject project, String uploadPort) {
-		Common.setBuildEnvironmentVariable(project, ENV_KEY_JANTJE_UPLOAD_PORT, uploadPort);
-	}
-
 	private String getMyOSName() {
 		return this.myOSName;
 	}
@@ -724,8 +756,8 @@ public class BoardDescriptor {
 	}
 
 	/**
-	 * This method looks for a referenced platform. Ask the boards manager to
-	 * find the latest installed vendor/architecture platform file
+	 * This method looks for a referenced platform. Ask the boards manager to find
+	 * the latest installed vendor/architecture platform file
 	 *
 	 * If this is not found there is still sme old code that probably can be
 	 * deleted.
@@ -742,8 +774,8 @@ public class BoardDescriptor {
 	}
 
 	/**
-	 * provide the actual path to the variant. Use this method if you want to
-	 * know where the variant is
+	 * provide the actual path to the variant. Use this method if you want to know
+	 * where the variant is
 	 *
 	 * @return the path to the variant; null if no variant is needed
 	 */
@@ -776,8 +808,8 @@ public class BoardDescriptor {
 	}
 
 	/**
-	 * provide the actual path to the variant. Use this method if you want to
-	 * know where the variant is
+	 * provide the actual path to the variant. Use this method if you want to know
+	 * where the variant is
 	 *
 	 * @return the path to the variant
 	 */
@@ -800,7 +832,7 @@ public class BoardDescriptor {
 	public Path getreferencingPlatformPath() {
 		try {
 			return new Path(this.myreferencingBoardsFile.getParent());
-		} catch (Exception e) {
+		} catch (@SuppressWarnings("unused") Exception e) {
 			return new Path(new String());
 		}
 	}
@@ -843,10 +875,5 @@ public class BoardDescriptor {
 	public boolean usesProgrammer() {
 		return !this.myProgrammer.equals(Defaults.getDefaultUploadProtocol());
 	}
-
-	// public String getActualUploadProtocol() {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 }

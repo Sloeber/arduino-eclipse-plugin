@@ -56,8 +56,6 @@ public class Const {
 	public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "NETWORK.AUTH";
 
 	public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
-	public static final String ENV_KEY_SERIAL_PORT = ERASE_START + "SERIAL.PORT";
-	public static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "SERIAL.PORT.FILE";
 
 	public static final String ENV_KEY_JANTJE_START = "JANTJE.";
 
