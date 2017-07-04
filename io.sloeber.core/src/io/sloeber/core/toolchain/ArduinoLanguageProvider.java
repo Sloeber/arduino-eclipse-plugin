@@ -170,7 +170,7 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 			ManagedBuilderCorePlugin.error(
 					"Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId());
 		}
-
+		extraOptions = extraOptions + " " + compileOptions.getMyAditional_C_andCPP_CompileOptions();
 		try {
 			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, true).getValue();
 			compilerCommand = compilerCommand
