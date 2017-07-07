@@ -2,10 +2,15 @@ package jUnit;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -22,13 +27,17 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Sketch;
+import io.sloeber.core.common.ConfigurationPreferences;
 import jUnit.boards.Due;
 import jUnit.boards.IBoard;
 import jUnit.boards.UnoBoard;
+import jUnit.boards.YunBoard;
 import jUnit.boards.Zero;
 import jUnit.boards.arduino101Board;
+import jUnit.boards.friedBoard;
 import jUnit.boards.leonardoBoard;
 import jUnit.boards.megaBoard;
+import jUnit.boards.wemosD1;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -37,7 +46,7 @@ public class CompileAndUpload {
 	private static int mCounter = 0;
 	private IBoard myBoard;
 	private String myName;
-	private static final String interval = "1500";// change between 1500 and 100
+	private static String interval = "1500";// change between 1500 and 100
 
 	public CompileAndUpload(String name, IBoard board) {
 		this.myBoard = board;
@@ -50,7 +59,39 @@ public class CompileAndUpload {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 
-		IBoard[] boards = { new UnoBoard(), new megaBoard(), new Zero(), new Due(), new leonardoBoard(),
+		try {
+			File file = ConfigurationPreferences.getInstallationPath().append("test.properties").toFile();
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileInputStream fileInput = new FileInputStream(file);
+			Properties properties = new Properties();
+			properties.load(fileInput);
+			fileInput.close();
+
+			String key = "Last Used Blink Interval";
+			interval = properties.getProperty(key);
+
+			if ("100".equals(interval)) {
+				interval = "1500";
+			} else {
+				interval = "100";
+			}
+			properties.put(key, interval);
+			FileOutputStream fileOutput = new FileOutputStream(file);
+			properties.store(fileOutput, "This is a file with values for unit testing");
+			fileOutput.close();
+
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+
+
+		IBoard[] boards = { new wemosD1(), new friedBoard(), new YunBoard(), new UnoBoard(), new megaBoard(),
+				new Zero(), new Due(),
+				new leonardoBoard(),
 				new arduino101Board() };
 		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();

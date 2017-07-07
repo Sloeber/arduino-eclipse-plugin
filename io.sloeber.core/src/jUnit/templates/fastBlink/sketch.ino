@@ -1,7 +1,16 @@
 #include "Arduino.h"
 #ifndef LED_BUILTIN
+#ifdef ARDUINO_ESP8266_WEMOS_D1MINI
+#define LED_BUILTIN D4
+#else
 #define LED_BUILTIN 13
 #endif
+#endif
+#ifdef ARDUINO_AVR_LILYPAD_USB
+#undef LED_BUILTIN
+#define LED_BUILTIN 5
+#endif
+
 #ifndef INTERVAL
 #define INTERVAL 100
 #endif
