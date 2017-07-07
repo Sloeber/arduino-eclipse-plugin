@@ -30,6 +30,8 @@ import io.sloeber.core.api.Sketch;
 import io.sloeber.core.common.ConfigurationPreferences;
 import jUnit.boards.Due;
 import jUnit.boards.IBoard;
+import jUnit.boards.NodeMCUBoard;
+import jUnit.boards.Teensy3_1Board;
 import jUnit.boards.UnoBoard;
 import jUnit.boards.YunBoard;
 import jUnit.boards.Zero;
@@ -89,7 +91,9 @@ public class CompileAndUpload {
 
 
 
-		IBoard[] boards = { new wemosD1(), new friedBoard(), new YunBoard(), new UnoBoard(), new megaBoard(),
+		IBoard[] boards = { new NodeMCUBoard(), new Teensy3_1Board(), new wemosD1(), new friedBoard(), new YunBoard(),
+				new UnoBoard(),
+				new megaBoard(),
 				new Zero(), new Due(),
 				new leonardoBoard(),
 				new arduino101Board() };
@@ -123,6 +127,7 @@ public class CompileAndUpload {
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.installAllLatestPlatforms();
 		}
+		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 
 	}
 

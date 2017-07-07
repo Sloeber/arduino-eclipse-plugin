@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 @SuppressWarnings("nls")
 public class Shared {
-	private static String teensyInstall = "D:/arduino/arduino-1.6.9 - Teensy 1.29/hardware/teensy";
+	private static String teensyInstall = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
 	private static String teensyInstallLinux = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
 
 	public static String getTeensyPlatform() {

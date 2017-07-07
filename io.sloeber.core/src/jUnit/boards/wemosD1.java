@@ -19,7 +19,7 @@ public class wemosD1 extends IBoard {
 		if (this.myBoardDescriptor == null) {
 			fail("wemos Board not found");
 		}
-		this.myBoardDescriptor.setUploadPort("none");
+		this.myBoardDescriptor.setUploadPort("COM21");
 	}
 
 }

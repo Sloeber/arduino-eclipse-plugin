@@ -2,10 +2,13 @@
 #ifndef LED_BUILTIN
 #ifdef ARDUINO_ESP8266_WEMOS_D1MINI
 #define LED_BUILTIN D4
+#elif ARDUINO_ESP8266_NODEMCU
+#define LED_BUILTIN 2
+#endif
 #else
 #define LED_BUILTIN 13
 #endif
-#endif
+
 #ifdef ARDUINO_AVR_LILYPAD_USB
 #undef LED_BUILTIN
 #define LED_BUILTIN 5

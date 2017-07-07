@@ -12,7 +12,7 @@ public class NodeMCUBoard extends IBoard {
 		if (this.myBoardDescriptor == null) {
 			fail("nodemcu Board not found");
 		}
-		this.myBoardDescriptor.setUploadPort("none");
+		this.myBoardDescriptor.setUploadPort("COM22");
 	}
 
 }
