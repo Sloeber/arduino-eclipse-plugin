@@ -142,35 +142,48 @@ public class BoardDescriptor {
 	 * @param obj
 	 * @return true if equal otherwise false
 	 */
-	public boolean equals(BoardDescriptor obj) {
-		if (!this.getUploadPort().equals(obj.getUploadPort())) {
+	public boolean equals(BoardDescriptor otherBoardDescriptor) {
+		if (!this.getUploadPort().equals(otherBoardDescriptor.getUploadPort())) {
 			return false;
 		}
-		if (!this.getProgrammer().equals(obj.getProgrammer())) {
+		if (!this.getProgrammer().equals(otherBoardDescriptor.getProgrammer())) {
 			return false;
 		}
-		if (!this.getBoardID().equals(obj.getBoardID())) {
-			return false;
+		return !needsSettingDirty(otherBoardDescriptor);
+	}
+
+	/**
+	 * compare 2 board descriptors and return true if replacing one board descriptor
+	 * with the other implies that a rebuild is needed
+	 *
+	 * @param otherBoardDescriptor
+	 * @return
+	 */
+	public boolean needsSettingDirty(BoardDescriptor otherBoardDescriptor) {
+
+
+		if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
+			return true;
 		}
-		if (!this.getReferencingBoardsFile().equals(obj.getReferencingBoardsFile())) {
-			return false;
+		if (!this.getReferencingBoardsFile().equals(otherBoardDescriptor.getReferencingBoardsFile())) {
+			return true;
 		}
-		if (!this.getOptions().equals(obj.getOptions())) {
-			return false;
+		if (!this.getOptions().equals(otherBoardDescriptor.getOptions())) {
+			return true;
 		}
-		if (!this.getProjectName().equals(obj.getProjectName())) {
-			return false;
+		if (!this.getProjectName().equals(otherBoardDescriptor.getProjectName())) {
+			return true;
 		}
-		if (!this.getMyOSName().equals(obj.getMyOSName())) {
-			return false;
+		if (!this.getMyOSName().equals(otherBoardDescriptor.getMyOSName())) {
+			return true;
 		}
-		if (!this.getMyWorkEclipseLocation().equals(obj.getMyWorkEclipseLocation())) {
-			return false;
+		if (!this.getMyWorkEclipseLocation().equals(otherBoardDescriptor.getMyWorkEclipseLocation())) {
+			return true;
 		}
-		if (!this.getMyWorkSpaceLocation().equals(obj.getMyWorkSpaceLocation())) {
-			return false;
-		}
+		if (!this.getMyWorkSpaceLocation().equals(otherBoardDescriptor.getMyWorkSpaceLocation())) {
 		return true;
+	}
+		return false;
 	}
 
 	/*
@@ -537,7 +550,8 @@ public class BoardDescriptor {
 	}
 
 	public void save(ICConfigurationDescription confdesc) throws Exception {
-		saveConfiguration(confdesc, null);
+		boolean needsSettingDirty = saveConfiguration(confdesc, null);
+
 		if (confdesc != null) {
 			IProject project = confdesc.getProjectDescription().getProject();
 
@@ -545,8 +559,13 @@ public class BoardDescriptor {
 
 			Helpers.addArduinoCodeToProject(this, project, confdesc);
 
-			Helpers.removeInvalidIncludeFolders(confdesc);
-			Helpers.setDirtyFlag(project, confdesc);
+			needsSettingDirty = needsSettingDirty || Helpers.removeInvalidIncludeFolders(confdesc);
+			if (needsSettingDirty) {
+				Helpers.setDirtyFlag(project, confdesc);
+			} else {
+				Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+						"Ignoring update; clean may be required: " + project.getName()));
+			}
 		}
 	}
 
@@ -554,8 +573,11 @@ public class BoardDescriptor {
 		saveConfiguration(null, null);
 	}
 
-	public void saveConfiguration(ICConfigurationDescription confDesc, IContributedEnvironment contribEnvIn) {
+	public boolean saveConfiguration(ICConfigurationDescription confDesc, IContributedEnvironment contribEnvIn) {
+		boolean needsSettingDirty = false;
 		if (confDesc != null) {
+			BoardDescriptor curBoardDesCriptor = makeBoardDescriptor(confDesc);
+			needsSettingDirty = curBoardDesCriptor.needsSettingDirty(this);
 			IContributedEnvironment contribEnv = contribEnvIn;
 			if (contribEnv == null) {
 				IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
@@ -595,6 +617,7 @@ public class BoardDescriptor {
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
 		myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
 		myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
+		return needsSettingDirty;
 	}
 
 	public String getPackage() {
