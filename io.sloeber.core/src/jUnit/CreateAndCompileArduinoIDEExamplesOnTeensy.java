@@ -24,19 +24,12 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
-import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
-import jUnit.boards.EsploraBoard;
-import jUnit.boards.GenericArduinoAvrBoard;
+import jUnit.boards.GenericTeensyBoard;
 import jUnit.boards.IBoard;
-import jUnit.boards.MegaADKBoard;
-import jUnit.boards.UnoBoard;
-import jUnit.boards.YunBoard;
-import jUnit.boards.leonardoBoard;
-import jUnit.boards.megaBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
+public class CreateAndCompileArduinoIDEExamplesOnTeensy {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
@@ -45,7 +38,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 	private boolean myUsesSerial;
 	private static int totalFails = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnAVRHardware(String name, CodeDescriptor codeDescriptor,
+	public CreateAndCompileArduinoIDEExamplesOnTeensy(String name, CodeDescriptor codeDescriptor,
 			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
 
 		this.myCodeDescriptor = codeDescriptor;
@@ -59,7 +52,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-
+		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 
 		Shared.waitForAllJobsToFinish();
 
@@ -111,136 +104,41 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnUno() {
-		testExample(new UnoBoard());
+	public void testArduinoIDEExamplesOnTeensy3_6() {
+		testExample(new GenericTeensyBoard("teensy36"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnLeonardo() {
-		testExample(new leonardoBoard());
+	public void testArduinoIDEExamplesOnTeensy3_5() {
+		testExample(new GenericTeensyBoard("teensy35"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnEsplora() {
-		testExample(new EsploraBoard());
+	public void testArduinoIDEExamplesOnTeensy3_1() {
+		testExample(new GenericTeensyBoard("teensy31"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnYun() {
-		testExample(new YunBoard());
+	public void testArduinoIDEExamplesOnTeensy3_0() {
+		testExample(new GenericTeensyBoard("teensy30"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnDiecimila() {
-		testExample(new GenericArduinoAvrBoard("diecimila"));
+	public void testArduinoIDEExamplesOnTeensyLC() {
+		testExample(new GenericTeensyBoard("teensyLC"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnMega() {
-		testExample(new megaBoard());
+	public void testArduinoIDEExamplesOnTeensyPP2() {
+		testExample(new GenericTeensyBoard("teensypp2"));
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOneMegaADK() {
-		testExample(new MegaADKBoard());
+	public void testArduinoIDEExamplesOnTeensy2() {
+		testExample(new GenericTeensyBoard("teensy2"));
 
 	}
 
-	@Test
-	public void testArduinoIDEExamplesOnLeonardoEth() {
-
-		testExample(new GenericArduinoAvrBoard("leonardoeth"));
-
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOneMicro() {
-
-		testExample(new GenericArduinoAvrBoard("micro"));
-
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOneMini() {
-		testExample(new GenericArduinoAvrBoard("mini"));
-
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnEthernet() {
-		testExample(new GenericArduinoAvrBoard("ethernet"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnFio() {
-		testExample(new GenericArduinoAvrBoard("fio"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnBt() {
-		testExample(new GenericArduinoAvrBoard("bt"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnLilyPadUSB() {
-		testExample(new GenericArduinoAvrBoard("LilyPadUSB"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnlilypad() {
-		testExample(new GenericArduinoAvrBoard("lilypad"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnPro() {
-		testExample(new GenericArduinoAvrBoard("pro"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnatmegang() {
-		testExample(new GenericArduinoAvrBoard("atmegang"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnrobotControl() {
-		testExample(new GenericArduinoAvrBoard("robotControl"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnrobotMotor() {
-		testExample(new GenericArduinoAvrBoard("robotMotor"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOngemma() {
-		testExample(new GenericArduinoAvrBoard("gemma"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOncircuitplay32u4cat() {
-		testExample(new AdafruitnCirquitPlaygroundBoard());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnyunmini() {
-		testExample(new GenericArduinoAvrBoard("yunmini"));
-
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnchiwawa() {
-		testExample(new GenericArduinoAvrBoard("chiwawa"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnone() {
-		testExample(new GenericArduinoAvrBoard("one"));
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnunowifi() {
-		testExample(new GenericArduinoAvrBoard("unowifi"));
-	}
 
 	public void BuildAndVerify(BoardDescriptor boardDescriptor) {
 
