@@ -16,6 +16,7 @@ import io.sloeber.ui.monitor.views.SerialMonitor;
 public class SerialListener implements MessageConsumer {
 	private static boolean myPlotterFilterFlag = false;
 	SerialMonitor theMonitor;
+	boolean isDisposed = false;
 	int theColorIndex;
 	private ByteBuffer myReceivedPlotterData = ByteBuffer.allocate(2000);
 
@@ -127,7 +128,8 @@ public class SerialListener implements MessageConsumer {
 
 	@Override
 	public void dispose() {
-		// No need to dispose something
+		this.isDisposed = true;
+		this.myReceivedPlotterData.clear();
 	}
 
 	@Override
@@ -137,7 +139,9 @@ public class SerialListener implements MessageConsumer {
 			@Override
 			public void run() {
 				try {
+					if (!SerialListener.this.isDisposed) {
 					SerialListener.this.theMonitor.ReportSerialActivity(tempString, SerialListener.this.theColorIndex);
+					}
 				} catch (Exception e) {// ignore as we get errors when closing
 					// down
 				}
