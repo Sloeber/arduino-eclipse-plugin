@@ -368,7 +368,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		this.disconnect.setText(Messages.serialMonitorDisconnectedFrom);
 		this.disconnect.setToolTipText(Messages.serialMonitorRemoveSerialPortFromMonitor);
 		this.disconnect.setImageDescriptor(
-				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));// IMG_OBJS_INFO_TSK));
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));// IMG_OBJS_INFO_TSK));
 		this.disconnect.setEnabled(this.serialConnections.size() != 0);
 
 		this.clear = new Action(Messages.serialMonitorClear) {
