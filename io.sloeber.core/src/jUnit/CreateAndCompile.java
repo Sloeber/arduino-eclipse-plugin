@@ -27,12 +27,10 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompile {
+	// use the boolean below to avoid downloading and installation
+	private static final boolean reinstall_boards_and_libraries = false;
 	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
-	// TODO boards to investigate
-	// tinyx313 tinyx4
-	// tinyx5
-	// atmegax4 atmegax8
 
 	public CreateAndCompile(BoardDescriptor board) {
 		this.mBoard = board;
@@ -54,9 +52,9 @@ public class CreateAndCompile {
 	}
 
 	/*
-	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmst have finished before we
-	 * can start testing
+	 * In new installations (of the Sloeber development environment) the installer
+	 * job will trigger downloads These must have finished before we can start
+	 * testing This will take a long time
 	 */
 
 	public static void installAdditionalBoards() {
@@ -132,9 +130,11 @@ public class CreateAndCompile {
 				"http://downloads.sodaq.net/package_samd_sodaq_index.json",
 				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		if (reinstall_boards_and_libraries) {
+		BoardsManager.installAllLatestPlatforms();
 		BoardsManager.onlyKeepLatestPlatforms();
+		}
 		Shared.waitForAllJobsToFinish();
 	}
 
@@ -170,9 +170,8 @@ public class CreateAndCompile {
 			fail("Failed to compile the project:" + boardid.getBoardName() + " exception");
 		}
 		try {
-			theTestProject.delete(false, true, null);// close(null);
+			theTestProject.delete(false, true, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
