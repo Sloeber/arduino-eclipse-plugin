@@ -457,22 +457,16 @@ public class Helpers extends Common {
 			ICConfigurationDescription confDesc, BoardDescriptor boardDescriptor) {
 		// Set some default values because the platform.txt does not contain
 		// them
-		Path platformPath = boardDescriptor.getreferencingPlatformPath();
+		IPath referencedPlatformPath = boardDescriptor.getReferencedCorePlatformPath();
+		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
-		// String packagename = boardDescriptor.getPackage();
-		int numSegmentsToSubtractForHardwarePath = 1;
-		if (architecture.contains(DOT)) { // in case there is a version in the
-			// path ignore the version
-			numSegmentsToSubtractForHardwarePath = 3;
-			architecture = platformPath.removeLastSegments(2).lastSegment();
-			// packagename = platformPath.removeLastSegments(4).lastSegment();
-		}
+
 
 		boardDescriptor.saveConfiguration(confDesc, contribEnv);
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
-				platformPath.removeLastSegments(numSegmentsToSubtractForHardwarePath).toString());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
+				hardwarePath.toString());
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, referencedPlatformPath.toString());
 		// setBuildEnvironmentVariable(contribEnv, confDesc,
 		// ENV_KEY_SERIAL_PORT,
 		// makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
