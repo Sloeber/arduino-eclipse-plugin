@@ -343,7 +343,6 @@ public class LibraryManager {
 		try {
 			FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathLibraries().toFile());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

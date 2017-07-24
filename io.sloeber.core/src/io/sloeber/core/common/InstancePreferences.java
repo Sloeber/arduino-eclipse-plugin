@@ -138,7 +138,6 @@ public class InstancePreferences {
 	}
 
 	public static boolean getPragmaOnceHeaders() {
-		// TODO Auto-generated method stub
 		return getGlobalBoolean(KEY_PRAGMA_ONCE_HEADER, true);
 	}
 

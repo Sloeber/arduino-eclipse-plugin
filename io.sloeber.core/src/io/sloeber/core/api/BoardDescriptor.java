@@ -258,6 +258,7 @@ public class BoardDescriptor {
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, core)
 									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
 									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
 				}
 			} else {
 				this.myBoardsCore = core;
@@ -275,6 +276,7 @@ public class BoardDescriptor {
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
 									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
 									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
 				}
 			} else {
 				this.myBoardsVariant = variant;
@@ -292,6 +294,7 @@ public class BoardDescriptor {
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, upload)
 									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
 									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
 				}
 			} else {
 				this.myUploadTool = upload;
@@ -897,6 +900,16 @@ public class BoardDescriptor {
 
 	public boolean usesProgrammer() {
 		return !this.myProgrammer.equals(Defaults.getDefaultUploadProtocol());
+	}
+
+	public IPath getreferencedHardwarePath() {
+		IPath platformPath = getReferencedCorePlatformPath();
+		String architecture = platformPath.lastSegment();
+		if (architecture.contains(Const.DOT)) { // This is a version number so
+			// package
+			return platformPath.removeLastSegments(2);
+		}
+		return platformPath.removeLastSegments(1);
 	}
 
 }

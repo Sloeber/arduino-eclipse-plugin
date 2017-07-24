@@ -51,7 +51,6 @@ public class FileModifiers {
 							try {
 								prependPrefix(file.toFile(), PRAGMA_ONCE + System.lineSeparator());
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
@@ -87,7 +86,6 @@ public class FileModifiers {
 		try {
 			Files.walkFileTree(startingDir, finder);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
