@@ -76,17 +76,22 @@ import io.sloeber.core.managers.ToolDependency;
  */
 public class Helpers extends Common {
 	private static final String ARDUINO_CORE_BUILD_FOLDER_NAME = "core";
+	// TODO find some regex to fix this mess
 	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
+	private static final String BUILD_PATH_SYSCALLS_SAM3_option2 = "\"{build.path}/core/syscalls_sam3.c.o\"";
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
+			+ "/" + ARDUINO_CORE_BUILD_FOLDER_NAME
 			+ "/syscalls_sam3.c.o\"";
 	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
 	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
+			+ "/" + ARDUINO_CORE_BUILD_FOLDER_NAME
 			+ "/syscalls_mtk.c.o\"";
 
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
+	private static final String ENV_KEY_REFERENCED_PLATFORM_PATH = ERASE_START + "RUNTIME.REFERENCED.PLATFORM.PATH";
 
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
 
@@ -458,6 +463,7 @@ public class Helpers extends Common {
 		// Set some default values because the platform.txt does not contain
 		// them
 		IPath referencedPlatformPath = boardDescriptor.getReferencedCorePlatformPath();
+		IPath platformPath = boardDescriptor.getreferencingPlatformPath();
 		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
 
@@ -466,7 +472,9 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
 				hardwarePath.toString());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, referencedPlatformPath.toString());
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_PLATFORM_PATH,
+				referencedPlatformPath.toString());
 		// setBuildEnvironmentVariable(contribEnv, confDesc,
 		// ENV_KEY_SERIAL_PORT,
 		// makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
@@ -539,6 +547,8 @@ public class Helpers extends Common {
 						String value = var[1].trim();
 						if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
 							value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
+						} else if (value.contains(BUILD_PATH_SYSCALLS_SAM3_option2)) {
+							value = value.replace(BUILD_PATH_SYSCALLS_SAM3_option2, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
 						} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
 							value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
 						}
@@ -1111,13 +1121,7 @@ public class Helpers extends Common {
 	 *         output is "file.cpp"
 	 */
 	public static IPath GetOutputName(IPath Source) {
-		IPath outputName;
-		if (Source.toString().startsWith(Const.ARDUINO_CODE_FOLDER_NAME)) {
-			outputName = new Path(Const.ARDUINO_CODE_FOLDER_NAME).append(Source.lastSegment());
-		} else {
-			outputName = Source;
-		}
-		return outputName;
+		return Source;
 	}
 
 	/**
