@@ -59,6 +59,24 @@ public class Libraries {
 		if (children == null) {
 			// Either dir does not exist or is not a directory
 		} else {
+			//if the folder contains any of the following it is considered a library itself
+			// src library.properties or examples
+			if(ArrayUtils.contains(children, "src")||ArrayUtils.contains(children, "library.properties")||ArrayUtils.contains(children, "examples")) { //$NON-NLS-1$
+				ret.put(ipath.lastSegment(), ipath);
+				return ret;
+			}
+			//if the folder contains a *.h or *.cpp file it is considered a library itself
+			for (String curFolder : children) {
+				// Get filename of file or directory
+				IPath LibPath = ipath.append(curFolder);
+				File LibPathFile = LibPath.toFile();
+				if (LibPathFile.isFile() && (LibPath.getFileExtension().equalsIgnoreCase("cpp")
+						|| LibPath.getFileExtension().equalsIgnoreCase("h"))) {
+					ret.put(ipath.lastSegment(), ipath);
+					return ret;
+				}
+			}
+			//otherwise assume all subfolders are libraries
 			for (String curFolder : children) {
 				// Get filename of file or directory
 				IPath LibPath = ipath.append(curFolder);
