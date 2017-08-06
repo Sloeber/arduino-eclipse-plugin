@@ -173,8 +173,6 @@ public class ArduinoSerial {
 				.equalsIgnoreCase(Const.TRUE);
 		String comPort = boardDescriptor.getUploadPort();
 		String boardName = boardDescriptor.getBoardName();
-		String uploadProtocol = Common.getBuildEnvironmentVariable(project, configName,
-				Common.get_ENV_KEY_PROTOCOL(Const.ACTION_UPLOAD), new String());
 
 		boolean bResetPortForUpload = Common
 				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)
@@ -185,7 +183,7 @@ public class ArduinoSerial {
 		 * boards.txt use Const.ENV_KEY_RESET_BEFORE_UPLOAD=FALSE to disable a
 		 * reset
 		 */
-		if (!bResetPortForUpload || uploadProtocol.equalsIgnoreCase("halfkay")) { //$NON-NLS-1$
+		if (!bResetPortForUpload || "teensyloader".equalsIgnoreCase(boardDescriptor.getActualUploadTool())) { //$NON-NLS-1$
 			return comPort;
 		}
 		/*

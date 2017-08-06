@@ -54,7 +54,6 @@
             <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Linux comments</a>
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Mac comments</a>
             <a href="#" ng-class="tab.g" class="list-group-item small" ng-click="select('g')">Windows comments</a>
-            <a href="#" ng-class="tab.h" class="list-group-item small" ng-click="select('h')">V2: Library madness</a>
             </div>
         </div>
         <div class="col-md-9 col-md-pull-3">
@@ -63,13 +62,12 @@
           <section ng-show="tab.b" marked ng-include="'fragments/install_advice/V1.md'"></section>
           <section ng-show="tab.c" marked ng-include="'fragments/install_advice/V2.md'"></section>
           <section ng-show="tab.cc" marked ng-include="'fragments/install_advice/V3.md'"></section>
-          <section ng-show="tab.cc" marked ng-include="'fragments/install_advice/V4.md'"></section>
+          <section ng-show="tab.ccc" marked ng-include="'fragments/install_advice/V4.md'"></section>
           <section ng-show="tab.d" marked ng-include="'fragments/install_advice/all_os.md'"></section>
           <section ng-show="tab.e" marked ng-include="'fragments/install_advice/linux.md'"></section>
           <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac.md'"></section>
           <section ng-show="tab.f" marked ng-include="'fragments/install_advice/mac_make.md'"></section>
           <section ng-show="tab.g" marked ng-include="'fragments/install_advice/windows.md'"></section>
-          <section ng-show="tab.h" marked ng-include="'fragments/install_advice/library_madness.md'"></section>
         </div>
       </div>
     </div><!-- /container -->

@@ -36,45 +36,50 @@ public class arduinoUploader implements IRealUpload {
 	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, boolean usingProgrammer, IProgressMonitor monitor) {
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor inBoardDescriptor, IProgressMonitor monitor) {
 		String MComPort = new String();
 		String boardName = new String();
 		boolean needsPassword = false;
+		boolean needsUpdatedConfig = false;
+		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(inBoardDescriptor);
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(this.myProject);
 		ICConfigurationDescription configurationDescription = prjDesc.getConfigurationByName(this.mycConf);
-		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
 
 		try {
 			needsPassword = envManager.getVariable(Const.ENV_KEY_NETWORK_AUTH, configurationDescription, true)
 					.getValue().equalsIgnoreCase(Const.TRUE);
 		} catch (Exception e) {// ignore all errors
 		}
-		String NewSerialPort = MComPort;
-		if (!usingProgrammer) {
-			NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(), this.myProject,
-					this.mycConf, boardDescriptor);
-		}
 
-		BoardDescriptor.storeUploadPort(this.myProject, NewSerialPort);
-		IEnvironmentVariable var = new EnvironmentVariable(Const.ENV_KEY_SERIAL_PORT_FILE,
-				NewSerialPort.replace("/dev/", new String())); //$NON-NLS-1$
-		contribEnv.addVariable(var, configurationDescription);
+		if (!boardDescriptor.usesProgrammer()) {
+			String NewSerialPort = ArduinoSerial.makeArduinoUploadready(this.myConsole.newMessageStream(),
+					this.myProject, this.mycConf, boardDescriptor);
+			if (!boardDescriptor.getUploadPort().equals(NewSerialPort)) {
+				boardDescriptor.setUploadPort(NewSerialPort);
+				needsUpdatedConfig = true;
+			}
+		}
 
 		// for web authorized upload
 		if (needsPassword) {
 			setEnvironmentvarsForAutorizedUpload(contribEnv, configurationDescription, MComPort);
 		}
 
-		String command = new String();
-		try {
-			command = envManager
-					.getVariable(Common.get_Jantje_KEY_RECIPE(Const.ACTION_UPLOAD), configurationDescription, true)
-					.getValue();
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to get the Upload recipe ", e)); //$NON-NLS-1$
+		if (needsUpdatedConfig) {
+			try {
+				boardDescriptor.saveConfiguration(configurationDescription, null);
+			} catch (Exception e) {
+				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to save configuration before upload", //$NON-NLS-1$
+						e));
+				return false;
+			}
+		}
+		String command = boardDescriptor.getUploadCommand(configurationDescription);
+		if (command == null) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to get the Upload recipe ")); //$NON-NLS-1$
 			return false;
 		}
 
@@ -92,8 +97,8 @@ public class arduinoUploader implements IRealUpload {
 	}
 
 	/**
-	 * given a project look in the source code for the line of code that sets
-	 * the password;
+	 * given a project look in the source code for the line of code that sets the
+	 * password;
 	 *
 	 * @param iProject
 	 * @return the password string or no_pwd_found_in_code if not found

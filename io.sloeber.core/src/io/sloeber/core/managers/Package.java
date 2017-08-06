@@ -10,8 +10,11 @@ package io.sloeber.core.managers;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import io.sloeber.core.tools.Version;
 
 public class Package implements Comparable<Package> {
 
@@ -19,6 +22,7 @@ public class Package implements Comparable<Package> {
 	private String maintainer;
 	private String websiteURL;
 	private String email;
+	private Help help;
 	private List<ArduinoPlatform> platforms;
 	private List<Tool> tools;
 
@@ -51,6 +55,10 @@ public class Package implements Comparable<Package> {
 		return this.email;
 	}
 
+	public Help getHelp() {
+		return this.help;
+	}
+
 	public List<ArduinoPlatform> getPlatforms() {
 		return this.platforms;
 	}
@@ -64,7 +72,7 @@ public class Package implements Comparable<Package> {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
 			ArduinoPlatform p = platformMap.get(platform.getName());
-			if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+			if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
 				platformMap.put(platform.getName(), platform);
 			}
 		}
@@ -79,12 +87,12 @@ public class Package implements Comparable<Package> {
 	 * @return the installed platforms but only one for each platform (the one
 	 *         with the highest version number)
 	 */
-	public Collection<ArduinoPlatform> getInstalledPlatforms() {
+	public Collection<ArduinoPlatform> getLatestInstalledPlatforms() {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.isInstalled()) {
 				ArduinoPlatform p = platformMap.get(platform.getName());
-				if (p == null || Manager.compareVersions(platform.getVersion(), p.getVersion()) > 0) {
+				if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
 					platformMap.put(platform.getName(), platform);
 				}
 			}
@@ -92,15 +100,33 @@ public class Package implements Comparable<Package> {
 		return Collections.unmodifiableCollection(platformMap.values());
 	}
 
-	public ArduinoPlatform getLatestPlatform(String platformName) {
+	/**
+	 * This method looks up the installed platforms So if you have 2 arduino avr
+	 * platform versions installed you will get back 2.
+	 *
+	 * @return all the installed platforms
+	 */
+	public List<ArduinoPlatform> getInstalledPlatforms() {
+		List<ArduinoPlatform> platformMap = new LinkedList<>();
+		for (ArduinoPlatform platform : this.platforms) {
+			if (platform.isInstalled()) {
+				platformMap.add(platform);
+			}
+		}
+		return platformMap;
+	}
+
+	public ArduinoPlatform getLatestPlatform(String platformName, boolean mustBeInstalled) {
 		ArduinoPlatform foundPlatform = null;
 		for (ArduinoPlatform platform : this.platforms) {
-			if (platform.getName().equals(platformName)) {
-				if (foundPlatform == null) {
-					foundPlatform = platform;
-				} else {
-					if (Manager.compareVersions(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+			if (!mustBeInstalled || platform.isInstalled()) {
+				if (platform.getName().equals(platformName)) {
+					if (foundPlatform == null) {
 						foundPlatform = platform;
+					} else {
+						if (Version.compare(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+							foundPlatform = platform;
+						}
 					}
 				}
 			}
@@ -112,7 +138,7 @@ public class Package implements Comparable<Package> {
 
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.getName().equals(platformName)) {
-				if (Manager.compareVersions(platform.getVersion(), version) == 0) {
+				if (Version.compare(platform.getVersion(), version) == 0) {
 					return platform;
 				}
 			}
@@ -137,7 +163,7 @@ public class Package implements Comparable<Package> {
 		Tool latestTool = null;
 		for (Tool tool : this.tools) {
 			if (tool.getName().equals(toolName)) {
-				if (latestTool == null || Manager.compareVersions(tool.getVersion(), latestTool.getVersion()) > 0) {
+				if (latestTool == null || Version.compare(tool.getVersion(), latestTool.getVersion()) > 0) {
 					latestTool = tool;
 				}
 			}

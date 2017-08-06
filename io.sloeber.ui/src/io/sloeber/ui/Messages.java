@@ -68,7 +68,7 @@ public class Messages extends NLS {
 	public static String ui_select_Arduino_libraries;
 	public static String ui_select_folder;
 	public static String ui_show_all_warnings;
-	public static String ui_url_for_package_index_file;
+	public static String ui_url_for_index_file;
 
 	public static String ui_workspace_settings;
 
@@ -106,6 +106,8 @@ public class Messages extends NLS {
 	public static String port_is_not_a_computer_name;
 
 	public static String Set_or_Remove_password;
+
+	public static String ui_pragma_once_headers;
 
 	static {
 		// initialize resource bundle

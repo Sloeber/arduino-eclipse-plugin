@@ -19,7 +19,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.JsonManager;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -37,26 +37,26 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 
 	@Override
 	public boolean performOk() {
-		BoardsManager.setBoardsPackageURL(this.urlsText.getText().split(System.lineSeparator()));
-		BoardsManager.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
+		JsonManager.setURL(this.urlsText.getText().split(System.lineSeparator()));
+		JsonManager.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
 		return super.performOk();
 	}
 
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.urlsText.setText(BoardsManager.getDefaultBoardsPackageURLs());
+		this.urlsText.setText(JsonManager.getDefaultURLs());
 	}
 
 	@Override
 	protected void createFieldEditors() {
-		String selectedJsons[] = BoardsManager.getBoardsPackageURLList();
+		String selectedJsons[] = JsonManager.getURLList();
 		final Composite parent = getFieldEditorParent();
 		// Composite control = new Composite(parent, SWT.NONE);
 		Label title = new Label(parent, SWT.UP);
 		title.setFont(parent.getFont());
 
-		title.setText(Messages.ui_url_for_package_index_file);
+		title.setText(Messages.ui_url_for_index_file);
 		title.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
 		this.urlsText = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER | SWT.WRAP);

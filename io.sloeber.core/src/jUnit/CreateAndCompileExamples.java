@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,122 +26,80 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.LibraryManager;
+import jUnit.boards.AdafruitnCirquitPlaygroundBoard;
+import jUnit.boards.AdafruitnRF52idBoard;
+import jUnit.boards.Due;
+import jUnit.boards.EsploraBoard;
+import jUnit.boards.GenericArduinoAvrBoard;
+import jUnit.boards.IBoard;
+import jUnit.boards.NodeMCUBoard;
+import jUnit.boards.Primo;
+import jUnit.boards.UnoBoard;
+import jUnit.boards.Zero;
+import jUnit.boards.leonardoBoard;
+import jUnit.boards.megaBoard;
+import jUnit.boards.mkrfox1200;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamples {
+	private static final boolean reinstall_boards_and_examples = false;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
+	private static int totalFails = 0;
+	private String myName;
 
 	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
 		this.myCodeDescriptor = codeDescriptor;
-
+		this.myName = name;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
-		Map<String, String> myOptions = new HashMap<>();
-		String[] lines = new String("").split("\n"); //$NON-NLS-1$
-		for (String curLine : lines) {
-			String[] values = curLine.split("=", 2); //$NON-NLS-1$
-			if (values.length == 2) {
-				myOptions.put(values[0], values[1]);
-			}
-		}
-		BoardDescriptor leonardoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "leonardo", myOptions);
-		if (leonardoBoardid == null) {
-			fail("leonardo Board not found");
-			return null;
-		}
-		leonardoBoardid.setUploadPort("none");
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "uno", myOptions);
-		if (unoBoardid == null) {
-			fail("uno Board not found");
-			return null;
-		}
-		unoBoardid.setUploadPort("none");
-		BoardDescriptor EsploraBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino",
-				"Arduino AVR Boards", "esplora", myOptions);
-		if (EsploraBoardid == null) {
-			fail("Esplora Board not found");
-			return null;
-		}
-		EsploraBoardid.setUploadPort("none");
+
+		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
+				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(), new megaBoard(),
+				new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200(), new Due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
+		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
-			if (isExampleOkForLeonardo(curexample.getKey())) {
-				Object[] theData = new Object[] { "leonardo :" + curexample.getKey(), leonardoBoardid, codeDescriptor };
-
-				examples.add(theData);
+			String inoName = curexample.getKey();
+			String libName = "";
+			if (examples.size() == 82) {// use this for debugging based on the
+										// project number
+				// use this to put breakpoint
+				int a = 0;
+				a = a + 1;
 			}
-			if (isExampleOkForUno(curexample.getKey())) {
-				Object[] theData = new Object[] { "Uno :" + curexample.getKey(), unoBoardid, codeDescriptor };
-
-				examples.add(theData);
+			try {
+				libName = inoName.split(" ")[0].trim();
+			} catch (Exception e) {
+				// ignore error
 			}
-			if (isExampleOkForEsplora(curexample.getKey())) {
-				Object[] theData = new Object[] { "Esplora :" + curexample.getKey(), EsploraBoardid, codeDescriptor };
 
-				examples.add(theData);
+			// with the current amount of examples only do one
+			for (IBoard curBoard : myBoards) {
+				if (curBoard.isExampleOk(inoName, libName)) {
+					Object[] theData = new Object[] { inoName.trim(), curBoard.getBoardDescriptor(), codeDescriptor };
+					examples.add(theData);
+					break;
+				}
+
 			}
 		}
 
 		return examples;
 
-	}
-
-	private static boolean isExampleOkForUno(String key) {
-		final String[] notOkForUno = { "Firmataexamples?StandardFirmataWiFi", "examples?04.Communication?MultiSerial",
-				"examples?09.USB?Keyboard?KeyboardLogout", "examples?09.USB?Keyboard?KeyboardMessage",
-				"examples?09.USB?Keyboard?KeyboardReprogram", "examples?09.USB?Keyboard?KeyboardSerial",
-				"examples?09.USB?KeyboardAndMouseControl", "examples?09.USB?Mouse?ButtonMouseControl",
-				"examples?09.USB?Mouse?JoystickMouseControl", };
-		if (key.startsWith("Esploraexamples"))
-			return false;
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-
-		if (key.contains("Firmata"))
-			return false;
-		if (Arrays.asList(notOkForUno).contains(key.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForLeonardo(String key) {
-		final String[] notOkForLeonardo = { "Esploraexamples?Beginners?EsploraJoystickMouse",
-				"Esploraexamples?Experts?EsploraKart", "Esploraexamples?Experts?EsploraTable",
-				"Firmataexamples?StandardFirmataWiFi" };
-		if (key.contains("Firmata"))
-			return false;
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-		if (Arrays.asList(notOkForLeonardo).contains(key.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
-	}
-
-	private static boolean isExampleOkForEsplora(String key) {
-		final String[] notOkForEsplora = { "Firmataexamples?StandardFirmataBLE",
-				"Firmataexamples?StandardFirmataChipKIT", "Firmataexamples?StandardFirmataEthernet",
-				"Firmataexamples?StandardFirmataWiFi" };
-		if (key.replace(" ", "").startsWith("TFTexamples?Esplora?Esplora"))
-			return false;
-		if (Arrays.asList(notOkForEsplora).contains(key.replace(" ", "")))
-			return false;
-		return true; // default everything is fine
 	}
 
 	/*
@@ -152,30 +109,47 @@ public class CreateAndCompileExamples {
 	 */
 
 	public static void WaitForInstallerToFinish() {
+
 		installAdditionalBoards();
+
 		Shared.waitForAllJobsToFinish();
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json" };
+		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+				"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
+				"https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/master/io.sloeber.core/src/jUnit/library_sloeber_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		BoardsManager.installAllLatestPlatforms();
+		if (reinstall_boards_and_examples) {
+			BoardsManager.installAllLatestPlatforms();
+			// deal with removal of json files or libs from json files
+			LibraryManager.removeAllLibs();
+			LibraryManager.installAllLatestLibraries();
+		}
 
 	}
 
 	@Test
 	public void testExamples() {
-		BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
+		// Stop after X fails because
+		// the fails stays open in eclipse and it becomes really slow
+		// There are only a number of issues you can handle
+		// best is to focus on the first ones and then rerun starting with the
+		// failures
+		if (totalFails < 40) {
+			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
+		} else {
+			fail("To many fails. Stopping test");
+		}
 
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%03d_", new Integer(mCounter++)) + boardid.getBoardID()
-				+ codeDescriptor.getExamples().get(0).lastSegment();
+		String projectName = String.format("%05d_%s", new Integer(mCounter++), this.myName);
 		try {
 
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
@@ -183,6 +157,7 @@ public class CreateAndCompileExamples {
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
+			totalFails++;
 			fail("Failed to create the project:" + projectName);
 			return;
 		}
@@ -191,14 +166,26 @@ public class CreateAndCompileExamples {
 			if (Shared.hasBuildErrors(theTestProject)) {
 				// try again because the libraries may not yet been added
 				Shared.waitForAllJobsToFinish(); // for the indexer
+				try {
+					Thread.sleep(3000);// seen sometimes the libs were still not
+										// added
+				} catch (InterruptedException e) {
+					// ignore
+				}
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
+					totalFails++;
 					fail("Failed to compile the project:" + projectName + " build errors");
+				} else {
+					theTestProject.delete(true, null);
 				}
+			} else {
+				theTestProject.delete(true, null);
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
+			totalFails++;
 			fail("Failed to compile the project:" + projectName + " exception");
 		}
 	}

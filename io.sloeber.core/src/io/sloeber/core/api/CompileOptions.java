@@ -19,7 +19,14 @@ public class CompileOptions {
 	private String myAditional_C_andCPP_CompileOptions = ""; //$NON-NLS-1$
 	private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.COMPILER.WARNING_FLAGS"; //$NON-NLS-1$
 	private static final String ENV_KEY_WARNING_LEVEL_ON = "${A.COMPILER.WARNING_FLAGS.ALL}"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.COMPILE"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START
+			+ "EXTRA.C.COMPILE"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START
+			+ "EXTRA.CPP.COMPILE"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_WARNING_LEVEL = Const.ENV_KEY_JANTJE_START + "WARNING_LEVEL"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_SIZE_COMMAND = Const.ERASE_START + "ALT_SIZE_COMMAND"; //$NON-NLS-1$
+	public static final String ENV_KEY_JANTJE_SIZE_SWITCH = Const.ENV_KEY_JANTJE_START + "SIZE.SWITCH"; //$NON-NLS-1$
 
 	/**
 	 * gets the compile options stored in this configuration description. if the
@@ -38,18 +45,19 @@ public class CompileOptions {
 			IEnvironmentVariable var = contribEnv.getVariable(ENV_KEY_JANTJE_WARNING_LEVEL, confDesc);
 			if (var != null)
 				this.myWarningLevel = Boolean.valueOf(var.getValue());
-			var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, confDesc);
+			var = contribEnv.getVariable(ENV_KEY_JANTJE_SIZE_SWITCH, confDesc);
 			if (var != null)
-				this.myAlternativeSizeCommand = var.getValue().contains(Const.ENV_KEY_JANTJE_SIZE_COMMAND);
-			var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc);
+				this.myAlternativeSizeCommand = var.getValue().contains(ENV_KEY_JANTJE_SIZE_COMMAND);
+			var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, confDesc);
 			if (var != null)
 				this.myAditional_C_andCPP_CompileOptions = var.getValue();
-			var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc);
+			var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, confDesc);
 			if (var != null)
 				this.myAditional_C_CompileOptions = var.getValue();
-			var = contribEnv.getVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc);
+			var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, confDesc);
 			if (var != null)
 				this.myAditional_CPP_CompileOptions = var.getValue();
+
 		}
 	}
 
@@ -111,22 +119,21 @@ public class CompileOptions {
 			contribEnv.addVariable(var, configuration);
 		}
 		if (this.myAlternativeSizeCommand) {
-			var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-					+ Const.ENV_KEY_JANTJE_SIZE_COMMAND + "}"); //$NON-NLS-1$
+			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
+					+ ENV_KEY_JANTJE_SIZE_COMMAND + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, configuration);
 		} else {
-			var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
+			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
 					+ Common.get_ENV_KEY_RECIPE(Const.ACTION_SIZE) + "}"); //$NON-NLS-1$
 			contribEnv.addVariable(var, configuration);
 		}
-		var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,
 				this.myAditional_C_andCPP_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
 				this.myAditional_CPP_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(Const.ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
-				this.myAditional_C_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.myAditional_C_CompileOptions);
 		contribEnv.addVariable(var, configuration);
 
 	}

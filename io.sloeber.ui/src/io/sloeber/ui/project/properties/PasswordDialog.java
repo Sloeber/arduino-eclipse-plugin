@@ -24,7 +24,6 @@ public class PasswordDialog extends Dialog {
 
 	@Override
 	protected void buttonPressed(int buttonId) {
-		// TODO Auto-generated method stub
 		switch (buttonId) {
 		case IDialogConstants.OK_ID: {
 			PasswordManager.setPwd(this.myPassWordmanager.getHost(), this.txtUser.getText(),

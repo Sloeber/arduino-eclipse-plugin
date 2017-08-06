@@ -1,6 +1,8 @@
 All os'es
 ==
 
+**Wierdly enough all info is for older versions**
+
 Arduino IDE **1.5.2** beta and **1.5.4** beta are **not supported** due to a change in the library system.
 
 Arduino IDE **1.5.5** beta works with V2.2 but you **need to fix** the remaining V1.5 Libraries (see library madness)

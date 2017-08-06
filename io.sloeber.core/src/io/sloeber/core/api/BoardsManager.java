@@ -46,6 +46,7 @@ public class BoardsManager {
 	private static final String PDE = "pde";//$NON-NLS-1$
 	private static final String CPP = "cpp";//$NON-NLS-1$
 	private static final String C = "c";//$NON-NLS-1$
+	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 
 	/**
 	 * Gets the board descriptor based on the information provided. If
@@ -81,19 +82,18 @@ public class BoardsManager {
 	static private BoardDescriptor getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
 			String platformName, String boardID, Map<String, String> options) {
 
-		List<Board> boards = null;
 		Package thePackage = Manager.getPackage(jsonFileName, packageName);
 		if (thePackage == null) {
 			// fail("failed to find package:" + this.mPackageName);
 			return null;
 		}
-		ArduinoPlatform platform = thePackage.getLatestPlatform(platformName);
+		ArduinoPlatform platform = thePackage.getLatestPlatform(platformName, true);
 		if (platform == null) {
 			// fail("failed to find platform " + this.mPlatform + " in
 			// package:" + this.mPackageName);
 			return null;
 		}
-		boards = platform.getBoards();
+		List<Board> boards = platform.getBoards();
 		if (boards == null) {
 			// fail("No boards found");
 			return null;
@@ -111,11 +111,11 @@ public class BoardsManager {
 	}
 
 	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-		Manager.addPackageURLs(packageUrlsToAdd, forceDownload);
+		Manager.addJsonURLs(packageUrlsToAdd, forceDownload);
 	}
 
 	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
-		Manager.removeBoardsPackageURLs(packageUrlsToRemove);
+		Manager.removePackageURLs(packageUrlsToRemove);
 
 	}
 
@@ -144,18 +144,6 @@ public class BoardsManager {
 		InstancePreferences.setPrivateHardwarePaths(newPaths);
 	}
 
-	public static String[] getBoardsPackageURLList() {
-		return Manager.getBoardsPackageURLList();
-	}
-
-	public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
-		Manager.setBoardsPackageURL(newBoardJsonUrls);
-	}
-
-	public static String getDefaultBoardsPackageURLs() {
-		return Manager.getDefaultBoardsPackageURLs();
-	}
-
 	public static boolean isReady() {
 		return Manager.isReady();
 	}
@@ -168,14 +156,61 @@ public class BoardsManager {
 	 *
 	 * If the boardID is null there will be no platform examples
 	 *
-	 * @param boardID
+	 * @param boardDescriptor
 	 * @return
 	 */
-	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardID) {
+	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardDescriptor) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		// Get the examples of the library manager installed libraries
-		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
+
+		examples.putAll(getAllLibraryExamples());
+		examples.putAll(getAllArduinoIDEExamples());
+		// This one should be the last as hasmap overwrites doubles. This way
+		// hardware libraries are preferred to others
+		examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
+
+		return examples;
+	}
+
+	/*
+	 * Get the examples of the libraries from the selected hardware These may be
+	 * referenced libraries
+	 */
+	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescriptor boardDescriptor) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		if (boardDescriptor != null) {
+			IPath platformPath = boardDescriptor.getreferencingPlatformPath();
+			if (platformPath.toFile().exists()) {
+				examples.putAll(getLibExampleFolders(platformPath.append(LIBRARY_PATH_SUFFIX)));
+			}
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples that are delivered with the Arduino IDE
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllArduinoIDEExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		Path exampleLocation = new Path(ConfigurationPreferences.getInstallationPathExamples().toString());
+
+		if (exampleLocation.toFile().exists()) {
+			examples.putAll(getExamplesFromFolder(new String(), exampleLocation));
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples that are delivered with a library This does not include
+	 * the libraries delivered with hardware
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllLibraryExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
 
 		IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
 		if (CommonLibLocation.toFile().exists()) {
@@ -188,22 +223,6 @@ public class BoardsManager {
 				if (new File(curLibLocation).exists()) {
 					examples.putAll(getLibExampleFolders(new Path(curLibLocation)));
 				}
-			}
-		}
-
-		// Get the examples from the example locations
-
-		if (exampleLocation.toFile().exists()) {
-			examples.putAll(getExamplesFromFolder("", exampleLocation)); //$NON-NLS-1$
-		}
-
-		// Get the examples of the libraries from the selected hardware
-		// This one should be the last as hasmap overwrites doubles. This way
-		// hardware libraries are preferred to others
-		if (boardID != null) {
-			IPath platformPath = boardID.getPlatformPath();
-			if (platformPath.toFile().exists()) {
-				examples.putAll(getLibExampleFolders(platformPath.append(Const.LIBRARY_PATH_SUFFIX)));
 			}
 		}
 		return examples;
@@ -283,11 +302,6 @@ public class BoardsManager {
 
 	}
 
-	public static boolean getAutoImportLibraries(boolean booleanValue) {
-		return InstancePreferences.getAutomaticallyImportLibraries();
-
-	}
-
 	public static String[] getBoardNames(String boardFile) {
 		TxtFile theBoardsFile = new TxtFile(new File(boardFile));
 		return theBoardsFile.getAllNames();
@@ -340,7 +354,7 @@ public class BoardsManager {
 	 */
 	private static String[] getHardwarePaths() {
 		return (InstancePreferences.getPrivateHardwarePathsString() + File.pathSeparator
-				+ ConfigurationPreferences.getInstallationPath()).split(File.pathSeparator);
+				+ ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
 	}
 
 	public static void setPrivateHardwarePaths(String[] hardWarePaths) {
@@ -713,9 +727,13 @@ public class BoardsManager {
 
 	}
 
-	public static void setUpdateJsonFilesFlag(boolean flag) {
-		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
+	public static void setPragmaOnceHeaders(boolean booleanValue) {
+		InstancePreferences.setPragmaOnceHeaders(booleanValue);
 
+	}
+
+	public static boolean getPragmaOnceHeaders() {
+		return InstancePreferences.getPragmaOnceHeaders();
 	}
 
 }

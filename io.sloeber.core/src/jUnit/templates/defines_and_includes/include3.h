@@ -9,4 +9,5 @@
 #ifndef DEFINE_3
 #error "DEFINE_3 should be defined"
 #endif
+int tt=t;  //t should be defined
 #endif

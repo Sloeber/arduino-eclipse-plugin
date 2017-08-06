@@ -34,19 +34,32 @@ import io.sloeber.core.Activator;
 public class ConfigurationPreferences {
 
 	private static String stringSplitter = "\n";//$NON-NLS-1$
+	private static final String EXAMPLE_FOLDER_NAME = "examples"; //$NON-NLS-1$
 	private static final String DOWNLOADS_FOLDER = "downloads"; //$NON-NLS-1$
 	private static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
 	private static final String POST_PROCESSING_PLATFORM_TXT = "post_processing_platform.txt"; //$NON-NLS-1$
 	private static final String PRE_PROCESSING_BOARDS_TXT = "pre_processing_boards.txt"; //$NON-NLS-1$
 	private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
-	private static final String KEY_MANAGER_JSON_URLS = "Arduino Manager board Urls"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
 	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json" //$NON-NLS-1$
-			+ System.lineSeparator() + "http://arduino.esp8266.com/stable/package_esp8266com_index.json"; //$NON-NLS-1$
+			// + System.lineSeparator() +
+			// "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
+			// //$NON-NLS-1$
+			+ System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
-	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
+	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
 	private ConfigurationPreferences() {
+	}
+
+	private static void removeKey(String key) {
+		IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
+		myScope.remove(key);
 	}
 
 	private static String getString(String key, String defaultValue) {
@@ -105,15 +118,19 @@ public class ConfigurationPreferences {
 	}
 
 	public static IPath getInstallationPathLibraries() {
-		return getInstallationPath().append(Const.LIBRARY_PATH_SUFFIX);
+		return getInstallationPath().append(LIBRARY_PATH_SUFFIX);
 	}
 
 	public static IPath getInstallationPathExamples() {
-		return getInstallationPath().append(Const.EXAMPLE_FOLDER_NAME);
+		return getInstallationPath().append(EXAMPLE_FOLDER_NAME);
 	}
 
 	public static IPath getInstallationPathDownload() {
 		return getInstallationPath().append(DOWNLOADS_FOLDER);
+	}
+
+	public static IPath getInstallationPathPackages() {
+		return getInstallationPath().append(PACKAGES_FOLDER_NAME);
 	}
 
 	/**
@@ -142,31 +159,48 @@ public class ConfigurationPreferences {
 		return getInstallationPath().append(POST_PROCESSING_BOARDS_TXT).toFile();
 	}
 
-	public static String getBoardsPackageURLs() {
-		return getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
+	public static String getJsonURLs() {
+		// TODO I added some code here to get easier from V3 to V4
+		// the library json url is now managed as the boards url's so it also
+		// needs to be added to the json url's
+		// this is doen in the default but people who have installed other
+		// boards or do not move to the default (which is by default)
+		// wil not see libraries
+		// to fix this I changed the storage name and if the new storage name is
+		// empty I read the ol one and add the lib
+		String ret = getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
+		if (DEFAULT_JSON_URLS.equals(ret)) {
+			ret = getString(KEY_MANAGER_JSON_URLS_V3, DEFAULT_JSON_URLS);
+			if (!DEFAULT_JSON_URLS.equals(ret)) {
+				ret += System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
+				setString(KEY_MANAGER_JSON_URLS, ret);
+				removeKey(KEY_MANAGER_JSON_URLS_V3);
+			}
+		}
+		return ret;
 	}
 
-	public static String getDefaultBoardsPackageURLs() {
+	public static String getDefaultJsonURLs() {
 		return DEFAULT_JSON_URLS;
 	}
 
-	public static String[] getBoardsPackageURLList() {
-		return getBoardsPackageURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
+	public static String[] getJsonURLList() {
+		return getJsonURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
 	}
 
-	public static String getBoardsPackageKey() {
+	public static String getJsonUrlsKey() {
 		return KEY_MANAGER_JSON_URLS;
 	}
 
-	public static void setBoardsPackageURLs(String urls) {
+	public static void setJsonURLs(String urls) {
 		setString(KEY_MANAGER_JSON_URLS, urls);
 	}
 
-	public static void setBoardsPackageURLs(String urls[]) {
+	public static void setJsonURLs(String urls[]) {
 		setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
 	}
 
-	public static void setBoardsPackageURLs(HashSet<String> urls) {
+	public static void setJsonURLs(HashSet<String> urls) {
 		setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
 	}
 

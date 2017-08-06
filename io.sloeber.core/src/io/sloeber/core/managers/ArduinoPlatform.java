@@ -48,6 +48,7 @@ public class ArduinoPlatform {
 	private Package pkg;
 	private HierarchicalProperties boardsFile;
 	private Properties platformProperties;
+	private static final String PLATFORM_FILE_NAME = "platform.txt"; //$NON-NLS-1$
 
 	void setOwner(Package pkg) {
 		this.pkg = pkg;
@@ -112,8 +113,8 @@ public class ArduinoPlatform {
 			// Replace the boards with a real ones
 			this.boards = new ArrayList<>();
 			for (Map.Entry<String, HierarchicalProperties> entry : this.boardsFile.getChildren().entrySet()) {
-				if (entry.getValue().getChild("name") != null) { //$NON-NLS-1$
-					// assume things with names are boards
+				if ((entry.getValue().getChild("name") != null) && (entry.getKey() != null)) { //$NON-NLS-1$
+					// assume things with name and id are boards
 					this.boards.add(new Board(entry.getKey(), entry.getValue()).setOwners(this));
 				}
 			}
@@ -173,13 +174,12 @@ public class ArduinoPlatform {
 	}
 
 	public File getPlatformFile() {
-		return getInstallPath().resolve(Const.PLATFORM_FILE_NAME).toFile();
+		return getInstallPath().resolve(PLATFORM_FILE_NAME).toFile();
 	}
 
 	public Path getInstallPath() {
-		String stPath = ConfigurationPreferences.getInstallationPath().append(Const.PACKAGES_FOLDER_NAME)
-				.append(this.pkg.getName()).append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture)
-				.append(this.version).toString();
+		String stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
+				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version).toString();
 		return Paths.get(stPath);
 	}
 
@@ -257,6 +257,14 @@ public class ArduinoPlatform {
 		List<String> ret = new ArrayList<>();
 		for (Board curBoar : this.boards) {
 			ret.add(curBoar.getName());
+		}
+		return ret;
+	}
+
+	public List<String> getBoardIDs() {
+		List<String> ret = new ArrayList<>();
+		for (Board curBoar : this.boards) {
+			ret.add(curBoar.getId());
 		}
 		return ret;
 	}
