@@ -15,22 +15,21 @@ import org.eclipse.core.runtime.jobs.Job;
 
 @SuppressWarnings("nls")
 public class Shared {
-	private static String teensyInstall = "D:/arduino/arduino-1.6.9 - Teensy 1.29/hardware/teensy";
+	private static String teensyInstall = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
 	private static String teensyInstallLinux = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
- 
-	public static String getTeensyPlatform(){
-		switch (Platform.getOS()){
+
+	public static String getTeensyPlatform() {
+		switch (Platform.getOS()) {
 		case Platform.OS_WIN32:
-			return  teensyInstall;
+			return teensyInstall;
 		case Platform.OS_LINUX:
-			return teensyInstallLinux ;
+			return teensyInstallLinux;
 		}
 		return null;
 	}
 
-	
-	public static String getTeensyBoard_txt(){
-			return  getTeensyPlatform() + "/avr/boards.txt";
+	public static String getTeensyBoard_txt() {
+		return getTeensyPlatform() + "/avr/boards.txt";
 	}
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
@@ -45,12 +44,12 @@ public class Shared {
 
 	public static void waitForAllJobsToFinish() {
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(1000);
 
 			IJobManager jobMan = Job.getJobManager();
 
 			while (!jobMan.isIdle()) {
-				Thread.sleep(5000);
+				Thread.sleep(500);
 				// If you do not get out of this loop it probably means you are
 				// runnning the test in the gui thread
 			}

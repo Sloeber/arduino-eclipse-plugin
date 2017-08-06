@@ -47,6 +47,9 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 		if (proj.isOpen()) {
 			if (Sketch.isSketch(proj)) {
 				ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(proj);
+				if (prjDesc == null) {
+					return new String();
+				}
 				ICConfigurationDescription configurationDescription = prjDesc.getActiveConfiguration();
 				BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
 				String boardName = boardDescriptor.getBoardName();

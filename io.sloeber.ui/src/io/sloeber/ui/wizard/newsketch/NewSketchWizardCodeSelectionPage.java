@@ -56,9 +56,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public void handleBoarDescriptorChange() {
 
 		if (this.mExampleEditor != null) {
-			if (!this.myBoardDescriptor.getBoardsFile().isEmpty()) {
-				this.mExampleEditor.AddAllExamples(this.myBoardDescriptor, this.myCodedescriptor.getExamples());
-			}
+			this.mExampleEditor.AddAllExamples(this.myBoardDescriptor, this.myCodedescriptor.getExamples());
 		}
 
 		validatePage();

@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "io.sloeber.core.tools.messages"; //$NON-NLS-1$
+	public static String MultipleVersionsOfLib;
 	public static String Boards_Failed_to_read_boards;
 	public static String Boards_Get_menu_item_name_from_id_did_not_find;
 	public static String Boards_name;
@@ -36,6 +37,7 @@ public class Messages extends NLS {
 	public static String security_login;
 	public static String security_password;
 	public static String getMenuItemIDFromMenuItemName;
+	public static String EmptyLibFolder;
 
 	static {
 		// initialize resource bundle

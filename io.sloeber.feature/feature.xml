@@ -2,7 +2,7 @@
 <feature
       id="io.sloeber.feature"
       label="%featureName"
-      version="4.0.1.qualifier"
+      version="4.1.0.qualifier"
       provider-name="%provider">
 
    <description url="http://baeyens.it/eclipse/">
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      Copyright (c) 2011-2016 Jan Baeyens and others
+      Copyright (c) 2011-2017 Jan Baeyens and others
 
 
 All rights reserved by the owning parties.
@@ -33,8 +33,7 @@ If you do not agree with this policy, please do not install this software.
    </license>
 
    <url>
-      <update label="Sloeber V4 update site" url="http://sloeber.io/gnuarmeclipse/stable"/>
-      <discovery label="jan&apos;s site with plenty of documentation" url="http://eclipse.baeyens.it/"/>
+      <discovery label="jan&apos;s site with plenty of documentation" url="https://eclipse.baeyens.it/"/>
    </url>
 
    <requires>

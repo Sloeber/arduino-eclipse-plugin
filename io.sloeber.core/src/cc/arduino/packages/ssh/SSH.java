@@ -82,7 +82,6 @@ public class SSH {
 					stderr.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (channel != null) {

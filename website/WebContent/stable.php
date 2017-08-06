@@ -1,6 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "4.0";
+$version = "4.1";
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];

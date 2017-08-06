@@ -203,16 +203,19 @@ public class Serial implements SerialPortEventListener {
 	}
     }
 
-    public void disconnect() {
-	if (this.port != null) {
-	    try {
-		this.port.closePort();
-	    } catch (SerialPortException e) {
-		e.printStackTrace();
-	    }
-	    this.port = null;
+	public void disconnect() {
+		if (this.port != null) {
+
+			if (this.port.isOpened()) {
+				try {
+					this.port.closePort();
+				} catch (@SuppressWarnings("unused") SerialPortException e) {
+					// e.printStackTrace();
+				}
+			}
+			this.port = null;
+		}
 	}
-    }
 
     public void dispose() {
 	notifyConsumersOfEvent("Disconnect of port " + this.port.getPortName() + " executed"); //$NON-NLS-1$ //$NON-NLS-2$

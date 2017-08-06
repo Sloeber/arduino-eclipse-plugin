@@ -23,6 +23,7 @@ public class InstancePreferences {
 	private static final String KEY_PRIVATE_LIBRARY_PATHS = "Private Library Path"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_HARDWARE_PATHS = "Private hardware Path"; //$NON-NLS-1$
 	public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries"; //$NON-NLS-1$
+	private static final String KEY_PRAGMA_ONCE_HEADER = "add pragma once to headers"; //$NON-NLS-1$
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
@@ -130,6 +131,14 @@ public class InstancePreferences {
 
 	public static void setPrivateHardwarePaths(String[] folderName) {
 		setGlobalValue(KEY_PRIVATE_HARDWARE_PATHS, String.join(File.pathSeparator, folderName));
+	}
+
+	public static void setPragmaOnceHeaders(boolean booleanValue) {
+		setGlobalValue(KEY_PRAGMA_ONCE_HEADER, booleanValue);
+	}
+
+	public static boolean getPragmaOnceHeaders() {
+		return getGlobalBoolean(KEY_PRAGMA_ONCE_HEADER, true);
 	}
 
 }

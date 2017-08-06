@@ -19,12 +19,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +52,7 @@ import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.MyMultiStatus;
@@ -61,7 +60,7 @@ import io.sloeber.core.tools.MyMultiStatus;
 public class Manager {
 
 	static private List<PackageIndex> packageIndices;
-	static private LibraryIndex libraryIndex;
+
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {
@@ -71,13 +70,12 @@ public class Manager {
 	private Manager() {
 	}
 
-	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-		HashSet<String> originalBoardUrls = new HashSet<>(
-				Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
-		packageUrlsToAdd.addAll(originalBoardUrls);
+	public static void addJsonURLs(HashSet<String> jsonUrlsToAdd, boolean forceDownload) {
+		HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+		jsonUrlsToAdd.addAll(originalJsonUrls);
 
-		ConfigurationPreferences.setBoardsPackageURLs(packageUrlsToAdd);
-		loadIndices(forceDownload);
+		ConfigurationPreferences.setJsonURLs(jsonUrlsToAdd);
+		loadJsons(forceDownload);
 
 	}
 
@@ -88,13 +86,13 @@ public class Manager {
 	 * @param monitor
 	 */
 	public static void startup_Pluging(IProgressMonitor monitor) {
-		loadIndices(ConfigurationPreferences.getUpdateJasonFilesFlag());
+		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
-			InstallDefaultLibraries(monitor);
+			LibraryManager.InstallDefaultLibraries(monitor);
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
-			// Downnload sample programs
+			// Download sample programs
 			mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
 					Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
 
@@ -103,7 +101,7 @@ public class Manager {
 
 				Package pkg = getPackageIndices().get(0).getPackages().get(0);
 				if (pkg != null) {
-					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME);
+					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME, false);
 					if (platform == null) {
 						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
 						pkg.getLatestPlatforms().toArray(platformList);
@@ -122,17 +120,6 @@ public class Manager {
 		}
 		myIsReady = true;
 
-	}
-
-	private static void InstallDefaultLibraries(IProgressMonitor monitor) {
-		LibraryIndex libindex = getLibraryIndex();
-
-		for (String library : Defaults.INSTALLED_LIBRARIES) {
-			Library toInstalLib = libindex.getLatestLibrary(library);
-			if (toInstalLib != null) {
-				toInstalLib.install(monitor);
-			}
-		}
 	}
 
 	/**
@@ -167,7 +154,7 @@ public class Manager {
 			Path localMakePath = Paths.get(ConfigurationPreferences.getMakePath().toString());
 			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
 				mstatus.addErrors(
-						downloadAndInstall("http://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
+						downloadAndInstall("https://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
 								forceDownload, monitor));
 			}
 		}
@@ -176,15 +163,14 @@ public class Manager {
 
 	}
 
-	static private void loadIndices(boolean forceDownload) {
-		String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
-		packageIndices = new ArrayList<>(boardUrls.length);
-		for (String boardUrl : boardUrls) {
-			loadPackageIndex(boardUrl, forceDownload);
+	static private void loadJsons(boolean forceDownload) {
+		packageIndices = new ArrayList<>();
+		LibraryManager.flushIndices();
+
+		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
+		for (String jsonUrl : jsonUrls) {
+			loadJson(jsonUrl, forceDownload);
 		}
-
-		loadLibraryIndex(false);
-
 	}
 
 	/**
@@ -211,6 +197,18 @@ public class Manager {
 	}
 
 	/**
+	 * convert a local file name to a baeyens it alternative download name There
+	 * is no check wether the file exists only a conversion
+	 *
+	 * @param url
+	 *            url of the file we want a local
+	 * @return the file that represents the file on Baeyens.it
+	 */
+	private static String getBaeyensItAlternativeDownload(String localFileName) {
+		return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
+	}
+
+	/**
 	 * This method takes a json boards file url and downloads it and parses it
 	 * for usage in the boards manager
 	 *
@@ -220,80 +218,58 @@ public class Manager {
 	 *            set true if you want to download the file even if it is
 	 *            already available locally
 	 */
-	static private void loadPackageIndex(String url, boolean forceDownload) {
-		File packageFile = getLocalFileName(url);
-		if (packageFile == null) {
+	static private void loadJson(String url, boolean forceDownload) {
+		File jsonFile = getLocalFileName(url);
+		if (jsonFile == null) {
 			return;
 		}
-		if (!packageFile.exists() || forceDownload) {
-			packageFile.getParentFile().mkdirs();
+		if (!jsonFile.exists() || forceDownload) {
+			jsonFile.getParentFile().mkdirs();
+			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
 			try {
-				myCopy(new URL(url.trim()), packageFile);
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
+			} catch (IOException e0) {
+				try {
+					myCopy(new URL(url.trim()), jsonFile, false);
+				} catch (IOException e) {
+					Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+				}
 			}
 		}
-		if (packageFile.exists()) {
-			try (Reader reader = new FileReader(packageFile)) {
-				PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-				index.setOwners(null);
-				index.setJsonFile(packageFile);
-				packageIndices.add(index);
-			} catch (Exception e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(),
-						"Unable to parse " + packageFile.getAbsolutePath(), e)); //$NON-NLS-1$
-				packageFile.delete();// Delete the file so it stops damaging
+		if (jsonFile.exists()) {
+			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
+				loadPackage(jsonFile);
+			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
+				LibraryManager.loadJson(jsonFile);
 			}
+		}
+	}
+
+	static private void loadPackage(File jsonFile) {
+		try (Reader reader = new FileReader(jsonFile)) {
+			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
+			index.setOwners(null);
+			index.setJsonFile(jsonFile);
+			packageIndices.add(index);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
+			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
 
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
-			String[] boardUrls = ConfigurationPreferences.getBoardsPackageURLList();
-			packageIndices = new ArrayList<>(boardUrls.length);
-			for (String boardUrl : boardUrls) {
-				loadPackageIndex(boardUrl, false);
-			}
+			loadJsons(false);
 		}
 		return packageIndices;
 	}
 
-	private static void loadLibraryIndex(boolean download) {
-		File librariesFile = null;
-		try {
-			URL librariesUrl = new URL(Defaults.LIBRARIES_URL);
-			String localFileName = Paths.get(librariesUrl.getPath()).getFileName().toString();
-			librariesFile = ConfigurationPreferences.getInstallationPath().append(localFileName).toFile();
-			if (!librariesFile.exists() || download) {
-				librariesFile.getParentFile().mkdirs();
-				myCopy(librariesUrl, librariesFile);
-			}
-			if (librariesFile.exists()) {
-				try (InputStreamReader reader = new InputStreamReader(new FileInputStream(librariesFile),
-						Charset.forName("UTF8"))) { //$NON-NLS-1$
-					libraryIndex = new Gson().fromJson(reader, LibraryIndex.class);
-					libraryIndex.resolve();
-				}
-			}
-		} catch (IOException e) {
-			Common.log(
-					new Status(IStatus.ERROR, Activator.getId(), "Failed to load library index: " + librariesFile, e)); //$NON-NLS-1$
-		}
-
-	}
-
-	static public LibraryIndex getLibraryIndex() {
-		if (libraryIndex == null) {
-			loadLibraryIndex(false);
-		}
-		return libraryIndex;
-	}
-
-	static public Board getBoard(String boardName, String platformName, String packageName) {
+	static public Board getBoard(String boardName, String platformName, String packageName, boolean mustBeInstalled) {
 		for (PackageIndex index : getPackageIndices()) {
 			Package pkg = index.getPackage(packageName);
 			if (pkg != null) {
-				ArduinoPlatform platform = pkg.getLatestPlatform(platformName);
+				ArduinoPlatform platform = pkg.getLatestPlatform(platformName, mustBeInstalled);
 				if (platform != null) {
 					Board board = platform.getBoard(boardName);
 					if (board != null) {
@@ -331,7 +307,7 @@ public class Manager {
 
 		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
-				for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
+				for (ArduinoPlatform curPlatform : pkg.getLatestInstalledPlatforms()) {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
@@ -361,6 +337,18 @@ public class Manager {
 		return null;
 	}
 
+	static public List<ArduinoPlatform> getLatestInstalledPlatforms() {
+		List<ArduinoPlatform> platforms = new ArrayList<>();
+		for (PackageIndex index : getPackageIndices()) {
+			for (Package pkg : index.getPackages()) {
+
+				platforms.addAll(pkg.getLatestInstalledPlatforms());
+
+			}
+		}
+		return platforms;
+	}
+
 	static public List<ArduinoPlatform> getInstalledPlatforms() {
 		List<ArduinoPlatform> platforms = new ArrayList<>();
 		for (PackageIndex index : getPackageIndices()) {
@@ -377,7 +365,7 @@ public class Manager {
 		List<Board> boards = new ArrayList<>();
 		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
-				for (ArduinoPlatform platform : pkg.getInstalledPlatforms()) {
+				for (ArduinoPlatform platform : pkg.getLatestInstalledPlatforms()) {
 					boards.addAll(platform.getBoards());
 				}
 			}
@@ -452,7 +440,7 @@ public class Manager {
 			dlDir.toFile().mkdir();
 			if (!archivePath.toFile().exists() || pForceDownload) {
 				pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
-				myCopy(dl, archivePath.toFile());
+				myCopy(dl, archivePath.toFile(), true);
 			}
 		} catch (IOException e) {
 			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download + pURL, e);
@@ -744,72 +732,18 @@ public class Manager {
 	}
 
 	/**
-	 * compares 2 strings as if they are version numbers if version1<version2
-	 * returns -1 if version1==version2(also if both are null) returns 0 else
-	 * return 1 This method caters for the null case
-	 *
-	 * @param version1
-	 * @param version2
-	 * @return
-	 */
-	public static int compareVersions(String version1, String version2) {
-		if (version1 == null) {
-			return version2 == null ? 0 : -1;
-		}
-
-		if (version2 == null) {
-			return 1;
-		}
-
-		String[] v1 = version1.split("\\."); //$NON-NLS-1$
-		String[] v2 = version2.split("\\."); //$NON-NLS-1$
-		for (int i = 0; i < Math.max(v1.length, v2.length); ++i) {
-			if (v1.length <= i) {
-				return v2.length < i ? 0 : -1;
-			}
-
-			if (v2.length <= i) {
-				return 1;
-			}
-
-			try {
-				int vi1 = Integer.parseInt(v1[i]);
-				int vi2 = Integer.parseInt(v2[i]);
-				if (vi1 < vi2) {
-					return -1;
-				}
-
-				if (vi1 > vi2) {
-					return 1;
-				}
-			} catch (NumberFormatException e) {
-				// not numbers, do string compares
-				int c = v1[i].compareTo(v2[i]);
-				if (c < 0) {
-					return -1;
-				}
-				if (c > 0) {
-					return 1;
-				}
-			}
-		}
-
-		return 0;
-	}
-
-	/**
 	 * This method removes the json files from disk and removes memory
 	 * references to these files or their content
 	 *
 	 * @param packageUrlsToRemove
 	 */
-	public static void removeBoardsPackageURLs(Set<String> packageUrlsToRemove) {
+	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
 		// remove the files from memory
-		Set<String> activeBoardUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getBoardsPackageURLList()));
+		Set<String> activeUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
 
-		activeBoardUrls.removeAll(packageUrlsToRemove);
+		activeUrls.removeAll(packageUrlsToRemove);
 
-		ConfigurationPreferences.setBoardsPackageURLs(activeBoardUrls.toArray(null));
+		ConfigurationPreferences.setJsonURLs(activeUrls.toArray(null));
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {
@@ -823,24 +757,24 @@ public class Manager {
 		// references
 		// existing files do not need to be refreshed as they have been
 		// refreshed at startup
-		loadIndices(false);
+		loadJsons(false);
 
 	}
 
-	public static String[] getBoardsPackageURLList() {
-		return ConfigurationPreferences.getBoardsPackageURLList();
+	public static String[] getJsonURLList() {
+		return ConfigurationPreferences.getJsonURLList();
 	}
 
 	/**
 	 * Completely replace the list with jsons with a new list
 	 *
-	 * @param newBoardJsonUrls
+	 * @param newJsonUrls
 	 */
-	public static void setBoardsPackageURL(String[] newBoardJsonUrls) {
+	public static void setJsonURL(String[] newJsonUrls) {
 
-		String curJsons[] = getBoardsPackageURLList();
+		String curJsons[] = getJsonURLList();
 		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
-		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newBoardJsonUrls));
+		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
 		currentSelectedJsons.removeAll(origJsons);
 		// remove the files from disk which were in the old lst but not in the
 		// new one
@@ -851,17 +785,13 @@ public class Manager {
 			}
 		}
 		// save to configurationsettings before calling LoadIndices
-		ConfigurationPreferences.setBoardsPackageURLs(newBoardJsonUrls);
+		ConfigurationPreferences.setJsonURLs(newJsonUrls);
 		// reload the indices (this will remove all potential remaining
 		// references
 		// existing files do not need to be refreshed as they have been
 		// refreshed at startup
 		// new files will be added
-		loadIndices(false);
-	}
-
-	public static String getDefaultBoardsPackageURLs() {
-		return ConfigurationPreferences.getDefaultBoardsPackageURLs();
+		loadJsons(false);
 	}
 
 	public static void setReady(boolean b) {
@@ -874,9 +804,10 @@ public class Manager {
 	 *
 	 * @param url
 	 * @param localFile
+	 * @throws IOException
 	 */
 	@SuppressWarnings("nls")
-	private static void myCopy(URL url, File localFile) {
+	private static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(5000);
@@ -887,18 +818,28 @@ public class Manager {
 			// normally, 3xx is redirect
 			int status = conn.getResponseCode();
 
-			if (status != HttpURLConnection.HTTP_OK) {
-				if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-						|| status == HttpURLConnection.HTTP_SEE_OTHER)
-
-					Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(),
-							REPLACE_EXISTING);
-			} else {
+			if (status == HttpURLConnection.HTTP_OK) {
 				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
 			}
 
+			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
+					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
+				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
+			}
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(),
+						"Failed to download url " + url + " error code is: " + status, null));
+			}
+			throw new IOException("Failed to download url " + url + " error code is: " + status);
+
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			}
+			throw e;
+
 		}
 	}
 

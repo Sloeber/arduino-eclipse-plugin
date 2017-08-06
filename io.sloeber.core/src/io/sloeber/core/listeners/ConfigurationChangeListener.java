@@ -77,7 +77,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 									0);
 
 							if (dialog.open() == 0) {
-								org.eclipse.swt.program.Program.launch("http://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
+								org.eclipse.swt.program.Program.launch("https://baeyens.it/eclipse/toolchainFix.php"); //$NON-NLS-1$
 							}
 						}
 					}
@@ -92,6 +92,10 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 			return;
 		}
 
+		// TODO check here how this behaves when changing a config and select
+		// ok.
+		// It seems to me this is rerunning the config change which is not
+		// nessesary in this case
 		// We have a arduino project so we are safe.
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
 		ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
@@ -110,12 +114,12 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 		}
 		Helpers.setTheEnvironmentVariables(activeProject, activeConf, newBoardDescriptor);
 		try {
-
-			Helpers.addArduinoCodeToProject(activeProject, activeConf);
+			Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
 		}
 		Libraries.reAttachLibrariesToProject(activeConf);
+		projDesc.setActiveConfiguration(activeConf);
 	}
 
 }

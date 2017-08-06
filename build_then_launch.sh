@@ -1,7 +1,7 @@
 #!/bin/bash
 
-file_x86="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86/opt/sloeber/sloeber-ide"
-file_x86_64="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86_64/opt/sloeber/sloeber-ide"
+file_x86="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86/sloeber/sloeber-ide"
+file_x86_64="./io.sloeber.product/target/products/io.sloeber.product/linux/gtk/x86_64/sloeber/sloeber-ide"
 file=""
 
 echo "Trying to build and then launch the Arduino Eclipse IDE"

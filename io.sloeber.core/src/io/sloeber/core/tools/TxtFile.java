@@ -103,7 +103,7 @@ public class TxtFile {
 			if (entry.getKey().equals(MENU)) {
 				for (Entry<String, String> e2 : entry.getValue().entrySet()) {
 					if (!e2.getKey().contains(Const.DOT)) {
-						ret.put(e2.getKey().toUpperCase(), e2.getValue());
+						ret.put(e2.getKey(), e2.getValue());
 					}
 				}
 			}
@@ -441,7 +441,7 @@ public class TxtFile {
 		if (menuSectionMap != null) {
 			for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 				if (curOption.getValue().equals(menuName)) {
-					return curOption.getKey().toUpperCase();
+					return curOption.getKey();
 				}
 			}
 		}
@@ -456,7 +456,7 @@ public class TxtFile {
 		for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getValue().equals(menuItemName)) {
 				if (curOption.getKey().toUpperCase().startsWith(lookupValue))
-					return curOption.getKey().substring(lookupValue.length()).toUpperCase();
+					return curOption.getKey().substring(lookupValue.length());
 			}
 		}
 		// nothing found so look in the post 1.5.4 way
@@ -467,7 +467,7 @@ public class TxtFile {
 		for (Entry<String, String> curOption : BoardIDSectionMap.entrySet()) {
 			if (curOption.getValue().equals(menuItemName)) {
 				if (curOption.getKey().toUpperCase().startsWith(lookupValue))
-					return curOption.getKey().substring(lookupValue.length()).toUpperCase();
+					return curOption.getKey().substring(lookupValue.length());
 			}
 		}
 		return Messages.getMenuItemIDFromMenuItemName.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)

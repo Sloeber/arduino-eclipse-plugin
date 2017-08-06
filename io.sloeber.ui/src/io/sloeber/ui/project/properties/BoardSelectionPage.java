@@ -81,7 +81,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		public void handleEvent(Event e) {
 
 			File boardFile = getSelectedBoardsFile();
-			BoardSelectionPage.this.myBoardID.setBoardsFile(boardFile);
+			BoardSelectionPage.this.myBoardID.setreferencingBoardsFile(boardFile);
 
 			/*
 			 * Change the list of available boards
@@ -258,8 +258,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mBoardOptionCombos = new LabelCombo[menus.size()];
 		int index = 0;
 		for (Map.Entry<String, String> curMenu : menus.entrySet()) {
-			this.mBoardOptionCombos[index] = new LabelCombo(composite, curMenu.getValue(),
-					curMenu.getKey().toUpperCase(), this.ncol - 1, true);
+			this.mBoardOptionCombos[index] = new LabelCombo(composite, curMenu.getValue(), curMenu.getKey(),
+					this.ncol - 1, true);
 			this.mBoardOptionCombos[index++].addListener(this.labelComboListener);
 
 		}
@@ -361,7 +361,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	private void setValues(ICConfigurationDescription confdesc) {
 
-		this.mControlBoardsTxtFile.setText(tidyUpLength(this.myBoardID.getBoardsFile()));
+		this.mControlBoardsTxtFile.setText(tidyUpLength(this.myBoardID.getReferencingBoardsFile().toString()));
 		this.mcontrolBoardName.setItems(this.myBoardID.getCompatibleBoards());
 		this.mcontrolBoardName.setText(this.myBoardID.getBoardName());
 
@@ -370,7 +370,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		BoardSelectionPage.this.mControlUploadProtocol.setItems(this.myBoardID.getUploadProtocols());
 		BoardSelectionPage.this.mControlUploadProtocol.setText(CurrentUploadProtocol);
 		if (getUpLoadProtocol().isEmpty()) {
-			this.mControlUploadProtocol.setText(this.myBoardID.getUploadProtocol());
+			this.mControlUploadProtocol.setText(this.myBoardID.getProgrammer());
 			if (this.mControlUploadProtocol.getText().isEmpty()) {
 				this.mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
@@ -410,7 +410,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	private void doOK() {
-		this.myBoardID.setBoardsFile(getSelectedBoardsFile());
+		this.myBoardID.setreferencingBoardsFile(getSelectedBoardsFile());
 		this.myBoardID.setUploadPort(getUpLoadPort());
 		this.myBoardID.setUploadProtocol(getUpLoadProtocol());
 		this.myBoardID.setBoardName(getBoardName());
@@ -499,7 +499,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 		if (this.mBoardOptionCombos != null) {// only update the values if the
 			// page has been drawn
-			this.myBoardID.setBoardsFile(getSelectedBoardsFile());
+			this.myBoardID.setreferencingBoardsFile(getSelectedBoardsFile());
 			this.myBoardID.setBoardName(getBoardName());
 			this.myBoardID.setOptions(getOptions());
 			this.myBoardID.setUploadPort(getUpLoadPort());

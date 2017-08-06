@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-      <feature url="features/io.sloeber.feature_4.0.1.qualifier.jar" id="io.sloeber.feature" version="4.0.1.qualifier">
-      <category name="Sloeber"/>
-   </feature>
    <feature url="features/org.eclipse.nebula.widgets.oscilloscope.feature_0.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/org.eclipse.cdt_9.0.0.201606062011.jar" id="org.eclipse.cdt" version="9.0.0.201606062011">
+   <feature url="features/org.eclipse.cdt_0.0.0.qualifier.jar" id="org.eclipse.cdt" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.managedbuild.cross_2.2.1.201606210758.jar" id="ilg.gnuarmeclipse.managedbuild.cross" version="2.2.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.managedbuild.cross_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.managedbuild.cross" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.openocd_4.1.1.201606210758.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.openocd" version="4.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.openocd_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.openocd" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.jlink_4.1.1.201606210758.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.jlink" version="4.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.jlink_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.jlink" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.pyocd_1.1.1.201606210758.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.pyocd" version="1.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.pyocd_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.pyocd" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.qemu_3.1.1.201606210758.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.qemu" version="3.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.qemu_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.qemu" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.codered_1.1.1.201606210758.jar" id="ilg.gnuarmeclipse.codered" version="1.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.codered_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.codered" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.doc.user_1.1.1.201606210758.jar" id="ilg.gnuarmeclipse.doc.user" version="1.1.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.doc.user_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.doc.user" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.packs_2.2.2.201606210758.jar" id="ilg.gnuarmeclipse.packs" version="2.2.2.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.packs_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.packs" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.ad_1.1.3.201606210758.jar" id="ilg.gnuarmeclipse.templates.ad" version="1.1.3.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.templates.ad_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.ad" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.cortexm_1.3.1.201606210758.jar" id="ilg.gnuarmeclipse.templates.cortexm" version="1.3.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.templates.cortexm_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.cortexm" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.freescale_2.2.7.201606210758.jar" id="ilg.gnuarmeclipse.templates.freescale" version="2.2.7.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.templates.freescale_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.freescale" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.stm_2.5.1.201606210758.jar" id="ilg.gnuarmeclipse.templates.stm" version="2.5.1.201606210758">
+   <feature url="features/ilg.gnuarmeclipse.templates.stm_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.stm" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-
+   <feature url="features/io.sloeber.feature_4.1.0.qualifier.jar" id="io.sloeber.feature" version="4.1.0.qualifier">
+      <category name="Sloeber"/>
+   </feature>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
@@ -53,7 +52,7 @@
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-   <repository-reference location="http://sloeber.io/gnuarmeclipse/stable" enabled="true" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.2" enabled="true" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
+   <repository-reference location="http://gnuarmeclipse.sourceforge.net/updates" enabled="true" />
 </site>
