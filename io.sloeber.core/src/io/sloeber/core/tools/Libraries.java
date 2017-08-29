@@ -71,7 +71,7 @@ public class Libraries {
 				IPath LibPath = ipath.append(curFolder);
 				File LibPathFile = LibPath.toFile();
 				if (LibPathFile.isFile() && (LibPath.getFileExtension().equalsIgnoreCase("cpp")
-						|| LibPath.getFileExtension().equalsIgnoreCase("h"))) {
+                        || "h".equalsIgnoreCase(LibPath.getFileExtension()))) {
 					ret.put(ipath.lastSegment(), ipath);
 					return ret;
 				}
