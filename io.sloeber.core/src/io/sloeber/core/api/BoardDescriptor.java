@@ -889,7 +889,7 @@ public class BoardDescriptor {
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
 		if (this.myUploadTool == null && confdesc != null) {
-			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", this.myUploadTool.toUpperCase());
+            return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
 		return this.myUploadTool;
 	}
