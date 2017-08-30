@@ -798,10 +798,15 @@ public class Helpers extends Common {
 	/**
 	 * Following post processing is done
 	 *
-	 * the macro expansion resolves the "file tag" Therefore I split the
-	 * "recipe" patterns in 2 parts (before and after the "file tag") the
-	 * pattern in the toolchain is then ${first part} ${files} ${second part}
+	 * CDT uses different keys to identify the input and output files then the arduino recipes.
+	 * Therefore I split the arduino recipes into parts (based on the arduino keys)
+	 * and connect them again in the plugin.xml
+	 * using the CDT keys.
+	 * This code assumes that the command is in following order
+	 * ${first part} ${files} ${second part} [${ARCHIVE_FILE} ${third part}]
+	 * with [optional]
 	 *
+	 * Secondly
 	 * The handling of the upload variables is done differently in arduino than
 	 * here. This is taken care of here. for example the output of this input
 	 * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}"
@@ -809,8 +814,13 @@ public class Helpers extends Common {
 	 * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
 	 * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
 	 *
+	 * thirdly
 	 * if a programmer is selected different from default some extra actions are
 	 * done here so no special code is needed to handle programmers
+	 *
+	 * Fourthly
+	 * The build path for the core is {BUILD.PATH}/core/core in sloeber where it is {BUILD.PATH}/core/ in arduino world
+	 * so ${A.BUILD.PATH}/core/ is replaced with ${A.BUILD.PATH}/core/core/
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -827,7 +837,7 @@ public class Helpers extends Common {
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
-			//
+			recipe=recipe.replace("${A.BUILD.PATH}/core/", "${A.BUILD.PATH}/core/core/");
 
 			recipe = adaptCompilerCommand(recipe);
 			setBuildEnvironmentVariable(confDesc, recipeKey, recipe);
@@ -863,45 +873,6 @@ public class Helpers extends Common {
 			if (MComPort.isEmpty()) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 						"Upload will fail due to missing upload port"));
-			} else {
-				//
-				// String host = getHostFromComPort(MComPort);
-				// if (host != null) {
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// ENV_KEY_NETWORK_PORT,
-				// NetworkDiscovery.getPort(host));
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// ENV_KEY_NETWORK_AUTH,
-				// NetworkDiscovery.hasAuth(host) ? TRUE : FALSE);
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// ENV_KEY_SERIAL_PORT, host);
-				//
-				// try {
-				// String key = ERASE_START +
-				// boardsDescriptor.getArchitecture().toUpperCase() + DOT +
-				// "NETWORK"
-				// + DOT + ACTION_UPLOAD.toUpperCase() + DOT + ENV_TOOL;
-				// String networkUploadTool = contribEnv.getVariable(key,
-				// confDesc).getValue();
-				// if (!networkUploadTool.isEmpty()) {
-				// uploadTool = networkUploadTool;
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// get_ENV_KEY_TOOL(UPLOAD_CLASS),
-				// UPLOAD_CLASS_DEFAULT);
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// ENV_KEY_RESET_BEFORE_UPLOAD, FALSE);
-				// }
-				// } catch (Exception e) {
-				// // simply ignore
-				// }
-				// }
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// get_Jantje_KEY_RECIPE(ACTION_UPLOAD),
-				// makeEnvironmentVar(get_ENV_KEY_RECIPE(uploadTool,
-				// ACTION_UPLOAD)));
-				// setBuildEnvironmentVariable(contribEnv, confDesc,
-				// get_ENV_KEY_TOOL(ACTION_PROGRAM),
-				// makeEnvironmentVar(get_ENV_KEY_TOOL(ACTION_UPLOAD)));
 			}
 		}
 
