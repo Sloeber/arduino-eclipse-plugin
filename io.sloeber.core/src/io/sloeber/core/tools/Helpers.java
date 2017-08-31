@@ -76,16 +76,6 @@ import io.sloeber.core.managers.ToolDependency;
  */
 public class Helpers extends Common {
 	private static final String ARDUINO_CORE_BUILD_FOLDER_NAME = "core";
-	// TODO find some regex to fix this mess
-	private static final String BUILD_PATH_SYSCALLS_SAM3 = "\"{build.path}/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_SYSCALLS_SAM3_option2 = "\"{build.path}/core/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_SAM3 = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
-			+ "/" + ARDUINO_CORE_BUILD_FOLDER_NAME
-			+ "/syscalls_sam3.c.o\"";
-	private static final String BUILD_PATH_SYSCALLS_MTK = "\"{build.path}/syscalls_mtk.c.o\"";
-	private static final String BUILD_PATH_ARDUINO_SYSCALLS_MTK = "\"{build.path}/" + ARDUINO_CORE_BUILD_FOLDER_NAME
-			+ "/" + ARDUINO_CORE_BUILD_FOLDER_NAME
-			+ "/syscalls_mtk.c.o\"";
 
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
@@ -537,21 +527,12 @@ public class Helpers extends Common {
 
 			// Read File Line By Line
 			while ((strLine = br.readLine()) != null) {
-				String realData[] = strLine.split("#");// Ignore
-				// everything after
-				// first #
+				// Ignore everything after first #
+				String realData[] = strLine.split("#");
 				if (realData.length > 0) {
-					String var[] = realData[0].split("=", 2); // look
-					// for assignment
+					String var[] = realData[0].split("=", 2);
 					if (var.length == 2) {
 						String value = var[1].trim();
-						if (value.contains(BUILD_PATH_SYSCALLS_SAM3)) {
-							value = value.replace(BUILD_PATH_SYSCALLS_SAM3, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
-						} else if (value.contains(BUILD_PATH_SYSCALLS_SAM3_option2)) {
-							value = value.replace(BUILD_PATH_SYSCALLS_SAM3_option2, BUILD_PATH_ARDUINO_SYSCALLS_SAM3);
-						} else if (value.contains(BUILD_PATH_SYSCALLS_MTK)) {
-							value = value.replace(BUILD_PATH_SYSCALLS_MTK, BUILD_PATH_ARDUINO_SYSCALLS_MTK);
-						}
 						setBuildEnvironmentVariable(contribEnv, confDesc, MakeKeyString(prefix, var[0]),
 								MakeEnvironmentString(value, prefix, touppercase));
 					}
@@ -685,7 +666,7 @@ public class Helpers extends Common {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc);
 			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture())
 					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
-				if (Version.compare(curPlatform.getVersion(), curversion) > 0) {
+				if (Version.compare(curPlatform.getVersion(), curversion) >= 0) {
 					curversion = curPlatform.getVersion();
 					platform = curPlatform;
 				}
@@ -798,29 +779,27 @@ public class Helpers extends Common {
 	/**
 	 * Following post processing is done
 	 *
-	 * CDT uses different keys to identify the input and output files then the arduino recipes.
-	 * Therefore I split the arduino recipes into parts (based on the arduino keys)
-	 * and connect them again in the plugin.xml
-	 * using the CDT keys.
-	 * This code assumes that the command is in following order
-	 * ${first part} ${files} ${second part} [${ARCHIVE_FILE} ${third part}]
-	 * with [optional]
+	 * CDT uses different keys to identify the input and output files then the
+	 * arduino recipes. Therefore I split the arduino recipes into parts (based on
+	 * the arduino keys) and connect them again in the plugin.xml using the CDT
+	 * keys. This code assumes that the command is in following order ${first part}
+	 * ${files} ${second part} [${ARCHIVE_FILE} ${third part}] with [optional]
 	 *
-	 * Secondly
-	 * The handling of the upload variables is done differently in arduino than
-	 * here. This is taken care of here. for example the output of this input
-	 * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}"
-	 * {upload.verbose} is changed as if it were the output of this input
+	 * Secondly The handling of the upload variables is done differently in arduino
+	 * than here. This is taken care of here. for example the output of this input
+	 * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose}
+	 * is changed as if it were the output of this input
 	 * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
 	 * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
 	 *
-	 * thirdly
-	 * if a programmer is selected different from default some extra actions are
-	 * done here so no special code is needed to handle programmers
+	 * thirdly if a programmer is selected different from default some extra actions
+	 * are done here so no special code is needed to handle programmers
 	 *
-	 * Fourthly
-	 * The build path for the core is {BUILD.PATH}/core/core in sloeber where it is {BUILD.PATH}/core/ in arduino world
-	 * so ${A.BUILD.PATH}/core/ is replaced with ${A.BUILD.PATH}/core/core/
+	 * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
+	 * where it is {BUILD.PATH}/core/ in arduino world and used to be {BUILD.PATH}/
+	 * This only gives problems in the link command as sometimes there are hardcoded
+	 * links to some sys files so ${A.BUILD.PATH}/core/sys* ${A.BUILD.PATH}/sys* is
+	 * replaced with ${A.BUILD.PATH}/core/core/sys*
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -837,7 +816,10 @@ public class Helpers extends Common {
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
-			recipe=recipe.replace("${A.BUILD.PATH}/core/", "${A.BUILD.PATH}/core/core/");
+			if (ACTION_C_COMBINE.equals(action)) {
+				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
+				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
+			}
 
 			recipe = adaptCompilerCommand(recipe);
 			setBuildEnvironmentVariable(confDesc, recipeKey, recipe);
