@@ -120,10 +120,13 @@ public class CreateAndCompile {
 				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
 				"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
-				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
-				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
-				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
-				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
+				/*
+				 * simba needs a main function so it will never work in this test
+				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
+				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
+				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
+				 * "https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
+				 */
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
 				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
