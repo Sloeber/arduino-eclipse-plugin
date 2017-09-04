@@ -68,7 +68,7 @@ if (isset ( $_GET ["OS"] ))
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.<br>
         <h2>Some recent changes:</h2>
         <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
-        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.0.1-SNAPSHOT/"  target="_blank">
+        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.1.0-SNAPSHOT/"  target="_blank">
         This download page is the travis build. Download the tar.gz for your os.</a></p>
         <p>Note that there are multiple versions. The latest are at the bottom.</p>
         <p>Mac users read the <a href="http://eclipse.baeyens.it/installAdvice.shtml#">mac specific info</a>.</p>
