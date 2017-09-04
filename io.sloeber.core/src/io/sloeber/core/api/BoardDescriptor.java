@@ -904,11 +904,6 @@ public class BoardDescriptor {
 
 	public IPath getreferencedHardwarePath() {
 		IPath platformPath = getReferencedCorePlatformPath();
-		String architecture = platformPath.lastSegment();
-		if (architecture.contains(Const.DOT)) { // This is a version number so
-			// package
-			return platformPath.removeLastSegments(2);
-		}
 		return platformPath.removeLastSegments(1);
 	}
 
