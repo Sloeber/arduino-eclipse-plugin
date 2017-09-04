@@ -11,4 +11,33 @@
   <artifactId>io.sloeber.core</artifactId>
   <packaging>eclipse-plugin</packaging>
   <version>4.1.0-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.11</version>
+  		<scope>test</scope>
+  	</dependency>
+  </dependencies>
+    <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.20</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+            <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <testSourceDirectory>${basedir}/src/jUnit/</testSourceDirectory>
+                    <testClassesDirectory>${project.build.directory}/classes/jUnit</testClassesDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+  </build>
 </project>
