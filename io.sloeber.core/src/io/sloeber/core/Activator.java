@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -103,48 +104,62 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void testKnownIssues() {
-		// currently no more issues are known
-		// if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		// String bashCommand = "where bash";
-		// String shCommand = "where sh";
-		// boolean bashFound = false;
-		// ExternalCommandLauncher bashCommandLauncher = new
-		// ExternalCommandLauncher(bashCommand);
-		// try {
-		// bashFound = (bashCommandLauncher.launch(null) == 0);
-		// } catch (IOException e) {
-		// // nothing to do here
-		// }
-		// boolean shFound = false;
-		// ExternalCommandLauncher shCommandLauncher = new
-		// ExternalCommandLauncher(shCommand);
-		// try {
-		// shFound = (shCommandLauncher.launch(null) == 0);
-		// } catch (IOException e) {
-		// // nothing to do here
-		// }
-		// String errorString = Const.EMPTY_STRING;
-		// String addString = Const.EMPTY_STRING;
-		// if (bashFound) {
-		// errorString = errorString + addString + "bash";
-		// addString = " and ";
-		// }
-		// if (shFound) {
-		// errorString = errorString + addString + "sh";
-		// addString = " and ";
-		// }
-		// if (!errorString.isEmpty()) {
-		// errorString = "we have found programs in the path that might conflict
-		// with our external builder.\nThe conflicting programs are "
-		//
-		// + errorString
-		// + ".\nThe program might still function but if you get strange build
-		// errors you know where to look\nRunning Sloeber.cmd may fix this
-		// issue.";
-		// Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-		// errorString));
-		// }
-		// }
+		String errorString = new String();
+		String addString = new String();
+		IPath installPath = ConfigurationPreferences.getInstallationPath();
+		if (downloadFolderIsNotWritable()) {
+			errorString += addString + "The plugin Needs write access to " + installPath.toString();
+			addString = "\nand\n";
+		}
+
+		if (installPathToLong()) {
+			errorString += errorString + addString;
+			errorString += "Due to issues with long pathnames on Windows, the plugin installation path must be less than 40 characters. \n";
+			errorString += "Your current path: " + installPath.toString();
+			errorString += " is too long and the plugin will no longer function correctly for all packages.";
+			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
+			addString = "\nand\n";
+		}
+		if (installPath.toOSString().contains(" ")) {
+			errorString += addString + "The installpath can not contain spaces " + installPath.toString();
+			addString = "\nand\n";
+		}
+		String workSpacePath =ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
+		if (workSpacePath.contains(" ")) {
+			errorString += addString + "The Workspacepath can not contain spaces " + workSpacePath;
+			addString = "\nand\n";
+		}
+
+		if (!errorString.isEmpty()) {
+			errorString += "\nSloeber might still function but if you get strange results you know where to look.\n";
+			errorString += "Do not create an issue if you see this!!!";
+			Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorString));
+		}
+
+	}
+
+	/**
+	 * Test whether we can write in the installation folder
+	 *
+	 * @return true if the parent of the installation folder is not writable
+	 */
+	private static boolean downloadFolderIsNotWritable() {
+		IPath installPath = ConfigurationPreferences.getInstallationPath();
+		return !installPath.toFile().getParentFile().canWrite();
+	}
+
+	/**
+	 * On windows the install path can not be deep
+	 * due to windows restrictions
+	 *
+	 * @return true if the install path is to deep on windows
+	 */
+	private static boolean installPathToLong() {
+		IPath installPath = ConfigurationPreferences.getInstallationPath();
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			return installPath.toString().length() > 40;
+		}
+		return false;
 	}
 
 	private static void registerListeners() {
@@ -193,55 +208,16 @@ public class Activator extends AbstractUIPlugin {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				if (DownloadFolderConditionsOK()) {
-					monitor.beginTask("Sit back, relax and watch us work for a little while ..",
-							IProgressMonitor.UNKNOWN);
-					addFileAssociations();
-					makeOurOwnCustomBoards_txt();
-					Manager.startup_Pluging(monitor);
-					monitor.setTaskName("Done!");
-					NetworkDiscovery.start();
-					registerListeners();
-					return Status.OK_STATUS;
-				}
-				addFileAssociations();
-				NetworkDiscovery.start();
-				return Status.CANCEL_STATUS;
-			}
-
-			/**
-			 * Check whether the install conditions for the plugin are met. Test
-			 * whether we can write in the download folder check whether the
-			 * download folder is not to deep on windows
-			 *
-			 * @return true is installation can be done else false
-			 */
-			private boolean DownloadFolderConditionsOK() {
 				IPath installPath = ConfigurationPreferences.getInstallationPath();
 				installPath.toFile().mkdirs();
-				boolean cantWrite = !installPath.toFile().canWrite();
-				boolean windowsPathToLong = false;
-				if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					windowsPathToLong = installPath.toString().length() > 40;
-				}
-				if (cantWrite || windowsPathToLong) {
-					String errorMessage = new String();
-					if (cantWrite) {
-						errorMessage = "The plugin Needs write access to " + installPath.toString();
-					}
-					if (windowsPathToLong) {
-						if (cantWrite) {
-							errorMessage += '\n';
-						}
-						errorMessage += "Due to issues with long pathnames on Windows, the plugin installation path must less than 40 characters. \n";
-						errorMessage += "Your current path: " + installPath.toString();
-						errorMessage += " is too long and the plugin will no longer function correctly for all packages.";
-						errorMessage += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
-					}
-					Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorMessage));
-					return false;
-				}
-				return true;
+				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
+				addFileAssociations();
+				makeOurOwnCustomBoards_txt();
+				Manager.startup_Pluging(monitor);
+				monitor.setTaskName("Done!");
+				NetworkDiscovery.start();
+				registerListeners();
+				return Status.OK_STATUS;
 			}
 
 		};
@@ -266,24 +242,24 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * This is a wrapper method to quickly make the dough code that is the basis
-	 * of the io.sloeber.core.managers and io.sloeber.core.managers.ui to work.
+	 * This is a wrapper method to quickly make the dough code that is the basis of
+	 * the io.sloeber.core.managers and io.sloeber.core.managers.ui to work.
 	 */
 	public static String getId() {
 		return PLUGIN_ID;
 	}
 
 	/**
-	 * To be capable of overwriting the boards.txt and platform.txt file
-	 * settings the plugin contains its own settings. The settings are arduino
-	 * IDE version specific and it seems to be relatively difficult to read a
-	 * boards.txt located in the plugin itself (so outside of the workspace)
-	 * Therefore I copy the file during plugin configuration to the workspace
-	 * root. The file is arduino IDE specific. If no specific file is found the
-	 * default is used. There are actually 4 txt files. 2 are for pre-processing
-	 * 2 are for post processing. each time 1 board.txt an platform.txt I
-	 * probably do not need all of them but as I'm setting up this framework it
-	 * seems best to add all possible combinations.
+	 * To be capable of overwriting the boards.txt and platform.txt file settings
+	 * the plugin contains its own settings. The settings are arduino IDE version
+	 * specific and it seems to be relatively difficult to read a boards.txt located
+	 * in the plugin itself (so outside of the workspace) Therefore I copy the file
+	 * during plugin configuration to the workspace root. The file is arduino IDE
+	 * specific. If no specific file is found the default is used. There are
+	 * actually 4 txt files. 2 are for pre-processing 2 are for post processing.
+	 * each time 1 board.txt an platform.txt I probably do not need all of them but
+	 * as I'm setting up this framework it seems best to add all possible
+	 * combinations.
 	 *
 	 */
 	private static void makeOurOwnCustomBoards_txt() {
@@ -299,13 +275,13 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * This method creates a file in the root of the workspace based on a file
-	 * delivered with the plugin The file can be arduino IDE version specific.
-	 * If no specific version is found the default is used. Decoupling the ide
-	 * from the plugin makes the version specific impossible
+	 * delivered with the plugin The file can be arduino IDE version specific. If no
+	 * specific version is found the default is used. Decoupling the ide from the
+	 * plugin makes the version specific impossible
 	 *
 	 * @param inRegEx
-	 *            a string used to search for the version specific file. The $
-	 *            is replaced by the arduino version or default
+	 *            a string used to search for the version specific file. The $ is
+	 *            replaced by the arduino version or default
 	 * @param outFile
 	 *            the name of the file that will be created in the root of the
 	 *            workspace
