@@ -1,5 +1,5 @@
 #this file is processed without the adding of A to enable referencing non arduino set variables
-A.software=baeyens
+A.software=ARDUINO
 A.RECIPE.OBJCOPY.HEX.PATTERN={A.RECIPE.OBJCOPY.BIN.PATTERN}
 A.ARCHIVE_FILE=arduino.ar
 A.ARCHIVE_FILE_PATH={A.BUILD.PATH}/{A.ARCHIVE_FILE}
