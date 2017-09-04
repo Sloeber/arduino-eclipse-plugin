@@ -24,7 +24,7 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 
 @SuppressWarnings("nls")
-public class Regression {
+public class Regression_Test {
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
