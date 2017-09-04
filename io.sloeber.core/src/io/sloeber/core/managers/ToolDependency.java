@@ -15,44 +15,44 @@ import io.sloeber.core.Activator;
 
 public class ToolDependency {
 
-    private String packager;
-    private String name;
-    private String version;
+	private String packager;
+	private String name;
+	private String version;
 
-    private transient ArduinoPlatform platform;
+	private transient ArduinoPlatform platform;
 
-    public void setOwner(ArduinoPlatform platform) {
-	this.platform = platform;
-    }
-
-    public String getPackager() {
-	return this.packager;
-    }
-
-    public String getName() {
-	return this.name;
-    }
-
-    public String getVersion() {
-	return this.version;
-    }
-
-    public Tool getTool() {
-	Package pkg = this.platform.getPackage();
-	if (!pkg.getName().equals(this.packager)) {
-	    pkg = Manager.getPackage(this.packager);
+	public void setOwner(ArduinoPlatform platform) {
+		this.platform = platform;
 	}
 
-	return pkg.getTool(this.name, this.version);
-    }
-
-    public IStatus install(IProgressMonitor monitor) {
-	Tool tool = getTool();
-	if (tool == null) {
-	    return new Status(IStatus.ERROR, Activator.getId(),
-		    String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
+	public String getPackager() {
+		return this.packager;
 	}
-	return getTool().install(monitor);
-    }
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getVersion() {
+		return this.version;
+	}
+
+	public Tool getTool() {
+		Package pkg = this.platform.getPackage();
+		if (!pkg.getName().equals(this.packager)) {
+			pkg = Manager.getPackage(this.packager);
+		}
+
+		return pkg.getTool(this.name, getVersion());
+	}
+
+	public IStatus install(IProgressMonitor monitor) {
+		Tool tool = getTool();
+		if (tool == null) {
+			return new Status(IStatus.ERROR, Activator.getId(),
+					String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
+		}
+		return getTool().install(monitor);
+	}
 
 }

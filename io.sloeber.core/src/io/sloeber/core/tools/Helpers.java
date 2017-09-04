@@ -88,15 +88,14 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
 
 	/**
-	 * This method is the internal working class that adds the provided include
-	 * path to all configurations and languages.
+	 * This method is the internal working class that adds the provided include path
+	 * to all configurations and languages.
 	 *
 	 * @param configurationDescription
 	 *            The configuration description of the project to add it to
 	 * @param IncludePath
 	 *            The path to add to the include folders
-	 * @see addLibraryDependency
-	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	private static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath) {
 		// find all languages
@@ -128,8 +127,8 @@ public class Helpers extends Common {
 	 *
 	 * @param configurationDescription
 	 *            the configuration that is checked
-	 * @return true is a include path has been removed. False if the include
-	 *         path remains unchanged.
+	 * @return true is a include path has been removed. False if the include path
+	 *         remains unchanged.
 	 */
 	public static boolean removeInvalidIncludeFolders(ICConfigurationDescription configurationDescription) {
 		// find all languages
@@ -173,9 +172,9 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * Creates a folder and links the folder to an existing folder Parent
-	 * folders of the target folder are created if needed. In case this method
-	 * fails an error is logged.
+	 * Creates a folder and links the folder to an existing folder Parent folders of
+	 * the target folder are created if needed. In case this method fails an error
+	 * is logged.
 	 *
 	 * @param project
 	 *            the project the newly created folder will belong to
@@ -207,12 +206,11 @@ public class Helpers extends Common {
 
 	/**
 	 * This method creates a link folder in the project and add the folder as a
-	 * source path to the project it also adds the path to the include folder if
-	 * the include path parameter points to a path that contains a subfolder
-	 * named "utility" this subfolder will be added to the include path as well
-	 * <br/>
-	 * Forget about this. Arduino made this all so complicated I don't know
-	 * anymore what needs to be added to what<br/>
+	 * source path to the project it also adds the path to the include folder if the
+	 * include path parameter points to a path that contains a subfolder named
+	 * "utility" this subfolder will be added to the include path as well <br/>
+	 * Forget about this. Arduino made this all so complicated I don't know anymore
+	 * what needs to be added to what<br/>
 	 * <br/>
 	 *
 	 * note Arduino has these subfolders in the libraries that need to be
@@ -220,15 +218,14 @@ public class Helpers extends Common {
 	 * <br/>
 	 *
 	 * note that in the current eclipse version, there is no need to add the
-	 * subfolder as a code folder. This may change in the future as it looks
-	 * like a bug to me.<br/>
+	 * subfolder as a code folder. This may change in the future as it looks like a
+	 * bug to me.<br/>
 	 *
 	 * @param project
 	 * @param Path
 	 * @throws CoreException
 	 *
-	 * @see addLibraryDependency
-	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	public static void addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
 			ICConfigurationDescription configurationDescription) throws CoreException {
@@ -270,10 +267,9 @@ public class Helpers extends Common {
 
 	/**
 	 * This method creates a link folder in the project and adds the folder as a
-	 * source path to the project it also adds the path to the include folder if
-	 * the include path parameter points to a path that contains a subfolder
-	 * named "utility" this subfolder will be added to the include path as well
-	 * <br/>
+	 * source path to the project it also adds the path to the include folder if the
+	 * include path parameter points to a path that contains a subfolder named
+	 * "utility" this subfolder will be added to the include path as well <br/>
 	 * <br/>
 	 *
 	 * note Arduino has these subfolders in the libraries that need to be
@@ -281,15 +277,14 @@ public class Helpers extends Common {
 	 * <br/>
 	 *
 	 * note that in the current eclipse version, there is no need to add the
-	 * subfolder as a code folder. This may change in the future as it looks
-	 * like a bug to me.<br/>
+	 * subfolder as a code folder. This may change in the future as it looks like a
+	 * bug to me.<br/>
 	 *
 	 * @param project
 	 * @param Path
 	 * @throws CoreException
 	 *
-	 * @see addLibraryDependency
-	 *      {@link #addLibraryDependency(IProject, IProject)}
+	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription)
 			throws CoreException {
@@ -396,9 +391,9 @@ public class Helpers extends Common {
 	 * @param newFolderName
 	 *            the new folder to create (can contain subfolders)
 	 * @param linklocation
-	 *            if null a local folder is created using newFolderName if not
-	 *            null a link folder is created with the name newFolderName and
-	 *            pointing to linklocation
+	 *            if null a local folder is created using newFolderName if not null
+	 *            a link folder is created with the name newFolderName and pointing
+	 *            to linklocation
 	 *
 	 * @return nothing
 	 * @throws CoreException
@@ -435,8 +430,8 @@ public class Helpers extends Common {
 
 	/**
 	 * Sets the default values. Basically some settings are not set in the
-	 * platform.txt file. Here I set these values. This method should be called
-	 * as first. This way the values in platform.txt and boards.txt will take
+	 * platform.txt file. Here I set these values. This method should be called as
+	 * first. This way the values in platform.txt and boards.txt will take
 	 * precedence of the default values declared here
 	 *
 	 * @param projectName
@@ -444,8 +439,8 @@ public class Helpers extends Common {
 	 * @param contribEnv
 	 * @param confDesc
 	 * @param platformFile
-	 *            Used to define the hardware as different settings are needed
-	 *            for avr and sam
+	 *            Used to define the hardware as different settings are needed for
+	 *            avr and sam
 	 */
 
 	private static void setTheEnvironmentVariablesSetTheDefaults(String projectName, IContributedEnvironment contribEnv,
@@ -457,11 +452,9 @@ public class Helpers extends Common {
 		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
 
-
 		boardDescriptor.saveConfiguration(confDesc, contribEnv);
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
-				hardwarePath.toString());
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, hardwarePath.toString());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_PLATFORM_PATH,
 				referencedPlatformPath.toString());
@@ -511,8 +504,8 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * This method parses a file with environment variables like the
-	 * platform.txt file for values to be added to the environment variables
+	 * This method parses a file with environment variables like the platform.txt
+	 * file for values to be added to the environment variables
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -549,11 +542,11 @@ public class Helpers extends Common {
 
 	/**
 	 * This method parses the boards.txt file for values to be added to the
-	 * environment variables First it adds all the variables based on the board
-	 * name [boardID].[key]=[value] results in [key]=[value] (taking in account
-	 * the modifiers) Then it parses for the menu variables
-	 * menu.[menuID].[boardID].[selectionID].[key]=[value] results in
-	 * [key]=[value] (taking in account the modifiers)
+	 * environment variables First it adds all the variables based on the board name
+	 * [boardID].[key]=[value] results in [key]=[value] (taking in account the
+	 * modifiers) Then it parses for the menu variables
+	 * menu.[menuID].[boardID].[selectionID].[key]=[value] results in [key]=[value]
+	 * (taking in account the modifiers)
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -634,23 +627,25 @@ public class Helpers extends Common {
 	}
 
 	private static void addPlatformFileTools(ArduinoPlatform platform, IContributedEnvironment contribEnv,
-			ICConfigurationDescription confDesc) {
+			ICConfigurationDescription confDesc, boolean reportToolNotFound) {
 		if (platform.getToolsDependencies() != null) {
 			for (ToolDependency tool : platform.getToolsDependencies()) {
 				String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path");
 				Tool theTool = tool.getTool();
 				if (theTool == null) {
-					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							"Error adding platformFileTools while processing tool " + tool.getName() + " version "
-									+ tool.getVersion() + " Installpath is null"));
-					return;
+					if (reportToolNotFound) {
+						Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+								"Error adding platformFileTools while processing tool " + tool.getName() + " version "
+										+ tool.getVersion() + " Installpath is null"));
+					}
+				} else {
+					String valueString = new Path(theTool.getInstallPath().toString()).toString();
+					setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
+					keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
+					setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
+					keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path");
+					setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 				}
-				String valueString = new Path(theTool.getInstallPath().toString()).toString();
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
-				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
-				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path");
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 			}
 		}
 	}
@@ -659,38 +654,37 @@ public class Helpers extends Common {
 			IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
 		File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile();
 		File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
-
-		ArduinoPlatform platform = null;
-		String curversion = null;
+		String architecture = boardDescriptor.getArchitecture();
 		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
-			addPlatformFileTools(curPlatform, contribEnv, confDesc);
-			if (curPlatform.isInstalled() && "avr".equalsIgnoreCase(curPlatform.getArchitecture())
-					&& "arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
-				if (Version.compare(curPlatform.getVersion(), curversion) >= 0) {
-					curversion = curPlatform.getVersion();
-					platform = curPlatform;
+				addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
+		}
+		ArduinoPlatform LatestArduinoPlatform = null;
+		for (ArduinoPlatform curPlatform : Manager.getLatestInstalledPlatforms()) {
+			if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())) {
+				addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
+				if ("arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
+					LatestArduinoPlatform = curPlatform;
 				}
 			}
 		}
 		// add the newest arduino avr platform again for the idiots wanting to
 		// reference arduino without referencing it
-		if (platform != null) {
-			addPlatformFileTools(platform, contribEnv, confDesc);
+		if (LatestArduinoPlatform != null) {
+			addPlatformFileTools(LatestArduinoPlatform, contribEnv, confDesc, true);
 		}
+		// todo implement this jsonBasedPlatformManagement trigger
+		boolean jsonBasedPlatformManagement = true;
+		if (jsonBasedPlatformManagement) {
+			// add the referenced platform before the real platform
+			ArduinoPlatform referencedPlatform = Manager.getPlatform(referencedPlatformFile);
+			if ((referencedPlatform != null) && (referencedPlatform != LatestArduinoPlatform)) {
+				addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
+			}
+			// and the real platform
+			ArduinoPlatform referencingPlatform = Manager.getPlatform(referencingPlatformFile);
+			if ((referencingPlatform != null) && (referencingPlatform != LatestArduinoPlatform)) {
 
-		// add the referenced platform before the real platform
-		platform = Manager.getPlatform(referencedPlatformFile);
-		if (platform != null) {
-			addPlatformFileTools(platform, contribEnv, confDesc);
-		}
-		// and the real platform
-		platform = Manager.getPlatform(referencingPlatformFile);
-		if (platform != null) {
-			// skip if this platform has no platform.txt. This is to fix
-			// problem with arduboy that provide tooldependencies but no
-			// platform.txt
-			if (platform.getPlatformFile().exists()) {
-				addPlatformFileTools(platform, contribEnv, confDesc);
+				addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);
 			}
 		}
 	}
@@ -699,15 +693,15 @@ public class Helpers extends Common {
 	 * This method creates environment variables based on the platform.txt and
 	 * boards.txt. platform.txt is processed first and then boards.txt. This way
 	 * boards.txt settings can overwrite common settings in platform.txt The
-	 * environment variables are only valid for the project given as parameter
-	 * The project properties are used to identify the boards.txt and
-	 * platform.txt as well as the board id to select the settings in the
-	 * board.txt file At the end also the path variable is set
+	 * environment variables are only valid for the project given as parameter The
+	 * project properties are used to identify the boards.txt and platform.txt as
+	 * well as the board id to select the settings in the board.txt file At the end
+	 * also the path variable is set
 	 *
 	 *
-	 * To be able to quickly fix boards.txt and platform.txt problems I also
-	 * added a pre and post platform and boards files that are processed before
-	 * and after the arduino delivered boards.txt file.
+	 * To be able to quickly fix boards.txt and platform.txt problems I also added a
+	 * pre and post platform and boards files that are processed before and after
+	 * the arduino delivered boards.txt file.
 	 *
 	 * @param project
 	 *            the project for which the environment variables are set
@@ -928,14 +922,14 @@ public class Helpers extends Common {
 	 *
 	 * For the os dependent stuff see
 	 * https://github.com/jantje/arduino-eclipse-plugin/issues/493 in windows
-	 * replace '-DXXX="YYY"' with "-DXXX=\\"YYY\\"" in windows replace '-DXXXX='
-	 * * with -DXXXX=
+	 * replace '-DXXX="YYY"' with "-DXXX=\\"YYY\\"" in windows replace '-DXXXX=' *
+	 * with -DXXXX=
 	 *
 	 * replaceAll("  ", " ") due to the above replacements there can be multiple
-	 * spaces. this cause(s/d) problems so I re^lace them with 1 space. note
-	 * that -with the current implementation- this means that is you define a
-	 * string to a define and the string has multiple spaces there will only be
-	 * one left. This one has to be the last replacement !!
+	 * spaces. this cause(s/d) problems so I re^lace them with 1 space. note that
+	 * -with the current implementation- this means that is you define a string to a
+	 * define and the string has multiple spaces there will only be one left. This
+	 * one has to be the last replacement !!
 	 *
 	 * I also do some stuff for the warning settings
 	 */
@@ -958,10 +952,10 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * When parsing boards.txt and platform.txt some processing needs to be done
-	 * to get "acceptable environment variable values" This method does the
-	 * parsing {xx} is replaced with ${XX} if to uppercase is true {xx} is
-	 * replaced with ${xx} if to uppercase is false
+	 * When parsing boards.txt and platform.txt some processing needs to be done to
+	 * get "acceptable environment variable values" This method does the parsing
+	 * {xx} is replaced with ${XX} if to uppercase is true {xx} is replaced with
+	 * ${xx} if to uppercase is false
 	 *
 	 * @param inputString
 	 *            the value string as read from the file
@@ -988,10 +982,10 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * When parsing boards.txt and platform.txt some processing needs to be done
-	 * to get "acceptable environment variable keys" This method does the
-	 * parsing some examples on windows "test.windows" becomes "A.TEST"
-	 * "test.linux" becomes "A.TEST.LINUX"
+	 * When parsing boards.txt and platform.txt some processing needs to be done to
+	 * get "acceptable environment variable keys" This method does the parsing some
+	 * examples on windows "test.windows" becomes "A.TEST" "test.linux" becomes
+	 * "A.TEST.LINUX"
 	 *
 	 * on Linux "test.windows" becomes "A.TEST.WINDOWS" "test.linux" becomes
 	 * "A.TEST"
@@ -1017,11 +1011,10 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * Set the project to force a rebuild. This method is called after the
-	 * arduino settings have been updated. Note the only way I found I could get
-	 * this to work is by deleting the build folder Still then the "indexer
-	 * needs to recheck his includes from the language provider which still is
-	 * not working
+	 * Set the project to force a rebuild. This method is called after the arduino
+	 * settings have been updated. Note the only way I found I could get this to
+	 * work is by deleting the build folder Still then the "indexer needs to recheck
+	 * his includes from the language provider which still is not working
 	 *
 	 * @param project
 	 */
@@ -1061,25 +1054,25 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * Given a source file calculates the base of the output file. this method
-	 * may not be needed if I can used the eclipse default behavior. However the
-	 * eclipse default behavior is different from the arduino default behavior.
-	 * So I keep it for now and we'll see how it goes The eclipse default
-	 * behavior is (starting from the project folder [configuration]/Source The
-	 * Arduino default behavior is all in 1 location (so no subfolders)
+	 * Given a source file calculates the base of the output file. this method may
+	 * not be needed if I can used the eclipse default behavior. However the eclipse
+	 * default behavior is different from the arduino default behavior. So I keep it
+	 * for now and we'll see how it goes The eclipse default behavior is (starting
+	 * from the project folder [configuration]/Source The Arduino default behavior
+	 * is all in 1 location (so no subfolders)
 	 *
 	 * @param Source
 	 *            The source file to find the
-	 * @return The base file name for the ouput if Source is "file.cpp" the
-	 *         output is "file.cpp"
+	 * @return The base file name for the ouput if Source is "file.cpp" the output
+	 *         is "file.cpp"
 	 */
 	public static IPath GetOutputName(IPath Source) {
 		return Source;
 	}
 
 	/**
-	 * Converts a name to a tagged environment variable if variableName ="this"
-	 * the output is "${this}"
+	 * Converts a name to a tagged environment variable if variableName ="this" the
+	 * output is "${this}"
 	 *
 	 * @param variableName
 	 * @return
@@ -1089,9 +1082,8 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * Give the string entered in the com port try to extract a host. If no host
-	 * is found return null yun.local at xxx.yyy.zzz (arduino yun) returns
-	 * yun.local
+	 * Give the string entered in the com port try to extract a host. If no host is
+	 * found return null yun.local at xxx.yyy.zzz (arduino yun) returns yun.local
 	 *
 	 * @param mComPort
 	 * @return
