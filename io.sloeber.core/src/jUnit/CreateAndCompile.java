@@ -28,7 +28,7 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 @RunWith(Parameterized.class)
 public class CreateAndCompile {
 	// use the boolean below to avoid downloading and installation
-	private static final boolean reinstall_boards_and_libraries = false;
+	private static final boolean reinstall_boards_and_libraries = true;
 	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
 
@@ -58,7 +58,15 @@ public class CreateAndCompile {
 	 */
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "https://sandeepmistry.github.io/arduino-nRF5/package_nRF5_boards_index.json",
+		String[] packageUrlsToAdd = { "http://library.radino.cc/Arduino_1_8/package_radino_radino32_index.json",
+				"http://rig.reka.com.my/package_rig_index.json",
+				"https://engimusing.github.io/arduinoIDE/package_engimusing_modules_index.json",
+				"https://github.com/XMegaForArduino/IDE/raw/master/package_XMegaForArduino_index.json",
+				"https://mesom.de/atflash/package_atflash_index.json",
+				"https://openpanzerproject.github.io/OpenPanzerBoards/package_openpanzer_index.json",
+				"https://raw.githubusercontent.com/FemtoCow/ATTinyCore/master/Downloads/package_femtocow_attiny_index.json",
+				"https://raw.githubusercontent.com/udif/ITEADSW_Iteaduino-Lite-HSP/master/package/package_iteaduino_lite_index.json",
+				"https://sandeepmistry.github.io/arduino-nRF5/package_nRF5_boards_index.json",
 				"https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
 				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
 				"http://clkdiv8.com/download/package_clkdiv8_index.json",
@@ -67,6 +75,7 @@ public class CreateAndCompile {
 				"http://download.labs.mediatek.com/package_mtk_linkit_smart_7688_index.json",
 				"http://downloads.konekt.io/arduino/package_konekt_index.json",
 				"http://downloads.sodaq.net/package_sodaq_index.json",
+				"http://downloads.sodaq.net/package_sodaq_samd_index.json",
 				"http://drazzy.com/package_drazzy.com_index.json",
 				"http://hidnseek.github.io/hidnseek/package_hidnseek_boot_index.json",
 				"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
@@ -78,7 +87,6 @@ public class CreateAndCompile {
 				"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
 				"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
 				"https://arduboy.github.io/board-support/package_arduboy_index.json",
-				"https://dl.dropboxusercontent.com/u/2807353/femtoCore/package_femtocow_attiny_index.json",
 				"https://github.com/Ameba8195/Arduino/raw/master/release/package_realtek.com_ameba_index.json",
 				"https://github.com/chipKIT32/chipKIT-core/raw/master/package_chipkit_index.json",
 				"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json",
@@ -95,8 +103,7 @@ public class CreateAndCompile {
 				"https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
 				"https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json",
 				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
-				// https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json
-				// clearly a shameless copy of esp package Do not support
+				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
 				"https://raw.githubusercontent.com/eightdog/laika_arduino/master/IDE_Board_Manager/package_project_laika.com_index.json",
 				// "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
 				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.6_index.json",
@@ -116,7 +123,7 @@ public class CreateAndCompile {
 				"https://raw.githubusercontent.com/ThamesValleyReprapUserGroup/Beta-TVRRUG-Mendel90/master/Added-Documents/OMC/package_omc_index.json",
 				"https://raw.githubusercontent.com/TKJElectronics/Balanduino/master/package_tkj_balanduino_index.json",
 				"https://rawgit.com/hunianhang/nufront_arduino_json/master/package_tl7788_index.json",
-				"https://redbearlab.github.io/arduino/package_redbear_index.json",
+				// "https://redbearlab.github.io/arduino/package_redbear_index.json",
 				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
 				"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
@@ -125,18 +132,17 @@ public class CreateAndCompile {
 				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
 				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
 				 * "https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
-				 * "https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
-				 */
+				 * 		 */
+				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
 				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
-				"http://downloads.sodaq.net/package_samd_sodaq_index.json",
 				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 		if (reinstall_boards_and_libraries) {
-		BoardsManager.installAllLatestPlatforms();
-		BoardsManager.onlyKeepLatestPlatforms();
+			BoardsManager.installAllLatestPlatforms();
+			BoardsManager.onlyKeepLatestPlatforms();
 		}
 		Shared.waitForAllJobsToFinish();
 	}
