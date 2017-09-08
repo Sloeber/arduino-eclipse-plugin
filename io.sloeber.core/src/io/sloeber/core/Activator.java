@@ -4,11 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -351,10 +350,11 @@ public class Activator extends AbstractUIPlugin {
 				int curFbStatus = myScope.getInt(BUILD_FLAG, 0);
 				int curFsiStatus = curFsStatus + curFuStatus + curFbStatus;
 				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
+				final int trigger=30;
 				if ((curFsiStatus - lastFsiStatus) < 0) {
-					lastFsiStatus = curFsiStatus - 51;
+					lastFsiStatus = curFsiStatus - (trigger+1);
 				}
-				if ((curFsiStatus - lastFsiStatus) >= 50) {
+				if ((curFsiStatus - lastFsiStatus) >= trigger) {
 					myScope.putInt(LOCAL_FLAG, curFsiStatus);
 					try {
 						myScope.flush();
@@ -377,27 +377,15 @@ public class Activator extends AbstractUIPlugin {
 		if (isPatron != null) {
 			return isPatron.booleanValue();
 		}
-		HttpURLConnection urlConnect = null;
+		String systemhash = ConfigurationPreferences.getSystemHash();
+
 		try {
-			String systemhash = ConfigurationPreferences.getSystemHash();
 			URL url = new URL(HELP_LOC + "?systemhash=" + systemhash);
-			urlConnect = (HttpURLConnection) url.openConnection();
-			urlConnect.getContent();
-		} catch (UnknownHostException e) {
-			return false;
-		} catch (IOException e) {
-			return false;
-		} finally {
-			if (urlConnect != null) {
-				try {
-					urlConnect.getContent();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				int length = urlConnect.getContentLength();
-				isPatron = new Boolean(length < 200);
-				urlConnect.disconnect();
-			}
+			String content= IOUtils.toString( url);
+			isPatron = new Boolean(content.length() < 200);
+
+		} catch (@SuppressWarnings("unused") Exception e) {
+			//Ignore the download error. This will make the code try again later
 		}
 		if (isPatron != null) {
 			return isPatron.booleanValue();

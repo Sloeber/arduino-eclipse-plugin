@@ -61,7 +61,7 @@ public class Libraries {
 		} else {
 			//if the folder contains any of the following it is considered a library itself
 			// src library.properties or examples
-			if(ArrayUtils.contains(children, "src")||ArrayUtils.contains(children, "library.properties")||ArrayUtils.contains(children, "examples")) { //$NON-NLS-1$
+			if(ArrayUtils.contains(children, "src")||ArrayUtils.contains(children, "library.properties")||ArrayUtils.contains(children, "examples")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				ret.put(ipath.lastSegment(), ipath);
 				return ret;
 			}
@@ -70,8 +70,8 @@ public class Libraries {
 				// Get filename of file or directory
 				IPath LibPath = ipath.append(curFolder);
 				File LibPathFile = LibPath.toFile();
-				if (LibPathFile.isFile() && (LibPath.getFileExtension().equalsIgnoreCase("cpp")
-                        || "h".equalsIgnoreCase(LibPath.getFileExtension()))) {
+				if (LibPathFile.isFile() && (LibPath.getFileExtension().equalsIgnoreCase("cpp") //$NON-NLS-1$
+                        || "h".equalsIgnoreCase(LibPath.getFileExtension()))) { //$NON-NLS-1$
 					ret.put(ipath.lastSegment(), ipath);
 					return ret;
 				}
@@ -429,7 +429,6 @@ public class Libraries {
 	 *
 	 * @return
 	 */
-	@SuppressWarnings("nls")
 	private static Map<String, String> buildincludeHeaderReplacementMap() {
 
 		Map<String, String> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -447,14 +446,14 @@ public class Libraries {
 			File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".h");
+					return name.toLowerCase().endsWith(".h"); //$NON-NLS-1$
 				}
 			});
-			if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) {
+			if (ArrayUtils.contains(allHeaderFiles, new File(curLibName + ".h"))) { //$NON-NLS-1$
 				// We found a one to one match make sure others do not
 				// overrule
 				doubleHeaders.add(curLibName);
-				map.remove(curLibName + ".h");
+				map.remove(curLibName + ".h"); //$NON-NLS-1$
 			} else if (allHeaderFiles.length <= 10) { // Ignore libraries with
 														// to many headers
 				for (File CurFile : allHeaderFiles) {
@@ -476,12 +475,12 @@ public class Libraries {
 		// //$NON-NLS-1$
 		// add adrfruit sensor as this lib is highly used and the header is in
 		// libs
-		map.put("Adafruit_Sensor", "Adafruit_Unified_Sensor");
+		map.put("Adafruit_Sensor", "Adafruit_Unified_Sensor"); //$NON-NLS-1$ //$NON-NLS-2$
 		// remove the common hardware libraries so they will never be redirected
-		map.remove("SPI");
-		map.remove("SoftwareSerial");
-		map.remove("HID");
-		map.remove("EEPROM");
+		map.remove("SPI"); //$NON-NLS-1$
+		map.remove("SoftwareSerial"); //$NON-NLS-1$
+		map.remove("HID"); //$NON-NLS-1$
+		map.remove("EEPROM"); //$NON-NLS-1$
 		return map;
 	}
 }

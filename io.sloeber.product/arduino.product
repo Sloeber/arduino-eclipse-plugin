@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
@@ -46,7 +46,6 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
    <launcher name="sloeber-ide">
       <linux icon="launch/icon.xpm"/>
       <macosx icon="launch/icon.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="launch/icons.ico"/>
          <bmp/>

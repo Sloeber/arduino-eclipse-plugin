@@ -66,10 +66,11 @@ public class CompileAndUpload {
 			if (!file.exists()) {
 				file.createNewFile();
 			}
-			FileInputStream fileInput = new FileInputStream(file);
 			Properties properties = new Properties();
-			properties.load(fileInput);
-			fileInput.close();
+			try (FileInputStream fileInput = new FileInputStream(file)) {
+				properties.load(fileInput);
+				fileInput.close();
+			}
 
 			String key = "Last Used Blink Interval";
 			interval = properties.getProperty(key);
@@ -80,9 +81,10 @@ public class CompileAndUpload {
 				interval = "100";
 			}
 			properties.put(key, interval);
-			FileOutputStream fileOutput = new FileOutputStream(file);
-			properties.store(fileOutput, "This is a file with values for unit testing");
-			fileOutput.close();
+			try (FileOutputStream fileOutput = new FileOutputStream(file);) {
+				properties.store(fileOutput, "This is a file with values for unit testing");
+				fileOutput.close();
+			}
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
