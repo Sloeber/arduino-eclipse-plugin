@@ -17,6 +17,10 @@ A.BUILD.PATH={ProjDirPath}/{ConfigName}
 A.BUILD.PROJECT_NAME={ProjName}
 A.PACKAGES={eclipse_home}/arduinoPlugin/packages
 
+#quick fix for issue #810
+A.UPLOAD.SPEED=19200
+A.UPLOAD.PROTOCOL=stk500v1
+
 
 #for esp8266 network upload
 A.tools.esp8266OTA={A.TOOLS.ESPTOOL.NETWORK_CMD}
