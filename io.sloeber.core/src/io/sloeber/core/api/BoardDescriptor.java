@@ -423,7 +423,7 @@ public class BoardDescriptor {
 		this.myUploadTool = sourceBoardDescriptor.getuploadTool();
 	}
 
-	private String getuploadTool() {
+	public String getuploadTool() {
 		return this.myUploadTool;
 	}
 
@@ -888,14 +888,15 @@ public class BoardDescriptor {
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
-		if (this.myUploadTool == null && confdesc != null) {
+		if(confdesc == null) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,"Confdesc null is not alowed here"));
+			return this.myUploadTool;
+		}
+
+		if (this.myUploadTool == null  ) {
             return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
 		return this.myUploadTool;
-	}
-
-	public String getActualUploadTool() {
-		return getActualUploadTool(null);
 	}
 
 	public boolean usesProgrammer() {

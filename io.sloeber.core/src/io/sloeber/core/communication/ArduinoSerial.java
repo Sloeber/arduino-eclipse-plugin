@@ -183,7 +183,7 @@ public class ArduinoSerial {
 		 * boards.txt use Const.ENV_KEY_RESET_BEFORE_UPLOAD=FALSE to disable a
 		 * reset
 		 */
-		if (!bResetPortForUpload || "teensyloader".equalsIgnoreCase(boardDescriptor.getActualUploadTool())) { //$NON-NLS-1$
+		if (!bResetPortForUpload || "teensyloader".equalsIgnoreCase(boardDescriptor.getuploadTool())) { //$NON-NLS-1$
 			return comPort;
 		}
 		/*
