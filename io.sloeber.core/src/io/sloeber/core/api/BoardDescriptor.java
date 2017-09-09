@@ -423,7 +423,7 @@ public class BoardDescriptor {
 		this.myUploadTool = sourceBoardDescriptor.getuploadTool();
 	}
 
-	private String getuploadTool() {
+	public String getuploadTool() {
 		return this.myUploadTool;
 	}
 
@@ -883,19 +883,26 @@ public class BoardDescriptor {
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
 		String upLoadTool = getActualUploadTool(confdesc);
-		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + ".UPLOAD.PATTERN",
+		String action="UPLOAD";
+		if (usesProgrammer()) {
+			action="PROGRAM";
+		}
+		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + "."+action+".PATTERN",
 				upLoadTool.toUpperCase());
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
-		if (this.myUploadTool == null && confdesc != null) {
+		if(confdesc == null) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,"Confdesc null is not alowed here"));
+			return this.myUploadTool;
+		}
+		if(usesProgrammer()) {
+			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL", "Program tool not properly configured");
+		}
+		if (this.myUploadTool == null  ) {
             return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
 		return this.myUploadTool;
-	}
-
-	public String getActualUploadTool() {
-		return getActualUploadTool(null);
 	}
 
 	public boolean usesProgrammer() {
