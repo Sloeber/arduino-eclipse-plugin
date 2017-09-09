@@ -883,7 +883,11 @@ public class BoardDescriptor {
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
 		String upLoadTool = getActualUploadTool(confdesc);
-		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + ".UPLOAD.PATTERN",
+		String action="UPLOAD";
+		if (usesProgrammer()) {
+			action="PROGRAM";
+		}
+		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + "."+action+".PATTERN",
 				upLoadTool.toUpperCase());
 	}
 
@@ -892,7 +896,9 @@ public class BoardDescriptor {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,"Confdesc null is not alowed here"));
 			return this.myUploadTool;
 		}
-
+		if(usesProgrammer()) {
+			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL", "Program tool not properly configured");
+		}
 		if (this.myUploadTool == null  ) {
             return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
