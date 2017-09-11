@@ -109,6 +109,8 @@ public class Messages extends NLS {
 
 	public static String ui_pragma_once_headers;
 
+	public static String ui_use_arduino_toolchain_selection;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

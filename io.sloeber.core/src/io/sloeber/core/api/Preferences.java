@@ -26,7 +26,14 @@ public class Preferences {
 		return InstancePreferences.getAutomaticallyImportLibraries();
 	}
 
+	public static void setUseArduinoToolSelection(boolean booleanValue) {
+		InstancePreferences.setUseArduinoToolSelection(booleanValue);
 
+	}
+
+	public static boolean getUseArduinoToolSelection() {
+		return InstancePreferences.getUseArduinoToolSelection();
+	}
 
 
 }

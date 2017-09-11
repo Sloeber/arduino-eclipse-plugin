@@ -23,6 +23,7 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -144,6 +145,8 @@ public class CreateAndCompile {
 			BoardsManager.installAllLatestPlatforms();
 			BoardsManager.onlyKeepLatestPlatforms();
 		}
+		//build the Arduino way
+		Preferences.setUseArduinoToolSelection(false);
 		Shared.waitForAllJobsToFinish();
 	}
 
