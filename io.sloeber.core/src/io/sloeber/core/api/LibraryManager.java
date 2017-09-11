@@ -237,6 +237,10 @@ public class LibraryManager {
 	public static String getPrivateLibraryPathsString() {
 		return InstancePreferences.getPrivateLibraryPathsString();
 	}
+	public static void setPrivateLibraryPaths(String[] libraryPaths) {
+		InstancePreferences.setPrivateLibraryPaths(libraryPaths);
+
+	}
 
 	/**
 	 * get all the categories for all libraries (installed or not)

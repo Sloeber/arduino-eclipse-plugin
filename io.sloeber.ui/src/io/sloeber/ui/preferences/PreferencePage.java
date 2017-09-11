@@ -20,6 +20,7 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -97,10 +98,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		boolean ret = super.performOk();
 		String hardWarePaths[] = getPreferenceStore().getString(KEY_PRIVATE_HARDWARE_PATHS).split(File.pathSeparator);
 		String libraryPaths[] = getPreferenceStore().getString(KEY_PRIVATE_LIBRARY_PATHS).split(File.pathSeparator);
-		BoardsManager.setAutoImportLibraries(this.automaticallyImportLibrariesOption.getBooleanValue());
-		BoardsManager.setPragmaOnceHeaders(this.PragmaOnceHeaderOption.getBooleanValue());
+		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOption.getBooleanValue());
+		Preferences.setPragmaOnceHeaders(this.PragmaOnceHeaderOption.getBooleanValue());
 		BoardsManager.setPrivateHardwarePaths(hardWarePaths);
-		BoardsManager.setPrivateLibraryPaths(libraryPaths);
+		LibraryManager.setPrivateLibraryPaths(libraryPaths);
 		return ret;
 	}
 
@@ -108,8 +109,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	public void init(IWorkbench workbench) {
 		String hardWarePaths = BoardsManager.getPrivateHardwarePathsString();
 		String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
-		boolean autoImport = BoardsManager.getAutoImportLibraries();
-		boolean pragmaOnceHeaders = BoardsManager.getPragmaOnceHeaders();
+		boolean autoImport = Preferences.getAutoImportLibraries();
+		boolean pragmaOnceHeaders = Preferences.getPragmaOnceHeaders();
 
 		getPreferenceStore().setValue(KEY_AUTO_IMPORT_LIBRARIES, autoImport);
 		getPreferenceStore().setValue(KEY_PRAGMA_ONCE_HEADERS, pragmaOnceHeaders);

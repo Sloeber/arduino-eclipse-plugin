@@ -297,10 +297,7 @@ public class BoardsManager {
 		return examples;
 	}
 
-	public static void setAutoImportLibraries(boolean booleanValue) {
-		InstancePreferences.setAutomaticallyImportLibraries(booleanValue);
 
-	}
 
 	public static String[] getBoardNames(String boardFile) {
 		TxtFile theBoardsFile = new TxtFile(new File(boardFile));
@@ -357,15 +354,7 @@ public class BoardsManager {
 				+ ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
 	}
 
-	public static void setPrivateHardwarePaths(String[] hardWarePaths) {
-		InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
 
-	}
-
-	public static void setPrivateLibraryPaths(String[] libraryPaths) {
-		InstancePreferences.setPrivateLibraryPaths(libraryPaths);
-
-	}
 
 	public static class PlatformTree {
 		private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
@@ -685,13 +674,9 @@ public class BoardsManager {
 		return status;
 	}
 
-	public static boolean getAutoImportLibraries() {
-		return InstancePreferences.getAutomaticallyImportLibraries();
-	}
 
-	public static String getPrivateHardwarePathsString() {
-		return InstancePreferences.getPrivateHardwarePathsString();
-	}
+
+
 
 	/**
 	 * returns all the menu names for all installed platforms. The return is
@@ -727,13 +712,11 @@ public class BoardsManager {
 
 	}
 
-	public static void setPragmaOnceHeaders(boolean booleanValue) {
-		InstancePreferences.setPragmaOnceHeaders(booleanValue);
-
+	public static void setPrivateHardwarePaths(String[] hardWarePaths) {
+		InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
 	}
-
-	public static boolean getPragmaOnceHeaders() {
-		return InstancePreferences.getPragmaOnceHeaders();
+	public static String getPrivateHardwarePathsString() {
+		return InstancePreferences.getPrivateHardwarePathsString();
 	}
 
 }
