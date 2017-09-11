@@ -35,4 +35,8 @@ public class Defaults {
 	public static String getDefaultUploadProtocol() {
 		return DEFAULT;
 	}
+
+	public static boolean  getUseArduinoToolSelection() {
+		return true;
+	}
 }
