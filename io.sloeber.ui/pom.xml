@@ -7,8 +7,7 @@
     <version>4.1.0-SNAPSHOT</version>
     <relativePath>../io.sloeber.parent</relativePath>
   </parent>
+  
   <artifactId>io.sloeber.ui</artifactId>
   <packaging>eclipse-plugin</packaging>
-  <version>4.1.0-SNAPSHOT</version>
-  <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 </project>

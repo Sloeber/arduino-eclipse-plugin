@@ -50,9 +50,12 @@
 
     <module>../io.sloeber.ui.nl1</module>
     <module>../io.sloeber.ui</module>
+    
+    <module>../io.sloeber.tests</module>
   </modules>
 
   <build>
+    <outputDirectory>bin</outputDirectory>
     <plugins>
       <!-- Enable tycho build extension -->
       <plugin>
