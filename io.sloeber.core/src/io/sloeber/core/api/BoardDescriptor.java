@@ -13,7 +13,6 @@ import javax.swing.event.ChangeListener;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -65,7 +64,7 @@ public class BoardDescriptor {
 	private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol";
 	private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file";
 	private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections";
-	private static final String MENUSELECTION = Const.ENV_KEY_JANTJE_START + "MENU.";
+	private static final String ENV_KEY_JANTJE_MENU_SELECTION = Const.ENV_KEY_JANTJE_START + "MENU";
 	private static final String ENV_KEY_JANTJE_UPLOAD_PORT = Const.ENV_KEY_JANTJE_START + "COM_PORT";
 	private static final String ENV_KEY_JANTJE_BOARD_NAME = Const.ENV_KEY_JANTJE_START + "BOARD_NAME";
 	private static final String ENV_KEY_JANTJE_PROJECT_NAME = Const.ENV_KEY_JANTJE_START + "PROJECT_NAME";
@@ -325,16 +324,9 @@ public class BoardDescriptor {
 					"");
 			this.myWorkEclipseLocation = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					"");
-
-			this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-			IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-			IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-			IEnvironmentVariable[] curVariables = contribEnv.getVariables(confdesc);
-			for (IEnvironmentVariable curVariable : curVariables) {
-				if (curVariable.getName().startsWith(MENUSELECTION)) {
-					this.myOptions.put(curVariable.getName().substring(MENUSELECTION.length()), curVariable.getValue());
-				}
-			}
+			String optinconcat= Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_MENU_SELECTION,
+					"");
+			this.myOptions = KeyValue.makeMap(optinconcat);
 		}
 		calculateDerivedFields();
 	}
@@ -603,12 +595,9 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					this.myWorkEclipseLocation);
 			Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myProgrammer);
-			if (this.myOptions != null) {
-				for (Map.Entry<String, String> curoption : this.myOptions.entrySet()) {
-					Common.setBuildEnvironmentVariable(contribEnv, confDesc, MENUSELECTION + curoption.getKey(),
-							curoption.getValue());
-				}
-			}
+			String value=KeyValue.makeString(this.myOptions);
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MENU_SELECTION ,value);
+
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
 					this.myUploadPort.replace("/dev/", new String()));
@@ -712,10 +701,9 @@ public class BoardDescriptor {
 	}
 
 	public String[] getUploadProtocols() {
-		if (this.myreferencingBoardsFile.exists()) {
-			return Programmers.getUploadProtocols(this.myreferencingBoardsFile.toString());
-		}
-		return new String[0];
+
+			return Programmers.getUploadProtocols(this);
+
 	}
 
 	public String[] getMenuItemNamesFromMenuID(String menuID) {
@@ -897,7 +885,7 @@ public class BoardDescriptor {
 			return this.myUploadTool;
 		}
 		if(usesProgrammer()) {
-			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL", "Program tool not properly configured");
+			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL", "Program 	tool not properly configured");
 		}
 		if (this.myUploadTool == null  ) {
             return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
