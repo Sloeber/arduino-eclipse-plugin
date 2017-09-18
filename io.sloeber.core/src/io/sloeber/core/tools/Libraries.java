@@ -30,11 +30,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -390,15 +392,34 @@ public class Libraries {
 							UnresolvedIncludedHeaders.add(entry.getValue());
 						}
 					}
-					Map<String, IPath> availableLibs = getAllInstalledLibraries(configurationDescription);
 					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
 
-					availableLibs.keySet().retainAll(UnresolvedIncludedHeaders);
-					if (!availableLibs.isEmpty()) {
+
+					//Check if there are libraries that are not found in the installed libraries
+					Map<String, IPath> installedLibs = getAllInstalledLibraries(configurationDescription);
+					Set<String> uninstalledIncludedHeaders=new TreeSet<>(UnresolvedIncludedHeaders);
+					uninstalledIncludedHeaders.removeAll(installedLibs.keySet());
+					if(!uninstalledIncludedHeaders.isEmpty()) {
+						//some libraries may need to be installed
+						Map<String, Library> availableLibs = LibraryManager.getAllInstallableLibraries();
+						availableLibs.keySet().retainAll(uninstalledIncludedHeaders);
+						if(!availableLibs.isEmpty()) {
+							//We now know which libraries to install
+							//TODO for now I just install but there should be some user
+							//interaction
+							for (Entry<String, Library> curLib : availableLibs.entrySet()) {
+								curLib.getValue().install(new NullProgressMonitor());
+							}
+						}
+					}
+
+					installedLibs = getAllInstalledLibraries(configurationDescription);
+					installedLibs.keySet().retainAll(UnresolvedIncludedHeaders);
+					if (!installedLibs.isEmpty()) {
 						// there are possible libraries to add
 						Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
-								+ affectedProject.getName() + ": " + availableLibs.keySet().toString())); //$NON-NLS-1$
-						addLibrariesToProject(affectedProject, configurationDescription, availableLibs);
+								+ affectedProject.getName() + ": " + installedLibs.keySet().toString())); //$NON-NLS-1$
+						addLibrariesToProject(affectedProject, configurationDescription, installedLibs);
 						try {
 							mngr.setProjectDescription(affectedProject, projectDescription, true, null);
 						} catch (CoreException e) {

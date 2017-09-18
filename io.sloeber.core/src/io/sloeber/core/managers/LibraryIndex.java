@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -93,6 +94,15 @@ public class LibraryIndex {
 		return this.latestLibs;
 	}
 
+	public Map<String, Library> getLatestInstallableLibraries() {
+		Map<String, Library> ret = new HashMap<>();
+		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
+			if (getInstalledLibrary(curLibrary.getKey())==null) {
+				ret.put(curLibrary.getKey(), curLibrary.getValue());
+			}
+		}
+		return ret;
+	}
 	public Collection<Library> getLibraries(String category) {
 		Set<String> categoryLibs = this.categories.get(category);
 		if (categoryLibs == null) {

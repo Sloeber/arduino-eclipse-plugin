@@ -351,4 +351,19 @@ public class LibraryManager {
 		}
 	}
 
+	/**
+	 * Searches for all libraries that can be installed but are not yet installed.
+	 * A library is considered installed when 1 version of the library is installed.
+	 *
+	 * @return a map of all instalable libraries
+	 */
+	public static Map<String, io.sloeber.core.managers.Library> getAllInstallableLibraries() {
+		Map<String, Library> ret = new HashMap<>();
+		for (LibraryIndex libraryIndex : libraryIndices) {
+			 ret.putAll(libraryIndex.getLatestInstallableLibraries());
+		}
+
+		return ret;
+	}
+
 }
