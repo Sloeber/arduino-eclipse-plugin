@@ -366,4 +366,16 @@ public class LibraryManager {
 		return ret;
 	}
 
+	public static Map<String, io.sloeber.core.managers.Library> getLatestInstallableLibraries(
+			Set<String> libnames) {
+		Set<String> remainingLibNames=new TreeSet<>(libnames);
+		Map<String, Library> ret = new HashMap<>();
+		for (LibraryIndex libraryIndex : libraryIndices) {
+			 ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
+			 remainingLibNames.removeAll(ret.keySet());
+		}
+
+		return ret;
+	}
+
 }

@@ -401,8 +401,9 @@ public class Libraries {
 					uninstalledIncludedHeaders.removeAll(installedLibs.keySet());
 					if(!uninstalledIncludedHeaders.isEmpty()) {
 						//some libraries may need to be installed
-						Map<String, Library> availableLibs = LibraryManager.getAllInstallableLibraries();
-						availableLibs.keySet().retainAll(uninstalledIncludedHeaders);
+
+						Map<String, Library>	availableLibs=LibraryManager.getLatestInstallableLibraries(uninstalledIncludedHeaders);
+
 						if(!availableLibs.isEmpty()) {
 							//We now know which libraries to install
 							//TODO for now I just install but there should be some user
@@ -421,7 +422,13 @@ public class Libraries {
 								+ affectedProject.getName() + ": " + installedLibs.keySet().toString())); //$NON-NLS-1$
 						addLibrariesToProject(affectedProject, configurationDescription, installedLibs);
 						try {
+							//TODO remove this logging code if this code is not causing the disrupts
+							long startTime = System.nanoTime();
 							mngr.setProjectDescription(affectedProject, projectDescription, true, null);
+							long duration = (System.nanoTime() - startTime)/ 1000000; //in miliseconds
+							if (duration>45000) {
+								Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,"setProjectDescription took "+duration+" miliseconds!!!")); //$NON-NLS-1$ //$NON-NLS-2$
+							}
 						} catch (CoreException e) {
 							// this can fail because the project may already
 							// be
