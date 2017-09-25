@@ -1,8 +1,10 @@
 package io.sloeber.core.tools;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
 
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.Defaults;
@@ -19,42 +21,36 @@ public class Programmers extends TxtFile {
 		super(programmersFile);
 	}
 
-	public static Programmers[] fromBoards(String boardsFileName) {
-		return fromBoards(new File(boardsFileName));
-	}
-
-	public static Programmers[] fromBoards(File boardsFile) {
-		File BoardsFile1 = new Path(boardsFile.getParentFile().toString()).append(programmersFileName1).toFile();
-
-		File BoardsFile2 = new Path(boardsFile.getParentFile().toString()).append(programmersFileName2).toFile();
-		if (BoardsFile1.exists() & BoardsFile2.exists()) {
-			Programmers ret[] = new Programmers[2];
-
-			ret[0] = new Programmers(BoardsFile1);
-			ret[1] = new Programmers(BoardsFile2);
-			return ret;
+	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath) {
+		HashSet<File> BoardsFiles = new HashSet<>();
+		BoardsFiles.add(referencingPlatformPath.append(programmersFileName1).toFile());
+		BoardsFiles.add(referencingPlatformPath.append(programmersFileName2).toFile());
+		if (referencedPlatformPath != null) {
+			BoardsFiles.add(referencedPlatformPath.append(programmersFileName1).toFile());
+			BoardsFiles.add(referencedPlatformPath.append(programmersFileName2).toFile());
 		}
-		if (BoardsFile1.exists()) {
-			Programmers ret[] = new Programmers[1];
-
-			ret[0] = new Programmers(BoardsFile1);
-			return ret;
+		for (Iterator<File> i = BoardsFiles.iterator(); i.hasNext();) {
+			File file = i.next();
+			if (!file.exists()) {
+				i.remove();
+			}
 		}
-		if (BoardsFile2.exists()) {
-			Programmers ret[] = new Programmers[1];
 
-			ret[0] = new Programmers(BoardsFile2);
-			return ret;
-
+		Programmers ret[] = new Programmers[BoardsFiles.size()];
+		int i = 0;
+		for (File file : BoardsFiles) {
+			ret[i++] = new Programmers(file);
 		}
-		return new Programmers[0];
+
+		return ret;
 
 	}
 
-	public static String[] getUploadProtocols(String boardsFileName) {
+	public static String[] getUploadProtocols(BoardDescriptor boardsDescriptor) {
 		String[] ret = new String[1];
 		ret[0] = Defaults.getDefaultUploadProtocol();
-		Programmers allProgrammers[] = fromBoards(new File(boardsFileName));
+		Programmers allProgrammers[] = fromBoards(boardsDescriptor.getreferencingPlatformPath(),
+				boardsDescriptor.getReferencedUploadPlatformPath());
 		for (Programmers curprogrammer : allProgrammers) {
 			ret = curprogrammer.getAllNames(ret);
 		}
@@ -63,7 +59,8 @@ public class Programmers extends TxtFile {
 	}
 
 	public static Programmers[] fromBoards(BoardDescriptor boardsDescriptor) {
-		return fromBoards(boardsDescriptor.getReferencingBoardsFile());
+		return fromBoards(boardsDescriptor.getreferencingPlatformPath(),
+				boardsDescriptor.getReferencedUploadPlatformPath());
 	}
 
 }

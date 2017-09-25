@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sloeber Tests
+Bundle-SymbolicName: io.sloeber.tests
+Bundle-Version: 4.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: Jan Baeyens
+Require-Bundle: io.sloeber.core,
+ org.eclipse.cdt.core,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.junit;bundle-version="4.12.0"
+Bundle-ActivationPolicy: lazy
