@@ -65,7 +65,7 @@
         <div class="col-md-4">
           <h2><span class="glyphicon glyphicon-star" style="color:orange"></span>&nbsp;News</h2>
           <div>
-            <a class="twitter-timeline" data-dnt="true" "https://twitter.com/Arduino_jantje" height="400" data-widget-id="433339655606394880" data-chrome="nofooter noheader">Latest News</a>
+            <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/Arduino_jantje" height="400" data-widget-id="433339655606394880" data-chrome="nofooter noheader">Latest News</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
           </div>
         </div>
