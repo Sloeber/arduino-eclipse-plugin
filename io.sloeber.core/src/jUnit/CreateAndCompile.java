@@ -138,7 +138,8 @@ public class CreateAndCompile {
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
 				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
-				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json" };
+				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json" ,
+				"https://resources.canique.com/ide/package_canique_index.json"};
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 		if (reinstall_boards_and_libraries) {
