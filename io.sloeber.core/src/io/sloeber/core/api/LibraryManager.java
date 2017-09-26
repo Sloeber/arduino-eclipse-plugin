@@ -26,6 +26,7 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
+import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.LibraryIndex;
 import io.sloeber.core.managers.Manager;
@@ -34,6 +35,7 @@ import io.sloeber.core.tools.Version;
 
 public class LibraryManager {
 	static private List<LibraryIndex> libraryIndices;
+	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
 
 	static public List<LibraryIndex> getLibraryIndices() {
 		if (libraryIndices == null) {
@@ -237,6 +239,7 @@ public class LibraryManager {
 	public static String getPrivateLibraryPathsString() {
 		return InstancePreferences.getPrivateLibraryPathsString();
 	}
+
 	public static void setPrivateLibraryPaths(String[] libraryPaths) {
 		InstancePreferences.setPrivateLibraryPaths(libraryPaths);
 
@@ -296,9 +299,9 @@ public class LibraryManager {
 	}
 
 	/**
-	 * Install the latest version of all the libraries belonging to this
-	 * category If a earlier version is installed this version will be removed
-	 * before installation of the newer version
+	 * Install the latest version of all the libraries belonging to this category If
+	 * a earlier version is installed this version will be removed before
+	 * installation of the newer version
 	 *
 	 * @param category
 	 */
@@ -352,30 +355,37 @@ public class LibraryManager {
 	}
 
 	/**
-	 * Searches for all libraries that can be installed but are not yet installed.
-	 * A library is considered installed when 1 version of the library is installed.
+	 * Searches for all libraries that can be installed but are not yet installed. A
+	 * library is considered installed when 1 version of the library is installed.
 	 *
 	 * @return a map of all instalable libraries
 	 */
 	public static Map<String, io.sloeber.core.managers.Library> getAllInstallableLibraries() {
 		Map<String, Library> ret = new HashMap<>();
 		for (LibraryIndex libraryIndex : libraryIndices) {
-			 ret.putAll(libraryIndex.getLatestInstallableLibraries());
+			ret.putAll(libraryIndex.getLatestInstallableLibraries());
 		}
 
 		return ret;
 	}
 
-	public static Map<String, io.sloeber.core.managers.Library> getLatestInstallableLibraries(
-			Set<String> libnames) {
-		Set<String> remainingLibNames=new TreeSet<>(libnames);
+	public static Map<String, io.sloeber.core.managers.Library> getLatestInstallableLibraries(Set<String> libnames) {
+		Set<String> remainingLibNames = new TreeSet<>(libnames);
 		Map<String, Library> ret = new HashMap<>();
 		for (LibraryIndex libraryIndex : libraryIndices) {
-			 ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
-			 remainingLibNames.removeAll(ret.keySet());
+			ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
+			remainingLibNames.removeAll(ret.keySet());
 		}
 
 		return ret;
+	}
+
+	public static void registerInstallLibraryHandler(IInstallLibraryHandler installLibraryHandler) {
+		myInstallLibraryHandler = installLibraryHandler;
+	}
+
+	public static IInstallLibraryHandler getInstallLibraryHandler() {
+		return myInstallLibraryHandler;
 	}
 
 }

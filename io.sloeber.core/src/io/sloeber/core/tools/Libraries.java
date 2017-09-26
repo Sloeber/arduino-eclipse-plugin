@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -394,7 +395,8 @@ public class Libraries {
 					}
 					UnresolvedIncludedHeaders.removeAll(alreadyAddedLibs);
 
-
+					IInstallLibraryHandler installHandler =LibraryManager.getInstallLibraryHandler();
+					if (installHandler.autoInstall()) {
 					//Check if there are libraries that are not found in the installed libraries
 					Map<String, IPath> installedLibs = getAllInstalledLibraries(configurationDescription);
 					Set<String> uninstalledIncludedHeaders=new TreeSet<>(UnresolvedIncludedHeaders);
@@ -408,13 +410,15 @@ public class Libraries {
 							//We now know which libraries to install
 							//TODO for now I just install but there should be some user
 							//interaction
+							availableLibs=installHandler.selectLibrariesToInstall(availableLibs);
 							for (Entry<String, Library> curLib : availableLibs.entrySet()) {
 								curLib.getValue().install(new NullProgressMonitor());
 							}
 						}
 					}
+					}
 
-					installedLibs = getAllInstalledLibraries(configurationDescription);
+					Map<String, IPath> installedLibs = getAllInstalledLibraries(configurationDescription);
 					installedLibs.keySet().retainAll(UnresolvedIncludedHeaders);
 					if (!installedLibs.isEmpty()) {
 						// there are possible libraries to add
