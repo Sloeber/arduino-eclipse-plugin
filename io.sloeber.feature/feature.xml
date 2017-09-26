@@ -27,7 +27,7 @@ Trump211
    </copyright>
 
    <license url="%licenseUrl">
-This software sends non personalised activity data (build/upload/open serial monitor/open plotter) to baeyens.it for statistical analysis of the plugin usage.
+      This software sends non personalised activity data (build/upload/open serial monitor/open plotter) to baeyens.it for statistical analysis of the plugin usage.
 
 If you do not agree with this policy, please do not install this software.
    </license>
@@ -38,7 +38,8 @@ If you do not agree with this policy, please do not install this software.
 
    <requires>
       <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
-      <import plugin="ilg.gnuarmeclipse.debug.gdbjtag.openocd"/>
+
+      <import feature="ilg.gnuarmeclipse.debug.gdbjtag.openocd" />
    </requires>
 
    <plugin
