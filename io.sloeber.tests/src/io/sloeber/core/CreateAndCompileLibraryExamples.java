@@ -37,14 +37,14 @@ import io.sloeber.core.boards.leonardoBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileLibraryExamplesTest {
+public class CreateAndCompileLibraryExamples {
 	private static final boolean reinstall_boards_and_examples = false;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
 	private static int totalFails = 0;
 
-	public CreateAndCompileLibraryExamplesTest(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public CreateAndCompileLibraryExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
 		this.myCodeDescriptor = codeDescriptor;
 

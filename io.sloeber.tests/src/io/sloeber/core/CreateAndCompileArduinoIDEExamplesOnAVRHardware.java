@@ -36,7 +36,7 @@ import io.sloeber.core.boards.megaBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
+public class CreateAndCompileArduinoIDEExamplesOnAVRHardware {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
@@ -45,7 +45,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 	private boolean myUsesSerial;
 	private static int totalFails = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String name, CodeDescriptor codeDescriptor,
+	public CreateAndCompileArduinoIDEExamplesOnAVRHardware(String name, CodeDescriptor codeDescriptor,
 			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
 
 		this.myCodeDescriptor = codeDescriptor;

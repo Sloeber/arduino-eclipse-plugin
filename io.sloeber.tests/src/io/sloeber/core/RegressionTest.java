@@ -60,7 +60,7 @@ public class RegressionTest {
 			fail("redirect Json ");
 			return;
 		}
-		CreateAndCompileTest.BuildAndVerify(boardid);
+		CreateAndCompile.BuildAndVerify(boardid);
 	}
 
 	/**

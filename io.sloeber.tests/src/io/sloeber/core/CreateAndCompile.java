@@ -27,13 +27,13 @@ import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileTest {
+public class CreateAndCompile {
 	// use the boolean below to avoid downloading and installation
 	private static final boolean reinstall_boards_and_libraries = true;
 	private BoardDescriptor mBoard;
 	private static int mCounter = 0;
 
-	public CreateAndCompileTest(BoardDescriptor board) {
+	public CreateAndCompile(BoardDescriptor board) {
 		this.mBoard = board;
 	}
 
