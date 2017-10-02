@@ -13,23 +13,25 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.core.api.Other;
+
 @SuppressWarnings("nls")
 public class Shared {
 	public final static String TEST_LIBRARY_INDEX_URL = "https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/master/io.sloeber.core/src/jUnit/library_sloeber_index.json";
 	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
-	private static String teensyInstall = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
-	private static String teensyInstallLinux = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
+	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
+	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
 
 	public static String getTeensyPlatform() {
-		switch (Platform.getOS()) {
-		case Platform.OS_WIN32:
-			return teensyInstall;
-		case Platform.OS_LINUX:
-			return teensyInstallLinux;
+		switch ( Other.getSystemHash()) {
+		case "1248215851":
+			return jantjesWindowsMachine;
+		case "still need to gett the key":
+			return jantjesVirtualLinuxMachine;
 		}
-		return null;
+		return new String();
 	}
 
 	public static String getTeensyBoard_txt() {

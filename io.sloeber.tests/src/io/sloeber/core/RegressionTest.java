@@ -41,7 +41,9 @@ public class RegressionTest {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		if (!Shared.getTeensyPlatform().isEmpty()) {
+			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		}
 	}
 
 	/**
@@ -70,6 +72,11 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void issue555() {
+		if (Shared.getTeensyPlatform().isEmpty()) {
+			//skip test due to no teensy install folder provided
+			//do not fail as this will always fail on travis
+			return;
+		}
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -139,7 +146,7 @@ public class RegressionTest {
 				fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
 			}
 		} catch (Exception e) {
-			fail("Failed to create the project:" + projectName + " issue687 is not tested");
+			fail("Failed to create the project:" + projectName);
 			return;
 		}
 
