@@ -18,7 +18,7 @@ public class Shared {
 	public final static String TEST_LIBRARY_INDEX_URL = "https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/master/io.sloeber.core/src/jUnit/library_sloeber_index.json";
 	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
-	
+
 	private static String teensyInstall = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
 	private static String teensyInstallLinux = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
 
@@ -82,7 +82,7 @@ public class Shared {
 			}
 			gitHome += "/.git";
 		}
-		Path path = new Path(gitHome + "/arduino-eclipse-plugin/io.sloeber.core/src/jUnit/templates/" + templateName);
+		Path path = new Path(gitHome + "/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
 		return path;
 	}
 
