@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Other;
 
 @SuppressWarnings("nls")
@@ -54,7 +55,7 @@ public class Shared {
 
 			IJobManager jobMan = Job.getJobManager();
 
-			while (!jobMan.isIdle()) {
+			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
 				Thread.sleep(500);
 				// If you do not get out of this loop it probably means you are
 				// runnning the test in the gui thread
