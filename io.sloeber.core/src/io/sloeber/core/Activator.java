@@ -82,6 +82,11 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
+		IPath installPath = ConfigurationPreferences.getInstallationPath();
+		installPath.toFile().mkdirs();
+		IPath downloadPath = ConfigurationPreferences.getInstallationPathDownload();
+		System.out.println("arduinoPlugin folders created");
+		downloadPath.toFile().mkdirs();
 		testKnownIssues();
 		initializeImportantVariables();
 		runPluginCoreStartInstantiatorJob();
@@ -207,8 +212,7 @@ public class Activator extends AbstractUIPlugin {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				IPath installPath = ConfigurationPreferences.getInstallationPath();
-				installPath.toFile().mkdirs();
+
 				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 				addFileAssociations();
 				makeOurOwnCustomBoards_txt();
