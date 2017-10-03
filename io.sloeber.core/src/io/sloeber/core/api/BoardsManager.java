@@ -130,6 +130,21 @@ public class BoardsManager {
 		}
 	}
 
+	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
+
+		Package curPackage = Manager.getPackage(JasonName, packageName);
+		if (curPackage != null) {
+			ArduinoPlatform curPlatform = curPackage.getLatestPlatform(platformName, false);
+			if (curPlatform != null) {
+				NullProgressMonitor monitor = new NullProgressMonitor();
+				curPlatform.install(monitor);
+				return;
+			}
+		}
+		Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+				"failed to find " + JasonName + " " + packageName + " " + platformName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
 	public static void referenceLocallInstallation(String newHardwarePath) {
 
 		String currentPaths[] = InstancePreferences.getPrivateHardwarePaths();
