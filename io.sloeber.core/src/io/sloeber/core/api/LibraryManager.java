@@ -358,7 +358,10 @@ public class LibraryManager {
 	 * @return true if at least one library is installed
 	 */
 	public static boolean libsAreInstalled() {
-		return ConfigurationPreferences.getInstallationPathLibraries().toFile().list().length!=0;
+		if (ConfigurationPreferences.getInstallationPathLibraries().toFile().exists()) {
+			return ConfigurationPreferences.getInstallationPathLibraries().toFile().list().length != 0;
+		}
+		return false;
 	}
 
 }
