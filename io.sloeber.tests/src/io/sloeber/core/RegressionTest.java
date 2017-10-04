@@ -35,12 +35,11 @@ public class RegressionTest {
 	public static void WaitForInstallerToFinish() {
 		Shared.waitForAllJobsToFinish();
 		installAdditionalBoards();
-		BoardsManager.installAllLatestPlatforms();
 	}
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
 		if (!Shared.getTeensyPlatform().isEmpty()) {
 			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
 		}
@@ -53,7 +52,9 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void redirectedJson() {
-
+		//this board references to arduino avr so install that one to
+		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
 		BoardDescriptor boardid = BoardsManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
@@ -124,10 +125,12 @@ public class RegressionTest {
 
 	/**
 	 * support void loop{};
+	 * @throws Exception
 	 */
 	@SuppressWarnings("static-method")
 	@Test
-	public void issue687() {
+	public void issue687() throws Exception {
+		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -146,6 +149,7 @@ public class RegressionTest {
 				fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
 			return;
 		}
@@ -156,10 +160,12 @@ public class RegressionTest {
 	 * This test will fail if the arduino compile option are not taken into
 	 * account To do sa a bunch of defines are added to the command line and the
 	 * code checks whether these defines are set properly
+	 * @throws Exception
 	 */
 	@SuppressWarnings("static-method")
 	@Test
-	public void are_jantjes_options_taken_into_account() {
+	public void are_jantjes_options_taken_into_account() throws Exception {
+		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -197,10 +203,12 @@ public class RegressionTest {
 	/**
 	 * If a .ino file is including a include using extern C is this handled
 	 * properly by the ino to cpp parser
+	 * @throws Exception
 	 */
 	@SuppressWarnings("static-method")
 	@Test
-	public void are_defines_before_includes_taken_into_account() {
+	public void are_defines_before_includes_taken_into_account() throws Exception {
+		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -232,10 +240,12 @@ public class RegressionTest {
 	/**
 	 * If a .ino file is defining defines before including a include this should
 	 * be handled properly by the ino to cpp parser
+	 * @throws Exception
 	 */
 	@SuppressWarnings("static-method")
 	@Test
-	public void is_extern_C_taken_into_account() {
+	public void is_extern_C_taken_into_account() throws Exception {
+		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
