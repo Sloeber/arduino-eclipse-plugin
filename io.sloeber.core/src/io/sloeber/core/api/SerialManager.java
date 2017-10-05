@@ -89,4 +89,8 @@ public class SerialManager {
 	public static String[] listNetworkPorts() {
 		return NetworkDiscovery.getList();
 	}
+
+	public static void stopNetworkScanning() {
+		NetworkDiscovery.stop();
+	}
 }

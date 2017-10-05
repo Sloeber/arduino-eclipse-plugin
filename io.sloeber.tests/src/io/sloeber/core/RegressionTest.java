@@ -22,6 +22,7 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.SerialManager;
 
 @SuppressWarnings("nls")
 public class RegressionTest {
@@ -34,6 +35,7 @@ public class RegressionTest {
 	@BeforeClass
 	public static void WaitForInstallerToFinish() {
 		Shared.waitForAllJobsToFinish();
+		SerialManager.stopNetworkScanning();
 		installAdditionalBoards();
 	}
 
