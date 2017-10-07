@@ -107,7 +107,7 @@ public class NetworkDiscovery implements ServiceListener {
 	}
 
 	public static void stop() {
-		timer.purge();
+		timer.cancel();
 		// we don't close each JmDNS instance as it's too slow
 	}
 
