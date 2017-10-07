@@ -26,7 +26,7 @@ public class Shared {
 	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
 
 	public static String getTeensyPlatform() {
-		switch ( Other.getSystemHash()) {
+		switch (Other.getSystemHash()) {
 		case "1248215851":
 			return jantjesWindowsMachine;
 		case "still need to gett the key":
@@ -74,18 +74,48 @@ public class Shared {
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			if (gitHome == null) {
-				System.err.println("Git HOME envvar is not define. Using default value");
 				gitHome = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH");
 			}
-			gitHome += "/git";
 		} else {
 			if (gitHome == null) {
 				System.err.println("Git HOME envvar is not define. Using default value");
 				gitHome = "~";
 			}
-			gitHome += "/.git";
+
 		}
-		Path path = new Path(gitHome + "/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		Path path = new Path(gitHome + "/git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		path = new Path(gitHome + "/.git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		path = new Path(gitHome + "/git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		path = new Path(
+				gitHome + "/.git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		path = new Path(gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		path = new Path(
+				gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		if (path.toFile().exists()) {
+			return path;
+		}
+		System.err.println("Failed to find templates in git repository. Checked following locations");
+		System.err.println("->"+gitHome + "/git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		System.err.println("->"+gitHome + "/.git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		System.err.println("->"+gitHome + "/git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		System.err.println("->"+gitHome + "/.git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		System.err.println("->"+gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
+		System.err.println("->"+gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
 		return path;
 	}
 
