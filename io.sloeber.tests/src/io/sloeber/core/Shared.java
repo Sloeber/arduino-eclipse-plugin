@@ -2,16 +2,22 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.osgi.framework.Bundle;
 
 import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Other;
@@ -70,53 +76,21 @@ public class Shared {
 
 	public static IPath getTemplateFolder(String templateName) {
 
-		String gitHome = System.getenv("HOME");
+		try {
+			   Bundle bundle = Platform.getBundle("io.sloeber.tests");
+			   Path path = new Path("src/templates/" + templateName);
+			   URL fileURL = FileLocator.find(bundle, path, null);
+			   URL resolvedFileURL=FileLocator.toFileURL(fileURL);
+			return new  Path(resolvedFileURL.toURI().getPath());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			if (gitHome == null) {
-				gitHome = System.getenv("HOMEDRIVE") + System.getenv("HOMEPATH");
-			}
-		} else {
-			if (gitHome == null) {
-				System.err.println("Git HOME envvar is not define. Using default value");
-				gitHome = "~";
-			}
 
-		}
-		Path path = new Path(gitHome + "/git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		path = new Path(gitHome + "/.git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		path = new Path(gitHome + "/git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		path = new Path(
-				gitHome + "/.git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		path = new Path(gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		path = new Path(
-				gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		if (path.toFile().exists()) {
-			return path;
-		}
-		System.err.println("Failed to find templates in git repository. Checked following locations");
-		System.err.println("->"+gitHome + "/git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		System.err.println("->"+gitHome + "/.git/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		System.err.println("->"+gitHome + "/git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		System.err.println("->"+gitHome + "/.git/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		System.err.println("->"+gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		System.err.println("->"+gitHome + "/Sloeber/arduino-eclipse-plugin/io.sloeber.tests/src/templates/" + templateName);
-		return path;
+		System.err.println("Failed to find templates in io.sloeber.tests plugin.");
+		return new Path(new String());
 	}
 
 }
