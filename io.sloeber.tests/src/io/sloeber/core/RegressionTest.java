@@ -65,7 +65,7 @@ public class RegressionTest {
 			fail("redirect Json ");
 			return;
 		}
-		CreateAndCompile.BuildAndVerify(boardid);
+		Shared.BuildAndVerify(boardid);
 	}
 
 	/**

@@ -43,7 +43,7 @@ import io.sloeber.core.boards.mkrfox1200;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileExamples {
+public class CreateAndCompileExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
@@ -51,7 +51,7 @@ public class CreateAndCompileExamples {
 	private static int totalFails = 0;
 	private String myName;
 
-	public CreateAndCompileExamples(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public CreateAndCompileExamplesTest(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 		this.myBoardid = boardid;
 		this.myCodeDescriptor = codeDescriptor;
 		this.myName = name;

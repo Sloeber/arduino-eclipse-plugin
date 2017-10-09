@@ -1,7 +1,5 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +7,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -20,20 +14,17 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompile {
+public class CreateAndCompileTest {
 	// use the boolean below to avoid downloading and installation
 	private static final boolean reinstall_boards_and_libraries = true;
 	private BoardDescriptor mBoard;
-	private static int mCounter = 0;
 
-	public CreateAndCompile(BoardDescriptor board) {
+
+	public CreateAndCompileTest(BoardDescriptor board) {
 		this.mBoard = board;
 	}
 
@@ -152,40 +143,10 @@ public class CreateAndCompile {
 
 	@Test
 	public void testBoard() {
-		BuildAndVerify(this.mBoard);
+		Shared.BuildAndVerify(this.mBoard);
 
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid) {
 
-		IProject theTestProject = null;
-		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%03d_", new Integer(mCounter++)) + boardid.getBoardID();
-		try {
-
-			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
-					codeDescriptor, new CompileOptions(null), monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " build errors");
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			fail("Failed to compile the project:" + boardid.getBoardName() + " exception");
-		}
-		try {
-			theTestProject.delete(false, true, null);
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
 
 }

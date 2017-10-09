@@ -29,7 +29,7 @@ import io.sloeber.core.boards.IBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CreateAndCompileArduinoIDEExamplesOnTeensy {
+public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
@@ -38,7 +38,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensy {
 	private boolean myUsesSerial;
 	private static int totalFails = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnTeensy(String name, CodeDescriptor codeDescriptor,
+	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String name, CodeDescriptor codeDescriptor,
 			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
 
 		this.myCodeDescriptor = codeDescriptor;
