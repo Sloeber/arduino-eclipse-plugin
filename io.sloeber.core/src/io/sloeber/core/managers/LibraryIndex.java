@@ -12,8 +12,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.tools.Version;
 
+/**
+ * This class represents a json file that references libraries
+ *
+ * @author jan
+ *
+ */
 public class LibraryIndex {
 	private String jsonFileName;
 	private List<Library> libraries;
@@ -101,11 +108,11 @@ public class LibraryIndex {
 	 *
 	 * @return
 	 */
-	public Map<String, Library> getLatestInstallableLibraries() {
-		Map<String, Library> ret = new HashMap<>();
+	public Map<String, LibraryDescriptor> getLatestInstallableLibraries() {
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
 		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
 			if (!curLibrary.getValue().isAVersionInstalled()) {
-				ret.put(curLibrary.getKey(), curLibrary.getValue());
+				ret.put(curLibrary.getKey(),new LibraryDescriptor( curLibrary.getValue()));
 			}
 		}
 		return ret;
@@ -147,15 +154,15 @@ public class LibraryIndex {
 	 *
 	 * @return
 	 */
-	public Map<String, Library> getLatestInstallableLibraries(Set<String> libNames) {
-		Map<String, Library> ret = new HashMap<>();
+	public Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libNames) {
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
 		if (libNames.isEmpty()) {
 			return ret;
 		}
 		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
 			if (libNames.contains(curLibrary.getKey())) {
 				if (!curLibrary.getValue().isAVersionInstalled()) {
-					ret.put(curLibrary.getKey(), curLibrary.getValue());
+					ret.put(curLibrary.getKey(), new LibraryDescriptor(curLibrary.getValue()));
 				}
 			}
 		}

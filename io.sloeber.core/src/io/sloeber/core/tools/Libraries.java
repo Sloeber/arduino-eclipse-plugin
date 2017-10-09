@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.IInstallLibraryHandler;
+import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -404,15 +405,15 @@ public class Libraries {
 					if(!uninstalledIncludedHeaders.isEmpty()) {
 						//some libraries may need to be installed
 
-						Map<String, Library>	availableLibs=LibraryManager.getLatestInstallableLibraries(uninstalledIncludedHeaders);
+						Map<String, LibraryDescriptor>	availableLibs=LibraryManager.getLatestInstallableLibraries(uninstalledIncludedHeaders);
 
 						if(!availableLibs.isEmpty()) {
 							//We now know which libraries to install
 							//TODO for now I just install but there should be some user
 							//interaction
 							availableLibs=installHandler.selectLibrariesToInstall(availableLibs);
-							for (Entry<String, Library> curLib : availableLibs.entrySet()) {
-								curLib.getValue().install(new NullProgressMonitor());
+							for (Entry<String, LibraryDescriptor> curLib : availableLibs.entrySet()) {
+								curLib.getValue().toLibrary().install(new NullProgressMonitor());
 							}
 						}
 					}

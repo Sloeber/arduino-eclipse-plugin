@@ -32,7 +32,16 @@ import io.sloeber.core.managers.LibraryIndex;
 import io.sloeber.core.managers.Manager;
 import io.sloeber.core.managers.Messages;
 import io.sloeber.core.tools.Version;
-
+/**
+ * This class is the main entry point for libraries.
+ * It handles
+ *   private libraries
+ *   hardware libraries
+ *   installed libraries
+ *
+ * @author jan
+ *
+ */
 public class LibraryManager {
 	static private List<LibraryIndex> libraryIndices;
 	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
@@ -360,8 +369,8 @@ public class LibraryManager {
 	 *
 	 * @return a map of all instalable libraries
 	 */
-	public static Map<String, io.sloeber.core.managers.Library> getAllInstallableLibraries() {
-		Map<String, Library> ret = new HashMap<>();
+	public static Map<String, LibraryDescriptor> getAllInstallableLibraries() {
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
 		for (LibraryIndex libraryIndex : libraryIndices) {
 			ret.putAll(libraryIndex.getLatestInstallableLibraries());
 		}
@@ -369,9 +378,9 @@ public class LibraryManager {
 		return ret;
 	}
 
-	public static Map<String, io.sloeber.core.managers.Library> getLatestInstallableLibraries(Set<String> libnames) {
+	public static Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libnames) {
 		Set<String> remainingLibNames = new TreeSet<>(libnames);
-		Map<String, Library> ret = new HashMap<>();
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
 		for (LibraryIndex libraryIndex : libraryIndices) {
 			ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
 			remainingLibNames.removeAll(ret.keySet());

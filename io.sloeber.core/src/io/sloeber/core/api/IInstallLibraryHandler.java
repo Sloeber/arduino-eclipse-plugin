@@ -2,8 +2,6 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 
-import io.sloeber.core.managers.Library;
-
 /**
  * this interface is to allow the ui to handle the automatic installation
  * of libraries.
@@ -31,5 +29,5 @@ public interface  IInstallLibraryHandler {
   *
   * @return The libraries the user wants to install
   */
- abstract Map<String, Library> selectLibrariesToInstall(Map<String, Library> proposedLibsToInstall);
+ abstract Map<String, LibraryDescriptor> selectLibrariesToInstall(Map<String, LibraryDescriptor> proposedLibsToInstall);
 }
