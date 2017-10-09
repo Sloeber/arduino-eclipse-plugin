@@ -52,11 +52,18 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		LinkedList<Object[]> examples = new LinkedList<>();
+		if(Shared.getTeensyPlatform().isEmpty()) {
+			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
+		}
+		else {
+			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		}
+
 
 		Shared.waitForAllJobsToFinish();
 
-		LinkedList<Object[]> examples = new LinkedList<>();
+
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
@@ -105,37 +112,44 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_6() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensy36"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_5() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensy35"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_1() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensy31"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_0() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensy30"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyLC() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensyLC"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyPP2() {
+		if (!Shared.getTeensyPlatform().isEmpty())
 		testExample(new GenericTeensyBoard("teensypp2"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy2() {
-		testExample(new GenericTeensyBoard("teensy2"));
+		if (!Shared.getTeensyPlatform().isEmpty())
+			testExample(new GenericTeensyBoard("teensy2"));
 
 	}
 
