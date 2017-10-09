@@ -160,7 +160,6 @@ public class BoardDescriptor {
 	 */
 	public boolean needsSettingDirty(BoardDescriptor otherBoardDescriptor) {
 
-
 		if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
 			return true;
 		}
@@ -180,8 +179,8 @@ public class BoardDescriptor {
 			return true;
 		}
 		if (!this.getMyWorkSpaceLocation().equals(otherBoardDescriptor.getMyWorkSpaceLocation())) {
-		return true;
-	}
+			return true;
+		}
 		return false;
 	}
 
@@ -244,14 +243,29 @@ public class BoardDescriptor {
 				upload = uploadOption;
 			}
 		}
-
+		String architecture = getArchitecture();
 		if (core != null) {
 			String valueSplit[] = core.split(":");
 			if (valueSplit.length == 2) {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsCore = actualValue;
-				this.myReferencedCorePlatformPath = findReferencedPlatform(refVendor);
+				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				if (this.myReferencedCorePlatformPath == null) {
+					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, core)
+									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
+									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
+				}
+			} else if (valueSplit.length == 4) {
+				String refVendor = valueSplit[0];
+				String refArchitecture = valueSplit[1];
+				String refVersion = valueSplit[2];
+				String actualValue = valueSplit[3];
+				this.myUploadTool = actualValue;
+				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+						refVersion);
 				if (this.myReferencedCorePlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, core)
@@ -269,7 +283,22 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsVariant = actualValue;
-				this.myReferencedBoardVariantPlatformPath = findReferencedPlatform(refVendor);
+				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				if (this.myReferencedBoardVariantPlatformPath == null) {
+					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
+									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
+									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
+				}
+			} else if (valueSplit.length == 4) {
+				String refVendor = valueSplit[0];
+				String refArchitecture = valueSplit[1];
+				String refVersion = valueSplit[2];
+				String actualValue = valueSplit[3];
+				this.myUploadTool = actualValue;
+				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+						refVersion);
 				if (this.myReferencedBoardVariantPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
@@ -287,7 +316,22 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = findReferencedPlatform(refVendor);
+				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				if (this.myReferencedUploadToolPlatformPath == null) {
+					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, upload)
+									.replaceAll(FILE_KEY, getReferencingBoardsFile().toString())
+									.replaceAll(BOARD_KEY, getBoardID())));
+					return;
+				}
+			} else if (valueSplit.length == 4) {
+				String refVendor = valueSplit[0];
+				String refArchitecture = valueSplit[1];
+				String refVersion = valueSplit[2];
+				String actualValue = valueSplit[3];
+				this.myUploadTool = actualValue;
+				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+						refVersion);
 				if (this.myReferencedUploadToolPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, upload)
@@ -324,8 +368,7 @@ public class BoardDescriptor {
 					"");
 			this.myWorkEclipseLocation = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					"");
-			String optinconcat= Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_MENU_SELECTION,
-					"");
+			String optinconcat = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_MENU_SELECTION, "");
 			this.myOptions = KeyValue.makeMap(optinconcat);
 		}
 		calculateDerivedFields();
@@ -595,8 +638,8 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
 					this.myWorkEclipseLocation);
 			Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myProgrammer);
-			String value=KeyValue.makeString(this.myOptions);
-			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MENU_SELECTION ,value);
+			String value = KeyValue.makeString(this.myOptions);
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MENU_SELECTION, value);
 
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
@@ -702,7 +745,7 @@ public class BoardDescriptor {
 
 	public String[] getUploadProtocols() {
 
-			return Programmers.getUploadProtocols(this);
+		return Programmers.getUploadProtocols(this);
 
 	}
 
@@ -767,24 +810,6 @@ public class BoardDescriptor {
 
 	public String getProjectName() {
 		return this.myProjectName;
-	}
-
-	/**
-	 * This method looks for a referenced platform. Ask the boards manager to find
-	 * the latest installed vendor/architecture platform file
-	 *
-	 * If this is not found there is still sme old code that probably can be
-	 * deleted.
-	 *
-	 * @param vendor
-	 * @param architecture
-	 * @return
-	 */
-	private IPath findReferencedPlatform(String vendor) {
-		// ask the boardsmanager for the platform file
-		IPath ret = Manager.getPlatformInstallPath(vendor, getArchitecture());
-		return ret;
-
 	}
 
 	/**
@@ -871,24 +896,25 @@ public class BoardDescriptor {
 
 	public String getUploadCommand(ICConfigurationDescription confdesc) {
 		String upLoadTool = getActualUploadTool(confdesc);
-		String action="UPLOAD";
+		String action = "UPLOAD";
 		if (usesProgrammer()) {
-			action="PROGRAM";
+			action = "PROGRAM";
 		}
-		return Common.getBuildEnvironmentVariable(confdesc, "A.TOOLS." + upLoadTool.toUpperCase() + "."+action+".PATTERN",
-				upLoadTool.toUpperCase());
+		return Common.getBuildEnvironmentVariable(confdesc,
+				"A.TOOLS." + upLoadTool.toUpperCase() + "." + action + ".PATTERN", upLoadTool.toUpperCase());
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
-		if(confdesc == null) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,"Confdesc null is not alowed here"));
+		if (confdesc == null) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Confdesc null is not alowed here"));
 			return this.myUploadTool;
 		}
-		if(usesProgrammer()) {
-			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL", "Program 	tool not properly configured");
+		if (usesProgrammer()) {
+			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL",
+					"Program 	tool not properly configured");
 		}
-		if (this.myUploadTool == null  ) {
-            return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
+		if (this.myUploadTool == null) {
+			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
 		return this.myUploadTool;
 	}

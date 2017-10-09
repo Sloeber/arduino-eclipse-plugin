@@ -222,7 +222,7 @@ public class Manager {
 	 *            already available locally
 	 */
 	static private void loadJson(String url, boolean forceDownload) {
-		System.out.println("loadJson "+url+" forced= "+forceDownload);
+		//System.out.println("loadJson "+url+" forced= "+forceDownload); //$NON-NLS-1$ //$NON-NLS-2$
 		File jsonFile = getLocalFileName(url);
 		if (jsonFile == null) {
 			return;
@@ -315,6 +315,22 @@ public class Manager {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, String refVersion) {
+		for (PackageIndex index : getPackageIndices()) {
+			for (Package pkg : index.getPackages()) {
+				if (refVendor.equalsIgnoreCase(pkg.getName())) {
+					for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
+						if (refArchitecture.equalsIgnoreCase(curPlatform.getArchitecture())
+								&& refVersion.equalsIgnoreCase(curPlatform.getVersion())) {
+							return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
+						}
 					}
 				}
 			}
@@ -853,5 +869,7 @@ public class Manager {
 			curPackage.onlyKeepLatestPlatforms();
 		}
 	}
+
+
 
 }
