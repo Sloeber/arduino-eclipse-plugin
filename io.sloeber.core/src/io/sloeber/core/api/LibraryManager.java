@@ -388,4 +388,17 @@ public class LibraryManager {
 		return myInstallLibraryHandler;
 	}
 
+	/**
+	 * Check wether a library is installed.
+	 * The check looks at the library installation place at the disk.
+	 *
+	 * @return true if at least one library is installed
+	 */
+	public static boolean libsAreInstalled() {
+		if (ConfigurationPreferences.getInstallationPathLibraries().toFile().exists()) {
+			return ConfigurationPreferences.getInstallationPathLibraries().toFile().list().length != 0;
+		}
+		return false;
+	}
+
 }

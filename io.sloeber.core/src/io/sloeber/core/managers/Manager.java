@@ -88,8 +88,11 @@ public class Manager {
 	public static void startup_Pluging(IProgressMonitor monitor) {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
-		if (allBoards.isEmpty()) { // If boards are installed do nothing
+		if(!LibraryManager.libsAreInstalled()) {
 			LibraryManager.InstallDefaultLibraries(monitor);
+		}
+		if (allBoards.isEmpty()) { // If boards are installed do nothing
+
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
 
 			// Download sample programs
@@ -196,17 +199,17 @@ public class Manager {
 		return packagePath.toFile();
 	}
 
-	/**
-	 * convert a local file name to a baeyens it alternative download name There
-	 * is no check wether the file exists only a conversion
-	 *
-	 * @param url
-	 *            url of the file we want a local
-	 * @return the file that represents the file on Baeyens.it
-	 */
-	private static String getBaeyensItAlternativeDownload(String localFileName) {
-		return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
-	}
+//	/**
+//	 * convert a local file name to a baeyens it alternative download name There
+//	 * is no check wether the file exists only a conversion
+//	 *
+//	 * @param url
+//	 *            url of the file we want a local
+//	 * @return the file that represents the file on Baeyens.it
+//	 */
+//	private static String getBaeyensItAlternativeDownload(String localFileName) {
+//		return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
+//	}
 
 	/**
 	 * This method takes a json boards file url and downloads it and parses it
@@ -219,22 +222,23 @@ public class Manager {
 	 *            already available locally
 	 */
 	static private void loadJson(String url, boolean forceDownload) {
+		//System.out.println("loadJson "+url+" forced= "+forceDownload); //$NON-NLS-1$ //$NON-NLS-2$
 		File jsonFile = getLocalFileName(url);
 		if (jsonFile == null) {
 			return;
 		}
 		if (!jsonFile.exists() || forceDownload) {
 			jsonFile.getParentFile().mkdirs();
-			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
-			try {
-				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
-			} catch (IOException e0) {
+//			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
+//			try {
+//				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
+//			} catch (IOException e0) {
 				try {
 					myCopy(new URL(url.trim()), jsonFile, false);
 				} catch (IOException e) {
 					Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
 				}
-			}
+//			}
 		}
 		if (jsonFile.exists()) {
 			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
@@ -311,6 +315,22 @@ public class Manager {
 					if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
 							&& (vendor.equalsIgnoreCase(pkg.getName()))) {
 						return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, String refVersion) {
+		for (PackageIndex index : getPackageIndices()) {
+			for (Package pkg : index.getPackages()) {
+				if (refVendor.equalsIgnoreCase(pkg.getName())) {
+					for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
+						if (refArchitecture.equalsIgnoreCase(curPlatform.getArchitecture())
+								&& refVersion.equalsIgnoreCase(curPlatform.getVersion())) {
+							return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
+						}
 					}
 				}
 			}
@@ -849,5 +869,7 @@ public class Manager {
 			curPackage.onlyKeepLatestPlatforms();
 		}
 	}
+
+
 
 }

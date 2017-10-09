@@ -50,9 +50,12 @@
 
     <module>../io.sloeber.ui.nl1</module>
     <module>../io.sloeber.ui</module>
+
+    <module>../io.sloeber.tests</module>
   </modules>
 
   <build>
+    <outputDirectory>bin</outputDirectory>
     <plugins>
       <!-- Enable tycho build extension -->
       <plugin>
@@ -353,7 +356,7 @@
         </repository>
       </repositories>
     </profile>
-	
+
     <profile>
       <id>mars</id>
       <properties>
@@ -437,6 +440,13 @@
       <layout>p2</layout>
       <url>http://download.eclipse.org/nebula/snapshot</url>
     </repository>
+
+       <repository>
+      <id>cdt</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/tools/cdt/releases/9.3</url>
+    </repository>
+
 
     <repository>
       <id>gnuarm</id>
