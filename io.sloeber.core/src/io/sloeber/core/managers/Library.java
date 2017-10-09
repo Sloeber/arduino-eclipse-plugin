@@ -21,6 +21,12 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
 
+/**
+ * This class represents an entry ina a library json file
+ *
+ * @author jan
+ *
+ */
 public class Library implements Comparable<Library> {
 
 	private String name;
