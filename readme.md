@@ -17,24 +17,24 @@ Below are instructions on how to download and compile the source code from the c
 You only need to do one.
 Also subscribe to the developers list by [clicking here](http://www.freelists.org/list/eclipse-arduino-dev) or by sending a mail with subject _Subscribe_ to [eclipse-arduino-dev@freelists.org](mailto:eclipse-arduino-dev@freelists.org?subject=Subscribe) (this is not for support questions)
 
-## There are lots of issues open that seem fixed.
-We only close issues when they are in part of a stable release. Therefore the open list contains all open items for the last stable release. Known open issue for the last nightly can be found with this query:
-is:issue is:open -label:"status: fixed in nightly"
+## There are lots of issues in the release that seem fixed.
+We close issues when they have been validated as part of the nightly. Therefore the open list no longer contains items fixed in the nightly. Known issue fixed in the last nightly can be found with this query:
+is:issue is:closed -label:"status: fixed in nightly"
 
 ## Quick Installation
 ### Prerequisites
 
 Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi).
 
-### Build from source
+### Build from the command line from source for your os and the default eclipse instance
 
 ```bash
 git clone https://github.com/jantje/arduino-eclipse-plugin
 cd arduino-eclipse-plugin
-mvn clean verify
+mvn clean -Dtest=RegressionTest verify
 ```
 
-### Running the IDE/Plugin
+### Running the build from source IDE/Plugin
 
 Sloeber can be started, e.g. on a 64-bit mac, with:
 
@@ -63,6 +63,7 @@ Mac OSX and Linux
 
 You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediately)
 
+* oxygen
 * neon (builds against the neon repositories (4.6))
 * luna (builds agains the luna repositories (4.4))
 * mars (builds agains the mars repositories (4.5))
@@ -73,12 +74,16 @@ You can control the maven build with the following profiles: (this list may not 
 * mac64
 
 ##### Examples
-    mvn verify -Plinux32 (builds for neon and linux 32 bits)
-    mvn verify -Pwin32,mars,linux32
+    mvn verify -Plinux32 -Dtest=RegressionTest (builds for neon and linux 32 bits)
+    mvn verify -Pwin32,mars,linux32 -Dtest=RegressionTest
 
 To build for neon and the platform you are running on:
 
-    mvn clean verify
+    mvn clean verify -Dtest=RegressionTest
+
+### what is this -Dtest=RegressionTest about
+     mvn builds and run tests automagically. However many junit tests in Sloeber are very extensive and will always have failures.
+     By adding -Dtest=RegressionTest anly the regression test is run and this test should be successfull.
 
 ### Setting up a repository
 
@@ -91,7 +96,7 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
  * Make changes
- * Run ```mvn clean verify``` to build
+ * Run ```mvn clean verify -Dtest=RegressionTest``` to build
  * Open the self-contained IDE and verify your fix
  * (Anything special about Travis CI & builds?)
 
