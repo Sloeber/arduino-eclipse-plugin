@@ -26,7 +26,6 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
-import io.sloeber.core.api.Other;
 
 @SuppressWarnings("nls")
 public class Shared {
@@ -34,18 +33,10 @@ public class Shared {
 	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
-	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
-	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
 	private static int mCounter = 0;
 
 	public static String getTeensyPlatform() {
-		switch (Other.getSystemHash()) {
-		case "1248215851":
-			return jantjesWindowsMachine;
-		case "still need to gett the key":
-			return jantjesVirtualLinuxMachine;
-		}
-		return new String();
+		return MySystem.getTeensyPlatform();
 	}
 
 	public static String getTeensyBoard_txt() {
