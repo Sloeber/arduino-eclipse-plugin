@@ -10,14 +10,16 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
 
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.ui.helpers.MyPreferences;
+import io.sloeber.ui.listeners.MyLibraryInstallHandler;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 
 /**
  * generated code
- * 
+ *
  * @author Jan Baeyens
- * 
+ *
  */
 public class Activator extends AbstractUIPlugin {
 
@@ -39,6 +41,7 @@ public class Activator extends AbstractUIPlugin {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				ProjectExplorerListener.registerListener();
+				LibraryManager.registerInstallLibraryHandler(new MyLibraryInstallHandler());;
 				return Status.OK_STATUS;
 			}
 
@@ -58,7 +61,7 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * Logs the status information
-	 * 
+	 *
 	 * @param status
 	 *            the status information to log
 	 */
@@ -83,7 +86,7 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
 	 * relative path
-	 * 
+	 *
 	 * @param path
 	 *            the path
 	 * @return the image descriptor

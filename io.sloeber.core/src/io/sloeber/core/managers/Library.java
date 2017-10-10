@@ -17,9 +17,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
 
+/**
+ * This class represents an entry ina a library json file
+ *
+ * @author jan
+ *
+ */
 public class Library implements Comparable<Library> {
 
 	private String name;
@@ -159,6 +166,26 @@ public class Library implements Comparable<Library> {
 		return getInstallPath().toFile().exists();
 	}
 
+	/**
+	 * checks if any version of this library is installed. Can popup a window if
+	 * there is something wrong with the folder structure
+	 *
+	 * @return false if any version is installed. true in case of error and in case
+	 *         no version is installed
+	 */
+	public boolean isAVersionInstalled() {
+		if (!getInstallPath().getParent().toFile().exists()) {
+			return false;
+		}
+		if (getInstallPath().getParent().toFile().isFile()) {
+			// something is wrong here
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					getInstallPath().getParent() + " is a file but it should be a directory.")); //$NON-NLS-1$
+			return false;
+		}
+		return getInstallPath().getParent().toFile().list().length > 0;
+	}
+
 	public IStatus install(IProgressMonitor monitor) {
 		monitor.setTaskName("Downloading and installing " + getName() + " library."); //$NON-NLS-1$ //$NON-NLS-2$
 		if (isInstalled()) {
@@ -215,9 +242,9 @@ public class Library implements Comparable<Library> {
 	}
 
 	/**
-	 * delete the library This will delete all installed versions of the
-	 * library. Normally only 1 version can be installed so deleting all
-	 * versions should be delete 1 version
+	 * delete the library This will delete all installed versions of the library.
+	 * Normally only 1 version can be installed so deleting all versions should be
+	 * delete 1 version
 	 *
 	 * @param monitor
 	 * @return Status.OK_STATUS if delete is successful otherwise IStatus.ERROR

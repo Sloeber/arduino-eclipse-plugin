@@ -263,7 +263,7 @@ public class BoardDescriptor {
 				String refArchitecture = valueSplit[1];
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
-				this.myUploadTool = actualValue;
+				this.myBoardsCore = actualValue;
 				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedCorePlatformPath == null) {
@@ -296,7 +296,7 @@ public class BoardDescriptor {
 				String refArchitecture = valueSplit[1];
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
-				this.myUploadTool = actualValue;
+				this.myBoardsVariant = actualValue;
 				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedBoardVariantPlatformPath == null) {

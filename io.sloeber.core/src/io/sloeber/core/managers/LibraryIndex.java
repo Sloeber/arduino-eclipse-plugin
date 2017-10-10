@@ -7,12 +7,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.tools.Version;
 
+/**
+ * This class represents a json file that references libraries
+ *
+ * @author jan
+ *
+ */
 public class LibraryIndex {
 	private String jsonFileName;
 	private List<Library> libraries;
@@ -93,6 +101,23 @@ public class LibraryIndex {
 		return this.latestLibs;
 	}
 
+	/**
+	 * get all the latest versions of alll libraries that can be installed but are
+	 * not yet installed To do so I find all latest libraries and I remove the once
+	 * that are installed.
+	 *
+	 * @return
+	 */
+	public Map<String, LibraryDescriptor> getLatestInstallableLibraries() {
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
+		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
+			if (!curLibrary.getValue().isAVersionInstalled()) {
+				ret.put(curLibrary.getKey(),new LibraryDescriptor( curLibrary.getValue()));
+			}
+		}
+		return ret;
+	}
+
 	public Collection<Library> getLibraries(String category) {
 		Set<String> categoryLibs = this.categories.get(category);
 		if (categoryLibs == null) {
@@ -120,5 +145,27 @@ public class LibraryIndex {
 
 	public String getName() {
 		return this.jsonFileName;
+	}
+
+	/**
+	 * get all the latest versions of alll the libraries provided that can be
+	 * installed but are not yet installed To do so I find all latest libraries and
+	 * I remove the once that are installed.
+	 *
+	 * @return
+	 */
+	public Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libNames) {
+		Map<String, LibraryDescriptor> ret = new HashMap<>();
+		if (libNames.isEmpty()) {
+			return ret;
+		}
+		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
+			if (libNames.contains(curLibrary.getKey())) {
+				if (!curLibrary.getValue().isAVersionInstalled()) {
+					ret.put(curLibrary.getKey(), new LibraryDescriptor(curLibrary.getValue()));
+				}
+			}
+		}
+		return ret;
 	}
 }
