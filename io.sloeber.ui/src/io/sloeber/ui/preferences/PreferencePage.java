@@ -40,6 +40,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 	private static final String FALSE = "FALSE"; //$NON-NLS-1$
 	private static final String KEY_AUTO_IMPORT_LIBRARIES = "Gui entry for import libraries"; //$NON-NLS-1$
+	private static final String KEY_AUTO_INSTALL_LIBRARIES = "Gui entry for install libraries"; //$NON-NLS-1$
 	private static final String KEY_PRAGMA_ONCE_HEADERS = "Gui entry for add pragma once"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_HARDWARE_PATHS = "Gui entry for private hardware paths"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_LIBRARY_PATHS = "Gui entry for private library paths"; //$NON-NLS-1$
@@ -50,6 +51,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private ComboFieldEditor buildBeforeUploadOptionEditor;
 	private BooleanFieldEditor openSerialMonitorOpensSerialsOptionEditor;
 	private BooleanFieldEditor automaticallyImportLibrariesOptionEditor;
+	private BooleanFieldEditor automaticallyInstallLibrariesOptionEditor;
 	private BooleanFieldEditor useArduinoToolchainSelectionEditor;
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
@@ -63,6 +65,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		preferences.setDefault(MyPreferences.KEY_OPEN_SERIAL_WITH_MONITOR,
 				MyPreferences.DEFAULT_OPEN_SERIAL_WITH_MONITOR);
 		preferences.setDefault(KEY_AUTO_IMPORT_LIBRARIES, true);
+		preferences.setDefault(KEY_AUTO_INSTALL_LIBRARIES, true);
 		preferences.setDefault(KEY_PRAGMA_ONCE_HEADERS, true);
 		preferences.setDefault(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath());
 		preferences.setDefault(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
@@ -167,6 +170,9 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.automaticallyImportLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_IMPORT_LIBRARIES,
 				Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.automaticallyImportLibrariesOptionEditor);
+		this.automaticallyInstallLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_INSTALL_LIBRARIES,
+				Messages.ui_auto_install_libraries, BooleanFieldEditor.DEFAULT, parent);
+		addField(this.automaticallyInstallLibrariesOptionEditor);
 
 		this.pragmaOnceHeaderOptionEditor = new BooleanFieldEditor(KEY_PRAGMA_ONCE_HEADERS, Messages.ui_pragma_once_headers,
 				BooleanFieldEditor.DEFAULT, parent);
@@ -211,6 +217,13 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = ncol;
 		line.setLayoutData(gridData);
+	}
+
+	public static boolean getAutomaticallyInstallLibrariesOption() {
+		ScopedPreferenceStore preferences = new ScopedPreferenceStore(InstanceScope.INSTANCE,
+				MyPreferences.NODE_ARDUINO);
+		preferences.setDefault(KEY_AUTO_INSTALL_LIBRARIES, true);
+		return preferences.getBoolean(KEY_AUTO_INSTALL_LIBRARIES);
 	}
 
 }
