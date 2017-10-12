@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -193,6 +194,13 @@ public class Manager {
 		} catch (MalformedURLException e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
 			return null;
+		}
+		if("file".equals(packageUrl.getProtocol())) { //$NON-NLS-1$
+			String tst=packageUrl.getFile();
+			File file=new File(tst);
+			String localFileName = file.getName();
+			Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+			return packagePath.toFile();
 		}
 		String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
 		Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
@@ -828,6 +836,10 @@ public class Manager {
 	 */
 	@SuppressWarnings("nls")
 	private static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
+		if("file".equals(url.getProtocol())) {
+			FileUtils.copyFile(new File(url.getFile()), localFile);
+			return;
+		}
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(5000);
