@@ -19,8 +19,8 @@ Import-Package: io.sloeber.core.common,
 Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
- lib/jmdns-3.4.1.jar,
- lib/jssc-2.8.0.jar
+ lib/jssc-2.8.0.jar,
+ lib/jmdns-3.5.3.jar
 Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.filesystem,
  org.eclipse.cdt.core,

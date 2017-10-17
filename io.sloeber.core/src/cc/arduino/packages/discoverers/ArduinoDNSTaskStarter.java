@@ -1,5 +1,6 @@
 package cc.arduino.packages.discoverers;
 
+import java.net.InetAddress;
 import java.util.Timer;
 
 import javax.jmdns.impl.DNSIncoming;
@@ -87,10 +88,10 @@ public class ArduinoDNSTaskStarter implements DNSTaskStarter.Factory.ClassDelega
 		delegate.startServiceResolver(type);
 	    }
 
-	    @Override
-	    public void startResponder(DNSIncoming in, int port) {
-		delegate.startResponder(in, port);
-	    }
+		@Override
+		public void startResponder(DNSIncoming pIncoming, InetAddress pAddress, int pPort) {
+			delegate.startResponder(pIncoming,pAddress, pPort);
+		}
 	};
     }
 }

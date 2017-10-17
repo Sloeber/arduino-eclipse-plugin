@@ -3,10 +3,6 @@
 	<name>io.sloeber.core</name>
 	<comment></comment>
 	<projects>
-		<project>io.sloeber.core.common</project>
-		<project>io.sloeber.avreclipse.core</project>
-		<project>io.sloeber.avreclipse.core.managedbuildsystem</project>
-		<project>io.sloeber.avreclipse.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
