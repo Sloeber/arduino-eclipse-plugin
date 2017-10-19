@@ -29,7 +29,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 
-import cc.arduino.packages.discoverers.NetworkDiscovery;
+import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
@@ -218,7 +218,7 @@ public class Activator extends AbstractUIPlugin {
 				makeOurOwnCustomBoards_txt();
 				Manager.startup_Pluging(monitor);
 				monitor.setTaskName("Done!");
-				NetworkDiscovery.start();
+				SloeberNetworkDiscovery.start();
 				registerListeners();
 				return Status.OK_STATUS;
 			}

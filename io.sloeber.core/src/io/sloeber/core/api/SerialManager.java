@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 
-import cc.arduino.packages.discoverers.NetworkDiscovery;
+import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 
 public class SerialManager {
 	static ISerialUser otherSerialUser = null; // If someone else uses the
@@ -87,10 +87,10 @@ public class SerialManager {
 	}
 
 	public static String[] listNetworkPorts() {
-		return NetworkDiscovery.getList();
+		return SloeberNetworkDiscovery.getList();
 	}
 
 	public static void stopNetworkScanning() {
-		NetworkDiscovery.stop();
+		SloeberNetworkDiscovery.stop();
 	}
 }

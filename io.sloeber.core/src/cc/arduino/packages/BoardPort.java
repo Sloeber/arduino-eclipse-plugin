@@ -29,84 +29,90 @@
 
 package cc.arduino.packages;
 
-@SuppressWarnings({ "unqualified-field-access", "nls" })
+
+
 public class BoardPort {
 
-	private String address;
-	private String protocol;
-	private String boardName;
-	private String vid;
-	private String pid;
-	private String iserial;
-	private String label;
-	private boolean online;
+  private String address;
+  private String protocol;
+  private String boardName;
+  private String vid;
+  private String pid;
+  private String iserial;
+  private String label;
+  private final PreferencesMap prefs;
+  private boolean online;
 
-	public BoardPort() {
-	}
+  public BoardPort() {
+    this.prefs = new PreferencesMap();
+  }
 
-	public String getAddress() {
-		return address;
-	}
+  public String getAddress() {
+    return this.address;
+  }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+  public void setAddress(String address) {
+    this.address = address;
+  }
 
-	public String getProtocol() {
-		return protocol;
-	}
+  public String getProtocol() {
+    return this.protocol;
+  }
 
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
+  public void setProtocol(String protocol) {
+    this.protocol = protocol;
+  }
 
-	public String getBoardName() {
-		return boardName;
-	}
+  public String getBoardName() {
+    return this.boardName;
+  }
 
-	public void setBoardName(String boardName) {
-		this.boardName = boardName;
-	}
+  public void setBoardName(String boardName) {
+    this.boardName = boardName;
+  }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+  public PreferencesMap getPrefs() {
+    return this.prefs;
+  }
 
-	public String getLabel() {
-		return label;
-	}
+  public void setLabel(String label) {
+    this.label = label;
+  }
 
-	public void setOnlineStatus(boolean online) {
-		this.online = online;
-	}
+  public String getLabel() {
+    return this.label;
+  }
 
-	public boolean isOnline() {
-		return online;
-	}
+  public void setOnlineStatus(boolean online) {
+    this.online = online;
+  }
 
-	public void setVIDPID(String vid, String pid) {
-		this.vid = vid;
-		this.pid = pid;
-	}
+  public boolean isOnline() {
+    return this.online;
+  }
 
-	public String getVID() {
-		return vid;
-	}
+  public void setVIDPID(String vid, String pid) {
+    this.vid = vid;
+    this.pid = pid;
+  }
 
-	public String getPID() {
-		return pid;
-	}
+  public String getVID() {
+    return this.vid;
+  }
 
-	public void setISerial(String iserial) {
-		this.iserial = iserial;
-	}
+  public String getPID() {
+    return this.pid;
+  }
 
-	public String getISerial() {
-		return iserial;
-	}
+  public void setISerial(String iserial) {
+    this.iserial = iserial;
+  }
+  public String getISerial() {
+    return this.iserial;
+  }
 
-	@Override
-	public String toString() {
-		return this.address + "_" + this.vid + "_" + this.pid;
-	}
+  @Override
+  public String toString() {
+    return this.address+"_"+this.vid+"_"+this.pid;  //$NON-NLS-1$//$NON-NLS-2$
+  }
 }
