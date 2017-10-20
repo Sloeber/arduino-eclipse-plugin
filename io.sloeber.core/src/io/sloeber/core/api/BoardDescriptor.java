@@ -905,8 +905,13 @@ public class BoardDescriptor {
 		if (usesProgrammer()) {
 			action = "PROGRAM";
 		}
-		return Common.getBuildEnvironmentVariable(confdesc,
-				"A.TOOLS." + upLoadTool.toUpperCase() + "." + action + ".PATTERN", upLoadTool.toUpperCase());
+		String ret = Common.getBuildEnvironmentVariable(confdesc,
+				"A.TOOLS." + upLoadTool.toUpperCase() + "." + action + ".PATTERN", "");
+		if (ret.isEmpty()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "tools." + upLoadTool + "."
+					+ action.toLowerCase() + ".pattern : not found in the platform.txt file"));
+		}
+		return ret;
 	}
 
 	public String getActualUploadTool(ICConfigurationDescription confdesc) {
@@ -916,7 +921,7 @@ public class BoardDescriptor {
 		}
 		if (usesProgrammer()) {
 			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL",
-					"Program 	tool not properly configured");
+					"Program tool not properly configured");
 		}
 		if (this.myUploadTool == null) {
 			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
