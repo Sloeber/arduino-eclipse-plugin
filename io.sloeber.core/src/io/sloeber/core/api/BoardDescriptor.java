@@ -297,8 +297,13 @@ public class BoardDescriptor {
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
 				this.myBoardsVariant = actualValue;
+				if("*".equals(refVersion)) {
+					this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture);
+				}
+				else {
 				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
+				}
 				if (this.myReferencedBoardVariantPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
@@ -926,6 +931,15 @@ public class BoardDescriptor {
 	public IPath getreferencedHardwarePath() {
 		IPath platformPath = getReferencedCorePlatformPath();
 		return platformPath.removeLastSegments(1);
+	}
+
+	/*
+	 * get the latest installed arduino platform with the same architecture.
+	 * This is the platform to use the programmers.txt if no other programmers.txt
+	 * are found.
+	 */
+	public IPath getArduinoPlatformPath() {
+		return Manager.getPlatformInstallPath("arduino", getArchitecture());
 	}
 
 }

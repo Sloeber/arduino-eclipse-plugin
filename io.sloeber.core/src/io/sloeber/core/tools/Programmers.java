@@ -21,7 +21,8 @@ public class Programmers extends TxtFile {
 		super(programmersFile);
 	}
 
-	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath) {
+	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath,
+			IPath arduinoPlatformPath) {
 		HashSet<File> BoardsFiles = new HashSet<>();
 		BoardsFiles.add(referencingPlatformPath.append(programmersFileName1).toFile());
 		BoardsFiles.add(referencingPlatformPath.append(programmersFileName2).toFile());
@@ -35,7 +36,11 @@ public class Programmers extends TxtFile {
 				i.remove();
 			}
 		}
-
+		if ((BoardsFiles.size() == 0) && (referencedPlatformPath == null) && (arduinoPlatformPath != null)) {
+			if (arduinoPlatformPath.append(programmersFileName1).toFile().exists()) {
+				BoardsFiles.add(arduinoPlatformPath.append(programmersFileName1).toFile());
+			}
+		}
 		Programmers ret[] = new Programmers[BoardsFiles.size()];
 		int i = 0;
 		for (File file : BoardsFiles) {
@@ -49,8 +54,7 @@ public class Programmers extends TxtFile {
 	public static String[] getUploadProtocols(BoardDescriptor boardsDescriptor) {
 		String[] ret = new String[1];
 		ret[0] = Defaults.getDefaultUploadProtocol();
-		Programmers allProgrammers[] = fromBoards(boardsDescriptor.getreferencingPlatformPath(),
-				boardsDescriptor.getReferencedUploadPlatformPath());
+		Programmers allProgrammers[] = fromBoards(boardsDescriptor);
 		for (Programmers curprogrammer : allProgrammers) {
 			ret = curprogrammer.getAllNames(ret);
 		}
@@ -60,7 +64,7 @@ public class Programmers extends TxtFile {
 
 	public static Programmers[] fromBoards(BoardDescriptor boardsDescriptor) {
 		return fromBoards(boardsDescriptor.getreferencingPlatformPath(),
-				boardsDescriptor.getReferencedUploadPlatformPath());
+				boardsDescriptor.getReferencedUploadPlatformPath(), boardsDescriptor.getArduinoPlatformPath());
 	}
 
 }
