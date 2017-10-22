@@ -44,7 +44,7 @@ public class ConfigurationPreferences {
 	private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
-	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json\nhttps://raw.githubusercontent.com/jantje/hardware/1.0.0/package_jantje_index.json" //$NON-NLS-1$
+	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json\nhttps://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json" //$NON-NLS-1$
 			// + System.lineSeparator() +
 			// "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
 			// //$NON-NLS-1$
