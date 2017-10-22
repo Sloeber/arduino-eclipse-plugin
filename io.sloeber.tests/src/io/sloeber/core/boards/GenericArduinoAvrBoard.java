@@ -27,7 +27,7 @@ public class GenericArduinoAvrBoard extends IBoard {
 		setSupportKeyboard(supportKeyboardList().contains(boardName));
 	}
 
-	private static List<String> supportSerial1List() {
+	 static List<String> supportSerial1List() {
 		if (mySupportSerial1List == null) {
 			mySupportSerial1List = new LinkedList<>();
 			mySupportSerial1List.add("circuitplay32u4cat");
@@ -48,7 +48,7 @@ public class GenericArduinoAvrBoard extends IBoard {
 		return mySupportSerial1List;
 	}
 
-	private static List<String> doesNotSupportSerialList() {
+	static List<String> doesNotSupportSerialList() {
 		if (myDoesNotSupportSerialList == null) {
 			myDoesNotSupportSerialList = new LinkedList<>();
 			myDoesNotSupportSerialList.add("gemma");
@@ -56,7 +56,7 @@ public class GenericArduinoAvrBoard extends IBoard {
 		return myDoesNotSupportSerialList;
 	}
 
-	private static List<String> supportKeyboardList() {
+	 static List<String> supportKeyboardList() {
 		if (mySupportKeyboardList == null) {
 			mySupportKeyboardList = new LinkedList<>();
 			mySupportKeyboardList.add("circuitplay32u4cat");
