@@ -79,6 +79,7 @@ public class BoardDescriptor {
 	public static final String ENV_KEY_JANTJE_BOARD_ID = Const.ENV_KEY_JANTJE_START + "BOARD_ID";
 	public static final String ENV_KEY_SERIAL_PORT = Const.ERASE_START + "SERIAL.PORT";
 	public static final String ENV_KEY_SERIAL_PORT_FILE = Const.ERASE_START + "SERIAL.PORT.FILE";
+	private static final String ENV_KEY_BUILD_VARIANT_PATH = Const.ERASE_START + "BUILD.VARIANT.PATH";
 
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
@@ -86,6 +87,7 @@ public class BoardDescriptor {
 	private static final String LIBRARY_PATH_SUFFIX = "libraries";
 	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";
 	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+
 
 	/*
 	 * This is the basic info contained in the descriptor
@@ -649,6 +651,9 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
 					this.myUploadPort.replace("/dev/", new String()));
+			
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,getActualVariantPath().toOSString());
+			
 		}
 
 		// Also save last used values
