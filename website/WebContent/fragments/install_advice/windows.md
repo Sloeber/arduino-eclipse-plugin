@@ -1,5 +1,8 @@
 Windows
 ===
+**Support status**
+Jantjes development machine is a windows machine.
+
 **unzip**
 The down-loaded file for the product is a tar file. On windows you can uncompress and unzip it with 7Zip. You need to use 7zip two times.
 

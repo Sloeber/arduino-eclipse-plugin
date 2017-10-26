@@ -1,7 +1,11 @@
 All os'es
 ==
+**Do not use spaces in your paths.**
+Not in your install path.
+Not in your workspace path.
+This counts for all os's and is a make limitation (make is the tool cdt uses to build your project).
 
-**Wierdly enough all info is for older versions**
+**Wierdly enough all other info is for older versions of Sloeber**
 
 Arduino IDE **1.5.2** beta and **1.5.4** beta are **not supported** due to a change in the library system.
 
