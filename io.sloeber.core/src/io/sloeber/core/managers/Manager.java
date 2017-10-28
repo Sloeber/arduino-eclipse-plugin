@@ -254,6 +254,9 @@ public class Manager {
 			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
 				LibraryManager.loadJson(jsonFile);
 			}
+			else {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), "json files should start with \"package_\" or \"library_\" " + url+ " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 	}
 
@@ -803,10 +806,10 @@ public class Manager {
 		String curJsons[] = getJsonURLList();
 		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
 		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
-		currentSelectedJsons.removeAll(origJsons);
+		origJsons.removeAll(currentSelectedJsons);
 		// remove the files from disk which were in the old lst but not in the
 		// new one
-		for (String curJson : currentSelectedJsons) {
+		for (String curJson : origJsons) {
 			File localFile = getLocalFileName(curJson);
 			if (localFile.exists()) {
 				localFile.delete();
