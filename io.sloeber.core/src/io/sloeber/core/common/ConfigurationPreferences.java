@@ -44,11 +44,10 @@ public class ConfigurationPreferences {
 	private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
-	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json\nhttps://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\nhttps://raw.githubusercontent.com/jantje/ArduinoLibraries/master/jantje_library_index.json" //$NON-NLS-1$
-			// + System.lineSeparator() +
-			// "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
-			// //$NON-NLS-1$
-			+ System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
+	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
+			+ "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
+			+ "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
+			+ "http://arduino.esp8266.com/stable/package_esp8266com_index.json\n" + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL; //$NON-NLS-1$
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
@@ -220,8 +219,8 @@ public class ConfigurationPreferences {
 	private static String systemHash = null;
 
 	/**
-	 * Make a unique hashKey based on system parameters so we can identify users
-	 * To make the key the mac addresses of the network cards are used
+	 * Make a unique hashKey based on system parameters so we can identify users To
+	 * make the key the mac addresses of the network cards are used
 	 *
 	 * @return a unique key identifying the system
 	 */
