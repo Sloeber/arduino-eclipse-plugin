@@ -651,9 +651,14 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
 					this.myUploadPort.replace("/dev/", new String()));
-			
-			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,getActualVariantPath().toOSString());
-			
+			IPath variantPath=getActualVariantPath();
+			if (variantPath != null) {
+				Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,
+						variantPath.toOSString());
+			} else {// teensy does not use variants
+				Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, new String());
+			}
+
 		}
 
 		// Also save last used values
