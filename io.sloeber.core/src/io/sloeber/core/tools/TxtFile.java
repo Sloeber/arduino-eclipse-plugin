@@ -429,6 +429,9 @@ public class TxtFile {
 
 		IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
 		String architecture = platformFile.removeLastSegments(1).lastSegment();
+		if (architecture==null) {//for error conditions
+			architecture="avr"; //$NON-NLS-1$
+		}
 		if (architecture.contains(Const.DOT)) { // This is a version number so
 			// package
 			architecture = platformFile.removeLastSegments(2).lastSegment();
