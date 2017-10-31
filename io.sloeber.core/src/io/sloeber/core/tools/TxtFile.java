@@ -112,8 +112,8 @@ public class TxtFile {
 	}
 
 	/**
-	 * Get all the acceptable values for a option for a board The outcome of
-	 * this method can be used to fill a
+	 * Get all the acceptable values for a option for a board The outcome of this
+	 * method can be used to fill a
 	 *
 	 * @param menu
 	 *            the id of a menu not the name
@@ -143,8 +143,8 @@ public class TxtFile {
 	}
 
 	/**
-	 * Get all the acceptable values for a option for a board The outcome of
-	 * this method can be used to fill a
+	 * Get all the acceptable values for a option for a board The outcome of this
+	 * method can be used to fill a
 	 *
 	 * @param menu
 	 *            the id of a menu not the name
@@ -185,13 +185,13 @@ public class TxtFile {
 	}
 
 	/**
-	 * getAllNames returns all the "names" that are in the currently loaded
-	 * *.txt file. The toaddNames are added to the end result toaddNames should
-	 * be a string array and can not be null
+	 * getAllNames returns all the "names" that are in the currently loaded *.txt
+	 * file. The toaddNames are added to the end result toaddNames should be a
+	 * string array and can not be null
 	 *
-	 * For a boards.txt file that means all the board names. For a
-	 * programmers.txt file that means all the programmers For platform.txt the
-	 * outcome is not defined
+	 * For a boards.txt file that means all the board names. For a programmers.txt
+	 * file that means all the programmers For platform.txt the outcome is not
+	 * defined
 	 *
 	 * @return an empty list if no board file is loaded. In all other cases it
 	 *         returns the list of boards found in the file
@@ -270,8 +270,8 @@ public class TxtFile {
 
 	/**
 	 * Given a nice name look for the ID The assumption is that the txt file
-	 * contains a line like ID.name=[nice name] Given this this method returns
-	 * ID when given [nice name]
+	 * contains a line like ID.name=[nice name] Given this this method returns ID
+	 * when given [nice name]
 	 */
 	public String getBoardIDFromBoardName(String name) {
 		if ((name == null) || name.isEmpty()) {
@@ -318,8 +318,8 @@ public class TxtFile {
 	}
 
 	/**
-	 * Loads an input stream into an array of strings representing each line of
-	 * the input stream
+	 * Loads an input stream into an array of strings representing each line of the
+	 * input stream
 	 *
 	 * @param input
 	 *            the input stream to load
@@ -408,29 +408,34 @@ public class TxtFile {
 	}
 
 	/*
-	 * Returns the package name based on the boardsfile name Caters for the
-	 * packages (with version number and for the old way
+	 * Returns the package name based on the boardsfile name Caters for the packages
+	 * (with version number and for the old way
+	 * if the boards file does not exists returns arduino
 	 */
 	public String getPackage() {
-		IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
-		String architecture = platformFile.removeLastSegments(1).lastSegment();
-		if (architecture.contains(Const.DOT)) { // This is a version number so
-			// package
-			return platformFile.removeLastSegments(4).lastSegment();
+		if (this.mLastLoadedTxtFile.exists()) {
+			IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
+			String architecture = platformFile.removeLastSegments(1).lastSegment();
+			if (architecture.contains(Const.DOT)) { // This is a version number so
+				// package
+				return platformFile.removeLastSegments(4).lastSegment();
+			}
+			return platformFile.removeLastSegments(2).lastSegment();
 		}
-		return platformFile.removeLastSegments(2).lastSegment();
+		return "arduino"; //$NON-NLS-1$
 	}
 
 	/*
 	 * Returns the architecture based on the platform file name Caters for the
 	 * packages (with version number and for the old way
+	 * if the boards file does not exists returns avr
 	 */
 	public String getArchitecture() {
 
 		IPath platformFile = new Path(this.mLastLoadedTxtFile.toString().trim());
 		String architecture = platformFile.removeLastSegments(1).lastSegment();
-		if (architecture==null) {//for error conditions
-			architecture="avr"; //$NON-NLS-1$
+		if (architecture == null) {// for error conditions
+			architecture = "avr"; //$NON-NLS-1$
 		}
 		if (architecture.contains(Const.DOT)) { // This is a version number so
 			// package
