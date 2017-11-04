@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.common.Common;
@@ -133,9 +134,19 @@ public class Activator extends AbstractUIPlugin {
 			errorString += addString + "The Workspacepath can not contain spaces " + workSpacePath;
 			addString = "\nand\n";
 		}
-
+		Preferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core").node("indexer");
+		String indexAllFiles= myScope.get("indexAllFiles", new String());
+		String indexUnusedHeaders= myScope.get("indexUnusedHeadersWithDefaultLang", new String());
+		if(!"false".equalsIgnoreCase(indexAllFiles)) {
+			errorString += addString + "The indexer option \"index source files not included in the build\" must be off in windows->preferences->C/C++->indexer " ;
+			addString = "\nand\n";
+		}
+		if(!"false".equalsIgnoreCase(indexUnusedHeaders)) {
+			errorString += addString + "The indexer option \"index unused headers\" must be off in windows->preferences->C/C++->indexer " ;
+			addString = "\nand\n";
+		}
 		if (!errorString.isEmpty()) {
-			errorString += "\nSloeber might still function but if you get strange results you know where to look.\n";
+			errorString += "\n\nSloeber might still function but if you get strange results you know where to look.\n";
 			errorString += "Do not create an issue if you see this!!!";
 			Common.log(new Status(IStatus.ERROR, PLUGIN_ID, errorString));
 		}
