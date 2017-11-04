@@ -162,15 +162,15 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		CompileOptions compileOptions = new CompileOptions(confDesc);
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
 			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O);
-			extraOptions = compileOptions.getMyAditional_C_CompileOptions();
+			extraOptions = compileOptions.get_C_CompileOptions();
 		} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
 			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O);
-			extraOptions = compileOptions.getMyAditional_CPP_CompileOptions();
+			extraOptions = compileOptions.get_CPP_CompileOptions();
 		} else {
 			ManagedBuilderCorePlugin.error(
 					"Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId());
 		}
-		extraOptions = extraOptions + " " + compileOptions.getMyAditional_C_andCPP_CompileOptions();
+		extraOptions = extraOptions + " " + compileOptions.get_C_andCPP_CompileOptions()+" "+compileOptions.get_All_CompileOptions();
 		try {
 			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, true).getValue();
 			compilerCommand = compilerCommand

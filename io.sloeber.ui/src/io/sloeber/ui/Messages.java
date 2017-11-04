@@ -5,6 +5,15 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "io.sloeber.ui.messages"; //$NON-NLS-1$
 
+	public static String ui_Apend_assembly;
+	public static String ui_append_assembly_text;
+	public static String ui_Apend_archive;
+	public static String ui_append_archive_text;
+	public static String ui_Apend_link;
+	public static String ui_append_link_text;
+	public static String ui_Apend_all;
+	public static String ui_append_all_text;
+
 	public static String platformSelectionTip;
 
 	public static String error_adding_arduino_code;

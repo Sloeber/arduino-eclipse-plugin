@@ -180,9 +180,9 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
 			CompileOptions compileOptions = new CompileOptions(null);
-			compileOptions.setMyAditional_C_andCPP_CompileOptions("-DTEST_C_CPP");
-			compileOptions.setMyAditional_C_CompileOptions("-DTEST_C");
-			compileOptions.setMyAditional_CPP_CompileOptions("-DTEST_CPP");
+			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
+			compileOptions.set_C_CompileOptions("-DTEST_C");
+			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
 			theTestProject = unoBoardid.createProject(projectName, null,
 					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
 			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);

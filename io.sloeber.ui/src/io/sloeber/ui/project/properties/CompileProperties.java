@@ -5,15 +5,11 @@ import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.CompileOptions;
@@ -21,12 +17,28 @@ import io.sloeber.ui.Messages;
 
 public class CompileProperties extends AbstractCPropertyTab {
 
-	private static final String EMPTY_STRING = new String();
-	protected Button myWarningLevel;
-	protected Button mySizeCommand;
-	protected Text myCAndCppCommand;
-	protected Text myCppCommand;
-	protected Text myCCommand;
+	@Override
+	protected void performOK() {
+
+		updateStorageData();
+		if (getConfdesc() != null) {
+			CompileProperties.this.myCompileOptions.save(getConfdesc());
+		}
+		super.performOK();
+	}
+
+	private Button myWarningLevel;
+	private Button mySizeCommand;
+	private Text myCAndCppCommand;
+	private Text myCppCommand;
+	private Text myCCommand;
+	private Text myAllCommand;
+	private Text myArchiveCommand;
+	private Text myAssemblyCommand;
+	private Text myLinkCommand;
+
+
+
 	protected CompileOptions myCompileOptions;
 
 	private static void createLine(Composite parent, int ncol) {
@@ -34,6 +46,21 @@ public class CompileProperties extends AbstractCPropertyTab {
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = ncol;
 		line.setLayoutData(gridData);
+	}
+
+	private Text makeOptionField( String labelText,String toolTipText) {
+		// edit field add to C & C++ command line
+		Label label = new Label(this.usercomp, SWT.LEFT);
+		label.setText(labelText);
+		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
+		Text textField = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
+		textField.setToolTipText(toolTipText);
+		textField.setEnabled(true);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 1;
+		gridData.verticalSpan = 2;
+		textField.setLayoutData(gridData);
+		return textField;
 	}
 
 	@Override
@@ -50,123 +77,61 @@ public class CompileProperties extends AbstractCPropertyTab {
 		this.myWarningLevel.setText(Messages.ui_show_all_warnings);
 		this.myWarningLevel.setEnabled(true);
 		this.myWarningLevel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-		this.myWarningLevel.addListener(UPDATE, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				CompileProperties.this.myCompileOptions
-						.setMyWarningLevel(CompileProperties.this.myWarningLevel.getSelection());
-				if (getConfdesc() != null) {
-					CompileProperties.this.myCompileOptions.save(getConfdesc());
-				}
-			}
-		});
+
 
 		// checkbox show alternative size
 		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
 		this.mySizeCommand.setText(Messages.ui_Alternative_size);
 		this.mySizeCommand.setEnabled(true);
 		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-		this.mySizeCommand.addListener(UPDATE, new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				CompileProperties.this.myCompileOptions
-						.setMyAlternativeSizeCommand(CompileProperties.this.mySizeCommand.getSelection());
-				if (getConfdesc() != null) {
-					CompileProperties.this.myCompileOptions.save(getConfdesc());
-				}
-			}
-
-		});
+;
 
 		createLine(this.usercomp, 2);
-		// edit field add to C & C++ command line
-		Label label = new Label(this.usercomp, SWT.LEFT);
-		label.setText(Messages.ui_Apend_c_cpp);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-		this.myCAndCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
-		this.myCAndCppCommand.setText(EMPTY_STRING);
-		this.myCAndCppCommand.setToolTipText(Messages.ui_append_c_cpp_text);
-		this.myCAndCppCommand.setEnabled(true);
-
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
-		gridData.verticalSpan = 2;
-		this.myCAndCppCommand.setLayoutData(gridData);
-		this.myCAndCppCommand.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				CompileProperties.this.myCompileOptions
-						.setMyAditional_C_andCPP_CompileOptions(CompileProperties.this.myCAndCppCommand.getText());
-				if (getConfdesc() != null) {
-					CompileProperties.this.myCompileOptions.save(getConfdesc());
-				}
-			}
-		});
-
-		// edit field add to C++ command line
-		label = new Label(this.usercomp, SWT.LEFT);
-		label.setText(Messages.ui_append_cpp);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-		this.myCppCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
-		this.myCppCommand.setText(EMPTY_STRING);
-		this.myCppCommand.setToolTipText(Messages.ui_append_cpp_text);
-		this.myCppCommand.setEnabled(true);
-		this.myCppCommand.setLayoutData(gridData);
-		this.myCppCommand.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				CompileProperties.this.myCompileOptions
-						.setMyAditional_CPP_CompileOptions(CompileProperties.this.myCppCommand.getText());
-				if (getConfdesc() != null) {
-					CompileProperties.this.myCompileOptions.save(getConfdesc());
-				}
-			}
-		});
-
-		// edit field add to C command line
-		label = new Label(this.usercomp, SWT.LEFT);
-		label.setText(Messages.ui_append_c);
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-		this.myCCommand = new Text(this.usercomp, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
-		this.myCCommand.setText(EMPTY_STRING);
-		this.myCCommand.setToolTipText(Messages.ui_append_c_text);
-		this.myCCommand.setEnabled(true);
-		this.myCCommand.setLayoutData(gridData);
-		this.myCCommand.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				CompileProperties.this.myCompileOptions
-						.setMyAditional_C_CompileOptions(CompileProperties.this.myCCommand.getText());
-				if (getConfdesc() != null) {
-					CompileProperties.this.myCompileOptions.save(getConfdesc());
-				}
-			}
-		});
+		this.myCAndCppCommand = makeOptionField(Messages.ui_Apend_c_cpp, Messages.ui_append_c_cpp_text);
+		this.myCppCommand = makeOptionField(Messages.ui_append_cpp, Messages.ui_append_cpp_text);
+		this.myCCommand = makeOptionField(Messages.ui_append_c, Messages.ui_append_c_text);
+		this.myAssemblyCommand = makeOptionField(Messages.ui_Apend_assembly, Messages.ui_append_assembly_text);
+		this.myArchiveCommand = makeOptionField(Messages.ui_Apend_archive, Messages.ui_append_archive_text);
+		this.myLinkCommand = makeOptionField(Messages.ui_Apend_link, Messages.ui_append_link_text);
+		this.myAllCommand = makeOptionField(Messages.ui_Apend_all, Messages.ui_append_all_text);
 
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
-		setValues();
+		updateScreenData();
 		setVisible(true);
 	}
 
-	private void setValues() {
+	private void updateScreenData() {
 
-		this.myWarningLevel.setSelection(this.myCompileOptions.isMyWarningLevel());
+		this.myWarningLevel.setSelection(this.myCompileOptions.isWarningLevel());
+		this.mySizeCommand.setSelection(this.myCompileOptions.isAlternativeSizeCommand());
+		this.myCAndCppCommand.setText(this.myCompileOptions.get_C_andCPP_CompileOptions());
+		this.myCCommand.setText(this.myCompileOptions.get_C_CompileOptions());
+		this.myCppCommand.setText(this.myCompileOptions.get_CPP_CompileOptions());
 
-		this.mySizeCommand.setSelection(this.myCompileOptions.isMyAlternativeSizeCommand());
-		this.myCAndCppCommand.setText(this.myCompileOptions.getMyAditional_C_andCPP_CompileOptions());
-		this.myCCommand.setText(this.myCompileOptions.getMyAditional_C_CompileOptions());
-		this.myCppCommand.setText(this.myCompileOptions.getMyAditional_CPP_CompileOptions());
+		this.myAllCommand.setText(this.myCompileOptions.get_All_CompileOptions());
+		this.myArchiveCommand.setText(this.myCompileOptions.get_Archive_CompileOptions());
+		this.myAssemblyCommand.setText(this.myCompileOptions.get_Assembly_CompileOptions());
+		this.myLinkCommand.setText(this.myCompileOptions.get_Link_CompileOptions());
 	}
+	private void updateStorageData() {
 
+		this.myCompileOptions.setWarningLevel(this.myWarningLevel.getSelection());
+		this.myCompileOptions.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
+		this.myCompileOptions.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
+		this.myCompileOptions.set_C_CompileOptions(this.myCCommand.getText());
+		this.myCompileOptions.set_CPP_CompileOptions(this.myCppCommand.getText());
+
+		this.myCompileOptions.set_All_CompileOptions(this.myAllCommand.getText());
+		this.myCompileOptions.set_Archive_CompileOptions(this.myArchiveCommand.getText());
+		this.myCompileOptions.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
+		this.myCompileOptions.set_Link_CompileOptions(this.myLinkCommand.getText());
+	}
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
 		this.myCompileOptions = new CompileOptions(getConfdesc());
-		setValues();
+		updateScreenData();
 	}
 
 	@Override
@@ -182,16 +147,16 @@ public class CompileProperties extends AbstractCPropertyTab {
 
 	@Override
 	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
-		// nothing to do here
+		updateStorageData();
+		if (dst.getConfiguration() != null) {
+			CompileProperties.this.myCompileOptions.save(dst.getConfiguration());
+		}
 	}
 
 	@Override
 	protected void performDefaults() {
-		this.myWarningLevel.setSelection(true);
-		this.mySizeCommand.setSelection(false);
-		this.myCAndCppCommand.setText(EMPTY_STRING);
-		this.myCCommand.setText(EMPTY_STRING);
-		this.myCppCommand.setText(EMPTY_STRING);
+		this.myCompileOptions = new CompileOptions(null);
+		updateScreenData();
 	}
 
 	/**

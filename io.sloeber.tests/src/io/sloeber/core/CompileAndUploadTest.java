@@ -136,7 +136,7 @@ public class CompileAndUploadTest {
 	public void testExamples() {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
 		CompileOptions compileOptions = new CompileOptions(null);
-		compileOptions.setMyAditional_C_andCPP_CompileOptions("-DINTERVAL=" + interval);
+		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval);
 		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder), compileOptions);
 
 	}
