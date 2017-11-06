@@ -3,7 +3,9 @@ package io.sloeber.core;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -52,6 +54,9 @@ public class CreateAndCompileJantjesBoardsTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
+		String[] packageUrlsToAdd = { "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json"};
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+
 		LinkedList<Object[]> examples = new LinkedList<>();
 		Shared.waitForAllJobsToFinish();
 		BoardsManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(), GenericJantjeBoard.getPlatformName());
