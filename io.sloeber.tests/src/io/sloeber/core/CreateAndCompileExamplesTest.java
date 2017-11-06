@@ -44,7 +44,7 @@ import io.sloeber.core.boards.mkrfox1200;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamplesTest {
-	private static final boolean reinstall_boards_and_examples = false;
+	private static final boolean reinstall_boards_and_examples = true;
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
