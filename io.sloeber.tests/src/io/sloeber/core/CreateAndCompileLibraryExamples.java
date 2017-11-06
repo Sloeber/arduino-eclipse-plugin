@@ -27,6 +27,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.core.boards.AdafruitnCirquitPlaygroundBoard;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
 import io.sloeber.core.boards.EsploraBoard;
@@ -54,7 +55,7 @@ public class CreateAndCompileLibraryExamples {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
-
+		Preferences.setUseArduinoToolSelection(true);
 		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
 				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard() };
 

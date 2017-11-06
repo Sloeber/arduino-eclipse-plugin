@@ -31,6 +31,8 @@ public class CreateAndCompileTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0} ")
 	public static Collection boards() {
+		//build the Arduino way
+		Preferences.setUseArduinoToolSelection(true);
 		installAdditionalBoards();
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curBoardFile : BoardsManager.getAllBoardsFiles()) {
@@ -136,8 +138,7 @@ public class CreateAndCompileTest {
 			BoardsManager.installAllLatestPlatforms();
 			BoardsManager.onlyKeepLatestPlatforms();
 		}
-		//build the Arduino way
-		Preferences.setUseArduinoToolSelection(false);
+
 		Shared.waitForAllJobsToFinish();
 	}
 
