@@ -43,14 +43,14 @@ import io.sloeber.core.common.ConfigurationPreferences;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
-public class CompileAndUploadTest {
+public class CompileAndUpload {
 	private static final boolean reinstall_boards_and_libraries = false;
 	private static int mCounter = 0;
 	private IBoard myBoard;
 	private String myName;
 	private static String interval = "1500";// change between 1500 and 100
 
-	public CompileAndUploadTest(String name, IBoard board) {
+	public CompileAndUpload(String name, IBoard board) {
 		this.myBoard = board;
 		this.myName = name;
 
