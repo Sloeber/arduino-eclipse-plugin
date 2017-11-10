@@ -561,12 +561,13 @@ public class BoardDescriptor {
 		ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(new String()), true);
 		ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
 		if (entries.length == 1) {
-			Path exclusionPath[] = new Path[5];
+			Path exclusionPath[] = new Path[6];
 			exclusionPath[0] = new Path(LIBRARY_PATH_SUFFIX + "/?*/**/?xamples/**");
 			exclusionPath[1] = new Path(LIBRARY_PATH_SUFFIX + "/?*/**/?xtras/**");
 			exclusionPath[2] = new Path(LIBRARY_PATH_SUFFIX + "/?*/**/test*/**");
 			exclusionPath[3] = new Path(LIBRARY_PATH_SUFFIX + "/?*/**/third-party/**");
-			exclusionPath[4] = new Path(LIBRARY_PATH_SUFFIX + "**/._*");
+			exclusionPath[4] = new Path(LIBRARY_PATH_SUFFIX + "/**/._*");
+			exclusionPath[5] = new Path(LIBRARY_PATH_SUFFIX + "/?*/utility/*/*");
 
 			ICExclusionPatternPathEntry newSourceEntry = new CSourceEntry(entries[0].getFullPath(), exclusionPath,
 					ICSettingEntry.VALUE_WORKSPACE_PATH);
