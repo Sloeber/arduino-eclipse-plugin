@@ -31,6 +31,7 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
 -Dorg.eclipse.update.reconcile=false
 -Xms40m
 -Xmx512m
+--add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
