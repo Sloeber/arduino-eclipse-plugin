@@ -69,6 +69,7 @@ public class BoardsManager {
 	 * @param options
 	 *            the options to specify the board (the menu named on the
 	 *            boards.txt file)
+	 *            or null for defaults
 	 * @return The class BoardDescriptor or null
 	 */
 	static public BoardDescriptor getBoardDescriptor(String jsonFileName, String packageName, String platformName,
