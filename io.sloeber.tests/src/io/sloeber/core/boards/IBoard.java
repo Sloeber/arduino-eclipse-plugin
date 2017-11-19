@@ -66,10 +66,11 @@ public abstract class IBoard {
 		return this.mySupportKeyboard;
 	}
 
-	public boolean isExampleOk(String inoName, String libName) {
+	private boolean isExampleOk(String inoName, String libName) {
 		if (this.myBoardDescriptor == null) {
 			return false;
 		}
+		// make the' lists for this boards once
 		if (this.doNotTestTheseSketches == null) {
 			createDoNotTestTheseSketches();
 			createDoNotTestTheseLibs();
@@ -78,9 +79,15 @@ public abstract class IBoard {
 		if (this.doNotTestTheseLibs.contains(libName)) {
 			return false;
 		}
+
 		if (this.doNotTestTheseSketches.contains(inoName)) {
 			return false;
 		}
+		if (libName.toLowerCase().contains("seesaw")) {
+			// at the time of testing seesaw is not supported on gnu
+			return false;
+		}
+
 		return true;
 	}
 
@@ -101,6 +108,7 @@ public abstract class IBoard {
 				"Adafruit_LED_Backpack_Library examples?wavface", "Adafruit_SSD1306 examples?ssd1306_128x64_i2c",
 				"Adafruit_SSD1306 examples?ssd1306_128x64_spi", "Adafruit_ST7735_Library examples?soft_spitftbitmap",
 				"Adafruit_TCS34725 examples? colorview? processing?colorview",
+				"Adafruit_Circuit_Playground examples?Infrared_Send",
 				"Adafruit_TinyRGBLCDShield examples?TinyHelloWorld",
 				"Akafugu_TWILiquidCrystal_Library examples?change_address", "Akafugu_WireRtc_Library examples?alarm",
 				"ALA examples?RgbStripButton", "APA102 examples?GameOfLife", "arduino-menusystem examples?led_matrix",
@@ -118,35 +126,40 @@ public abstract class IBoard {
 				"CopyThreads examples?ExamplesFromReadme", "DallasTemperature examples?Multibus_simple",
 				"DecodeIR examples?InfraredDecode", "AutoAnalogAudio examples?SimpleSine",
 				"DimSwitch examples?DimSwitchTester-ESP-MQTT", "DS3231 examples?echo_time", "Easy_NeoPixelsexamples",
-				"DallasTemperature examples?AlarmHandler" });
+				"DallasTemperature examples?AlarmHandler", "ADCTouchSensor examples?CapacitiveController",
+				"AmazonDRS examples?amazonDashNfc",
+				"Andee examples? Lesson_02_Buttons?Lesson_2h_Using_Buttons_to_Control_Servos",
+				"Andee examples?Project_Christmas_Lights_and_Annoying_Music",
+				"Andee examples?Project_Rubber_Band_Launcher", "Andee examples?Project_Time_Automated_Data_Logger",
+				"ANT-Arduino_library examples?NativeAnt",
+				"arduino-fsm examples?timed_switchoff",
+				"BME280 examples?BME_280_BRZO_I2C_Test"
+
+		});
 		runSketchOnBoard.put("fix case Sensitive include first",
 				new String[] { "AutoAnalogAudio examples? SDAudio?SdAudioRecording",
 						"AutoAnalogAudio examples? SDAudio?SdAudioWavPlayer",
 						"AutoAnalogAudio examples?AudioRadioRelay", "AutoAnalogAudio examples?WirelessMicrophone",
 						"AutoAnalogAudio examples?WirelessSpeaker", "AutoAnalogAudio examples?WirelessTx_RPi" });
 
-		runSketchOnBoard.put("nodemcu",
-				new String[] { "YouMadeIt examples?basic_example", "ArduinoIRC examples?BasicESP8266",
-						"ArduinoIRC examples?BasicESP8266Reply",
-						"ArduinoMenu_library examples? esp8266? XmlServer?XmlServer", "aREST examples?ESP8266",
-						"aREST examples?ESP8266_cloud", "aREST examples?ESP8266_cloud_and_local",
-						"aREST examples?ESP8266_cloud_pro", "aREST examples?ESP8266_softAP",
-						"aREST_UI examples?ESP8266", "ConfigManagerexamples", "DimSwitch examples?DimSwitchTester-ESP"
+		runSketchOnBoard.put("nodemcu", new String[] { "YouMadeIt examples?basic_example",
+				// "ConfigManagerexamples",
+				"DimSwitch examples?DimSwitchTester-ESP", "AIOModule examples?handling-module",
+				"AIOModule examples?mobility-module", "AlertMe examples?email_and_sms"
 
-				});
-		runSketchOnBoard.put("gemma",
-				new String[] { "Adafruit_MiniMLX90614 examples?templight",
-						"Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma",
-						"Arduino_Low_Power examples?PrimoDeepSleep" });
+		});
+		runSketchOnBoard.put("gemma", new String[] { "Adafruit_MiniMLX90614 examples?templight",
+				"Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma" });
 		runSketchOnBoard.put("primo",
 				new String[] { "Arduino_Low_Power examples?PrimoDeepSleep", "BLEPeripheral examples?iBeacon" });
-		runSketchOnBoard.put("trinket",
-				new String[] { "Adafruit_SoftServo examples?TrinketKnob",
-						"Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma",
-						"Adafruit_TinyFlash examples?TrinketPlayer" });
+		// runSketchOnBoard.put("trinket",
+		// new String[] { "Adafruit_SoftServo examples?TrinketKnob",
+		// "Adafruit_TiCoServo examples?TiCoServo_Test_Trinket_Gemma",
+		// "Adafruit_TinyFlash examples?TrinketPlayer" });
 		runSketchOnBoard.put("zero", new String[] { "ArduinoCloud examples?ReadAndWrite",
 				"ArduinoCloud examples?SimpleCloudButton", "AudioFrequencyMeter examples?SimpleAudioFrequencyMeter" });
-		runSketchOnBoard.put("due", new String[] { "ArduinoThread examples?SensorThread" });
+		runSketchOnBoard.put("due", new String[] { "ArduinoThread examples?SensorThread",
+				"Adafruit_BME280_Library examples?advancedsettings" });
 		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000" });
 		runSketchOnBoard.put("wildfire", new String[] { "aREST_UI examples?WildFire" });
 		runSketchOnBoard.put("circuitplay32u4catexpress",
@@ -155,6 +168,10 @@ public abstract class IBoard {
 						"Adafruit_Circuit_Playground examples?Infrared_Record",
 						"Adafruit_Circuit_Playground examples?Infrared_Testpattern" });
 		runSketchOnBoard.put("unowifi", new String[] { "Braccio examples?braccioOfUnoWiFi" });
+		runSketchOnBoard.put("uno",
+				new String[] { "Accessory_Shield examples?OLED_example_Adafruit",
+						"Accessory_Shield examples?temp_humidity_oled", "AFArray examples?GetFromIndex",
+						"AFArray examples?ImplodeExplode", "Adafruit_ESP8266 examples?webclient" });
 
 		for (Entry<String, String[]> curEntry : runSketchOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -167,18 +184,9 @@ public abstract class IBoard {
 	private void createDoNotTestTheseLibs() {
 		this.doNotTestTheseLibs = new ArrayList<>();
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
-		runLibOnBoard.put("no Board",
-				new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library", "Adafruit_HX8340B",
-						"Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash", "Adafruit_SSD1325",
-						"ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil", "ArduinoMenu_library",
-						"ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC", "ArduZ80",
-						"AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
-						"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1",
-						"Constellation", "CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector",
-						"DCF77", "dcf77_xtal", "DW1000", "EDB", "eBtn", "AJSP", "EducationShield", "ArduinoMqtt",
-						"Embedded_Template_Library", "Embedis", "EMoRo_2560" });
 
-		runLibOnBoard.put("fix case Sensitive include first", new String[] { "DS1307RTC" });
+		runLibOnBoard.put("no board", new String[] { "Arduino_Commanderexamples", "ALog" ,"BPLib","ESP8266_Microgear","ESP8266_Weather_Station","Gamebuino","Gadgetron_Libraries","GadgetBox"});
+		runLibOnBoard.put("fix issue first", new String[] { "DS1307RTC" });
 
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
@@ -187,10 +195,9 @@ public abstract class IBoard {
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
-		runLibOnBoard.put("nodemcu",
-				new String[] { "Adafruit_IO_Arduino", "anto-esp8266-arduino", "Automaton-Esp8266", "CMMC_Easy",
-						"CMMC_MQTT_Connector", "CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS",
-						"CoinMarketCapApi" });
+		runLibOnBoard.put("nodemcu", new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector",
+				"CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi" ,"ArduinoIHC","AsciiMassage",
+				"ESPiLight"});
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo" });
@@ -199,6 +206,7 @@ public abstract class IBoard {
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
 		runLibOnBoard.put("due",
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
+		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert","ESPectro" });
 
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -214,4 +222,103 @@ public abstract class IBoard {
 		return this.myBoardDescriptor.getBoardID();
 	}
 
+	/**
+	 * Give a list of boards pick the board that is best to test this code Boards in
+	 * the beginning of the array are prefered (first found ok algorithm)
+	 *
+	 * returns null if this code should not be tested return null if myBoards is
+	 * empty returns the best known boarddescriptor to run this example
+	 */
+
+	public static BoardDescriptor pickBestBoard(String inoName, String libName, IBoard myBoards[]) {
+		if (myBoards.length == 0) {
+			return null;
+		}
+		if (neverTestThisLib(libName)) {
+			return null;
+		}
+		if (neverTestThisExample(inoName, libName)) {
+			return null;
+		}
+
+		// if the boardname is in the libname or ino name pick this one
+		for (IBoard curBoard : myBoards) {
+			String filter = curBoard.getName().toLowerCase();
+			if (libName.toLowerCase().contains(filter) || inoName.toLowerCase().contains(filter)) {
+				if (curBoard.isExampleOk(inoName, libName)) {
+					return curBoard.getBoardDescriptor();
+				}
+			}
+		}
+		// If the archtecture is in the libname or boardname pick this one
+		for (IBoard curBoard : myBoards) {
+			String filter = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
+			if (libName.toLowerCase().contains(filter) || inoName.toLowerCase().contains(filter)) {
+				if (curBoard.isExampleOk(inoName, libName)) {
+					return curBoard.getBoardDescriptor();
+				}
+			}
+		}
+		/*
+		 * look for well known names that identify the board that should be used
+		 *  in the lib and ino name
+		 * to skip in case these boards are not in the list of boards
+		 */
+		String commonlyUsedIDNames[]=new String[] { "trinket", "esp8266", "esp32"};
+		for (String curBoardName : commonlyUsedIDNames) {
+			if (libName.toLowerCase().contains(curBoardName) || inoName.toLowerCase().contains(curBoardName)) {
+				/*This examplename or libname contains the name of a board/techology/architecture
+				* commonly used in lib- and example names
+				* and such a board is not provided
+				*/
+					return null;
+
+			}
+		}
+		// Out of guesses based on the name. Take the first ok one
+		for (IBoard curBoard : myBoards) {
+			if (curBoard.isExampleOk(inoName, libName)) {
+				return curBoard.getBoardDescriptor();
+			}
+		}
+		return null;
+
+	}
+
+	private static boolean neverTestThisLib(String libName) {
+		String skipLibs[] = new String[] { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library",
+				"Adafruit_HX8340B", "Adafruit_IO_Arduino", "Adafruit_MQTT_Library", "Adafruit_SPIFlash",
+				"Adafruit_SSD1325", "ArdBitmap", "ArdOSC", "Arduino-Websocket-Fast", "ArduinoFacil",
+				"ArduinoMenu_library", "ArduinoSensors", "ArduinoSerialToTCPBridgeClient", "ArduinoUnit", "arduinoVNC",
+				"ArduZ80", "AS3935", "AzureIoTHubMQTTClient", "BigCrystal", "Babelduino", "Blynk", "Brief", "Brzo_I2C",
+				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation",
+				"CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector", "DCF77", "dcf77_xtal",
+				"DW1000", "EDB", "eBtn", "AJSP", "EducationShield", "ArduinoMqtt", "Embedded_Template_Library",
+				"Embedis", "EMoRo_2560", "Adafruit_microbit_Library" };
+		return Arrays.asList(skipLibs).contains(libName);
+	}
+
+	/**
+	 * if the example fails it is known not to compile(under sloeber?)
+	 *
+	 * @param inoName
+	 * @param libName
+	 * @return
+	 */
+	private static boolean neverTestThisExample(String inoName, String libName) {
+		final String[] skipIno = { "AD7193_VoltageMeasurePsuedoDifferential_Example", "bunny_cuberotate?cuberotate",
+				"XPT2046_Touchscreen?ILI9341Test" };
+
+		if (Arrays.asList(skipIno).contains(inoName.replace(" ", "")))
+			return true;
+		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
+			return true;
+		// following examples also fail in Arduino IDE at the time of writing
+		// these unit tests
+		if (inoName.endsWith("ahrs_mahony")
+				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
+			return true;
+		}
+		return false; // default everything is fine so don't skip
+	}
 }

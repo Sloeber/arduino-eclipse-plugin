@@ -30,9 +30,9 @@ public class GenericJantjeBoard extends IBoard {
 		}
 		this.myBoardDescriptor.setUploadPort("none");
 
-		setSupportSerial(!GenericArduinoAvrBoard.doesNotSupportSerialList().contains(boardName));
-		setSupportSerial1(GenericArduinoAvrBoard.supportSerial1List().contains(boardName));
-		setSupportKeyboard(GenericArduinoAvrBoard.supportKeyboardList().contains(boardName));
+		setSupportSerial(!ArduinoBoards.doesNotSupportSerialList().contains(boardName));
+		setSupportSerial1(ArduinoBoards.supportSerial1List().contains(boardName));
+		setSupportKeyboard(ArduinoBoards.supportKeyboardList().contains(boardName));
 	}
 
 

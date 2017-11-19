@@ -27,19 +27,11 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.boards.AdafruitnCirquitPlaygroundBoard;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
+import io.sloeber.core.boards.ArduinoBoards;
 import io.sloeber.core.boards.Due;
-import io.sloeber.core.boards.EsploraBoard;
-import io.sloeber.core.boards.GenericArduinoAvrBoard;
 import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.boards.NodeMCUBoard;
-import io.sloeber.core.boards.Primo;
-import io.sloeber.core.boards.UnoBoard;
-import io.sloeber.core.boards.Zero;
-import io.sloeber.core.boards.leonardoBoard;
-import io.sloeber.core.boards.megaBoard;
-import io.sloeber.core.boards.mkrfox1200;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -62,9 +54,18 @@ public class CreateAndCompileExamplesTest {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 
-		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
-				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard(), new Primo(), new megaBoard(),
-				new GenericArduinoAvrBoard("gemma"), new Zero(), new mkrfox1200(), new Due() };
+		IBoard myBoards[] = { ArduinoBoards.leonardo(),
+				ArduinoBoards.uno(),
+				ArduinoBoards.getEsploraBoard(),
+				new AdafruitnRF52idBoard(),
+				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(),
+				new NodeMCUBoard(),
+				ArduinoBoards.primo(),
+				ArduinoBoards.getMega2560Board(),
+				ArduinoBoards.getGemma(),
+				ArduinoBoards.zero(),
+				ArduinoBoards.mkrfox1200(),
+				new Due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
@@ -88,14 +89,11 @@ public class CreateAndCompileExamplesTest {
 			}
 
 			// with the current amount of examples only do one
-			for (IBoard curBoard : myBoards) {
-				if (curBoard.isExampleOk(inoName, libName)) {
-					Object[] theData = new Object[] { inoName.trim(), curBoard.getBoardDescriptor(), codeDescriptor };
+			BoardDescriptor curBoard =IBoard.pickBestBoard(inoName, libName,myBoards);
+				if (curBoard!=null) {
+					Object[] theData = new Object[] { inoName.trim(), curBoard, codeDescriptor };
 					examples.add(theData);
-					break;
 				}
-
-			}
 		}
 
 		return examples;
@@ -184,6 +182,11 @@ public class CreateAndCompileExamplesTest {
 		} catch (CoreException e) {
 			e.printStackTrace();
 			totalFails++;
+			try {
+				theTestProject.close(null);
+			} catch (@SuppressWarnings("unused") CoreException e1) {
+				//fully ignore
+			}
 			fail("Failed to compile the project:" + projectName + " exception");
 		}
 	}

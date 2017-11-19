@@ -28,13 +28,11 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.core.boards.AdafruitnCirquitPlaygroundBoard;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
-import io.sloeber.core.boards.EsploraBoard;
+import io.sloeber.core.boards.ESPressoLite;
+import io.sloeber.core.boards.ArduinoBoards;
 import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.boards.NodeMCUBoard;
-import io.sloeber.core.boards.UnoBoard;
-import io.sloeber.core.boards.leonardoBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -56,8 +54,8 @@ public class CreateAndCompileLibraryExamplesTest {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 		Preferences.setUseArduinoToolSelection(true);
-		IBoard myBoards[] = { new leonardoBoard(), new UnoBoard(), new EsploraBoard(), new AdafruitnRF52idBoard(),
-				new AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard() };
+		IBoard myBoards[] = { ArduinoBoards.leonardo(), ArduinoBoards.uno(), ArduinoBoards.getEsploraBoard(), new AdafruitnRF52idBoard(),
+				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(), new NodeMCUBoard() ,new ESPressoLite()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
@@ -68,7 +66,7 @@ public class CreateAndCompileLibraryExamplesTest {
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			String inoName = curexample.getKey();
 			String libName = "";
-			if (examples.size() == 82) {// use this for debugging based on the
+			if (examples.size() >= 100) {// use this for debugging based on the
 										// project number
 				// use this to put breakpoint
 				int a = 0;
@@ -79,50 +77,21 @@ public class CreateAndCompileLibraryExamplesTest {
 			} catch (Exception e) {
 				// ignore error
 			}
-			if (isExampleOk(inoName, libName)) {
-				// with the current amount of examples only do one
-				for (IBoard curBoard : myBoards) {
-					if (curBoard.isExampleOk(inoName, libName)) {
-						Object[] theData = new Object[] { libName + ":" + inoName + ":" + curBoard.getName(),
-								curBoard.getBoardDescriptor(), codeDescriptor };
-						examples.add(theData);
-						break;
-					}
-				}
 
-			}
+				// with the current amount of examples only do one
+				BoardDescriptor curBoard =IBoard.pickBestBoard(inoName, libName,myBoards);
+				if(curBoard!=null) {
+						Object[] theData = new Object[] { libName + ":" + inoName + ":" + curBoard.getBoardName(),
+								curBoard, codeDescriptor };
+						examples.add(theData);
+				}
 		}
 
 		return examples;
 
 	}
 
-	/**
-	 * if the example fails it is known not to compile(under sloeber?)
-	 *
-	 * @param inoName
-	 * @param libName
-	 * @return
-	 */
-	private static boolean isExampleOk(String inoName, String libName) {
-		final String[] inoNotOK = { "AD7193_VoltageMeasurePsuedoDifferential_Example", "bunny_cuberotate?cuberotate",
-				"XPT2046_Touchscreen?ILI9341Test" };
-		final String[] libNotOk = { "ACROBOTIC_SSD1306", "XLR8Servo", "Adafruit_CC3000_Library" };
-		if (Arrays.asList(libNotOk).contains(libName)) {
-			return false;
-		}
-		if (Arrays.asList(inoNotOK).contains(inoName.replace(" ", "")))
-			return false;
-		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
-			return false;
-		// following examples also fail in Arduino IDE at the time of writing
-		// these unit tests
-		if (inoName.endsWith("ahrs_mahony")
-				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
-			return false;
-		}
-		return true; // default everything is fine
-	}
+
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
@@ -138,8 +107,8 @@ public class CreateAndCompileLibraryExamplesTest {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL, Shared.TEST_LIBRARY_INDEX_URL };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL};
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
 			BoardsManager.installAllLatestPlatforms();
 			// deal with removal of json files or libs from json files
@@ -156,7 +125,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (totalFails < 20) {
+		if (totalFails < 200) {
 			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
 		} else {
 			fail("To many fails. Stopping test");

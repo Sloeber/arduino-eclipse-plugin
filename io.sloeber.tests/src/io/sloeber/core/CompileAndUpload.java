@@ -27,17 +27,11 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Sketch;
+import io.sloeber.core.boards.ArduinoBoards;
 import io.sloeber.core.boards.Due;
 import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.boards.NodeMCUBoard;
 import io.sloeber.core.boards.Teensy3_1Board;
-import io.sloeber.core.boards.UnoBoard;
-import io.sloeber.core.boards.YunBoard;
-import io.sloeber.core.boards.Zero;
-import io.sloeber.core.boards.arduino101Board;
-import io.sloeber.core.boards.friedBoard;
-import io.sloeber.core.boards.leonardoBoard;
-import io.sloeber.core.boards.megaBoard;
 import io.sloeber.core.boards.wemosD1;
 import io.sloeber.core.common.ConfigurationPreferences;
 
@@ -92,12 +86,15 @@ public class CompileAndUpload {
 
 
 
-		IBoard[] boards = { new NodeMCUBoard(), new Teensy3_1Board(), new wemosD1(), new friedBoard(), new YunBoard(),
-				new UnoBoard(),
-				new megaBoard(),
-				new Zero(), new Due(),
-				new leonardoBoard(),
-				new arduino101Board() };
+		IBoard[] boards = { new NodeMCUBoard(), new Teensy3_1Board(), new wemosD1(),
+				ArduinoBoards.fried(),
+				ArduinoBoards.yun(),
+				ArduinoBoards.uno(),
+				ArduinoBoards.getMega2560Board(),
+				ArduinoBoards.zero(),
+				new Due(),
+				ArduinoBoards.leonardo(),
+				ArduinoBoards.arduino_101() };
 		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();
 
