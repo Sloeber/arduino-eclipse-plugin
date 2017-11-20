@@ -1,4 +1,5 @@
  <?php
+    include 'globals.txt';
 	$default = 1;
 	if (isset ( $_GET ["systemhash"] )) {
 		$KEY = $_GET ["systemhash"];
@@ -30,7 +31,7 @@
 	    $VERSION_MINOR = $_GET ["minorVersion"];
 	    $VERSION_MICRO = $_GET ["microVersion"];
 	    $VERSION_QUAL = $_GET ["qualifierVersion"];
-	    $ADVICE_UPGRADE =(($VERSION_MAJOR < 3) && ($VERSION_MAJOR >0)) || (($VERSION_MAJOR == 3) && ($VERSION_MINOR < 1) );
+	    $ADVICE_UPGRADE =($VERSION_MAJOR < $STABLE_VERSION_MAJOR)  || (($VERSION_MAJOR == $STABLE_VERSION_MAJOR) && ($VERSION_MINOR<$STABLE_VERSION_MINOR ) );
 	    $ADVERTISE_HIDE_THIS_PAGE =($VERSION_MAJOR > 3);
 	    ?>
 
@@ -60,7 +61,7 @@
 
 
 <?php if($ADVICE_UPGRADE){
-echo "<h1>You are running Sloeber V".$VERSION_MAJOR.".".$VERSION_MINOR." and the Latest stable version is V3.1!</h1>" ?>
+    echo "<h1>You are running Sloeber V".$VERSION_MAJOR.".".$VERSION_MINOR." and the Latest stable version is V".$STABLE_VERSION_MAJOR.".".$STABLE_VERSION_MINOR."!</h1>" ?>
 Please consider upgrading to the latest Stable.<br>
 Click <a href="http://eclipse.baeyens.it/how_to.shtml#/n">here to see how to upgrade.</a>
 <?php } ?>

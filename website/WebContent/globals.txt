@@ -1,0 +1,4 @@
+  <?php
+   $STABLE_VERSION_MAJOR=4;
+  $STABLE_VERSION_MINOR=2;
+   ?>
