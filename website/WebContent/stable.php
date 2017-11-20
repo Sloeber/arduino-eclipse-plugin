@@ -1,6 +1,7 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "4.1";
+include 'globals.txt';
+$version = $STABLE_VERSION_MAJOR."."$STABLE_VERSION_MINOR;
 
 if (isset ( $_GET ["OS"] ))
 	$OS = $_GET ["OS"];
@@ -43,21 +44,22 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 
 	<div class="container" role="main">
 		<div class="page-header">
-      <?php	echo "<h1>$OS Latest Stable <small>runs smoothly and nicely</small></h1>"; ?>
+      <?php	echo "<h1>$OS $version Latest Stable <small>runs smoothly and nicely</small></h1>"; ?>
         <a name="top">&nbsp;</a>
 		</div>
 		<p>This is the latest stable build of Arduino Eclipse IDE and it's
 			available as a product and a plugin: pick the one you prefer!</p>
 		<h3>Product bundle</h3>
 		<a name="product">&nbsp;</a>
-		<p><strong>Strongly advised when you are new to the Arduino eclipse IDE.</strong></p>
-		<p>This is the simplest way to start using Arduino Eclipse as it
+		<p><strong>Strongly advised when you are new to Sloeber.</strong></p>
+		<p>This is the simplest way to start using Sloeber as it
 			bundles in one single download a complete setup including a stable
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
+		<?php	if($os=="win"){echo "<p>It even includes java.</p>";}; ?>
+		<p>This is also the only supported setup!</p>
 
 
-        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php
         listFiles("V" . $version . '_' . $os);?>
@@ -70,13 +72,16 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 		<p>If you want to pick a different version of the Eclipse CDT than the
 			one included in the product bundle or you want to add the Arduino
 			Eclipse plugin to an existing installation this is the way to go.</p>
+		<p>Though this setup works this setup is not supported because setting it up is not so easy and the number of combinations is ... kind of endless.</p>
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
-				<div class="well text-center">http://eclipse.baeyens.it/update/V4/stable</div>
+			<?php
+				echo"<div class="well text-center">http://eclipse.baeyens.it/update/V$STABLE_VERSION_MAJOR/stable</div>
+				?>
 			</div>
 		</div>
 		        <div class="row">
-        <p>Watch these V3.x new and noteworthy video's to get a quick start: (V4 video's are not yet released)</p>
+        <p>Watch these V3.x new and noteworthy video's to get a quick start: (V4 video's are still not made)</p>
         <iframe width="560" height="315" src="https://www.youtube.com/embed/MGAyIOC24lU" frameborder="0" allowfullscreen></iframe>
 
 		<iframe width="560" height="315" src="https://www.youtube.com/embed/HE5iYxv-B-o" frameborder="0" allowfullscreen></iframe>
