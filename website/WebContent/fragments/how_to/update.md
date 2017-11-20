@@ -1,6 +1,7 @@
 How to update your plugin
 =========================
 **When you update the plugin you also have to update the workspace.**
+**Take a backup before you do the update.**
 
 How to do a major update  (V2.x to V3.y)
 ==================
