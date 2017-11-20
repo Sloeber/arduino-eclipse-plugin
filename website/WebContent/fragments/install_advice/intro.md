@@ -8,20 +8,21 @@ First do this
 
 So take the latest 32/64 bit product version for your platform.
 In human language:
+ * use java 8 (included in the windows product downloads)
  * Take the product and not the plugin.
  * Take the latest stable version.
- * Read your OS specific info linked on thispage at the right.
+ * Read your OS specific info linked on this page at the right.
 
 This way you have something that gives you the best shot at being able to compile and upload to standard Arduino boards. And get support if you fail. Once you have the hang of this you can try to be more adventurous and take more exotic (read less tested) boards.
-Once you have all of this in your fingers you could consider to move to more exotic setups (like installing the plugin in a existing eclipse) but note that if you do so you are more on your own.
+Once you have all of this in your fingers you could consider to move to more exotic setups (like installing the plugin in a existing eclipse) but note that if you do so; you are considered a grownup that can take care of itself.
 
 When you hit a problem we will ask you to
 ==
  * Do the steps in "First do this" if you havn't done that yet.
  * Upgrade to the nightly.
 
-We do not advice newcommers to start with the nightly. This because the nightly has not been tested and fluctuates in quality.
-However, as developers we have a pretty good idea of the quality and changes of the code of the "current nightly". So in many cases we know issues have been fixed and we test your case before giving the advice to go to the nightly.
+We do not advice newcommers to start with the nightly. This because the nightly has not been tested as thoroughly and fluctuates in quality.
+However, as developers we have a pretty good idea of the quality and changes of the code of the "current nightly". So in many cases we know issues have been fixed and we may have tested your case before giving the advice to go to the nightly.
 So "upgrade to the nightly" is not a general advice. Basically it means: backup your current install and upgrade to the nightly today. Because the nightly tomorrow may be ... well we do not know.
 
 
