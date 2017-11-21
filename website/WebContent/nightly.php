@@ -1,15 +1,16 @@
 <?php
 require 'fragments/file-buttons.php';
-$version = "4.1";
+include 'globals.txt';
+$version = $STABLE_VERSION_MAJOR . "." . $STABLE_VERSION_MINOR;
 
 if (isset ( $_GET ["OS"] ))
-	$OS = $_GET ["OS"];
-	$os =strtolower ( $OS );
-	if($os!="linux")
-	{
-    $os =  substr ( $os, 0, 3 );
-	}
-?>
+    $OS = $_GET ["OS"];
+    $os =strtolower ( $OS );
+    if($os!="linux")
+    {
+        $os =  substr ( $os, 0, 3 );
+    }
+    ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,10 +63,9 @@ if (isset ( $_GET ["OS"] ))
 			away right after launching it!</p>
 			<P>And probably worse: The nightly is the playground of the contributors.
 			No testing has been done, no validation has been done.</P>
+		<P>In contrast to the stable the nightly product downloads do not contain a java run time.</P>
 
 
-
-        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.<br>
         <h2>Some recent changes:</h2>
         <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
         <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.1.0-SNAPSHOT/"  target="_blank">
@@ -76,12 +76,14 @@ if (isset ( $_GET ["OS"] ))
 
 
       <h3>Eclipse Update Site</h3>
-      <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Eclipse CDT installation</p>
+      <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Sloeber installation.</p>
       <p>You can not upgrade from V3 to V4!!!!</p>
-      <p>Even worse: you can install V3 and V4 in the same eclips installation causing all kind of wierd side effects. So don't do it</p>
+      <p>Even worse: you can install V3 and V4 in the same eclipse installation causing all kind of wierd side effects. So don't do it</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
-          <div class="well text-center">http://eclipse.baeyens.it/update/V4/nightly</div>
+        			<?php
+				echo '<div class="well text-center">http://eclipse.baeyens.it/update/V'.$STABLE_VERSION_MAJOR."/nightly</div>";
+				?>
         </div>
       </div>
        <p>Watch these movies to get a quick start:</p>

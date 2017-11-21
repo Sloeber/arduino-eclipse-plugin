@@ -1,12 +1,12 @@
 <?php
 require 'fragments/file-buttons.php';
 include 'globals.txt';
-$version = $STABLE_VERSION_MAJOR."."$STABLE_VERSION_MINOR;
+$version = $STABLE_VERSION_MAJOR.".".$STABLE_VERSION_MINOR;
 
 if (isset ( $_GET ["OS"] ))
-	$OS = $_GET ["OS"];
-$os = strtolower ( substr ( $OS, 0, 3 ) );
-?>
+    $OS = $_GET ["OS"];
+    $os = strtolower ( substr ( $OS, 0, 3 ) );
+    ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,10 +56,10 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 			bundles in one single download a complete setup including a stable
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
-		<?php	if($os=="win"){echo "<p>It even includes java.</p>";}; ?>
 		<p>This is also the only supported setup!</p>
+		<?php	if($os=="win"){echo "<p>It even includes java.</p>";}; ?>
 
-
+        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php
         listFiles("V" . $version . '_' . $os);?>
@@ -76,7 +76,7 @@ $os = strtolower ( substr ( $OS, 0, 3 ) );
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
 			<?php
-				echo"<div class="well text-center">http://eclipse.baeyens.it/update/V$STABLE_VERSION_MAJOR/stable</div>
+				echo '<div class="well text-center">http://eclipse.baeyens.it/update/V'.$STABLE_VERSION_MAJOR.'/stable</div>';
 				?>
 			</div>
 		</div>
