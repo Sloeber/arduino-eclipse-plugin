@@ -16,18 +16,12 @@ public class PlotterListener implements MessageConsumer {
 
 	MyPlotter myPlotter;
 	/**
-	 * myReceivedSerialData is a fixed size buffer holding the bytes that have
-	 * been received from the com port
+	 * myReceivedSerialData is a fixed size buffer holding the bytes that have been
+	 * received from the com port
 	 *
 	 * if we are more than this behind we will loose data
 	 */
 	private ByteBuffer myReceivedSerialData = ByteBuffer.allocate(2000);
-	/**
-	 * myEndPosition points to the last byte that is still valid in the buffer.
-	 * This is needed because myReceivedSerialData is fixed size.
-	 *
-	 */
-	private int myEndPosition = 0;
 
 	public PlotterListener(MyPlotter plotter) {
 		this.myReceivedSerialData.order(ByteOrder.LITTLE_ENDIAN);
@@ -35,11 +29,11 @@ public class PlotterListener implements MessageConsumer {
 	}
 
 	/**
-	 * Here the message comes in from the serial port. If there is not enough
-	 * place in If there is enough place in myReceivedSerialData the data is
-	 * added to myReceivedSerialData to hold all the data; all the data (that in
-	 * myReceivedSerialData and in s) is ignored and a warning is dumped If
-	 * there is enough place in myReceivedSerialData the data is added to
+	 * Here the message comes in from the serial port. If there is not enough place
+	 * in If there is enough place in myReceivedSerialData the data is added to
+	 * myReceivedSerialData to hold all the data; all the data (that in
+	 * myReceivedSerialData and in s) is ignored and a warning is dumped If there is
+	 * enough place in myReceivedSerialData the data is added to
 	 * myReceivedSerialData and myReceivedSerialData is scanned for plotter data
 	 *
 	 */
@@ -47,14 +41,17 @@ public class PlotterListener implements MessageConsumer {
 	public synchronized void message(byte[] newData) {
 		if (this.myPlotter.isDisposed())
 			return;
-		if (this.myEndPosition + newData.length >= this.myReceivedSerialData.capacity()) {
-			this.myEndPosition = 0;
+		if (this.myReceivedSerialData.remaining() < newData.length) {
+			this.myReceivedSerialData.clear();
 			Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serialListenerPlotterSkippingData));
 		} else {
-			this.myReceivedSerialData.position(this.myEndPosition);
-			this.myReceivedSerialData.put(newData, 0, newData.length);
-			this.myEndPosition = this.myReceivedSerialData.position();
-			internalExtractAndProcessSerialData();
+
+			this.myReceivedSerialData.put(newData);
+			this.myReceivedSerialData.flip();
+			if (internalExtractAndProcessSerialData()) {
+				addValuesToPlotter();
+			}
+			this.myReceivedSerialData.compact();
 		}
 
 	}
@@ -66,8 +63,8 @@ public class PlotterListener implements MessageConsumer {
 	}
 
 	/**
-	 * addValuesToPlotter This method makes the plotter to draw the values that
-	 * have been delivered to the plotter
+	 * addValuesToPlotter This method makes the plotter to draw these values
+	 * when a redraw is triggered
 	 */
 	public void addValuesToPlotter() {
 		if (this.myPlotter.isDisposed())
@@ -77,8 +74,6 @@ public class PlotterListener implements MessageConsumer {
 			@Override
 			public void run() {
 				try {
-					// PlotterListener.this.myPlotter.getDispatcher(0).hookPulse(PlotterListener.this.myPlotter,
-					// 1);
 					PlotterListener.this.myPlotter.redraw();
 				} catch (Exception e) {
 					// ignore as we get errors when closing down
@@ -90,51 +85,52 @@ public class PlotterListener implements MessageConsumer {
 
 	/**
 	 * internalExtractAndProcessSerialData scans the incoming serial for plotter
-	 * data in myReceivedSerialData If data is found it is send to the plotter
-	 * all data that has been scanned is removed from myReceivedSerialData
+	 * data in myReceivedSerialData If data is found it is send to the plotter all
+	 * data that has been scanned
+	 *
+	 * returns true if the plotter needs to redraw (because data has been send)
+	 * false if no data has been send to plotter
 	 */
-	private void internalExtractAndProcessSerialData() {
-		int lastFoundData = this.myEndPosition - 6;
-		if (lastFoundData < 0)
-			return;
-		// Scan for plotter data
-		for (int scannnedDataPointer = 0; scannnedDataPointer < this.myEndPosition - 8; scannnedDataPointer++) {
-			if (this.myReceivedSerialData.getShort(scannnedDataPointer) == Activator.PLOTTER_START_DATA) {
-				// we have a hit.
-				lastFoundData = scannnedDataPointer;
-				scannnedDataPointer = scannnedDataPointer + 2;
-				int bytestoRead = this.myReceivedSerialData.getShort(scannnedDataPointer);
+	private boolean internalExtractAndProcessSerialData() {
+		boolean addedDataToPlotter = false;
+		while (this.myReceivedSerialData.remaining() >= 6) {
+			boolean found = false;
+			// Scan for plotter data
+			for (int curByte = this.myReceivedSerialData.position(); curByte < this.myReceivedSerialData.limit()
+					- 4; curByte++) {
+				if (this.myReceivedSerialData.getShort(curByte) == Activator.PLOTTER_START_DATA) {
+					// we have a hit.
+					this.myReceivedSerialData.position(curByte + 2);
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				int bytestoRead = this.myReceivedSerialData.getShort();
 				if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
 					Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serialListenerErrorInputPart1
 							+ bytestoRead / 2 + ' ' + Messages.serialListenerErrorInputPart2));
 				} else {
-					if (bytestoRead + 2 + scannnedDataPointer < this.myEndPosition) {
+					if (bytestoRead < this.myReceivedSerialData.remaining()) {
 						// all data is available
-						int myNumDataSetsToReceive = this.myReceivedSerialData.getShort(scannnedDataPointer) / 2 + 0;
-						for (int CurData = 0; CurData < myNumDataSetsToReceive; CurData++) {
-							int data = this.myReceivedSerialData.getShort(scannnedDataPointer + 2 + CurData * 2);
-							this.myPlotter.setValue(CurData, data);
+						int numChannels = bytestoRead / 2;
+						for (int curChannel = 0; curChannel < numChannels; curChannel++) {
+							int data = this.myReceivedSerialData.getShort();
+							this.myPlotter.setValue(curChannel, data);
+							addedDataToPlotter = true;
 						}
-						addValuesToPlotter();
-						scannnedDataPointer = scannnedDataPointer + 2 + myNumDataSetsToReceive * 2;
-						lastFoundData = scannnedDataPointer;
 
+					} else {// not all data is available set the position at the beginning and wait for new
+							// data
+						this.myReceivedSerialData.position(this.myReceivedSerialData.position() - 4);
+						return addedDataToPlotter;
 					}
 				}
+			} else {
+				this.myReceivedSerialData.position(this.myReceivedSerialData.limit() - 4);
 			}
 		}
-		// remove all the scanned data
-		for (int curByte = 0; curByte <= this.myEndPosition - lastFoundData; curByte++) {
-			try {
-				this.myReceivedSerialData.put(curByte, this.myReceivedSerialData.get(curByte + lastFoundData));
-			} catch (IndexOutOfBoundsException e) {
-				Activator
-						.log(new Status(IStatus.WARNING, Activator.getId(), Messages.plotterListenerBufferOverflow, e));
-			}
-
-		}
-		this.myEndPosition -= lastFoundData;
-
+		return addedDataToPlotter;
 	}
 
 	@Override
