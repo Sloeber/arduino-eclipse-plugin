@@ -32,7 +32,7 @@ public class SerialListener implements MessageConsumer {
 		event(internalMessage(newData));
 	}
 
-	protected String internalMessage(byte[] newData) {
+	 public String internalMessage(byte[] newData) {
 		String ret = new String();
 		if (myPlotterFilterFlag) {
 			// filter plotter data
@@ -77,7 +77,7 @@ public class SerialListener implements MessageConsumer {
 				// we have a hit.
 				found = true;
 				if ((lastFound != curByte) && (curByte > lastFound)) {
-					outMessage += inMessage.substring(lastFound, curByte - 1);
+					outMessage += inMessage.substring(lastFound, curByte );
 				}
 				this.myReceivedSerialData.position(curByte);
 				if (this.myReceivedSerialData.remaining() > 4) {
