@@ -66,7 +66,7 @@ The foreground color of the plotter
 The grid color of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="Channel 1 color" value="COLOR_BLUE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="Channel 1 color" value="COLOR_YELLOW">
 <description>
 The color used by the first channel of the plotter
 </description>
@@ -76,22 +76,22 @@ The color used by the first channel of the plotter
 The color used by the second channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="Channel 3 color" value="COLOR_DARK_GRAY">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="Channel 3 color" value="COLOR_WHITE">
 <description>
 The color used by the third channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="Channel 4 color" value="COLOR_DARK_GREEN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="Channel 4 color" value="COLOR_GREEN">
 <description>
 The color used by the fourth channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="Channel 5 color" value="COLOR_DARK_RED">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="Channel 5 color" value="COLOR_RED">
 <description>
 The color used by the fifth channel of the plotter
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="Channel 6 color" value="COLOR_DARK_YELLOW">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="Channel 6 color" value="COLOR_BLUE">
 <description>
 The color used by the sixth channel of the plotter
 </description>
