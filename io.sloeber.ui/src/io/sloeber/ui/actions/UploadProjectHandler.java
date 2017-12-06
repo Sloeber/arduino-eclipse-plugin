@@ -31,12 +31,13 @@ class UploadJobHandler extends Job {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
+    boolean canUpload=true;
 	if (MyPreferences.getBuildBeforeUploadOption()) {
 
-	    boolean success = Sketch.verify(this.myBuildProject, monitor);
-	    if (!success) {
+	    canUpload = Sketch.verify(this.myBuildProject, monitor);
+	    if (!canUpload) {
 
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 		    @Override
 		    public void run() {
 			Shell theShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
@@ -48,7 +49,9 @@ class UploadJobHandler extends Job {
 		});
 	    }
 	}
-	Sketch.upload(UploadJobHandler.this.myBuildProject);
+	if(canUpload) {
+		Sketch.upload(UploadJobHandler.this.myBuildProject);
+	}
 	return Status.OK_STATUS;
     }
 }
