@@ -22,18 +22,18 @@ import io.sloeber.core.api.LaunchConfiguration;
 public class LaunchShortcut implements ILaunchShortcut {
 
     /**
-     * The file handle from which this launch shortcut has been startet.
+     * The file handle from which this launch shortcut has been started.
      */
-    private IFile file;
+    private IFile myFile;
     /**
-     * The project handle from which this launch shortcut has been startet.
+     * The project handle from which this launch shortcut has been started.
      */
-    private IProject project;
+    private IProject myProject;
 
     /**
      * The mode of the launch ("run" or "debug").
      */
-    private String mode;
+    private String myMode;
 
     /**
      * {@inheritDoc}
@@ -62,29 +62,29 @@ public class LaunchShortcut implements ILaunchShortcut {
     /**
      * Launch the project of the file via an existing launch configuration or
      * create a new one if there is none yet.
-     * 
-     * @param file
+     *
+     * @param myFile
      *            The file to be launched
-     * @param mode
+     * @param myMode
      *            The mode the launch should be performed in (e.g. 'run' or
      *            'debug')
      */
     private void launch(IFile launchFile, String launchMode) {
-	this.file = launchFile;
-	this.project = this.file.getProject();
-	this.mode = launchMode;
+	myFile = launchFile;
+	myProject = myFile.getProject();
+	myMode = launchMode;
 
 	// Find launch config for the project or initialize new one.
 	ILaunchConfiguration config = findOrCreateLaunchConfiguration();
 	// Launch
-	DebugUITools.launch(config, this.mode);
+	DebugUITools.launch(config, myMode);
     }
 
     /**
      * Searches for a launch configuration in the project. Creates a new one if
      * none found.
-     * 
-     * @param mode
+     *
+     * @param myMode
      *            The mode the launch should be performed in (e.g. 'run' or
      *            'debug')
      * @return launch configuration for the project.
@@ -102,7 +102,7 @@ public class LaunchShortcut implements ILaunchShortcut {
 
     /**
      * Creates and initializes a new launch config for the project.
-     * 
+     *
      * @return the new launch configuration
      */
     private ILaunchConfiguration createNewConfiguration() {
@@ -111,7 +111,7 @@ public class LaunchShortcut implements ILaunchShortcut {
 	    ILaunchConfigurationType type = lm
 		    .getLaunchConfigurationType(LaunchConfiguration.LAUNCH_CONFIGURATION_TYPE_ID);
 	    // Infere name of launch config from project name
-	    String name = this.project.getName();
+	    String name = myProject.getName();
 	    // Create launch config
 	    ILaunchConfigurationWorkingCopy wc = type.newInstance(null, name);
 	    initializeConfiguration(wc);
@@ -126,19 +126,19 @@ public class LaunchShortcut implements ILaunchShortcut {
      * Initializes a new launch config for the project. The main file and
      * environment used are loaded from the project's properties if possible or
      * from dialogs if not.
-     * 
+     *
      * @param config
      *            The launch configuration to be initialized
      */
 
     private void initializeConfiguration(ILaunchConfigurationWorkingCopy config) {
 	// Set project
-	config.setAttribute(LaunchConfiguration.ATTR_PROJECT, this.project.getName());
+	config.setAttribute(LaunchConfiguration.ATTR_PROJECT, myProject.getName());
     }
 
     /**
      * Searches for all applicable launch configurations for this project.
-     * 
+     *
      * @return list with the launch configurations.
      */
     private ArrayList<ILaunchConfiguration> getLaunchConfigurations() {
@@ -162,14 +162,14 @@ public class LaunchShortcut implements ILaunchShortcut {
 
     /**
      * Checks if the launch configuration is for this project.
-     * 
+     *
      * @param configuration
      *            The configuration to be checked
      */
     private boolean isGoodMatch(ILaunchConfiguration configuration) {
 	try {
 	    String projectName = configuration.getAttribute(LaunchConfiguration.ATTR_PROJECT, ""); //$NON-NLS-1$
-	    return projectName.equals(this.project.getName());
+	    return projectName.equals(myProject.getName());
 	} catch (CoreException e) {
 	    // Stupid exception...
 	}
