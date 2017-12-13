@@ -1,7 +1,7 @@
 <?php
 require 'fragments/file-buttons.php';
 include 'globals.txt';
-$version = $STABLE_VERSION_MAJOR . "." . $STABLE_VERSION_MINOR;
+$version = $STABLE_VERSION_MAJOR . "." . $STABLE_VERSION_MINOR . "." . $STABLE_VERSION_PATCH;
 
 if (isset ( $_GET ["OS"] ))
     $OS = $_GET ["OS"];
@@ -22,7 +22,7 @@ if (isset ( $_GET ["OS"] ))
     <meta name="author" content="Roberto Lo Giacco">
     <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
-    <title>Arduino Eclipse IDE - Nightly Builds</title>";
+    <title>Arduino Eclipse IDE - Nightly Builds</title>
 
     <!-- Bootstrap core CSS and theme -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -68,7 +68,9 @@ if (isset ( $_GET ["OS"] ))
 
         <h2>Some recent changes:</h2>
         <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
-        <p><a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/4.1.0-SNAPSHOT/"  target="_blank">
+        <p>
+        $version
+         <?php echo '<a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/' . $version . '-SNAPSHOT/"  target="_blank">';?>
         This download page is the travis build. Download the tar.gz for your os.</a></p>
         <p>Note that there are multiple versions. The latest are at the bottom.</p>
         <p>Mac users read the <a href="http://eclipse.baeyens.it/installAdvice.shtml#">mac specific info</a>.</p>
