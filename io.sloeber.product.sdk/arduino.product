@@ -296,7 +296,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </plugins>
 
    <features>
-      <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
