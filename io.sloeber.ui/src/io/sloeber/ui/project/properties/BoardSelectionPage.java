@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.BoardDescriptor;
@@ -176,7 +177,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			this.mAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
 		}
 
-		this.mComposite = composite;
+		Slider slider = new Slider(composite, SWT.VERTICAL);
+		slider.setMinimum(0);
+		slider.setMaximum(100);
+		
+		this.mComposite = slider;
 
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = this.ncol;
