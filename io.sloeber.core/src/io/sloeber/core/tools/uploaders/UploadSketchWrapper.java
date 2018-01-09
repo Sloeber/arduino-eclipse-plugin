@@ -60,6 +60,7 @@ public class UploadSketchWrapper {
 		BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(confDesc);
 		String UpLoadTool = boardDescriptor.getActualUploadTool(confDesc);
 		String MComPort = boardDescriptor.getUploadPort();
+		String host = boardDescriptor.getHost();
 		String uploadClass = Common.getBuildEnvironmentVariable(confDesc, Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 				new String());
 
@@ -76,7 +77,7 @@ public class UploadSketchWrapper {
 		IRealUpload realUploader = null;
 		String uploadJobName = null;
 
-		String host = Helpers.getHostFromComPort(MComPort);
+
 
 		if (host != null) {
 			if (Const.UPLOAD_CLASS_DEFAULT.equals(uploadClass)) {
