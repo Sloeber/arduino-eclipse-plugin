@@ -160,7 +160,7 @@ public abstract class IBoard {
 				"ArduinoCloud examples?SimpleCloudButton", "AudioFrequencyMeter examples?SimpleAudioFrequencyMeter" });
 		runSketchOnBoard.put("due", new String[] { "ArduinoThread examples?SensorThread",
 				"Adafruit_BME280_Library examples?advancedsettings" });
-		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000" });
+		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000"});
 		runSketchOnBoard.put("wildfire", new String[] { "aREST_UI examples?WildFire" });
 		runSketchOnBoard.put("circuitplay32u4catexpress",
 				new String[] { "Adafruit_Circuit_Playground examples?Infrared_NeoPixel",
@@ -171,7 +171,7 @@ public abstract class IBoard {
 		runSketchOnBoard.put("uno",
 				new String[] { "Accessory_Shield examples?OLED_example_Adafruit",
 						"Accessory_Shield examples?temp_humidity_oled", "AFArray examples?GetFromIndex",
-						"AFArray examples?ImplodeExplode", "Adafruit_ESP8266 examples?webclient" });
+						"AFArray examples?ImplodeExplode", "Adafruit_ESP8266 examples?webclient"  });
 
 		for (Entry<String, String[]> curEntry : runSketchOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -185,28 +185,30 @@ public abstract class IBoard {
 		this.doNotTestTheseLibs = new ArrayList<>();
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
 
-		runLibOnBoard.put("no board", new String[] { "Arduino_Commanderexamples", "ALog" ,"BPLib","ESP8266_Microgear","ESP8266_Weather_Station","Gamebuino","Gadgetron_Libraries","GadgetBox"});
-		runLibOnBoard.put("fix issue first", new String[] { "DS1307RTC" });
+		runLibOnBoard.put("no board", new String[] { "Arduino_Commanderexamples", "ALog" ,"BPLib","ESP8266_Microgear","ESP8266_Weather_Station","Gamebuino","Gadgetron_Libraries","GadgetBox","ESP8266_Oled_Driver_for_SSD1306_display","FrequencyTimer2","Gamer","ghaemShopSmSim"});
+		runLibOnBoard.put("fix issue first", new String[] { "DS1307RTC" ,"ESPMail","EspSaveCrash","FlashStorage","Fram","Geometry"});
+		runLibOnBoard.put("macro's confuse indexer", new String[] { "EnableInterrupt","Eventually"});
 
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
-						"DDS" });
+						"DDS","EtherSia","ExodeCore","FingerLib" ,"HamShield"});
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
 		runLibOnBoard.put("nodemcu", new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector",
 				"CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi" ,"ArduinoIHC","AsciiMassage",
-				"ESPiLight"});
+				"ESPiLight","HaLakeKit","HaLakeKitFirst"});
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
-		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo" });
+		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo","EnergyBoard" });
 		runLibOnBoard.put("zero", new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero",
 				"Dimmer_class_for_SAMD21", "AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
 		runLibOnBoard.put("due",
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert","ESPectro" });
+		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo","ESPUI"});
 
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -264,7 +266,7 @@ public abstract class IBoard {
 		 *  in the lib and ino name
 		 * to skip in case these boards are not in the list of boards
 		 */
-		String commonlyUsedIDNames[]=new String[] { "trinket", "esp8266", "esp32"};
+		String commonlyUsedIDNames[]=new String[] { "trinket", "esp8266", "esp32","Goldilocks"};
 		for (String curBoardName : commonlyUsedIDNames) {
 			if (libName.toLowerCase().contains(curBoardName) || inoName.toLowerCase().contains(curBoardName)) {
 				/*This examplename or libname contains the name of a board/techology/architecture
@@ -294,7 +296,7 @@ public abstract class IBoard {
 				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation",
 				"CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector", "DCF77", "dcf77_xtal",
 				"DW1000", "EDB", "eBtn", "AJSP", "EducationShield", "ArduinoMqtt", "Embedded_Template_Library",
-				"Embedis", "EMoRo_2560", "Adafruit_microbit_Library" };
+				"Embedis", "EMoRo_2560", "Adafruit_microbit_Library","GPRSbee","hd44780" };
 		return Arrays.asList(skipLibs).contains(libName);
 	}
 
