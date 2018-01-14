@@ -1082,19 +1082,7 @@ public class Helpers extends Common {
 		return "${" + variableName + '}';
 	}
 
-	/**
-	 * Give the string entered in the com port try to extract a host. If no host is
-	 * found return null yun.local at xxx.yyy.zzz (arduino yun) returns yun.local
-	 *
-	 * @param mComPort
-	 * @return
-	 */
-	public static String getHostFromComPort(String mComPort) {
-		String host = mComPort.split(Const.SPACE)[0];
-		if (host.equals(mComPort))
-			return null;
-		return host;
-	}
+
 
 	/**
 	 * creates links to the root files and folders of the source location

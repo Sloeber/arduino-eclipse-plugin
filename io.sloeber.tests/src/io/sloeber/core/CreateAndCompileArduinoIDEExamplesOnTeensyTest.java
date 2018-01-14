@@ -24,8 +24,8 @@ import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
-import io.sloeber.core.boards.GenericTeensyBoard;
 import io.sloeber.core.boards.IBoard;
+import io.sloeber.core.boards.TeensyBoards;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -113,43 +113,43 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_6() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensy36"));
+		testExample( TeensyBoards.Teensy3_6());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_5() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensy35"));
+		testExample( TeensyBoards.Teensy3_5());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_1() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensy31"));
+		testExample( TeensyBoards.Teensy3_1());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_0() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensy30"));
+		testExample( TeensyBoards.Teensy3_0());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyLC() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensyLC"));
+		testExample(TeensyBoards.Teensy_LC());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyPP2() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-		testExample(new GenericTeensyBoard("teensypp2"));
+		testExample( TeensyBoards.teensypp2());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy2() {
 		if (!Shared.getTeensyPlatform().isEmpty())
-			testExample(new GenericTeensyBoard("teensy2"));
+			testExample( TeensyBoards.teensy2());
 
 	}
 

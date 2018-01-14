@@ -27,18 +27,13 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.Due;
 import io.sloeber.core.boards.IBoard;
-import io.sloeber.core.boards.NodeMCUBoard;
-import io.sloeber.core.boards.Teensy3_1Board;
-import io.sloeber.core.boards.wemosD1;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
-	private static final boolean reinstall_boards_and_libraries = false;
+	private static final boolean reinstall_boards_and_libraries = true;
 	private static int mCounter = 0;
 	private IBoard myBoard;
 	private String myName;
@@ -86,15 +81,7 @@ public class CompileAndUpload {
 
 
 
-		IBoard[] boards = { new NodeMCUBoard(), new Teensy3_1Board(), new wemosD1(),
-				ArduinoBoards.fried(),
-				ArduinoBoards.yun(),
-				ArduinoBoards.uno(),
-				ArduinoBoards.getMega2560Board(),
-				ArduinoBoards.zero(),
-				new Due(),
-				ArduinoBoards.leonardo(),
-				ArduinoBoards.arduino_101() };
+		IBoard[] boards =MySystem.getUploadBoards();
 		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();
 
@@ -104,6 +91,8 @@ public class CompileAndUpload {
 
 		return examples;
 	}
+
+
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the

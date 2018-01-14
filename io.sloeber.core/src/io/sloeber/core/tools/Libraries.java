@@ -74,7 +74,7 @@ public class Libraries {
 				// Get filename of file or directory
 				IPath LibPath = ipath.append(curFolder);
 				File LibPathFile = LibPath.toFile();
-				if (LibPathFile.isFile() && ("cpp".equalsIgnoreCase(LibPath.getFileExtension()) //$NON-NLS-1$
+				if (LibPathFile.isFile() && (!LibPathFile.getName().startsWith(".")) && ("cpp".equalsIgnoreCase(LibPath.getFileExtension()) //$NON-NLS-1$ //$NON-NLS-2$
                         || "h".equalsIgnoreCase(LibPath.getFileExtension()))) { //$NON-NLS-1$
 					ret.put(ipath.lastSegment(), ipath);
 					return ret;

@@ -958,4 +958,20 @@ public class BoardDescriptor {
 		return Manager.getPlatformInstallPath("arduino", getArchitecture());
 	}
 
+
+	/**
+	 * If the upload port contains a space everything before the first space is
+	 *  considered to be a dns name or ip adress.
+	 *
+	 * @param mComPort
+	 * @return null if no space in uploadport
+	 *         return dns name op ipadress
+	 */
+	public String getHost() {
+		String host = myUploadPort.split(Const.SPACE)[0];
+		if (host.equals(myUploadPort))
+			return null;
+		return host;
+	}
+
 }

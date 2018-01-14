@@ -15,80 +15,142 @@ public class ArduinoBoards extends IBoard {
 	private static List<String> myDoesNotSupportSerialList = null;
 	private static List<String> mySupportSerial1List = null;
 	private static List<String> mySupportKeyboardList = null;
-	private static final String providerArduino="arduino";
-	private static final String providerIntel="Intel";
-	 private static final String AVRPlatformName= "Arduino AVR Boards";
-	private static final String SAMDPlatformName ="Arduino SAMD Boards (32-bits ARM Cortex-M0+)";
-	private static final String NFR52PlatformName ="Arduino NRF52 Boards";
-	private static final String intelPlatformName ="Intel Curie Boards";
-	 public static ArduinoBoards  getGemma() {
-		return new ArduinoBoards(providerArduino,AVRPlatformName,"gemma");
-	 }
-	 public static ArduinoBoards  MegaADK() {
-		return new ArduinoBoards(providerArduino,AVRPlatformName,"megaADK");
-	 }
-	 public static ArduinoBoards  getEsploraBoard() {
-		return new ArduinoBoards(providerArduino,AVRPlatformName,"esplora");
-	 }
-	 public static ArduinoBoards  AdafruitnCirquitPlaygroundBoard () {
-		return new ArduinoBoards(providerArduino,AVRPlatformName,"circuitplay32u4cat");
-	 }
-	 public static ArduinoBoards  getAvrBoard(String boardID) {
-		return new ArduinoBoards(providerArduino,AVRPlatformName,boardID);
-	 }
-	 public static ArduinoBoards  fried() {
-		 ArduinoBoards fried= new ArduinoBoards(providerArduino,AVRPlatformName,"LilyPadUSB");
-		 fried.myBoardDescriptor.setUploadPort("COM23");
-			return fried;
-		}
+	private static final String providerArduino = "arduino";
+	private static final String providerIntel = "Intel";
+	private static final String AVRPlatformName = "Arduino AVR Boards";
+	private static final String SAMDPlatformName = "Arduino SAMD Boards (32-bits ARM Cortex-M0+)";
+	private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
+	private static final String NFR52PlatformName = "Arduino NRF52 Boards";
+	private static final String intelPlatformName = "Intel Curie Boards";
 
+	public static IBoard getGemma() {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, "gemma");
+	}
 
-	 public static ArduinoBoards  getMega2560Board() {
-		 ArduinoBoards mega= new ArduinoBoards(providerArduino,AVRPlatformName,"mega");
-			mega.myBoardDescriptor.setUploadPort("COM11");
+	public static IBoard MegaADK() {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, "megaADK");
+	}
 
-			Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-			options.put("cpu", "atmega2560");
-			mega.myBoardDescriptor.setOptions(options);
-			return mega;
-		}
+	public static IBoard getEsploraBoard() {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, "esplora");
+	}
 
-	 public static ArduinoBoards  leonardo() {
-		 ArduinoBoards leonardo= new ArduinoBoards(providerArduino,AVRPlatformName,"leonardo");
-		 leonardo.myBoardDescriptor.setUploadPort("COM13");
-			return leonardo;
-		}
-	 public static ArduinoBoards  yun() {
-		 ArduinoBoards yun= new ArduinoBoards(providerArduino,AVRPlatformName,"yun");
-		 yun.myBoardDescriptor.setUploadPort("COM24");
-			return yun;
-		}
-	 public static ArduinoBoards  zero() {
-		 ArduinoBoards zero= new ArduinoBoards(providerArduino,SAMDPlatformName,"arduino_zero_edbg");
-		 zero.myBoardDescriptor.setUploadPort("COM14");
-			return zero;
-		}
-	 public static ArduinoBoards  mkrfox1200() {
-		 return new ArduinoBoards(providerArduino,SAMDPlatformName,"mkrfox1200");
-		}
-	 public static ArduinoBoards  primo() {
-		 return new ArduinoBoards(providerArduino,NFR52PlatformName,"primo");
-		}
+	public static IBoard AdafruitnCirquitPlaygroundBoard() {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, "circuitplay32u4cat");
+	}
 
+	public static IBoard getAvrBoard(String boardID) {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, boardID);
+	}
 
-	 public static ArduinoBoards  uno() {
-		 ArduinoBoards uno= new ArduinoBoards(providerArduino,AVRPlatformName,"uno");
-		 uno.myBoardDescriptor.setUploadPort("COM6");
-			return uno;
-		}
-	 public static ArduinoBoards  arduino_101() {
-		 ArduinoBoards arduino_101= new ArduinoBoards(providerIntel,intelPlatformName,"arduino_101");
-		 arduino_101.myBoardDescriptor.setUploadPort("COM9");
-			return arduino_101;
-		}
+	public static IBoard fried() {
+		return new ArduinoBoards(providerArduino, AVRPlatformName, "LilyPadUSB");
+	}
 
-	public ArduinoBoards(String packageName,String platformName,String boardName) {
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor("package_index.json", packageName,AVRPlatformName,
+	public static IBoard fried(String uploadPort) {
+		IBoard fried = fried();
+		fried.myBoardDescriptor.setUploadPort(uploadPort);
+		return fried;
+	}
+
+	public static IBoard getMega2560Board() {
+		IBoard mega = new ArduinoBoards(providerArduino, AVRPlatformName, "mega");
+		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		options.put("cpu", "atmega2560");
+		mega.myBoardDescriptor.setOptions(options);
+		return mega;
+	}
+
+	public static IBoard getMega2560Board(String uploadPort) {
+		IBoard mega = getMega2560Board();
+		mega.myBoardDescriptor.setUploadPort(uploadPort);
+		return mega;
+	}
+
+	public static IBoard leonardo() {
+		IBoard leonardo = new ArduinoBoards(providerArduino, AVRPlatformName, "leonardo");
+		return leonardo;
+	}
+
+	public static IBoard leonardo(String uploadPort) {
+		IBoard leonardo = leonardo();
+		leonardo.myBoardDescriptor.setUploadPort(uploadPort);
+		return leonardo;
+	}
+
+	public static IBoard yun() {
+		IBoard yun = new ArduinoBoards(providerArduino, AVRPlatformName, "yun");
+		return yun;
+	}
+
+	public static IBoard yun(String uploadPort) {
+		IBoard yun = yun();
+		yun.myBoardDescriptor.setUploadPort(uploadPort);
+		return yun;
+	}
+
+	public static IBoard zero() {
+		IBoard zero = new ArduinoBoards(providerArduino, SAMDPlatformName, "arduino_zero_edbg");
+		return zero;
+	}
+
+	public static IBoard zero(String uploadPort) {
+		IBoard zero = zero();
+		zero.myBoardDescriptor.setUploadPort(uploadPort);
+		return zero;
+	}
+
+	public static IBoard due() {
+		return new ArduinoBoards(providerArduino, SAMPlatformName, "arduino_due_x");
+	}
+
+	public static IBoard due(String uploadPort) {
+		IBoard board = due();
+		board.myBoardDescriptor.setUploadPort(uploadPort);
+		return board;
+	}
+	public static IBoard dueprogramming() {
+		return new ArduinoBoards(providerArduino, SAMPlatformName, "arduino_due_x_dbg");
+	}
+
+	public static IBoard dueprogramming(String uploadPort) {
+		IBoard board = dueprogramming();
+		board.myBoardDescriptor.setUploadPort(uploadPort);
+		return board;
+	}
+
+	public static IBoard mkrfox1200() {
+		return new ArduinoBoards(providerArduino, SAMDPlatformName, "mkrfox1200");
+	}
+
+	public static IBoard primo() {
+		return new ArduinoBoards(providerArduino, NFR52PlatformName, "primo");
+	}
+
+	public static IBoard uno() {
+		IBoard uno = new ArduinoBoards(providerArduino, AVRPlatformName, "uno");
+		return uno;
+	}
+
+	public static IBoard uno(String uploadPort) {
+		IBoard uno = uno();
+		uno.myBoardDescriptor.setUploadPort(uploadPort);
+		return uno;
+	}
+
+	public static IBoard arduino_101() {
+		IBoard arduino_101 = new ArduinoBoards(providerIntel, intelPlatformName, "arduino_101");
+		return arduino_101;
+	}
+
+	public static IBoard arduino_101(String uploadPort) {
+		IBoard arduino_101 = arduino_101();
+		arduino_101.myBoardDescriptor.setUploadPort(uploadPort);
+		return arduino_101;
+	}
+
+	private ArduinoBoards(String packageName, String platformName, String boardName) {
+		this.myBoardDescriptor = BoardsManager.getBoardDescriptor("package_index.json", packageName, platformName,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -99,8 +161,6 @@ public class ArduinoBoards extends IBoard {
 		setSupportSerial1(supportSerial1List().contains(boardName));
 		setSupportKeyboard(supportKeyboardList().contains(boardName));
 	}
-
-
 
 	static List<String> supportSerial1List() {
 		if (mySupportSerial1List == null) {
@@ -131,7 +191,7 @@ public class ArduinoBoards extends IBoard {
 		return myDoesNotSupportSerialList;
 	}
 
-	 static List<String> supportKeyboardList() {
+	static List<String> supportKeyboardList() {
 		if (mySupportKeyboardList == null) {
 			mySupportKeyboardList = new LinkedList<>();
 			mySupportKeyboardList.add("circuitplay32u4cat");

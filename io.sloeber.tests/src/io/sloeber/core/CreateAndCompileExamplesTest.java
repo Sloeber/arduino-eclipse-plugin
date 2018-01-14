@@ -29,9 +29,8 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
 import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.Due;
+import io.sloeber.core.boards.ESP8266Boards;
 import io.sloeber.core.boards.IBoard;
-import io.sloeber.core.boards.NodeMCUBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -59,13 +58,13 @@ public class CreateAndCompileExamplesTest {
 				ArduinoBoards.getEsploraBoard(),
 				new AdafruitnRF52idBoard(),
 				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(),
-				new NodeMCUBoard(),
+				ESP8266Boards.NodeMCUBoard(),
 				ArduinoBoards.primo(),
 				ArduinoBoards.getMega2560Board(),
 				ArduinoBoards.getGemma(),
 				ArduinoBoards.zero(),
 				ArduinoBoards.mkrfox1200(),
-				new Due() };
+				ArduinoBoards.due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
