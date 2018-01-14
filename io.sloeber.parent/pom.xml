@@ -101,12 +101,6 @@
 
 		<profile>
 			<id>SDK</id>
-			<activation>
-				<property>
-					<name>SDK</name>
-					<value>true</value>
-				</property>
-			</activation>
 			<modules>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
@@ -121,10 +115,7 @@
 		<profile>
 			<id>NOSDK</id>
 			<activation>
-				<property>
-					<name>SDK</name>
-					<value>!true</value>
-				</property>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<modules>
 				<module>../io.sloeber.feature</module>
@@ -340,6 +331,7 @@
 				</plugins>
 			</build>
 		</profile>
+
 		<profile>
 			<id>mac64</id>
 			<build>
@@ -365,6 +357,7 @@
 				</plugins>
 			</build>
 		</profile>
+
 		<profile>
 			<id>luna</id>
 			<properties>
