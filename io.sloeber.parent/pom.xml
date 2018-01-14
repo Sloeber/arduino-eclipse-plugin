@@ -463,6 +463,31 @@
 			</repositories>
 		</profile>
 
+		<profile>
+			<id>photon</id>
+			<properties>
+				<platform-version-name>photon</platform-version-name>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>platform_photon</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/eclipse/updates/4.8</url>
+				</repository>
+
+				<repository>
+					<id>release-train_photon</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/photon</url>
+				</repository>
+
+			</repositories>
+		</profile>
+
 
 	</profiles>
 
