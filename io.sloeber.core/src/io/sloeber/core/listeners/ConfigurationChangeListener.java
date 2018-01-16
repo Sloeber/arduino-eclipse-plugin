@@ -108,8 +108,10 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
 		if (oldBoardDescriptor.equals(newBoardDescriptor)) {
 			if (event.getProject().getName().equals(oldBoardDescriptor.getProjectName())) {
+				if(oldprojDesc.getActiveConfiguration().getName().equals(projDesc.getActiveConfiguration().getName())) {
 				// only act when there is change
 				return;
+				}
 			}
 		}
 		Helpers.setTheEnvironmentVariables(activeProject, activeConf, newBoardDescriptor);
