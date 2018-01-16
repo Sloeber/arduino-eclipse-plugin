@@ -733,16 +733,6 @@ public class Helpers extends Common {
 		// Now we have all info we can start processing
 
 		//set the output folder as derive
-		try {
-			IFolder folder=project.getFolder(confDesc.getName());
-			if(!folder.exists()) {
-				folder.create(true, true, null);
-			}
-			//folder.setDerived(true, null);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		// first remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
