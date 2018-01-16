@@ -330,9 +330,9 @@ public class Helpers extends Common {
 	 *            A monitor to show progress
 	 * @throws CoreException
 	 */
-	public static void addFileToProject(IContainer container, Path path, InputStream contentStream,
+	public static IFile addFileToProject(IContainer container, Path path, InputStream contentStream,
 			IProgressMonitor monitor, boolean overwrite) throws CoreException {
-		final IFile file = container.getFile(path);
+		IFile file = container.getFile(path);
 		file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		if (overwrite && file.exists()) {
 			file.delete(true, null);
@@ -342,6 +342,7 @@ public class Helpers extends Common {
 		if (!file.exists() && (contentStream != null)) {
 			file.create(contentStream, true, monitor);
 		}
+		return file;
 	}
 
 	public static MessageConsole findConsole(String name) {
@@ -730,6 +731,18 @@ public class Helpers extends Common {
 		File pluginPostProcessingPlatformTxt = ConfigurationPreferences.getPostProcessingPlatformFile();
 
 		// Now we have all info we can start processing
+
+		//set the output folder as derive
+		try {
+			IFolder folder=project.getFolder(confDesc.getName());
+			if(!folder.exists()) {
+				folder.create(true, true, null);
+			}
+			//folder.setDerived(true, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// first remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
