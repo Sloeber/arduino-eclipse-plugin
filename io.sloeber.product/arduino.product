@@ -348,8 +348,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.ssh"/>
       <feature id="org.eclipse.rse.core"/>
       <feature id="org.eclipse.cdt.native"/>
-      <feature id="ilg.gnuarmeclipse.debug.gdbjtag.openocd"/>
-      <feature id="ilg.gnuarmeclipse.managedbuild.cross"/>
+      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature" version="4.3.1.201801092051"/>
    </features>
 
    <configurations>
@@ -360,6 +359,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
       <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
    </configurations>
 

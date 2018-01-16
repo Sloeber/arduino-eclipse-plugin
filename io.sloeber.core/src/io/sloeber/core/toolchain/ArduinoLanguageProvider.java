@@ -13,10 +13,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.language.settings.providers.ToolchainBuiltinSpecsDetector;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.common.Common;
@@ -144,18 +141,6 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-
-		// Bug fix for CDT 8.1 fixed in 8.2
-		IFolder buildFolder = this.currentProject.getFolder(confDesc.getName());
-		if (!buildFolder.exists()) {
-			try {
-				buildFolder.create(true, true, null);
-			} catch (CoreException e) {
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						"failed to create folder " + confDesc.getName(), e));
-			}
-		}
-		// End of Bug fix for CDT 8.1 fixed in 8.2
 
 		String recipeKey = new String();
 		String extraOptions = new String();

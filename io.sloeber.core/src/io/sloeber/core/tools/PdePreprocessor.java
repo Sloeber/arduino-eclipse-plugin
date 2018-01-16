@@ -141,10 +141,11 @@ public class PdePreprocessor {
 		}
 
 		if (!newFileContent.equals(currentFileContent)) {
-			Helpers.addFileToProject(iProject, new Path(generatedFile),
+			IFile file = Helpers.addFileToProject(iProject, new Path(generatedFile),
 					new ByteArrayInputStream(newFileContent.getBytes()), null, true);
-			// } else {
-			// System.out.println(".ino.cpp has not changed");
+			if (file != null) {
+				file.setDerived(true, null);
+			}
 		}
 
 	}

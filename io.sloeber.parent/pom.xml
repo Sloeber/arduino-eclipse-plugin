@@ -171,7 +171,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -216,7 +216,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -240,7 +240,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -266,7 +266,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -291,7 +291,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -316,7 +316,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -342,7 +342,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -494,14 +494,14 @@
 		<repository>
 			<id>cdt</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/cdt/releases/9.3</url>
+			<url>http://download.eclipse.org/tools/cdt/releases/9.4</url>
 		</repository>
 
 
 		<repository>
-			<id>gnuarm</id>
+			<id>gnumcu</id>
 			<layout>p2</layout>
-			<url>http://gnuarmeclipse.sourceforge.net/updates</url>
+			<url>http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/</url>
 		</repository>
 	</repositories>
 

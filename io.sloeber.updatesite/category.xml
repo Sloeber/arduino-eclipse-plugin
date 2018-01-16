@@ -6,45 +6,84 @@
    <feature url="features/org.eclipse.cdt_0.0.0.qualifier.jar" id="org.eclipse.cdt" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/ilg.gnuarmeclipse.managedbuild.cross_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.managedbuild.cross" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.openocd_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.openocd" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.jlink_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.jlink" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.pyocd_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.pyocd" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.debug.gdbjtag.qemu_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.debug.gdbjtag.qemu" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.codered_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.codered" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.doc.user_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.doc.user" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.packs_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.packs" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.ad_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.ad" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.cortexm_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.cortexm" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.freescale_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.freescale" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/ilg.gnuarmeclipse.templates.stm_0.0.0.qualifier.jar" id="ilg.gnuarmeclipse.templates.stm" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
    <feature url="features/io.sloeber.feature_4.2.0.qualifier.jar" id="io.sloeber.feature" version="4.2.0.qualifier">
       <category name="Sloeber"/>
    </feature>
+   <bundle id="ilg.gnumcueclipse.codered" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.core" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.core" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.jlink" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.openocd" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.pyocd" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.qemu" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.restart" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.debug.packs" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.managedbuild.cross" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.managedbuild.cross.arm" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.managedbuild.cross.riscv" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.managedbuild.packs" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.packs" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.packs.core" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.packs.data" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.packs.ui" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.ad" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.core" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.cortexm" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.freescale" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.freescale.pe" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.sifive" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
+   <bundle id="ilg.gnumcueclipse.templates.stm" version="0.0.0">
+      <category name="Dependencies"/>
+   </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
@@ -52,7 +91,6 @@
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-   <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.2" enabled="true" />
-   <repository-reference location="http://download.eclipse.org/tools/cdt/releases/8.8.1" enabled="true" />
-   <repository-reference location="http://gnuarmeclipse.sourceforge.net/updates" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.4" enabled="true" />
+   <repository-reference location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates" enabled="true" />
 </site>
