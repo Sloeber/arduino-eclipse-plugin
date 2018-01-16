@@ -38,7 +38,7 @@ If you do not agree with this policy, please do not install this software.
 
    <requires>
       <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
-      <import feature="ilg.gnuarmeclipse.debug.gdbjtag.openocd" version="4.1.4.201704251808"/>
+      <import plugin="ilg.gnumcueclipse.debug.gdbjtag.openocd"/>
    </requires>
 
    <plugin
