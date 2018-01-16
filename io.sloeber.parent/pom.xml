@@ -501,7 +501,7 @@
 		<repository>
 			<id>cdt</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/cdt/releases/9.3</url>
+			<url>http://download.eclipse.org/tools/cdt/releases/9.4</url>
 		</repository>
 
 
