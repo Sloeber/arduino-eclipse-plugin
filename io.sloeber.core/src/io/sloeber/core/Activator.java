@@ -112,7 +112,7 @@ public class Activator extends AbstractUIPlugin {
 		String errorString = new String();
 		String addString = new String();
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
-		if (downloadFolderIsNotWritable()) {
+		if (!installPath.toFile().getParentFile().canWrite()) {
 			errorString += addString + "The plugin Needs write access to " + installPath.toString();
 			addString = "\nand\n";
 		}
@@ -153,15 +153,7 @@ public class Activator extends AbstractUIPlugin {
 
 	}
 
-	/**
-	 * Test whether we can write in the installation folder
-	 *
-	 * @return true if the parent of the installation folder is not writable
-	 */
-	private static boolean downloadFolderIsNotWritable() {
-		IPath installPath = ConfigurationPreferences.getInstallationPath();
-		return !installPath.toFile().getParentFile().canWrite();
-	}
+
 
 	/**
 	 * On windows the install path can not be deep
