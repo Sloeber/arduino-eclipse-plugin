@@ -89,7 +89,7 @@ public class Manager {
 	public static void startup_Pluging(IProgressMonitor monitor) {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
-		if(!LibraryManager.libsAreInstalled()) {
+		if (!LibraryManager.libsAreInstalled()) {
 			LibraryManager.InstallDefaultLibraries(monitor);
 		}
 		if (allBoards.isEmpty()) { // If boards are installed do nothing
@@ -187,17 +187,19 @@ public class Manager {
 	 *         file itself may not exists. If the url is malformed return null;
 	 * @throws MalformedURLException
 	 */
-	public static File getLocalFileName(String url) {
+	private static File getLocalFileName(String url, boolean show_error) {
 		URL packageUrl;
 		try {
 			packageUrl = new URL(url.trim());
 		} catch (MalformedURLException e) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
+			if (show_error) {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
+			}
 			return null;
 		}
-		if("file".equals(packageUrl.getProtocol())) { //$NON-NLS-1$
-			String tst=packageUrl.getFile();
-			File file=new File(tst);
+		if ("file".equals(packageUrl.getProtocol())) { //$NON-NLS-1$
+			String tst = packageUrl.getFile();
+			File file = new File(tst);
 			String localFileName = file.getName();
 			Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
 			return packagePath.toFile();
@@ -207,17 +209,17 @@ public class Manager {
 		return packagePath.toFile();
 	}
 
-//	/**
-//	 * convert a local file name to a baeyens it alternative download name There
-//	 * is no check wether the file exists only a conversion
-//	 *
-//	 * @param url
-//	 *            url of the file we want a local
-//	 * @return the file that represents the file on Baeyens.it
-//	 */
-//	private static String getBaeyensItAlternativeDownload(String localFileName) {
-//		return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
-//	}
+	// /**
+	// * convert a local file name to a baeyens it alternative download name There
+	// * is no check wether the file exists only a conversion
+	// *
+	// * @param url
+	// * url of the file we want a local
+	// * @return the file that represents the file on Baeyens.it
+	// */
+	// private static String getBaeyensItAlternativeDownload(String localFileName) {
+	// return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
+	// }
 
 	/**
 	 * This method takes a json boards file url and downloads it and parses it
@@ -231,22 +233,22 @@ public class Manager {
 	 */
 	static private void loadJson(String url, boolean forceDownload) {
 		//System.out.println("loadJson "+url+" forced= "+forceDownload); //$NON-NLS-1$ //$NON-NLS-2$
-		File jsonFile = getLocalFileName(url);
+		File jsonFile = getLocalFileName(url,true);
 		if (jsonFile == null) {
 			return;
 		}
 		if (!jsonFile.exists() || forceDownload) {
 			jsonFile.getParentFile().mkdirs();
 //			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
-//			try {
-//				myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
-//			} catch (IOException e0) {
-				try {
-					myCopy(new URL(url.trim()), jsonFile, false);
-				} catch (IOException e) {
-					Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
-				}
-//			}
+			// try {
+			// myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
+			// } catch (IOException e0) {
+			try {
+				myCopy(new URL(url.trim()), jsonFile, false);
+			} catch (IOException e) {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+			}
+			// }
 		}
 		if (jsonFile.exists()) {
 			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
@@ -778,9 +780,11 @@ public class Manager {
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {
-			File localFile = getLocalFileName(curJson);
-			if (localFile.exists()) {
-				localFile.delete();
+			File localFile = getLocalFileName(curJson, true);
+			if (localFile != null) {
+				if (localFile.exists()) {
+					localFile.delete();
+				}
 			}
 		}
 
@@ -810,9 +814,13 @@ public class Manager {
 		// remove the files from disk which were in the old lst but not in the
 		// new one
 		for (String curJson : origJsons) {
-			File localFile = getLocalFileName(curJson);
-			if (localFile.exists()) {
-				localFile.delete();
+			try {
+				File localFile = getLocalFileName(curJson, false);
+				if (localFile.exists()) {
+					localFile.delete();
+				}
+			} catch (@SuppressWarnings("unused") Exception e) {
+				// ignore
 			}
 		}
 		// save to configurationsettings before calling LoadIndices
@@ -839,7 +847,7 @@ public class Manager {
 	 */
 	@SuppressWarnings("nls")
 	private static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
-		if("file".equals(url.getProtocol())) {
+		if ("file".equals(url.getProtocol())) {
 			FileUtils.copyFile(new File(url.getFile()), localFile);
 			return;
 		}
@@ -884,7 +892,5 @@ public class Manager {
 			curPackage.onlyKeepLatestPlatforms();
 		}
 	}
-
-
 
 }
