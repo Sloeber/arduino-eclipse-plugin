@@ -81,8 +81,8 @@ public class Manager {
 	}
 
 	/**
-	 * Loads all stuff needed and if this is the first time downloads the avr
-	 * boards and needed tools
+	 * Loads all stuff needed and if this is the first time downloads the avr boards
+	 * and needed tools
 	 *
 	 * @param monitor
 	 */
@@ -127,9 +127,9 @@ public class Manager {
 	}
 
 	/**
-	 * Given a platform description in a json file download and install all
-	 * needed stuff. All stuff is including all tools and core files and
-	 * hardware specific libraries. That is (on windows) inclusive the make.exe
+	 * Given a platform description in a json file download and install all needed
+	 * stuff. All stuff is including all tools and core files and hardware specific
+	 * libraries. That is (on windows) inclusive the make.exe
 	 *
 	 * @param platform
 	 * @param monitor
@@ -178,13 +178,13 @@ public class Manager {
 	}
 
 	/**
-	 * convert a web url to a local file name. The local file name is the cache
-	 * of the web
+	 * convert a web url to a local file name. The local file name is the cache of
+	 * the web
 	 *
 	 * @param url
 	 *            url of the file we want a local cache
-	 * @return the file that represents the file that is the local cache. the
-	 *         file itself may not exists. If the url is malformed return null;
+	 * @return the file that represents the file that is the local cache. the file
+	 *         itself may not exists. If the url is malformed return null;
 	 * @throws MalformedURLException
 	 */
 	private static File getLocalFileName(String url, boolean show_error) {
@@ -201,7 +201,8 @@ public class Manager {
 			String tst = packageUrl.getFile();
 			File file = new File(tst);
 			String localFileName = file.getName();
-			Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+			Path packagePath = Paths
+					.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
 			return packagePath.toFile();
 		}
 		String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
@@ -209,55 +210,37 @@ public class Manager {
 		return packagePath.toFile();
 	}
 
-	// /**
-	// * convert a local file name to a baeyens it alternative download name There
-	// * is no check wether the file exists only a conversion
-	// *
-	// * @param url
-	// * url of the file we want a local
-	// * @return the file that represents the file on Baeyens.it
-	// */
-	// private static String getBaeyensItAlternativeDownload(String localFileName) {
-	// return "https://eclipse.baeyens.it/download/" + localFileName; //$NON-NLS-1$
-	// }
-
 	/**
-	 * This method takes a json boards file url and downloads it and parses it
-	 * for usage in the boards manager
+	 * This method takes a json boards file url and downloads it and parses it for
+	 * usage in the boards manager
 	 *
 	 * @param url
 	 *            the url of the file to download and load
 	 * @param forceDownload
-	 *            set true if you want to download the file even if it is
-	 *            already available locally
+	 *            set true if you want to download the file even if it is already
+	 *            available locally
 	 */
 	static private void loadJson(String url, boolean forceDownload) {
-		//System.out.println("loadJson "+url+" forced= "+forceDownload); //$NON-NLS-1$ //$NON-NLS-2$
-		File jsonFile = getLocalFileName(url,true);
+		File jsonFile = getLocalFileName(url, true);
 		if (jsonFile == null) {
 			return;
 		}
 		if (!jsonFile.exists() || forceDownload) {
 			jsonFile.getParentFile().mkdirs();
-//			String alternativeDownloadurl = getBaeyensItAlternativeDownload(jsonFile.getName());
-			// try {
-			// myCopy(new URL(alternativeDownloadurl.trim()), jsonFile, false);
-			// } catch (IOException e0) {
 			try {
 				myCopy(new URL(url.trim()), jsonFile, false);
 			} catch (IOException e) {
 				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
 			}
-			// }
 		}
 		if (jsonFile.exists()) {
 			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
 				loadPackage(jsonFile);
 			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
 				LibraryManager.loadJson(jsonFile);
-			}
-			else {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "json files should start with \"package_\" or \"library_\" " + url+ " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(),
+						"json files should start with \"package_\" or \"library_\" " + url + " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
@@ -449,11 +432,11 @@ public class Manager {
 	/**
 	 * downloads an archive file from the internet and saves it in the download
 	 * folder under the name "pArchiveFileName" then extrats the file to
-	 * pInstallPath if pForceDownload is true the file will be downloaded even
-	 * if the download file already exists if pForceDownload is false the file
-	 * will only be downloaded if the download file does not exists The
-	 * extraction is done with processArchive so only files types supported by
-	 * this method will be properly extracted
+	 * pInstallPath if pForceDownload is true the file will be downloaded even if
+	 * the download file already exists if pForceDownload is false the file will
+	 * only be downloaded if the download file does not exists The extraction is
+	 * done with processArchive so only files types supported by this method will be
+	 * properly extracted
 	 *
 	 * @param pURL
 	 *            the url of the file to download
@@ -765,8 +748,8 @@ public class Manager {
 	}
 
 	/**
-	 * This method removes the json files from disk and removes memory
-	 * references to these files or their content
+	 * This method removes the json files from disk and removes memory references to
+	 * these files or their content
 	 *
 	 * @param packageUrlsToRemove
 	 */
