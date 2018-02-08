@@ -348,7 +348,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.ssh"/>
       <feature id="org.eclipse.rse.core"/>
       <feature id="org.eclipse.cdt.native"/>
-      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature" version="4.3.1.201801092051"/>
+      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature"/>
    </features>
 
    <configurations>
