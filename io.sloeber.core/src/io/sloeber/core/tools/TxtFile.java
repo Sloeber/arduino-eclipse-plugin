@@ -470,12 +470,14 @@ public class TxtFile {
 		// nothing found so look in the post 1.5.4 way
 		// boardid."menu".menuid.menuitemid=name
 		Map<String, String> BoardIDSectionMap = getSection(boardID);
-		lookupValue = MENU + DOT + menuID + DOT;
-		lookupValue = lookupValue.toUpperCase();
 		for (Entry<String, String> curOption : BoardIDSectionMap.entrySet()) {
+
 			if (curOption.getValue().equals(menuItemName)) {
-				if (curOption.getKey().toUpperCase().startsWith(lookupValue))
-					return curOption.getKey().substring(lookupValue.length());
+				String[] keyParts=curOption.getKey().split("\\.");
+				if(keyParts.length==3) {
+				if (keyParts[1].equalsIgnoreCase(menuID))
+					return keyParts[2];
+			}
 			}
 		}
 		return Messages.getMenuItemIDFromMenuItemName.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)
