@@ -31,11 +31,11 @@
 		<h1>Good to know.</h1>
 		<ul>
 		<li>The console output shows the build result and is your friend in compiling your code.</li>
-		<li>The console utput is in a tab in the bottom.</li>
+		<li>The console output is in a tab at the bottom.</li>
 		<li>The serial monitor can be open all the time.</li>
 			<li>The serial monitor is in a tab in the bottom.</li>
 			<li>So is the scope.</li>
-			<li>The console output shows build and upload feedback of the current selected project.</li>
+			<li>The console output shows build and upload feedback for the current selected project.</li>
 			<li>On the left you see the project explorer. This contains all the projects. Each project corresponds with a sketch.</li>
 			<li>There are multiple monitors in Eclipse world. If you see nothing in the monitor make sure you have the correct monitor view (buttons left top of monitor)</li>
 		</ul>
