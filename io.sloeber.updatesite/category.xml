@@ -84,6 +84,12 @@
    <bundle id="ilg.gnumcueclipse.templates.stm" version="0.0.0">
       <category name="Dependencies"/>
    </bundle>
+   <bundle id="io.sloeber.product" version="4.2.0.qualifier">
+      <category name="Sloeber"/>
+   </bundle>
+   <bundle id="io.sloeber.product.sdk" version="4.2.0.qualifier">
+      <category name="Sloeber"/>
+   </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
