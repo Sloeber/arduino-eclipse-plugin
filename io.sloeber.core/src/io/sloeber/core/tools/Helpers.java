@@ -10,10 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -470,19 +467,7 @@ public class Helpers extends Common {
 					ConfigurationPreferences.getMakePath().toString() + '/');
 		}
 
-		// Build Time
-		Date d = new Date();
-		GregorianCalendar cal = new GregorianCalendar();
-		long current = d.getTime() / 1000;
-		long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
-		long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
-		// p.put("extra.time.utc", Long.toString(current));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.UTC", Long.toString(current));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.LOCAL",
-				Long.toString(current + timezone + daylight));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.ZONE", Long.toString(timezone));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.DTS", Long.toString(daylight));
-		// End of Teensy specific settings
+
 
 		// some glue to make it work
 		String pathDelimiter = makeEnvironmentVar("PathDelimiter");
@@ -912,10 +897,10 @@ public class Helpers extends Common {
 		// The expansion is needed because the adaptCompilerCommand can not
 		// handle
 		// noon extended environment variables
-		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-		var = envManager.getVariable(key, confdesc, true);
-		var = new EnvironmentVariable(key, adaptCompilerCommand(var.getValue()));
-		contribEnv.addVariable(var, confdesc);
+//		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+//		var = envManager.getVariable(key, confdesc, true);
+//		var = new EnvironmentVariable(key, adaptCompilerCommand(var.getValue()));
+//		contribEnv.addVariable(var, confdesc);
 
 	}
 
@@ -940,21 +925,21 @@ public class Helpers extends Common {
 	 * I also do some stuff for the warning settings
 	 */
 	private static String adaptCompilerCommand(String recipe) {
-		String ret = recipe.replaceAll(" -MMD ", " ");
-		ret = ret.replaceAll("[^\\\\]\"\"", "");
-
-		String replaceString = " '-D$1=\"$2\"'"; // linux and mac
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			ret = ret.replaceAll(" '-D(\\S+)='", " -D$1=");
-			replaceString = " \"-D$1=\\\\\"$2\\\\\"\""; // windows
-		}
-
-		ret = ret.replaceAll(" '?-D(\\S+)=\\\\?\"(.+?)\\\\?\"'?", replaceString);
-		ret = ret.replaceAll(" '-D(\\S+)='", replaceString);
-
-		ret = ret.replaceAll("  ", " ");
-
-		return ret;
+//		String ret = recipe.replaceAll(" -MMD ", " ");
+//		ret = ret.replaceAll("[^\\\\]\"\"", "");
+//
+//		String replaceString = " '-D$1=\"$2\"'"; // linux and mac
+//		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+//			ret = ret.replaceAll(" '-D(\\S+)='", " -D$1=");
+//			replaceString = " \"-D$1=\\\\\"$2\\\\\"\""; // windows
+//		}
+//
+//		ret = ret.replaceAll(" '?-D(\\S+)=\\\\?\"(.+?)\\\\?\"'?", replaceString);
+//		ret = ret.replaceAll(" '-D(\\S+)='", replaceString);
+//
+//		ret = ret.replaceAll("  ", " ");
+//
+		return recipe;
 	}
 
 	/**
