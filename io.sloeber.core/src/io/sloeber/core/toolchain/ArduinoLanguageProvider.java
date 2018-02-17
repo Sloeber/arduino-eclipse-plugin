@@ -1,14 +1,9 @@
 package io.sloeber.core.toolchain;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsEditableProvider;
 import org.eclipse.cdt.core.language.settings.providers.IWorkingDirectoryTracker;
@@ -27,23 +22,7 @@ import io.sloeber.core.common.Const;
 @SuppressWarnings("nls")
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		implements ILanguageSettingsEditableProvider {
-	@Override
-	protected List<IEnvironmentVariable> getEnvironmentVariables() {
-		// TODO Auto-generated method stub
-		// Build Time to set clock based on computer time
-		Date d = new Date();
-		GregorianCalendar cal = new GregorianCalendar();
-		long current = d.getTime() / 1000;
-		long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
-		long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
 
-		 List<IEnvironmentVariable> ret = super.getEnvironmentVariables();
-		 ret.add(new EnvironmentVariable( "A.EXTRA.TIME.UTC", Long.toString(current)));
-		 ret.add(new EnvironmentVariable( "A.EXTRA.TIME.LOCAL",	Long.toString(current + timezone + daylight)));
-		 ret.add(new EnvironmentVariable("A.EXTRA.TIME.ZONE", Long.toString(timezone)));
-		 ret.add(new EnvironmentVariable("A.EXTRA.TIME.DTS", Long.toString(daylight)));
-		 return ret;
-	}
 
 	// ID must match the tool-chain definition in
 	// org.eclipse.cdt.managedbuilder.core.buildDefinitions extension point
@@ -180,11 +159,11 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		}
 		extraOptions = extraOptions + " " + compileOptions.get_C_andCPP_CompileOptions()+" "+compileOptions.get_All_CompileOptions();
 		try {
-			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, true).getValue();
+			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, false).getValue();
 			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "2", confDesc, true).getValue();
+					+ envManager.getVariable(recipeKey + Const.DOT + "2", confDesc, false).getValue();
 			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "3", confDesc, true).getValue();
+					+ envManager.getVariable(recipeKey + Const.DOT + "3", confDesc, false).getValue();
 		} catch (Exception e) {
 			compilerCommand = new String();
 		}

@@ -80,9 +80,7 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
 	private static final String ENV_KEY_REFERENCED_PLATFORM_PATH = ERASE_START + "RUNTIME.REFERENCED.PLATFORM.PATH";
-
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
-
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
 
 	/**
@@ -804,10 +802,8 @@ public class Helpers extends Common {
 			if (ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
 				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
+				setBuildEnvironmentVariable(contribEnv,confDesc, recipeKey, recipe);
 			}
-
-			recipe = adaptCompilerCommand(recipe);
-			setBuildEnvironmentVariable(confDesc, recipeKey, recipe);
 
 			String recipeParts[] = recipe.split(
 					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE_PATH}\")",
@@ -818,16 +814,16 @@ public class Helpers extends Common {
 						Messages.Helpers_No_command_for + recipeKey);
 				break;
 			case 1:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
 				break;
 			case 2:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
 				break;
 			case 3:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
 				break;
 			default:
 				// this should never happen as the split is limited to 3
@@ -877,6 +873,11 @@ public class Helpers extends Common {
 					objcopyCommand.add(makeEnvironmentVar(name));
 
 				}
+				//Handle spaces in defines for USB stuff in windows
+				if (name.startsWith("A.BUILD.USB_")&&(Platform.getOS().equals(Platform.OS_WIN32))) {
+					String moddedValue=curVariable.getValue().replace("\"","\\\"").replace("'", "\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+				}
 			}
 
 		} catch (Exception e) {
@@ -888,59 +889,7 @@ public class Helpers extends Common {
 
 	}
 
-	private static void setBuildEnvironmentVariableRecipe(IContributedEnvironment contribEnv,
-			ICConfigurationDescription confdesc, String key, String recipe) {
 
-		IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(recipe));
-		contribEnv.addVariable(var, confdesc);
-
-		// The expansion is needed because the adaptCompilerCommand can not
-		// handle
-		// noon extended environment variables
-//		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-//		var = envManager.getVariable(key, confdesc, true);
-//		var = new EnvironmentVariable(key, adaptCompilerCommand(var.getValue()));
-//		contribEnv.addVariable(var, confdesc);
-
-	}
-
-	/*
-	 * due to the way arduino and cdt work some conversions are needed her.
-	 * replaceAll(" -MMD ", " ") CDT adds -MMD so we delete them
-	 *
-	 * replaceAll("[^\\\\]\"\"", "" I can't recall what this one is for but it
-	 * removes "" except \""
-	 *
-	 * For the os dependent stuff see
-	 * https://github.com/jantje/arduino-eclipse-plugin/issues/493 in windows
-	 * replace '-DXXX="YYY"' with "-DXXX=\\"YYY\\"" in windows replace '-DXXXX=' *
-	 * with -DXXXX=
-	 *
-	 * replaceAll("  ", " ") due to the above replacements there can be multiple
-	 * spaces. this cause(s/d) problems so I re^lace them with 1 space. note that
-	 * -with the current implementation- this means that is you define a string to a
-	 * define and the string has multiple spaces there will only be one left. This
-	 * one has to be the last replacement !!
-	 *
-	 * I also do some stuff for the warning settings
-	 */
-	private static String adaptCompilerCommand(String recipe) {
-//		String ret = recipe.replaceAll(" -MMD ", " ");
-//		ret = ret.replaceAll("[^\\\\]\"\"", "");
-//
-//		String replaceString = " '-D$1=\"$2\"'"; // linux and mac
-//		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-//			ret = ret.replaceAll(" '-D(\\S+)='", " -D$1=");
-//			replaceString = " \"-D$1=\\\\\"$2\\\\\"\""; // windows
-//		}
-//
-//		ret = ret.replaceAll(" '?-D(\\S+)=\\\\?\"(.+?)\\\\?\"'?", replaceString);
-//		ret = ret.replaceAll(" '-D(\\S+)='", replaceString);
-//
-//		ret = ret.replaceAll("  ", " ");
-//
-		return recipe;
-	}
 
 	/**
 	 * When parsing boards.txt and platform.txt some processing needs to be done to
