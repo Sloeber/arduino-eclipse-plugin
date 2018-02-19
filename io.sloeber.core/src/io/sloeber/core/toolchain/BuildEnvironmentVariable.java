@@ -97,7 +97,7 @@ public class BuildEnvironmentVariable implements IBuildEnvironmentVariable {
 	}
 
 	// Helper method to check equality of two objects
-	private boolean equals(Object obj1, Object obj2) {
+	private static boolean equals(Object obj1, Object obj2) {
 		if (obj1 == obj2)
 			return true;
 		else if (obj1 == null)
