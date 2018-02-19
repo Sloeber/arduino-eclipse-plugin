@@ -1,14 +1,27 @@
 package io.sloeber.core.toolchain;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
-import org.eclipse.cdt.internal.core.envvar.EnvironmentVariableManager;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 
 public class BuildEnvironmentVariable implements IBuildEnvironmentVariable {
 	protected String fName;
 	protected String fValue;
-	final protected String fDelimiter= EnvironmentVariableManager.getDefault().getDefaultDelimiter();
+	final protected String fDelimiter= getDefaultDelimiter();
+	private static final String DELIMITER_WIN32 = ";";  //$NON-NLS-1$
+	private static final String DELIMITER_UNIX = ":";  //$NON-NLS-1$
 	protected int fOperation;
+
+	private static boolean isWin32() {
+		String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+		if (os.startsWith("windows ")) //$NON-NLS-1$
+			return true;
+		return false;
+	}
+
+
+	public static String getDefaultDelimiter() {
+		return isWin32() ? DELIMITER_WIN32 : DELIMITER_UNIX;
+	}
 
 	public BuildEnvironmentVariable(String name, String value, int op) {
 		fName = name;
