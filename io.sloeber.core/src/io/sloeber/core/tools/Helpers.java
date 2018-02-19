@@ -224,7 +224,7 @@ public class Helpers extends Common {
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	public static void addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
-			ICConfigurationDescription configurationDescription) throws CoreException {
+			ICConfigurationDescription configurationDescription,boolean forceRoot) throws CoreException {
 		IFolder link = project.getFolder(LinkName);
 
 		LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
@@ -238,13 +238,17 @@ public class Helpers extends Common {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 		}
 
-		// add src or root give priority to src
-		possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
-		file = toLinkFolder.append(possibleIncludeFolder).toFile();
-		if (file.exists()) {
-			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
-		} else {
+		if (forceRoot) {
 			addIncludeFolder(configurationDescription, link.getFullPath());
+		} else {
+			// add src or root give priority to src
+			possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
+			file = toLinkFolder.append(possibleIncludeFolder).toFile();
+			if (file.exists()) {
+				addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+			} else {
+				addIncludeFolder(configurationDescription, link.getFullPath());
+			}
 		}
 
 		possibleIncludeFolder = "arch";
@@ -284,11 +288,11 @@ public class Helpers extends Common {
 	 *
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription)
+	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription,boolean forceRoot)
 			throws CoreException {
 
 		String NiceName = Path.lastSegment();
-		addCodeFolder(project, Path, NiceName, configurationDescription);
+		addCodeFolder(project, Path, NiceName, configurationDescription,forceRoot);
 	}
 
 	/**
@@ -369,7 +373,7 @@ public class Helpers extends Common {
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
 
 		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
-				configurationDescription);
+				configurationDescription,true);
 		IPath variantPath = boardDescriptor.getActualVariantPath();
 		if (variantPath == null) {
 			// remove the existing link
@@ -377,7 +381,7 @@ public class Helpers extends Common {
 		} else {
 			IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
 			Helpers.addCodeFolder(project, redirectVariantPath, ARDUINO_CODE_FOLDER_NAME + "/variant",
-					configurationDescription);
+					configurationDescription,false);
 		}
 
 	}
@@ -799,6 +803,11 @@ public class Helpers extends Common {
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
+			if (Platform.getOS().equals(Platform.OS_WIN32)) {
+				//this is for adafruit using "{version}" with has to be \"{version}\" to work in windows
+				recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
+			}
+
 			if (ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
 				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
@@ -874,10 +883,27 @@ public class Helpers extends Common {
 
 				}
 				//Handle spaces in defines for USB stuff in windows
-				if (name.startsWith("A.BUILD.USB_")&&(Platform.getOS().equals(Platform.OS_WIN32))) {
-					String moddedValue=curVariable.getValue().replace("\"","\\\"").replace("'", "\"");
+				if (Platform.getOS().equals(Platform.OS_WIN32)){
+					if("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("\"","\\\"");
 					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("\"","\\\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.USB_FLAGS".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("'", "\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.EXTRA_FLAGS".equalsIgnoreCase(name)){
+						//for radino
+						//radinoCC1101.build.extra_flags=-DUSB_VID={build.vid} -DUSB_PID={build.pid} '-DUSB_PRODUCT={build.usb_product}'
+						String moddedValue=curVariable.getValue().replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'","\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
+						setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
 				}
+
 			}
 
 		} catch (Exception e) {
