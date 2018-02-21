@@ -79,7 +79,6 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
-	private static final String ENV_KEY_REFERENCED_PLATFORM_PATH = ERASE_START + "RUNTIME.REFERENCED.PLATFORM.PATH";
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
 
@@ -450,7 +449,6 @@ public class Helpers extends Common {
 			ICConfigurationDescription confDesc, BoardDescriptor boardDescriptor) {
 		// Set some default values because the platform.txt does not contain
 		// them
-		IPath referencedPlatformPath = boardDescriptor.getReferencedCorePlatformPath();
 		IPath platformPath = boardDescriptor.getreferencingPlatformPath();
 		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
@@ -459,11 +457,8 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, hardwarePath.toString());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_PLATFORM_PATH,
-				referencedPlatformPath.toString());
-		// setBuildEnvironmentVariable(contribEnv, confDesc,
-		// ENV_KEY_SERIAL_PORT,
-		// makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
+
+
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 					ConfigurationPreferences.getMakePath().toString() + '/');
