@@ -23,6 +23,7 @@ public class GenericJantjeBoard extends IBoard {
 	}
 	public GenericJantjeBoard(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		options.put("type", "debug");
 		this.myBoardDescriptor = BoardsManager.getBoardDescriptor(getJsonFileName(),getPackageName(),getPlatformName() ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
