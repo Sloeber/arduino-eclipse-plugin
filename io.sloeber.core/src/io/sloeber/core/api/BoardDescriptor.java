@@ -126,15 +126,7 @@ public class BoardDescriptor {
 		return getReferencingBoardsFile() + " \"" + getBoardName() + "\" " + getUploadPort(); //$NON-NLS-2$
 	}
 
-	// private static final String ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM =
-	// Const.ERASE_START
-	// + "JANTJE.VARIANT.REFERENCED.PLATFORM";
-	// private static final String ENV_KEY_JANTJE_UPLOAD_REFERENCED_PLATFORM =
-	// Const.ERASE_START
-	// + "JANTJE.UPLOAD.REFERENCED.PLATFORM";
-	// public static final String ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM =
-	// ERASE_START + ENV_KEY_JANTJE_START
-	// + "CORE.REFERENCED.PLATFORM"; //$NON-NLS-1$
+
 	/**
 	 * Compare 2 descriptors and return true is they are equal. This method detects
 	 * - OS changes - project name changes - moves of workspace - changed runtine
@@ -392,14 +384,14 @@ public class BoardDescriptor {
 	 * @param boardFile
 	 * @return a list of board descriptors
 	 */
-	public static List<BoardDescriptor> makeBoardDescriptors(File boardFile) {
+	public static List<BoardDescriptor> makeBoardDescriptors(File boardFile,Map<String, String> options) {
 		TxtFile txtFile = new TxtFile(boardFile);
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curboardName : txtFile.getAllNames()) {
 			Map<String, String> boardSection = txtFile.getSection(txtFile.getBoardIDFromBoardName(curboardName));
 			if (boardSection != null) {
 				if (!"true".equalsIgnoreCase(boardSection.get("hide"))) {
-					boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), null));
+					boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), options));
 				}
 			}
 		}
@@ -421,10 +413,9 @@ public class BoardDescriptor {
 		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myreferencingBoardsFile = boardsFile;
 		this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+		setDefaultOptions();
 		if (options != null) {
 			this.myOptions.putAll(options);
-		} else {
-			setDefaultOptions();
 		}
 		calculateDerivedFields();
 
@@ -736,7 +727,6 @@ public class BoardDescriptor {
 	}
 
 	public void setOptions(Map<String, String> options) {
-		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myOptions.putAll(options);
 		calculateDerivedFields();
 	}

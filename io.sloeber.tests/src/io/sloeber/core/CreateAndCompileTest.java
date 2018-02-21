@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +35,11 @@ public class CreateAndCompileTest {
 		// build the Arduino way
 		Preferences.setUseArduinoToolSelection(true);
 		installAdditionalBoards();
+		 Map<String, String> options= new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		options.put("type", "debug");
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curBoardFile : BoardsManager.getAllBoardsFiles()) {
-			boards.addAll(BoardDescriptor.makeBoardDescriptors(new File(curBoardFile)));
+			boards.addAll(BoardDescriptor.makeBoardDescriptors(new File(curBoardFile),options));
 		}
 		// to avoid warnings set the upload port to some value
 		for (BoardDescriptor curBoard : boards) {
