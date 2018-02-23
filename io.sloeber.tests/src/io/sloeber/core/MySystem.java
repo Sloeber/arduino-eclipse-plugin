@@ -16,13 +16,13 @@ import io.sloeber.core.boards.TeensyBoards;
 public class MySystem {
 	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-PR-beta1.9-BUILD-31\\hardware\\teensy";
 	//D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
-	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
+	private static String jantjesVirtualLinuxMachine = "/home/jan/arduino-1.8.5/hardware/teensy";
 
 	public static String getTeensyPlatform() {
 		switch (Other.getSystemHash()) {
 		case "1248215851":
 			return jantjesWindowsMachine;
-		case "still need to get the key":
+		case "-784776710":
 			return jantjesVirtualLinuxMachine;
 		}
 		return new String();
