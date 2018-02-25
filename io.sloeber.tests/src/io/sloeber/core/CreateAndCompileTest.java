@@ -55,7 +55,10 @@ public class CreateAndCompileTest {
 	 */
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "http://downloads.arduino.cc/packages/package_index.json",
+		String[] packageUrlsToIgnore = {"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json"//There is a newer version
+				};
+
+		String[] packageUrlsFromThirthPartyWebPage = { "http://downloads.arduino.cc/packages/package_index.json",
 				"https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json",
 				"https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json",
 				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
@@ -100,7 +103,7 @@ public class CreateAndCompileTest {
 				"https://raw.githubusercontent.com/AloriumTechnology/Arduino_Boards/master/package_aloriumtech_index.json",
 				"https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
 				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
-//				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
+				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
 				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.6_index.json",
 				"https://raw.githubusercontent.com/FemtoCow/ATTinyCore/master/Downloads/package_femtocow_attiny_index.json",
 				"https://raw.githubusercontent.com/Lauszus/Sanguino/master/package_lauszus_sanguino_index.json",
@@ -141,8 +144,10 @@ public class CreateAndCompileTest {
 				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
 				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json" };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		HashSet<String> toAddList=new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
+		toAddList.removeAll(Arrays.asList(packageUrlsToIgnore));
+		BoardsManager.addPackageURLs(toAddList, true);
+		BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.installAllLatestPlatforms();
 			BoardsManager.onlyKeepLatestPlatforms();
