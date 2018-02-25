@@ -14,7 +14,7 @@ import io.sloeber.core.boards.TeensyBoards;
  */
 @SuppressWarnings("nls")
 public class MySystem {
-	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-PR-beta1.9-BUILD-31\\hardware\\teensy";
+	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-1.8.5\\hardware\\teensy";
 	//D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
 	private static String jantjesVirtualLinuxMachine = "/home/jan/arduino-1.8.5/hardware/teensy";
 
