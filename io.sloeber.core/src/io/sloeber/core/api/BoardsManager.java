@@ -146,8 +146,10 @@ public class BoardsManager {
 				"failed to find " + JasonName + " " + packageName + " " + platformName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
-	public static void referenceLocallInstallation(String newHardwarePath) {
-
+	public static void addPrivateHardwarePath(String newHardwarePath) {
+		if(newHardwarePath==null) {
+			return;
+		}
 		String currentPaths[] = InstancePreferences.getPrivateHardwarePaths();
 		String newPaths[] = new String[currentPaths.length + 1];
 		for (int i = 0; i < currentPaths.length; i++) {

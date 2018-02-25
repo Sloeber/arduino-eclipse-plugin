@@ -43,7 +43,7 @@ public class RegressionTest {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
 		if (!Shared.getTeensyPlatform().isEmpty()) {
-			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
 		}
 	}
 

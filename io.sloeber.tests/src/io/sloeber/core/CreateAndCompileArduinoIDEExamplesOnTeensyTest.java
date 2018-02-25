@@ -57,7 +57,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
 		}
 		else {
-			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
 		}
 
 
