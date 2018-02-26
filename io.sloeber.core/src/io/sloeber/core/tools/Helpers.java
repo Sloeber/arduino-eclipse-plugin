@@ -236,7 +236,6 @@ public class Helpers extends Common {
 
 		// Now the folder has been created we need to make sure the special
 		// folders are added to the path
-		addIncludeFolder(configurationDescription, link.getFullPath());
 
 		String possibleIncludeFolder = "utility";
 		File file = toLinkFolder.append(possibleIncludeFolder).toFile();
@@ -244,10 +243,13 @@ public class Helpers extends Common {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 		}
 
+		// add src or root give priority to src
 		possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
 		file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+		} else {
+			addIncludeFolder(configurationDescription, link.getFullPath());
 		}
 
 		possibleIncludeFolder = "arch";
@@ -328,9 +330,9 @@ public class Helpers extends Common {
 	 *            A monitor to show progress
 	 * @throws CoreException
 	 */
-	public static void addFileToProject(IContainer container, Path path, InputStream contentStream,
+	public static IFile addFileToProject(IContainer container, Path path, InputStream contentStream,
 			IProgressMonitor monitor, boolean overwrite) throws CoreException {
-		final IFile file = container.getFile(path);
+		IFile file = container.getFile(path);
 		file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		if (overwrite && file.exists()) {
 			file.delete(true, null);
@@ -340,6 +342,7 @@ public class Helpers extends Common {
 		if (!file.exists() && (contentStream != null)) {
 			file.create(contentStream, true, monitor);
 		}
+		return file;
 	}
 
 	public static MessageConsole findConsole(String name) {
@@ -657,7 +660,7 @@ public class Helpers extends Common {
 		File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
 		String architecture = boardDescriptor.getArchitecture();
 		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
-				addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
+			addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 		}
 		ArduinoPlatform LatestArduinoPlatform = null;
 		for (ArduinoPlatform curPlatform : Manager.getLatestInstalledPlatforms()) {
@@ -728,6 +731,8 @@ public class Helpers extends Common {
 		File pluginPostProcessingPlatformTxt = ConfigurationPreferences.getPostProcessingPlatformFile();
 
 		// Now we have all info we can start processing
+
+		//set the output folder as derive
 
 		// first remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
@@ -1081,8 +1086,6 @@ public class Helpers extends Common {
 	private static String makeEnvironmentVar(String variableName) {
 		return "${" + variableName + '}';
 	}
-
-
 
 	/**
 	 * creates links to the root files and folders of the source location

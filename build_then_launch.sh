@@ -14,7 +14,7 @@ if [[ $? -ne 0 ]] ; then
 fi
 
 #This is the actual build
-mvn verify
+mvn clean verify -DskipTests=true
 if [[ $? -ne 0 ]] ; then
     echo "Problem in build"
     exit 1

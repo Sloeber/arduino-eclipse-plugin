@@ -409,8 +409,8 @@ public class TxtFile {
 
 	/*
 	 * Returns the package name based on the boardsfile name Caters for the packages
-	 * (with version number and for the old way
-	 * if the boards file does not exists returns arduino
+	 * (with version number and for the old way if the boards file does not exists
+	 * returns arduino
 	 */
 	public String getPackage() {
 		if (this.mLastLoadedTxtFile.exists()) {
@@ -427,8 +427,8 @@ public class TxtFile {
 
 	/*
 	 * Returns the architecture based on the platform file name Caters for the
-	 * packages (with version number and for the old way
-	 * if the boards file does not exists returns avr
+	 * packages (with version number and for the old way if the boards file does not
+	 * exists returns avr
 	 */
 	public String getArchitecture() {
 
@@ -470,12 +470,14 @@ public class TxtFile {
 		// nothing found so look in the post 1.5.4 way
 		// boardid."menu".menuid.menuitemid=name
 		Map<String, String> BoardIDSectionMap = getSection(boardID);
-		lookupValue = MENU + DOT + menuID + DOT;
-		lookupValue = lookupValue.toUpperCase();
 		for (Entry<String, String> curOption : BoardIDSectionMap.entrySet()) {
+
 			if (curOption.getValue().equals(menuItemName)) {
-				if (curOption.getKey().toUpperCase().startsWith(lookupValue))
-					return curOption.getKey().substring(lookupValue.length());
+				String[] keyParts = curOption.getKey().split("\\."); //$NON-NLS-1$
+				if (keyParts.length == 3) {
+					if (keyParts[1].equalsIgnoreCase(menuID))
+						return keyParts[2];
+				}
 			}
 		}
 		return Messages.getMenuItemIDFromMenuItemName.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)
