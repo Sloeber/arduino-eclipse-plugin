@@ -72,10 +72,13 @@ public class Manager {
 	}
 
 	public static void addJsonURLs(HashSet<String> jsonUrlsToAdd, boolean forceDownload) {
-		HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
-		jsonUrlsToAdd.addAll(originalJsonUrls);
-
-		ConfigurationPreferences.setJsonURLs(jsonUrlsToAdd);
+		HashSet<String> urls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+		for (String entry : jsonUrlsToAdd) {
+			if (entry.trim().length() > 0) {
+				urls.add(entry);
+			}
+		}
+		ConfigurationPreferences.setJsonURLs(urls);
 		loadJsons(forceDownload);
 
 	}
