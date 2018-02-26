@@ -42,8 +42,8 @@ public class RegressionTest {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
 		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
-		if (!Shared.getTeensyPlatform().isEmpty()) {
-			BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
+		if (!MySystem.getTeensyPlatform().isEmpty()) {
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 	}
 
@@ -75,7 +75,7 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void issue555() {
-		if (Shared.getTeensyPlatform().isEmpty()) {
+		if (MySystem.getTeensyPlatform().isEmpty()) {
 			//skip test due to no teensy install folder provided
 			//do not fail as this will always fail on travis
 			return;
@@ -87,7 +87,7 @@ public class RegressionTest {
 		teensyOptions.put("usb", "serial");
 		teensyOptions.put("speed", "96");
 		teensyOptions.put("keys", "en-us");
-		BoardDescriptor teensyBoardid = BoardsManager.getBoardDescriptor("local", Shared.getTeensyBoard_txt(), "", "teensy31",
+		BoardDescriptor teensyBoardid = BoardsManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
 				teensyOptions);
 		IProject theTestProject = null;
 		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();

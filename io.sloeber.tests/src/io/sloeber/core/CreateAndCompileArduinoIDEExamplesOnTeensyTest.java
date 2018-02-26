@@ -53,11 +53,11 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		LinkedList<Object[]> examples = new LinkedList<>();
-		if(Shared.getTeensyPlatform().isEmpty()) {
+		if(MySystem.getTeensyPlatform().isEmpty()) {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
 		}
 		else {
-			BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
 
@@ -112,43 +112,43 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_6() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_6());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_5() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_5());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_1() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_1());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_0() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_0());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyLC() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample(TeensyBoards.Teensy_LC());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyPP2() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.teensypp2());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy2() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 			testExample( TeensyBoards.teensy2());
 
 	}

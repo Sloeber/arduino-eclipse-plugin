@@ -114,7 +114,7 @@ public class CompileAndUpload {
 		if (reinstall_boards_and_libraries) {
 			BoardsManager.installAllLatestPlatforms();
 		}
-		BoardsManager.addPrivateHardwarePath(Shared.getTeensyPlatform());
+		BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 
 	}
 
