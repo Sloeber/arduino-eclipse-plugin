@@ -20,10 +20,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.boards.ArduinoBoards;
 import io.sloeber.core.boards.IBoard;
 
@@ -57,7 +57,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 		Shared.waitForAllJobsToFinish();
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllArduinoIDEExamples();
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 

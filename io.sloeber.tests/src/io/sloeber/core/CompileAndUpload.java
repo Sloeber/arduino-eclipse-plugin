@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
@@ -110,11 +110,11 @@ public class CompileAndUpload {
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
 				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json" };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
-			BoardsManager.installAllLatestPlatforms();
+			PackageManager.installAllLatestPlatforms();
 		}
-		BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+		PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 
 	}
 

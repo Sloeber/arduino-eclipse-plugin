@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
@@ -171,7 +171,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 		ICConfigurationDescription confdesc = getConfdesc();
 
-		String[] allBoardsFileNames = BoardsManager.getAllBoardsFiles();
+		String[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
 		for (String curBoardFile : allBoardsFileNames) {
 			this.mAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
 		}
@@ -253,7 +253,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		});
 		createLine(composite, this.ncol);
 
-		TreeMap<String, String> menus = BoardsManager.getAllmenus();
+		TreeMap<String, String> menus = PackageManager.getAllmenus();
 
 		this.mBoardOptionCombos = new LabelCombo[menus.size()];
 		int index = 0;

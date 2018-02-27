@@ -22,11 +22,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
 import io.sloeber.core.boards.ArduinoBoards;
@@ -58,7 +58,7 @@ public class CreateAndCompileLibraryExamplesTest {
 				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(), ESP8266Boards.NodeMCUBoard() ,new ESPressoLite()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllExamples(null);
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
@@ -108,9 +108,9 @@ public class CreateAndCompileLibraryExamplesTest {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL};
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
-			BoardsManager.installAllLatestPlatforms();
+			PackageManager.installAllLatestPlatforms();
 			// deal with removal of json files or libs from json files
 			LibraryManager.removeAllLibs();
 			LibraryManager.installAllLatestLibraries();

@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class GenericJantjeBoard extends IBoard {
@@ -24,7 +24,7 @@ public class GenericJantjeBoard extends IBoard {
 	public GenericJantjeBoard(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor(getJsonFileName(),getPackageName(),getPlatformName() ,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(getJsonFileName(),getPackageName(),getPlatformName() ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

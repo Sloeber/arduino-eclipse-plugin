@@ -32,7 +32,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
@@ -62,7 +62,7 @@ public class Shared {
 
 			IJobManager jobMan = Job.getJobManager();
 
-			while (!(jobMan.isIdle() && BoardsManager.isReady())) {
+			while (!(jobMan.isIdle() && PackageManager.isReady())) {
 				Thread.sleep(500);
 				// If you do not get out of this loop it probably means you are
 				// runnning the test in the gui thread
@@ -93,10 +93,9 @@ public class Shared {
 		return new Path(new String());
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid) {
+	public static void BuildAndVerify(BoardDescriptor boardid,CodeDescriptor codeDescriptor) {
 
 		IProject theTestProject = null;
-		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		String projectName = String.format("%03d_", new Integer(mBuildCounter++)) + boardid.getBoardID();
 		try {
@@ -142,14 +141,19 @@ public class Shared {
 		 */
 
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
-		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT\\hardware\\pic32\\2.0.1\\platform.txt");
+		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32").resolve("2.0.1").resolve("platform.txt");
 		if (platform_txt.toFile().exists()) {
-			replaceInFile(platform_txt, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
+			replaceInFile(platform_txt,false, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
 		}
 
 		/*
-		 * oak does not come with all required libraries and assumes arduino IDE has
+		 * oak on windows does not come with all required libraries and assumes arduino IDE has
 		 * them available So I set sloeber_path_extension to the teensy root
+		 *
+		 * environment/workspace/SLOEBER_PATH_EXTENSION/delimiter=;
+environment/workspace/SLOEBER_PATH_EXTENSION/operation=replace
+environment/workspace/SLOEBER_PATH_EXTENSION/value=D\:\\arduino\\arduino-1.8.5
+
 		 */
 		java.nio.file.Path arduinoIDERoot = Paths.get(MySystem.getTeensyPlatform());
 		if (arduinoIDERoot.toFile().exists() && (arduinoIDERoot.toFile().list().length > 3)) {
@@ -169,34 +173,22 @@ public class Shared {
 				e.printStackTrace();
 			}
 		}
+/*
+ * Sparkfun uses different names for different versions.
+ * This causes issues with the script installing all these versions
+ * Some of these older versions do not work (because they require a specific arduino sam install which is not installed)
+ * So this is actuallynot a sloeber workaround but a test script workaround.
+ * We rename these versions in the json file
+ */
 
-		// String CFG_DATA_PROVIDER_ID="";
-		// IEnvironmentVariable var = new EnvironmentVariable("sloeber_path_extension",
-		// arduinoIDERoot.toString());
-		// try {
-		// ICConfigurationDescription prjCDesc
-		// =CCorePlugin.getDefault().getPreferenceConfiguration(CFG_DATA_PROVIDER_ID,
-		// true);
-		// IEnvironmentVariableManager envManager =
-		// CCorePlugin.getDefault().getBuildEnvironmentManager();
-		// envManager.
-		// prjCDesc.
-		// CCorePlugin.getDefault().setPreferenceConfiguration(CFG_DATA_PROVIDER_ID,
-		// prjCDesc);
-		// } catch (CoreException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// ICProjectDescription prjCDesc = CoreModel.getDefault().getCModel().
-		// .getDefault().getProjectDescription(project);
-		// ICConfigurationDescription configurationDescription =
-		// prjCDesc.getActiveConfiguration();
-		// configurationDescription.
+		java.nio.file.Path SparkfunJson = packageRoot.resolve("package_sparkfun_index.json");
+		if (SparkfunJson.toFile().exists()) {
+			replaceInFile(SparkfunJson, true, "SparkFun SAMD Boards (dependency: Arduino SAMD Boards .*", "SparkFun SAMD Boards");
+		}
 
 	}
 
-	private static void replaceInFile(java.nio.file.Path file, String find, String replace) {
+	private static void replaceInFile(java.nio.file.Path file, boolean regex, String find, String replace) {
 
 		try {
 			// read all bytes from file (they will include bytes representing used line
@@ -207,7 +199,11 @@ public class Shared {
 			String textFromFile = new String(bytesFromFile, StandardCharsets.UTF_8);// use proper charset
 
 			// replace what you need (line separators will stay the same)
+			if(regex) {
+				textFromFile = textFromFile.replaceAll(find, replace);
+			}else {
 			textFromFile = textFromFile.replace(find, replace);
+			}
 
 			// write back data to file
 

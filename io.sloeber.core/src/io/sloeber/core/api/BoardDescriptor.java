@@ -44,11 +44,10 @@ import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.tools.Libraries;
-import io.sloeber.core.tools.Messages;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
@@ -244,7 +243,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsCore = actualValue;
-				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedCorePlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, core)
@@ -258,7 +257,7 @@ public class BoardDescriptor {
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
 				this.myBoardsCore = actualValue;
-				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedCorePlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
@@ -277,7 +276,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsVariant = actualValue;
-				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedBoardVariantPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
@@ -292,10 +291,10 @@ public class BoardDescriptor {
 				String actualValue = valueSplit[3];
 				this.myBoardsVariant = actualValue;
 				if("*".equals(refVersion)) {
-					this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture);
+					this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture);
 				}
 				else {
-				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				}
 				if (this.myReferencedBoardVariantPlatformPath == null) {
@@ -315,7 +314,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedUploadToolPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, upload)
@@ -329,7 +328,7 @@ public class BoardDescriptor {
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
 				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedUploadToolPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
@@ -764,7 +763,7 @@ public class BoardDescriptor {
 	}
 
 	public TreeMap<String, IPath> getAllExamples() {
-		return BoardsManager.getAllExamples(this);
+		return LibraryManager.getAllExamples(this);
 	}
 
 	public void addChangeListener(ChangeListener l) {
@@ -945,7 +944,7 @@ public class BoardDescriptor {
 	 * are found.
 	 */
 	public IPath getArduinoPlatformPath() {
-		return Manager.getPlatformInstallPath("arduino", getArchitecture());
+		return InternalPackageManager.getPlatformInstallPath("arduino", getArchitecture());
 	}
 
 

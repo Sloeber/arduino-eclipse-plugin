@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Messages;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 public class Tool {

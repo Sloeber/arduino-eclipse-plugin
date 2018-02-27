@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
@@ -41,9 +41,9 @@ public class RegressionTest {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
-			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 	}
 
@@ -55,17 +55,17 @@ public class RegressionTest {
 	@Test
 	public void redirectedJson() {
 		//this board references to arduino avr so install that one to
-		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
-		BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
+		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
-		BoardDescriptor boardid = BoardsManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
+		BoardDescriptor boardid = PackageManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
 				"Talk2 AVR Boards", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");
 			return;
 		}
-		Shared.BuildAndVerify(boardid);
+		Shared.BuildAndVerify(boardid,CodeDescriptor.createDefaultIno());
 	}
 
 	/**
@@ -81,13 +81,13 @@ public class RegressionTest {
 			return;
 		}
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 		Map<String, String> teensyOptions = new HashMap<>();
 		teensyOptions.put("usb", "serial");
 		teensyOptions.put("speed", "96");
 		teensyOptions.put("keys", "en-us");
-		BoardDescriptor teensyBoardid = BoardsManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
+		BoardDescriptor teensyBoardid = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
 				teensyOptions);
 		IProject theTestProject = null;
 		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
@@ -132,9 +132,9 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void issue687() throws Exception {
-		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -167,9 +167,9 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void are_jantjes_options_taken_into_account() throws Exception {
-		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -210,9 +210,9 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void are_defines_before_includes_taken_into_account() throws Exception {
-		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
@@ -247,9 +247,9 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void is_extern_C_taken_into_account() throws Exception {
-		BoardsManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = BoardsManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;

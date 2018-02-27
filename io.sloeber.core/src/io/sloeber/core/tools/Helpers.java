@@ -55,13 +55,14 @@ import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.Messages;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Library;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
@@ -641,11 +642,11 @@ public class Helpers extends Common {
 		File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile();
 		File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
 		String architecture = boardDescriptor.getArchitecture();
-		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
+		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 		}
 		ArduinoPlatform LatestArduinoPlatform = null;
-		for (ArduinoPlatform curPlatform : Manager.getLatestInstalledPlatforms()) {
+		for (ArduinoPlatform curPlatform : InternalPackageManager.getLatestInstalledPlatforms()) {
 			if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())) {
 				addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 				if ("arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
@@ -662,12 +663,12 @@ public class Helpers extends Common {
 		boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
 		if (jsonBasedPlatformManagement) {
 			// add the referenced platform before the real platform
-			ArduinoPlatform referencedPlatform = Manager.getPlatform(referencedPlatformFile);
+			ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
 			if ((referencedPlatform != null) && (referencedPlatform != LatestArduinoPlatform)) {
 				addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
 			}
 			// and the real platform
-			ArduinoPlatform referencingPlatform = Manager.getPlatform(referencingPlatformFile);
+			ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
 			if ((referencingPlatform != null) && (referencingPlatform != LatestArduinoPlatform)) {
 
 				addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);

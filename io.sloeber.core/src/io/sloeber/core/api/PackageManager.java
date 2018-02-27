@@ -1,8 +1,18 @@
 package io.sloeber.core.api;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +21,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.eclipse.core.runtime.IPath;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -19,19 +29,21 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
-import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
-import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
+import com.google.gson.Gson;
+
+import io.sloeber.core.Activator;
+import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
+import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
+import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Board;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.PackageIndex;
-import io.sloeber.core.tools.Messages;
 import io.sloeber.core.tools.TxtFile;
 
 /**
@@ -41,13 +53,9 @@ import io.sloeber.core.tools.TxtFile;
  * @author jantje
  *
  */
-public class BoardsManager {
-	private static final String INO = "ino"; //$NON-NLS-1$
-	private static final String PDE = "pde";//$NON-NLS-1$
-	private static final String CPP = "cpp";//$NON-NLS-1$
-	private static final String C = "c";//$NON-NLS-1$
-	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
+public class PackageManager {
 
+	protected static List<PackageIndex> packageIndices;
 	/**
 	 * Gets the board descriptor based on the information provided. If
 	 * jsonFileName="local" the board is assumed not to be installed by the
@@ -83,7 +91,7 @@ public class BoardsManager {
 	static private BoardDescriptor getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
 			String platformName, String boardID, Map<String, String> options) {
 
-		Package thePackage = Manager.getPackage(jsonFileName, packageName);
+		Package thePackage = InternalPackageManager.getPackage(jsonFileName, packageName);
 		if (thePackage == null) {
 			// fail("failed to find package:" + this.mPackageName);
 			return null;
@@ -112,17 +120,25 @@ public class BoardsManager {
 	}
 
 	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-		Manager.addJsonURLs(packageUrlsToAdd, forceDownload);
+		HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+		packageUrlsToAdd.addAll(originalJsonUrls);
+
+		ConfigurationPreferences.setJsonURLs(packageUrlsToAdd);
+		loadJsons(forceDownload);
+	}
+	public static void setPackageURLs(HashSet<String> packageUrls, boolean forceDownload) {
+		ConfigurationPreferences.setJsonURLs(packageUrls);
+		loadJsons(forceDownload);
 	}
 
 	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
-		Manager.removePackageURLs(packageUrlsToRemove);
+		InternalPackageManager.removePackageURLs(packageUrlsToRemove);
 
 	}
 
 	public static void installAllLatestPlatforms() {
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		List<Package> allPackages = Manager.getPackages();
+		List<Package> allPackages = InternalPackageManager.getPackages();
 		for (Package curPackage : allPackages) {
 			Collection<ArduinoPlatform> latestPlatforms = curPackage.getLatestPlatforms();
 			for (ArduinoPlatform curPlatform : latestPlatforms) {
@@ -133,7 +149,7 @@ public class BoardsManager {
 
 	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
 
-		Package curPackage = Manager.getPackage(JasonName, packageName);
+		Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
 		if (curPackage != null) {
 			ArduinoPlatform curPlatform = curPackage.getLatestPlatform(platformName, false);
 			if (curPlatform != null) {
@@ -163,157 +179,9 @@ public class BoardsManager {
 	}
 
 	public static boolean isReady() {
-		return Manager.isReady();
+		return InternalPackageManager.isReady();
 	}
 
-	/**
-	 * find all examples for this type of board. That is the examples provided
-	 * by Arduino The examples provided by the common libraries The examples
-	 * provided by the private libraries The examples provided by the platform
-	 * the board belongs to
-	 *
-	 * If the boardID is null there will be no platform examples
-	 *
-	 * @param boardDescriptor
-	 * @return
-	 */
-	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardDescriptor) {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		// Get the examples of the library manager installed libraries
-
-		examples.putAll(getAllLibraryExamples());
-		examples.putAll(getAllArduinoIDEExamples());
-		// This one should be the last as hasmap overwrites doubles. This way
-		// hardware libraries are preferred to others
-		examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
-
-		return examples;
-	}
-
-	/*
-	 * Get the examples of the libraries from the selected hardware These may be
-	 * referenced libraries
-	 */
-	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescriptor boardDescriptor) {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		if (boardDescriptor != null) {
-			IPath platformPath = boardDescriptor.getreferencingPlatformPath();
-			if (platformPath.toFile().exists()) {
-				examples.putAll(getLibExampleFolders(platformPath.append(LIBRARY_PATH_SUFFIX)));
-			}
-		}
-		return examples;
-	}
-
-	/**
-	 * find all examples that are delivered with the Arduino IDE
-	 *
-	 * @return
-	 */
-	public static TreeMap<String, IPath> getAllArduinoIDEExamples() {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		Path exampleLocation = new Path(ConfigurationPreferences.getInstallationPathExamples().toString());
-
-		if (exampleLocation.toFile().exists()) {
-			examples.putAll(getExamplesFromFolder(new String(), exampleLocation));
-		}
-		return examples;
-	}
-
-	/**
-	 * find all examples that are delivered with a library This does not include
-	 * the libraries delivered with hardware
-	 *
-	 * @return
-	 */
-	public static TreeMap<String, IPath> getAllLibraryExamples() {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
-
-		IPath CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries();
-		if (CommonLibLocation.toFile().exists()) {
-			examples.putAll(getLibExampleFolders(CommonLibLocation));
-		}
-
-		// get the examples from the user provide library locations
-		if (libLocations != null) {
-			for (String curLibLocation : libLocations) {
-				if (new File(curLibLocation).exists()) {
-					examples.putAll(getLibExampleFolders(new Path(curLibLocation)));
-				}
-			}
-		}
-		return examples;
-	}
-
-	/***
-	 * finds all the example folders for both the version including and without
-	 * version libraries
-	 *
-	 * @param location
-	 *            The parent folder of the libraries
-	 */
-	private static TreeMap<String, IPath> getLibExampleFolders(IPath LibRoot) {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		String[] Libs = LibRoot.toFile().list();
-		if (Libs == null) {
-			// Either dir does not exist or is not a directory
-		} else {
-			for (String curLib : Libs) {
-				IPath Lib_examples = LibRoot.append(curLib).append("examples");//$NON-NLS-1$
-				IPath Lib_Examples = LibRoot.append(curLib).append("Examples");//$NON-NLS-1$
-				if (Lib_examples.toFile().isDirectory()) {
-					examples.putAll(getExamplesFromFolder(curLib, Lib_examples));
-				} else if (Lib_Examples.toFile().isDirectory()) {
-					examples.putAll(getExamplesFromFolder(curLib, Lib_Examples));
-				} else // nothing found directly so maybe this is a version
-						// based lib
-				{
-					String[] versions = LibRoot.append(curLib).toFile().list();
-					if (versions != null) {
-						if (versions.length == 1) {// There can only be 1
-							// version of a lib
-							Lib_examples = LibRoot.append(curLib).append(versions[0]).append("examples");//$NON-NLS-1$
-							Lib_Examples = LibRoot.append(curLib).append(versions[0]).append("Examples");//$NON-NLS-1$
-							if (Lib_examples.toFile().isDirectory()) {
-								examples.putAll(getExamplesFromFolder(curLib, Lib_examples));
-							} else if (Lib_Examples.toFile().isDirectory()) {
-								examples.putAll(getExamplesFromFolder(curLib, Lib_Examples));
-							}
-						}
-					}
-				}
-			}
-		}
-		return examples;
-	}
-
-	/**
-	 * This method adds a folder recursively examples. Leaves containing ino
-	 * files are assumed to be examples
-	 *
-	 * @param File
-	 */
-	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, IPath location) {
-		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		File[] children = location.toFile().listFiles();
-		if (children == null) {
-			// Either dir does not exist or is not a directory
-		} else {
-			for (File exampleFolder : children) {
-				Path pt = new Path(exampleFolder.toString());
-				String extension = pt.getFileExtension();
-				if (exampleFolder.isDirectory()) {
-					examples.putAll(getExamplesFromFolder(prefix + ' ' + location.lastSegment() + '?',
-							new Path(exampleFolder.toString())));
-				} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)
-						|| CPP.equalsIgnoreCase(extension) || C.equalsIgnoreCase(extension)) {
-					examples.put(prefix + location.lastSegment(), location);
-				}
-			}
-		}
-		return examples;
-	}
 
 
 
@@ -603,7 +471,7 @@ public class BoardsManager {
 		}
 
 		public PlatformTree() {
-			List<PackageIndex> packageIndexes = Manager.getPackageIndices();
+			List<PackageIndex> packageIndexes = InternalPackageManager.getPackageIndices();
 			for (PackageIndex curPackageIndex : packageIndexes) {
 				IndexFile curIndexFile = new IndexFile(curPackageIndex.getJsonFile());
 				this.IndexFiles.put(curPackageIndex.getJsonFileName(), curIndexFile);
@@ -662,15 +530,15 @@ public class BoardsManager {
 	}
 
 	public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
-		if (!Manager.isReady()) {
+		if (!InternalPackageManager.isReady()) {
 			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still busy", null)); //$NON-NLS-1$
 			return status;
 		}
 		try {
-			Manager.setReady(false);
+			InternalPackageManager.setReady(false);
 
 			for (IndexFile curIndexFile : platformTree.getAllIndexFiles()) {
-				for (io.sloeber.core.api.BoardsManager.PlatformTree.Package curPackage : curIndexFile
+				for (io.sloeber.core.api.PackageManager.PlatformTree.Package curPackage : curIndexFile
 						.getAllPackages()) {
 					for (Platform curPlatform : curPackage.getPlatforms()) {
 						for (InstallableVersion curVersion : curPlatform.getVersions()) {
@@ -688,7 +556,7 @@ public class BoardsManager {
 		} catch (Exception e) {
 			// do nothing
 		}
-		Manager.setReady(true);
+		InternalPackageManager.setReady(true);
 		return status;
 	}
 
@@ -726,7 +594,7 @@ public class BoardsManager {
 	 * Remove all packages that have a more recent version
 	 */
 	public static void onlyKeepLatestPlatforms() {
-		Manager.onlyKeepLatestPlatforms();
+		InternalPackageManager.onlyKeepLatestPlatforms();
 
 	}
 
@@ -737,4 +605,190 @@ public class BoardsManager {
 		return InstancePreferences.getPrivateHardwarePathsString();
 	}
 
+	protected static void loadJsons(boolean forceDownload) {
+		packageIndices = new ArrayList<>();
+		LibraryManager.flushIndices();
+
+		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
+		for (String jsonUrl : jsonUrls) {
+			loadJson(jsonUrl, forceDownload);
+		}
+	}
+	/**
+	 * This method takes a json boards file url and downloads it and parses it for
+	 * usage in the boards manager
+	 *
+	 * @param url
+	 *            the url of the file to download and load
+	 * @param forceDownload
+	 *            set true if you want to download the file even if it is already
+	 *            available locally
+	 */
+	static private void loadJson(String url, boolean forceDownload) {
+		File jsonFile = getLocalFileName(url, true);
+		if (jsonFile == null) {
+			return;
+		}
+		if (!jsonFile.exists() || forceDownload) {
+			jsonFile.getParentFile().mkdirs();
+			try {
+				myCopy(new URL(url.trim()), jsonFile, false);
+			} catch (IOException e) {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
+			}
+		}
+		if (jsonFile.exists()) {
+			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
+				loadPackage(jsonFile);
+			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
+				LibraryManager.loadJson(jsonFile);
+			} else {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(),
+						"json files should start with \"package_\" or \"library_\" " + url + " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+	}
+
+	static private void loadPackage(File jsonFile) {
+		try (Reader reader = new FileReader(jsonFile)) {
+			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
+			index.setOwners(null);
+			index.setJsonFile(jsonFile);
+			packageIndices.add(index);
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Activator.getId(),
+					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
+			jsonFile.delete();// Delete the file so it stops damaging
+		}
+	}
+
+
+	/**
+	 * convert a web url to a local file name. The local file name is the cache of
+	 * the web
+	 *
+	 * @param url
+	 *            url of the file we want a local cache
+	 * @return the file that represents the file that is the local cache. the file
+	 *         itself may not exists. If the url is malformed return null;
+	 * @throws MalformedURLException
+	 */
+	protected static File getLocalFileName(String url, boolean show_error) {
+		URL packageUrl;
+		try {
+			packageUrl = new URL(url.trim());
+		} catch (MalformedURLException e) {
+			if (show_error) {
+				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
+			}
+			return null;
+		}
+		if ("file".equals(packageUrl.getProtocol())) { //$NON-NLS-1$
+			String tst = packageUrl.getFile();
+			File file = new File(tst);
+			String localFileName = file.getName();
+			java.nio.file.Path packagePath = Paths
+					.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+			return packagePath.toFile();
+		}
+		String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
+		java.nio.file.Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+		return packagePath.toFile();
+	}
+
+
+	/**
+	 * copy a url locally taking into account redirections
+	 *
+	 * @param url
+	 * @param localFile
+	 * @throws IOException
+	 */
+	@SuppressWarnings("nls")
+	protected
+	static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
+		if ("file".equals(url.getProtocol())) {
+			FileUtils.copyFile(new File(url.getFile()), localFile);
+			return;
+		}
+		try {
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setReadTimeout(5000);
+			conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+			conn.addRequestProperty("User-Agent", "Mozilla");
+			conn.addRequestProperty("Referer", "google.com");
+
+			// normally, 3xx is redirect
+			int status = conn.getResponseCode();
+
+			if (status == HttpURLConnection.HTTP_OK) {
+				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
+			}
+
+			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
+					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
+				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
+				return;
+			}
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(),
+						"Failed to download url " + url + " error code is: " + status, null));
+			}
+			throw new IOException("Failed to download url " + url + " error code is: " + status);
+
+		} catch (Exception e) {
+			if (report_error) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
+			}
+			throw e;
+
+		}
+	}
+
+	public static String[] getJsonURLList() {
+		return ConfigurationPreferences.getJsonURLList();
+	}
+
+	/**
+	 * Completely replace the list with jsons with a new list
+	 *
+	 * @param newJsonUrls
+	 */
+	public static void setJsonURLs(String[] newJsonUrls) {
+
+		String curJsons[] = getJsonURLList();
+		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
+		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
+		origJsons.removeAll(currentSelectedJsons);
+		// remove the files from disk which were in the old lst but not in the
+		// new one
+		for (String curJson : origJsons) {
+			try {
+				File localFile = getLocalFileName(curJson, false);
+				if (localFile.exists()) {
+					localFile.delete();
+				}
+			} catch (@SuppressWarnings("unused") Exception e) {
+				// ignore
+			}
+		}
+		// save to configurationsettings before calling LoadIndices
+		ConfigurationPreferences.setJsonURLs(newJsonUrls);
+		// reload the indices (this will remove all potential remaining
+		// references
+		// existing files do not need to be refreshed as they have been
+		// refreshed at startup
+		// new files will be added
+		loadJsons(false);
+	}
+
+	public static String getDefaultURLs() {
+		return ConfigurationPreferences.getDefaultJsonURLs();
+	}
+
+	public static void removeAllInstalledPlatforms() {
+		ConfigurationPreferences.getInstallationPathPackages().toFile().delete();
+
+	}
 }

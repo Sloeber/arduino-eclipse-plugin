@@ -39,6 +39,7 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;

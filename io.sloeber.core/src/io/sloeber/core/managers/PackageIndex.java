@@ -35,7 +35,7 @@ public class PackageIndex {
 	return null;
     }
 
-    void setOwners(Manager manager) {
+    public void setOwners(InternalPackageManager manager) {
 	for (Package pkg : this.packages) {
 	    pkg.setOwner(manager);
 	}

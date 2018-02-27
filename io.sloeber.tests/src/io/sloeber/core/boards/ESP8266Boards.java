@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class ESP8266Boards extends IBoard {
@@ -39,7 +39,7 @@ public class ESP8266Boards extends IBoard {
 
 
 	public ESP8266Boards(String boardName, Map<String, String> options) {
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor("package_esp8266com_index.json", "esp8266", "esp8266",
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor("package_esp8266com_index.json", "esp8266", "esp8266",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

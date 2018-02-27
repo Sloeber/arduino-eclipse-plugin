@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.sloeber.core.MySystem;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class TeensyBoards extends IBoard {
@@ -70,7 +70,7 @@ public class TeensyBoards extends IBoard {
 			break;
 		}
 
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "ignored",
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "ignored",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

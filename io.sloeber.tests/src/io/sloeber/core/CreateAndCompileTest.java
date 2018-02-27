@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.IPath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
@@ -26,107 +29,117 @@ public class CreateAndCompileTest {
 	private static final boolean apply_known_work_Arounds = true;
 	private BoardDescriptor mBoard;
 	private static final String[] packageUrlsToIgnore = {
-			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json", // There
-																															// is
-																															// a
-																															// newer
-																															// version
-			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json", // ardhat does not work
-																								// in, arduino ide
+			// There is a newer version
+			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
+			// ardhat does not work in, arduino ide
+			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
+
+	};
+	private static final String[] boardsToIgnore = {
+			// Variant folder non existing
+			"SmartEverything Bee (Native USB Port)",
+			// does not work in, arduino ide on windows
+			"ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)",
+			// does not work in, arduino ide on windows
+			"Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",
+			//this board does not use gcc so there is no added value in using Sloeber
+			"Windows 10 IoT Core",
 	};
 
+
+
 	private static final String[] packageUrlsFromThirthPartyWebPage = {
-			"http://downloads.arduino.cc/packages/package_index.json",
-			"https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json",
-			"https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json",
-			"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
-			"http://downloads.arduino.cc/libraries/library_index.json",
-			"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
-			"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
-			"http://clkdiv8.com/download/package_clkdiv8_index.json",
-			"http://digistump.com/package_digistump_index.json",
-			"http://download.labs.mediatek.com/package_mtk_linkit_index.json",
-			"http://download.labs.mediatek.com/package_mtk_linkit_smart_7688_index.json",
-			"http://downloads.konekt.io/arduino/package_konekt_index.json",
-			"http://downloads.sodaq.net/package_sodaq_index.json",
-			"http://downloads.sodaq.net/package_sodaq_samd_index.json",
-			"http://drazzy.com/package_drazzy.com_index.json",
-			"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json",
-			"http://hidnseek.github.io/hidnseek/package_hidnseek_boot_index.json",
-			"http://library.radino.cc/Arduino_1_8/package_radino_radino32_index.json",
-			"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
-			"http://panstamp.org/arduino/package_panstamp_index.json", "http://rfduino.com/package_rfduino_index.json",
-			"http://rig.reka.com.my/package_rig_index.json",
-			"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json",
-			"http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
-			"http://www.leonardomiliani.com/repository/package_leonardomiliani.com_index.json",
-			"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
-			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
-			"https://arduboy.github.io/board-support/package_arduboy_index.json",
-			"https://engimusing.github.io/arduinoIDE/package_engimusing_modules_index.json",
-			"https://github.com/Ameba8195/Arduino/raw/master/release/package_realtek.com_ameba_index.json",
-			"https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
-			"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json",
-			"https://github.com/XMegaForArduino/IDE/raw/master/package_XMegaForArduino_index.json",
-			"https://github.com/chipKIT32/chipKIT-core/raw/master/package_chipkit_index.json",
-			"https://github.com/ms-iot/iot-utilities/raw/master/IotCoreAppDeployment/ArduinoIde/package_iotcore_ide-1.6.6_index.json",
-			"https://lowpowerlab.github.io/MoteinoCore/package_LowPowerLab_index.json",
-			"https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json",
-			"https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json",
-			"https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json",
-			"https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json",
-			"https://mesom.de/atflash/package_atflash_index.json",
-			"https://openpanzerproject.github.io/OpenPanzerBoards/package_openpanzer_index.json",
-			"https://per1234.github.io/Ariadne-Bootloader/package_codebendercc_ariadne-bootloader_index.json",
-			"https://raw.githubusercontent.com/AloriumTechnology/Arduino_Boards/master/package_aloriumtech_index.json",
-			"https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
-			"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
-			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
-			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.6_index.json",
-			"https://raw.githubusercontent.com/FemtoCow/ATTinyCore/master/Downloads/package_femtocow_attiny_index.json",
-			"https://raw.githubusercontent.com/Lauszus/Sanguino/master/package_lauszus_sanguino_index.json",
-			"https://raw.githubusercontent.com/MaximIntegratedMicros/arduino-collateral/master/package_maxim_index.json",
-			"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
-			"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_avr_index.json",
-			"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/PIC/package_olimex_pic_index.json",
-			"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/STM/package_olimex_stm_index.json",
-			"https://raw.githubusercontent.com/RiddleAndCode/RnCAtmega256RFR2/master/Board_Manager/package_rnc_index.json",
-			"https://raw.githubusercontent.com/Seeed-Studio/Seeeduino-Boards/master/package_seeeduino_index.json",
-			"https://raw.githubusercontent.com/TKJElectronics/Balanduino/master/package_tkj_balanduino_index.json",
-			"https://raw.githubusercontent.com/ThamesValleyReprapUserGroup/Beta-TVRRUG-Mendel90/master/Added-Documents/OMC/package_omc_index.json",
-			"https://raw.githubusercontent.com/akafugu/akafugu_core/master/package_akafugu_index.json",
-			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
-			"https://raw.githubusercontent.com/carlosefr/atmega/master/package_carlosefr_atmega_index.json",
-			"https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json",
-			"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
-			"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
-			"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
-			"https://raw.githubusercontent.com/eightdog/laika_arduino/master/IDE_Board_Manager/package_project_laika.com_index.json",
-			"https://raw.githubusercontent.com/feilipu/feilipu.github.io/master/package_goldilocks_index.json",
-			"https://raw.githubusercontent.com/geolink/opentracker-arduino-board/master/package_opentracker_index.json",
-			"https://raw.githubusercontent.com/ioteamit/ioteam-arduino-core/master/package_ioteam_index.json",
-			"https://raw.githubusercontent.com/ioteamit/smarteverything-core/master/package_arrow_index.json",
-			"https://raw.githubusercontent.com/mikaelpatel/Cosa/master/package_cosa_index.json",
-			"https://raw.githubusercontent.com/oshlab/Breadboard-Arduino/master/avr/boardsmanager/package_oshlab_breadboard_index.json",
-			"https://raw.githubusercontent.com/sblyolcubal/arduino-iot2000/master/package_iot2000_index.json",
-			"https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json",
-			"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
-			"https://raw.githubusercontent.com/udif/ITEADSW_Iteaduino-Lite-HSP/master/package/package_iteaduino_lite_index.json",
-			"https://rawgit.com/hunianhang/nufront_arduino_json/master/package_tl7788_index.json",
-			"https://redbearlab.github.io/arduino/package_redbear_index.json",
-			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
-			"https://resources.canique.com/ide/package_canique_index.json",
-			"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
-			"https://sandeepmistry.github.io/arduino-nRF5/package_nRF5_boards_index.json",
-			"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
-			"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
-			"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
-			"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json" };
-	private static final String[] boardsToIgnore = { "SmartEverything Bee (Native USB Port)", // Variant folder non
-																								// existing
-			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json", // ardhat does not work
-																								// in, arduino ide
-	};
+			/* the list below is made as follows
+			 * extract all url's containing .json from https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls
+			 * replace http with "http
+			 * replace .json with .json",
+			 *
+			 * remove the error line "https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.6.x-package_index.json",-format-specification
+			 */
+//			"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+//				"http://clkdiv8.com/download/package_clkdiv8_index.json",
+				"http://digistump.com/package_digistump_index.json",
+				"http://download.labs.mediatek.com/package_mtk_linkit_index.json",
+//				"http://download.labs.mediatek.com/package_mtk_linkit_smart_7688_index.json",
+//				"http://downloads.konekt.io/arduino/package_konekt_index.json",
+//				"http://downloads.sodaq.net/package_sodaq_index.json",
+//				"http://downloads.sodaq.net/package_sodaq_samd_index.json",
+//				"http://drazzy.com/package_drazzy.com_index.json",
+//				"http://fpgalibre.sf.net/Lattuino/package_lattuino_index.json",
+//				"http://hidnseek.github.io/hidnseek/package_hidnseek_boot_index.json",
+//				"http://library.radino.cc/Arduino_1_8/package_radino_radino32_index.json",
+//				"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
+//				"http://panstamp.org/arduino/package_panstamp_index.json",
+//				"http://rfduino.com/package_rfduino_index.json",
+//				"http://rig.reka.com.my/package_rig_index.json",
+//				"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json",
+//				"http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
+				"http://www.leonardomiliani.com/repository/package_leonardomiliani.com_index.json",
+//				"https://adafruit.github.io/arduino-board-index/package_adafruit_index.json",
+//				"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
+//				"https://arduboy.github.io/board-support/package_arduboy_index.json",
+//				"https://engimusing.github.io/arduinoIDE/package_engimusing_modules_index.json",
+//				"https://github.com/Ameba8195/Arduino/raw/master/release/package_realtek.com_ameba_index.json",
+//				"https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
+//				"https://github.com/IntoRobot/IntoRobotPackages-ArduinoIDE/releases/download/1.0.0/package_intorobot_index.json",
+//				"https://github.com/XMegaForArduino/IDE/raw/master/package_XMegaForArduino_index.json",
+//				"https://github.com/chipKIT32/chipKIT-core/raw/master/package_chipkit_index.json",
+//				"https://github.com/ms-iot/iot-utilities/raw/master/IotCoreAppDeployment/ArduinoIde/package_iotcore_ide-1.6.6_index.json",
+//				"https://lowpowerlab.github.io/MoteinoCore/package_LowPowerLab_index.json",
+//				"https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json",
+//				"https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json",
+//				"https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json",
+//				"https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json",
+//				"https://mesom.de/atflash/package_atflash_index.json",
+//				"https://openpanzerproject.github.io/OpenPanzerBoards/package_openpanzer_index.json",
+//				"https://per1234.github.io/Ariadne-Bootloader/package_codebendercc_ariadne-bootloader_index.json",
+//				"https://raw.githubusercontent.com/AloriumTechnology/Arduino_Boards/master/package_aloriumtech_index.json",
+//				"https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
+//				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
+//				"https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
+//				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
+//				"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.6_index.json",
+				"https://raw.githubusercontent.com/FemtoCow/ATTinyCore/master/Downloads/package_femtocow_attiny_index.json",
+//				"https://raw.githubusercontent.com/Lauszus/Sanguino/master/package_lauszus_sanguino_index.json",
+//				"https://raw.githubusercontent.com/MaximIntegratedMicros/arduino-collateral/master/package_maxim_index.json",
+//				"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
+//				"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/AVR/package_olimex_avr_index.json",
+//				"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/PIC/package_olimex_pic_index.json",
+//				"https://raw.githubusercontent.com/OLIMEX/Arduino_configurations/master/STM/package_olimex_stm_index.json",
+				"https://raw.githubusercontent.com/RiddleAndCode/RnCAtmega256RFR2/master/Board_Manager/package_rnc_index.json",
+//				"https://raw.githubusercontent.com/Seeed-Studio/Seeeduino-Boards/master/package_seeeduino_index.json",
+//				"https://raw.githubusercontent.com/TKJElectronics/Balanduino/master/package_tkj_balanduino_index.json",
+//				"https://raw.githubusercontent.com/ThamesValleyReprapUserGroup/Beta-TVRRUG-Mendel90/master/Added-Documents/OMC/package_omc_index.json",
+//				"https://raw.githubusercontent.com/akafugu/akafugu_core/master/package_akafugu_index.json",
+				"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
+//				"https://raw.githubusercontent.com/carlosefr/atmega/master/package_carlosefr_atmega_index.json",
+//				"https://raw.githubusercontent.com/damellis/attiny/ide-1.6.x-boards-manager/package_damellis_attiny_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/avr/package_simba_avr_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/esp/package_simba_esp_index.json",
+				"https://raw.githubusercontent.com/eerimoq/simba-releases/master/arduino/sam/package_simba_sam_index.json",
+//				"https://raw.githubusercontent.com/eightdog/laika_arduino/master/IDE_Board_Manager/package_project_laika.com_index.json",
+//				"https://raw.githubusercontent.com/feilipu/feilipu.github.io/master/package_goldilocks_index.json",
+//				"https://raw.githubusercontent.com/geolink/opentracker-arduino-board/master/package_opentracker_index.json",
+//				"https://raw.githubusercontent.com/ioteamit/ioteam-arduino-core/master/package_ioteam_index.json",
+//				"https://raw.githubusercontent.com/ioteamit/smarteverything-core/master/package_arrow_index.json",
+//				"https://raw.githubusercontent.com/mikaelpatel/Cosa/master/package_cosa_index.json",
+//				"https://raw.githubusercontent.com/oshlab/Breadboard-Arduino/master/avr/boardsmanager/package_oshlab_breadboard_index.json",
+				"https://raw.githubusercontent.com/sblyolcubal/arduino-iot2000/master/package_iot2000_index.json",
+				"https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json",
+				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
+//				"https://raw.githubusercontent.com/udif/ITEADSW_Iteaduino-Lite-HSP/master/package/package_iteaduino_lite_index.json",
+//				"https://rawgit.com/hunianhang/nufront_arduino_json/master/package_tl7788_index.json",
+				"https://redbearlab.github.io/arduino/package_redbear_index.json",
+				"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
+//				"https://resources.canique.com/ide/package_canique_index.json",
+//				"https://s3.amazonaws.com/quirkbot-downloads-production/downloads/package_quirkbot.com_index.json",
+//				"https://sandeepmistry.github.io/arduino-nRF5/package_nRF5_boards_index.json",
+//				"https://thomasonw.github.io/ATmegaxxM1-C1/package_thomasonw_ATmegaxxM1-C1_index.json",
+				"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
+				"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
+				"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
+			 };
+
 
 	public CreateAndCompileTest(BoardDescriptor board) {
 		this.mBoard = board;
@@ -140,13 +153,13 @@ public class CreateAndCompileTest {
 		installAdditionalBoards();
 
 		List<BoardDescriptor> boards = new ArrayList<>();
-		for (String curBoardFile : BoardsManager.getAllBoardsFiles()) {
+		for (String curBoardFile : PackageManager.getAllBoardsFiles()) {
 			Map<String, String> options = null;
 			if (curBoardFile.contains("jantje")) {
 				// for jantjes boards as unit testing does not make a exe without the gdb lib
 				options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 				options.put("type", "debug");
-			} else if (curBoardFile.contains("avr__boot")) {
+			} else if (curBoardFile.contains("avr_boot")) {
 				// for avr_boot avr_boot_atmega328 to have variant
 				options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 				options.put("pinout", "avrdevelopers");
@@ -175,17 +188,20 @@ public class CreateAndCompileTest {
 	 */
 
 	public static void installAdditionalBoards() {
-
+		if (reinstall_boards_and_libraries) {
+			PackageManager.removeAllInstalledPlatforms();
+			LibraryManager.removeAllLibs();
+		}
 		HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
 		toAddList.removeAll(Arrays.asList(packageUrlsToIgnore));
-		BoardsManager.addPackageURLs(toAddList, true);
-		BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+		PackageManager.setPackageURLs(toAddList, true);
+		PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		if (apply_known_work_Arounds) {
 			Shared.applyKnownWorkArounds();
 		}
 		if (reinstall_boards_and_libraries) {
-			BoardsManager.installAllLatestPlatforms();
-			BoardsManager.onlyKeepLatestPlatforms();
+			PackageManager.installAllLatestPlatforms();
+			PackageManager.onlyKeepLatestPlatforms();
 		}
 
 		Shared.waitForAllJobsToFinish();
@@ -193,7 +209,8 @@ public class CreateAndCompileTest {
 
 	@Test
 	public void testBoard() {
-		Shared.BuildAndVerify(this.mBoard);
+		IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
+		Shared.BuildAndVerify(this.mBoard,CodeDescriptor.createCustomTemplate(templateFolder));
 
 	}
 

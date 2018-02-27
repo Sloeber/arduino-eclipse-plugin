@@ -8,7 +8,6 @@ import org.eclipse.equinox.security.storage.StorageException;
 
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.tools.Messages;
 
 public class PasswordManager {
 	private String myPassword;

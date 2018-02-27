@@ -11,19 +11,13 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -41,7 +35,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -49,18 +42,17 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
-import com.google.gson.Gson;
-
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.common.Common;
+import io.sloeber.core.api.Messages;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.MyMultiStatus;
 
-public class Manager {
+public class InternalPackageManager extends PackageManager{
 
-	static private List<PackageIndex> packageIndices;
+
 
 	private static boolean myIsReady = false;
 
@@ -68,17 +60,10 @@ public class Manager {
 		return myIsReady;
 	}
 
-	private Manager() {
+	private InternalPackageManager() {
 	}
 
-	public static void addJsonURLs(HashSet<String> jsonUrlsToAdd, boolean forceDownload) {
-		HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
-		jsonUrlsToAdd.addAll(originalJsonUrls);
 
-		ConfigurationPreferences.setJsonURLs(jsonUrlsToAdd);
-		loadJsons(forceDownload);
-
-	}
 
 	/**
 	 * Loads all stuff needed and if this is the first time downloads the avr boards
@@ -167,96 +152,7 @@ public class Manager {
 
 	}
 
-	static private void loadJsons(boolean forceDownload) {
-		packageIndices = new ArrayList<>();
-		LibraryManager.flushIndices();
 
-		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
-		for (String jsonUrl : jsonUrls) {
-			loadJson(jsonUrl, forceDownload);
-		}
-	}
-
-	/**
-	 * convert a web url to a local file name. The local file name is the cache of
-	 * the web
-	 *
-	 * @param url
-	 *            url of the file we want a local cache
-	 * @return the file that represents the file that is the local cache. the file
-	 *         itself may not exists. If the url is malformed return null;
-	 * @throws MalformedURLException
-	 */
-	private static File getLocalFileName(String url, boolean show_error) {
-		URL packageUrl;
-		try {
-			packageUrl = new URL(url.trim());
-		} catch (MalformedURLException e) {
-			if (show_error) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Malformed url " + url, e)); //$NON-NLS-1$
-			}
-			return null;
-		}
-		if ("file".equals(packageUrl.getProtocol())) { //$NON-NLS-1$
-			String tst = packageUrl.getFile();
-			File file = new File(tst);
-			String localFileName = file.getName();
-			Path packagePath = Paths
-					.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
-			return packagePath.toFile();
-		}
-		String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
-		Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
-		return packagePath.toFile();
-	}
-
-	/**
-	 * This method takes a json boards file url and downloads it and parses it for
-	 * usage in the boards manager
-	 *
-	 * @param url
-	 *            the url of the file to download and load
-	 * @param forceDownload
-	 *            set true if you want to download the file even if it is already
-	 *            available locally
-	 */
-	static private void loadJson(String url, boolean forceDownload) {
-		File jsonFile = getLocalFileName(url, true);
-		if (jsonFile == null) {
-			return;
-		}
-		if (!jsonFile.exists() || forceDownload) {
-			jsonFile.getParentFile().mkdirs();
-			try {
-				myCopy(new URL(url.trim()), jsonFile, false);
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
-			}
-		}
-		if (jsonFile.exists()) {
-			if (jsonFile.getName().toLowerCase().startsWith("package_")) { //$NON-NLS-1$
-				loadPackage(jsonFile);
-			} else if (jsonFile.getName().toLowerCase().startsWith("library_")) { //$NON-NLS-1$
-				LibraryManager.loadJson(jsonFile);
-			} else {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(),
-						"json files should start with \"package_\" or \"library_\" " + url + " is ignored")); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-	}
-
-	static private void loadPackage(File jsonFile) {
-		try (Reader reader = new FileReader(jsonFile)) {
-			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-			index.setOwners(null);
-			index.setJsonFile(jsonFile);
-			packageIndices.add(index);
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
-			jsonFile.delete();// Delete the file so it stops damaging
-		}
-	}
 
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
@@ -779,94 +675,10 @@ public class Manager {
 
 	}
 
-	public static String[] getJsonURLList() {
-		return ConfigurationPreferences.getJsonURLList();
-	}
-
-	/**
-	 * Completely replace the list with jsons with a new list
-	 *
-	 * @param newJsonUrls
-	 */
-	public static void setJsonURL(String[] newJsonUrls) {
-
-		String curJsons[] = getJsonURLList();
-		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
-		HashSet<String> currentSelectedJsons = new HashSet<>(Arrays.asList(newJsonUrls));
-		origJsons.removeAll(currentSelectedJsons);
-		// remove the files from disk which were in the old lst but not in the
-		// new one
-		for (String curJson : origJsons) {
-			try {
-				File localFile = getLocalFileName(curJson, false);
-				if (localFile.exists()) {
-					localFile.delete();
-				}
-			} catch (@SuppressWarnings("unused") Exception e) {
-				// ignore
-			}
-		}
-		// save to configurationsettings before calling LoadIndices
-		ConfigurationPreferences.setJsonURLs(newJsonUrls);
-		// reload the indices (this will remove all potential remaining
-		// references
-		// existing files do not need to be refreshed as they have been
-		// refreshed at startup
-		// new files will be added
-		loadJsons(false);
-	}
 
 	public static void setReady(boolean b) {
 		myIsReady = b;
 
-	}
-
-	/**
-	 * copy a url locally taking into account redirections
-	 *
-	 * @param url
-	 * @param localFile
-	 * @throws IOException
-	 */
-	@SuppressWarnings("nls")
-	private static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
-		if ("file".equals(url.getProtocol())) {
-			FileUtils.copyFile(new File(url.getFile()), localFile);
-			return;
-		}
-		try {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout(5000);
-			conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-			conn.addRequestProperty("User-Agent", "Mozilla");
-			conn.addRequestProperty("Referer", "google.com");
-
-			// normally, 3xx is redirect
-			int status = conn.getResponseCode();
-
-			if (status == HttpURLConnection.HTTP_OK) {
-				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
-				return;
-			}
-
-			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
-				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
-				return;
-			}
-			if (report_error) {
-				Common.log(new Status(IStatus.WARNING, Activator.getId(),
-						"Failed to download url " + url + " error code is: " + status, null));
-			}
-			throw new IOException("Failed to download url " + url + " error code is: " + status);
-
-		} catch (Exception e) {
-			if (report_error) {
-				Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
-			}
-			throw e;
-
-		}
 	}
 
 	public static void onlyKeepLatestPlatforms() {

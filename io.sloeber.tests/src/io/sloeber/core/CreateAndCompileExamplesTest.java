@@ -22,11 +22,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.boards.AdafruitnRF52idBoard;
 import io.sloeber.core.boards.ArduinoBoards;
 import io.sloeber.core.boards.ESP8266Boards;
@@ -67,7 +67,7 @@ public class CreateAndCompileExamplesTest {
 				ArduinoBoards.due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllLibraryExamples();
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllLibraryExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
@@ -114,9 +114,9 @@ public class CreateAndCompileExamplesTest {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL, Shared.TEST_LIBRARY_INDEX_URL };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_examples) {
-			BoardsManager.installAllLatestPlatforms();
+			PackageManager.installAllLatestPlatforms();
 			// deal with removal of json files or libs from json files
 			LibraryManager.removeAllLibs();
 			LibraryManager.installAllLatestLibraries();
