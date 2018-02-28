@@ -61,8 +61,8 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.InternalPackageManager;
+import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
@@ -82,6 +82,10 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
+
+	private static final String MENU_KEY = "menu.";
+
+	private static boolean myHasBeenLogged=false;
 
 	/**
 	 * This method is the internal working class that adds the provided include path
@@ -561,7 +565,7 @@ public class Helpers extends Common {
 		List<EnvironmentVariable> localVariables = new ArrayList<>();
 		for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 			// if it is not a menu item add it
-			if (!currentPair.getKey().startsWith(Messages.Helpers_menu)) {
+			if (!currentPair.getKey().startsWith(MENU_KEY)) {
 				String keyString = MakeKeyString(currentPair.getKey());
 				String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START, true);
 				if (isLocalKey(currentPair.getKey())) {
@@ -576,7 +580,7 @@ public class Helpers extends Common {
 		}
 		for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 			// if it is a menu item add it
-			if (currentPair.getKey().startsWith(Messages.Helpers_menu)) {
+			if (currentPair.getKey().startsWith(MENU_KEY)) {
 
 				String[] keySplit = currentPair.getKey().split("\\.");
 				String menuID = keySplit[1];
@@ -1055,8 +1059,11 @@ public class Helpers extends Common {
 
 		File[] a = source.toFile().listFiles();
 		if (a == null) {
+			if(!myHasBeenLogged) {
 			Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
 					Messages.Helpers_link_folder + source + Messages.Helpers_is_empty, null));
+			myHasBeenLogged=true;
+			}
 			return;
 		}
 		for (File f : a) {
