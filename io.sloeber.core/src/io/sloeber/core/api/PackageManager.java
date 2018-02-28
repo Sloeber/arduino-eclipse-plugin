@@ -56,6 +56,7 @@ import io.sloeber.core.tools.TxtFile;
 public class PackageManager {
 
 	protected static List<PackageIndex> packageIndices;
+	private static boolean myHasbeenLogged=false;
 	/**
 	 * Gets the board descriptor based on the information provided. If
 	 * jsonFileName="local" the board is assumed not to be installed by the
@@ -216,8 +217,11 @@ public class PackageManager {
 		if (depth > 0) {
 			File[] a = folder.listFiles();
 			if (a == null) {
+				if(!myHasbeenLogged) {
 				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
 						Messages.Helpers_The_folder + folder + Messages.Helpers_is_empty, null));
+				myHasbeenLogged=true;
+				}
 				return;
 			}
 			for (File f : a) {
@@ -788,7 +792,12 @@ public class PackageManager {
 	}
 
 	public static void removeAllInstalledPlatforms() {
-		ConfigurationPreferences.getInstallationPathPackages().toFile().delete();
+		try {
+			FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 }
