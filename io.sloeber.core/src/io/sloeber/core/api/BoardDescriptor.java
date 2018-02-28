@@ -203,7 +203,7 @@ public class BoardDescriptor {
 		this.myBoardsVariant = null;
 		this.myReferencedUploadToolPlatformPath = null;
 		this.myUploadTool = null;
-
+		setDefaultOptions();
 		// search in the board info
 		Map<String, String> boardInfo = this.myTxtFile.getSection(getBoardID());
 		ParseSection(boardInfo);
@@ -604,6 +604,7 @@ public class BoardDescriptor {
 	public void save(ICConfigurationDescription confdesc) throws Exception {
 		boolean needsSettingDirty = saveConfiguration(confdesc, null);
 
+
 		if (confdesc != null) {
 			IProject project = confdesc.getProjectDescription().getProject();
 
@@ -863,6 +864,7 @@ public class BoardDescriptor {
 			Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
 					"failed to find the board core for board " + this.myBoardID + " in file "
 							+ this.myTxtFile.getTxtFile().toString()));
+			return null;
 		}
 		return retPath.append("cores").append(this.myBoardsCore);
 	}
