@@ -3,7 +3,7 @@ package io.sloeber.core.api;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "io.sloeber.core.managers.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "io.sloeber.core.api.messages"; //$NON-NLS-1$
 	public static String Manager_Cant_create_folder;
 	public static String Manager_Cant_extract_file;
 	public static String Manager_Failed_to_download;
@@ -35,7 +35,6 @@ public class Messages extends NLS {
 	public static String Helpers_File_does_not_exists;
 	public static String Helpers_Invalid_boards_config;
 	public static String Helpers_IO_exception;
-	public static String Helpers_menu;
 	public static String Helpers_No_boards_txt_found;
 	public static String Helpers_The_project;
 	public static String Helpers_tool_reference_missing;
