@@ -375,7 +375,7 @@ public class Helpers extends Common {
 			ICConfigurationDescription configurationDescription) throws CoreException {
 
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
-
+		if(corePath!=null) {
 		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
 				configurationDescription,true);
 		IPath variantPath = boardDescriptor.getActualVariantPath();
@@ -386,6 +386,7 @@ public class Helpers extends Common {
 			IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
 			Helpers.addCodeFolder(project, redirectVariantPath, ARDUINO_CODE_FOLDER_NAME + "/variant",
 					configurationDescription,false);
+		}
 		}
 
 	}
