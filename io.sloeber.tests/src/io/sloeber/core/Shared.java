@@ -28,14 +28,13 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.Bundle;
-import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 @SuppressWarnings("nls")
@@ -93,7 +92,7 @@ public class Shared {
 		return new Path(new String());
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid,CodeDescriptor codeDescriptor) {
+	public static void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
@@ -141,50 +140,48 @@ public class Shared {
 		 */
 
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
-		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32").resolve("2.0.1").resolve("platform.txt");
+		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32")
+				.resolve("2.0.1").resolve("platform.txt");
 		if (platform_txt.toFile().exists()) {
-			replaceInFile(platform_txt,false, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
+			replaceInFile(platform_txt, false, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
 		}
 
 		/*
-		 * oak on windows does not come with all required libraries and assumes arduino IDE has
-		 * them available So I set sloeber_path_extension to the teensy root
+		 * oak on windows does not come with all required libraries and assumes arduino
+		 * IDE has them available So I set sloeber_path_extension to the teensy root
 		 *
-		 * environment/workspace/SLOEBER_PATH_EXTENSION/delimiter=;
-environment/workspace/SLOEBER_PATH_EXTENSION/operation=replace
-environment/workspace/SLOEBER_PATH_EXTENSION/value=D\:\\arduino\\arduino-1.8.5
-
 		 */
 		java.nio.file.Path arduinoIDERoot = Paths.get(MySystem.getTeensyPlatform());
-		if (arduinoIDERoot.toFile().exists() && (arduinoIDERoot.toFile().list().length > 3)) {
-			arduinoIDERoot = arduinoIDERoot.getParent().getParent();
+		if (arduinoIDERoot.toFile().exists()) {
+			try {///cater for null pointer
+				arduinoIDERoot = arduinoIDERoot.getParent().getParent();
 
-			IEnvironmentVariable var = new EnvironmentVariable("sloeber_path_extension", arduinoIDERoot.toString());
-			IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core");
-			Preferences t = myScope.node("environment").node("workspace").node(var.getName().toUpperCase());
-			t.put("delimiter", var.getDelimiter());
-			t.put("operation", "append");
-			t.put("value", var.getValue());
+				IEnvironmentVariable var = new EnvironmentVariable("sloeber_path_extension", arduinoIDERoot.toString());
+				IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core");
+				Preferences t = myScope.node("environment").node("workspace").node(var.getName().toUpperCase());
+				t.put("delimiter", var.getDelimiter());
+				t.put("operation", "append");
+				t.put("value", var.getValue());
 
-			try {
 				myScope.flush();
-			} catch (BackingStoreException e) {
+			} catch (Exception e) {
 
 				e.printStackTrace();
 			}
 		}
-/*
- * Sparkfun uses different names for different versions.
- * This causes issues with the script installing all these versions
- * Some of these older versions do not work (because they require a specific arduino sam install which is not installed)
- * So this is actuallynot a sloeber workaround but a test script workaround.
- * We rename these versions in the json file
- */
-
-		java.nio.file.Path SparkfunJson = packageRoot.resolve("package_sparkfun_index.json");
-		if (SparkfunJson.toFile().exists()) {
-			replaceInFile(SparkfunJson, true, "SparkFun SAMD Boards (dependency: Arduino SAMD Boards .*", "SparkFun SAMD Boards");
-		}
+//		/*
+//		 * Sparkfun uses different names for different versions. This causes issues with
+//		 * the script installing all these versions Some of these older versions do not
+//		 * work (because they require a specific arduino sam install which is not
+//		 * installed) So this is actuallynot a sloeber workaround but a test script
+//		 * workaround. We rename these versions in the json file
+//		 */
+//
+//		java.nio.file.Path SparkfunJson = packageRoot.resolve("package_sparkfun_index.json");
+//		if (SparkfunJson.toFile().exists()) {
+//			replaceInFile(SparkfunJson, true, "SparkFun SAMD Boards (dependency: Arduino SAMD Boards .*",
+//					"SparkFun SAMD Boards");
+//		}
 
 	}
 
@@ -199,10 +196,10 @@ environment/workspace/SLOEBER_PATH_EXTENSION/value=D\:\\arduino\\arduino-1.8.5
 			String textFromFile = new String(bytesFromFile, StandardCharsets.UTF_8);// use proper charset
 
 			// replace what you need (line separators will stay the same)
-			if(regex) {
+			if (regex) {
 				textFromFile = textFromFile.replaceAll(find, replace);
-			}else {
-			textFromFile = textFromFile.replace(find, replace);
+			} else {
+				textFromFile = textFromFile.replace(find, replace);
 			}
 
 			// write back data to file
