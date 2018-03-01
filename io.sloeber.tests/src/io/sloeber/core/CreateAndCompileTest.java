@@ -48,6 +48,10 @@ public class CreateAndCompileTest {
 			// variant content should not be part of the archive
 			"UDOO Neo (Cortex M4)",
 
+			//issue #660
+			"Engimusing EFM32WG840",
+			"Engimusing EFM32WG842",
+			
 			//to investigate why it fails
 
 
