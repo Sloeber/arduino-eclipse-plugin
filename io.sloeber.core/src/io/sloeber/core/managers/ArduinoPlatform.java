@@ -236,11 +236,11 @@ public class ArduinoPlatform {
 		if (getClass() != obj.getClass())
 			return false;
 		ArduinoPlatform other = (ArduinoPlatform) obj;
-//		if (this.name == null) {
-//			if (other.name != null)
-//				return false;
-//		} else if (!this.name.equals(other.name))
-//			return false;
+		if (this.name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!this.name.equals(other.name))
+			return false;
 		if (this.pkg == null) {
 			if (other.pkg != null)
 				return false;

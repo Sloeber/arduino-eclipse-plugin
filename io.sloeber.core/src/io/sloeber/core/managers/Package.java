@@ -65,15 +65,17 @@ public class Package implements Comparable<Package> {
 
 	/**
 	 * Only the latest versions of the platforms.
+	 * Arduino IDE does not do this based on the name.
+	 * I hope it is based on the architecture because this code is now
 	 *
 	 * @return latest platforms
 	 */
 	public Collection<ArduinoPlatform> getLatestPlatforms() {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
-			ArduinoPlatform p = platformMap.get(platform.getName());
+			ArduinoPlatform p = platformMap.get(platform.getArchitecture());
 			if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
-				platformMap.put(platform.getName(), platform);
+				platformMap.put(platform.getArchitecture(), platform);
 			}
 		}
 		return Collections.unmodifiableCollection(platformMap.values());
