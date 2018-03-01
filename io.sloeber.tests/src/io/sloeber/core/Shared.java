@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.model.ICModelMarker;
@@ -151,6 +152,7 @@ public class Shared {
 		 * IDE has them available So I set sloeber_path_extension to the teensy root
 		 *
 		 */
+		if(SystemUtils.IS_OS_WINDOWS) {
 		java.nio.file.Path arduinoIDERoot = Paths.get(MySystem.getTeensyPlatform());
 		if (arduinoIDERoot.toFile().exists()) {
 			try {///cater for null pointer
@@ -169,19 +171,38 @@ public class Shared {
 				e.printStackTrace();
 			}
 		}
-//		/*
-//		 * Sparkfun uses different names for different versions. This causes issues with
-//		 * the script installing all these versions Some of these older versions do not
-//		 * work (because they require a specific arduino sam install which is not
-//		 * installed) So this is actuallynot a sloeber workaround but a test script
-//		 * workaround. We rename these versions in the json file
-//		 */
-//
-//		java.nio.file.Path SparkfunJson = packageRoot.resolve("package_sparkfun_index.json");
-//		if (SparkfunJson.toFile().exists()) {
-//			replaceInFile(SparkfunJson, true, "SparkFun SAMD Boards (dependency: Arduino SAMD Boards .*",
-//					"SparkFun SAMD Boards");
-//		}
+		}
+		/*
+		 * oak on linux comes with a esptool2 in a wrong folder.
+		 * As it is only 1 file I move the file
+		 *
+		 */
+		if(SystemUtils.IS_OS_LINUX) {
+			java.nio.file.Path esptool2root = packageRoot.resolve("digistup").resolve("tools").resolve("esptool2").resolve("0.9.1");
+			java.nio.file.Path esptool2wrong= esptool2root.resolve("0.9.1").resolve("esptool2");
+			java.nio.file.Path esptool2right= esptool2root.resolve("esptool2");
+			if(esptool2wrong.toFile().exists()) {
+				try {
+					Files.move( esptool2wrong,esptool2right);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		/*
+		 * Elector heeft core Platino maar de directory noemt platino.
+		 * In windows geen probleem maar in case sensitive linux dus wel
+		 */
+		if(SystemUtils.IS_OS_LINUX) {
+			java.nio.file.Path cores = packageRoot.resolve("Elektor").resolve("hardware").resolve("avr")
+					.resolve("1.0.0").resolve("cores");
+			java.nio.file.Path coreWrong = cores.resolve("platino");
+			java.nio.file.Path coreGood = cores.resolve("Platino");
+			if(coreWrong.toFile().exists()) {
+				coreWrong.toFile().renameTo(coreGood.toFile());
+			}
+		}
 
 	}
 
