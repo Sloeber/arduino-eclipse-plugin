@@ -41,6 +41,8 @@ public class CreateAndCompileTest {
 
 	};
 	private static final String[] packageUrlsToIgnoreOnLinux = {
+			// following packages did not work in the arduino ide on windows at last test
+			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
 			// A ( is used in a define in the compile command and that seems to be a issue
 			"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
 			//Arduinoide says npt supported on this os
