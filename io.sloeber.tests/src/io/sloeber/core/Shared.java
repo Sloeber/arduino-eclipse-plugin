@@ -178,7 +178,7 @@ public class Shared {
 		 *
 		 */
 		if(SystemUtils.IS_OS_LINUX) {
-			java.nio.file.Path esptool2root = packageRoot.resolve("digistup").resolve("tools").resolve("esptool2").resolve("0.9.1");
+			java.nio.file.Path esptool2root = packageRoot.resolve("digistump").resolve("tools").resolve("esptool2").resolve("0.9.1");
 			java.nio.file.Path esptool2wrong= esptool2root.resolve("0.9.1").resolve("esptool2");
 			java.nio.file.Path esptool2right= esptool2root.resolve("esptool2");
 			if(esptool2wrong.toFile().exists()) {
