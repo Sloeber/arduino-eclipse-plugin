@@ -27,7 +27,7 @@ import io.sloeber.core.api.Preferences;
 public class CreateAndCompileTest {
 
 	// use the boolean below to avoid downloading and installation
-	private static final boolean removeAllinstallationInfoAtStartup = false;
+	private static final boolean removeAllinstallationInfoAtStartup = true;
 	private static final boolean apply_known_work_Arounds = true;
 	private static final boolean testPrivateHardware = true;
 	private BoardDescriptor mBoard;
