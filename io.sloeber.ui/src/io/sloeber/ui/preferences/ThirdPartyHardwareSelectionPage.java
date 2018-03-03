@@ -19,7 +19,8 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.JsonManager;
+import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -37,20 +38,20 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 
 	@Override
 	public boolean performOk() {
-		JsonManager.setURL(this.urlsText.getText().split(System.lineSeparator()));
-		JsonManager.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
+		PackageManager.setJsonURLs(this.urlsText.getText().split(System.lineSeparator()));
+		Preferences.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
 		return super.performOk();
 	}
 
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.urlsText.setText(JsonManager.getDefaultURLs());
+		this.urlsText.setText(PackageManager.getDefaultURLs());
 	}
 
 	@Override
 	protected void createFieldEditors() {
-		String selectedJsons[] = JsonManager.getURLList();
+		String selectedJsons[] = PackageManager.getJsonURLList();
 		final Composite parent = getFieldEditorParent();
 		// Composite control = new Composite(parent, SWT.NONE);
 		Label title = new Label(parent, SWT.UP);

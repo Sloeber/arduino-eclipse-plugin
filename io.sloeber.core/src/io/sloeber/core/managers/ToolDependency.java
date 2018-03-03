@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Messages;
 
 public class ToolDependency {
 
@@ -40,9 +41,11 @@ public class ToolDependency {
 	public Tool getTool() {
 		Package pkg = this.platform.getPackage();
 		if (!pkg.getName().equals(this.packager)) {
-			pkg = Manager.getPackage(this.packager);
+			pkg = InternalPackageManager.getPackage(this.packager);
 		}
-
+		if(pkg==null) {
+			return null;
+		}
 		return pkg.getTool(this.name, getVersion());
 	}
 

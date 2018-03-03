@@ -20,10 +20,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.boards.TeensyBoards;
 
@@ -53,18 +54,18 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		LinkedList<Object[]> examples = new LinkedList<>();
-		if(Shared.getTeensyPlatform().isEmpty()) {
+		if(MySystem.getTeensyPlatform().isEmpty()) {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
 		}
 		else {
-			BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
 
 		Shared.waitForAllJobsToFinish();
 
 
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllArduinoIDEExamples();
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			ArrayList<Path> paths = new ArrayList<>();
 
@@ -112,43 +113,43 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_6() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_6());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_5() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_5());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_1() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_1());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_0() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.Teensy3_0());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyLC() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample(TeensyBoards.Teensy_LC());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyPP2() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 		testExample( TeensyBoards.teensypp2());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy2() {
-		if (!Shared.getTeensyPlatform().isEmpty())
+		if (!MySystem.getTeensyPlatform().isEmpty())
 			testExample( TeensyBoards.teensy2());
 
 	}

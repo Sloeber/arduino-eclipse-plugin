@@ -36,7 +36,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 
 abstract class FamilyJob extends Job {
 	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
@@ -219,7 +219,7 @@ public class Activator extends AbstractUIPlugin {
 				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 				addFileAssociations();
 				makeOurOwnCustomBoards_txt();
-				Manager.startup_Pluging(monitor);
+				InternalPackageManager.startup_Pluging(monitor);
 				monitor.setTaskName("Done!");
 				SloeberNetworkDiscovery.start();
 				registerListeners();

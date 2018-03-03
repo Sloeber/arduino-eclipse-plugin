@@ -14,30 +14,32 @@ import io.sloeber.core.boards.TeensyBoards;
  */
 @SuppressWarnings("nls")
 public class MySystem {
-	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-PR-beta1.9-BUILD-31\\hardware\\teensy";
-	//D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
-	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
+	private static final String jantjesWindowsMachineHashKey = "1248215851";
+	private static final String jantjesLinuxMachineHashKey = "-784776710";
 
 	public static String getTeensyPlatform() {
 		switch (Other.getSystemHash()) {
-		case "1248215851":
-			return jantjesWindowsMachine;
-		case "still need to get the key":
-			return jantjesVirtualLinuxMachine;
+		case jantjesWindowsMachineHashKey:
+			return "D:\\arduino\\arduino-1.8.5\\hardware\\teensy";
+		case jantjesLinuxMachineHashKey:
+			return "/home/jan/arduino-1.8.5/hardware/teensy";
 		}
 		return new String();
 	}
 
+	public static String getTeensyBoard_txt() {
+		return getTeensyPlatform() + "/avr/boards.txt";
+	}
 	public static IBoard[] getUploadBoards()  {
 		switch (Other.getSystemHash()) {
-		case "still need to get the key": {
+		case jantjesLinuxMachineHashKey: {
 			IBoard[] boards = {   TeensyBoards.teensypp2(),  ESP8266Boards.wemosD1("COM34"),
 					ArduinoBoards.fried(""), ArduinoBoards.yun(""), ArduinoBoards.uno(""),
 					ArduinoBoards.getMega2560Board(""), ArduinoBoards.zero("COM14"), ArduinoBoards.due(""),
 					ArduinoBoards.leonardo(""), ArduinoBoards.arduino_101("") };
 			return boards;
 		}
-		case "1248215851": {
+		case jantjesWindowsMachineHashKey: {
 			IBoard[] boards = {  TeensyBoards.teensypp2(), ESP8266Boards.wemosD1("COM34"),
 					ArduinoBoards.fried("COM5"), ArduinoBoards.yun("COM17"), ArduinoBoards.uno("COM6"),
 					ArduinoBoards.getMega2560Board("COM11"), ArduinoBoards.zero("COM14"), ArduinoBoards.due("COM3"),ArduinoBoards.dueprogramming("COM8"),

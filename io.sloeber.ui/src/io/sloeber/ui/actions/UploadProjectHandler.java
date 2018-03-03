@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
@@ -67,7 +67,7 @@ public class UploadProjectHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-	if (!BoardsManager.isReady()) {
+	if (!PackageManager.isReady()) {
 	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.pleaseWaitForInstallerJob, null));
 	    return null;
 	}

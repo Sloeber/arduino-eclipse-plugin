@@ -16,7 +16,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
@@ -109,14 +109,14 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
 		Preferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
-		BoardsManager.setPrivateHardwarePaths(hardWarePaths);
+		PackageManager.setPrivateHardwarePaths(hardWarePaths);
 		LibraryManager.setPrivateLibraryPaths(libraryPaths);
 		return ret;
 	}
 
 	@Override
 	public void init(IWorkbench workbench) {
-		String hardWarePaths = BoardsManager.getPrivateHardwarePathsString();
+		String hardWarePaths = PackageManager.getPrivateHardwarePathsString();
 		String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
 		boolean autoImport = Preferences.getAutoImportLibraries();
 		boolean pragmaOnceHeaders = Preferences.getPragmaOnceHeaders();

@@ -199,6 +199,7 @@
            prebuildStep="io.sloeber.core.command.generate.cpp">
         <toolChain
               archList="all"
+              configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberBuildVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
               languageSettingsProviders="io.sloeber.languageSettingsProvider"

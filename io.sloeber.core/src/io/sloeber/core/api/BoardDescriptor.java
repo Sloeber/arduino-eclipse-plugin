@@ -3,6 +3,7 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,11 +45,10 @@ import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.tools.Libraries;
-import io.sloeber.core.tools.Messages;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
@@ -126,15 +126,7 @@ public class BoardDescriptor {
 		return getReferencingBoardsFile() + " \"" + getBoardName() + "\" " + getUploadPort(); //$NON-NLS-2$
 	}
 
-	// private static final String ENV_KEY_JANTJE_VARIANT_REFERENCED_PLATFORM =
-	// Const.ERASE_START
-	// + "JANTJE.VARIANT.REFERENCED.PLATFORM";
-	// private static final String ENV_KEY_JANTJE_UPLOAD_REFERENCED_PLATFORM =
-	// Const.ERASE_START
-	// + "JANTJE.UPLOAD.REFERENCED.PLATFORM";
-	// public static final String ENV_KEY_JANTJE_CORE_REFERENCED_PLATFORM =
-	// ERASE_START + ENV_KEY_JANTJE_START
-	// + "CORE.REFERENCED.PLATFORM"; //$NON-NLS-1$
+
 	/**
 	 * Compare 2 descriptors and return true is they are equal. This method detects
 	 * - OS changes - project name changes - moves of workspace - changed runtine
@@ -211,7 +203,7 @@ public class BoardDescriptor {
 		this.myBoardsVariant = null;
 		this.myReferencedUploadToolPlatformPath = null;
 		this.myUploadTool = null;
-
+		setDefaultOptions();
 		// search in the board info
 		Map<String, String> boardInfo = this.myTxtFile.getSection(getBoardID());
 		ParseSection(boardInfo);
@@ -252,7 +244,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsCore = actualValue;
-				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedCorePlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, core)
@@ -266,7 +258,7 @@ public class BoardDescriptor {
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
 				this.myBoardsCore = actualValue;
-				this.myReferencedCorePlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedCorePlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
@@ -285,7 +277,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myBoardsVariant = actualValue;
-				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedBoardVariantPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, variant)
@@ -300,10 +292,10 @@ public class BoardDescriptor {
 				String actualValue = valueSplit[3];
 				this.myBoardsVariant = actualValue;
 				if("*".equals(refVersion)) {
-					this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture);
+					this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture);
 				}
 				else {
-				this.myReferencedBoardVariantPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				}
 				if (this.myReferencedBoardVariantPlatformPath == null) {
@@ -323,7 +315,7 @@ public class BoardDescriptor {
 				String refVendor = valueSplit[0];
 				String actualValue = valueSplit[1];
 				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, architecture);
+				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
 				if (this.myReferencedUploadToolPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Helpers_tool_reference_missing.replaceAll(TOOL_KEY, upload)
@@ -337,7 +329,7 @@ public class BoardDescriptor {
 				String refVersion = valueSplit[2];
 				String actualValue = valueSplit[3];
 				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = Manager.getPlatformInstallPath(refVendor, refArchitecture,
+				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
 						refVersion);
 				if (this.myReferencedUploadToolPlatformPath == null) {
 					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
@@ -392,14 +384,14 @@ public class BoardDescriptor {
 	 * @param boardFile
 	 * @return a list of board descriptors
 	 */
-	public static List<BoardDescriptor> makeBoardDescriptors(File boardFile) {
+	public static List<BoardDescriptor> makeBoardDescriptors(File boardFile,Map<String, String> options) {
 		TxtFile txtFile = new TxtFile(boardFile);
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curboardName : txtFile.getAllNames()) {
 			Map<String, String> boardSection = txtFile.getSection(txtFile.getBoardIDFromBoardName(curboardName));
 			if (boardSection != null) {
 				if (!"true".equalsIgnoreCase(boardSection.get("hide"))) {
-					boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), null));
+					boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), options));
 				}
 			}
 		}
@@ -421,10 +413,9 @@ public class BoardDescriptor {
 		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myreferencingBoardsFile = boardsFile;
 		this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+		setDefaultOptions();
 		if (options != null) {
 			this.myOptions.putAll(options);
-		} else {
-			setDefaultOptions();
 		}
 		calculateDerivedFields();
 
@@ -473,14 +464,29 @@ public class BoardDescriptor {
 		return this.myBoardsCore;
 	}
 
+	/*
+	 * Sets default options as follows
+	 * If no option is specified take the first one
+	 * if a option is specified but the value is invalid take the first one
+	 *
+	 * this is so because I want to provide a list of options
+	 * but if the options are incomplete or invalid
+	 * this method still returns a complete and valid set.
+	 */
 	private void setDefaultOptions() {
 
-		TreeMap<String, String> allOptions = this.myTxtFile.getMenus();
-		for (Map.Entry<String, String> curoption : allOptions.entrySet()) {
-			if (!this.myOptions.containsKey(curoption.getKey())) {
-				String[] menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curoption.getKey(), getBoardID());
+		TreeMap<String, String> allMenuIDs = this.myTxtFile.getMenus();
+		for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
+			String providedMenuValue=this.myOptions.get(curMenuID.getKey());
+			String[] menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
+			  if (providedMenuValue==null) {
 				if (menuOptions.length > 0) {
-					this.myOptions.put(curoption.getKey(), menuOptions[0]);
+					this.myOptions.put(curMenuID.getKey(), menuOptions[0]);
+				}
+			}
+			else if( !Arrays.asList(menuOptions).contains(providedMenuValue)){
+				if (menuOptions.length > 0) {
+					this.myOptions.put(curMenuID.getKey(), menuOptions[0]);
 				}
 			}
 		}
@@ -597,6 +603,7 @@ public class BoardDescriptor {
 
 	public void save(ICConfigurationDescription confdesc) throws Exception {
 		boolean needsSettingDirty = saveConfiguration(confdesc, null);
+
 
 		if (confdesc != null) {
 			IProject project = confdesc.getProjectDescription().getProject();
@@ -736,7 +743,6 @@ public class BoardDescriptor {
 	}
 
 	public void setOptions(Map<String, String> options) {
-		this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		this.myOptions.putAll(options);
 		calculateDerivedFields();
 	}
@@ -774,7 +780,7 @@ public class BoardDescriptor {
 	}
 
 	public TreeMap<String, IPath> getAllExamples() {
-		return BoardsManager.getAllExamples(this);
+		return LibraryManager.getAllExamples(this);
 	}
 
 	public void addChangeListener(ChangeListener l) {
@@ -858,6 +864,7 @@ public class BoardDescriptor {
 			Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
 					"failed to find the board core for board " + this.myBoardID + " in file "
 							+ this.myTxtFile.getTxtFile().toString()));
+			return null;
 		}
 		return retPath.append("cores").append(this.myBoardsCore);
 	}
@@ -955,7 +962,7 @@ public class BoardDescriptor {
 	 * are found.
 	 */
 	public IPath getArduinoPlatformPath() {
-		return Manager.getPlatformInstallPath("arduino", getArchitecture());
+		return InternalPackageManager.getPlatformInstallPath("arduino", getArchitecture());
 	}
 
 

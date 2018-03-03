@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class ArduinoBoards extends IBoard {
@@ -150,7 +150,7 @@ public class ArduinoBoards extends IBoard {
 	}
 
 	private ArduinoBoards(String packageName, String platformName, String boardName) {
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor("package_index.json", packageName, platformName,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor("package_index.json", packageName, platformName,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

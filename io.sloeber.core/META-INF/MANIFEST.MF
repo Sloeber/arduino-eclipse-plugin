@@ -28,4 +28,5 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.junit;bundle-version="4.12.0",
  org.slf4j.api;bundle-version="1.7.2"
 Export-Package: io.sloeber.core.api,
- io.sloeber.core.common
+ io.sloeber.core.common;x-friends:="io.sloeber.tests",
+ io.sloeber.core.tools;x-friends:="io.sloeber.tests"

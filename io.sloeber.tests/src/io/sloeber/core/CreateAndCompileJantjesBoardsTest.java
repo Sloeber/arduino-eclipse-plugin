@@ -22,10 +22,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.boards.GenericJantjeBoard;
 import io.sloeber.core.boards.IBoard;
 
@@ -55,14 +56,14 @@ public class CreateAndCompileJantjesBoardsTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		String[] packageUrlsToAdd = { "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json"};
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		Shared.waitForAllJobsToFinish();
-		BoardsManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(), GenericJantjeBoard.getPlatformName());
+		PackageManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(), GenericJantjeBoard.getPlatformName());
 
 
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllArduinoIDEExamples();
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			if(!skipExample(curexample.getKey())) {
 			ArrayList<Path> paths = new ArrayList<>();

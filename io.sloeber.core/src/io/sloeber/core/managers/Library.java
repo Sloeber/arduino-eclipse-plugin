@@ -191,7 +191,7 @@ public class Library implements Comparable<Library> {
 		if (isInstalled()) {
 			return Status.OK_STATUS;
 		}
-		IStatus ret = Manager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
+		IStatus ret = InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false, monitor);
 		FileModifiers.addPragmaOnce(getInstallPath());
 		return ret;
 	}

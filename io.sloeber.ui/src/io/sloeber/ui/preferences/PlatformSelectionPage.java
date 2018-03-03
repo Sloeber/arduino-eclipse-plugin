@@ -33,12 +33,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
-import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.BoardsManager.PlatformTree;
-import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
-import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
-import io.sloeber.core.api.BoardsManager.PlatformTree.Package;
-import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
+import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.PackageManager.PlatformTree;
+import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
+import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
+import io.sloeber.core.api.PackageManager.PlatformTree.Package;
+import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -49,7 +49,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	public PlatformSelectionPage() {
 	}
 
-	protected PlatformTree myPlatformTree = new BoardsManager.PlatformTree();
+	protected PlatformTree myPlatformTree = new PackageManager.PlatformTree();
 	protected FilteredTree myGuiplatformTree;
 	protected boolean myHideJson = MyPreferences.getHideJson();
 	protected TreeViewer viewer;
@@ -318,7 +318,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 	protected IStatus updateInstallation(IProgressMonitor monitor) {
 		MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_platforms, null);
-		BoardsManager.setPlatformTree(this.myPlatformTree, monitor, status);
+		PackageManager.setPlatformTree(this.myPlatformTree, monitor, status);
 		return status;
 	}
 

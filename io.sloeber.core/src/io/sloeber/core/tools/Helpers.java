@@ -10,10 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,13 +55,14 @@ import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.Messages;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Library;
-import io.sloeber.core.managers.Manager;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
@@ -82,11 +80,12 @@ public class Helpers extends Common {
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
-	private static final String ENV_KEY_REFERENCED_PLATFORM_PATH = ERASE_START + "RUNTIME.REFERENCED.PLATFORM.PATH";
-
 	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
-
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
+
+	private static final String MENU_KEY = "menu.";
+
+	private static boolean myHasBeenLogged=false;
 
 	/**
 	 * This method is the internal working class that adds the provided include path
@@ -229,7 +228,7 @@ public class Helpers extends Common {
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
 	public static void addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
-			ICConfigurationDescription configurationDescription) throws CoreException {
+			ICConfigurationDescription configurationDescription,boolean forceRoot) throws CoreException {
 		IFolder link = project.getFolder(LinkName);
 
 		LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
@@ -243,13 +242,17 @@ public class Helpers extends Common {
 			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
 		}
 
-		// add src or root give priority to src
-		possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
-		file = toLinkFolder.append(possibleIncludeFolder).toFile();
-		if (file.exists()) {
-			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
-		} else {
+		if (forceRoot) {
 			addIncludeFolder(configurationDescription, link.getFullPath());
+		} else {
+			// add src or root give priority to src
+			possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
+			file = toLinkFolder.append(possibleIncludeFolder).toFile();
+			if (file.exists()) {
+				addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+			} else {
+				addIncludeFolder(configurationDescription, link.getFullPath());
+			}
 		}
 
 		possibleIncludeFolder = "arch";
@@ -289,11 +292,11 @@ public class Helpers extends Common {
 	 *
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription)
+	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription,boolean forceRoot)
 			throws CoreException {
 
 		String NiceName = Path.lastSegment();
-		addCodeFolder(project, Path, NiceName, configurationDescription);
+		addCodeFolder(project, Path, NiceName, configurationDescription,forceRoot);
 	}
 
 	/**
@@ -372,9 +375,9 @@ public class Helpers extends Common {
 			ICConfigurationDescription configurationDescription) throws CoreException {
 
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
-
+		if(corePath!=null) {
 		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
-				configurationDescription);
+				configurationDescription,true);
 		IPath variantPath = boardDescriptor.getActualVariantPath();
 		if (variantPath == null) {
 			// remove the existing link
@@ -382,7 +385,8 @@ public class Helpers extends Common {
 		} else {
 			IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
 			Helpers.addCodeFolder(project, redirectVariantPath, ARDUINO_CODE_FOLDER_NAME + "/variant",
-					configurationDescription);
+					configurationDescription,false);
+		}
 		}
 
 	}
@@ -451,7 +455,6 @@ public class Helpers extends Common {
 			ICConfigurationDescription confDesc, BoardDescriptor boardDescriptor) {
 		// Set some default values because the platform.txt does not contain
 		// them
-		IPath referencedPlatformPath = boardDescriptor.getReferencedCorePlatformPath();
 		IPath platformPath = boardDescriptor.getreferencingPlatformPath();
 		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
@@ -460,29 +463,14 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, hardwarePath.toString());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_PLATFORM_PATH,
-				referencedPlatformPath.toString());
-		// setBuildEnvironmentVariable(contribEnv, confDesc,
-		// ENV_KEY_SERIAL_PORT,
-		// makeEnvironmentVar(Const.ENV_KEY_JANTJE_UPLOAD_PORT));
+
+
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 					ConfigurationPreferences.getMakePath().toString() + '/');
 		}
 
-		// Build Time
-		Date d = new Date();
-		GregorianCalendar cal = new GregorianCalendar();
-		long current = d.getTime() / 1000;
-		long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
-		long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
-		// p.put("extra.time.utc", Long.toString(current));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.UTC", Long.toString(current));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.LOCAL",
-				Long.toString(current + timezone + daylight));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.ZONE", Long.toString(timezone));
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.EXTRA.TIME.DTS", Long.toString(daylight));
-		// End of Teensy specific settings
+
 
 		// some glue to make it work
 		String pathDelimiter = makeEnvironmentVar("PathDelimiter");
@@ -578,7 +566,7 @@ public class Helpers extends Common {
 		List<EnvironmentVariable> localVariables = new ArrayList<>();
 		for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 			// if it is not a menu item add it
-			if (!currentPair.getKey().startsWith(Messages.Helpers_menu)) {
+			if (!currentPair.getKey().startsWith(MENU_KEY)) {
 				String keyString = MakeKeyString(currentPair.getKey());
 				String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START, true);
 				if (isLocalKey(currentPair.getKey())) {
@@ -593,7 +581,7 @@ public class Helpers extends Common {
 		}
 		for (Entry<String, String> currentPair : boardSectionMap.entrySet()) {
 			// if it is a menu item add it
-			if (currentPair.getKey().startsWith(Messages.Helpers_menu)) {
+			if (currentPair.getKey().startsWith(MENU_KEY)) {
 
 				String[] keySplit = currentPair.getKey().split("\\.");
 				String menuID = keySplit[1];
@@ -659,11 +647,11 @@ public class Helpers extends Common {
 		File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile();
 		File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
 		String architecture = boardDescriptor.getArchitecture();
-		for (ArduinoPlatform curPlatform : Manager.getInstalledPlatforms()) {
+		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
 			addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 		}
 		ArduinoPlatform LatestArduinoPlatform = null;
-		for (ArduinoPlatform curPlatform : Manager.getLatestInstalledPlatforms()) {
+		for (ArduinoPlatform curPlatform : InternalPackageManager.getLatestInstalledPlatforms()) {
 			if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())) {
 				addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 				if ("arduino".equalsIgnoreCase(curPlatform.getPackage().getMaintainer())) {
@@ -680,12 +668,12 @@ public class Helpers extends Common {
 		boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
 		if (jsonBasedPlatformManagement) {
 			// add the referenced platform before the real platform
-			ArduinoPlatform referencedPlatform = Manager.getPlatform(referencedPlatformFile);
+			ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
 			if ((referencedPlatform != null) && (referencedPlatform != LatestArduinoPlatform)) {
 				addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
 			}
 			// and the real platform
-			ArduinoPlatform referencingPlatform = Manager.getPlatform(referencingPlatformFile);
+			ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
 			if ((referencingPlatform != null) && (referencingPlatform != LatestArduinoPlatform)) {
 
 				addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);
@@ -816,13 +804,16 @@ public class Helpers extends Common {
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
+			if (Platform.getOS().equals(Platform.OS_WIN32)) {
+				//this is for adafruit using "{version}" with has to be \"{version}\" to work in windows
+				recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
+			}
+
 			if (ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
 				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
+				setBuildEnvironmentVariable(contribEnv,confDesc, recipeKey, recipe);
 			}
-
-			recipe = adaptCompilerCommand(recipe);
-			setBuildEnvironmentVariable(confDesc, recipeKey, recipe);
 
 			String recipeParts[] = recipe.split(
 					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE_PATH}\")",
@@ -833,16 +824,16 @@ public class Helpers extends Common {
 						Messages.Helpers_No_command_for + recipeKey);
 				break;
 			case 1:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
 				break;
 			case 2:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
 				break;
 			case 3:
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
-				setBuildEnvironmentVariableRecipe(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
 				break;
 			default:
 				// this should never happen as the split is limited to 3
@@ -892,6 +883,28 @@ public class Helpers extends Common {
 					objcopyCommand.add(makeEnvironmentVar(name));
 
 				}
+				//Handle spaces in defines for USB stuff in windows
+				if (Platform.getOS().equals(Platform.OS_WIN32)){
+					if("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("\"","\\\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("\"","\\\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.USB_FLAGS".equalsIgnoreCase(name)){
+					String moddedValue=curVariable.getValue().replace("'", "\"");
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+					if("A.BUILD.EXTRA_FLAGS".equalsIgnoreCase(name)){
+						//for radino
+						//radinoCC1101.build.extra_flags=-DUSB_VID={build.vid} -DUSB_PID={build.pid} '-DUSB_PRODUCT={build.usb_product}'
+						String moddedValue=curVariable.getValue().replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'","\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
+						setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+					}
+				}
+
 			}
 
 		} catch (Exception e) {
@@ -903,59 +916,7 @@ public class Helpers extends Common {
 
 	}
 
-	private static void setBuildEnvironmentVariableRecipe(IContributedEnvironment contribEnv,
-			ICConfigurationDescription confdesc, String key, String recipe) {
 
-		IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(recipe));
-		contribEnv.addVariable(var, confdesc);
-
-		// The expansion is needed because the adaptCompilerCommand can not
-		// handle
-		// noon extended environment variables
-		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-		var = envManager.getVariable(key, confdesc, true);
-		var = new EnvironmentVariable(key, adaptCompilerCommand(var.getValue()));
-		contribEnv.addVariable(var, confdesc);
-
-	}
-
-	/*
-	 * due to the way arduino and cdt work some conversions are needed her.
-	 * replaceAll(" -MMD ", " ") CDT adds -MMD so we delete them
-	 *
-	 * replaceAll("[^\\\\]\"\"", "" I can't recall what this one is for but it
-	 * removes "" except \""
-	 *
-	 * For the os dependent stuff see
-	 * https://github.com/jantje/arduino-eclipse-plugin/issues/493 in windows
-	 * replace '-DXXX="YYY"' with "-DXXX=\\"YYY\\"" in windows replace '-DXXXX=' *
-	 * with -DXXXX=
-	 *
-	 * replaceAll("  ", " ") due to the above replacements there can be multiple
-	 * spaces. this cause(s/d) problems so I re^lace them with 1 space. note that
-	 * -with the current implementation- this means that is you define a string to a
-	 * define and the string has multiple spaces there will only be one left. This
-	 * one has to be the last replacement !!
-	 *
-	 * I also do some stuff for the warning settings
-	 */
-	private static String adaptCompilerCommand(String recipe) {
-		String ret = recipe.replaceAll(" -MMD ", " ");
-		ret = ret.replaceAll("[^\\\\]\"\"", "");
-
-		String replaceString = " '-D$1=\"$2\"'"; // linux and mac
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			ret = ret.replaceAll(" '-D(\\S+)='", " -D$1=");
-			replaceString = " \"-D$1=\\\\\"$2\\\\\"\""; // windows
-		}
-
-		ret = ret.replaceAll(" '?-D(\\S+)=\\\\?\"(.+?)\\\\?\"'?", replaceString);
-		ret = ret.replaceAll(" '-D(\\S+)='", replaceString);
-
-		ret = ret.replaceAll("  ", " ");
-
-		return ret;
-	}
 
 	/**
 	 * When parsing boards.txt and platform.txt some processing needs to be done to
@@ -1099,8 +1060,11 @@ public class Helpers extends Common {
 
 		File[] a = source.toFile().listFiles();
 		if (a == null) {
+			if(!myHasBeenLogged) {
 			Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
 					Messages.Helpers_link_folder + source + Messages.Helpers_is_empty, null));
+			myHasBeenLogged=true;
+			}
 			return;
 		}
 		for (File f : a) {

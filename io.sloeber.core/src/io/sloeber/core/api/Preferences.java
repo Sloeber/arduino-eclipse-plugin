@@ -1,5 +1,6 @@
 package io.sloeber.core.api;
 
+import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 
 /**
@@ -35,5 +36,8 @@ public class Preferences {
 		return InstancePreferences.getUseArduinoToolSelection();
 	}
 
+	public static void setUpdateJsonFilesFlag(boolean flag) {
+		ConfigurationPreferences.setUpdateJasonFilesFlag(flag);
+	}
 
 }

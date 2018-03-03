@@ -39,6 +39,7 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -224,7 +225,7 @@ public class Libraries {
 		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
 			try {
 
-				Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc);
+				Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc,false);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.import_lib_failed, e));
 			}

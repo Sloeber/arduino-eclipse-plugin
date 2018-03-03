@@ -2,7 +2,7 @@ package io.sloeber.core.boards;
 
 import static org.junit.Assert.fail;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class GenericAdaFruitBoard extends IBoard {
@@ -23,7 +23,7 @@ public class GenericAdaFruitBoard extends IBoard {
 	}
 	public GenericAdaFruitBoard(String platformName,String boardName) {
         this.platformName=platformName;
-		this.myBoardDescriptor = BoardsManager.getBoardDescriptor(getJsonFileName(),getPackageName(),platformName ,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(getJsonFileName(),getPackageName(),platformName ,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

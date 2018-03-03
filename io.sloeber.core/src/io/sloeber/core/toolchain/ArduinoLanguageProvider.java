@@ -22,6 +22,8 @@ import io.sloeber.core.common.Const;
 @SuppressWarnings("nls")
 public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		implements ILanguageSettingsEditableProvider {
+
+
 	// ID must match the tool-chain definition in
 	// org.eclipse.cdt.managedbuilder.core.buildDefinitions extension point
 	private static final String GCC_TOOLCHAIN_ID = "cdt.managedbuild.toolchain.gnu.base"; //$NON-NLS-1$
@@ -157,11 +159,11 @@ public class ArduinoLanguageProvider extends ToolchainBuiltinSpecsDetector
 		}
 		extraOptions = extraOptions + " " + compileOptions.get_C_andCPP_CompileOptions()+" "+compileOptions.get_All_CompileOptions();
 		try {
-			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, true).getValue();
+			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, false).getValue();
 			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "2", confDesc, true).getValue();
+					+ envManager.getVariable(recipeKey + Const.DOT + "2", confDesc, false).getValue();
 			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "3", confDesc, true).getValue();
+					+ envManager.getVariable(recipeKey + Const.DOT + "3", confDesc, false).getValue();
 		} catch (Exception e) {
 			compilerCommand = new String();
 		}

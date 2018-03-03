@@ -10,3 +10,11 @@ void loop()
 {
 //Add your repeated code here
 }
+
+//simba compiles fine but does not provide a main
+#ifdef __SIMBA_H__
+int main( void )
+{
+	return 0;
+}
+#endif
