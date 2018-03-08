@@ -215,7 +215,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		case CustomTemplate:
 			return CodeDescriptor.createCustomTemplate(new Path(this.mTemplateFolderEditor.getStringValue()));
 		case sample:
-			ArrayList<Path> sampleFolders = this.mExampleEditor.GetSampleFolders();
+			ArrayList<IPath> sampleFolders = this.mExampleEditor.GetSampleFolders();
 			boolean link = this.mCheckBoxUseCurrentLinkSample.getSelection();
 			return CodeDescriptor.createExample(link, sampleFolders);
 		}
