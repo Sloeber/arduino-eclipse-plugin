@@ -7,10 +7,9 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -51,9 +50,9 @@ public class Tool {
 		return this.systems;
 	}
 
-	public Path getInstallPath() {
-		return Paths.get(ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
-				.append(this.name).append(this.version).toString());
+	public IPath getInstallPath() {
+		return ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
+				.append(this.name).append(this.version);
 
 	}
 

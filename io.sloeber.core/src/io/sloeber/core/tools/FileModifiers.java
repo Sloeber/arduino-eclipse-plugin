@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.core.common.InstancePreferences;
 
@@ -33,18 +33,18 @@ public class FileModifiers {
 	 * Add pragma once to all .h files from this path recursively if the option
 	 * is set
 	 */
-	public static void addPragmaOnce(Path startingDir) {
+	public static void addPragmaOnce(IPath startingDir) {
 		if (!InstancePreferences.getPragmaOnceHeaders()) {
 			return;
 		}
-		class Finder extends SimpleFileVisitor<Path> {
+		class Finder extends SimpleFileVisitor<java.nio.file.Path> {
 
 			// Compares the glob pattern against
 			// the file or directory name.
-			void find(Path file) {
-				Path filePath = file.getFileName();
-				if (filePath != null) {
-					String fileName = filePath.toString();
+			void find(java.nio.file.Path file) {
+				java.nio.file.Path fileNamePath = file.getFileName();
+				if (fileNamePath != null) {
+					String fileName=fileNamePath.toString();
 					if (fileName.length() > 2) {
 						if (".h".equals(fileName.substring(fileName.length() - 2))) { //$NON-NLS-1$
 
@@ -62,7 +62,7 @@ public class FileModifiers {
 			// Invoke the pattern matching
 			// method on each file.
 			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+			public FileVisitResult visitFile(java.nio.file.Path file, BasicFileAttributes attrs) {
 				find(file);
 				return FileVisitResult.CONTINUE;
 			}
@@ -70,13 +70,13 @@ public class FileModifiers {
 			// Invoke the pattern matching
 			// method on each directory.
 			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+			public FileVisitResult preVisitDirectory(java.nio.file.Path dir, BasicFileAttributes attrs) {
 				find(dir);
 				return FileVisitResult.CONTINUE;
 			}
 
 			@Override
-			public FileVisitResult visitFileFailed(Path file, IOException exc) {
+			public FileVisitResult visitFileFailed(java.nio.file.Path file, IOException exc) {
 				System.err.println(exc);
 				return FileVisitResult.CONTINUE;
 			}
@@ -84,15 +84,12 @@ public class FileModifiers {
 
 		Finder finder = new Finder();
 		try {
-			Files.walkFileTree(startingDir, finder);
+			Files.walkFileTree(Paths.get(startingDir.toOSString()), finder);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public static void addPragmaOnce(org.eclipse.core.runtime.Path curPath) {
-		addPragmaOnce(Paths.get(curPath.toOSString()));
 
-	}
 }

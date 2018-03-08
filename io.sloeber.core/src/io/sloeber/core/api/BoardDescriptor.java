@@ -80,6 +80,8 @@ public class BoardDescriptor {
 	public static final String ENV_KEY_SERIAL_PORT = Const.ERASE_START + "SERIAL.PORT";
 	public static final String ENV_KEY_SERIAL_PORT_FILE = Const.ERASE_START + "SERIAL.PORT.FILE";
 	private static final String ENV_KEY_BUILD_VARIANT_PATH = Const.ERASE_START + "BUILD.VARIANT.PATH";
+	private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = Const.ERASE_START + "BUILD.CORE.PATH";
+
 
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
@@ -659,6 +661,7 @@ public class BoardDescriptor {
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
 					this.myUploadPort.replace("/dev/", new String()));
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toOSString());
 			IPath variantPath=getActualVariantPath();
 			if (variantPath != null) {
 				Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,

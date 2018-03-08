@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,55 +33,51 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
-	private boolean myUsesSerial1;
-	private boolean myUsesKeyboard;
-	private boolean myUsesSerial;
+	private Example myExample;
 	private static int totalFails = 0;
+	private static int maxFails = 500;
 
-	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String name, CodeDescriptor codeDescriptor,
-			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
+	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String name, CodeDescriptor codeDescriptor, Example example) {
 
-		this.myCodeDescriptor = codeDescriptor;
-		this.myName = name;
-		this.myUsesSerial = usesSerial;
-		this.myUsesSerial1 = usesSerial1;
-		this.myUsesKeyboard = usesKeyboard;
-
+		myCodeDescriptor = codeDescriptor;
+		myName = name;
+		myExample = example;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		LinkedList<Object[]> examples = new LinkedList<>();
-		if(MySystem.getTeensyPlatform().isEmpty()) {
+		if (MySystem.getTeensyPlatform().isEmpty()) {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
-		}
-		else {
+		} else {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
-
 		Shared.waitForAllJobsToFinish();
-
+		LinkedList<Object[]> examples = new LinkedList<>();
 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			ArrayList<Path> paths = new ArrayList<>();
-
-			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			String inoName = curexample.getKey().trim();
-			Boolean usesSerial = new Boolean(Examples.getUsesSerialExamples().contains(inoName));
-			Boolean usesSerial1 = new Boolean(Examples.getUsesSerial1Examples().contains(inoName));
-			Boolean usesKeyboard = new Boolean(Examples.getUsesKeyboardExamples().contains(inoName));
+			IPath examplePath = curexample.getValue();
+			Example example = new Example(inoName, null, examplePath);
+			if (!skipExample(example)) {
+				ArrayList<IPath> paths = new ArrayList<>();
+				paths.add(examplePath);
+				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, usesSerial, usesSerial1,
-					usesKeyboard };
-			examples.add(theData);
+				Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, example };
+				examples.add(theData);
+			}
 		}
 
 		return examples;
 
+	}
+
+	private static boolean skipExample(Example example) {
+		// no need to skip examples in this test
+		return false;
 	}
 
 	public void testExample(IBoard board) {
@@ -91,19 +86,11 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (this.myUsesSerial && !board.supportsSerial()) {
-			System.out.println("!TEST SKIPPED due to Serial " + this.myName + " " + board.getName());
+		if (!board.isExampleSupported(myExample)) {
 			return;
 		}
-		if (this.myUsesSerial1 && !board.supportsSerial1()) {
-			System.out.println("!TEST SKIPPED due to Serial1 " + this.myName + " " + board.getName());
-			return;
-		}
-		if (this.myUsesKeyboard && !board.supportsKeyboard()) {
-			System.out.println("!TEST SKIPPED due to keyboard " + this.myName + " " + board.getName());
-			return;
-		}
-		if (totalFails < 40) {
+
+		if (totalFails < maxFails) {
 			BuildAndVerify(board.getBoardDescriptor());
 		} else {
 			fail("To many fails. Stopping test");
@@ -114,46 +101,45 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_6() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample( TeensyBoards.Teensy3_6());
+			testExample(TeensyBoards.Teensy3_6());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_5() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample( TeensyBoards.Teensy3_5());
+			testExample(TeensyBoards.Teensy3_5());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_1() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample( TeensyBoards.Teensy3_1());
+			testExample(TeensyBoards.Teensy3_1());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy3_0() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample( TeensyBoards.Teensy3_0());
+			testExample(TeensyBoards.Teensy3_0());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyLC() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample(TeensyBoards.Teensy_LC());
+			testExample(TeensyBoards.Teensy_LC());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensyPP2() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-		testExample( TeensyBoards.teensypp2());
+			testExample(TeensyBoards.teensypp2());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnTeensy2() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample( TeensyBoards.teensy2());
+			testExample(TeensyBoards.teensy2());
 
 	}
-
 
 	public void BuildAndVerify(BoardDescriptor boardDescriptor) {
 

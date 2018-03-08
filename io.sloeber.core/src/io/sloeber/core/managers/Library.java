@@ -2,8 +2,6 @@ package io.sloeber.core.managers;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,8 +10,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
@@ -157,9 +157,9 @@ public class Library implements Comparable<Library> {
 		this.checksum = checksum;
 	}
 
-	public Path getInstallPath() {
-		return Paths.get(ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'))
-				.append(this.version).toString());
+	public IPath getInstallPath() {
+		return ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'))
+				.append(this.version);
 	}
 
 	public boolean isInstalled() {
@@ -174,16 +174,17 @@ public class Library implements Comparable<Library> {
 	 *         no version is installed
 	 */
 	public boolean isAVersionInstalled() {
-		if (!getInstallPath().getParent().toFile().exists()) {
+		File rootFolder=getInstallPath().toFile().getParentFile();
+		if (!rootFolder.exists()) {
 			return false;
 		}
-		if (getInstallPath().getParent().toFile().isFile()) {
+		if (rootFolder.isFile()) {
 			// something is wrong here
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					getInstallPath().getParent() + " is a file but it should be a directory.")); //$NON-NLS-1$
+					rootFolder + " is a file but it should be a directory.")); //$NON-NLS-1$
 			return false;
 		}
-		return getInstallPath().getParent().toFile().list().length > 0;
+		return rootFolder.list().length > 0;
 	}
 
 	public IStatus install(IProgressMonitor monitor) {
@@ -196,9 +197,9 @@ public class Library implements Comparable<Library> {
 		return ret;
 	}
 
-	public Collection<Path> getIncludePath() {
-		Path installPath = getInstallPath();
-		Path srcPath = installPath.resolve(LIBRARY_SOURCE_FODER);
+	public Collection<IPath> getIncludePath() {
+		IPath installPath = getInstallPath();
+		IPath srcPath = installPath.append(LIBRARY_SOURCE_FODER);
 		if (srcPath.toFile().isDirectory()) {
 			return Collections.singletonList(srcPath);
 		}
@@ -206,30 +207,30 @@ public class Library implements Comparable<Library> {
 
 	}
 
-	private void getSources(IProject project, Collection<Path> sources, Path dir, boolean recurse) {
-		for (File file : dir.toFile().listFiles()) {
+	private void getSources(IProject project, Collection<IPath> sources, File dir, boolean recurse) {
+		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
 				if (recurse) {
-					getSources(project, sources, file.toPath(), recurse);
+					getSources(project, sources, file, recurse);
 				}
 			} else {
 				if (CoreModel.isValidSourceUnitName(project, file.getName())) {
-					sources.add(file.toPath());
+					sources.add(new Path(file.toString()));
 				}
 			}
 		}
 	}
 
-	public Collection<Path> getSources(IProject project) {
-		List<Path> sources = new ArrayList<>();
-		Path installPath = getInstallPath();
-		Path srcPath = installPath.resolve(LIBRARY_SOURCE_FODER);
-		if (srcPath.toFile().isDirectory()) {
+	public Collection<IPath> getSources(IProject project) {
+		List<IPath> sources = new ArrayList<>();
+		IPath installPath = getInstallPath();
+		File srcPath = installPath.append(LIBRARY_SOURCE_FODER).toFile();
+		if (srcPath.isDirectory()) {
 			getSources(project, sources, srcPath, true);
 		} else {
-			getSources(project, sources, installPath, false);
-			Path utilityPath = installPath.resolve("utility"); //$NON-NLS-1$
-			if (utilityPath.toFile().isDirectory()) {
+			getSources(project, sources, installPath.toFile(), false);
+			File utilityPath = installPath.append("utility").toFile(); //$NON-NLS-1$
+			if (utilityPath.isDirectory()) {
 				getSources(project, sources, utilityPath, false);
 			}
 		}
@@ -255,7 +256,7 @@ public class Library implements Comparable<Library> {
 		}
 
 		try {
-			FileUtils.deleteDirectory(getInstallPath().getParent().toFile());
+			FileUtils.deleteDirectory(getInstallPath().toFile().getParentFile());
 		} catch (IOException e) {
 			return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
 					e);

@@ -18,8 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,7 +81,7 @@ public class InternalPackageManager extends PackageManager{
 
 			// Download sample programs
 			mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
-					Paths.get(ConfigurationPreferences.getInstallationPathExamples().toString()), false, monitor));
+					ConfigurationPreferences.getInstallationPathExamples(), false, monitor));
 
 			if (mstatus.isOK()) {
 				// if successfully installed the examples: add the boards
@@ -140,7 +138,7 @@ public class InternalPackageManager extends PackageManager{
 		}
 		// On Windows install make
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			Path localMakePath = Paths.get(ConfigurationPreferences.getMakePath().toString());
+			IPath localMakePath = ConfigurationPreferences.getMakePath();
 			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
 				mstatus.addErrors(
 						downloadAndInstall("https://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
@@ -343,7 +341,7 @@ public class InternalPackageManager extends PackageManager{
 	 * @param pMonitor
 	 * @return
 	 */
-	public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, Path pInstallPath,
+	public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, IPath pInstallPath,
 			boolean pForceDownload, IProgressMonitor pMonitor) {
 		IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
 		IPath archivePath = dlDir.append(pArchiveFileName);
@@ -360,7 +358,7 @@ public class InternalPackageManager extends PackageManager{
 		return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archivePath.toString(), pMonitor);
 	}
 
-	private static IStatus processArchive(String pArchiveFileName, Path pInstallPath, boolean pForceDownload,
+	private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
 			String pArchiveFullFileName, IProgressMonitor pMonitor) {
 		// Create an ArchiveInputStream with the correct archiving algorithm
 		String faileToExtractMessage = Messages.Manager_Failed_to_extract + pArchiveFullFileName;

@@ -117,7 +117,7 @@ public class SampleSelector {
 	 * @param mPlatformPathPath
 	 */
 
-	public void AddAllExamples(BoardDescriptor platformPath, ArrayList<Path> arrayList) {
+	public void AddAllExamples(BoardDescriptor platformPath, ArrayList<IPath> arrayList) {
 		this.numSelected = 0;
 		this.examples = LibraryManager.getAllExamples(platformPath);
 
@@ -191,7 +191,7 @@ public class SampleSelector {
 	 *
 	 * @param arrayList
 	 */
-	private void setLastUsedExamples(ArrayList<Path> arrayList) {
+	private void setLastUsedExamples(ArrayList<IPath> arrayList) {
 
 		TreeItem[] startIems = this.sampleTree.getItems();
 		for (TreeItem curItem : startIems) {
@@ -200,10 +200,10 @@ public class SampleSelector {
 		this.numSelectedLabel.setText(Integer.toString(this.numSelected));
 	}
 
-	private void recursiveSetExamples(TreeItem curTreeItem, ArrayList<Path> arrayList) {
+	private void recursiveSetExamples(TreeItem curTreeItem, ArrayList<IPath> arrayList) {
 		for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 			if (curchildTreeItem.getItems().length == 0) {
-				for (Path curLastUsedExample : arrayList) {
+				for (IPath curLastUsedExample : arrayList) {
 					Path ss = (Path) curchildTreeItem.getData(EXAMPLEPATH);
 					if (curLastUsedExample.equals(ss)) {
 						curchildTreeItem.setChecked(true);
@@ -224,9 +224,9 @@ public class SampleSelector {
 		}
 	}
 
-	public ArrayList<Path> GetSampleFolders() {
+	public ArrayList<IPath> GetSampleFolders() {
 		this.sampleTree.getItems();
-		ArrayList<Path> ret = new ArrayList<>();
+		ArrayList<IPath> ret = new ArrayList<>();
 		for (TreeItem curTreeItem : this.sampleTree.getItems()) {
 			ret.addAll(recursiveGetSelectedExamples(curTreeItem));
 		}

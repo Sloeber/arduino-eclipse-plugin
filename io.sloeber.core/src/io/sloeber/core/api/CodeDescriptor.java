@@ -49,7 +49,7 @@ public class CodeDescriptor {
 	private CodeTypes codeType;
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
-	private ArrayList<Path> myExamples = new ArrayList<>();
+	private ArrayList<IPath> myExamples = new ArrayList<>();
 
 	public IPath getTemPlateFoldername() {
 		return this.myTemPlateFoldername;
@@ -67,7 +67,7 @@ public class CodeDescriptor {
 		return new CodeDescriptor(CodeTypes.defaultCPP);
 	}
 
-	public static CodeDescriptor createExample(boolean link, ArrayList<Path> sampleFolders) {
+	public static CodeDescriptor createExample(boolean link, ArrayList<IPath> sampleFolders) {
 		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.sample);
 		codeDescriptor.myMakeLinks = link;
 		codeDescriptor.myExamples = sampleFolders;
@@ -167,7 +167,7 @@ public class CodeDescriptor {
 			break;
 		case sample:
 			try {
-				for (Path curPath : this.myExamples) {
+				for (IPath curPath : this.myExamples) {
 					if (this.myMakeLinks) {
 						Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
 					} else {
@@ -194,7 +194,7 @@ public class CodeDescriptor {
 		}
 	}
 
-	public ArrayList<Path> getExamples() {
+	public ArrayList<IPath> getExamples() {
 		return this.myExamples;
 	}
 
@@ -251,7 +251,7 @@ public class CodeDescriptor {
 	}
 
 	@SuppressWarnings("nls")
-	public static String getLibraryName(Path examplePath) {
+	public static String getLibraryName(IPath examplePath) {
 		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
 			return examplePath.removeLastSegments(3).lastSegment();
 		}
