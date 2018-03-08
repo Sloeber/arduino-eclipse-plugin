@@ -2,22 +2,107 @@ package io.sloeber.core;
 
 import java.util.LinkedList;
 
+import org.eclipse.core.runtime.IPath;
+
 @SuppressWarnings("nls")
-public class Examples {
+public class Example {
 	private static LinkedList<String> usesSerialExampleList = null;
 	private static LinkedList<String> usesSerial1ExampleList = null;
 	private static LinkedList<String> usesKeyboardExampleList = null;
+	private static LinkedList<String> usesFlightSimExampleList = null;
+	private static LinkedList<String> usesMidiExampleList = null;
 
-	public static LinkedList<String> getUsesSerial1Examples() {
+	private String myExampleName;
+	private boolean myUsesSerial;
+	private boolean usesSerial1;
+	private boolean usesKeyboard;
+	private boolean usesFlightSim;
+	private boolean usesMidi;
+	private String myLibName;
+	private IPath myPath;
+
+
+
+	public Example(String exampleName,String libName, IPath path) {
+		myExampleName = exampleName;
+		myUsesSerial = getUsesSerialExamples().contains(myExampleName);
+		usesSerial1 = getUsesSerial1Examples().contains(myExampleName);
+		usesKeyboard = getUsesKeyboardExamples().contains(myExampleName);
+		usesFlightSim = getUsesusesFlightSimExamples().contains(myExampleName);
+		usesMidi = getUsesusesMidiExamples().contains(myExampleName) || myExampleName.contains("USB_MIDI");
+		myLibName=libName;
+		myPath=path;
+	}
+	public IPath getPath() {
+		return myPath;
+	}
+	public String getName() {
+		return myExampleName;
+	}
+
+	public boolean UsesSerial() {
+		return myUsesSerial;
+	}
+
+	public boolean UsesSerial1() {
+		return usesSerial1;
+	}
+
+	public boolean UsesKeyboard() {
+		return usesKeyboard;
+	}
+
+	public boolean UsesFlightSim() {
+		return usesFlightSim;
+	}
+
+	public boolean UsesMidi() {
+		return usesMidi;
+	}
+
+	public String getLibName() {
+		return myLibName;
+	}
+
+	public String getInoName() {
+		return myPath.lastSegment();
+	}
+
+	private static LinkedList<String> getUsesusesMidiExamples() {
+		if (usesMidiExampleList != null) {
+			return usesMidiExampleList;
+		}
+		usesMidiExampleList = new LinkedList<>();
+		usesMidiExampleList.add("examples? Teensy? USB_FlightSim?ThrottleServo");
+
+		return usesMidiExampleList;
+	}
+
+	private static LinkedList<String> getUsesusesFlightSimExamples() {
+		if (usesFlightSimExampleList != null) {
+			return usesFlightSimExampleList;
+		}
+		usesFlightSimExampleList = new LinkedList<>();
+		usesFlightSimExampleList.add("examples? Teensy? USB_FlightSim?BlinkTransponder");
+		usesFlightSimExampleList.add("examples? Teensy? USB_FlightSim?FrameRateDisplay");
+		usesFlightSimExampleList.add("examples? Teensy? USB_FlightSim?NavFrequencyr");
+		usesFlightSimExampleList.add("examples? Teensy? USB_FlightSim?ThrottleServo");
+
+		return usesFlightSimExampleList;
+	}
+
+	private static LinkedList<String> getUsesSerial1Examples() {
 		if (usesSerial1ExampleList != null) {
 			return usesSerial1ExampleList;
 		}
 		usesSerial1ExampleList = new LinkedList<>();
 		usesSerial1ExampleList.add("examples? 04.Communication?MultiSerial");
+		usesSerial1ExampleList.add("examples? 04.Communication?SerialPassthrough");
+		usesSerial1ExampleList.add("examples? Teensy? Serial?EchoBoth");
 		return usesSerial1ExampleList;
 	}
 
-	public static LinkedList<String> getUsesKeyboardExamples() {
+	private static LinkedList<String> getUsesKeyboardExamples() {
 		if (usesKeyboardExampleList != null) {
 			return usesKeyboardExampleList;
 		}
@@ -32,7 +117,7 @@ public class Examples {
 		return usesKeyboardExampleList;
 	}
 
-	public static LinkedList<String> getUsesSerialExamples() {
+	private static LinkedList<String> getUsesSerialExamples() {
 		if (usesSerialExampleList != null) {
 			return usesSerialExampleList;
 		}
@@ -84,7 +169,17 @@ public class Examples {
 		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p13_TouchSensorLamp");
 		usesSerialExampleList.add("examples? 10.StarterKit_BasicKit?p14_TweakTheArduinoLogo");
 		usesSerialExampleList.add("examples? 11.ArduinoISP?ArduinoISP");
+		usesSerialExampleList.add("examples? Teensy? Tutorial3?HelloSerialMonitor");
+		usesSerialExampleList.add("examples? Teensy? Tutorial3?Pushbutton");
+		usesSerialExampleList.add("examples? Teensy? Tutorial3?PushbuttonPullup");
+		usesSerialExampleList.add("examples? Teensy? Tutorial3?PushbuttonRGBcolor");
+		usesSerialExampleList.add("examples? Teensy? Tutorial4?AnalogInput");
+		usesSerialExampleList.add("examples? Teensy? Tutorial4?TemperatureNumberOnly");
+		usesSerialExampleList.add("examples? Teensy? Tutorial4?TemperatureScaled");
+		usesSerialExampleList.add("examples? Teensy? Tutorial4?TemperatureScaledMulti");
 		return usesSerialExampleList;
 	}
+
+
 
 }

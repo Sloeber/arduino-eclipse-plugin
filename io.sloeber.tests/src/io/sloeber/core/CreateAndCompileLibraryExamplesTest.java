@@ -60,10 +60,11 @@ public class CreateAndCompileLibraryExamplesTest {
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			ArrayList<Path> paths = new ArrayList<>();
+			ArrayList<IPath> paths = new ArrayList<>();
 
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+
 			String inoName = curexample.getKey();
 			String libName = "";
 			if (examples.size() >= 100) {// use this for debugging based on the
@@ -77,9 +78,9 @@ public class CreateAndCompileLibraryExamplesTest {
 			} catch (Exception e) {
 				// ignore error
 			}
-
+			Example example=new Example(inoName,libName,curexample.getValue());
 				// with the current amount of examples only do one
-				BoardDescriptor curBoard =IBoard.pickBestBoard(inoName, libName,myBoards);
+				BoardDescriptor curBoard =IBoard.pickBestBoard(example,myBoards);
 				if(curBoard!=null) {
 						Object[] theData = new Object[] { libName + ":" + inoName + ":" + curBoard.getBoardName(),
 								curBoard, codeDescriptor };

@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -36,48 +35,43 @@ public class CreateAndCompileJantjesBoardsTest {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
-	private boolean myUsesSerial1;
-	private boolean myUsesKeyboard;
-	private boolean myUsesSerial;
+	private Example myExample;
 	private static int totalFails = 0;
+	private static int maxFails = 500;
 
-	public CreateAndCompileJantjesBoardsTest(String name, CodeDescriptor codeDescriptor,
-			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
+	public CreateAndCompileJantjesBoardsTest(String name, CodeDescriptor codeDescriptor, Example example) {
 
-		this.myCodeDescriptor = codeDescriptor;
-		this.myName = name;
-		this.myUsesSerial = usesSerial;
-		this.myUsesSerial1 = usesSerial1;
-		this.myUsesKeyboard = usesKeyboard;
+		myCodeDescriptor = codeDescriptor;
+		myName = name;
+		myExample = example;
 
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		String[] packageUrlsToAdd = { "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json"};
+		String[] packageUrlsToAdd = {
+				"https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json" };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		PackageManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(),
+				GenericJantjeBoard.getPlatformName());
 
-		LinkedList<Object[]> examples = new LinkedList<>();
 		Shared.waitForAllJobsToFinish();
-		PackageManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(), GenericJantjeBoard.getPlatformName());
-
+		LinkedList<Object[]> examples = new LinkedList<>();
 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			if(!skipExample(curexample.getKey())) {
-			ArrayList<Path> paths = new ArrayList<>();
-
-			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 			String inoName = curexample.getKey().trim();
-			Boolean usesSerial = new Boolean(Examples.getUsesSerialExamples().contains(inoName));
-			Boolean usesSerial1 = new Boolean(Examples.getUsesSerial1Examples().contains(inoName));
-			Boolean usesKeyboard = new Boolean(Examples.getUsesKeyboardExamples().contains(inoName));
+			IPath examplePath = curexample.getValue();
+			Example example = new Example(inoName, null, examplePath);
+			if (!skipExample(example)) {
+				ArrayList<IPath> paths = new ArrayList<>();
 
-			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, usesSerial, usesSerial1,
-					usesKeyboard };
-			examples.add(theData);
+				paths.add(examplePath);
+				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+
+				Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, example };
+				examples.add(theData);
 			}
 		}
 
@@ -85,10 +79,11 @@ public class CreateAndCompileJantjesBoardsTest {
 
 	}
 
-	private static boolean skipExample(String curexample) {
-		String searchName=curexample.trim().replace('?', '_');
-		searchName=searchName.replace(' ', '_');
-		searchName=searchName.replace('.', '_');
+	private static boolean skipExample(Example example) {
+		String curexample = example.getName();
+		String searchName = curexample.trim().replace('?', '_');
+		searchName = searchName.replace(' ', '_');
+		searchName = searchName.replace('.', '_');
 		switch (searchName) {
 		case "examples__10_StarterKit_BasicKit_p13_TouchSensorLamp":
 			return true;
@@ -116,19 +111,11 @@ public class CreateAndCompileJantjesBoardsTest {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (this.myUsesSerial && !board.supportsSerial()) {
-			System.out.println("!TEST SKIPPED due to Serial " + this.myName + " " + board.getName());
+		if (!board.isExampleSupported(myExample)) {
 			return;
 		}
-		if (this.myUsesSerial1 && !board.supportsSerial1()) {
-			System.out.println("!TEST SKIPPED due to Serial1 " + this.myName + " " + board.getName());
-			return;
-		}
-		if (this.myUsesKeyboard && !board.supportsKeyboard()) {
-			System.out.println("!TEST SKIPPED due to keyboard " + this.myName + " " + board.getName());
-			return;
-		}
-		if (totalFails < 40) {
+
+		if (totalFails < maxFails) {
 			BuildAndVerify(board.getBoardDescriptor());
 		} else {
 			fail("To many fails. Stopping test");
@@ -160,60 +147,71 @@ public class CreateAndCompileJantjesBoardsTest {
 	public void testJantjeMega() {
 		testExample(new GenericJantjeBoard("mega"));
 	}
+
 	@Test
 	public void testJantjeMegaADK() {
 		testExample(new GenericJantjeBoard("megaADK"));
 	}
+
 	@Test
 	public void testJantjeLeonardo() {
 		testExample(new GenericJantjeBoard("leonardo"));
 	}
+
 	@Test
 	public void testJantjeMicro() {
 		testExample(new GenericJantjeBoard("micro"));
 	}
+
 	@Test
 	public void testJantjeEsplora() {
 		testExample(new GenericJantjeBoard("esplora"));
 	}
+
 	@Test
 	public void testJantjeMini() {
 		testExample(new GenericJantjeBoard("mini"));
 	}
+
 	@Test
 	public void testJantjeEthernet() {
 		testExample(new GenericJantjeBoard("ethernet"));
 	}
+
 	@Test
 	public void testJantje_fio() {
 		testExample(new GenericJantjeBoard("fio"));
 	}
+
 	@Test
 	public void testJantje_bt() {
 		testExample(new GenericJantjeBoard("bt"));
 	}
+
 	@Test
 	public void testJantje_LilyPadUSB() {
 		testExample(new GenericJantjeBoard("LilyPadUSB"));
 	}
+
 	@Test
 	public void testJantje_lilypad() {
 		testExample(new GenericJantjeBoard("lilypad"));
 	}
+
 	@Test
 	public void testJantje_pro() {
 		testExample(new GenericJantjeBoard("pro"));
 	}
+
 	@Test
 	public void testJantje_atmegang() {
 		testExample(new GenericJantjeBoard("atmegang"));
 	}
+
 	@Test
 	public void testJantje_robotControl() {
 		testExample(new GenericJantjeBoard("robotControl"));
 	}
-
-
 
 	public void BuildAndVerify(BoardDescriptor boardDescriptor) {
 

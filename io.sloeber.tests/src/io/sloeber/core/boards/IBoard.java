@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescriptor;
 
 @SuppressWarnings("nls")
@@ -18,6 +19,9 @@ public abstract class IBoard {
 	private boolean mySupportSerial = true;
 	private boolean mySupportSerial1 = false;
 	private boolean mySupportKeyboard = false;
+	private boolean mySupportFlightSim = false;
+	private boolean mySupportMidi = false;
+	private static final boolean log = true;
 
 	void setSupportSerial(boolean supportSerial) {
 		this.mySupportSerial = supportSerial;
@@ -66,7 +70,15 @@ public abstract class IBoard {
 		return this.mySupportKeyboard;
 	}
 
-	private boolean isExampleOk(String inoName, String libName) {
+	public boolean supportsFlightSim() {
+		return this.mySupportFlightSim;
+	}
+
+	public boolean supportsusesMidi() {
+		return this.mySupportMidi;
+	}
+
+	public boolean isExampleSupported(Example example) {
 		if (this.myBoardDescriptor == null) {
 			return false;
 		}
@@ -76,18 +88,35 @@ public abstract class IBoard {
 			createDoNotTestTheseLibs();
 
 		}
-		if (this.doNotTestTheseLibs.contains(libName)) {
+		if (this.doNotTestTheseLibs.contains(example.getLibName())) {
 			return false;
 		}
 
-		if (this.doNotTestTheseSketches.contains(inoName)) {
+		if (this.doNotTestTheseSketches.contains(example.getInoName())) {
 			return false;
 		}
-		if (libName.toLowerCase().contains("seesaw")) {
+		if (example.getLibName()!=null&&example.getLibName().toLowerCase().contains("seesaw")) {
 			// at the time of testing seesaw is not supported on gnu
 			return false;
 		}
 
+		boolean ret = matches(example.getName(), getName(), "usesSerial", example.UsesSerial(), supportsSerial());
+		ret = ret && matches(example.getName(), getName(), "usesSerial1", example.UsesSerial1(), supportsSerial1());
+		ret = ret && matches(example.getName(), getName(), "usesKeyboard", example.UsesKeyboard(), supportsKeyboard());
+		ret = ret
+				&& matches(example.getName(), getName(), "usesFlightSim", example.UsesFlightSim(), supportsFlightSim());
+		ret = ret && matches(example.getName(), getName(), "usesMidi", example.UsesMidi(), supportsusesMidi());
+
+		return ret;
+	}
+
+	private boolean matches(String exampleName, String boardName, String fieldName, boolean val1, boolean val2) {
+		if (val1 && !val2) {
+			if (log) {
+				System.out.println("!Example " + exampleName + " SKIPPED on " + boardName + " due to " + fieldName);
+			}
+			return false;
+		}
 		return true;
 	}
 
@@ -131,8 +160,7 @@ public abstract class IBoard {
 				"Andee examples? Lesson_02_Buttons?Lesson_2h_Using_Buttons_to_Control_Servos",
 				"Andee examples?Project_Christmas_Lights_and_Annoying_Music",
 				"Andee examples?Project_Rubber_Band_Launcher", "Andee examples?Project_Time_Automated_Data_Logger",
-				"ANT-Arduino_library examples?NativeAnt",
-				"arduino-fsm examples?timed_switchoff",
+				"ANT-Arduino_library examples?NativeAnt", "arduino-fsm examples?timed_switchoff",
 				"BME280 examples?BME_280_BRZO_I2C_Test"
 
 		});
@@ -160,7 +188,7 @@ public abstract class IBoard {
 				"ArduinoCloud examples?SimpleCloudButton", "AudioFrequencyMeter examples?SimpleAudioFrequencyMeter" });
 		runSketchOnBoard.put("due", new String[] { "ArduinoThread examples?SensorThread",
 				"Adafruit_BME280_Library examples?advancedsettings" });
-		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000"});
+		runSketchOnBoard.put("mega", new String[] { "aREST_UI examples?WiFi_CC3000" });
 		runSketchOnBoard.put("wildfire", new String[] { "aREST_UI examples?WildFire" });
 		runSketchOnBoard.put("circuitplay32u4catexpress",
 				new String[] { "Adafruit_Circuit_Playground examples?Infrared_NeoPixel",
@@ -171,7 +199,7 @@ public abstract class IBoard {
 		runSketchOnBoard.put("uno",
 				new String[] { "Accessory_Shield examples?OLED_example_Adafruit",
 						"Accessory_Shield examples?temp_humidity_oled", "AFArray examples?GetFromIndex",
-						"AFArray examples?ImplodeExplode", "Adafruit_ESP8266 examples?webclient"  });
+						"AFArray examples?ImplodeExplode", "Adafruit_ESP8266 examples?webclient" });
 
 		for (Entry<String, String[]> curEntry : runSketchOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -185,30 +213,35 @@ public abstract class IBoard {
 		this.doNotTestTheseLibs = new ArrayList<>();
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
 
-		runLibOnBoard.put("no board", new String[] { "Arduino_Commanderexamples", "ALog" ,"BPLib","ESP8266_Microgear","ESP8266_Weather_Station","Gamebuino","Gadgetron_Libraries","GadgetBox","ESP8266_Oled_Driver_for_SSD1306_display","FrequencyTimer2","Gamer","ghaemShopSmSim"});
-		runLibOnBoard.put("fix issue first", new String[] { "DS1307RTC" ,"ESPMail","EspSaveCrash","FlashStorage","Fram","Geometry"});
-		runLibOnBoard.put("macro's confuse indexer", new String[] { "EnableInterrupt","Eventually"});
+		runLibOnBoard.put("no board",
+				new String[] { "Arduino_Commanderexamples", "ALog", "BPLib", "ESP8266_Microgear",
+						"ESP8266_Weather_Station", "Gamebuino", "Gadgetron_Libraries", "GadgetBox",
+						"ESP8266_Oled_Driver_for_SSD1306_display", "FrequencyTimer2", "Gamer", "ghaemShopSmSim" });
+		runLibOnBoard.put("fix issue first",
+				new String[] { "DS1307RTC", "ESPMail", "EspSaveCrash", "FlashStorage", "Fram", "Geometry" });
+		runLibOnBoard.put("macro's confuse indexer", new String[] { "EnableInterrupt", "Eventually" });
 
 		runLibOnBoard.put("uno",
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
-						"DDS","EtherSia","ExodeCore","FingerLib" ,"HamShield"});
+						"DDS", "EtherSia", "ExodeCore", "FingerLib", "HamShield" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
 		runLibOnBoard.put("circuitplay32u4cat",
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library" });
-		runLibOnBoard.put("nodemcu", new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector",
-				"CMMC_OTA", "CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi" ,"ArduinoIHC","AsciiMassage",
-				"ESPiLight","HaLakeKit","HaLakeKitFirst"});
+		runLibOnBoard.put("nodemcu",
+				new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector", "CMMC_OTA",
+						"CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi", "ArduinoIHC", "AsciiMassage",
+						"ESPiLight", "HaLakeKit", "HaLakeKitFirst" });
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
-		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo","EnergyBoard" });
+		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo", "EnergyBoard" });
 		runLibOnBoard.put("zero", new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero",
 				"Dimmer_class_for_SAMD21", "AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
 		runLibOnBoard.put("due",
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
-		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert","ESPectro" });
-		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo","ESPUI"});
+		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
+		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI" });
 
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (!getName().equals(curEntry.getKey())) {
@@ -232,14 +265,16 @@ public abstract class IBoard {
 	 * empty returns the best known boarddescriptor to run this example
 	 */
 
-	public static BoardDescriptor pickBestBoard(String inoName, String libName, IBoard myBoards[]) {
+	public static BoardDescriptor pickBestBoard(Example example, IBoard myBoards[]) {
+		String libName=example.getLibName();
+		String inoName=example.getInoName();
 		if (myBoards.length == 0) {
 			return null;
 		}
 		if (neverTestThisLib(libName)) {
 			return null;
 		}
-		if (neverTestThisExample(inoName, libName)) {
+		if (neverTestThisExample(example)) {
 			return null;
 		}
 
@@ -247,7 +282,7 @@ public abstract class IBoard {
 		for (IBoard curBoard : myBoards) {
 			String filter = curBoard.getName().toLowerCase();
 			if (libName.toLowerCase().contains(filter) || inoName.toLowerCase().contains(filter)) {
-				if (curBoard.isExampleOk(inoName, libName)) {
+				if (curBoard.isExampleSupported(example)) {
 					return curBoard.getBoardDescriptor();
 				}
 			}
@@ -256,30 +291,30 @@ public abstract class IBoard {
 		for (IBoard curBoard : myBoards) {
 			String filter = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
 			if (libName.toLowerCase().contains(filter) || inoName.toLowerCase().contains(filter)) {
-				if (curBoard.isExampleOk(inoName, libName)) {
+				if (curBoard.isExampleSupported(example)) {
 					return curBoard.getBoardDescriptor();
 				}
 			}
 		}
 		/*
-		 * look for well known names that identify the board that should be used
-		 *  in the lib and ino name
-		 * to skip in case these boards are not in the list of boards
+		 * look for well known names that identify the board that should be used in the
+		 * lib and ino name to skip in case these boards are not in the list of boards
 		 */
-		String commonlyUsedIDNames[]=new String[] { "trinket", "esp8266", "esp32","Goldilocks"};
+		String commonlyUsedIDNames[] = new String[] { "trinket", "esp8266", "esp32", "Goldilocks" };
 		for (String curBoardName : commonlyUsedIDNames) {
 			if (libName.toLowerCase().contains(curBoardName) || inoName.toLowerCase().contains(curBoardName)) {
-				/*This examplename or libname contains the name of a board/techology/architecture
-				* commonly used in lib- and example names
-				* and such a board is not provided
-				*/
-					return null;
+				/*
+				 * This examplename or libname contains the name of a
+				 * board/techology/architecture commonly used in lib- and example names and such
+				 * a board is not provided
+				 */
+				return null;
 
 			}
 		}
 		// Out of guesses based on the name. Take the first ok one
 		for (IBoard curBoard : myBoards) {
-			if (curBoard.isExampleOk(inoName, libName)) {
+			if (curBoard.isExampleSupported(example)) {
 				return curBoard.getBoardDescriptor();
 			}
 		}
@@ -296,7 +331,7 @@ public abstract class IBoard {
 				"BTLE", "Cayenne", "CayenneMQTT", "Chronos", "CoAP_simple_library", "Comp6DOF_n0m1", "Constellation",
 				"CRC_Simula_Library", "Cytron_3A_Motor_Driver_Shield", "DoubleResetDetector", "DCF77", "dcf77_xtal",
 				"DW1000", "EDB", "eBtn", "AJSP", "EducationShield", "ArduinoMqtt", "Embedded_Template_Library",
-				"Embedis", "EMoRo_2560", "Adafruit_microbit_Library","GPRSbee","hd44780" };
+				"Embedis", "EMoRo_2560", "Adafruit_microbit_Library", "GPRSbee", "hd44780" };
 		return Arrays.asList(skipLibs).contains(libName);
 	}
 
@@ -307,10 +342,10 @@ public abstract class IBoard {
 	 * @param libName
 	 * @return
 	 */
-	private static boolean neverTestThisExample(String inoName, String libName) {
+	private static boolean neverTestThisExample(Example example) {
 		final String[] skipIno = { "AD7193_VoltageMeasurePsuedoDifferential_Example", "bunny_cuberotate?cuberotate",
 				"XPT2046_Touchscreen?ILI9341Test" };
-
+		String inoName = example.getInoName();
 		if (Arrays.asList(skipIno).contains(inoName.replace(" ", "")))
 			return true;
 		if (inoName.endsWith("AD7193_VoltageMeasurePsuedoDifferential_Example"))
@@ -318,9 +353,10 @@ public abstract class IBoard {
 		// following examples also fail in Arduino IDE at the time of writing
 		// these unit tests
 		if (inoName.endsWith("ahrs_mahony")
-				|| ("Adafruit_BLEFirmata".equals(libName) && inoName.endsWith("StandardFirmata"))) {
+				|| ("Adafruit_BLEFirmata".equals(example.getLibName()) && inoName.endsWith("StandardFirmata"))) {
 			return true;
 		}
 		return false; // default everything is fine so don't skip
 	}
+
 }
