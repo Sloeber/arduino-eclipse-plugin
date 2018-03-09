@@ -367,6 +367,7 @@ public abstract class IBoard {
 		return false; // default everything is fine so don't skip
 	}
 
+	@SuppressWarnings("static-method")
 	public Map<String, String> getBoardOptions(Example example) {
 		 Map<String, String>  ret =new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		 if(example.getFQN().contains("Teensy? USB_FlightSim")) {

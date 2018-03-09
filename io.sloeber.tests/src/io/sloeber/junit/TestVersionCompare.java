@@ -6,9 +6,8 @@ import org.junit.Test;
 
 import io.sloeber.core.tools.Version;
 
-@SuppressWarnings({"nls","restriction"})
+@SuppressWarnings({"nls","static-method"})
 public class TestVersionCompare {
-
 
 
 	@Test
