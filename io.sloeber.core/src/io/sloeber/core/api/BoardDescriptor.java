@@ -746,6 +746,9 @@ public class BoardDescriptor {
 	}
 
 	public void setOptions(Map<String, String> options) {
+		if(options==null) {
+			return;
+		}
 		this.myOptions.putAll(options);
 		calculateDerivedFields();
 	}
