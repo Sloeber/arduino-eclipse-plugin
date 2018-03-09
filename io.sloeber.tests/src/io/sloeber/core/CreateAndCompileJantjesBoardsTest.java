@@ -61,16 +61,16 @@ public class CreateAndCompileJantjesBoardsTest {
 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			String inoName = curexample.getKey().trim();
+			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Example example = new Example(inoName, null, examplePath);
+			Example example = new Example(fqn, null, examplePath);
 			if (!skipExample(example)) {
 				ArrayList<IPath> paths = new ArrayList<>();
 
 				paths.add(examplePath);
 				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-				Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, example };
+				Object[] theData = new Object[] { "Example:" + fqn, codeDescriptor, example };
 				examples.add(theData);
 			}
 		}
@@ -80,7 +80,7 @@ public class CreateAndCompileJantjesBoardsTest {
 	}
 
 	private static boolean skipExample(Example example) {
-		String curexample = example.getName();
+		String curexample = example.getFQN();
 		String searchName = curexample.trim().replace('?', '_');
 		searchName = searchName.replace(' ', '_');
 		searchName = searchName.replace('.', '_');

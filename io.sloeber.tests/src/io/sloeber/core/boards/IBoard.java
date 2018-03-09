@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescriptor;
@@ -100,17 +101,24 @@ public abstract class IBoard {
 			return false;
 		}
 
-		boolean ret = matches(example.getName(), getName(), "usesSerial", example.UsesSerial(), supportsSerial());
-		ret = ret && matches(example.getName(), getName(), "usesSerial1", example.UsesSerial1(), supportsSerial1());
-		ret = ret && matches(example.getName(), getName(), "usesKeyboard", example.UsesKeyboard(), supportsKeyboard());
+		boolean ret = matches(example.getFQN(), getName(), "usesSerial", example.UsesSerial(), supportsSerial());
+		ret = ret && matches(example.getFQN(), getName(), "usesSerial1", example.UsesSerial1(), supportsSerial1());
+		ret = ret && matches(example.getFQN(), getName(), "usesKeyboard", example.UsesKeyboard(), supportsKeyboard());
 		ret = ret
-				&& matches(example.getName(), getName(), "usesFlightSim", example.UsesFlightSim(), supportsFlightSim());
-		ret = ret && matches(example.getName(), getName(), "usesMidi", example.UsesMidi(), supportsusesMidi());
-
+				&& matches(example.getFQN(), getName(), "usesFlightSim", example.UsesFlightSim(), supportsFlightSim());
+		ret = ret && matches(example.getFQN(), getName(), "usesMidi", example.UsesMidi(), supportsusesMidi());
+		if ("Teensy".equalsIgnoreCase(getName())) {
+			if (example.getFQN().contains("Teensy? USB_Mouse?Buttons")) {
+				String boardID = myBoardDescriptor.getBoardID();
+				if ("teensypp2".equals(boardID) || "teensy2".equals(boardID)) {
+					return false;
+				}
+			}
+		}
 		return ret;
 	}
 
-	private boolean matches(String exampleName, String boardName, String fieldName, boolean val1, boolean val2) {
+	private static boolean matches(String exampleName, String boardName, String fieldName, boolean val1, boolean val2) {
 		if (val1 && !val2) {
 			if (log) {
 				System.out.println("!Example " + exampleName + " SKIPPED on " + boardName + " due to " + fieldName);
@@ -357,6 +365,23 @@ public abstract class IBoard {
 			return true;
 		}
 		return false; // default everything is fine so don't skip
+	}
+
+	public Map<String, String> getBoardOptions(Example example) {
+		 Map<String, String>  ret =new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		 if(example.getFQN().contains("Teensy? USB_FlightSim")) {
+			 // it is a teensy and you need to set the usb to flightsim
+			 ret.put("usb", "flightsim");
+		 }
+		 if(example.getFQN().contains("Teensy? USB_Mouse")) {
+			 // it is a teensy and you need to set the usb to flightsim
+			 ret.put("usb", "serialhid");
+		 }
+		 if(example.getFQN().contains("Teensy? USB_RawHID")) {
+			 // it is a teensy and you need to set the usb to flightsim
+			 ret.put("usb", "rawhid");
+		 }
+		return ret;
 	}
 
 }

@@ -74,7 +74,7 @@ public class CreateAndCompileExamplesTest {
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-			String inoName = curexample.getKey();
+			String fqn = curexample.getKey();
 			String libName = "";
 			if (examples.size() == 82) {// use this for debugging based on the
 										// project number
@@ -83,15 +83,15 @@ public class CreateAndCompileExamplesTest {
 				a = a + 1;
 			}
 			try {
-				libName = inoName.split(" ")[0].trim();
+				libName = fqn.split(" ")[0].trim();
 			} catch (Exception e) {
 				// ignore error
 			}
-			Example example=new Example(inoName,libName,curexample.getValue());
+			Example example=new Example(fqn,libName,curexample.getValue());
 			// with the current amount of examples only do one
 			BoardDescriptor curBoard =IBoard.pickBestBoard(example,myBoards);
 				if (curBoard!=null) {
-					Object[] theData = new Object[] { inoName.trim(), curBoard, codeDescriptor };
+					Object[] theData = new Object[] { fqn.trim(), curBoard, codeDescriptor };
 					examples.add(theData);
 				}
 		}

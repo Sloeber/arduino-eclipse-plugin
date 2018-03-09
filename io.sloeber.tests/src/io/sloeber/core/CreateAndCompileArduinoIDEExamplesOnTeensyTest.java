@@ -58,15 +58,15 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			String inoName = curexample.getKey().trim();
+			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Example example = new Example(inoName, null, examplePath);
+			Example example = new Example(fqn, null, examplePath);
 			if (!skipExample(example)) {
 				ArrayList<IPath> paths = new ArrayList<>();
 				paths.add(examplePath);
 				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-				Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, example };
+				Object[] theData = new Object[] { "Example:" + fqn, codeDescriptor, example };
 				examples.add(theData);
 			}
 		}
@@ -86,15 +86,17 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
+		if (totalFails >= maxFails) {
+			fail("To many fails. Stopping test");
+		}
+
 		if (!board.isExampleSupported(myExample)) {
 			return;
 		}
-
-		if (totalFails < maxFails) {
-			BuildAndVerify(board.getBoardDescriptor());
-		} else {
-			fail("To many fails. Stopping test");
-		}
+		Map<String,String> boardOptions=board.getBoardOptions(myExample);
+		BoardDescriptor boardDescriptor=board.getBoardDescriptor();
+		boardDescriptor.setOptions(boardOptions);
+		BuildAndVerify(boardDescriptor);
 
 	}
 
@@ -151,7 +153,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		try {
 
 			theTestProject = boardDescriptor.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), this.myCodeDescriptor, new CompileOptions(null),
+					ConfigurationDescriptor.getDefaultDescriptors(), this.myCodeDescriptor,  new CompileOptions(null),
 					monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {

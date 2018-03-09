@@ -12,7 +12,7 @@ public class Example {
 	private static LinkedList<String> usesFlightSimExampleList = null;
 	private static LinkedList<String> usesMidiExampleList = null;
 
-	private String myExampleName;
+	private String myFQN;
 	private boolean myUsesSerial;
 	private boolean usesSerial1;
 	private boolean usesKeyboard;
@@ -23,21 +23,21 @@ public class Example {
 
 
 
-	public Example(String exampleName,String libName, IPath path) {
-		myExampleName = exampleName;
-		myUsesSerial = getUsesSerialExamples().contains(myExampleName);
-		usesSerial1 = getUsesSerial1Examples().contains(myExampleName);
-		usesKeyboard = getUsesKeyboardExamples().contains(myExampleName);
-		usesFlightSim = getUsesusesFlightSimExamples().contains(myExampleName);
-		usesMidi = getUsesusesMidiExamples().contains(myExampleName) || myExampleName.contains("USB_MIDI");
+	public Example(String fqn,String libName, IPath path) {
+		myFQN = fqn;
+		myUsesSerial = getUsesSerialExamples().contains(myFQN);
+		usesSerial1 = getUsesSerial1Examples().contains(myFQN);
+		usesKeyboard = getUsesKeyboardExamples().contains(myFQN);
+		usesFlightSim = getUsesusesFlightSimExamples().contains(myFQN);
+		usesMidi = getUsesusesMidiExamples().contains(myFQN) || myFQN.contains("USB_MIDI");
 		myLibName=libName;
 		myPath=path;
 	}
 	public IPath getPath() {
 		return myPath;
 	}
-	public String getName() {
-		return myExampleName;
+	public String getFQN() {
+		return myFQN;
 	}
 
 	public boolean UsesSerial() {
