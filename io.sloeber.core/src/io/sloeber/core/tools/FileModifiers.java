@@ -10,7 +10,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.Activator;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {
@@ -25,7 +29,7 @@ public class FileModifiers {
 	 * @throws IOException
 	 */
 	public static void prependPrefix(File input, String prefix) throws IOException {
-		String fileString = FileUtils.readFileToString(input) + prefix;
+		String fileString = prefix +FileUtils.readFileToString(input)  ;
 		FileUtils.write(input, fileString);
 	}
 
@@ -46,14 +50,12 @@ public class FileModifiers {
 				if (fileNamePath != null) {
 					String fileName=fileNamePath.toString();
 					if (fileName.length() > 2) {
-						if (".h".equals(fileName.substring(fileName.length() - 2))) { //$NON-NLS-1$
-
+						if (fileName.endsWith(".h")) { //$NON-NLS-1$
 							try {
 								prependPrefix(file.toFile(), PRAGMA_ONCE + System.lineSeparator());
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
-
 						}
 					}
 				}
@@ -91,5 +93,20 @@ public class FileModifiers {
 
 	}
 
+	public static void replaceInFile(File file, boolean regex, String find, String replace) {
+		try {
+			String textFromFile = FileUtils.readFileToString(file);
+
+			if (regex) {
+				textFromFile = textFromFile.replaceAll(find, replace);
+			} else {
+				textFromFile = textFromFile.replace(find, replace);
+			}
+			FileUtils.write(file, textFromFile);
+		} catch (IOException e) {
+			Common.log(new Status(IStatus.WARNING, Activator.getId(),
+					"Failed to replace "+find+" with "+replace+" in file "+file.toString(), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+	}
 
 }

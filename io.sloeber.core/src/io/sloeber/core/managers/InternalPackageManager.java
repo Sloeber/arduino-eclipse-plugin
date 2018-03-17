@@ -33,6 +33,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,6 +47,7 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Messages;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.MyMultiStatus;
 
 public class InternalPackageManager extends PackageManager{
@@ -137,7 +139,7 @@ public class InternalPackageManager extends PackageManager{
 			}
 		}
 		// On Windows install make
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (SystemUtils.IS_OS_WINDOWS) {
 			IPath localMakePath = ConfigurationPreferences.getMakePath();
 			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
 				mstatus.addErrors(
@@ -146,6 +148,13 @@ public class InternalPackageManager extends PackageManager{
 			}
 		}
 
+		//on Windows fix esp8266 platform.txt file
+		//replace -DARDUINO_BOARD="{build.board}" with -DARDUINO_BOARD="\"{build.board}\""
+		if(SystemUtils.IS_OS_WINDOWS) {
+			if ("esp8266".equals(platform.getArchitecture())&&"esp8266".equals(platform.getName())){
+				FileModifiers.replaceInFile(platform.getPlatformFile(),false,"-DARDUINO_BOARD=\"{build.board}\"","-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
+			}
+		}
 		return mstatus;
 
 	}
