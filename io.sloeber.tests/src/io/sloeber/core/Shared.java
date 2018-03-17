@@ -5,10 +5,8 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -37,6 +35,7 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.tools.FileModifiers;
 
 @SuppressWarnings("nls")
 public class Shared {
@@ -143,7 +142,7 @@ public class Shared {
 		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32")
 				.resolve("2.0.1").resolve("platform.txt");
 		if (platform_txt.toFile().exists()) {
-			replaceInFile(platform_txt, false, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
+			FileModifiers.replaceInFile(platform_txt.toFile(), false, "\"{compiler.cpp.extra_flags}\"", "{compiler.cpp.extra_flags}");
 		}
 
 		/*
@@ -205,30 +204,6 @@ public class Shared {
 
 	}
 
-	private static void replaceInFile(java.nio.file.Path file, boolean regex, String find, String replace) {
 
-		try {
-			// read all bytes from file (they will include bytes representing used line
-			// separtors)
-			byte[] bytesFromFile = Files.readAllBytes(file);
-
-			// convert themm to string
-			String textFromFile = new String(bytesFromFile, StandardCharsets.UTF_8);// use proper charset
-
-			// replace what you need (line separators will stay the same)
-			if (regex) {
-				textFromFile = textFromFile.replaceAll(find, replace);
-			} else {
-				textFromFile = textFromFile.replace(find, replace);
-			}
-
-			// write back data to file
-
-			Files.write(file, textFromFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 }
