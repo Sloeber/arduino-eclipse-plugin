@@ -1,4 +1,4 @@
-package io.sloeber.core.boards;
+package io.sloeber.providers;
 
 import static org.junit.Assert.fail;
 
@@ -8,37 +8,41 @@ import java.util.TreeMap;
 import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
-public class ESP8266Boards extends IBoard {
-	private static final String WEMOSD1_ID = "d1_mini";
-	private static final String NODE_MCU_ID = "nodemcu";
+public class ESP8266 extends MCUBoard {
 
-	public static IBoard wemosD1() {
+	public static MCUBoard wemosD1() {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("CpuFrequency", "80");
 		options.put("UploadSpeed", "115200");
 		options.put("FlashSize", "4M1M");
-		return new ESP8266Boards(WEMOSD1_ID, options);
+		ESP8266 ret= new ESP8266("d1_mini", options);
+		ret.mySlangName="wemos";
+		return ret;
 	}
 
-	public static IBoard wemosD1(String uploadPort) {
-		IBoard board = wemosD1();
+	public static MCUBoard wemosD1(String uploadPort) {
+		MCUBoard board = wemosD1();
 		board.myBoardDescriptor.setUploadPort(uploadPort);
 		return board;
 	}
 
 
-	public static IBoard NodeMCUBoard() {
-		return new ESP8266Boards(NODE_MCU_ID, null);
+	public static MCUBoard nodeMCU() {
+		return new ESP8266("nodemcu", null);
 	}
 
-	public static IBoard NodeMCUBoard(String uploadPort) {
-		IBoard board = wemosD1();
+	public static MCUBoard NodeMCUBoard(String uploadPort) {
+		MCUBoard board = wemosD1();
 		board.myBoardDescriptor.setUploadPort(uploadPort);
 		return board;
 	}
 
+	public static MCUBoard  ESPressoLite() {
+		return new ESP8266("espresso_lite_v2", null);
+	}
 
-	public ESP8266Boards(String boardName, Map<String, String> options) {
+
+	public ESP8266(String boardName, Map<String, String> options) {
 		this.myBoardDescriptor = PackageManager.getBoardDescriptor("package_esp8266com_index.json", "esp8266", "esp8266",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {

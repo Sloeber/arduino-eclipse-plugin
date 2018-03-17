@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,25 +27,26 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.core.boards.AdafruitnRF52idBoard;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.ESP8266Boards;
-import io.sloeber.core.boards.ESPressoLite;
-import io.sloeber.core.boards.IBoard;
+import io.sloeber.providers.Adafruit;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.MCUBoard;
+import io.sloeber.providers.Teensy;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
-	private static int mCounter = 0;
-	private CodeDescriptor myCodeDescriptor;
-	private BoardDescriptor myBoardid;
-	private static int totalFails = 0;
+	private static int myCounter = 0;
+	private Examples myExample;
+	private MCUBoard myBoardID;
+	private static int skipAtStart = 860;
+	private static int myTotalFails = 0;
+	private static int maxFails = 40;
 
-	public CreateAndCompileLibraryExamplesTest(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
-		this.myBoardid = boardid;
-		this.myCodeDescriptor = codeDescriptor;
-
+	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
+		myBoardID = boardID;
+		myExample = example;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -54,101 +54,109 @@ public class CreateAndCompileLibraryExamplesTest {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 		Preferences.setUseArduinoToolSelection(true);
-		IBoard myBoards[] = { ArduinoBoards.leonardo(), ArduinoBoards.uno(), ArduinoBoards.getEsploraBoard(), new AdafruitnRF52idBoard(),
-				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(), ESP8266Boards.NodeMCUBoard() ,new ESPressoLite()};
+		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
+				Adafruit.feather(), Arduino.adafruitnCirquitPlayground(),
+				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
+				Arduino.zero(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,Adafruit.trinket8MH(),Arduino.yun()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			ArrayList<IPath> paths = new ArrayList<>();
+			String fqn = curexample.getKey().trim();
+			IPath examplePath = curexample.getValue();
+			Examples example = new Examples(fqn, null, examplePath);
 
-			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+			// with the current amount of examples only do one
+			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
 
-			String fqn = curexample.getKey();
-			String libName = "";
-			if (examples.size() >= 100) {// use this for debugging based on the
-										// project number
-				// use this to put breakpoint
-				int a = 0;
-				a = a + 1;
+			if (curBoard != null) {
+				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getName(), curBoard,
+						example };
+				examples.add(theData);
 			}
-			try {
-				libName = fqn.split(" ")[0].trim();
-			} catch (Exception e) {
-				// ignore error
-			}
-			Example example=new Example(fqn,libName,curexample.getValue());
-				// with the current amount of examples only do one
-				BoardDescriptor curBoard =IBoard.pickBestBoard(example,myBoards);
-				if(curBoard!=null) {
-						Object[] theData = new Object[] { libName + ":" + fqn + ":" + curBoard.getBoardName(),
-								curBoard, codeDescriptor };
-						examples.add(theData);
-				}
+
 		}
 
 		return examples;
 
 	}
 
-
-
 	/*
 	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we
-	 * can start testing
+	 * installer job will trigger downloads These mmust have finished before we can
+	 * start testing
 	 */
 
 	public static void WaitForInstallerToFinish() {
 
 		installAdditionalBoards();
-
 		Shared.waitForAllJobsToFinish();
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL};
+		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
 			PackageManager.installAllLatestPlatforms();
+			PackageManager.onlyKeepLatestPlatforms();
 			// deal with removal of json files or libs from json files
 			LibraryManager.removeAllLibs();
 			LibraryManager.installAllLatestLibraries();
+			// LibraryManager.onlyKeepLatestPlatforms();
+		}
+		if (MySystem.getTeensyPlatform().isEmpty()) {
+			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
+		} else {
+			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
 	}
 
 	@Test
 	public void testExamples() {
-		// Stop after X fails because
-		// the fails stays open in eclipse and it becomes really slow
-		// There are only a number of issues you can handle
-		// best is to focus on the first ones and then rerun starting with the
-		// failures
-		if (totalFails < 200) {
-			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
-		} else {
-			fail("To many fails. Stopping test");
+
+		if (myTotalFails > maxFails) {
+			// Stop after X fails because
+			// the fails stays open in eclipse and it becomes really slow
+			// There are only a number of issues you can handle
+			// best is to focus on the first ones and then rerun
+			// with a adapted skipAtStart
+//			fail("To many fails. Stopping test");
+			//failing is annoying when doing fixing
 		}
+		if (skipAtStart >= myCounter++) {
+			// skip these
+			return;
+		}
+		if (!myBoardID.isExampleSupported(myExample)) {
+			fail("Trying to run a test on unsoprted board");
+			return;
+		}
+		ArrayList<IPath> paths = new ArrayList<>();
+
+		paths.add(myExample.getPath());
+		CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+
+		Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
+		BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
+		boardDescriptor.setOptions(boardOptions);
+		BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor);
 
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
 
 		IProject theTestProject = null;
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_:%s:%s:%s", new Integer(mCounter++), codeDescriptor.getLibraryName(),
-				codeDescriptor.getExampleName(), boardid.getBoardID());
+		String projectName = String.format("%05d_%1.100s", new Integer(myCounter), myExample.getFQN());
 		try {
-
 			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
 					codeDescriptor, new CompileOptions(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
-			totalFails++;
+			myTotalFails++;
 			fail("Failed to create the project:" + projectName);
 			return;
 		}
@@ -166,7 +174,7 @@ public class CreateAndCompileLibraryExamplesTest {
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
-					totalFails++;
+					myTotalFails++;
 					fail("Failed to compile the project:" + projectName + " build errors");
 				} else {
 					theTestProject.delete(true, null);
@@ -176,7 +184,7 @@ public class CreateAndCompileLibraryExamplesTest {
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
-			totalFails++;
+			myTotalFails++;
 			fail("Failed to compile the project:" + projectName + " exception");
 		}
 	}

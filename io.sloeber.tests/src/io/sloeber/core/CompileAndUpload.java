@@ -27,19 +27,19 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
 	private static final boolean reinstall_boards_and_libraries = true;
 	private static int mCounter = 0;
-	private IBoard myBoard;
+	private MCUBoard myBoard;
 	private String myName;
 	private static String interval = "1500";// change between 1500 and 100
 
-	public CompileAndUpload(String name, IBoard board) {
+	public CompileAndUpload(String name, MCUBoard board) {
 		this.myBoard = board;
 		this.myName = name;
 
@@ -81,11 +81,11 @@ public class CompileAndUpload {
 
 
 
-		IBoard[] boards =MySystem.getUploadBoards();
+		MCUBoard[] boards =MySystem.getUploadBoards();
 		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();
 
-		for (IBoard curBoard : boards) {
+		for (MCUBoard curBoard : boards) {
 			examples.add(new Object[] { curBoard.getName(), curBoard });
 		}
 

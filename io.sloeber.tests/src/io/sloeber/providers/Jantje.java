@@ -1,4 +1,4 @@
-package io.sloeber.core.boards;
+package io.sloeber.providers;
 
 import static org.junit.Assert.fail;
 
@@ -8,7 +8,7 @@ import java.util.TreeMap;
 import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
-public class GenericJantjeBoard extends IBoard {
+public class Jantje extends MCUBoard {
 
 
 
@@ -21,7 +21,7 @@ public class GenericJantjeBoard extends IBoard {
 	public static String getPlatformName() {
 		return "Arduino avr Boards (local debug)";
 	}
-	public GenericJantjeBoard(String boardName) {
+	public Jantje(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
 		this.myBoardDescriptor = PackageManager.getBoardDescriptor(getJsonFileName(),getPackageName(),getPlatformName() ,
@@ -31,9 +31,9 @@ public class GenericJantjeBoard extends IBoard {
 		}
 		this.myBoardDescriptor.setUploadPort("none");
 
-		setSupportSerial(!ArduinoBoards.doesNotSupportSerialList().contains(boardName));
-		setSupportSerial1(ArduinoBoards.supportSerial1List().contains(boardName));
-		setSupportKeyboard(ArduinoBoards.supportKeyboardList().contains(boardName));
+		myAttributes.serial=!Arduino.doesNotSupportSerialList().contains(boardName);
+		myAttributes.serial1=Arduino.supportSerial1List().contains(boardName);
+		myAttributes.keyboard=Arduino.supportKeyboardList().contains(boardName);
 	}
 
 

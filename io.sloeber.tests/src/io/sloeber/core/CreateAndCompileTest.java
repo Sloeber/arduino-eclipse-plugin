@@ -194,6 +194,7 @@ public class CreateAndCompileTest {
 
 		List<BoardDescriptor> boards = new ArrayList<>();
 		for (String curBoardFile : PackageManager.getAllBoardsFiles()) {
+			//TOFIX these options should not be set here but in IBoard.getOptions
 			Map<String, String> options = null;
 			if (curBoardFile.contains("Jantje")) {
 				// for jantjes boards as unit testing does not make a exe without the gdb lib

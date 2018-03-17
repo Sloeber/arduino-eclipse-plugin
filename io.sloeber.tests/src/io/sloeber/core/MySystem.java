@@ -3,10 +3,10 @@ package io.sloeber.core;
 import static org.junit.Assert.fail;
 
 import io.sloeber.core.api.Other;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.ESP8266Boards;
-import io.sloeber.core.boards.IBoard;
-import io.sloeber.core.boards.TeensyBoards;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.MCUBoard;
+import io.sloeber.providers.Teensy;
 
 /*
  * Set system specific info here.
@@ -30,20 +30,20 @@ public class MySystem {
 	public static String getTeensyBoard_txt() {
 		return getTeensyPlatform() + "/avr/boards.txt";
 	}
-	public static IBoard[] getUploadBoards()  {
+	public static MCUBoard[] getUploadBoards()  {
 		switch (Other.getSystemHash()) {
 		case jantjesLinuxMachineHashKey: {
-			IBoard[] boards = {   TeensyBoards.teensypp2(),  ESP8266Boards.wemosD1("COM34"),
-					ArduinoBoards.fried(""), ArduinoBoards.yun(""), ArduinoBoards.uno(""),
-					ArduinoBoards.getMega2560Board(""), ArduinoBoards.zero("COM14"), ArduinoBoards.due(""),
-					ArduinoBoards.leonardo(""), ArduinoBoards.arduino_101("") };
+			MCUBoard[] boards = {   Teensy.teensypp2(),  ESP8266.wemosD1("COM34"),
+					Arduino.fried(""), Arduino.yun(""), Arduino.uno(""),
+					Arduino.getMega2560Board(""), Arduino.zero("COM14"), Arduino.due(""),
+					Arduino.leonardo(""), Arduino.arduino_101("") };
 			return boards;
 		}
 		case jantjesWindowsMachineHashKey: {
-			IBoard[] boards = {  TeensyBoards.teensypp2(), ESP8266Boards.wemosD1("COM34"),
-					ArduinoBoards.fried("COM5"), ArduinoBoards.yun("COM17"), ArduinoBoards.uno("COM6"),
-					ArduinoBoards.getMega2560Board("COM11"), ArduinoBoards.zero("COM14"), ArduinoBoards.due("COM3"),ArduinoBoards.dueprogramming("COM8"),
-					ArduinoBoards.leonardo("COM19"), ArduinoBoards.arduino_101("") };
+			MCUBoard[] boards = {  Teensy.teensypp2(), ESP8266.wemosD1("COM34"),
+					Arduino.fried("COM5"), Arduino.yun("COM17"), Arduino.uno("COM6"),
+					Arduino.getMega2560Board("COM11"), Arduino.zero("COM14"), Arduino.due("COM3"),Arduino.dueprogramming("COM8"),
+					Arduino.leonardo("COM19"), Arduino.arduino_101("") };
 			return boards;
 		}
 		}

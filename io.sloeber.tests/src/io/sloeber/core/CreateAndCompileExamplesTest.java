@@ -27,10 +27,10 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.boards.AdafruitnRF52idBoard;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.ESP8266Boards;
-import io.sloeber.core.boards.IBoard;
+import io.sloeber.providers.Adafruit;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -40,6 +40,7 @@ public class CreateAndCompileExamplesTest {
 	private CodeDescriptor myCodeDescriptor;
 	private BoardDescriptor myBoardid;
 	private static int totalFails = 0;
+	private static int maxFails = 40;
 	private String myName;
 
 	public CreateAndCompileExamplesTest(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
@@ -53,18 +54,18 @@ public class CreateAndCompileExamplesTest {
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 
-		IBoard myBoards[] = { ArduinoBoards.leonardo(),
-				ArduinoBoards.uno(),
-				ArduinoBoards.getEsploraBoard(),
-				new AdafruitnRF52idBoard(),
-				ArduinoBoards.AdafruitnCirquitPlaygroundBoard(),
-				ESP8266Boards.NodeMCUBoard(),
-				ArduinoBoards.primo(),
-				ArduinoBoards.getMega2560Board(),
-				ArduinoBoards.getGemma(),
-				ArduinoBoards.zero(),
-				ArduinoBoards.mkrfox1200(),
-				ArduinoBoards.due() };
+		MCUBoard myBoards[] = { Arduino.leonardo(),
+				Arduino.uno(),
+				Arduino.esplora(),
+				Adafruit.feather(),
+				Arduino.adafruitnCirquitPlayground(),
+				ESP8266.nodeMCU(),
+				Arduino.primo(),
+				Arduino.getMega2560Board(),
+				Arduino.gemma(),
+				Arduino.zero(),
+				Arduino.mkrfox1200(),
+				Arduino.due() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllLibraryExamples();
@@ -87,9 +88,9 @@ public class CreateAndCompileExamplesTest {
 			} catch (Exception e) {
 				// ignore error
 			}
-			Example example=new Example(fqn,libName,curexample.getValue());
+			Examples example=new Examples(fqn,libName,curexample.getValue());
 			// with the current amount of examples only do one
-			BoardDescriptor curBoard =IBoard.pickBestBoard(example,myBoards);
+			BoardDescriptor curBoard =Examples.pickBestBoard(example,myBoards).getBoardDescriptor();
 				if (curBoard!=null) {
 					Object[] theData = new Object[] { fqn.trim(), curBoard, codeDescriptor };
 					examples.add(theData);
@@ -114,10 +115,11 @@ public class CreateAndCompileExamplesTest {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL, Shared.TEST_LIBRARY_INDEX_URL };
+		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_examples) {
 			PackageManager.installAllLatestPlatforms();
+			PackageManager.onlyKeepLatestPlatforms();
 			// deal with removal of json files or libs from json files
 			LibraryManager.removeAllLibs();
 			LibraryManager.installAllLatestLibraries();
@@ -132,7 +134,7 @@ public class CreateAndCompileExamplesTest {
 		// There are only a number of issues you can handle
 		// best is to focus on the first ones and then rerun starting with the
 		// failures
-		if (totalFails < 40) {
+		if (totalFails < maxFails) {
 			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
 		} else {
 			fail("To many fails. Stopping test");

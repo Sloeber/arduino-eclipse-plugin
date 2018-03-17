@@ -40,7 +40,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 
 @SuppressWarnings("nls")
 public class Shared {
-	public final static String TEST_LIBRARY_INDEX_URL = "https://raw.githubusercontent.com/Sloeber/arduino-eclipse-plugin/master/io.sloeber.core/src/jUnit/library_sloeber_index.json";
 	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 

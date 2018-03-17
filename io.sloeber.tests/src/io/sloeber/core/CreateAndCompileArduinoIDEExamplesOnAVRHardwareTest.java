@@ -23,8 +23,8 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.IBoard;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -32,12 +32,12 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
 	private String myName;
-	private Example myExample;
+	private Examples myExample;
 	private static int totalFails = 0;
 	private static int maxFails = 500;
 
 	public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String name, CodeDescriptor codeDescriptor,
-			Example example) {
+			Examples example) {
 
 		myCodeDescriptor = codeDescriptor;
 		myName = name;
@@ -54,7 +54,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Example example = new Example(fqn, null, examplePath);
+			Examples example = new Examples(fqn, null, examplePath);
 			if (!skipExample(example)){
 				ArrayList<IPath> paths = new ArrayList<>();
 
@@ -70,14 +70,14 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 
 	}
 	
-	private static boolean skipExample(Example example) {
+	private static boolean skipExample(Examples example) {
 		// skip Teensy stuff on Arduino hardware
 		// Teensy is so mutch more advanced that most arduino avr hardware can not
 		// handle
 		// it
 		return example.getPath().toString().contains("Teensy");
 	}
-	public void testExample(IBoard board) {
+	public void testExample(MCUBoard board) {
 		// Stop after X fails because
 		// the fails stays open in eclipse and it becomes really slow
 		// There are only a number of issues you can handle
@@ -97,134 +97,134 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 
 	@Test
 	public void testArduinoIDEExamplesOnUno() {
-		testExample(ArduinoBoards.uno());
+		testExample(Arduino.uno());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLeonardo() {
-		testExample(ArduinoBoards.leonardo());
+		testExample(Arduino.leonardo());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnEsplora() {
-		testExample(ArduinoBoards.getEsploraBoard());
+		testExample(Arduino.esplora());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnYun() {
-		testExample(ArduinoBoards.yun());
+		testExample(Arduino.yun());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnDiecimila() {
-		testExample(ArduinoBoards.getAvrBoard("diecimila"));
+		testExample(Arduino.getAvrBoard("diecimila"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnMega() {
-		testExample(ArduinoBoards.getMega2560Board());
+		testExample(Arduino.getMega2560Board());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMegaADK() {
-		testExample(ArduinoBoards.MegaADK());
+		testExample(Arduino.MegaADK());
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLeonardoEth() {
 
-		testExample(ArduinoBoards.getAvrBoard("leonardoeth"));
+		testExample(Arduino.getAvrBoard("leonardoeth"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMicro() {
 
-		testExample(ArduinoBoards.getAvrBoard("micro"));
+		testExample(Arduino.getAvrBoard("micro"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOneMini() {
-		testExample(ArduinoBoards.getAvrBoard("mini"));
+		testExample(Arduino.getAvrBoard("mini"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnEthernet() {
-		testExample(ArduinoBoards.getAvrBoard("ethernet"));
+		testExample(Arduino.getAvrBoard("ethernet"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnFio() {
-		testExample(ArduinoBoards.getAvrBoard("fio"));
+		testExample(Arduino.getAvrBoard("fio"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnBt() {
-		testExample(ArduinoBoards.getAvrBoard("bt"));
+		testExample(Arduino.getAvrBoard("bt"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnLilyPadUSB() {
-		testExample(ArduinoBoards.getAvrBoard("LilyPadUSB"));
+		testExample(Arduino.getAvrBoard("LilyPadUSB"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnlilypad() {
-		testExample(ArduinoBoards.getAvrBoard("lilypad"));
+		testExample(Arduino.getAvrBoard("lilypad"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnPro() {
-		testExample(ArduinoBoards.getAvrBoard("pro"));
+		testExample(Arduino.getAvrBoard("pro"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnatmegang() {
-		testExample(ArduinoBoards.getAvrBoard("atmegang"));
+		testExample(Arduino.getAvrBoard("atmegang"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnrobotControl() {
-		testExample(ArduinoBoards.getAvrBoard("robotControl"));
+		testExample(Arduino.getAvrBoard("robotControl"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnrobotMotor() {
-		testExample(ArduinoBoards.getAvrBoard("robotMotor"));
+		testExample(Arduino.getAvrBoard("robotMotor"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOngemma() {
-		testExample(ArduinoBoards.getAvrBoard("gemma"));
+		testExample(Arduino.getAvrBoard("gemma"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOncircuitplay32u4cat() {
-		testExample(ArduinoBoards.AdafruitnCirquitPlaygroundBoard());
+		testExample(Arduino.adafruitnCirquitPlayground());
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnyunmini() {
-		testExample(ArduinoBoards.getAvrBoard("yunmini"));
+		testExample(Arduino.getAvrBoard("yunmini"));
 
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnchiwawa() {
-		testExample(ArduinoBoards.getAvrBoard("chiwawa"));
+		testExample(Arduino.getAvrBoard("chiwawa"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnone() {
-		testExample(ArduinoBoards.getAvrBoard("one"));
+		testExample(Arduino.getAvrBoard("one"));
 	}
 
 	@Test
 	public void testArduinoIDEExamplesOnunowifi() {
-		testExample(ArduinoBoards.getAvrBoard("unowifi"));
+		testExample(Arduino.getAvrBoard("unowifi"));
 	}
 
 	public void BuildAndVerify(BoardDescriptor boardDescriptor) {
