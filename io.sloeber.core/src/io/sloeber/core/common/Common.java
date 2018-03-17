@@ -64,7 +64,7 @@ public class Common extends Const {
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String name) {
-		char[] badChars = { ' ', '/', '.', '/', ':', ' ', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
+		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
 
 		String ret = name.trim();
 		for (char curchar : badChars) {
