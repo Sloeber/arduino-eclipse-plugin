@@ -60,7 +60,7 @@ public class PdePreprocessor {
 	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 	private static final String NEWLINE = "\n";
 
-	public static void processProject(IProject iProject) throws CoreException {
+	public static void processProject(boolean canSkip,IProject iProject) throws CoreException {
 		deleteTheGeneratedFileInPreviousBersionsOfSloeber(iProject);
 
 		// loop through all the files in the project to see we need to generate a file
@@ -76,8 +76,7 @@ public class PdePreprocessor {
 			}
 		}
 
-		ICProject tt = CoreModel.getDefault().create(iProject);
-		IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+
 		if (inoResources.isEmpty()) {
 			// delete the generated .ino.cpp file this is to cope with
 			// renaming ino files to cpp files removing the need for
@@ -85,6 +84,10 @@ public class PdePreprocessor {
 			deleteTheGeneratedFile(iProject);
 			return;
 		}
+		if(canSkip&&!CCorePlugin.getIndexManager().isIndexerIdle())return;
+		ICProject tt = CoreModel.getDefault().create(iProject);
+		IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
+
 		try {
 			try {
 				index.acquireReadLock();
