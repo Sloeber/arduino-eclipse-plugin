@@ -269,6 +269,8 @@ public class Examples {
 		ret.add("Library/aREST_UI/ESP8266");
 		ret.add("Library/aREST_UI/WiFi_CC3000");
 		ret.add("Library/aREST_UI/WildFire");
+		//uses arduinoWIFI
+		ret.add("Library/Braccio/braccioOfUnoWiFi");
 
 
 		// I don't recall why following examples didn't work
@@ -383,26 +385,7 @@ public class Examples {
 				}
 			}
 		}
-		// /*
-		// * look for well known names that identify the board that should be used in
-		// the
-		// * lib and ino name to skip in case these boards are not in the list of boards
-		// */
-		// String commonlyUsedIDNames[] = new String[] { "trinket", "esp8266", "esp32",
-		// "Goldilocks" };
-		// for (String curBoardName : commonlyUsedIDNames) {
-		// if (libName.toLowerCase().contains(curBoardName) ||
-		// inoName.toLowerCase().contains(curBoardName)) {
-		// /*
-		// * This examplename or libname contains the name of a
-		// * board/techology/architecture commonly used in lib- and example names and
-		// such
-		// * a board is not provided
-		// */
-		// return null;
-		//
-		// }
-		// }
+
 
 		// Out of guesses based on the name. Take the first ok one
 		for (MCUBoard curBoard : myBoards) {
@@ -436,39 +419,14 @@ public class Examples {
 			return "due";
 		case "Library/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
 				return "zero";
+		case "Library/BLEPeripheral/iBeacon":
+		return "feather52";
 		}
+
 
 		return null;
 
-		// runSketchOnBoard.put("nodemcu", new String[] { "YouMadeIt/basic_example",
-		// // "ConfigManager",
-		// "DimSwitch/DimSwitchTester-ESP", "AIOModule/handling-module",
-		// "AIOModule/mobility-module",
-		// "AlertMe/email_and_sms"
-		//
-		// });
-		// runSketchOnBoard.put("gemma",
-		// new String[] {, "Adafruit_TiCoServo/TiCoServo_Test_Trinket_Gemma" });
-		// runSketchOnBoard.put("primo", new String[] {
-		// "Arduino_Low_Power/PrimoDeepSleep", "BLEPeripheral/iBeacon" });
-		// // runSketchOnBoard.put("trinket",
-		// // new String[] { "Adafruit_SoftServo/TrinketKnob",
-		// // "Adafruit_TiCoServo/TiCoServo_Test_Trinket_Gemma",
-		// // "Adafruit_TinyFlash/TrinketPlayer" });
-		// runSketchOnBoard.put("zero", new String[] { "ArduinoCloud/ReadAndWrite",
-		// "ArduinoCloud/SimpleCloudButton",
-		// "AudioFrequencyMeter/SimpleAudioFrequencyMeter" });
-		// runSketchOnBoard.put("due",
-		// new String[] { "ArduinoThread/SensorThread",
-		// "Adafruit_BME280_Library/advancedsettings" });
-		// runSketchOnBoard.put("mega", new String[] { "aREST_UI/WiFi_CC3000" });
-		// runSketchOnBoard.put("wildfire", new String[] { "aREST_UI/WildFire" });
 
-		// runSketchOnBoard.put("unowifi", new String[] { "Braccio/braccioOfUnoWiFi" });
-		// runSketchOnBoard.put("uno",
-		// new String[] {
-		// "AFArray/GetFromIndex", "AFArray/ImplodeExplode",
-		// "Adafruit_ESP8266/webclient" });
 
 	}
 

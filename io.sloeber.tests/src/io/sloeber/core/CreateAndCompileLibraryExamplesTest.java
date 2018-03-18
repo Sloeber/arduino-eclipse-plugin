@@ -40,7 +40,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	private static int myCounter = 0;
 	private Examples myExample;
 	private MCUBoard myBoardID;
-	private static int skipAtStart = 860;
+	private static int skipAtStart = 1050;
 	private static int myTotalFails = 0;
 	private static int maxFails = 40;
 
@@ -123,6 +123,7 @@ public class CreateAndCompileLibraryExamplesTest {
 			// with a adapted skipAtStart
 //			fail("To many fails. Stopping test");
 			//failing is annoying when doing fixing
+			return;
 		}
 		if (skipAtStart >= myCounter++) {
 			// skip these

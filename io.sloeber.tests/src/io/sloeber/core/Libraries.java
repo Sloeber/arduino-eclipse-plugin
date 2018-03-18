@@ -82,7 +82,7 @@ public class Libraries {
 	 * esp8266 libraries
 	 */
 	private static boolean esp8266_mcu(String libName) {
-		String theLibs[] = new String[] { "Adafruit_ESP8266" };
+		String theLibs[] = new String[] { "Adafruit_ESP8266" ,"BoodskapTransceiver"};
 		return Arrays.asList(theLibs).contains(libName);
 	}
 
@@ -108,7 +108,7 @@ public class Libraries {
 		runLibOnBoard.put("nodemcu",
 				new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector", "CMMC_OTA",
 						"CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi", "ArduinoIHC", "AsciiMassage",
-						"ESPiLight", "HaLakeKit", "HaLakeKitFirst","AFArray" ,"AIOModule","AlertMe","Bleeper"});
+						"ESPiLight", "HaLakeKit", "HaLakeKitFirst","AFArray" ,"AIOModule","AlertMe","Bleeper","Blinker"});
 		runLibOnBoard.put("feather52", new String[] { "Firmata" });
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
 		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo", "EnergyBoard" });
