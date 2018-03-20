@@ -18,18 +18,18 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.InstancePreferences;
 
 public class FileModifiers {
-	static final String PRAGMA_ONCE = "\n//Added by Sloeber \n#pragma once\n"; //$NON-NLS-1$
+	static final String PRAGMA_ONCE = System.lineSeparator() +"//Added by Sloeber \n#pragma once"+System.lineSeparator() ; //$NON-NLS-1$
 
 	/**
 	 * method to add at the top of a file copied from
 	 * http://stackoverflow.com/questions/6127648/writing-in-the-beginning-of-a-text-file-java
 	 *
 	 * @param input
-	 * @param prefix
+	 * @param addString
 	 * @throws IOException
 	 */
-	public static void prependPrefix(File input, String prefix) throws IOException {
-		String fileString = prefix +FileUtils.readFileToString(input)  ;
+	public static void appendString(File input, String addString) throws IOException {
+		String fileString = FileUtils.readFileToString(input)  +addString;
 		FileUtils.write(input, fileString);
 	}
 
@@ -52,7 +52,7 @@ public class FileModifiers {
 					if (fileName.length() > 2) {
 						if (fileName.endsWith(".h")) { //$NON-NLS-1$
 							try {
-								prependPrefix(file.toFile(), PRAGMA_ONCE + System.lineSeparator());
+								appendString(file.toFile(),  PRAGMA_ONCE );
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
