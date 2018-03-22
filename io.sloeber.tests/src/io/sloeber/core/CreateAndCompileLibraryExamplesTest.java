@@ -36,11 +36,11 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
-	private static final boolean reinstall_boards_and_examples = false;
+	private static final boolean reinstall_boards_and_examples = true;
 	private static int myCounter = 0;
 	private Examples myExample;
 	private MCUBoard myBoardID;
-	private static int skipAtStart = 1050;
+	private static int skipAtStart = 0;
 	private static int myTotalFails = 0;
 	private static int maxFails = 40;
 
@@ -176,6 +176,7 @@ public class CreateAndCompileLibraryExamplesTest {
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
 					myTotalFails++;
+					theTestProject.close(null);
 					fail("Failed to compile the project:" + projectName + " build errors");
 				} else {
 					theTestProject.delete(true, null);
