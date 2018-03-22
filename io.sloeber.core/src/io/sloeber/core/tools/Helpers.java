@@ -804,10 +804,8 @@ public class Helpers extends Common {
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
-			if (Platform.getOS().equals(Platform.OS_WIN32)) {
-				//this is for adafruit using "{version}" with has to be \"{version}\" to work in windows
-				recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
-			}
+			recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
+
 
 			if (ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
