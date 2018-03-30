@@ -931,6 +931,25 @@ public class BoardDescriptor {
 		}
 		String ret = Common.getBuildEnvironmentVariable(confdesc,
 				"A.TOOLS." + upLoadTool.toUpperCase() + "." + action + ".PATTERN", "");
+		
+		// Below we handle the case where the port might have moved. This should be reasonably safe,
+		// since the port value that we have has to have been set, and it has to match a value from
+		// the port list ignoring any numbers on the end. If this specific scenario doesn't occur,
+		// then it will have no effect.
+		String oldComPort = getUploadPort();
+		if (!"".equals(oldComPort)) {
+			String[] comPorts = SerialManager.listComPorts();
+			List<String> ports = Arrays.asList(comPorts);
+			if (!ports.contains(oldComPort)) {
+				for (String port: ports) {
+					if (port.replaceAll("\\d+$", "").equals(oldComPort.replaceAll("\\d+$", ""))) {
+						setUploadPort(port);
+						ret = ret.replace(oldComPort, port);
+					}
+				}
+			}			
+		}
+		
 		if (ret.isEmpty()) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "tools." + upLoadTool + "."
 					+ action.toLowerCase() + ".pattern : not found in the platform.txt file"));
