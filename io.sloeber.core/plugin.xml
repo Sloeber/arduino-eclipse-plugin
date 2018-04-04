@@ -195,8 +195,7 @@
            cleanCommand="rm -f"
            id="io.sloeber.core.configuration.release"
            languageSettingsProviders="io.sloeber.languageSettingsProvider"
-           name="%configuration.name"
-           prebuildStep="io.sloeber.core.command.generate.cpp">
+           name="%configuration.name">
         <toolChain
               archList="all"
               configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberBuildVariableSupplier"
