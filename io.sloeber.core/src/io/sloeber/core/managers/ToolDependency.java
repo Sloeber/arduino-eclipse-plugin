@@ -55,7 +55,7 @@ public class ToolDependency {
 			return new Status(IStatus.ERROR, Activator.getId(),
 					String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
 		}
-		return getTool().install(monitor);
+		return tool.install(monitor);
 	}
 
 }
