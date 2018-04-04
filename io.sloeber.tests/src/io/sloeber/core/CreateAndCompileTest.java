@@ -178,6 +178,8 @@ public class CreateAndCompileTest {
 			"https://udooboard.github.io/arduino-board-package/package_udoo_index.json",
 			"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 			"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
+			"https://raw.githubusercontent.com/harbaum/ftduino/master/package_ftduino_index.json",
+			"http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json"
 
 	};
 
