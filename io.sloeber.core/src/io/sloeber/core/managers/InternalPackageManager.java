@@ -11,7 +11,6 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,9 +49,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.MyMultiStatus;
 
-public class InternalPackageManager extends PackageManager{
-
-
+public class InternalPackageManager extends PackageManager {
 
 	private static boolean myIsReady = false;
 
@@ -62,8 +59,6 @@ public class InternalPackageManager extends PackageManager{
 
 	private InternalPackageManager() {
 	}
-
-
 
 	/**
 	 * Loads all stuff needed and if this is the first time downloads the avr boards
@@ -148,18 +143,18 @@ public class InternalPackageManager extends PackageManager{
 			}
 		}
 
-		//on Windows fix esp8266 platform.txt file
-		//replace -DARDUINO_BOARD="{build.board}" with -DARDUINO_BOARD="\"{build.board}\""
-		if(SystemUtils.IS_OS_WINDOWS) {
-			if ("esp8266".equals(platform.getArchitecture())&&"esp8266".equals(platform.getName())){
-				FileModifiers.replaceInFile(platform.getPlatformFile(),false,"-DARDUINO_BOARD=\"{build.board}\"","-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
+		// on Windows fix esp8266 platform.txt file
+		// replace -DARDUINO_BOARD="{build.board}" with
+		// -DARDUINO_BOARD="\"{build.board}\""
+		if (SystemUtils.IS_OS_WINDOWS) {
+			if ("esp8266".equals(platform.getArchitecture()) && "esp8266".equals(platform.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
+				FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
+						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
 			}
 		}
 		return mstatus;
 
 	}
-
-
 
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
@@ -597,9 +592,17 @@ public class InternalPackageManager extends PackageManager{
 
 	}
 
-	private static void link(File something, File somewhere) throws IOException, InterruptedException {
-		Process process = Runtime.getRuntime()
-				.exec(new String[] { "ln", something.getAbsolutePath(), somewhere.getAbsolutePath() }, null, null); //$NON-NLS-1$
+	/*
+	 * create a link file at the level of the os
+	 * using mklink /H on windows makes that no admin rights are needed
+	 */
+	@SuppressWarnings("nls")
+	private static void link(File actualFile, File linkName) throws IOException, InterruptedException {
+		String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() }; 
+		if (SystemUtils.IS_OS_WINDOWS) {
+			command = new String[] { "cmd","/c","mklink", "/H",linkName.getAbsolutePath(), actualFile.getAbsolutePath() }; 
+		}
+		Process process = Runtime.getRuntime().exec(command, null, null);
 		process.waitFor();
 	}
 
@@ -681,7 +684,6 @@ public class InternalPackageManager extends PackageManager{
 		loadJsons(false);
 
 	}
-
 
 	public static void setReady(boolean b) {
 		myIsReady = b;
