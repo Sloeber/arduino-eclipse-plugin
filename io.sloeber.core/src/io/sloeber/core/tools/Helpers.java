@@ -88,6 +88,16 @@ public class Helpers extends Common {
 	private static boolean myHasBeenLogged=false;
 
 	/**
+	 * conveniance method because java does not know default values as parameters
+	 * default is isWorkSpace=true
+	 * @param configurationDescription
+	 * @param IncludePath
+	 */
+	public static void addIncludeFolder( ICConfigurationDescription configurationDescription,  IPath IncludePath) 
+	{
+		   addIncludeFolder( configurationDescription,  IncludePath,true) ;
+	}
+	/**
 	 * This method is the internal working class that adds the provided include path
 	 * to all configurations and languages.
 	 *
@@ -97,10 +107,15 @@ public class Helpers extends Common {
 	 *            The path to add to the include folders
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	private static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath) {
+	public static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath,boolean isWorkspacePath) {
 		// find all languages
 		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
 		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+		int pathSetting=ICSettingEntry.VALUE_WORKSPACE_PATH;
+		if(!isWorkspacePath)
+		{
+			pathSetting=0;
+		}
 
 		// Add include path to all languages
 		for (int idx = 0; idx < languageSettings.length; idx++) {
@@ -111,11 +126,8 @@ public class Helpers extends Common {
 					ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 					ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
 					System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-					IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath,
-							ICSettingEntry.VALUE_WORKSPACE_PATH); // (location.toString());
-
+					IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath,pathSetting);
 					lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
-
 				}
 			}
 		}

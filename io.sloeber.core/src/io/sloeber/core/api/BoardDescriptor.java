@@ -592,6 +592,10 @@ public class BoardDescriptor {
 			// this should not happen
 		}
 		Set<String> librariesToInstall = codeDescription.createFiles(projectHandle, monitor);
+		IPath linkedPath=codeDescription.getLinkedExamplePath();
+		if(linkedPath!=null) {
+			Helpers.addIncludeFolder(defaultConfigDescription, linkedPath,false);
+		}
 		Libraries.addLibrariesToProject(projectHandle, defaultConfigDescription, librariesToInstall);
 		prjCDesc.setActiveConfiguration(defaultConfigDescription);
 		prjCDesc.setCdtProjectCreated();
