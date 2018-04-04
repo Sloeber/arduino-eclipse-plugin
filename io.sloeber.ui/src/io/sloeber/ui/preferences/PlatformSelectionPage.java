@@ -1,6 +1,7 @@
 
 package io.sloeber.ui.preferences;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Set;
 
@@ -252,14 +253,15 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 							Package pkg = (Package) element;
 							String maintainer=pkg.getMaintainer();
 							String email=pkg.getEmail();
-							String weburl=pkg.getWebsiteURL().toString();
+							URL weburl=pkg.getWebsiteURL();
+							String weburlString="NULL"; //$NON-NLS-1$
 							if(maintainer==null)maintainer="NULL"; //$NON-NLS-1$
 							if(email==null)email="NULL"; //$NON-NLS-1$
-							if(weburl==null)weburl="NULL"; //$NON-NLS-1$
-
+							if(weburl!=null) weburlString=weburl.toString();
+						
 							return Messages.packageTooltip.replaceAll("\\$\\{MAINTAINER}", maintainer) //$NON-NLS-1$
 									.replaceAll("\\$\\{EMAIL}", email) //$NON-NLS-1$
-									.replaceAll("\\$\\{URL}", weburl); //$NON-NLS-1$
+									.replaceAll("\\$\\{URL}", weburlString); //$NON-NLS-1$
 
 						}
 						if (element instanceof Platform) {
