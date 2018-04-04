@@ -109,6 +109,20 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void testKnownIssues() {
+
+		{
+			org.osgi.service.prefs.Preferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core")
+					.node("indexer");
+			myScope.put("indexAllFiles", "false");
+			myScope.put("indexUnusedHeadersWithDefaultLang", "false");
+			try {
+				myScope.flush();
+			} catch (BackingStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		String errorString = new String();
 		String addString = new String();
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
