@@ -250,10 +250,16 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						}
 						if (element instanceof Package) {
 							Package pkg = (Package) element;
+							String maintainer=pkg.getMaintainer();
+							String email=pkg.getEmail();
+							String weburl=pkg.getWebsiteURL().toString();
+							if(maintainer==null)maintainer="NULL"; //$NON-NLS-1$
+							if(email==null)email="NULL"; //$NON-NLS-1$
+							if(weburl==null)weburl="NULL"; //$NON-NLS-1$
 
-							return Messages.packageTooltip.replaceAll("\\$\\{MAINTAINER}", pkg.getMaintainer()) //$NON-NLS-1$
-									.replaceAll("\\$\\{EMAIL}", pkg.getEmail()) //$NON-NLS-1$
-									.replaceAll("\\$\\{URL}", pkg.getWebsiteURL().toString()); //$NON-NLS-1$
+							return Messages.packageTooltip.replaceAll("\\$\\{MAINTAINER}", maintainer) //$NON-NLS-1$
+									.replaceAll("\\$\\{EMAIL}", email) //$NON-NLS-1$
+									.replaceAll("\\$\\{URL}", weburl); //$NON-NLS-1$
 
 						}
 						if (element instanceof Platform) {
