@@ -145,6 +145,7 @@ public class Arduino extends MCUBoard {
 
 	public static MCUBoard arduino_101() {
 		MCUBoard arduino_101 = new Arduino(providerIntel, intelPlatformName, "arduino_101");
+		arduino_101.mySlangName="BLE";
 		return arduino_101;
 	}
 

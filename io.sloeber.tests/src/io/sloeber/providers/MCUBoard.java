@@ -56,7 +56,7 @@ public  class MCUBoard {
 
 	/**
 	 * give the name of the board as it is generally known
-	 * For istance the board "Arduino genuion uno" is uno
+	 * For instance the board "Arduino genuino uno" is uno
 	 * or zero programming port is zero
 	 *
 	 * @return the name of the board as commonly used

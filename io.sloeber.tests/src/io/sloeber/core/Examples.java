@@ -8,12 +8,11 @@ import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class Examples {
-
-	private String myFQN;
-	private String myLibName;
-	private IPath myPath;
-	private BoardAttributes myRequiredBoardAttributes;
-	private static int noBoardFoundCount = 0;
+	private String			myFQN;
+	private String			myLibName;
+	private IPath			myPath;
+	private BoardAttributes	myRequiredBoardAttributes;
+	private static int		noBoardFoundCount	= 0;
 
 	public BoardAttributes getRequiredBoardAttributes() {
 		return myRequiredBoardAttributes;
@@ -40,7 +39,6 @@ public class Examples {
 		myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
 		myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
 		myRequiredBoardAttributes = myRequiredBoardAttributes.and(Libraries.getRequiredBoardAttributes(getLibName()));
-
 	}
 
 	private void getLibNameFromPath() {
@@ -51,7 +49,6 @@ public class Examples {
 				myLibName = splits[1];
 			}
 		}
-
 	}
 
 	public IPath getPath() {
@@ -73,7 +70,6 @@ public class Examples {
 	private static LinkedList<String> examplesUsingMidi() {
 		LinkedList<String> myUsesMidiExampleList = new LinkedList<>();
 		myUsesMidiExampleList.add("Example/Teensy/USB_FlightSim/ThrottleServo");
-
 		return myUsesMidiExampleList;
 	}
 
@@ -103,7 +99,6 @@ public class Examples {
 		ret.add("Example/09.USB/Mouse/ButtonMouseControl");
 		ret.add("Example/09.USB/Mouse/JoystickMouseControl");
 		ret.add("Example/09.USB/KeyboardAndMouseControl");
-
 		return ret;
 	}
 
@@ -197,7 +192,6 @@ public class Examples {
 	private static LinkedList<String> examplesUsingMCUmo() {
 		LinkedList<String> ret = new LinkedList<>();
 		ret.add("Library/Adafruit_Circuit_Playground/CircuitPlaygroundFirmata_Express_CodeOrg");
-
 		return ret;
 	}
 
@@ -207,12 +201,8 @@ public class Examples {
 	private static LinkedList<String> failingExamples() {
 		LinkedList<String> ret = new LinkedList<>();
 		/*
-		 * Because you can not define a enum 2 times Sloeber can not add the enum in
-		 * Slober.ino.cpp as a result the function declarations using these enums
-		 * generate a error because the enum is not defined. The examples below fail due
-		 * to this
+		 * Because you can not define a enum 2 times Sloeber can not add the enum in Slober.ino.cpp as a result the function declarations using these enums generate a error because the enum is not defined. The examples below fail due to this
 		 */
-
 		ret.add("Library/_2020Bot_Library/_2020Bot_Demo");
 		// These examples are the processing part and are not a deal of sloeber
 		ret.add("Library/Adafruit_BNO055/bunny/processing/cuberotate");
@@ -233,7 +223,6 @@ public class Examples {
 		ret.add("Library/Accessory/Shield/OLED/example/Adafruit");
 		ret.add("Library/Accessory/Shield/temp/humidity/oled");
 		// at the time of testing there were case sensetivity issues
-
 		ret.add("Library/AutoAnalogAudio/SDAudio/SdAudioRecording");
 		ret.add("Library/AutoAnalogAudio/SDAudio/SdAudioWavPlayer");
 		ret.add("Library/AutoAnalogAudio/AudioRadioRelay");
@@ -263,16 +252,20 @@ public class Examples {
 		ret.add("Library/ANT-Arduino/NativeAnt");
 		// uses missing library MobileBLE
 		ret.add("Library/ArduinoBlue/differentialDriveCar");
-		// defining struct in ino file
+		// defining struct/enum in ino file
 		ret.add("Library/ArduinoJson/JsonConfigFile");
+		ret.add("Library/Arduboy2/RGBled");
 		// error: no matching function for call to 'aREST_UI::addToBuffer(const char
 		ret.add("Library/aREST_UI/ESP8266");
 		ret.add("Library/aREST_UI/WiFi_CC3000");
 		ret.add("Library/aREST_UI/WildFire");
-		//uses arduinoWIFI
+		// uses arduinoWIFI
 		ret.add("Library/Braccio/braccioOfUnoWiFi");
-
-
+		// uses lib that does not has lib folder= include-.h
+		ret.add("Library/ArduinoCloud/SimpleCloudButtonYun");
+		// usi!ng non exsisting methods
+		ret.add("Library/CAN-BUS_Shield/gpioRead");
+		ret.add("Library/CAN-BUS_Shield/gpioWrite");
 		// I don't recall why following examples didn't work
 		ret.add("Library/AD7193/AD7193_VoltageMeasurePsuedoDifferential_Example");
 		ret.add("Library/bunny_cuberotate/cuberotate");
@@ -293,7 +286,6 @@ public class Examples {
 		ret.add("Library/Adafruit_SSD1306/ssd1306_128x64_spi");
 		ret.add("Library/Adafruit_ST7735_Library/soft_spitftbitmap");
 		ret.add("Library/Adafruit_TCS34725/colorview/processing/colorview");
-
 		ret.add("Library/Adafruit_TinyRGBLCDShield/TinyHelloWorld");
 		ret.add("Library/Akafugu_TWILiquidCrystal_Library/change_address");
 		ret.add("Library/Akafugu_WireRtc_Library/alarm");
@@ -331,7 +323,6 @@ public class Examples {
 		ret.add("Library/DS3231/echo_time");
 		ret.add("Library/Easy_NeoPixels");
 		ret.add("Library/DallasTemperature/AlarmHandler");
-
 		ret.add("Library/AmazonDRS/amazonDashNfc");
 		ret.add("Library/Andee/Lesson_02_Buttons/Lesson_2h_Using_Buttons_to_Control_Servos");
 		ret.add("Library/Andee/Project_Christmas_Lights_and_Annoying_Music");
@@ -341,31 +332,38 @@ public class Examples {
 		ret.add("Library/arduino-fsm/timed_switchoff");
 		ret.add("Library/BME280/BME_280_BRZO_I2C_Test");
 		ret.add("Library/Adafruit_seesaw_Library/DAP");
-
+		//uses unknown NO_ERROR
+		ret.add("Library/ClosedCube_TCA9546A/tca9546a_sht31d");
+		//uses dht.h from dht_sensor_lib
+		ret.add("Library/CMMC_MQTT_Connector/basic_dht");
+		//uses altsoftserial and then Serial2????
+		ret.add("Library/CMMC_NB-IoT/example1");
+		//some bu!g I guess
+		ret.add("Library/CopyThreads/ExamplesFromReadme");
+		ret.add("Library/CRC_Simula_Arduino_IDE_Library/Simula_BehaviorTree");
+		//empty sketch??
+		ret.add("Library/DFW/ProvisionController");
 		return ret;
 	}
 
 	/**
-	 * Give a list of boards pick the board that is best to test this code Boards in
-	 * the beginning of the array are prefered (first found ok algorithm)
+	 * Give a list of boards pick the board that is best to test this code Boards in the beginning of the array are prefered (first found ok algorithm)
 	 *
-	 * returns null if this code should not be tested return null if myBoards is
-	 * empty returns the best known boarddescriptor to run this example
+	 * returns null if this code should not be tested return null if myBoards is empty returns the best known boarddescriptor to run this example
 	 */
-
 	public static MCUBoard pickBestBoard(Examples example, MCUBoard myBoards[]) {
 		String libName = example.getLibName();
 		String fqn = example.getFQN();
 		if (myBoards.length == 0) {
 			return null;
 		}
-		/*
-		 * This example does not build out of the box
-		 */
+
 		if (example.getRequiredBoardAttributes().worksOutOfTheBox) {
+			/*
+			 * This example does not build out of the box
+			 */
 			return null;
 		}
-
 		// if the boardname is in the libname or ino name pick this one
 		for (MCUBoard curBoard : myBoards) {
 			String curBoardName = curBoard.getSlangName().toLowerCase();
@@ -378,26 +376,20 @@ public class Examples {
 		// If the archtecture is in the libname or boardname pick this one
 		for (MCUBoard curBoard : myBoards) {
 			String curArchitectureName = curBoard.getBoardDescriptor().getArchitecture().toLowerCase();
-			if (libName.toLowerCase().contains(curArchitectureName)
-					|| fqn.toLowerCase().contains(curArchitectureName)) {
+			if (libName.toLowerCase().contains(curArchitectureName) || fqn.toLowerCase().contains(curArchitectureName)) {
 				if (curBoard.isExampleSupported(example)) {
 					return curBoard;
 				}
 			}
 		}
-
-
 		// Out of guesses based on the name. Take the first ok one
 		for (MCUBoard curBoard : myBoards) {
 			if (curBoard.isExampleSupported(example)) {
 				return curBoard;
 			}
 		}
-
 		System.out.println("No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getFQN());
-
 		return null;
-
 	}
 
 	private static String getRequiredBoardID(String fqn) {
@@ -412,22 +404,15 @@ public class Examples {
 		case "Library/Adafruit_Circuit_Playground/Infrared_Demos/Infrared_Testpattern":
 		case "Library/Adafruit_Zero_FFT_Library/CircuitPlayground":
 			return "adafruit_circuitplayground_m0";
-
 		case "Library/Adafruit_MiniMLX90614/templight":
 			return "gemma";
 		case "Library/ArduinoThread/SensorThread":
 			return "due";
 		case "Library/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
-				return "zero";
+			return "zero";
 		case "Library/BLEPeripheral/iBeacon":
-		return "feather52";
+			return "feather52";
 		}
-
-
 		return null;
-
-
-
 	}
-
 }

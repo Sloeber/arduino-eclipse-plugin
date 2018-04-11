@@ -27,7 +27,7 @@ import io.sloeber.core.api.Preferences;
 public class CreateAndCompileTest {
 
 	// use the boolean below to avoid downloading and installation
-	private static final boolean removeAllinstallationInfoAtStartup = true;
+	private static final boolean removeAllinstallationInfoAtStartup = false;
 	private static final boolean apply_known_work_Arounds = true;
 	private static final boolean testPrivateHardware = true;
 	private BoardDescriptor mBoard;
@@ -179,7 +179,8 @@ public class CreateAndCompileTest {
 			"https://www.mattairtech.com/software/arduino/package_MattairTech_index.json",
 			"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
 			"https://raw.githubusercontent.com/harbaum/ftduino/master/package_ftduino_index.json",
-			"http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json"
+			"http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
+			"https://raw.githubusercontent.com/arachnidlabs/arachnidlabs-boards/master/package_arachnidlabs.com_boards_index.json"
 
 	};
 

@@ -36,6 +36,9 @@ public class Libraries {
 				"avdweb_SAMDtimer",
 				//uses unknown lib CurieBLE
 				"Andee101",
+				//uses unknonw lib ThingerESP8266
+				"ClimaStick",
+
 				//this fails in the combiner on windows for some strange reason.
 				//I think it is a windows command line limitation again
 				"ANTPLUS-Arduino",
@@ -46,7 +49,28 @@ public class Libraries {
 				//missing httpclient
 				"ArduinoFritzApi",
 				//uncomment something in my own library to make it work... are you kidding?
-				"DCCpp"};
+				"DCCpp",
+				"Commanders",
+				//Macro defenitions of setup and loop confusing the ino.cpp converter
+				"ArduinoLang",
+				//all kind of issue
+				"ArduinoOSC",
+				//usage of macro's confusing ino to cpp converter
+				"AUnit"	,
+				//contains REPLACE_ME
+				"CayenneLPP",
+				//uses unknown lib powerbank
+				"Charge_n_Boost",
+				//uses mbino that uses SPI but has SPI included so
+				//indexer thinks SPI is defines but utilities is not in include path
+				"CarreraDigitalControlUnit",
+				//I don't know which hardware to take for this lib
+				"CoDrone",
+				//uses a define that is not defined
+				"DcDccNanoController",
+				//requires Paul Stoffregens time lib and Sloeber takes arduino time lib
+				"DS3232RTC"
+				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}
 
@@ -82,7 +106,7 @@ public class Libraries {
 	 * esp8266 libraries
 	 */
 	private static boolean esp8266_mcu(String libName) {
-		String theLibs[] = new String[] { "Adafruit_ESP8266" ,"BoodskapTransceiver"};
+		String theLibs[] = new String[] { "Adafruit_ESP8266" ,"BoodskapTransceiver","AutoConnect","ClimaStick","CMMC_Interval","ConfigManager","CoogleIOT","CTBot"};
 		return Arrays.asList(theLibs).contains(libName);
 	}
 
@@ -109,9 +133,9 @@ public class Libraries {
 				new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector", "CMMC_OTA",
 						"CMMC_WiFi_Connector", "EasyUI", "EasyDDNS", "CoinMarketCapApi", "ArduinoIHC", "AsciiMassage",
 						"ESPiLight", "HaLakeKit", "HaLakeKitFirst","AFArray" ,"AIOModule","AlertMe","Bleeper","Blinker"});
-		runLibOnBoard.put("feather52", new String[] { "Firmata" });
+		runLibOnBoard.put("feather52", new String[] { "Firmata" ,"Codec2"});
 		runLibOnBoard.put("primo", new String[] { "Adafruit_BluefruitLE_nRF51", "arduino-NVM" });
-		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo", "EnergyBoard" });
+		runLibOnBoard.put("mega", new String[] { "Adafruit_GPS_Library", "Dynamixel_Servo", "EnergyBoard" ,"DFL168A_Async"});
 		runLibOnBoard.put("zero",
 				new String[] { "Arduino_Low_Power", "ArduinoSound", "AudioZero", "Dimmer_class_for_SAMD21",
 						"AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "Adafruit_AM_radio_library" });
