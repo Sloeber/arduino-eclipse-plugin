@@ -359,6 +359,8 @@ public class Libraries {
 					for (IIndexInclude curinclude : includes) {
 						if (curinclude.isActive() && !curinclude.isResolved()) {
 							ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
+							ret.add(new Path(curinclude.getName()).removeFileExtension().toString()+"_Library");
+							ret.add(new Path(curinclude.getName()).removeFileExtension().toString()+"_library");
 						}
 					}
 				}
@@ -388,6 +390,9 @@ public class Libraries {
 					Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
 					// remove pgmspace as it gives a problem
 					UnresolvedIncludedHeaders.remove("pgmspace"); //$NON-NLS-1$
+					if(UnresolvedIncludedHeaders.isEmpty()) {
+						return;
+					}
 
 					for (Map.Entry<String, String> entry : includeHeaderReplacement.entrySet()) {
 						if (UnresolvedIncludedHeaders.contains(entry.getKey())) {
