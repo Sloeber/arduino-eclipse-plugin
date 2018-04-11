@@ -1083,7 +1083,7 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 	 */
 	protected String calculateSourceMacro(ArduinoGnuMakefileGenerator makeGen, String srcExtensionName,
 			String outExtensionName, String wildcard) {
-		StringBuilder macroName = makeGen.getSourceMacroName(srcExtensionName);
+		StringBuffer macroName = makeGen.getSourceMacroName(srcExtensionName);
 		String OptDotExt = ""; //$NON-NLS-1$
 		if (outExtensionName != null) {
 			OptDotExt = DOT + outExtensionName;
