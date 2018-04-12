@@ -359,8 +359,6 @@ public class Libraries {
 					for (IIndexInclude curinclude : includes) {
 						if (curinclude.isActive() && !curinclude.isResolved()) {
 							ret.add(new Path(curinclude.getName()).removeFileExtension().toString());
-							ret.add(new Path(curinclude.getName()).removeFileExtension().toString()+"_Library");
-							ret.add(new Path(curinclude.getName()).removeFileExtension().toString()+"_library");
 						}
 					}
 				}
