@@ -119,8 +119,9 @@ import io.sloeber.core.common.Const;
  */
 @SuppressWarnings({ "deprecation", "restriction", "nls" ,"unused","synthetic-access",	"static-method","unchecked","hiding"})
 public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
-	private static final IPath	DOT_SLASH_PATH	= new Path("./");
+	
 	private static final String	FILE_SEPARATOR	= File.separator;
+	private static final IPath	DOT_SLASH_PATH	= new Path("."+FILE_SEPARATOR);
 
 	/**
 	 * This class walks the delta supplied by the build system to determine what resources have been changed. The logic is very simple. If a buildable resource (non-header) has been added or removed, the directories in which they are located are "dirty" so the makefile fragments for them have to be regenerated.
@@ -1692,7 +1693,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				buffer.append(DOT).append( WHITESPACE ).append( LINEBREAK);
 			} else {
 				IPath path = container.getProjectRelativePath();
-				buffer.append(escapeWhitespaces(path.toString())).append(WHITESPACE).append(LINEBREAK);
+				buffer.append(escapeWhitespaces(path.toOSString())).append(WHITESPACE).append(LINEBREAK);
 			}
 		}
 		buffer.append(NEWLINE);
@@ -1735,7 +1736,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		}
 		for (Entry<String, List<IPath>> entry : buildOutVars.entrySet()) {
 			String macroName = entry.getKey();
-			addMacroAdditionPrefix(buildVarToRuleStringMap, macroName, "./" + relativePath, false);
+			addMacroAdditionPrefix(buildVarToRuleStringMap, macroName, DOT_SLASH_PATH.append( relativePath).toOSString(), false);
 		}
 		// String buffers
 		StringBuffer buffer = new StringBuffer();
@@ -1847,7 +1848,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				if (generatedDepFiles.size() > 0) {
 					for (int k = 0; k < generatedDepFiles.size(); k++) {
 						IPath generatedDepFile = generatedDepFiles.get(k);
-						addMacroAdditionFile(buildVarToRuleStringMap, getDepMacroName(ext).toString(), (generatedDepFile.isAbsolute() ? "" : "./") + generatedDepFile.toOSString());
+						addMacroAdditionFile(buildVarToRuleStringMap, getDepMacroName(ext).toString(), (generatedDepFile.isAbsolute() ? "" : DOT_SLASH_PATH.toOSString()) + generatedDepFile.toOSString());
 					}
 				}
 				// If the generated outputs of this tool are input to another
@@ -3343,13 +3344,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		if (dirLocation.isPrefixOf(sourceLocation)) {
 			IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
 			if (generatedSource) {
-				srcName = "./" + srcPath.toOSString();
+				srcName = DOT_SLASH_PATH.append( srcPath).toOSString() ;
 			} else {
 				srcName = ROOT + FILE_SEPARATOR + srcPath.toOSString();
 			}
 		} else {
 			if (generatedSource && !sourceLocation.isAbsolute()) {
-				srcName = "./" + relativePath + sourceLocation.lastSegment().toString();
+				srcName = DOT_SLASH_PATH.append( relativePath).append( sourceLocation.lastSegment()).toOSString();
 			} else {
 				// TODO: Should we use relative paths when possible (e.g., see
 				// MbsMacroSupplier.calculateRelPath)
