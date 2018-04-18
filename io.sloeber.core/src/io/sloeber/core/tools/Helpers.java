@@ -643,7 +643,7 @@ public class Helpers extends Common {
 										+ tool.getVersion() + " Installpath is null"));
 					}
 				} else {
-					String valueString = new Path(theTool.getInstallPath().toString()).toString();
+					String valueString = theTool.getInstallPath().toOSString();
 					setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 					keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
 					setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
