@@ -479,7 +479,7 @@ public class Helpers extends Common {
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
-					ConfigurationPreferences.getMakePath().toString() + '/');
+					ConfigurationPreferences.getMakePath().toOSString() + File.separator);
 		}
 
 
