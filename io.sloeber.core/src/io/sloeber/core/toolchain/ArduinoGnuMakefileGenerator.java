@@ -119,9 +119,8 @@ import io.sloeber.core.common.Const;
  */
 @SuppressWarnings({ "deprecation", "restriction", "nls" ,"unused","synthetic-access",	"static-method","unchecked","hiding"})
 public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
-	
+	private static final IPath	DOT_SLASH_PATH	= new Path("./");
 	private static final String	FILE_SEPARATOR	= File.separator;
-	private static final IPath	DOT_SLASH_PATH	= new Path("."+FILE_SEPARATOR);
 
 	/**
 	 * This class walks the delta supplied by the build system to determine what resources have been changed. The logic is very simple. If a buildable resource (non-header) has been added or removed, the directories in which they are located are "dirty" so the makefile fragments for them have to be regenerated.
