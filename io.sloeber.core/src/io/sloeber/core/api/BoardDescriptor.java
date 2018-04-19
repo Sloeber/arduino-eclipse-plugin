@@ -635,6 +635,10 @@ public class BoardDescriptor {
 	public boolean saveConfiguration(ICConfigurationDescription confDesc, IContributedEnvironment contribEnvIn) {
 		boolean needsSettingDirty = false;
 		if (confDesc != null) {
+			if(getActualCoreCodePath()==null) {
+				//don't change stuff if the setup is wonky
+				return false;
+			}
 			BoardDescriptor curBoardDesCriptor = makeBoardDescriptor(confDesc);
 			needsSettingDirty = curBoardDesCriptor.needsSettingDirty(this);
 			IContributedEnvironment contribEnv = contribEnvIn;
