@@ -58,7 +58,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 					portName = "no port"; //$NON-NLS-1$
 				}
 				if (boardName.isEmpty()) {
-					boardName = "no Board"; //$NON-NLS-1$
+					boardName = "no platform"; //$NON-NLS-1$
 				}
 				return text + ' ' + boardName + ' ' + ':' + portName;
 			}
