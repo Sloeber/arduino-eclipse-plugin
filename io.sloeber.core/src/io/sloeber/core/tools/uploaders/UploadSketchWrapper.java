@@ -166,7 +166,7 @@ public class UploadSketchWrapper {
 			try {
 				String message = Messages.Upload_uploading;
 				message += " \"" + this.myProject.getName() + "\" "; //$NON-NLS-1$//$NON-NLS-2$
-				message += this.myNAmeTag + Const.SPACE;
+				message += this.myNAmeTag + ' ';
 				// message+= this.+Const.SPACE;
 				monitor.beginTask(message, 2);
 				try {

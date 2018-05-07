@@ -11,7 +11,6 @@ public class Const {
 	// java stuff so I do not have to add all the time $NON-NLS-1$
 	public static final String DOT = ".";
 	public static final String SLACH = "/";
-	public static final String SPACE = " ";
 	public static final String FALSE = "FALSE";
 	public static final String TRUE = "TRUE";
 	public static final String MENU = "menu";

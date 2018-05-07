@@ -268,7 +268,7 @@ public class ExternalCommandLauncher {
 			defaultConsoleStream.print(Messages.command_launching);
 			List<String> commandAndOptions = this.fProcessBuilder.command();
 			for (String str : commandAndOptions) {
-				defaultConsoleStream.print(str + Const.SPACE);
+				defaultConsoleStream.print(str + ' ');
 			}
 			defaultConsoleStream.println();
 			defaultConsoleStream.println(Messages.command_output);
