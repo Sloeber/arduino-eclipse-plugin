@@ -875,9 +875,6 @@ public class BoardDescriptor {
 			retPath = getreferencingPlatformPath();
 		}
 		if (this.myBoardsCore == null) {
-			Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
-					"failed to find the board core for board " + this.myBoardID + " in file "
-							+ this.myTxtFile.getTxtFile().toString()));
 			return null;
 		}
 		return retPath.append("cores").append(this.myBoardsCore);
@@ -989,10 +986,13 @@ public class BoardDescriptor {
 	 *         return dns name op ipadress
 	 */
 	public String getHost() {
-		String host = myUploadPort.split(Const.SPACE)[0];
+		String host = myUploadPort.split(" ")[0];
 		if (host.equals(myUploadPort))
 			return null;
 		return host;
 	}
+
+
+
 
 }

@@ -27,11 +27,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.common.Const;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
@@ -117,8 +116,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			BoardSelectionPage.this.myBoardID.setBoardName(getBoardName());
 
 			for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
-				curLabelCombo
-						.setItems(BoardSelectionPage.this.myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
+				curLabelCombo.setItems(BoardSelectionPage.this.myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
 				curLabelCombo.setLabel(BoardSelectionPage.this.myBoardID.getMenuNameFromMenuID(curLabelCombo.getID()));
 			}
 
@@ -143,6 +141,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
 		draw(parent);
+
 	}
 
 	public void setListener(Listener BoardSelectionChangedListener) {
@@ -166,8 +165,13 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	public void draw(Composite composite) {
 		// create the desired layout for this wizard page
-		if (this.myBoardID == null) {
-			this.myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+		if (myBoardID == null) {
+			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+			if (myBoardID.getActualCoreCodePath() == null) {
+				Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+						"failed to find the platform " +myBoardID.getReferencingPlatformFile()//$NON-NLS-1$
+								+ "\nDid you deinstall the platform?\nDid you import a project and did not install the platform?")); //$NON-NLS-1$
+			}
 		}
 		ICConfigurationDescription confdesc = getConfdesc();
 
@@ -235,19 +239,19 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			@Override
 			public void handleEvent(Event e) {
 				switch (e.type) {
-				case SWT.Selection:
-					String host = getUpLoadPort().split(Const.SPACE)[0];
-					if (host.equals(getUpLoadPort())) {
+					case SWT.Selection :
+						String host = getUpLoadPort().split(" ")[0]; //$NON-NLS-1$
+						if (host.equals(getUpLoadPort())) {
 						Activator.log(
 								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
-					} else {
-						PasswordManager passwordManager = new PasswordManager();
+						} else {
+							PasswordManager passwordManager = new PasswordManager();
 						PasswordDialog dialog = new PasswordDialog(composite.getShell());
-						passwordManager.setHost(host);
-						dialog.setPasswordManager(passwordManager);
-						dialog.open();
-					}
-					break;
+							passwordManager.setHost(host);
+							dialog.setPasswordManager(passwordManager);
+							dialog.open();
+						}
+						break;
 				}
 			}
 		});
