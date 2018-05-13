@@ -41,9 +41,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.Messages;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;

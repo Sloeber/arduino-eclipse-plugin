@@ -18,6 +18,7 @@ import cc.arduino.packages.ssh.SSH;
 import cc.arduino.packages.ssh.SSHClientSetupChainRing;
 import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;

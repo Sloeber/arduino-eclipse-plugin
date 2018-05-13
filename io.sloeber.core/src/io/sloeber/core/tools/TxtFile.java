@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.api.Messages;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 

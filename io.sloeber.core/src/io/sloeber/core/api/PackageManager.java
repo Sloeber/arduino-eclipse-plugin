@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.PackageManager.PlatformTree.Platform;

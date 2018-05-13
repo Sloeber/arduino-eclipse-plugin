@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.Messages;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;

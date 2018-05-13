@@ -52,10 +52,10 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.Defaults;
-import io.sloeber.core.api.Messages;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;

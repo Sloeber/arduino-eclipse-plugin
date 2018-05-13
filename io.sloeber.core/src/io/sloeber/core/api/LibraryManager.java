@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;

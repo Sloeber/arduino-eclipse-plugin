@@ -37,10 +37,10 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 import cc.arduino.packages.BoardPort;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.tools.uploaders.Messages;
 
 @SuppressWarnings({})
 public class SSHPwdSetup implements SSHClientSetupChainRing {

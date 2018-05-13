@@ -27,12 +27,12 @@ import org.eclipse.ui.console.MessageConsole;
 import org.osgi.service.prefs.BackingStoreException;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
-import io.sloeber.core.tools.uploaders.Messages;
 import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
 public class Sketch {

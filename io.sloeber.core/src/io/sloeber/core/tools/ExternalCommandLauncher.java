@@ -35,7 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import io.sloeber.core.api.Messages;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
