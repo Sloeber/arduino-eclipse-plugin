@@ -3,7 +3,7 @@ package io.sloeber.core;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "io.sloeber.core.api.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "io.sloeber.core.messages"; //$NON-NLS-1$
 	public static String Manager_Cant_create_folder;
 	public static String Manager_Cant_extract_file;
 	public static String Manager_Failed_to_download;

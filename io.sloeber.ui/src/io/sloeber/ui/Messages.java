@@ -5,6 +5,9 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "io.sloeber.ui.messages"; //$NON-NLS-1$
 
+	public static String Decorator_no_port;
+	public static String Decorator_no_platform;
+
 	public static String ui_Apend_assembly;
 	public static String ui_append_assembly_text;
 	public static String ui_Apend_archive;
