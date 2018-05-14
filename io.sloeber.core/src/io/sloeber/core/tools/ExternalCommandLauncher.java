@@ -265,7 +265,7 @@ public class ExternalCommandLauncher {
 			// the console.
 			defaultConsoleStream.println();
 			defaultConsoleStream.println();
-			defaultConsoleStream.print(Messages.command_launching);
+			defaultConsoleStream.print(Messages.command_launching+' ');
 			List<String> commandAndOptions = this.fProcessBuilder.command();
 			for (String str : commandAndOptions) {
 				defaultConsoleStream.print(str + ' ');
@@ -286,13 +286,23 @@ public class ExternalCommandLauncher {
 
 		// After the setup we can now start the command
 		try {
-			monitor.beginTask(Messages.command_launching + this.fProcessBuilder.command().get(0), 100);
+			monitor.beginTask(Messages.command_launching +' '+ this.fProcessBuilder.command().get(0), 100);
 
 			this.fStdOut = new ArrayList<>();
 			this.fStdErr = new ArrayList<>();
 
 			this.fProcessBuilder.directory(Common.getWorkspaceRoot().toPath().toFile());
-			process = this.fProcessBuilder.start();
+			try {
+			process = this.fProcessBuilder.start();}
+			catch(IOException ioe) {
+				String errorMessage=ioe.getMessage();
+				if(errorMessage==null) {
+					errorMessage="no error message given";
+				}
+				stderrConsoleStream.println(errorMessage);
+				ioe.printStackTrace();
+				throw ioe;
+			}
 
 			Thread stdoutRunner = new Thread(
 					new LogStreamRunner(process.getInputStream(), this.fStdOut, stdoutConsoleStream));
@@ -326,14 +336,14 @@ public class ExternalCommandLauncher {
 			// external process finished normally
 			monitor.worked(95);
 			if (defaultConsoleStream != null) {
-				defaultConsoleStream.println(commandname + Messages.command_finished);
+				defaultConsoleStream.println(commandname +' '+ Messages.command_finished);
 			}
 		} catch (InterruptedException e) {
 			// This thread was interrupted from outside
 			// consider this to be a failure of the external programm
 			if (defaultConsoleStream != null) {
 				// Write an Abort Message to the console (if active)
-				defaultConsoleStream.println(commandname + Messages.command_interupted);
+				defaultConsoleStream.println(commandname +' '+ Messages.command_interupted);
 			}
 			return -1;
 		} finally {
