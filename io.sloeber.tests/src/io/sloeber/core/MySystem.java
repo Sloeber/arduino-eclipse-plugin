@@ -15,12 +15,15 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings("nls")
 public class MySystem {
 	private static final String jantjesWindowsMachineHashKey = "1248215851";
+	//the one below is based on one mac address Fysiek adres (MAC):	C0-3F-D5-66-04-58 
+	private static final String jantjesWindowsMachineHashkeyAfterUpdate="139705674";
 	private static final String jantjesLinuxMachineHashKey = "-784776710";
 
 	public static String getTeensyPlatform() {
 		switch (Other.getSystemHash()) {
 		case jantjesWindowsMachineHashKey:
-			return "D:\\arduino\\arduino-1.8.5\\hardware\\teensy";
+		case jantjesWindowsMachineHashkeyAfterUpdate:
+			return "D:\\arduino\\teensy1.42-beta4\\hardware\\teensy";
 		case jantjesLinuxMachineHashKey:
 			return "/home/jan/arduino-1.8.5/hardware/teensy";
 		}
@@ -39,11 +42,21 @@ public class MySystem {
 					Arduino.leonardo(""), Arduino.arduino_101("") };
 			return boards;
 		}
-		case jantjesWindowsMachineHashKey: {
-			MCUBoard[] boards = {  Teensy.teensypp2(), ESP8266.wemosD1("COM34"),
-					Arduino.fried("COM5"), Arduino.yun("COM17"), Arduino.uno("COM6"),
-					Arduino.getMega2560Board("COM11"), Arduino.zero("COM14"), Arduino.due("COM3"),Arduino.dueprogramming("COM8"),
-					Arduino.leonardo("COM19"), Arduino.arduino_101("") };
+		case jantjesWindowsMachineHashKey: 
+		case jantjesWindowsMachineHashkeyAfterUpdate:{
+			//due native upload gives to mutch trouble even in arduino IDE
+			MCUBoard[] boards = {  
+					Teensy.teensypp2("COM10"),
+					Teensy.Teensy3_1("COM24"), 
+					ESP8266.wemosD1("COM23"),
+					Arduino.fried("COM22"), 
+					Arduino.yun("COM5"), 
+					Arduino.uno("COM6"),
+					Arduino.getMega2560Board("COM11"), 
+					Arduino.zero("COM14"), 
+					Arduino.dueprogramming("COM8"),
+					Arduino.leonardo("COM30"), 
+					Arduino.arduino_101("COM15") };
 			return boards;
 		}
 		}
