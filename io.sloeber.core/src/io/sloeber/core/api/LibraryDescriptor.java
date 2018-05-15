@@ -10,7 +10,6 @@ public class LibraryDescriptor {
 	}
 
 	public Library toLibrary() {
-		// TODO Auto-generated method stub
 		return this.library;
 	}
 

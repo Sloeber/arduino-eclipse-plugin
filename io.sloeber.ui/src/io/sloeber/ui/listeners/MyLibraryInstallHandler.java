@@ -10,13 +10,11 @@ public class MyLibraryInstallHandler implements IInstallLibraryHandler {
 
 	@Override
 	public boolean autoInstall() {
-		// TODO Auto-generated method stub
 		return PreferencePage.getAutomaticallyInstallLibrariesOption();
 	}
 
 	@Override
 	public Map<String, LibraryDescriptor> selectLibrariesToInstall(Map<String, LibraryDescriptor> proposedLibsToInstall) {
-		// TODO Auto-generated method stub
 		return proposedLibsToInstall;
 	}
 

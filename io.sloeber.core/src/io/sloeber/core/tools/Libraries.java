@@ -499,19 +499,9 @@ public class Libraries {
 						addLibrariesToProject(affectedProject,
 								configurationDescription, installedLibs);
 						try {
-							// TODO remove this logging code if this code is not
-							// causing the disrupts
-							long startTime = System.nanoTime();
 							mngr.setProjectDescription(affectedProject,
 									projectDescription, true, null);
-							long duration = (System.nanoTime() - startTime)
-									/ 1000000; // in miliseconds
-							if (duration > 45000) {
-								Common.log(new Status(IStatus.WARNING,
-										Const.CORE_PLUGIN_ID,
-										"setProjectDescription took " + duration //$NON-NLS-1$
-												+ " miliseconds!!!")); //$NON-NLS-1$
-							}
+							
 						} catch (CoreException e) {
 							// this can fail because the project may already
 							// be

@@ -796,7 +796,6 @@ public class PackageManager {
 		try {
 			FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

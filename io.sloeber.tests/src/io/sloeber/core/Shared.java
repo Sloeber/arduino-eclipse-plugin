@@ -162,7 +162,6 @@ public class Shared {
 				try {
 					Files.move(esptool2wrong, esptool2right);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
