@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -87,7 +88,7 @@ public class BoardDescriptor {
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String PLATFORM_FILE_NAME = "platform.txt";
 	private static final String LIBRARY_PATH_SUFFIX = "libraries";
-	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";
+	private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD";  //this is actually the programmer
 	private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
 
@@ -666,9 +667,9 @@ public class BoardDescriptor {
 			String value = KeyValue.makeString(this.myOptions);
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MENU_SELECTION, value);
 
-			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, this.myUploadPort);
+			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, getActualUploadPort());
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
-					this.myUploadPort.replace("/dev/", new String()));
+					getActualUploadPort().replace("/dev/", new String()));
 			Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toOSString());
 			IPath variantPath=getActualVariantPath();
 			if (variantPath != null) {
@@ -708,11 +709,29 @@ public class BoardDescriptor {
 	public String getUploadPort() {
 		return this.myUploadPort;
 	}
+	
+	/**
+	 * return the actual adress en,coded in the upload port
+	 * example
+	 * uploadport com4 returns com4
+	 * uploadport = arduino.local at 199.25.25.1 returns arduino.local
+	 *  
+	 * @return
+	 */
+	public String getActualUploadPort() {
+		return myUploadPort.split(" ")[0];
+	}
 
 	public String getProgrammer() {
 		return this.myProgrammer;
 	}
 
+	/**
+	 * Set the upload port like in the gui.
+	 * The upload port can be a comport or a networkadress space and something else
+	 * note that getuploadport returns the before space part of this method
+	 * @param newUploadPort
+	 */
 	public void setUploadPort(String newUploadPort) {
 		this.myUploadPort = newUploadPort;
 	}
@@ -934,11 +953,16 @@ public class BoardDescriptor {
 		if (usesProgrammer()) {
 			action = "PROGRAM";
 		}
-		String ret = Common.getBuildEnvironmentVariable(confdesc,
-				"A.TOOLS." + upLoadTool.toUpperCase() + "." + action + ".PATTERN", "");
+		String networkPrefix = "";
+		if (isNetworkUpload()) {
+			networkPrefix = "NETWORK_";
+		}
+		String key = "A.TOOLS." + upLoadTool.toUpperCase() + "."
+				+ action + "." + networkPrefix+"PATTERN";
+		String ret = Common.getBuildEnvironmentVariable(confdesc, key, "");
 		if (ret.isEmpty()) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "tools." + upLoadTool + "."
-					+ action.toLowerCase() + ".pattern : not found in the platform.txt file"));
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+					key + " : not found in the platform.txt file"));
 		}
 		return ret;
 	}
@@ -952,9 +976,11 @@ public class BoardDescriptor {
 			return Common.getBuildEnvironmentVariable(confdesc, "A.PROGRAM.TOOL",
 					"Program tool not properly configured");
 		}
+
 		if (this.myUploadTool == null) {
 			return Common.getBuildEnvironmentVariable(confdesc, "A.UPLOAD.TOOL", "upload tool not properly configured");
 		}
+		
 		return this.myUploadTool;
 	}
 
@@ -992,7 +1018,14 @@ public class BoardDescriptor {
 		return host;
 	}
 
-
+	/**
+	 * true if this board needs a networkUpload else false
+	 * 
+	 * @return
+	 */
+	public boolean isNetworkUpload() {
+		return getHost() != null;
+	}
 
 
 }

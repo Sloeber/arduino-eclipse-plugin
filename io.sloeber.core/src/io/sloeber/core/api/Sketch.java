@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -38,28 +37,77 @@ import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 public class Sketch {
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-
-	public static void upload(IProject project) {
+	
+	public static IStatus isUploadableProject(IProject project) {
 		try {
 			if (project == null || !project.hasNature(Const.ARDUINO_NATURE_ID)) {
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null));
-				return;
+				return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null);
 			}
 		} catch (CoreException e) {
-			// Log the Exception
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e));
+			return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e);
 		}
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
+		return Status.OK_STATUS;
+	}
+	/**
+	 * Asynchronous upload of the sketch.
+	 * The upload status has to be followed in the GUI
+	 * 
+	 * @param project
+	 * 
+	 */
+	public static Job asyncUpload(IProject project) {
+		IStatus ret = isUploadableProject(project);
+		if (!ret.isOK()) {
+			Common.log(ret);
+			return null;
+		}
 
-				UploadSketchWrapper.upload(project,
-						CoreModel.getDefault().getProjectDescription(project).getActiveConfiguration().getName());
-			}
-		});
+		return  UploadSketchWrapper.upload(project,
+				CoreModel.getDefault().getProjectDescription(project)
+						.getActiveConfiguration());
+
 
 	}
 
+	/**
+	 * Synchronous upload of the sketch returning the status.
+	 * 
+	 * @param project
+	 * @return the status of the upload. Status.OK means upload is OK
+	 */
+	public static IStatus syncUpload(IProject project) {
+		IStatus ret = isUploadableProject(project);
+		if (!ret.isOK()) {
+			return ret;
+		}
+		Job upLoadJob= UploadSketchWrapper.upload(project,
+				CoreModel.getDefault().getProjectDescription(project)
+				.getActiveConfiguration());
+
+		if (upLoadJob == null)
+			return  new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_failed, null);
+		try {
+			upLoadJob.join();
+			return upLoadJob.getResult();
+		} catch (InterruptedException e) {
+			// not sure if this is needed
+			return  new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_failed, e);
+		}
+	}
+	
+	/**
+	 * Synchronous upload of the sketch with the errors shown in the gui.
+	 * 
+	 * @param project
+	 * @return the status of the upload. Status.OK means upload is OK
+	 */
+	public static void upload(IProject project) {
+		IStatus ret = syncUpload(project);
+		if (!ret.isOK()) {
+			Common.log(ret);
+		}
+	}
+	
 	/**
 	 * Verifies a project. Builds the active configuration If the build fails
 	 * returns false else tru

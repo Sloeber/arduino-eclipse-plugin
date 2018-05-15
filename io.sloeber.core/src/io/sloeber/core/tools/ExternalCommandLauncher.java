@@ -27,8 +27,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.SWT;
-import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Messages;
@@ -64,11 +62,6 @@ public class ExternalCommandLauncher {
 
 	private final ProcessBuilder fProcessBuilder;
 
-
-	private MessageConsole fConsole = null;
-
-	private final static int COLOR_STDOUT = SWT.COLOR_DARK_GREEN;
-	private final static int COLOR_STDERR = SWT.COLOR_DARK_RED;
 
 	/**
 	 * A runnable class that will read a Stream until EOF, storing each line in
@@ -113,7 +106,7 @@ public class ExternalCommandLauncher {
 					// If a Listener has been registered, call it
 					int read = this.fReader.read();
 					if (read != -1) {
-						String readChar=""+(char)read;
+						String readChar=new String()+(char)read;
 
 						// And print to the console (if active)
 						if (this.fConsoleOutput != null) {
@@ -187,7 +180,6 @@ public class ExternalCommandLauncher {
 	 * @throws IOException
 	 *             An Exception from the underlying Process.
 	 */
-	@SuppressWarnings("resource")
 	public int launch(IProgressMonitor monitor, MessageConsoleStream defaultConsoleStream,	 MessageConsoleStream stdoutConsoleStream,	 MessageConsoleStream stderrConsoleStream) throws IOException {
 
 		Process process = null;
@@ -218,7 +210,7 @@ public class ExternalCommandLauncher {
 			catch(IOException ioe) {
 				String errorMessage=ioe.getMessage();
 				if(errorMessage==null) {
-					errorMessage="no error message given";
+					errorMessage="no error message given"; //$NON-NLS-1$
 				}
 				stderrConsoleStream.println(errorMessage);
 				ioe.printStackTrace();
@@ -280,49 +272,5 @@ public class ExternalCommandLauncher {
 	}
 
 
-
-
-	/**
-	 * Redirects the <code>stderr</code> output to <code>stdout</code>.
-	 * <p>
-	 * Use this either when not sure which stream an external program writes its
-	 * output to (some programs, like avr-size.exe write their help output to
-	 * stderr), or when you like any error messages inserted into the normal
-	 * output stream for analysis
-	 * </p>
-	 * <p>
-	 * Note: The redirection takes place at system level, so a command output
-	 * listener will only receive the mixed output.
-	 * </p>
-	 *
-	 * @see ProcessBuilder#redirectErrorStream(boolean)
-	 *
-	 * @param redirect
-	 *            <code>true</code> to redirect <code>stderr</code> to
-	 *            <code>stdout</code>
-	 */
-	public void redirectErrorStream(boolean redirect) {
-		this.fProcessBuilder.redirectErrorStream(redirect);
-	}
-
-	/**
-	 * Sets a Console where all output of the external command will go.
-	 * <p>
-	 * This is mostly for debugging. The output to the console is in addition to
-	 * the normal logging of this class.
-	 * </p>
-	 * <p>
-	 * This method must be called before the {@link #launch()} method. Once the
-	 * external command has been launched, calling this method will not have any
-	 * effect.
-	 * </p>
-	 *
-	 * @param console
-	 *            <code>MessageConsole</code> or <code>null</code> to disable
-	 *            console output.
-	 */
-	public void setConsole(MessageConsole console) {
-		this.fConsole = console;
-	}
 
 }

@@ -27,8 +27,8 @@ public class Const {
 	public static final String ACTION_SIZE = "RECIPE.SIZE";
 	public static final String ACTION_AR = "RECIPE.AR";
 	public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
-	public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
-	public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
+	//public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
+	//public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
 	// properties keys
 
