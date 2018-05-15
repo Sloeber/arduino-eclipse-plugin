@@ -1,7 +1,9 @@
 package io.sloeber.ui.monitor.views;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -374,7 +376,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		this.clear = new Action(Messages.serialMonitorClear) {
 			@Override
 			public void run() {
-				SerialMonitor.this.monitorOutput.setText(""); //$NON-NLS-1$
+				clearMonitor();
 			}
 		};
 		this.clear.setImageDescriptor(ImageDescriptor.createFromURL(IMG_CLEAR));
@@ -547,4 +549,15 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		}
 	}
 
+	public List<String> getMonitorContent() {
+		int numLines =monitorOutput.getContent().getLineCount();
+		List<String>ret=new ArrayList<>();
+		for(int curLine=1;curLine<numLines;curLine++) {
+			ret.add(monitorOutput.getContent().getLine(curLine-1));
+		}
+		return ret;
+	}
+	public void clearMonitor() {
+		monitorOutput.setText(new String());
+	}
 }

@@ -18,34 +18,32 @@
 #endif
 const int ledPin =  LED_BUILTIN;      // the number of the LED pin
 
-// Variables will change :
-int ledState = LOW;             // ledState used to set the LED
-
-// Generally, you should use "unsigned long" for variables that hold time
-// The value will quickly become too large for an int to store
-unsigned long previousMillis = 0;        // will store last time LED was updated
-
-// constants won't change :
 const long interval = INTERVAL;           // interval at which to blink (milliseconds)
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
 
 void setup() {
-  // set the digital pin as output:
-  pinMode(ledPin, OUTPUT);
+	pinMode(ledPin, OUTPUT);
+	Serial.begin(115200);
+	Serial.println(STR(SERIAlDUMP));
 }
 
 void loop() {
+	static unsigned long previousLedMillis = 0; // will store last time LED was updated
+	static unsigned long previousLogMillis = 0;
+	static int ledState = LOW;
 
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillis >= interval) {
-    // save the last time you blinked the LED
-    previousMillis = currentMillis;
-
-    // if the LED is off turn it on and vice-versa:
+	if (currentMillis - previousLedMillis >= interval) {
+		previousLedMillis = currentMillis;
     ledState = !ledState;
+		digitalWrite(ledPin, ledState);
 
-    // set the LED with the ledState of the variable:
-    digitalWrite(ledPin, ledState);
   }
+	if (currentMillis - previousLogMillis >= 100) {
+		previousLogMillis = currentMillis;
+		Serial.println(STR(SERIAlDUMP));
+	}
 }
 

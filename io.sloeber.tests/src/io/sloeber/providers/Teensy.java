@@ -36,6 +36,11 @@ public class Teensy extends MCUBoard {
 	public static MCUBoard Teensy3_1() {
 		return new Teensy(Teensy3_1_ID);
 	}
+	public static MCUBoard Teensy3_1(String uploadPort) {
+		MCUBoard board = Teensy3_1();
+		board.myBoardDescriptor.setUploadPort(uploadPort);
+		return board;
+	}
 
 	public static MCUBoard Teensy3_0() {
 		return new Teensy(Teensy3_0_ID);
@@ -43,6 +48,11 @@ public class Teensy extends MCUBoard {
 
 	public static MCUBoard teensypp2() {
 		return new Teensy(Teensy_PP2_ID);
+	}
+	public static MCUBoard teensypp2(String uploadPort) {
+		MCUBoard board = teensypp2();
+		board.myBoardDescriptor.setUploadPort(uploadPort);
+		return board;
 	}
 
 	public static MCUBoard teensy2() {
