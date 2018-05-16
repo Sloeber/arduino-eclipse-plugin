@@ -74,11 +74,11 @@ public class UploadSketchWrapper {
 			realUploader = new arduinoUploader(project, confDesc, UpLoadTool);
 			uploadJobName = UpLoadTool;
 			// } else {
-			// this.myHighLevelConsoleStream.println(Messages.Upload_ssh);
+			// myHighLevelConsoleStream.println(Messages.Upload_ssh);
 			//
 			// realUploader = new SSHUpload(project, UpLoadTool,
-			// this.myHighLevelConsoleStream,
-			// this.myOutconsoleStream, this.myErrconsoleStream, host);
+			// myHighLevelConsoleStream,
+			// myOutconsoleStream, myErrconsoleStream, host);
 			// uploadJobName = UPLOAD_SSH;
 			// }
 		} else if (UpLoadTool.equalsIgnoreCase(UPLOAD_TOOL_TEENSY)) {
@@ -144,11 +144,11 @@ public class UploadSketchWrapper {
 				ICConfigurationDescription cConf, IRealUpload uploader,
 				BoardDescriptor boardDescriptor) {
 			super(name);
-			this.myNAmeTag = name.toUpperCase();
-			this.myProject = project;
-			this.myConfDes = cConf;
-			this.myUploader = uploader;
-			this.myBoardDescriptor = boardDescriptor;
+			myNAmeTag = name.toUpperCase();
+			myProject = project;
+			myConfDes = cConf;
+			myUploader = uploader;
+			myBoardDescriptor = boardDescriptor;
 		}
 
 		@Override
