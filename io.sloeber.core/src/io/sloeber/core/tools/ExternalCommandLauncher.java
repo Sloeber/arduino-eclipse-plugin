@@ -58,10 +58,9 @@ import io.sloeber.core.common.Const;
 public class ExternalCommandLauncher {
 
 	/** Lock for internal synchronization */
-	protected final Object fRunLock;
+	protected final Object myRunLock;
 
-	private final ProcessBuilder fProcessBuilder;
-
+	private final ProcessBuilder myProcessBuilder;
 
 	/**
 	 * A runnable class that will read a Stream until EOF, storing each line in
@@ -88,7 +87,8 @@ public class ExternalCommandLauncher {
 		 *            <code>OutputStream</code> for secondary console output, or
 		 *            <code>null</code> for no console output.
 		 */
-		public LogStreamRunner(InputStream instream,  MessageConsoleStream consolestream) {
+		public LogStreamRunner(InputStream instream,
+				MessageConsoleStream consolestream) {
 			this.fReader = new BufferedReader(new InputStreamReader(instream));
 			this.fConsoleOutput = consolestream;
 		}
@@ -106,7 +106,7 @@ public class ExternalCommandLauncher {
 					// If a Listener has been registered, call it
 					int read = this.fReader.read();
 					if (read != -1) {
-						String readChar=new String()+(char)read;
+						String readChar = new String() + (char) read;
 
 						// And print to the console (if active)
 						if (this.fConsoleOutput != null) {
@@ -118,7 +118,8 @@ public class ExternalCommandLauncher {
 				}
 			} catch (IOException e) {
 				// This is unlikely to happen, but log it nevertheless
-				IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
+				IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+						Messages.command_io, e);
 				Common.log(status);
 			} finally {
 				try {
@@ -127,9 +128,9 @@ public class ExternalCommandLauncher {
 					// can't do anything
 				}
 			}
-			synchronized (ExternalCommandLauncher.this.fRunLock) {
+			synchronized (ExternalCommandLauncher.this.myRunLock) {
 				// Notify the caller that this thread is finished
-				ExternalCommandLauncher.this.fRunLock.notifyAll();
+				ExternalCommandLauncher.this.myRunLock.notifyAll();
 			}
 		}
 	}
@@ -145,18 +146,21 @@ public class ExternalCommandLauncher {
 	 */
 	public ExternalCommandLauncher(String command) {
 		Assert.isNotNull(command);
-		this.fRunLock = this;
-		String[] commandParts = command.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+		this.myRunLock = this;
+		String[] commandParts = command
+				.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+		//TODO do we really want to remove the quotes?
 		for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
-			if (commandParts[curCommand].startsWith("\"") && commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$ //$NON-NLS-2$
-				commandParts[curCommand] = commandParts[curCommand].substring(1, commandParts[curCommand].length() - 1);
+			if (commandParts[curCommand].startsWith("\"") //$NON-NLS-1$
+					&& commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$
+				commandParts[curCommand] = commandParts[curCommand].substring(1,
+						commandParts[curCommand].length() - 1);
 			}
 
 		}
-		this.fProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
+		myProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
+		myProcessBuilder.redirectErrorStream(true);
 	}
-
-
 
 	/**
 	 * Launch the external program with a ProgressMonitor.
@@ -180,50 +184,53 @@ public class ExternalCommandLauncher {
 	 * @throws IOException
 	 *             An Exception from the underlying Process.
 	 */
-	public int launch(IProgressMonitor monitor, MessageConsoleStream defaultConsoleStream,	 MessageConsoleStream stdoutConsoleStream,	 MessageConsoleStream stderrConsoleStream) throws IOException {
+	public int launch(IProgressMonitor monitor, MessageConsoleStream highStream,
+			MessageConsoleStream stdoutStream,
+			MessageConsoleStream stderrStream) throws IOException {
 
 		Process process = null;
 
-		defaultConsoleStream.println();
-		defaultConsoleStream.println();
-		defaultConsoleStream.print(Messages.command_launching + ' ');
-		List<String> commandAndOptions = this.fProcessBuilder.command();
+		highStream.println();
+		highStream.println();
+		highStream.print(Messages.command_launching + ' ');
+		List<String> commandAndOptions = myProcessBuilder.command();
 		for (String str : commandAndOptions) {
-			defaultConsoleStream.print(str + ' ');
+			highStream.print(str + ' ');
 		}
-		defaultConsoleStream.println();
-		defaultConsoleStream.println(Messages.command_output);
+		highStream.println();
+		highStream.println(Messages.command_output);
 
 		// Get the name of the command (without the path)
 		// This is used upon exit to print a nice exit message
 		String command = commandAndOptions.get(0);
-		String commandname = command.substring(command.lastIndexOf(File.separatorChar) + 1);
+		String commandname = command
+				.substring(command.lastIndexOf(File.separatorChar) + 1);
 
 		// After the setup we can now start the command
 		try {
-			monitor.beginTask(Messages.command_launching +' '+ command, 100);
+			monitor.beginTask(Messages.command_launching + ' ' + command, 100);
 
-			this.fProcessBuilder.directory(Common.getWorkspaceRoot().toPath().toFile());
+			myProcessBuilder
+					.directory(Common.getWorkspaceRoot().toPath().toFile());
 			try {
-			process = this.fProcessBuilder.start();
-			}
-			catch(IOException ioe) {
-				String errorMessage=ioe.getMessage();
-				if(errorMessage==null) {
-					errorMessage="no error message given"; //$NON-NLS-1$
+				process = myProcessBuilder.start();
+			} catch (IOException ioe) {
+				String errorMessage = ioe.getMessage();
+				if (errorMessage == null) {
+					errorMessage = "no error message given"; //$NON-NLS-1$
 				}
-				stderrConsoleStream.println(errorMessage);
+				stderrStream.println(errorMessage);
 				ioe.printStackTrace();
 				throw ioe;
 			}
 
-			Thread stdoutRunner = new Thread(
-					new LogStreamRunner(process.getInputStream(), stdoutConsoleStream));
-			Thread stderrRunner = new Thread(
-					new LogStreamRunner(process.getErrorStream(), stderrConsoleStream));
+			Thread stdoutRunner = new Thread(new LogStreamRunner(
+					process.getInputStream(), stdoutStream));
+			Thread stderrRunner = new Thread(new LogStreamRunner(
+					process.getErrorStream(), stderrStream));
 
-			synchronized (this.fRunLock) {
-				// Wait either for the logrunners to terminate or the user to
+			synchronized (myRunLock) {
+				// Wait either for the longrunners to terminate or the user to
 				// cancel the job.
 				// The monitor is polled 10 times / sec.
 				stdoutRunner.start();
@@ -232,14 +239,15 @@ public class ExternalCommandLauncher {
 				monitor.worked(5);
 
 				while (stdoutRunner.isAlive() || stderrRunner.isAlive()) {
-					this.fRunLock.wait(100);
+					myRunLock.wait(100);
 					if (monitor.isCanceled() == true) {
 						process.destroy();
 						process.waitFor();
 
-						if (defaultConsoleStream != null) {
+						if (highStream != null) {
 							// Write an Abort Message to the console (if active)
-							defaultConsoleStream.println(commandname + Messages.command_aborted);
+							highStream.println(
+									commandname +' '+ Messages.command_aborted);
 						}
 						return -1;
 					}
@@ -248,13 +256,12 @@ public class ExternalCommandLauncher {
 
 			// external process finished normally
 			monitor.worked(95);
-			if (defaultConsoleStream != null) {
-				defaultConsoleStream.println(commandname +' '+ Messages.command_finished);
-			}
+			highStream.println(commandname + ' ' + Messages.command_finished);
+
 		} catch (InterruptedException e) {
 			// This thread was interrupted from outside
 			// consider this to be a failure of the external programm
-			defaultConsoleStream.println(commandname +' '+ Messages.command_interupted);
+			highStream.println(commandname + ' ' + Messages.command_interupted);
 			return -1;
 		}
 		// if we make it to here, the process has run without any Exceptions
@@ -270,7 +277,5 @@ public class ExternalCommandLauncher {
 			return -1;
 		}
 	}
-
-
 
 }

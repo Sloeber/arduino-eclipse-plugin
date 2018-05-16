@@ -28,25 +28,20 @@ public class arduinoUploader implements IRealUpload {
 	private IProject myProject;
 	private ICConfigurationDescription mycConf;
 
-	private MessageConsoleStream myHighStream;
-	private MessageConsoleStream myOutStream;
-	private MessageConsoleStream myErrStream;
+
 
 	arduinoUploader(IProject Project, ICConfigurationDescription confDesc,
-			String UploadTool, 
-			MessageConsoleStream highConsoleStream,
-			MessageConsoleStream stdoutConsoleStream,
-			MessageConsoleStream stderrConsoleStream) {
+			String UploadTool) {
 		myProject = Project;
 		mycConf = confDesc;
-		myHighStream = highConsoleStream;
-		myOutStream = stdoutConsoleStream;
-		myErrStream = stderrConsoleStream;
 	}
 
 	@Override
 	public boolean uploadUsingPreferences(IFile hexFile,
-			BoardDescriptor boardDescr, IProgressMonitor monitor) {
+			BoardDescriptor boardDescr, IProgressMonitor monitor, 
+			MessageConsoleStream highStream,
+			MessageConsoleStream outStream,
+			MessageConsoleStream errStream) {
 		String uploadPort = boardDescr.getActualUploadPort();
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault()
@@ -55,18 +50,18 @@ public class arduinoUploader implements IRealUpload {
 				.getContributedEnvironment();
 
 		if (boardDescr.usesProgrammer()) {
-			myHighStream.println(Messages.uploader_no_reset_using_programmer);
+			highStream.println(Messages.uploader_no_reset_using_programmer);
 		} else if (boardDescr.isNetworkUpload()) {
 			setEnvironmentvarsForAutorizedUpload(contribEnv, mycConf);
-			myHighStream.println(Messages.uploader_no_reset_using_network);
+			highStream.println(Messages.uploader_no_reset_using_network);
 		} else {
-			uploadPort = ArduinoSerial.makeArduinoUploadready(myHighStream,
+			uploadPort = ArduinoSerial.makeArduinoUploadready(highStream,
 					this.myProject, mycConf, boardDescr);
 		}
 
 		String command = boardDescr.getUploadCommand(mycConf);
 		if (command == null) {
-			myHighStream.println(Messages.uploader_Failed_to_get_upload_recipe);
+			highStream.println(Messages.uploader_Failed_to_get_upload_recipe);
 			return false;
 		}
 		if (!uploadPort.equals(boardDescr.getUploadPort())) {
@@ -77,8 +72,8 @@ public class arduinoUploader implements IRealUpload {
 				command);
 
 		try {
-			if (commandLauncher.launch(monitor, myHighStream, myOutStream,
-					myErrStream) < 0)
+			if (commandLauncher.launch(monitor, highStream, outStream,
+					errStream) < 0)
 				return false;
 		} catch (IOException e) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,

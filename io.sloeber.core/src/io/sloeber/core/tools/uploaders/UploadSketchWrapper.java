@@ -11,8 +11,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
@@ -29,10 +34,6 @@ public class UploadSketchWrapper {
 	public static final String UPLOAD_SSH = "ssh upload"; //$NON-NLS-1$
 
 	static UploadSketchWrapper myThis = null;
-	MessageConsole myConsole = null;
-	MessageConsoleStream myHighLevelStream = null;
-	MessageConsoleStream myOutStream = null;
-	MessageConsoleStream myErrStream = null;
 
 	private UploadSketchWrapper() {
 		// no constructor needed
@@ -59,28 +60,18 @@ public class UploadSketchWrapper {
 		// Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 		// new String());/** @jniclass flags=no_gen */
 
-		// TOFIX issue 769 can it be fixed by simply adding the projectname to
-		// the name
-		myConsole = Helpers.findConsole(Messages.Upload_console);
-		myConsole.clearConsole();
-		myConsole.activate();
-		myHighLevelStream = myConsole.newMessageStream();
-		myOutStream = myConsole.newMessageStream();
-		myErrStream = myConsole.newMessageStream();
-		// TOFIX issue 717 set font/color based on preference settings
-		// this.myHighLevelConsoleStream.setColor(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_BLACK));
-		// this.myOutconsoleStream.setColor(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
-		// this.myErrconsoleStream.setColor(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_RED));
-		this.myHighLevelStream.println(Messages.Upload_starting);
+		 
+
+
+
+		
 		IRealUpload realUploader = null;
 		String uploadJobName = null;
 
 		if (boardDescriptor.isNetworkUpload()) {
 			// TOFIX is this ok?
 			// if (!Const.UPLOAD_CLASS_DEFAULT.equals(uploadClass)) {
-			this.myHighLevelStream.println(Messages.Upload_arduino);
-			realUploader = new arduinoUploader(project, confDesc, UpLoadTool,
-					myHighLevelStream, myOutStream, myErrStream);
+			realUploader = new arduinoUploader(project, confDesc, UpLoadTool);
 			uploadJobName = UpLoadTool;
 			// } else {
 			// this.myHighLevelConsoleStream.println(Messages.Upload_ssh);
@@ -91,14 +82,10 @@ public class UploadSketchWrapper {
 			// uploadJobName = UPLOAD_SSH;
 			// }
 		} else if (UpLoadTool.equalsIgnoreCase(UPLOAD_TOOL_TEENSY)) {
-			this.myHighLevelStream.println(Messages.Upload_generic);
-			realUploader = new GenericLocalUploader(UpLoadTool, confDesc,
-					myHighLevelStream, myErrStream, myOutStream);
+			realUploader = new GenericLocalUploader(UpLoadTool, confDesc);
 			uploadJobName = UpLoadTool;
 		} else {
-			this.myHighLevelStream.println(Messages.Upload_arduino);
-			realUploader = new arduinoUploader(project, confDesc, UpLoadTool,
-					myHighLevelStream, myOutStream, myErrStream);
+			realUploader = new arduinoUploader(project, confDesc, UpLoadTool);
 			uploadJobName = UpLoadTool;
 		}
 
@@ -166,13 +153,41 @@ public class UploadSketchWrapper {
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
+			// TOFIX issue 769 can it be fixed by simply adding the projectname to
+			// the name
+			MessageConsole console = Helpers.findConsole(Messages.Upload_console);
+			console.clearConsole();
+			console.activate();
+			MessageConsoleStream highLevelStream =  console.newMessageStream();
+			MessageConsoleStream outStream =  console.newMessageStream();
+			MessageConsoleStream errStream =  console.newMessageStream();
+			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+					ITheme currentTheme = themeManager.getCurrentTheme();
+					ColorRegistry colorRegistry = currentTheme.getColorRegistry();
+					FontRegistry fontRegistry = currentTheme.getFontRegistry();
+					
+					console.setFont(fontRegistry.get("io.sloeber.ui.uploadConsole.fontDefinition")); //$NON-NLS-1$
+					highLevelStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.high")); //$NON-NLS-1$
+					outStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.stdout")); //$NON-NLS-1$
+					errStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.stderr")); //$NON-NLS-1$
+				}
+			});
+
+			
+			
+			highLevelStream.println(Messages.Upload_starting);
+
 			IStatus ret = Status.OK_STATUS;
 			boolean WeStoppedTheComPort = false;
 			try {
 				String message = Messages.Upload_uploading
 						.replace("{project}", myProject.getName()) //$NON-NLS-1$
 						.replace("{uploader}", myNAmeTag) + ' '; //$NON-NLS-1$
-				UploadSketchWrapper.this.myHighLevelStream.println(message);
+				highLevelStream.println(message);
 				monitor.beginTask(message, 2);
 				try {
 					WeStoppedTheComPort = SerialManager.StopSerialMonitor(
@@ -186,12 +201,9 @@ public class UploadSketchWrapper {
 				IFile hexFile = myProject.getFile(myConfDes.getBuildSetting()
 						.getBuilderCWD().append(myProject.getName() + ".hex")); //$NON-NLS-1$
 				if (myUploader.uploadUsingPreferences(hexFile,
-						this.myBoardDescriptor, monitor)) {
-					UploadSketchWrapper.this.myHighLevelStream
-							.println(Messages.Upload_Done);
+						myBoardDescriptor, monitor,highLevelStream,outStream,errStream)) {
 				} else {
-					UploadSketchWrapper.this.myHighLevelStream
-							.println(Messages.Upload_failed_upload);
+					highLevelStream.println(Messages.Upload_failed_upload);
 					ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 							Messages.Upload_failed_upload);
 				}
@@ -205,18 +217,12 @@ public class UploadSketchWrapper {
 						SerialManager.StartSerialMonitor(
 								myBoardDescriptor.getActualUploadPort());
 					}
-					if (UploadSketchWrapper.this.myHighLevelStream != null) {
-						UploadSketchWrapper.this.myHighLevelStream.close();
-					}
-					if (UploadSketchWrapper.this.myErrStream != null) {
-						UploadSketchWrapper.this.myErrStream.close();
-					}
-					if (UploadSketchWrapper.this.myOutStream != null) {
-						UploadSketchWrapper.this.myOutStream.close();
-					}
-					UploadSketchWrapper.this.myHighLevelStream = null;
-					UploadSketchWrapper.this.myErrStream = null;
-					UploadSketchWrapper.this.myOutStream = null;
+				
+						highLevelStream.close();
+						errStream.close();
+						outStream.close();
+					
+
 				} catch (Exception e) {
 					ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
 							Messages.Upload_Error_serial_monitor_restart, e);
