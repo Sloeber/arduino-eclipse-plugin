@@ -153,9 +153,7 @@ public class UploadSketchWrapper {
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
-			// TOFIX issue 769 can it be fixed by simply adding the projectname to
-			// the name
-			MessageConsole console = Helpers.findConsole(Messages.Upload_console);
+			MessageConsole console = Helpers.findConsole(Messages.Upload_console+'['+myProject.getName()+']');
 			console.clearConsole();
 			console.activate();
 			MessageConsoleStream highLevelStream =  console.newMessageStream();
