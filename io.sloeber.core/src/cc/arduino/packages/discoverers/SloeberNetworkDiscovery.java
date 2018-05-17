@@ -19,7 +19,11 @@ public static String[] getList() {
 	List<BoardPort> boardPorts=getDiscovery().getBoardPortsDiscoveredWithJmDNS();
 	HashSet<String> allBoards = new HashSet<>();
 	for (BoardPort boardPort : boardPorts) {
-		allBoards.add(boardPort.getBoardName()+" "+boardPort.getAddress());
+		String boardName=boardPort.getBoardName();
+		if(!boardName.contains(".")) {
+			boardName=boardName+".local";
+		}
+		allBoards.add(boardName+" "+boardPort.getAddress());
 	}
 	String[] sBoards = new String[allBoards.size()];
 	allBoards.toArray(sBoards);
