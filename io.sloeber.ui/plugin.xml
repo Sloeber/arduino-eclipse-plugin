@@ -96,7 +96,11 @@ The color used by the fifth channel of the plotter
 The color used by the sixth channel of the plotter
 </description>
 </colorDefinition>
-<fontDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
+<fontDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      defaultsTo="org.eclipse.jface.textfont"
+      id="io.sloeber.serial.fontDefinition"
+      label="Font">
 <description>
 The font used in the serial monitor
 </description>
@@ -142,7 +146,7 @@ The color used by the fourth serial connection of the serial monitor
 </colorDefinition>
     <themeElementCategory
           id="io.sloeber.ui.uploadConsole.themeCategory"
-          label="upload Console"
+          label="Upload Console"
           parentId="io.sloeber.themeCategory">
        <description>
           Font and colors usedi in the upload console
@@ -150,9 +154,9 @@ The color used by the fourth serial connection of the serial monitor
     </themeElementCategory>
     <fontDefinition
           categoryId="io.sloeber.ui.uploadConsole.themeCategory"
+          defaultsTo="org.eclipse.jface.textfont"
           id="io.sloeber.ui.uploadConsole.fontDefinition"
-          label="Font"
-          value="Liberation Sans-Regular-10">
+          label="Font">
        <description>
           The font used in the upload console
        </description>
@@ -160,7 +164,7 @@ The color used by the fourth serial connection of the serial monitor
     <colorDefinition
           categoryId="io.sloeber.ui.uploadConsole.themeCategory"
           id="io.sloeber.ui.uploadConsole.colorDefinition.stderr"
-          label="error out"
+          label="Error out"
           value="COLOR_RED">
        <description>
           Color used for error out when running system commands
@@ -169,7 +173,7 @@ The color used by the fourth serial connection of the serial monitor
     <colorDefinition
           categoryId="io.sloeber.ui.uploadConsole.themeCategory"
           id="io.sloeber.ui.uploadConsole.colorDefinition.stdout"
-          label="standard out"
+          label="Standard out"
           value="COLOR_DARK_GREEN">
        <description>
           Color used for standard out when running system commands
@@ -178,7 +182,7 @@ The color used by the fourth serial connection of the serial monitor
     <colorDefinition
           categoryId="io.sloeber.ui.uploadConsole.themeCategory"
           id="io.sloeber.ui.uploadConsole.colorDefinition.high"
-          label="high level out"
+          label="High level out"
           value="COLOR_BLACK">
        <description>
           Color used for explaining the steps taken
