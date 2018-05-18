@@ -36,7 +36,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.ui.monitor.SerialConnection;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
 	private static final boolean reinstall_boards_and_libraries = false;

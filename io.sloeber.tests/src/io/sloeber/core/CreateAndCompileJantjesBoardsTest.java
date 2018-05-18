@@ -29,7 +29,7 @@ import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.Jantje;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileJantjesBoardsTest {
 	private static int mCounter = 0;

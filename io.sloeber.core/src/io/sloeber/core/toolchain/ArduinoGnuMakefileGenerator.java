@@ -3297,9 +3297,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 				}
 			}
 			return escapedPath.toString().trim();
-		}else {
-			return path;
 		}
+		return path;
 	}
 
 	/**

@@ -67,7 +67,7 @@ import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 /**
  * ArduinoHelpers is a static class containing general purpose functions
  *

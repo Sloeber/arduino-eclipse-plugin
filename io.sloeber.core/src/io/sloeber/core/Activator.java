@@ -58,7 +58,7 @@ abstract class FamilyJob extends Job {
  * @author Jan Baeyens
  *
  */
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
@@ -404,7 +404,7 @@ public class Activator extends AbstractUIPlugin {
 			String content= IOUtils.toString( url);
 			isPatron = new Boolean(content.length() < 200);
 
-		} catch (@SuppressWarnings("unused") Exception e) {
+		} catch ( Exception e) {
 			//Ignore the download error. This will make the code try again later
 		}
 		if (isPatron != null) {

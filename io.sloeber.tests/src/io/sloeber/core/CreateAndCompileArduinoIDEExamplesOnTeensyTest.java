@@ -27,7 +27,7 @@ import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	private static int mCounter = 0;

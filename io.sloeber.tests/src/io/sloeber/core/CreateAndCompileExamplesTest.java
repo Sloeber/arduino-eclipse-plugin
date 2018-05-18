@@ -32,7 +32,7 @@ import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamplesTest {
 	private static final boolean reinstall_boards_and_examples = true;
@@ -186,7 +186,7 @@ public class CreateAndCompileExamplesTest {
 			totalFails++;
 			try {
 				theTestProject.close(null);
-			} catch (@SuppressWarnings("unused") CoreException e1) {
+			} catch ( CoreException e1) {
 				//fully ignore
 			}
 			fail("Failed to compile the project:" + projectName + " exception");

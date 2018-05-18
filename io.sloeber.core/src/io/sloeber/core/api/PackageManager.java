@@ -54,6 +54,7 @@ import io.sloeber.core.tools.TxtFile;
  * @author jantje
  *
  */
+@SuppressWarnings("unused")
 public class PackageManager {
 
 	protected static List<PackageIndex> packageIndices;
@@ -774,7 +775,7 @@ public class PackageManager {
 				if (localFile.exists()) {
 					localFile.delete();
 				}
-			} catch (@SuppressWarnings("unused") Exception e) {
+			} catch ( Exception e) {
 				// ignore
 			}
 		}

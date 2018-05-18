@@ -1,5 +1,5 @@
 package io.sloeber.core.api;
-
+@SuppressWarnings("unused")
 public class VersionNumber implements Comparable<Object> {
     private String[] parts;
 

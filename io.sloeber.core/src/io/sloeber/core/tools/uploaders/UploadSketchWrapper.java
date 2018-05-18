@@ -1,5 +1,6 @@
 package io.sloeber.core.tools.uploaders;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -60,11 +61,6 @@ public class UploadSketchWrapper {
 		// Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 		// new String());/** @jniclass flags=no_gen */
 
-		 
-
-
-
-		
 		IRealUpload realUploader = null;
 		String uploadJobName = null;
 
@@ -153,82 +149,90 @@ public class UploadSketchWrapper {
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
-			MessageConsole console = Helpers.findConsole(Messages.Upload_console+'['+myProject.getName()+']');
+			IStatus ret = Status.OK_STATUS;
+			MessageConsole console = Helpers.findConsole(
+					Messages.Upload_console + '[' + myProject.getName() + ']');
 			console.clearConsole();
 			console.activate();
-			MessageConsoleStream highLevelStream =  console.newMessageStream();
-			MessageConsoleStream outStream =  console.newMessageStream();
-			MessageConsoleStream errStream =  console.newMessageStream();
-			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-				
-				@Override
-				public void run() {
-					IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
-					ITheme currentTheme = themeManager.getCurrentTheme();
-					ColorRegistry colorRegistry = currentTheme.getColorRegistry();
-					FontRegistry fontRegistry = currentTheme.getFontRegistry();
-					
-					console.setFont(fontRegistry.get("io.sloeber.ui.uploadConsole.fontDefinition")); //$NON-NLS-1$
-					highLevelStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.high")); //$NON-NLS-1$
-					outStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.stdout")); //$NON-NLS-1$
-					errStream.setColor(colorRegistry.get("io.sloeber.ui.uploadConsole.colorDefinition.stderr")); //$NON-NLS-1$
-				}
-			});
+			try (MessageConsoleStream highLevelStream = console
+					.newMessageStream();
+					MessageConsoleStream outStream = console.newMessageStream();
+					MessageConsoleStream errStream = console
+							.newMessageStream();) {
+				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
-			
-			
-			highLevelStream.println(Messages.Upload_starting);
+					@Override
+					public void run() {
+						IThemeManager themeManager = PlatformUI.getWorkbench()
+								.getThemeManager();
+						ITheme currentTheme = themeManager.getCurrentTheme();
+						ColorRegistry colorRegistry = currentTheme
+								.getColorRegistry();
+						FontRegistry fontRegistry = currentTheme
+								.getFontRegistry();
 
-			IStatus ret = Status.OK_STATUS;
-			boolean WeStoppedTheComPort = false;
-			try {
-				String message = Messages.Upload_uploading
-						.replace("{project}", myProject.getName()) //$NON-NLS-1$
-						.replace("{uploader}", myNAmeTag) + ' '; //$NON-NLS-1$
-				highLevelStream.println(message);
-				monitor.beginTask(message, 2);
-				try {
-					WeStoppedTheComPort = SerialManager.StopSerialMonitor(
-							myBoardDescriptor.getActualUploadPort());
-				} catch (Exception e) {
-					ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							Messages.Upload_Error_com_port, e);
-					Common.log(ret);
-				}
-
-				IFile hexFile = myProject.getFile(myConfDes.getBuildSetting()
-						.getBuilderCWD().append(myProject.getName() + ".hex")); //$NON-NLS-1$
-				if (myUploader.uploadUsingPreferences(hexFile,
-						myBoardDescriptor, monitor,highLevelStream,outStream,errStream)) {
-				} else {
-					highLevelStream.println(Messages.Upload_failed_upload);
-					ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Upload_failed_upload);
-				}
-
-			} catch (Exception e) {
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						Messages.Upload_failed_upload, e));
-			} finally {
-				try {
-					if (WeStoppedTheComPort) {
-						SerialManager.StartSerialMonitor(
-								myBoardDescriptor.getActualUploadPort());
+						console.setFont(fontRegistry.get(
+								"io.sloeber.ui.uploadConsole.fontDefinition")); //$NON-NLS-1$
+						highLevelStream.setColor(colorRegistry.get(
+								"io.sloeber.ui.uploadConsole.colorDefinition.high")); //$NON-NLS-1$
+						outStream.setColor(colorRegistry.get(
+								"io.sloeber.ui.uploadConsole.colorDefinition.stdout")); //$NON-NLS-1$
+						errStream.setColor(colorRegistry.get(
+								"io.sloeber.ui.uploadConsole.colorDefinition.stderr")); //$NON-NLS-1$
 					}
-				
-						highLevelStream.close();
-						errStream.close();
-						outStream.close();
-					
+				});
+
+				highLevelStream.println(Messages.Upload_starting);
+
+				boolean WeStoppedTheComPort = false;
+				try {
+					String message = Messages.Upload_uploading
+							.replace("{project}", myProject.getName()) //$NON-NLS-1$
+							.replace("{uploader}", myNAmeTag) + ' '; //$NON-NLS-1$
+					highLevelStream.println(message);
+					monitor.beginTask(message, 2);
+					try {
+						WeStoppedTheComPort = SerialManager.StopSerialMonitor(
+								myBoardDescriptor.getActualUploadPort());
+					} catch (Exception e) {
+						ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+								Messages.Upload_Error_com_port, e);
+						Common.log(ret);
+					}
+
+					IFile hexFile = myProject
+							.getFile(myConfDes.getBuildSetting().getBuilderCWD()
+									.append(myProject.getName() + ".hex")); //$NON-NLS-1$
+					if (!myUploader.uploadUsingPreferences(hexFile,
+							myBoardDescriptor, monitor, highLevelStream,
+							outStream, errStream)) {
+						highLevelStream.println(Messages.Upload_failed_upload);
+						ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+								Messages.Upload_failed_upload);
+					}
 
 				} catch (Exception e) {
-					ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							Messages.Upload_Error_serial_monitor_restart, e);
-					Common.log(ret);
-				}
-				monitor.done();
-			}
+					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+							Messages.Upload_failed_upload, e));
+				} finally {
+					try {
+						if (WeStoppedTheComPort) {
+							SerialManager.StartSerialMonitor(
+									myBoardDescriptor.getActualUploadPort());
+						}
 
+					} catch (Exception e) {
+						ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+								Messages.Upload_Error_serial_monitor_restart,
+								e);
+						Common.log(ret);
+					}
+					monitor.done();
+				}
+
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			return ret;
 		}
 	}

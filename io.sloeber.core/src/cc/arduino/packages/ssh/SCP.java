@@ -39,7 +39,7 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Session;
 
-@SuppressWarnings({ "unused", "nls", "unqualified-field-access" })
+@SuppressWarnings({ "unused", "nls" })
 public class SCP extends SSH {
 
 	private Channel channel;

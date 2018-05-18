@@ -54,7 +54,7 @@ import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls" ,"unused"})
 public class BoardDescriptor {
 
 	/*
@@ -924,7 +924,7 @@ public class BoardDescriptor {
 	public Path getreferencingPlatformPath() {
 		try {
 			return new Path(this.myreferencingBoardsFile.getParent());
-		} catch (@SuppressWarnings("unused") Exception e) {
+		} catch ( Exception e) {
 			return new Path(new String());
 		}
 	}

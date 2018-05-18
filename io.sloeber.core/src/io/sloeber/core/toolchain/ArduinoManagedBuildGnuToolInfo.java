@@ -48,7 +48,7 @@ import io.sloeber.core.toolchain.ArduinoGnuMakefileGenerator.ToolInfoHolder;
  *
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({ "restriction", "deprecation" })
+@SuppressWarnings({ "restriction", "deprecation" ,"unused"})
 public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo {
 
 	/*

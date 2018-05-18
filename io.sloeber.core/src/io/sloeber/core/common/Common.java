@@ -24,7 +24,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 public class Common extends Const {
 	private static final String ENV_PATTERN = "PATTERN";
 	private static final String ENV_PROTOCOL = "PROTOCOL";

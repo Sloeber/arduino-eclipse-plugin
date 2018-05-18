@@ -13,7 +13,7 @@ import io.sloeber.core.api.MessageConsumer;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.monitor.views.Messages;
 import io.sloeber.ui.monitor.views.SerialMonitor;
-
+@SuppressWarnings({"unused"})
 public class SerialListener implements MessageConsumer {
 	private static boolean myPlotterFilterFlag = false;
 	SerialMonitor theMonitor;

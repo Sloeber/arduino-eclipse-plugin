@@ -39,7 +39,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-@SuppressWarnings({ "nls", "unqualified-field-access" })
+@SuppressWarnings({ "nls","unused" })
 public class SSH {
 
 	final Session session;

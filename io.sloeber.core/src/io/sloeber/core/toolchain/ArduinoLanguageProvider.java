@@ -12,7 +12,7 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 	

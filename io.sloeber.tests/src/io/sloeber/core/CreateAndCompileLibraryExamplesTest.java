@@ -33,7 +33,7 @@ import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
 	private static final boolean reinstall_boards_and_examples = true;

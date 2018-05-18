@@ -45,7 +45,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.Library;
-
+@SuppressWarnings("unused") 
 public class Libraries {
 	public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
 

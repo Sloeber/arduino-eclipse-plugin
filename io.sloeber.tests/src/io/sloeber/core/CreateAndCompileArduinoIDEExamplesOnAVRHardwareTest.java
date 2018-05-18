@@ -26,7 +26,7 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 	private static int mCounter = 0;

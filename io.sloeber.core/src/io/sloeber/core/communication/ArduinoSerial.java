@@ -14,7 +14,7 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-
+@SuppressWarnings("unused")
 public class ArduinoSerial {
 
 	private ArduinoSerial() {
@@ -30,6 +30,7 @@ public class ArduinoSerial {
 	 *            The baud rate to set
 	 * @return true is successful otherwise false
 	 */
+
 	public static boolean reset_Arduino_by_baud_rate(String comPort, int baudRate, long openTime) {
 		Serial serialPort;
 		try {

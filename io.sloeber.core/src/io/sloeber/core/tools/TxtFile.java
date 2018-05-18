@@ -200,7 +200,7 @@ public class TxtFile {
 	 *
 	 */
 	public String[] getAllNames(String[] toaddNames) {
-		if (this.mLastLoadedTxtFile.equals(new String())) {
+		if (this.mLastLoadedTxtFile.toString().equals(new String())) {
 			return toaddNames;
 		}
 		HashSet<String> allNames = new HashSet<>();

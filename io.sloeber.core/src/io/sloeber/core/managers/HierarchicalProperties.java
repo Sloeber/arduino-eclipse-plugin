@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+@SuppressWarnings("unused") 
 public class HierarchicalProperties {
 
     private String value;

@@ -1,5 +1,5 @@
 package io.sloeber.core.tools;
-
+@SuppressWarnings("unused") 
 public class Version {
 	/**
 	 * compares 2 strings as if they are version numbers if version1<version2

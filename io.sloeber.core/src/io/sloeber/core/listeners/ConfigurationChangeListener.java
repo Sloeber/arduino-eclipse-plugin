@@ -30,7 +30,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
-
+@SuppressWarnings({"unused"})
 public class ConfigurationChangeListener implements ICProjectDescriptionListener {
 
 	@Override

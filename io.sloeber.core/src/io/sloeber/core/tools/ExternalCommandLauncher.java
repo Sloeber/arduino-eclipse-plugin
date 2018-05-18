@@ -55,6 +55,7 @@ import io.sloeber.core.common.Const;
  * @since 2.2
  *
  */
+@SuppressWarnings("unused") 
 public class ExternalCommandLauncher {
 
 	/** Lock for internal synchronization */

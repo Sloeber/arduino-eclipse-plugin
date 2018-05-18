@@ -44,6 +44,7 @@ import io.sloeber.ui.Messages;
  * @see ArduinoProperties ArduinoSettingsPage
  *
  */
+@SuppressWarnings({"unused"})
 public class BoardSelectionPage extends AbstractCPropertyTab {
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 

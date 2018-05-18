@@ -60,7 +60,7 @@ import io.sloeber.ui.monitor.internal.SerialListener;
  * serial connection.
  * 
  */
-
+@SuppressWarnings({"unused"})
 public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**

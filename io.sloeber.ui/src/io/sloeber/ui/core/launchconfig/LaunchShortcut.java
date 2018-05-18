@@ -18,7 +18,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ide.ResourceUtil;
 
 import io.sloeber.core.api.LaunchConfiguration;
-
+@SuppressWarnings({"unused"})
 public class LaunchShortcut implements ILaunchShortcut {
 
     /**

@@ -51,7 +51,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings({ "nls", "restriction","unused" })
 public class PdePreprocessor {
 	private static String oldGeneratedFile = ".ino.cpp";// somethimes having the
 														// file hidden is

@@ -32,7 +32,7 @@ import io.sloeber.core.api.Serial;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.monitor.internal.PlotterListener;
-
+@SuppressWarnings({"unused"})
 public class PlotterView extends ViewPart implements ServiceListener {
 
 	MyPlotter myPlotter = null;

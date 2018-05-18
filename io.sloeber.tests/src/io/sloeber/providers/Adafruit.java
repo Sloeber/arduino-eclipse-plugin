@@ -7,10 +7,10 @@ import io.sloeber.core.api.PackageManager;
 public class Adafruit extends MCUBoard {
 
 	private static final String AVRPlatformName = "Adafruit AVR Boards";
-	private static final String SAMDPlatformName = "Adafruit SAMD Boards";
-	private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
+	//private static final String SAMDPlatformName = "Adafruit SAMD Boards";
+	//private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
 	private static final String NFR52PlatformName = "Adafruit nRF52";
-	private static final String XICEDPlatformName = "Adafruit WICED";
+	//private static final String XICEDPlatformName = "Adafruit WICED";
 
 
 	public static String getnRF52PlatformName() {
