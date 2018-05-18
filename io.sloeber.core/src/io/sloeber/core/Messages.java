@@ -63,6 +63,8 @@ public class Messages extends NLS {
 	public static String ArduinoSerial_Continuing_to_use;
 	public static String ArduinoSerial_Ending_reset;
 	public static String ArduinoSerial_exception_while_opening_seral_port;
+	public static String ArduinoSerial_port_reappeared;
+	public static String ArduinoSerial_port_still_missing;
 
 	public static String ArduinoSerial_reset_dtr_toggle;
 	public static String ArduinoSerial_reset_failed;

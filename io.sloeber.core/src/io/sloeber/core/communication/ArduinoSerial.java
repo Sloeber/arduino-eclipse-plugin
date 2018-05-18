@@ -124,7 +124,7 @@ public class ArduinoSerial {
 		} while (newPortsCopy.isEmpty());
 
 		console.println(
-				Messages.ArduinoSerial_Comport_reset_took.replace("{ms}",Integer.toString(numTries * delayMs)));
+				Messages.ArduinoSerial_Comport_reset_took.replace("{ms}",Integer.toString(numTries * delayMs))); //$NON-NLS-1$
 		return newPortsCopy.get(0);
 
 	}
@@ -247,9 +247,9 @@ public class ArduinoSerial {
 					return newComport;
 				}
 				if (wait_for_com_Port_to_appear(comPort)) {
-					console.println("comport {port} reappeared. continuing...".replace("{port}", comPort)); //$NON-NLS-2$
+					console.println(Messages.ArduinoSerial_port_reappeared.replace("{port}", comPort));  //$NON-NLS-1$
 				}else {
-					console.println("comport {port} still not found. continuing..".replace("{port}", comPort));  //$NON-NLS-2$
+					console.println(Messages.ArduinoSerial_port_still_missing.replace("{port}", comPort));   //$NON-NLS-1$
 				}
 				
 			}
