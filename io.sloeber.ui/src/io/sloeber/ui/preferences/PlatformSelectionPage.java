@@ -2,7 +2,9 @@
 package io.sloeber.ui.preferences;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -225,7 +227,9 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						}
 						if (parentElement instanceof Platform) {
 							Collection<InstallableVersion> versions = ((Platform) parentElement).getVersions();
-							return versions.toArray(new Object[versions.size()]);
+							InstallableVersion arrayVersions[]= versions.toArray(new InstallableVersion[versions.size()]);
+							Arrays.sort(arrayVersions, Collections.reverseOrder());
+							return arrayVersions;
 						}
 
 						return null;
