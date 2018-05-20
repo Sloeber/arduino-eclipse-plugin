@@ -51,6 +51,7 @@ public class LibraryManager {
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 	private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
 	private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
+	private static final String FILE = Messages.FILE;
 
 	static private List<LibraryIndex> libraryIndices;
 	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
@@ -311,7 +312,7 @@ public class LibraryManager {
 			libraryIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
+					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}

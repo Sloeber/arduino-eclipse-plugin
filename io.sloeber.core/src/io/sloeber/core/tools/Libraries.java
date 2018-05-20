@@ -48,6 +48,7 @@ import io.sloeber.core.managers.Library;
 @SuppressWarnings("unused") 
 public class Libraries {
 	public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
+	private static final String LIB = Messages.LIB;
 
 	/**
 	 * for a given folder return all subfolders
@@ -158,7 +159,8 @@ public class Libraries {
 								Common.log(new Status(IStatus.WARNING,
 										Const.CORE_PLUGIN_ID,
 										Messages.EmptyLibFolder
-												.replace("${LIB}", curLib))); //$NON-NLS-1$
+												.replace(LIB, curLib))); 
+								Lib_root.toFile().delete();
 								break;
 							case 1 :// There should only be 1
 								ret.put(curLib, Lib_root.append(versions[0]));
@@ -174,7 +176,7 @@ public class Libraries {
 								Common.log(new Status(IStatus.WARNING,
 										Const.CORE_PLUGIN_ID,
 										Messages.MultipleVersionsOfLib
-												.replace("${LIB}", curLib))); //$NON-NLS-1$
+												.replace(LIB, curLib))); 
 
 						}
 					}
@@ -204,7 +206,7 @@ public class Libraries {
 				folderHandle.delete(true, null);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						Messages.failed_to_remove_lib, e));
+						Messages.failed_to_remove_lib.replace(LIB, CurItem), e));
 			}
 		}
 		Helpers.removeInvalidIncludeFolders(confdesc);
@@ -250,7 +252,7 @@ public class Libraries {
 						false);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						Messages.import_lib_failed, e));
+						Messages.import_lib_failed.replace(LIB, CurItem.getKey()), e));
 			}
 			// Check the libraries to see if there are "unwanted subfolders"
 			File subFolders[] = CurItem.getValue().toFile().listFiles();

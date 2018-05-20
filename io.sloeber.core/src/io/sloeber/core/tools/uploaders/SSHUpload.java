@@ -25,8 +25,13 @@ import io.sloeber.core.common.Common;
 
 public class SSHUpload implements IRealUpload {
 
-	String myHost;
+	private static final String FILE = Messages.FILE;
+	private static final String PORT =Messages.PORT;
+	private static final String HOST =Messages.HOST;
 
+
+	String myHost;
+ 
 
 	private String myUpLoadTool;
 	private IProject myProject;
@@ -65,7 +70,7 @@ public class SSHUpload implements IRealUpload {
 				scp = new SCP(session);
 				SSH ssh = new SSH(session);
 				highStream
-						.println(Messages.Upload_sending_sketch + hexFile + Messages.Upload_to + myHost);
+						.println(Messages.Upload_sending_sketch.replace(FILE, hexFile.toString()).replace(PORT, myHost));
 				scpFiles(scp, hexFile,highStream);
 				highStream.println(Messages.Upload_sketch_on_yun);
 
@@ -85,13 +90,13 @@ public class SSHUpload implements IRealUpload {
 		} catch (JSchException e) {
 			String message = e.getMessage();
 			String errormessage = new String();
-			if (Messages.Upload_auth_cancel.equals(message) || Messages.Upload_auth_fail.equals(message)) {
-				errormessage = new String(Messages.Upload_error_auth_fail) + myHost;
+			if ("Auth cancel".equals(message) || "Auth fail".equals(message)) { //$NON-NLS-1$ //$NON-NLS-2$
+				errormessage = Messages.Upload_error_auth_fail.replace(HOST, myHost);
 				// TODO add to ask if if the user wants to remove the password
 				PasswordManager.ErasePassword(myHost);
 			}
-			if (e.getMessage().contains(Messages.Upload_connection_refused)) {
-				errormessage = new String(Messages.Upload_error_connection_refused) + myHost;
+			if (e.getMessage().contains("Connection refused")) { //$NON-NLS-1$
+				errormessage = Messages.Upload_error_connection_refused.replace(HOST, myHost);
 			}
 			highStream.println(errormessage);
 			highStream.println(message);
@@ -121,7 +126,7 @@ public class SSHUpload implements IRealUpload {
 			scp.sendFile(uploadFile, "sketch.hex"); //$NON-NLS-1$
 			scp.endFolder();
 		} catch (IOException e) {
-			myHighStream.println(Messages.Upload_failed_upload + uploadFile);
+			myHighStream.println(Messages.Upload_failed_upload_file.replace(FILE, uploadFile.toString()));
 			throw (e);
 
 		} finally {

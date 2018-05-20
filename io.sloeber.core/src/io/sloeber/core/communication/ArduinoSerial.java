@@ -16,6 +16,9 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 @SuppressWarnings("unused")
 public class ArduinoSerial {
+	private static final String MS=Messages.MS;
+
+	private static final String PORT=Messages.PORT; 
 
 	private ArduinoSerial() {
 	}
@@ -39,7 +42,7 @@ public class ArduinoSerial {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_Unable_To_Open_Port + comPort, e));
+					Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT, comPort) , e));
 			return false;
 		}
 		try {
@@ -102,7 +105,7 @@ public class ArduinoSerial {
 			int newPortsCopySize = newPorts.size();
 			if ((newPortsCopy.isEmpty()) && (newPortsCopySize == prefNewPortsCopySize + 1)) {
 				console.println(Messages.ArduinoSerial_Comport_Appeared_and_disappeared);
-				console.println(Messages.ArduinoSerial_Comport_reset_took.replace("{ms}",Integer.toString( numTries * delayMs))); //$NON-NLS-1$
+				console.println(Messages.ArduinoSerial_Comport_reset_took.replace(MS,Integer.toString( numTries * delayMs))); 
 				return defaultComPort;
 			}
 			prefNewPortsCopySize = newPortsCopySize;
@@ -125,7 +128,7 @@ public class ArduinoSerial {
 		} while (newPortsCopy.isEmpty());
 
 		console.println(
-				Messages.ArduinoSerial_Comport_reset_took.replace("{ms}",Integer.toString(numTries * delayMs))); //$NON-NLS-1$
+				Messages.ArduinoSerial_Comport_reset_took.replace(MS,Integer.toString(numTries * delayMs))); 
 		return newPortsCopy.get(0);
 
 	}
@@ -234,7 +237,7 @@ public class ArduinoSerial {
 		}
 		if (use_1200bps_touch) {
 			// Get the list of the current com serial ports
-			console.println(Messages.ArduinoSerial_Using_1200bps_touch.replace("{port}", comPort)); //$NON-NLS-1$
+			console.println(Messages.ArduinoSerial_Using_1200bps_touch.replace(PORT, comPort)); 
 
 			if (!reset_Arduino_by_baud_rate(comPort, 1200, 400) ) {
 				console.println(Messages.ArduinoSerial_reset_failed);
@@ -243,18 +246,18 @@ public class ArduinoSerial {
 
 				if (bWaitForUploadPort) {
 					String newComport = wait_for_com_Port_to_appear(console, originalPorts, comPort);
-					console.println(Messages.ArduinoSerial_Using_comport.replace("{port}",  newComport)); //$NON-NLS-1$
+					console.println(Messages.ArduinoSerial_Using_comport.replace(PORT,  newComport)); 
 					console.println(Messages.ArduinoSerial_Ending_reset);
 					return newComport;
 				}
 				if (wait_for_com_Port_to_appear(comPort)) {
-					console.println(Messages.ArduinoSerial_port_reappeared.replace("{port}", comPort));  //$NON-NLS-1$
+					console.println(Messages.ArduinoSerial_port_reappeared.replace(PORT, comPort));  
 				}else {
-					console.println(Messages.ArduinoSerial_port_still_missing.replace("{port}", comPort));   //$NON-NLS-1$
+					console.println(Messages.ArduinoSerial_port_still_missing.replace(PORT, comPort));   
 				}
 				
 			}
-			console.println(Messages.ArduinoSerial_Continuing_to_use.replace("{port}", comPort)); //$NON-NLS-1$
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
@@ -266,27 +269,26 @@ public class ArduinoSerial {
 			serialPort = new Serial(comPort, 9600);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_exception_while_opening_seral_port + comPort, e));
-			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
-			console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+			String error=Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort); 
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,error, e));
+			console.println(error);
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort));
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
 		if (!serialPort.IsConnected()) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_unable_to_open_serial_port + comPort, null));
-			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
-			console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+					Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT,comPort) + comPort, null));
+			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort) );
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,comPort));
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
 
-		console.println(Messages.ArduinoSerial_23);
 		ToggleDTR(serialPort, 100);
 
 		serialPort.dispose();
-		console.println(Messages.ArduinoSerial_Continuing_to_use.replace("{port}", comPort)); //$NON-NLS-1$
+		console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
 		console.println(Messages.ArduinoSerial_Ending_reset);
 		return comPort;
 

@@ -21,6 +21,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 public class Tool {
 
 	private static final String TOOLS = "tools"; //$NON-NLS-1$
+	private static final String KEY = Messages.KEY;
 	private String name;
 	private String version;
 	private List<ToolSystem> systems;
@@ -72,7 +73,7 @@ public class Tool {
 		}
 
 		// No valid system
-		return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system.replace(KEY, this.name));
 	}
 
 	// public Properties getToolProperties() {

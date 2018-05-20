@@ -57,6 +57,8 @@ import io.sloeber.core.tools.TxtFile;
 @SuppressWarnings("unused")
 public class PackageManager {
 
+	private static final String FILE = Messages.FILE;
+	private static final String FOLDER = Messages.FOLDER;
 	protected static List<PackageIndex> packageIndices;
 	private static boolean myHasbeenLogged=false;
 	/**
@@ -209,7 +211,7 @@ public class PackageManager {
 		}
 		if (boardFiles.size() == 0) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-					Messages.Helpers_No_boards_txt_found + String.join("\n", hardwareFolders), null)); //$NON-NLS-1$
+					Messages.Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
 			return null;
 		}
 		return boardFiles.toArray(new String[boardFiles.size()]);
@@ -221,7 +223,7 @@ public class PackageManager {
 			if (a == null) {
 				if(!myHasbeenLogged) {
 				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-						Messages.Helpers_The_folder + folder + Messages.Helpers_is_empty, null));
+						Messages.Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()) , null));
 				myHasbeenLogged=true;
 				}
 				return;

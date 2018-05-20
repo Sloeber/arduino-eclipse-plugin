@@ -86,6 +86,13 @@ public class Helpers extends Common {
 
 	private static final String MENU_KEY = "menu.";
 
+	private static final String PROJECT = Messages.PROJECT;
+	private static final String CONFIG = Messages.CONFIG;
+	private static final String FILE = Messages.FILE;
+	private static final String BOARDID = Messages.BOARDID;
+	private static final String KEY = Messages.KEY;
+	private static final String FOLDER = Messages.FOLDER;
+
 	private static boolean myHasBeenLogged=false;
 
 	/**
@@ -213,7 +220,7 @@ public class Helpers extends Common {
 			createNewFolder(project, target.toString(), source);
 		} catch (CoreException e) {
 			Common.log(
-					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Create_folder_failed + target, e));
+					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Helpers_Create_folder_failed.replace(FOLDER, target.toString()), e));
 		}
 	}
 
@@ -538,10 +545,10 @@ public class Helpers extends Common {
 			}
 		} catch (FileNotFoundException e) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-					Messages.Helpers_Error_parsing + envVarFile.toString() + Messages.Helpers_File_does_not_exists, e));
+					Messages.Helpers_Error_parsing_IO_exception.replace(FILE, envVarFile.toString()), e));
 		} catch (IOException e) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-					Messages.Helpers_Error_parsing + envVarFile.toString() + Messages.Helpers_IO_exception, e));
+					Messages.Helpers_Error_File_does_not_exists.replace(FILE, envVarFile.toString()) , e));
 		}
 	}
 
@@ -568,11 +575,9 @@ public class Helpers extends Common {
 		Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
 		if (boardSectionMap == null) {
 			if (warn) {
-				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-						Messages.Helpers_The_project + confDesc.getProjectDescription().getProject().getName()
-								+ Messages.Helpers_Invalid_boards_config + confDesc.getName()
-								+ Messages.Helpers_boards_file + boardsFile.getTxtFile().toString()
-								+ Messages.Helpers_Boards_id + boardID));
+				String error=Messages.Helpers_error_boards_TXT.replace(PROJECT,  confDesc.getProjectDescription().getProject().getName()).replaceAll(CONFIG, confDesc.getName())
+						.replaceAll(FILE,  boardsFile.getTxtFile().toString()).replaceAll(BOARDID, boardID);
+				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,error));
 			}
 			return;
 		}
@@ -832,7 +837,7 @@ public class Helpers extends Common {
 			switch (recipeParts.length) {
 			case 0:
 				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1',
-						Messages.Helpers_No_command_for + recipeKey);
+						"echo no command for \"{KEY}\".".replace(KEY, recipeKey));
 				break;
 			case 1:
 				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
@@ -1012,7 +1017,7 @@ public class Helpers extends Common {
 				buildFolder.delete(true, null);
 			} catch (CoreException e) {
 				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						Messages.Helpers_delete_folder_failed + cfgDescription.getName(), e));
+						Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgDescription.getName()), e));
 			}
 		}
 
@@ -1077,7 +1082,7 @@ public class Helpers extends Common {
 		if (a == null) {
 			if(!myHasBeenLogged) {
 			Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-					Messages.Helpers_link_folder + source + Messages.Helpers_is_empty, null));
+					Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
 			myHasBeenLogged=true;
 			}
 			return;

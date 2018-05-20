@@ -16,6 +16,8 @@ import io.sloeber.core.Messages;
 
 public class ToolDependency {
 
+	private static final CharSequence NAME = Messages.NAME;
+	private static final CharSequence VERSION =Messages.VERSION;
 	private String packager;
 	private String name;
 	private String version;
@@ -53,7 +55,7 @@ public class ToolDependency {
 		Tool tool = getTool();
 		if (tool == null) {
 			return new Status(IStatus.ERROR, Activator.getId(),
-					String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
+					Messages.ToolDependency_Tool_not_found.replace(NAME, this.name).replace(VERSION, this.version));
 		}
 		return tool.install(monitor);
 	}
