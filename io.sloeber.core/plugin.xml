@@ -170,7 +170,7 @@
            </builder>
            <optionCategory
                  id="io.sloeber.core.optionCategory.includePaths"
-                 name="%optionCategory.name">
+                 name="%optionCategory.include.name">
            </optionCategory>
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
