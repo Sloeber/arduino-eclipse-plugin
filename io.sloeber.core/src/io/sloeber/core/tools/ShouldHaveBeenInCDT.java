@@ -71,6 +71,7 @@ public class ShouldHaveBeenInCDT {
 
 			Configuration cfg = new Configuration(mProj, (ToolChain) tcs,
 					ManagedBuildManager.calculateChildId(curConfDesc.ToolchainID, null), curConfDesc.configName);
+			cfg.setParallelDef(true);
 			IBuilder bld = cfg.getEditableBuilder();
 			if (bld != null) {
 				bld.setManagedBuildOn(isManagedBuild);
