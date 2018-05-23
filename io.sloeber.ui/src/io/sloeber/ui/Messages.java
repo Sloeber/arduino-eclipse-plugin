@@ -100,6 +100,7 @@ public class Messages extends NLS {
 	public static String SampleSelector_num_selected;
 
 	public static String ui_Clean_Serial_Monitor_After_Upload;
+	public static String ui_Enable_Parallel_Build_For_New_Projects;
 	public static String ArduinoUploadProjectHandler_Build_failed;
 	public static String ArduinoUploadProjectHandler_Build_failed_so_no_upload;
 	public static String ArduinoUploadProjectHandler_Multiple_projects_found;
