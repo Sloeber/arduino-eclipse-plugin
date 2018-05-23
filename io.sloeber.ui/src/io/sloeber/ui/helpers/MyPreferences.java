@@ -26,6 +26,8 @@ public class MyPreferences {
 	public static final String NODE_ARDUINO = "io.sloeber.core.ui"; //$NON-NLS-1$
 	public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor"; //$NON-NLS-1$
 	private static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
+	private static final String KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS = "Enable parallel build for new projects"; //$NON-NLS-1$
+
 	public static final boolean DEFAULT_OPEN_SERIAL_WITH_MONITOR = true;
 	// Serial monitor keys
 	private static final String KEY_SERIAL_RATE = "Serial monitor last selected rate"; //$NON-NLS-1$
@@ -177,6 +179,11 @@ public class MyPreferences {
 
 	}
 
+	public static boolean getEnableParallelBuildForNewProjects() {
+		return getGlobalBoolean(KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS, false);
+
+	}
+
 	/**
 	 * This method returns the index of the last used line ending options are CR
 	 * LF CR+LF none
@@ -212,6 +219,16 @@ public class MyPreferences {
 
 	public static String getCleanSerialMonitorAfterUploadKey() {
 		return KEY_CLEAN_MONITOR_AFTER_UPLOAD;
+	}
+
+	public static String getEnableParallelBuildForNewProjectsKey() {
+		return KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS;
+
+	}
+	
+	public static void setEnableParallelBuildForNewProjects(boolean newSetting) {
+		setGlobalValue(KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS, newSetting);
+
 	}
 
 	public static boolean getLastUsedPlotterFilter() {

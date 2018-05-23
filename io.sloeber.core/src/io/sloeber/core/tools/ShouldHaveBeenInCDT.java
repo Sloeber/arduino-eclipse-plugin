@@ -55,7 +55,7 @@ public class ShouldHaveBeenInCDT {
 	 * @throws CoreException
 	 */
 	public static ICProjectDescription setCProjectDescription(IProject project,
-			ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild, IProgressMonitor monitor)
+			ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild, boolean enableParallelBuild, IProgressMonitor monitor)
 			throws CoreException {
 
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
@@ -71,6 +71,9 @@ public class ShouldHaveBeenInCDT {
 
 			Configuration cfg = new Configuration(mProj, (ToolChain) tcs,
 					ManagedBuildManager.calculateChildId(curConfDesc.ToolchainID, null), curConfDesc.configName);
+			if (enableParallelBuild) {
+				cfg.setParallelDef(true);
+			}
 			IBuilder bld = cfg.getEditableBuilder();
 			if (bld != null) {
 				bld.setManagedBuildOn(isManagedBuild);
