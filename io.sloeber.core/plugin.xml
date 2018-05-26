@@ -15,7 +15,7 @@
 <provider
       class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
       id="io.sloeber.languageSettingsProvider"
-      name="Arduino Compiler Settings"
+      name="%provider.compoler.settings.name"
       parameter='${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"'
       prefer-non-shared="true">
 <language-scope id="org.eclipse.cdt.core.gcc"/>
@@ -59,7 +59,7 @@
             delegate="io.sloeber.core.api.LaunchConfiguration"
             id="io.sloeber.tools.arduinoLaunchConfiguration"
             modes="run, debug"
-            name="Arduino Launch"
+            name="%launchConfigurationType.arduio.name"
             public="true">
       </launchConfigurationType>
    </extension>
@@ -464,7 +464,7 @@ priority="high"/>
  </extension>
  <extension
        id="io.sloeber.core.inoToCpp"
-       name="Convert Ino to CPP files"
+       name="%builder.ino.to.cpp"
        point="org.eclipse.core.resources.builders">
     <builder
           callOnEmptyDelta="true"
