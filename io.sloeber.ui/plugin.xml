@@ -340,7 +340,7 @@
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.OpenSerialMonitorHandler"
-          description="%command.OpenSerialMonitorAction.description"
+          description="%command.openSerialMonitorAction.description"
           id="io.sloeber.actions.OpenSerialMonitorAction"
           name="%command.open.serial.monitor.label">
     </command>
@@ -361,16 +361,16 @@
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.OpenPlotterHandler"
-          description="%command.Open.Plotter.description"
+          description="%command.open.Plotter.description"
           id="io.sloeber.actions.OpenPlotterAction"
-          name="%command.Open.Plotter.label">
+          name="%command.open.Plotter.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.ReattachLibraries"
-          description="%command.ReattachLibraries.description"
+          description="%command.reattachLibraries.description"
           id="io.sloeber.actions.ReattachLibraries"
-          name="%command.ReattachLibraries.name">
+          name="%command.reattachLibraries.name">
     </command>
     <command
           categoryId="io.sloeber.commands"
@@ -442,7 +442,7 @@
           <command
                 commandId="io.sloeber.actions.OpenPlotterAction"
                 icon="icons/toolbar_plotter.png"
-                label="%command.Open.Plotter.label"
+                label="%command.open.Plotter.label"
                 style="push">
           </command>
        </toolbar>
@@ -473,7 +473,8 @@
           <command
                 commandId="io.sloeber.actions.NewSketchAction"
                 icon="icons/new.png"
-                id="NewSketchAction">
+                id="NewSketchAction"
+                tooltip="%command.new.sketch.description">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenSerialMonitorAction"
@@ -485,25 +486,29 @@
                 commandId="io.sloeber.actions.OpenPlotterAction"
                 icon="icons/toolbar_plotter.png"
                 id="OpenPlotterAction"
-                label="%command.Open.Plotter.label">
+                label="%command.open.Plotter.label"
+                tooltip="%command.open.Plotter.description">
           </command>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"
                 icon="icons/library.png"
                 id="AddLibraryAction"
-                style="push">
+                style="push"
+                tooltip="%command.AddLibraryAction.description">
           </command>
           <command
                 commandId="io.sloeber.actions.AddSourceFolderAction"
                 icon="icons/folder.png"
                 id="AddSourceFolderAction"
-                style="push">
+                style="push"
+                tooltip="%command.AddSourceFolder.description ">
           </command>
           <command
                 commandId="io.sloeber.actions.ReattachLibraries"
                 icon="icons/hammer.png"
                 id="ReattachLibrariesAction"
-                style="push">
+                style="push"
+                tooltip="%command.reattachLibraries.description">
           </command>
           <separator
                 name="io.sloeber.core.separator1"
@@ -514,7 +519,8 @@
                 icon="icons/help.png"
                 id="open.how.toweb.page"
                 label="%command.how.to.label"
-                style="push">
+                style="push"
+                tooltip="%command.how.to.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://eclipse.baeyens.it/how_to.shtml">
@@ -525,7 +531,8 @@
                 icon="icons/learn.png"
                 id="open.how.toweb.page"
                 label="%command.learn.label"
-                style="push">
+                style="push"
+                tooltip="%command.learn.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://eclipse.baeyens.it/learn.shtml">
@@ -536,7 +543,8 @@
                 icon="icons/tape.png"
                 id="open.youTube.page"
                 label="%command.videos.label"
-                style="push">
+                style="push"
+                tooltip="%command.videos.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://www.youtube.com/playlist?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF">
@@ -546,7 +554,8 @@
                 commandId="io.sloeber.core.open.link"
                 id="open.upgrade.page"
                 label="%command.upgrade.info.label"
-                style="push">
+                style="push"
+                tooltip="%command.upgrade.info.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://baeyens.it/eclipse/github_status.php?majorVersion=${MAJOR_VERSION}&amp;minorVersion=${MINOR_VERSION}&amp;microVersion=${MICRO_VERSION}&amp;qualifierVersion=${QUALIFIER_VERSION}">
@@ -560,7 +569,8 @@
                 commandId="io.sloeber.ui.actions.openPreferences"
                 icon="icons/preferences.png"
                 label="%command.preferences.label"
-                style="push">
+                style="push"
+                tooltip="%command.open.sloeber.preferences.description">
              <parameter
                    name="io.sloeber.ui.actions.openPreferences.pageId"
                    value="io.sloeber.eclipse.ArduinoPreferencePage">
