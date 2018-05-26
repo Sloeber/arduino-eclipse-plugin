@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: io.sloeber.ui.nl1 Fragment
+Bundle-Name: Sloeber ui language pack
 Bundle-SymbolicName: io.sloeber.ui.nl1;singleton:=true
 Bundle-Version: 4.2.0.qualifier
 Fragment-Host: io.sloeber.ui;bundle-version="4.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: sloeber.io

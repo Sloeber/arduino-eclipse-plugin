@@ -484,7 +484,8 @@
           <command
                 commandId="io.sloeber.actions.OpenPlotterAction"
                 icon="icons/toolbar_plotter.png"
-                id="OpenPlotterAction">
+                id="OpenPlotterAction"
+                label="%command.Open.Plotter.label">
           </command>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"
