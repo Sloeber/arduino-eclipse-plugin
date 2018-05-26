@@ -55,6 +55,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private BooleanFieldEditor useArduinoToolchainSelectionEditor;
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
+	private BooleanFieldEditor enableParallelBuildForNewProjects;
 
 	public PreferencePage() {
 		super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -181,6 +182,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.getCleanSerialMonitorAfterUploadKey(),
 				Messages.ui_Clean_Serial_Monitor_After_Upload, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.cleanSerialMonitorAfterUploadEditor);
+
+		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.getEnableParallelBuildForNewProjectsKey(),
+				Messages.ui_Enable_Parallel_Build_For_New_Projects, BooleanFieldEditor.DEFAULT, parent);
+		addField(this.enableParallelBuildForNewProjects);
 
 		createLine(parent, 4);
 		Label label = new Label(parent, SWT.LEFT);

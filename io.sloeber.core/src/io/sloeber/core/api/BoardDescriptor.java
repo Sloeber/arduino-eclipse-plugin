@@ -542,7 +542,7 @@ public class BoardDescriptor {
 
 		// Creates the .cproject file with the configurations
 		ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(projectHandle, cfgNamesAndTCIds,
-				true, monitor);
+				true, compileOptions.isParallelBuildEnabledForNewProject(), monitor);
 
 		// Add the C C++ AVR and other needed Natures to the project
 		Helpers.addTheNatures(desc);
