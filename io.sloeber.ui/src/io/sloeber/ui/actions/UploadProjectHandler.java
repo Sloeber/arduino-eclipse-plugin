@@ -25,7 +25,7 @@ class UploadJobHandler extends Job {
     IProject myBuildProject = null;
 
     public UploadJobHandler(IProject buildProject) {
-	super(Messages.ArduinoUploadProjectHandler_Upload_for_project + buildProject.getName());
+	super(Messages.arduino_upload_projecthandler_upload_for_project.replace(Messages.PROJECT, buildProject.getName()));
 	this.myBuildProject = buildProject;
     }
 
@@ -42,8 +42,8 @@ class UploadJobHandler extends Job {
 		    public void run() {
 			Shell theShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			MessageBox dialog = new MessageBox(theShell, SWT.ICON_QUESTION | SWT.OK);
-			dialog.setText(Messages.ArduinoUploadProjectHandler_Build_failed);
-			dialog.setMessage(Messages.ArduinoUploadProjectHandler_Build_failed_so_no_upload);
+			dialog.setText(Messages.arduino_upload_project_handler_build_failed);
+			dialog.setMessage(Messages.arduino_upload_project_handler_build_failed_so_no_upload);
 			dialog.open();
 		    }
 		});
@@ -75,7 +75,7 @@ public class UploadProjectHandler extends AbstractHandler {
 	switch (SelectedProjects.length) {
 	case 0:
 	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-		    Messages.Handler_No_project_found));
+		    Messages.no_project_found));
 	    break;
 	case 1:
 	    IProject project = SelectedProjects[0];
@@ -83,9 +83,9 @@ public class UploadProjectHandler extends AbstractHandler {
 	    break;
 	default:
 	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-		    Messages.ArduinoUploadProjectHandler_Multiple_projects_found
-			    + Integer.toString(SelectedProjects.length)
-			    + Messages.ArduinoUploadProjectHandler_The_Names_Are + SelectedProjects.toString()));
+		    Messages.arduino_upload_project_handler_multiple_projects_found.
+		    replace(Messages.NUMBER, Integer.toString(SelectedProjects.length) ).
+		    replace(Messages.PROJECT_LIST,  SelectedProjects.toString()) ));
 
 	}
 	return null;

@@ -479,8 +479,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				theListener.event(System.getProperty("line.separator") + Messages.serialMonitorConnectedTo + comPort //$NON-NLS-1$
-						+ Messages.serialMonitorAt + baudRate + System.getProperty("line.separator")); //$NON-NLS-1$
+				String newLine=System.getProperty("line.separator");//$NON-NLS-1$
+				theListener.event( newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) ) 
+						+ newLine); 
 				this.serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
 				return;

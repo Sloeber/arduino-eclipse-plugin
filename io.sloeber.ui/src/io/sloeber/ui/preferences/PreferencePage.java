@@ -16,10 +16,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -151,7 +151,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Dialog.applyDialogFont(parent);
 		createLine(parent, 4);
 		String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
-				{ "Yes", TRUE }, { "No", FALSE } }; //$NON-NLS-1$ //$NON-NLS-2$
+				{ Messages.yes, TRUE }, { Messages.no, FALSE } }; 
 		this.buildBeforeUploadOptionEditor = new ComboFieldEditor(MyPreferences.KEY_BUILD_BEFORE_UPLOAD_OPTION,
 				Messages.ui_build_before_upload, YesNoAskOptions, parent);
 		addField(this.buildBeforeUploadOptionEditor);
@@ -180,11 +180,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		addField(this.pragmaOnceHeaderOptionEditor);
 
 		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.getCleanSerialMonitorAfterUploadKey(),
-				Messages.ui_Clean_Serial_Monitor_After_Upload, BooleanFieldEditor.DEFAULT, parent);
+				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.cleanSerialMonitorAfterUploadEditor);
 
 		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.getEnableParallelBuildForNewProjectsKey(),
-				Messages.ui_Enable_Parallel_Build_For_New_Projects, BooleanFieldEditor.DEFAULT, parent);
+				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableParallelBuildForNewProjects);
 
 		createLine(parent, 4);

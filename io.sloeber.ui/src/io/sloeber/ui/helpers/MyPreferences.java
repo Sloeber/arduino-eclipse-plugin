@@ -65,9 +65,9 @@ public class MyPreferences {
 			@Override
 			public void run() {
 
-				MessageDialog dialog = new MessageDialog(null, Messages.buildBeforeUpload, null,
-						Messages.doYouWantToBuildBeforeUpload, MessageDialog.QUESTION,
-						new String[] { "Yes", "No", "Always", "Never" }, 0); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				MessageDialog dialog = new MessageDialog(null, Messages.build_before_upload, null,
+						Messages.do_you_want_to_build_before_upload, MessageDialog.QUESTION,
+						new String[] { Messages.yes, Messages.no, Messages.always, Messages.never }, 0);
 
 				switch (dialog.open()) {
 				case 0:

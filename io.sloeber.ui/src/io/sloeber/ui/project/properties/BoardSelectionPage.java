@@ -235,7 +235,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mControlUploadPort
 				.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
 		this.mPwdButton = new org.eclipse.swt.widgets.Button(composite, SWT.PUSH | SWT.CENTER);
-		this.mPwdButton.setText(Messages.Set_or_Remove_password);
+		this.mPwdButton.setText(Messages.set_or_remove_password);
 		this.mPwdButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {

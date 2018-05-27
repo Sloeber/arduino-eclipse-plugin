@@ -58,7 +58,7 @@ public class ImportLibraries implements IImportWizard {
 			this.mPages[0] = this.mProjectSelectionPage;
 		} else {
 
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
 		}
 	}
 

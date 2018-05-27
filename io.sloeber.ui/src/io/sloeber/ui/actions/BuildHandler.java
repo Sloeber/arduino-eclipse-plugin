@@ -30,7 +30,7 @@ class BuildJobHandler extends Job {
 	}
 
 	public BuildJobHandler(IProject buildProject) {
-		super(Messages.BuildHandler_Build_Code_of_project + buildProject.getName());
+		super(Messages.buildHandler_build_code_of_project.replace(Messages.PROJECT, buildProject.getName()));
 		this.myBuildProject = buildProject;
 	}
 
@@ -53,7 +53,7 @@ public class BuildHandler extends AbstractHandler {
 		IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 		switch (SelectedProjects.length) {
 		case 0:
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
 			break;
 		default:
 			PlatformUI.getWorkbench().saveAllEditors(false);
