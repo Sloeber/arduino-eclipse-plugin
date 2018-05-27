@@ -8,19 +8,31 @@ public class Messages extends NLS {
     public static final String PROJECT_LIST = "{PROJECTS}"; //$NON-NLS-1$
     public static final String NUMBER = "{NUMBER}"; //$NON-NLS-1$
     public static final String PROJECT = "{PROJECT}"; //$NON-NLS-1$
+    public static final String PORT = "{PORT}"; //$NON-NLS-1$
+    public static final String BAUD = "{BAUD}"; //$NON-NLS-1$
+    public static final String PLATFORM = "{PLATFORM}"; //$NON-NLS-1$
     public static final String MAINTAINER = "{MAINTAINER}"; //$NON-NLS-1$
     public static final String EMAIL = "{EMAIL}"; //$NON-NLS-1$
     public static final String URL = "{URL}"; //$NON-NLS-1$
-    public static final String PORT = "{PORT}"; //$NON-NLS-1$
-    public static final String BAUD = "{BAUD}"; //$NON-NLS-1$
-
-
-
+    
+    
     public static String always;
     public static String arduino_upload_project_handler_build_failed;
     public static String arduino_upload_project_handler_build_failed_so_no_upload;
     public static String arduino_upload_project_handler_multiple_projects_found;
     public static String arduino_upload_projecthandler_upload_for_project;
+    public static String BoardSelectionPage_arduino_board_specification;
+
+    public static String BoardSelectionPage_board;
+
+    public static String BoardSelectionPage_failed_to_find_platform;
+
+    public static String BoardSelectionPage_platform_folder;
+
+    public static String BoardSelectionPage_platform_you_want_to_use;
+
+    public static String BoardSelectionPage_upload_protocol;
+
     public static String buildHandler_build_code_of_project;
     public static String build_before_upload;
     public static String decorator_no_platform;
@@ -47,6 +59,8 @@ public class Messages extends NLS {
     public static String openSerialDialogBoxSelectTheBautRate;
     public static String openSerialDialogBoxSerialPortToConnectTo;
     public static String packageTooltip;
+
+    public static String PlatformSelectionPage_hide_third_party_url;
     public static String platformSelectionTip;
     public static String pleaseWaitForInstallerJob;
     public static String plotterViewChannel;

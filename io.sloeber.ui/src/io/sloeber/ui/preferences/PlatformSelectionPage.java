@@ -68,7 +68,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		control.setLayout(new GridLayout());
 
 		Button btnCheckButton = new Button(control, SWT.CHECK);
-		btnCheckButton.setText("Hide 3th party json files"); //$NON-NLS-1$
+		btnCheckButton.setText(Messages.PlatformSelectionPage_hide_third_party_url); 
 		btnCheckButton.setSelection(this.myHideJson);
 		btnCheckButton.addListener(SWT.Selection, new Listener() {
 
@@ -264,9 +264,9 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 							if(email==null)email=NULL; 
 							if(weburl!=null) weburlString=weburl.toString();
 						
-							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer) 
-									.replace(Messages.EMAIL, email) 
-									.replace(Messages.URL, weburlString); 
+							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer)
+									.replace(Messages.EMAIL, email)
+									.replace(Messages.URL, weburlString);
 
 						}
 						if (element instanceof Platform) {
