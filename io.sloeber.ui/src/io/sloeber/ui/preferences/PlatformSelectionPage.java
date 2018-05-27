@@ -68,7 +68,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		control.setLayout(new GridLayout());
 
 		Button btnCheckButton = new Button(control, SWT.CHECK);
-		btnCheckButton.setText("Hide 3th party json files"); //$NON-NLS-1$
+		btnCheckButton.setText(Messages.PlatformSelectionPage_hide_third_party_url); 
 		btnCheckButton.setSelection(this.myHideJson);
 		btnCheckButton.addListener(SWT.Selection, new Listener() {
 
@@ -254,18 +254,19 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 						}
 						if (element instanceof Package) {
+						    String NULL="NULL"; //$NON-NLS-1$
 							Package pkg = (Package) element;
 							String maintainer=pkg.getMaintainer();
 							String email=pkg.getEmail();
 							URL weburl=pkg.getWebsiteURL();
-							String weburlString="NULL"; //$NON-NLS-1$
-							if(maintainer==null)maintainer="NULL"; //$NON-NLS-1$
-							if(email==null)email="NULL"; //$NON-NLS-1$
+							String weburlString=NULL; 
+							if(maintainer==null)maintainer=NULL; 
+							if(email==null)email=NULL; 
 							if(weburl!=null) weburlString=weburl.toString();
 						
-							return Messages.packageTooltip.replaceAll("\\$\\{MAINTAINER}", maintainer) //$NON-NLS-1$
-									.replaceAll("\\$\\{EMAIL}", email) //$NON-NLS-1$
-									.replaceAll("\\$\\{URL}", weburlString); //$NON-NLS-1$
+							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer)
+									.replace(Messages.EMAIL, email)
+									.replace(Messages.URL, weburlString);
 
 						}
 						if (element instanceof Platform) {

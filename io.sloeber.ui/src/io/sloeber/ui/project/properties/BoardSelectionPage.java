@@ -170,8 +170,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 			if (myBoardID.getActualCoreCodePath() == null) {
 				Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-						"failed to find the platform " +myBoardID.getReferencingPlatformFile()//$NON-NLS-1$
-								+ "\nDid you deinstall the platform?\nDid you import a project and did not install the platform?")); //$NON-NLS-1$
+						Messages.BoardSelectionPage_failed_to_find_platform.replace(Messages.PLATFORM ,myBoardID.getReferencingPlatformFile().toString())));  
 			}
 		}
 		ICConfigurationDescription confdesc = getConfdesc();
@@ -195,8 +194,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 
 		// create a combo to select the boards
-		createLabel(composite, this.ncol, "The platform you want to use"); //$NON-NLS-1$
-		new Label(composite, SWT.NONE).setText("Platform folder:"); //$NON-NLS-1$
+		createLabel(composite, this.ncol, Messages.BoardSelectionPage_platform_you_want_to_use); 
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_platform_folder); 
 
 		this.mControlBoardsTxtFile = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
@@ -210,9 +209,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		// -------
 
 		// ------
-		createLabel(composite, this.ncol, "Your Arduino board specifications"); //$NON-NLS-1$
+		createLabel(composite, this.ncol, Messages.BoardSelectionPage_arduino_board_specification); 
 
-		new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_board); 
 		this.mcontrolBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
@@ -221,7 +220,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mcontrolBoardName.setEnabled(false);
 
 		// ------
-		new Label(composite, SWT.NONE).setText("Upload Protocol:"); //$NON-NLS-1$
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_upload_protocol); 
 		this.mControlUploadProtocol = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
@@ -235,7 +234,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mControlUploadPort
 				.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
 		this.mPwdButton = new org.eclipse.swt.widgets.Button(composite, SWT.PUSH | SWT.CENTER);
-		this.mPwdButton.setText(Messages.Set_or_Remove_password);
+		this.mPwdButton.setText(Messages.set_or_remove_password);
 		this.mPwdButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {

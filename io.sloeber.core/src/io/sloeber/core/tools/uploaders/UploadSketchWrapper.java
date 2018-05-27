@@ -92,7 +92,7 @@ public class UploadSketchWrapper {
 		uploadjob.setUser(true);
 		uploadjob.schedule();
 
-		Job job = new Job(Messages.Upload_PluginStartInitiator) {
+		Job job = new Job("pluginUploadStartInitiator") { //$NON-NLS-1$
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
@@ -130,6 +130,9 @@ public class UploadSketchWrapper {
 	 *
 	 */
 	private class UploadJobWrapper extends Job {
+		private static final String PROJECT = Messages.PROJECT;
+		private static final String UPLOADER = Messages.UPLOADER;
+		private static final String FILE = Messages.FILE;
 		IProject myProject;
 		ICConfigurationDescription myConfDes;
 		String myNAmeTag;
@@ -151,7 +154,7 @@ public class UploadSketchWrapper {
 		protected IStatus run(IProgressMonitor monitor) {
 			IStatus ret = Status.OK_STATUS;
 			MessageConsole console = Helpers.findConsole(
-					Messages.Upload_console + '[' + myProject.getName() + ']');
+					Messages.Upload_console_name.replace(PROJECT, myProject.getName() ));
 			console.clearConsole();
 			console.activate();
 			try (MessageConsoleStream highLevelStream = console
@@ -183,12 +186,14 @@ public class UploadSketchWrapper {
 				});
 
 				highLevelStream.println(Messages.Upload_starting);
-
+				IFile hexFile = myProject
+						.getFile(myConfDes.getBuildSetting().getBuilderCWD()
+								.append(myProject.getName() + ".hex")); //$NON-NLS-1$
 				boolean WeStoppedTheComPort = false;
 				try {
 					String message = Messages.Upload_uploading
-							.replace("{project}", myProject.getName()) //$NON-NLS-1$
-							.replace("{uploader}", myNAmeTag) + ' '; //$NON-NLS-1$
+							.replace(PROJECT, myProject.getName()) 
+							.replace(UPLOADER, myNAmeTag) ; 
 					highLevelStream.println(message);
 					monitor.beginTask(message, 2);
 					try {
@@ -200,20 +205,18 @@ public class UploadSketchWrapper {
 						Common.log(ret);
 					}
 
-					IFile hexFile = myProject
-							.getFile(myConfDes.getBuildSetting().getBuilderCWD()
-									.append(myProject.getName() + ".hex")); //$NON-NLS-1$
+
 					if (!myUploader.uploadUsingPreferences(hexFile,
 							myBoardDescriptor, monitor, highLevelStream,
 							outStream, errStream)) {
-						highLevelStream.println(Messages.Upload_failed_upload);
-						ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-								Messages.Upload_failed_upload);
+						String error=Messages.Upload_failed_upload_file.replace(FILE, hexFile.toString());
+						highLevelStream.println(error);
+						ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,error);
 					}
 
 				} catch (Exception e) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Upload_failed_upload, e));
+					String error=Messages.Upload_failed_upload_file.replace(FILE, hexFile.toString());
+					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,error, e));
 				} finally {
 					try {
 						if (WeStoppedTheComPort) {

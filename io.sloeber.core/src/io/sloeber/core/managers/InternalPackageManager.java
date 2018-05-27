@@ -51,6 +51,8 @@ import io.sloeber.core.tools.MyMultiStatus;
 
 public class InternalPackageManager extends PackageManager {
 
+	private static final String  FILE = Messages.FILE;
+	private static final String FOLDER = Messages.FOLDER;;
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {
@@ -357,7 +359,7 @@ public class InternalPackageManager extends PackageManager {
 				myCopy(dl, archivePath.toFile(), true);
 			}
 		} catch (IOException e) {
-			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download + pURL, e);
+			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL), e);
 		}
 		return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archivePath.toString(), pMonitor);
 	}
@@ -404,7 +406,7 @@ public class InternalPackageManager extends PackageManager {
 		// (because creating a file in a folder alters the folder's timestamp)
 		Map<File, Long> foldersTimestamps = new HashMap<>();
 
-		String pathPrefix = ""; //$NON-NLS-1$
+		String pathPrefix = new String(); 
 
 		Map<File, File> hardLinks = new HashMap<>();
 		Map<File, Integer> hardLinksMode = new HashMap<>();
@@ -467,7 +469,7 @@ public class InternalPackageManager extends PackageManager {
 				while (localstripPath > 0) {
 					slash = name.indexOf("/", slash); //$NON-NLS-1$
 					if (slash == -1) {
-						throw new IOException(Messages.Manager_no_single_root_folder);
+						throw new IOException(Messages.Manager_archiver_eror_single_root_folder_required);
 					}
 					slash++;
 					localstripPath--;
@@ -477,8 +479,8 @@ public class InternalPackageManager extends PackageManager {
 
 			// Strip the common path prefix when requested
 			if (!name.startsWith(pathPrefix)) {
-				throw new IOException(Messages.Manager_no_single_root_folder_while_file + name
-						+ Messages.Manager_is_outside + pathPrefix);
+				throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name).replace(FOLDER, pathPrefix));
+				
 			}
 			name = name.substring(pathPrefix.length());
 			if (name.isEmpty()) {
@@ -489,8 +491,7 @@ public class InternalPackageManager extends PackageManager {
 			File outputLinkedFile = null;
 			if (isLink && linkName != null) {
 				if (!linkName.startsWith(pathPrefix)) {
-					throw new IOException(Messages.Manager_no_single_root_folder_while_file + linkName
-							+ Messages.Manager_is_outside + pathPrefix);
+					throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name).replace(FOLDER, pathPrefix));
 				}
 				linkName = linkName.substring(pathPrefix.length());
 				outputLinkedFile = new File(destFolder, linkName);
@@ -499,8 +500,7 @@ public class InternalPackageManager extends PackageManager {
 				// Symbolic links are referenced with relative paths
 				outputLinkedFile = new File(linkName);
 				if (outputLinkedFile.isAbsolute()) {
-					System.err.println(Messages.Manager_Warning_file + outputFile
-							+ Messages.Manager_links_to_absolute_path + outputLinkedFile);
+					System.err.println(Messages.Manager_archive_error_symbolic_link_to_absolute_path.replace(FILE, outputFile.toString()).replace(FOLDER, outputLinkedFile.toString()));
 					System.err.println();
 				}
 			}
@@ -509,7 +509,7 @@ public class InternalPackageManager extends PackageManager {
 			if (isDirectory) {
 				if (outputFile.isFile() && !overwrite) {
 					throw new IOException(
-							Messages.Manager_Cant_create_folder + outputFile + Messages.Manager_File_exists);
+							Messages.Manager_Cant_create_folder_exists.replace(FILE, outputFile.getPath()) );
 				}
 			} else {
 				// - isLink
@@ -517,14 +517,14 @@ public class InternalPackageManager extends PackageManager {
 				// - anything else
 				if (outputFile.exists() && !overwrite) {
 					throw new IOException(
-							Messages.Manager_Cant_extract_file + outputFile + Messages.Manager_File_already_exists);
+							Messages.Manager_Cant_extract_file_exist.replace(FILE, outputFile.getPath()));
 				}
 			}
 
 			// Extract the entry
 			if (isDirectory) {
 				if (!outputFile.exists() && !outputFile.mkdirs()) {
-					throw new IOException(Messages.Manager_Cant_create_folder + outputFile);
+					throw new IOException(Messages.Manager_Cant_create_folder.replace(FILE, outputFile.getPath()));
 				}
 				foldersTimestamps.put(outputFile, modifiedTime);
 			} else if (isLink) {
@@ -645,7 +645,7 @@ public class InternalPackageManager extends PackageManager {
 			while (leftToWrite > 0) {
 				int length = in.read(buffer);
 				if (length <= 0) {
-					throw new IOException(Messages.Manager_Failed_to_extract + outputFile.getAbsolutePath());
+					throw new IOException(Messages.Manager_Failed_to_extract.replace(FILE, outputFile.getAbsolutePath()));
 				}
 				fos.write(buffer, 0, length);
 				leftToWrite -= length;

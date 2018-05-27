@@ -55,10 +55,10 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 				String boardName = boardDescriptor.getBoardName();
 				String portName = boardDescriptor.getActualUploadPort();
 				if (portName.isEmpty()) {
-					portName = Messages.Decorator_no_port; 
+					portName = Messages.decorator_no_port; 
 				}
 				if (boardName.isEmpty()) {
-					boardName = Messages.Decorator_no_platform; 
+					boardName = Messages.decorator_no_platform; 
 				}
 				return text + ' ' + boardName + ' ' + ':' + portName;
 			}

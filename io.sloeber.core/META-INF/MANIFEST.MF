@@ -4,7 +4,7 @@ Bundle-Name: Arduino eclipse plugin
 Bundle-SymbolicName: io.sloeber.core;singleton:=true
 Bundle-Version: 4.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: Jan Baeyens
+Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
@@ -30,3 +30,4 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
 Export-Package: io.sloeber.core.api,
  io.sloeber.core.common;x-friends:="io.sloeber.tests",
  io.sloeber.core.tools;x-friends:="io.sloeber.tests"
+Automatic-Module-Name: io.sloeber.core

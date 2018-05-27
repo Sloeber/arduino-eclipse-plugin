@@ -87,13 +87,13 @@ public class CompileProperties extends AbstractCPropertyTab {
 ;
 
 		createLine(this.usercomp, 2);
-		this.myCAndCppCommand = makeOptionField(Messages.ui_Apend_c_cpp, Messages.ui_append_c_cpp_text);
+		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);
 		this.myCppCommand = makeOptionField(Messages.ui_append_cpp, Messages.ui_append_cpp_text);
 		this.myCCommand = makeOptionField(Messages.ui_append_c, Messages.ui_append_c_text);
-		this.myAssemblyCommand = makeOptionField(Messages.ui_Apend_assembly, Messages.ui_append_assembly_text);
-		this.myArchiveCommand = makeOptionField(Messages.ui_Apend_archive, Messages.ui_append_archive_text);
-		this.myLinkCommand = makeOptionField(Messages.ui_Apend_link, Messages.ui_append_link_text);
-		this.myAllCommand = makeOptionField(Messages.ui_Apend_all, Messages.ui_append_all_text);
+		this.myAssemblyCommand = makeOptionField(Messages.ui_append_assembly, Messages.ui_append_assembly_text);
+		this.myArchiveCommand = makeOptionField(Messages.ui_append_archive, Messages.ui_append_archive_text);
+		this.myLinkCommand = makeOptionField(Messages.ui_append_link, Messages.ui_append_link_text);
+		this.myAllCommand = makeOptionField(Messages.ui_append_all, Messages.ui_append_all_text);
 
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;

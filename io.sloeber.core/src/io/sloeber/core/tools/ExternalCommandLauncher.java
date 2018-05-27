@@ -57,6 +57,7 @@ import io.sloeber.core.common.Const;
  */
 @SuppressWarnings("unused") 
 public class ExternalCommandLauncher {
+	private static final String COMMAND=Messages.COMMAND;
 
 	/** Lock for internal synchronization */
 	protected final Object myRunLock;
@@ -247,8 +248,7 @@ public class ExternalCommandLauncher {
 
 						if (highStream != null) {
 							// Write an Abort Message to the console (if active)
-							highStream.println(
-									commandname +' '+ Messages.command_aborted);
+							highStream.println( Messages.command_aborted.replace(COMMAND, commandname)); 
 						}
 						return -1;
 					}
@@ -257,12 +257,12 @@ public class ExternalCommandLauncher {
 
 			// external process finished normally
 			monitor.worked(95);
-			highStream.println(commandname + ' ' + Messages.command_finished);
+			highStream.println(  Messages.command_finished.replace(COMMAND, commandname)); 
 
 		} catch (InterruptedException e) {
 			// This thread was interrupted from outside
 			// consider this to be a failure of the external programm
-			highStream.println(commandname + ' ' + Messages.command_interupted);
+			highStream.println( Messages.command_interupted.replace(COMMAND, commandname));
 			return -1;
 		}
 		// if we make it to here, the process has run without any Exceptions

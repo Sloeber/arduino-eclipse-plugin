@@ -58,7 +58,7 @@ public class Import_Source_Folder implements IImportWizard {
 			this.mPages[0] = this.mFolderSelectionPage;
 			this.mFolderSelectionPage.setImportProject(SelectedProjects[0]);
 		} else {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Handler_No_project_found));
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
 		}
 	}
 

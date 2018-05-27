@@ -4,7 +4,7 @@ Bundle-Name: Sloeber Tests
 Bundle-SymbolicName: io.sloeber.tests
 Bundle-Version: 4.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: Jan Baeyens
+Bundle-Vendor: Sloeber.io
 Require-Bundle: io.sloeber.core,
  org.eclipse.cdt.core,
  org.eclipse.core.runtime,
@@ -16,3 +16,4 @@ Require-Bundle: io.sloeber.core,
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor
+Automatic-Module-Name: io.sloeber.tests
