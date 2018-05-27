@@ -124,7 +124,36 @@ public class Messages extends NLS {
 	public static String ui_pragma_once_headers;
 
 	public static String ui_use_arduino_toolchain_selection;
-
+    public static String MainTab_browse;
+    public static String MainTab_Main;
+    public static String MainTab_Project;
+    public static String MainTab_ProjectDoesNotExist;
+    public static String MainTab_ProjectSelection;
+    public static String MainTab_ProjectWrongType;
+    public static String MainTab_SpecifyProject;
+    public static String openSerialDialogBoxSelectTheBautRate;
+    public static String openSerialDialogBoxSerialPortToConnectTo;
+    public static String openSerialDialogBoxDtr;
+    public static String plotterListenerBufferOverflow;
+    public static String plotterViewChannel;
+    public static String plotterViewConnectedTo;
+    public static String plotterViewDisconnectedFrom;
+    public static String plotterViewSerialMessageMissed;
+    public static String serialListenerErrorInputPart1;
+    public static String serialListenerErrorInputPart2;
+    public static String serialListenerPlotterSkippingData;
+    public static String serialMonitorAddConnectionToSeralMonitor;
+    public static String serialMonitorAt;
+    public static String serialMonitorScrollLock;
+    public static String serialMonitorClear;
+    public static String serialMonitorConnectedTo;
+    public static String serialMonitorDisconnectedFrom;
+    public static String serialMonitorFilterPloter;
+    public static String serialMonitorNoInput;
+    public static String serialMonitorNoMoreSerialPortsSupported;
+    public static String serialMonitorRemoveSerialPortFromMonitor;
+    public static String serialMonitorReset;
+    public static String serialMonitorSend;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

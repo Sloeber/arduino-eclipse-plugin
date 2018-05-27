@@ -51,6 +51,7 @@ import io.sloeber.core.api.ISerialUser;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.Activator;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.monitor.internal.SerialListener;
 

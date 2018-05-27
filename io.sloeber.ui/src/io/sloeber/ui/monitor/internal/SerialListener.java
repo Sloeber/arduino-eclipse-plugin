@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.core.api.MessageConsumer;
 import io.sloeber.ui.Activator;
-import io.sloeber.ui.monitor.views.Messages;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.monitor.views.SerialMonitor;
 @SuppressWarnings({"unused"})
 public class SerialListener implements MessageConsumer {

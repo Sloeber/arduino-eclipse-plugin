@@ -30,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 
 import io.sloeber.core.api.Serial;
 import io.sloeber.ui.Activator;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.monitor.internal.PlotterListener;
 @SuppressWarnings({"unused"})

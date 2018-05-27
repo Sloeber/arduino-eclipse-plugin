@@ -27,6 +27,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import io.sloeber.core.api.LaunchConfiguration;
 import io.sloeber.core.api.Sketch;
+import io.sloeber.ui.Messages;
 
 // SWTFactory is a restricted class. Nontheless it is very usefull.
 @SuppressWarnings("restriction")
