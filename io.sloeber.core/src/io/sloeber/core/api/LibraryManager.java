@@ -287,7 +287,7 @@ public class LibraryManager {
 		if (libindex == null)
 			return;
 
-		for (String library : Defaults.INSTALLED_LIBRARIES) {
+		for (String library : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
 			Library toInstalLib = libindex.getLatestLibrary(library);
 			if (toInstalLib != null) {
 				toInstalLib.install(monitor);
@@ -575,5 +575,6 @@ public class LibraryManager {
 
 		return examples;
 	}
+
 
 }

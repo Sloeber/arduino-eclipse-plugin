@@ -87,7 +87,7 @@ public class InternalPackageManager extends PackageManager {
 
 				Package pkg = getPackageIndices().get(0).getPackages().get(0);
 				if (pkg != null) {
-					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.PLATFORM_NAME, false);
+					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.DEFAULT_INSTALL_PLATFORM_NAME, false);
 					if (platform == null) {
 						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
 						pkg.getLatestPlatforms().toArray(platformList);

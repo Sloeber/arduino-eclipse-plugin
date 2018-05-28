@@ -9,8 +9,8 @@ import io.sloeber.core.common.Const;
 public class Defaults {
 	public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip";
 	public static final String EXAMPLES_URL = "https://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE;
-	public static final String PLATFORM_NAME = "Arduino AVR Boards";
-	public static final String[] INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
+	public static final String DEFAULT_INSTALL_PLATFORM_NAME = "Arduino AVR Boards";
+	public static final String[] DEFAULT_INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 			"LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
 	public static final String DEFAULT = "Default";
 	private static final String LIBRARY_PATH_SUFFIX = "libraries";
