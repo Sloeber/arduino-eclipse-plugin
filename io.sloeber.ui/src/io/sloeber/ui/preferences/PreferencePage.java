@@ -179,11 +179,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 				BooleanFieldEditor.DEFAULT, parent);
 		addField(this.pragmaOnceHeaderOptionEditor);
 
-		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.getCleanSerialMonitorAfterUploadKey(),
+		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.KEY_CLEAN_MONITOR_AFTER_UPLOAD,
 				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.cleanSerialMonitorAfterUploadEditor);
 
-		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.getEnableParallelBuildForNewProjectsKey(),
+		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
 				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableParallelBuildForNewProjects);
 
