@@ -97,7 +97,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// The string to send to the serial port
 	protected Text sendString;
 	// This control contains the output of the serial port
-	protected StyledText monitorOutput;
+	static protected StyledText monitorOutput;
 	// Port used when doing actions
 	protected ComboViewer serialPorts;
 	// Add CR? LF? CR+LF? Nothing?
@@ -161,7 +161,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = myScope.getInt(MY_FLAG_MONITOR, 0) + 1;
 					myScope.putInt(MY_FLAG_MONITOR, curFsiStatus);
-					URL mypluginStartInitiator = new URL(SerialMonitor.this.uri.replaceAll(" ", "") //$NON-NLS-1$ //$NON-NLS-2$
+					URL mypluginStartInitiator = new URL(SerialMonitor.this.uri.replaceAll(" ", new String()) //$NON-NLS-1$ 
 							+ Integer.toString(curFsiStatus));
 					mypluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
@@ -253,7 +253,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			public void widgetSelected(SelectionEvent e) {
 				int index = lineTerminator.getCombo().getSelectionIndex();
 				GetSelectedSerial().write(sendString.getText(), SerialManager.getLineEnding(index));
-				sendString.setText(""); //$NON-NLS-1$
+				sendString.setText(new String()); 
 				sendString.setFocus();
 			}
 
@@ -542,7 +542,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						SerialMonitor.this.monitorOutput.setText(""); //$NON-NLS-1$
+						monitorOutput.setText(new String()); 
 					}
 				});
 
@@ -551,7 +551,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		}
 	}
 
-	public List<String> getMonitorContent() {
+	public static List<String> getMonitorContent() {
 		int numLines =monitorOutput.getContent().getLineCount();
 		List<String>ret=new ArrayList<>();
 		for(int curLine=1;curLine<numLines;curLine++) {
@@ -559,7 +559,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		}
 		return ret;
 	}
-	public void clearMonitor() {
+	public static void clearMonitor() {
 		monitorOutput.setText(new String());
 	}
 }
