@@ -96,7 +96,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	// The string to send to the serial port
 	protected Text sendString;
-	// This control contains the output of the serial port
+	//  control contains the output of the serial port
 	static protected StyledText monitorOutput;
 	// Port used when doing actions
 	protected ComboViewer serialPorts;
@@ -113,7 +113,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// link to color registry
 	private ColorRegistry colorRegistry = null;
 
-	private Composite parent;
+	static private Composite parent;
 
 	/*
 	 * ************** Below are variables needed for good housekeeping
@@ -124,7 +124,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	protected Map<Serial, SerialListener> serialConnections;
 
 	private static final String MY_FLAG_MONITOR = "FmStatus"; //$NON-NLS-1$
-	String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
+	static final String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
 
 	private static SerialMonitor instance = null;
 
@@ -161,7 +161,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = myScope.getInt(MY_FLAG_MONITOR, 0) + 1;
 					myScope.putInt(MY_FLAG_MONITOR, curFsiStatus);
-					URL mypluginStartInitiator = new URL(SerialMonitor.this.uri.replaceAll(" ", new String()) //$NON-NLS-1$ 
+					URL mypluginStartInitiator = new URL(uri.replace(" ", new String()) //$NON-NLS-1$ 
 							+ Integer.toString(curFsiStatus));
 					mypluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
@@ -349,7 +349,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(SerialMonitor.this.parent.getShell());
+				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());
 				comportSelector.create();
 				if (comportSelector.open() == Window.OK) {
 					connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate());
