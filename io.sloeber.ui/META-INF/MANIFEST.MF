@@ -19,6 +19,7 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.core.api,
+ org.apache.commons.io;version="2.2.0",
  org.apache.commons.lang,
  org.eclipse.nebula.widgets.oscilloscope.multichannel,
  org.eclipse.ui.dialogs

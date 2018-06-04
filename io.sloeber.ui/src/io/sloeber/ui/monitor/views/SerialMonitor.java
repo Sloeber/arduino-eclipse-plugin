@@ -1,5 +1,6 @@
 package io.sloeber.ui.monitor.views;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -7,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -32,6 +38,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -53,6 +61,7 @@ import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
+import io.sloeber.ui.listeners.ProjectExplorerListener;
 import io.sloeber.ui.monitor.internal.SerialListener;
 
 /**
@@ -292,6 +301,43 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		FontRegistry fontRegistry = currentTheme.getFontRegistry();
 		monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
 		monitorOutput.setText(Messages.serialMonitorNoInput);
+		monitorOutput.addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseUp(MouseEvent e) {
+             // ignore
+            }
+            
+            @Override
+            public void mouseDown(MouseEvent e) {
+                // If right button get selected text save it and start external tool
+                if (e.button==3) {
+                    String selectedText=monitorOutput.getSelectionText();
+                    if(!selectedText.isEmpty()) {
+                        IProject selectedProject = ProjectExplorerListener.getSelectedProject();
+                        if (selectedProject!=null) {
+                            
+                            try {
+                                ICConfigurationDescription activeCfg=CoreModel.getDefault().getProjectDescription(selectedProject).getActiveConfiguration();
+                                String activeConfigName= activeCfg.getName();
+                                IPath buildFolder=selectedProject.findMember(activeConfigName).getLocation();
+                                File dumpFile=buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
+                                FileUtils.writeStringToFile(dumpFile, selectedText);
+                            } catch (Exception e1) {
+                                // ignore
+                                e1.printStackTrace();
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                // ignore
+            }
+        });
 
 		parent.getShell().setDefaultButton(send);
 		makeActions();

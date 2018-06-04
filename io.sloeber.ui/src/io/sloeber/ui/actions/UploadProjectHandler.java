@@ -71,22 +71,9 @@ public class UploadProjectHandler extends AbstractHandler {
 	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.pleaseWaitForInstallerJob, null));
 	    return null;
 	}
-	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
-	switch (SelectedProjects.length) {
-	case 0:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-		    Messages.no_project_found));
-	    break;
-	case 1:
-	    IProject project = SelectedProjects[0];
-	    uploadProject(project);
-	    break;
-	default:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-		    Messages.arduino_upload_project_handler_multiple_projects_found.
-		    replace(Messages.NUMBER, Integer.toString(SelectedProjects.length) ).
-		    replace(Messages.PROJECT_LIST,  SelectedProjects.toString()) ));
-
+	IProject selectedProject = ProjectExplorerListener.getSelectedProject();
+	if (selectedProject!=null) {
+	    uploadProject(selectedProject);
 	}
 	return null;
     }
