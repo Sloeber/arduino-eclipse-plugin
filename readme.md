@@ -29,9 +29,9 @@ Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.ap
 ### Build from the command line from source for your os and the default eclipse instance
 
 ```bash
-git clone https://github.com/jantje/arduino-eclipse-plugin
+git clone https://github.com/sloeber/arduino-eclipse-plugin
 cd arduino-eclipse-plugin
-mvn clean -Dtest=RegressionTest verify
+mvn clean verify -Dmaven.tests.skip=true
 ```
 
 ### Running the build from source IDE/Plugin
@@ -63,7 +63,8 @@ Mac OSX and Linux
 
 You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediately)
 
-* oxygen
+* photo (builds against the photon repositories (4.8))
+* oxygen (builds against the oxygen repositories (4.7))
 * neon (builds against the neon repositories (4.6))
 * luna (builds agains the luna repositories (4.4))
 * mars (builds agains the mars repositories (4.5))
@@ -75,16 +76,17 @@ You can control the maven build with the following profiles: (this list may not 
 
 ##### Examples
     mvn verify -Plinux32 -Dtest=RegressionTest (builds for neon and linux 32 bits)
-    mvn verify -Pwin32,mars,linux32 -Dtest=RegressionTest
+        mvn verify -Pwin32,oxygen,linux32 -Dmaven.test.skip=true
 
-To build for neon and the platform you are running on:
+To build for photon and the platform you are running on:
 
-    mvn clean verify -Dtest=RegressionTest
+    mvn clean verify -Dmaven.test.skip=true
 
-### what is this -Dtest=RegressionTest about
-     mvn builds and run tests automagically. However many junit tests in Sloeber are very extensive and will always have failures.
-     By adding -Dtest=RegressionTest anly the regression test is run and this test should be successfull.
-
+### what is this -Dmaven.test.skip=true about
+mvn builds and run tests automagically. However many junit tests in Sloeber are very extensive and will always have failures because you don't have the boards attached. By adding -Dmaven.test.skip=true no tests will be executed.
+     
+     Try: -Dtest=RegressionTest to only run regression tests
+     
 ### Setting up a repository
 
 If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/io.sloeber.product/target/repository```
@@ -96,7 +98,7 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
  * Make changes
- * Run ```mvn clean verify -Dtest=RegressionTest``` to build
+ * Run ```mvn clean verify -Dmaven.test.skip=true``` to build
  * Open the self-contained IDE and verify your fix
  * (Anything special about Travis CI & builds?)
 
