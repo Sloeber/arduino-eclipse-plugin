@@ -29,6 +29,7 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.8
 -Dorg.eclipse.update.reconcile=false
+-Dlog4j.configuration=log4j/log4j.xml
 -Xms40m
 -Xmx512m
 --add-modules=ALL-SYSTEM
@@ -338,17 +339,18 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.platform" installMode="root"/>
       <feature id="org.eclipse.rcp" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
-      <feature id="org.eclipse.cdt.testsrunner.feature"/>
-      <feature id="org.eclipse.equinox.core.sdk"/>
-      <feature id="org.eclipse.rse.local"/>
-      <feature id="org.eclipse.mylyn.tasks.ide"/>
-      <feature id="org.eclipse.rse.dstore"/>
-      <feature id="org.eclipse.rse.ftp"/>
-      <feature id="org.eclipse.rse.telnet"/>
-      <feature id="org.eclipse.rse.ssh"/>
-      <feature id="org.eclipse.rse.core"/>
-      <feature id="org.eclipse.cdt.native"/>
-      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature"/>
+      <feature id="org.eclipse.cdt.testsrunner.feature" installMode="root"/>
+      <feature id="org.eclipse.equinox.core.sdk" installMode="root"/>
+      <feature id="org.eclipse.rse.local" installMode="root"/>
+      <feature id="org.eclipse.mylyn.tasks.ide" installMode="root"/>
+      <feature id="org.eclipse.rse.dstore" installMode="root"/>
+      <feature id="org.eclipse.rse.ftp" installMode="root"/>
+      <feature id="org.eclipse.rse.telnet" installMode="root"/>
+      <feature id="org.eclipse.rse.ssh" installMode="root"/>
+      <feature id="org.eclipse.rse.core" installMode="root"/>
+      <feature id="org.eclipse.cdt.native" installMode="root"/>
+      <feature id="org.eclipse.tips.feature" installMode="root"/>
+      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature" installMode="root"/>
    </features>
 
    <configurations>

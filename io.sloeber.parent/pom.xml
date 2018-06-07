@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
+	<groupId>sloeber</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
 	<version>4.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>0.24.0</tycho.version>
+		<tycho.version>1.2.0</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
@@ -437,7 +437,7 @@
 				<platform-version-name>oxygen</platform-version-name>
 			</properties>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 
 			<repositories>
@@ -462,20 +462,22 @@
 				<platform-version-name>photon</platform-version-name>
 			</properties>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 
 			<repositories>
 				<repository>
 					<id>platform_photon</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.8</url>
+<!-- 					<url>http://download.eclipse.org/eclipse/updates/4.8</url> -->
+					<url>http://download.eclipse.org/eclipse/updates/4.8-I-builds</url>
 				</repository>
 
 				<repository>
 					<id>release-train_photon</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/photon</url>
+<!-- 					<url>http://download.eclipse.org/releases/photon</url> -->
+					<url>http://download.eclipse.org/staging/photon/</url>
 				</repository>
 
 			</repositories>

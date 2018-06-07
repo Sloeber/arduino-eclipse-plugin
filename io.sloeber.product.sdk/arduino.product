@@ -29,6 +29,7 @@ https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </programArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.8
 -Dorg.eclipse.update.reconcile=false
+-Dlog4j.configuration=log4j/log4j.xml
 -Xms40m
 -Xmx512m
 --add-modules=ALL-SYSTEM
@@ -356,6 +357,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rcp.source" installMode="root"/>
       <feature id="org.eclipse.pde" installMode="root"/>
       <feature id="org.eclipse.pde.source" installMode="root"/>
+      <feature id="org.eclipse.tips.feature" installMode="root"/>
    </features>
 
    <configurations>
