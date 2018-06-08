@@ -470,7 +470,7 @@
 					<id>platform_photon</id>
 					<layout>p2</layout>
 <!-- 					<url>http://download.eclipse.org/eclipse/updates/4.8</url> -->
-					<url>http://download.eclipse.org/eclipse/updates/4.8-I-builds</url>
+					<url>http://download.eclipse.org/eclipse/updates/4.8-I-builds/I20180607-1630/</url>
 				</repository>
 
 				<repository>
