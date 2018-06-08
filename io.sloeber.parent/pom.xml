@@ -437,7 +437,7 @@
 				<platform-version-name>oxygen</platform-version-name>
 			</properties>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 
 			<repositories>
@@ -462,7 +462,7 @@
 				<platform-version-name>photon</platform-version-name>
 			</properties>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 
 			<repositories>
