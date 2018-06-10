@@ -86,7 +86,6 @@ public class Activator extends AbstractUIPlugin {
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
 		installPath.toFile().mkdirs();
 		IPath downloadPath = ConfigurationPreferences.getInstallationPathDownload();
-		System.out.println("arduinoPlugin folders created");
 		downloadPath.toFile().mkdirs();
 		testKnownIssues();
 		initializeImportantVariables();
