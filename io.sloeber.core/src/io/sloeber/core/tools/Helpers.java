@@ -934,11 +934,39 @@ public class Helpers extends Common {
 		Collections.sort(objcopyCommand);
 		setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", StringUtil.join(objcopyCommand, "\n\t"));
 
+		//handle the hooks
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PRE.LINK","A.RECIPE.HOOKS.LINKING.PRELINK.XX.PATTERN",false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.POST.LINK","A.RECIPE.HOOKS.LINKING.POSTLINK.XX.PATTERN",true);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PREBUILD","A.RECIPE.HOOKS.PREBUILD.XX.PATTERN",false);
+
 	}
 
 
 
-	/**
+    private static void setHookBuildEnvironmentVariable(IContributedEnvironment contribEnv,
+            ICConfigurationDescription confDesc, String varName, String hookName, boolean post) {
+        String envVarString = new String();
+        String postSeparator = "}\n\t";
+        String preSeparator = "${";
+        if (post) {
+            postSeparator = "${";
+            preSeparator = "}\n\t";
+        }
+        for (int numDigits = 1; numDigits <= 2; numDigits++) {
+            int counter = 1;
+            String hookVarName = hookName.replace("XX",
+                    String.format("%0" + Integer.toString(numDigits) + "d", new Integer(counter)));
+            while (!getBuildEnvironmentVariable(confDesc, hookVarName, "", true).isEmpty()) {
+                envVarString = envVarString + preSeparator + hookVarName + postSeparator;
+                hookVarName = hookName.replace("XX",
+                        String.format("%0" + Integer.toString(numDigits) + "d", new Integer(++counter)));
+            }
+            if (!envVarString.isEmpty()) {
+                setBuildEnvironmentVariable(contribEnv, confDesc, varName, envVarString);
+            }
+        }
+    }
+    /**
 	 * When parsing boards.txt and platform.txt some processing needs to be done to
 	 * get "acceptable environment variable values" This method does the parsing
 	 * {xx} is replaced with ${XX} if to uppercase is true {xx} is replaced with

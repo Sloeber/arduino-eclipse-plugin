@@ -342,7 +342,7 @@
            <tool
                  announcement="%tool.Arduino.combiner.announcement"
                  command="${A.RECIPE.C.COMBINE.PATTERN}"
-                 commandLinePattern="${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3} ${JANTJE.EXTRA.ALL} ${JANTJE.EXTRA.LINK}"
+                 commandLinePattern="${A.JANTJE.PRE.LINK}${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3} ${JANTJE.EXTRA.ALL} ${JANTJE.EXTRA.LINK}${A.JANTJE.POST.LINK}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
                  name="%tool.combiner.name"

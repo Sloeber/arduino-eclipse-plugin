@@ -1132,6 +1132,18 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// IConfiguration config = info.getDefaultConfiguration();
 		// Assemble the information needed to generate the targets
 		String prebuildStep = config.getPrebuildStep();
+		//JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt prebuild command if needed
+		ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
+        String sketchPrebuild= io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.PREBUILD", new String(), false);
+        if (!sketchPrebuild.isEmpty()) {
+            String separator = new String();
+            if (!prebuildStep.isEmpty()) {
+                prebuildStep = prebuildStep + "\n\t" + sketchPrebuild;
+            } else {
+                prebuildStep = sketchPrebuild;
+            }
+		}
+		//end off JABA issue927 
 		try {
 			// try to resolve the build macros in the prebuild step
 			prebuildStep = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(prebuildStep, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
