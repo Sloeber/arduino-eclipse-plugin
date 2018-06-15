@@ -1798,6 +1798,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	protected void addFragmentMakefileEntriesForSource(LinkedHashMap<String, String> buildVarToRuleStringMap, StringBuffer ruleBuffer, IFolder folder, String relativePath, IResource resource, IPath sourceLocation, IResourceInfo rcInfo, String varName, boolean generatedSource) {
 		// Determine which tool, if any, builds files with this extension
 		String ext = sourceLocation.getFileExtension();
+		//jaba ignore .ino files
+		if("ino".equalsIgnoreCase(ext)||"pde".equalsIgnoreCase(ext))return;
+		//end jaba ignore .ino files
 		ITool tool = null;
 		// TODO: remove
 		// IResourceConfiguration resConfig = null;
