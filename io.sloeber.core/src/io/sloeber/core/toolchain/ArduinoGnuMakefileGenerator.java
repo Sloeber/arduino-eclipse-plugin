@@ -2394,7 +2394,23 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			}
 			// buffer.append(TAB).append(AT).append(escapedEcho(buildCmd));
 			// buffer.append(TAB).append(AT).append(buildCmd);
-			buffer.append(TAB).append(buildCmd);
+			//JABA add sketch.prebuild and postbouild if needed
+			if("sloeber.ino".equals(fileName)) {
+			    ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
+			    String sketchPrebuild=io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.SKETCH.PREBUILD", new String(), true);
+			            String sketchPostBuild=io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.SKETCH.POSTBUILD", new String(), true);
+			            if(!sketchPrebuild.isEmpty()) {
+			                buffer.append(TAB).append(sketchPrebuild);
+			            }
+			    buffer.append(TAB).append(buildCmd).append(NEWLINE);
+                if(!sketchPostBuild.isEmpty()) {
+                    buffer.append(TAB).append(sketchPostBuild);
+                }
+			}else {
+			  buffer.append(TAB).append(buildCmd);
+			}
+			//end JABA add sketch.prebuild and postbouild if needed
+			
 			// Determine if there are any dependencies to calculate
 			if (doDepGen) {
 				// Get the dependency rule out of the generator

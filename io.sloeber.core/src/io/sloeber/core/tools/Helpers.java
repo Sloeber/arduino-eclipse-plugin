@@ -938,6 +938,9 @@ public class Helpers extends Common {
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PRE.LINK","A.RECIPE.HOOKS.LINKING.PRELINK.XX.PATTERN",false);
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.POST.LINK","A.RECIPE.HOOKS.LINKING.POSTLINK.XX.PATTERN",true);
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PREBUILD","A.RECIPE.HOOKS.PREBUILD.XX.PATTERN",false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.PREBUILD","A.RECIPE.HOOKS.SKETCH.PREBUILD.XX.PATTERN",false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD","A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN",false);
+		
 
 	}
 
