@@ -21,14 +21,13 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({ "nls", "unused" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
-    private static int mCounter = 0;
     private CodeDescriptor myCodeDescriptor;
     private String myName;
     private Examples myExample;
     private static int myBuildCounter = 0;
-    private static int totalFails = 0;
+    private static int myTotalFails = 0;
     private static int maxFails = 50;
-    private static int skipAtStart = 0;
+    private static int mySkipAtStart = 0;
 
     public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String name, CodeDescriptor codeDescriptor,
             Examples example) {
@@ -78,14 +77,11 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         // There are only a number of issues you can handle
         // best is to focus on the first ones and then rerun starting with the
         // failures
-        if (!board.isExampleSupported(myExample)) {
-            return;
-        }
-        Assume.assumeTrue("Skipping first " + skipAtStart + " tests", myBuildCounter++ >= skipAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", totalFails < maxFails);
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         if (!Shared.BuildAndVerify(myBuildCounter, board.getBoardDescriptor(), myCodeDescriptor, null)) {
-            totalFails++;
+            myTotalFails++;
         }
     }
 
