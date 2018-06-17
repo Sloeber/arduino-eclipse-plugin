@@ -18,22 +18,20 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings({ "nls", "unused" })
+@SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     private CodeDescriptor myCodeDescriptor;
-    private String myName;
     private Examples myExample;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
-    public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String name, CodeDescriptor codeDescriptor,
+    public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest( CodeDescriptor codeDescriptor,
             Examples example) {
 
         myCodeDescriptor = codeDescriptor;
-        myName = name;
         myExample = example;
     }
 
@@ -54,7 +52,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
                 paths.add(examplePath);
                 CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-                Object[] theData = new Object[] { "Example:" + fqn, codeDescriptor, example };
+                Object[] theData = new Object[] {  codeDescriptor, example };
                 examples.add(theData);
             }
         }
@@ -79,7 +77,11 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         // failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-
+        //because we run all examples on all boards we need to filter incompatible combinations
+        //like serial examples on gemma
+        if (!board.isExampleSupported(myExample)) {
+            return;
+        }
         if (!Shared.BuildAndVerify(myBuildCounter, board.getBoardDescriptor(), myCodeDescriptor, null)) {
             myTotalFails++;
         }
