@@ -41,7 +41,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class Shared {
 	public final static String	ADAFRUIT_BOARDS_URL	= "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String	ESP8266_BOARDS_URL	= "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
-	private static int			mBuildCounter		= 0;
+
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
@@ -85,17 +85,33 @@ public class Shared {
 		return new Path(new String());
 	}
 
-	public static void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+	/**
+	 * Convenience method to call BuildAndVerify with default project name and null as compile options
+	 * @param boardDescriptor
+	 * @param codeDescriptor
+	 * @param compileOptions can be null
+	 * @return
+	 */
+	public static boolean BuildAndVerify( int buildCounter, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
+	  String projectName = String.format("%03d_", new Integer(buildCounter)) + boardDescriptor.getBoardID();
+	  CompileOptions localCompileOptions=compileOptions;
+	  if(compileOptions==null) {
+	      localCompileOptions=new CompileOptions(null);
+	  }
+	  return BuildAndVerify( projectName,  boardDescriptor,  codeDescriptor, localCompileOptions);
+	}
+	public static boolean BuildAndVerify(String projectName, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%03d_", new Integer(mBuildCounter++)) + boardid.getBoardID();
+		
 		try {
-			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+		    compileOptions.setEnableParallelBuild(true);
+			theTestProject = boardDescriptor.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
 			waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Failed to create the project:" + projectName);
-			return;
+			return false;
 		}
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -104,17 +120,20 @@ public class Shared {
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (hasBuildErrors(theTestProject)) {
 					fail("Failed to compile the project:" + projectName + " build errors");
+					return false;
 				}
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
-			fail("Failed to compile the project:" + boardid.getBoardName() + " exception");
+			fail("Failed to compile the project:" + boardDescriptor.getBoardName() + " exception");
+			return false;
 		}
 		try {
-			theTestProject.delete(false, true, null);
+			theTestProject.delete(true, true, null);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	/*
