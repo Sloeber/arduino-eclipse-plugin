@@ -25,7 +25,7 @@ public class CompileOptions {
 	private String my_Link_CompileOptions = new String();
 	private String my_All_CompileOptions = new String();
 
-	private boolean myEnableParallelBuildForNewProject;
+	private boolean myEnableParallelBuild;
 
 
 	private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.COMPILER.WARNING_FLAGS"; //$NON-NLS-1$
@@ -96,12 +96,12 @@ public class CompileOptions {
 		this.myWarningLevel = new Boolean(myWarningLevel);
 	}
 	
-	public boolean isParallelBuildEnabledForNewProject() {
-		return myEnableParallelBuildForNewProject;
+	public boolean isParallelBuildEnabled() {
+		return myEnableParallelBuild;
 	}
 	
-	public void setEnableParallelBuildForNewProject(boolean myEnableParallelBuildForNewProject) {
-		this.myEnableParallelBuildForNewProject = myEnableParallelBuildForNewProject;
+	public void setEnableParallelBuild(boolean parrallelBuild) {
+		this.myEnableParallelBuild = parrallelBuild;
 	}
 
 	public boolean isAlternativeSizeCommand() {

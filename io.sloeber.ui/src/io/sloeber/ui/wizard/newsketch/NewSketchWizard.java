@@ -123,7 +123,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
 		try {
 			CompileOptions compileOptions = new CompileOptions(null);
-			compileOptions.setEnableParallelBuildForNewProject(MyPreferences.getEnableParallelBuildForNewProjects());
+			compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
 			this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
 					(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null,
 					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, compileOptions,
