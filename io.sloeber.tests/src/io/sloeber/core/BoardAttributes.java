@@ -1,7 +1,7 @@
 package io.sloeber.core;
 
 public class BoardAttributes {
-	public boolean serial = true;
+	public boolean serial = false;
 	public boolean serial1 = false;
 	public boolean keyboard = false;
 	public boolean flightSim = false;
@@ -9,6 +9,7 @@ public class BoardAttributes {
 	public boolean midi = false;
 	public boolean mouse = false;
 	public boolean wire1 = false;
+	public boolean rawHID = false;
 	/*
 	 * Only a very rara selection of boards supports input_pulldown as pin mode
 	 */
@@ -29,6 +30,7 @@ public class BoardAttributes {
 	public boolean compatibleWithExampleRequirements(BoardAttributes example) {
 		boolean ret = !worksOutOfTheBox;
 		ret = ret && matches(example.serial, serial);
+		ret = ret && matches(example.rawHID, rawHID);
 		ret = ret && matches(example.serial1, serial1);
 		ret = ret && matches(example.keyboard, keyboard);
 		ret = ret && matches(example.flightSim, flightSim);
@@ -58,9 +60,10 @@ public class BoardAttributes {
 	 * This method adds two attributes together.
 	 * The result is more restrictive than the 2 inputs
 	 */
-	public BoardAttributes and(BoardAttributes or) {
+	public BoardAttributes or(BoardAttributes or) {
 		BoardAttributes ret = new BoardAttributes();
 		ret.serial = serial || or.serial;
+		ret.rawHID = rawHID || or.rawHID;
 		ret.serial1 = serial1 || or.serial1;
 		ret.keyboard = keyboard || or.keyboard;
 		ret.flightSim = flightSim || or.flightSim;

@@ -69,7 +69,10 @@ public class Libraries {
 				//uses a define that is not defined
 				"DcDccNanoController",
 				//requires Paul Stoffregens time lib and Sloeber takes arduino time lib
-				"DS3232RTC"
+				"DS3232RTC",
+				//Cloud4RPi.cpp:179:5: error: 'DynamicJsonBuffer' was not declared in this scope
+				"cloud4rpi-esp-arduino"
+
 				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}

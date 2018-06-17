@@ -125,6 +125,9 @@ public class Teensy extends MCUBoard {
 			if (attribs.midi) {
 				ret.put("usb", "serialmidiaudio");
 			}
+	         if (attribs.rawHID) {
+	                ret.put("usb", "rawhid");
+	            }
 		}
 		return ret;
 	}

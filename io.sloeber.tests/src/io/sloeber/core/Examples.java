@@ -38,7 +38,8 @@ public class Examples {
 		myRequiredBoardAttributes.worksOutOfTheBox = failingExamples().contains(myFQN);
 		myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
 		myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
-		myRequiredBoardAttributes = myRequiredBoardAttributes.and(Libraries.getRequiredBoardAttributes(getLibName()));
+		myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
+		myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibName()));
 	}
 
 	private void getLibNameFromPath() {
@@ -69,7 +70,7 @@ public class Examples {
 
 	private static LinkedList<String> examplesUsingMidi() {
 		LinkedList<String> myUsesMidiExampleList = new LinkedList<>();
-		myUsesMidiExampleList.add("Example/Teensy/USB_FlightSim/ThrottleServo");
+		//myUsesMidiExampleList.add("Example/Teensy/USB_FlightSim/ThrottleServo");
 		return myUsesMidiExampleList;
 	}
 
