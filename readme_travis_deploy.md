@@ -15,7 +15,7 @@ Github integrates well with Travis CI and at many points there are links/images 
 
 There are two kinds of Travis CI builds performed:
  * If it is a pull request, then we do a mvn verify
- * If it is a commit on the master (i.e. a merged pull request or any direct commit by Jantje), then we do a mvn deploy
+ * If it is a commit on the master (i.e. a merged pull request or any direct commit), then we do a mvn deploy
 
 ### Verify Pull Requests
 Maven verify does a build (but does not send outputs out of Travis). It checks the build excutes and packaging succeeds (It does not deploy because it is not secure to make the secure travis tokens required available to a pull request). A status code will fail if there are issues.
@@ -24,8 +24,6 @@ Maven verify does a build (but does not send outputs out of Travis). It checks t
 Maven deploy builds and then uploads the outputs to the Sonatype Nexus staging platform.  A status code will fail if there are issues.
 
 _This means that after every change on the master branch we will have a built set of targets that can be tested._
-
-The deploy staging (currently) goes to brodykenrick's Nexus OSS account.
 
 Deployment produces two things:
 1) Support for installing the plugin into an existing Eclipse -- An "update site" of the releases and snapshots
@@ -50,7 +48,7 @@ See .travis.yml for the details of how this is implemented.
 
 This uses a Travis CI account jantje has linked to his github user name and authorised with a private token. It is automatically triggered on specific commits that github reports to Travis CI about.
 
-Jantje's Travis CI is at: https://travis-ci.org/Sloeber/arduino-eclipse-plugin
+Sloeber Travis CI is at: https://travis-ci.org/Sloeber/arduino-eclipse-plugin
 
 
 ## Nexus Sonatype Deployment
@@ -60,18 +58,15 @@ For deployment we use a free-to-OSS Nexus setup from Sonatype -- https://oss.son
 Deployment is taken care of by tycho/maven after some configuration in the POM.xml files. Essentially pointing a few key variables to the appropriate Nexus repository details and executing _'mvn deploy'_.
 
 ### Nexus Sonatype OSS Configuration
-
-Currently the setup uses the Nexus account created by brodykenrick. Later we will likely move to one controlled by jantje for consistency.
-
-The Nexus repo (groupId) is hardcoded for the project as com.github.brodykenrick.arduino-eclipse-plugin in the POM.XML. The groupid is hardcoded many places (in all the POM.xml) files as using a varaible produces warnings.
+The Nexus repo (groupId) is hardcoded for the project as io.sloeber.arduino-eclipse-plugin in the POM.XML. The groupid is hardcoded many places (in all the POM.xml) files as using a varaible produces warnings.
 
 See settings.xml for the enviroment variables used in the deployment (and release) process.
 
 They are (check settings.xml in case these docs aren't up to date):
- * CI_NEXUS_USERNAME -- The sonatype OSS account for the Nexus repo (currently for brodykenrick)
+ * CI_NEXUS_USERNAME -- The sonatype OSS account for the Nexus repo
  * CI_NEXUS_OAUTH2_TOKEN
- * CI_GPG_PASSPHRASE -- The output artifacts are signed with GPG (currently for brodykenrick)
- * CI_GITHUB_REPOUSERNAME -- This is the github account used for updating the source when doing a release (i.e. jantje)
+ * CI_GPG_PASSPHRASE -- The output artifacts are signed with GPG
+ * CI_GITHUB_REPOUSERNAME -- This is the github account used for updating the source when doing a release
 
 See .travis.yml for the setting of these environment variables in Travis CI -- usernames and passes and tokens used (many of which are "travis" encrypted against the github repository).
 
