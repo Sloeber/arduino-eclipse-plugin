@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.Path;
+
 @SuppressWarnings("nls")
 public class Libraries {
 
@@ -77,7 +79,8 @@ public class Libraries {
 		return Arrays.asList(skipLibs).contains(libName);
 	}
 
-	public static BoardAttributes getRequiredBoardAttributes(String libName) {
+	public static BoardAttributes getRequiredBoardAttributes(String longLibName) {
+	    String libName=new Path(longLibName).segment(1);
 		BoardAttributes ret = new BoardAttributes();
 		// ret.serial = serial && andd.serial;
 		// ret.serial1 = serial1 && andd.serial1;
@@ -89,7 +92,7 @@ public class Libraries {
 		// ret.wire1 = wire1 && andd.wire1;
 		// ret.inputPullDown = inputPullDown && andd.inputPullDown;
 		// ret.teensy = teensy && andd.teensy;
-		ret.worksOutOfTheBox = doNotUseThisLib(libName);
+		ret.worksOutOfTheBox =! doNotUseThisLib(libName);
 		ret.mo_mcu = mo_mcu(libName);
 		ret.esp8266_mcu = esp8266_mcu(libName);
 		ret.boardID = getRequiredBoard(libName);
@@ -147,6 +150,8 @@ public class Libraries {
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
 		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
+		runLibOnBoard.put("teensy", new String[] { "ACAN" });
+		
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (Arrays.asList(curEntry.getValue()).contains(libName)) {
 				return curEntry.getKey();

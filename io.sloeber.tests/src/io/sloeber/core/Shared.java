@@ -120,6 +120,7 @@ public class Shared {
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (hasBuildErrors(theTestProject)) {
 					fail("Failed to compile the project:" + projectName + " build errors");
+					theTestProject.close(null);
 					return false;
 				}
 			}

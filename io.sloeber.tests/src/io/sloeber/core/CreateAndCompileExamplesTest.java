@@ -1,7 +1,5 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,12 +8,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,7 +19,6 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.Adafruit;
@@ -35,16 +29,17 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamplesTest {
-	private static final boolean reinstall_boards_and_examples = true;
-	private static int mCounter = 0;
+	private static final boolean reinstall_boards_and_examples = false;
 	private CodeDescriptor myCodeDescriptor;
-	private BoardDescriptor myBoardid;
-	private static int totalFails = 0;
-	private static int maxFails = 40;
+	private BoardDescriptor myBoardDescriptor;
+    private static int myBuildCounter = 0;
+    private static int myTotalFails = 0;
+    private static int maxFails = 200;
+    private static int mySkipAtStart = 0;
 	private String myName;
 
-	public CreateAndCompileExamplesTest(String name, BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
-		this.myBoardid = boardid;
+	public CreateAndCompileExamplesTest(String name, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
+		this.myBoardDescriptor = boardDescriptor;
 		this.myCodeDescriptor = codeDescriptor;
 		this.myName = name;
 	}
@@ -89,12 +84,15 @@ public class CreateAndCompileExamplesTest {
 				// ignore error
 			}
 			Examples example=new Examples(fqn,libName,curexample.getValue());
-			// with the current amount of examples only do one
-			BoardDescriptor curBoard =Examples.pickBestBoard(example,myBoards).getBoardDescriptor();
-				if (curBoard!=null) {
-					Object[] theData = new Object[] { fqn.trim(), curBoard, codeDescriptor };
-					examples.add(theData);
-				}
+            // with the current amount of examples only do one
+            MCUBoard board = Examples.pickBestBoard(example, myBoards);
+            if (board != null) {
+                BoardDescriptor curBoard = board.getBoardDescriptor();
+                if (curBoard != null) {
+                    Object[] theData = new Object[] { fqn.trim(), curBoard, codeDescriptor };
+                    examples.add(theData);
+                }
+            }
 		}
 
 		return examples;
@@ -129,68 +127,69 @@ public class CreateAndCompileExamplesTest {
 
 	@Test
 	public void testExamples() {
-		// Stop after X fails because
-		// the fails stays open in eclipse and it becomes really slow
-		// There are only a number of issues you can handle
-		// best is to focus on the first ones and then rerun starting with the
-		// failures
-		if (totalFails < maxFails) {
-			BuildAndVerify(this.myBoardid, this.myCodeDescriptor);
-		} else {
-			fail("To many fails. Stopping test");
-		}
+        // Stop after X fails because
+        // the fails stays open in eclipse and it becomes really slow
+        // There are only a number of issues you can handle
+        // best is to focus on the first ones and then rerun starting with the
+        // failures
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        String projectName = String.format("%05d_%s", new Integer(myBuildCounter++), this.myName);
+        if (!Shared.BuildAndVerify(projectName, myBoardDescriptor, myCodeDescriptor,  new CompileOptions(null))) {
+            myTotalFails++;
+        }
 
 	}
-
-	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
-
-		IProject theTestProject = null;
-
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%s", new Integer(mCounter++), this.myName);
-		try {
-
-			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
-					codeDescriptor, new CompileOptions(null), monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			totalFails++;
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				// try again because the libraries may not yet been added
-				Shared.waitForAllJobsToFinish(); // for the indexer
-				try {
-					Thread.sleep(3000);// seen sometimes the libs were still not
-										// added
-				} catch (InterruptedException e) {
-					// ignore
-				}
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (Shared.hasBuildErrors(theTestProject)) {
-					// give up
-					totalFails++;
-					fail("Failed to compile the project:" + projectName + " build errors");
-				} else {
-					theTestProject.delete(true, null);
-				}
-			} else {
-				theTestProject.delete(true, null);
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			totalFails++;
-			try {
-				theTestProject.close(null);
-			} catch ( CoreException e1) {
-				//fully ignore
-			}
-			fail("Failed to compile the project:" + projectName + " exception");
-		}
-	}
+//
+//	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
+//
+//		IProject theTestProject = null;
+//
+//		NullProgressMonitor monitor = new NullProgressMonitor();
+//		
+//		try {
+//
+//			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
+//					codeDescriptor, new CompileOptions(null), monitor);
+//			Shared.waitForAllJobsToFinish(); // for the indexer
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			totalFails++;
+//			fail("Failed to create the project:" + projectName);
+//			return;
+//		}
+//		try {
+//			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+//			if (Shared.hasBuildErrors(theTestProject)) {
+//				// try again because the libraries may not yet been added
+//				Shared.waitForAllJobsToFinish(); // for the indexer
+//				try {
+//					Thread.sleep(3000);// seen sometimes the libs were still not
+//										// added
+//				} catch (InterruptedException e) {
+//					// ignore
+//				}
+//				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+//				if (Shared.hasBuildErrors(theTestProject)) {
+//					// give up
+//					totalFails++;
+//					fail("Failed to compile the project:" + projectName + " build errors");
+//				} else {
+//					theTestProject.delete(true, null);
+//				}
+//			} else {
+//				theTestProject.delete(true, null);
+//			}
+//		} catch (CoreException e) {
+//			e.printStackTrace();
+//			totalFails++;
+//			try {
+//				theTestProject.close(null);
+//			} catch ( CoreException e1) {
+//				//fully ignore
+//			}
+//			fail("Failed to compile the project:" + projectName + " exception");
+//		}
+//	}
 
 }

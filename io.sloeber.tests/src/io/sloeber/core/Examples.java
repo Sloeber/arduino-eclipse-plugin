@@ -35,7 +35,7 @@ public class Examples {
 		myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(myFQN);
 		myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
 		myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
-		myRequiredBoardAttributes.worksOutOfTheBox = failingExamples().contains(myFQN);
+		myRequiredBoardAttributes.worksOutOfTheBox = !failingExamples().contains(myFQN);
 		myRequiredBoardAttributes.boardID = getRequiredBoardID(myFQN);
 		myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
 		myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
@@ -344,6 +344,11 @@ public class Examples {
 		ret.add("Library/CRC_Simula_Arduino_IDE_Library/Simula_BehaviorTree");
 		//empty sketch??
 		ret.add("Library/DFW/ProvisionController");
+		// error: 'mapSensor' was not declared in this scope
+		ret.add("Library/AD_Sensors/ConstrainAnalogSensor");
+		// error: 'sensor' was not declared in this scope
+		ret.add("Library/AD_Sensors/MapAndConstrainAnalogSensor");
+
 		return ret;
 	}
 
@@ -359,7 +364,7 @@ public class Examples {
 			return null;
 		}
 
-		if (example.getRequiredBoardAttributes().worksOutOfTheBox) {
+		if (!example.getRequiredBoardAttributes().worksOutOfTheBox) {
 			/*
 			 * This example does not build out of the box
 			 */
