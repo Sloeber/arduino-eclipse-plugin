@@ -31,13 +31,13 @@ Deployment produces two things:
 1) Support for installing the plugin into an existing Eclipse -- An "update site" of the releases and snapshots
 2) Support for downloading the total package (Eclipse + plugin + perspective etc) -- Just links to Binaries
 
-The artifacts can be seen at http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/
+The artifacts can be seen at http://oss.sonatype.org/content/repositories/snapshots/io/sloeber/arduino-eclipse-plugin/
 
 #### Deploy "Product"s
-The snapshot all-in-one product packages go to : http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.product (for example http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.product/1.0.0-SNAPSHOT/)
+The snapshot all-in-one product packages go to : http://oss.sonatype.org/content/repositories/snapshots/io/sloeber/arduino-eclipse-plugin/it.baeyens.arduino.product (for example http://oss.sonatype.org/content/repositories/snapshots/io/sloeber/arduino-eclipse-plugin/it.baeyens.arduino.product/1.0.0-SNAPSHOT/)
 
 #### Deploy "Update Site"
-The snapshot update site goes to : http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/ (for example http://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/1.0.0-SNAPSHOT/)
+The snapshot update site goes to : http://oss.sonatype.org/content/repositories/snapshots/io/sloeber/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/ (for example http://oss.sonatype.org/content/repositories/snapshots/io/sloeber/arduino-eclipse-plugin/it.baeyens.arduino.updatesite/1.0.0-SNAPSHOT/)
 
 
 #### Deployment Data lifecycle
@@ -50,7 +50,7 @@ See .travis.yml for the details of how this is implemented.
 
 This uses a Travis CI account jantje has linked to his github user name and authorised with a private token. It is automatically triggered on specific commits that github reports to Travis CI about.
 
-Jantje's Travis CI is at: https://travis-ci.org/jantje/arduino-eclipse-plugin
+Jantje's Travis CI is at: https://travis-ci.org/Sloeber/arduino-eclipse-plugin
 
 
 ## Nexus Sonatype Deployment
