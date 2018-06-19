@@ -66,7 +66,6 @@ public class Messages extends NLS {
 	public static String Helpers_Error_parsing_IO_exception;
 	public static String Helpers_Error_The_folder_is_empty;
 	public static String Helpers_No_boards_txt_found;
-	public static String Helpers_ProblemInProgrammerFie;
 	public static String Helpers_tool_reference_missing;
 	public static String import_lib_failed;
 	public static String Manager_archive_error_root_folder_name_mismatch;
