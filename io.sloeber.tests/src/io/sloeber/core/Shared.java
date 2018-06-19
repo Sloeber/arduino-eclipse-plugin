@@ -98,7 +98,7 @@ public class Shared {
 	public static boolean BuildAndVerify( int buildCounter, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
 	    String projectName = String.format("%03d_", new Integer(buildCounter)) + boardDescriptor.getBoardID();
 	    if(codeDescriptor.getExampleName()!=null) {
-	        projectName= String.format("%03d_%s_%s", new Integer(buildCounter),codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
+	        projectName= String.format("%05d_%s_%s", new Integer(buildCounter),codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
 	   }
 	  CompileOptions localCompileOptions=compileOptions;
 	  if(compileOptions==null) {

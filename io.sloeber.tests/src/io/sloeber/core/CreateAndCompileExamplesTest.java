@@ -18,7 +18,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.Adafruit;
@@ -134,8 +133,8 @@ public class CreateAndCompileExamplesTest {
         // failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        String projectName = String.format("%05d_%s", new Integer(myBuildCounter++), this.myName);
-        if (!Shared.BuildAndVerify(projectName, myBoardDescriptor, myCodeDescriptor,  new CompileOptions(null))) {
+       // String projectName = String.format("%05d_%s", new Integer(myBuildCounter++), this.myName);
+        if (!Shared.BuildAndVerify( myBuildCounter++,myBoardDescriptor, myCodeDescriptor)) {
             myTotalFails++;
         }
 
