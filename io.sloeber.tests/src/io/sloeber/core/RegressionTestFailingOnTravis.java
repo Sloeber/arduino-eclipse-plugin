@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.SerialManager;
 
@@ -56,6 +57,6 @@ public class RegressionTestFailingOnTravis {
 			fail("redirect Json ");
 			return;
 		}
-		Shared.BuildAndVerify(boardid,CodeDescriptor.createDefaultIno());
+		Shared.BuildAndVerify("redirect_json",boardid,CodeDescriptor.createDefaultIno(),new CompileOptions(null));
 	}
 }

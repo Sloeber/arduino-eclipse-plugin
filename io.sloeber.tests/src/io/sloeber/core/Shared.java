@@ -41,6 +41,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class Shared {
 	public final static String	ADAFRUIT_BOARDS_URL	= "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	public final static String	ESP8266_BOARDS_URL	= "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+	public static boolean deleteProjects=true;
 
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
@@ -136,7 +137,12 @@ public class Shared {
 			return false;
 		}
 		try {
+		    if(deleteProjects) {
 			theTestProject.delete(true, true, null);
+		    }
+		    else {
+		        theTestProject.close(null);
+		    }
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
