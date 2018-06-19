@@ -85,6 +85,9 @@ public class Shared {
 		return new Path(new String());
 	}
 
+	public static boolean BuildAndVerify( int buildCounter, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
+	    return BuildAndVerify(  buildCounter,  boardDescriptor,  codeDescriptor, null) ;
+	}
 	/**
 	 * Convenience method to call BuildAndVerify with default project name and null as compile options
 	 * @param boardDescriptor
@@ -93,7 +96,10 @@ public class Shared {
 	 * @return
 	 */
 	public static boolean BuildAndVerify( int buildCounter, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
-	  String projectName = String.format("%03d_", new Integer(buildCounter)) + boardDescriptor.getBoardID();
+	    String projectName = String.format("%03d_", new Integer(buildCounter)) + boardDescriptor.getBoardID();
+	    if(codeDescriptor.getExampleName()!=null) {
+	        projectName= String.format("%03d_%s_%s", new Integer(buildCounter),codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
+	   }
 	  CompileOptions localCompileOptions=compileOptions;
 	  if(compileOptions==null) {
 	      localCompileOptions=new CompileOptions(null);
