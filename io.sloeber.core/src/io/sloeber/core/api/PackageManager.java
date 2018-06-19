@@ -665,7 +665,7 @@ public class PackageManager {
 			packageIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
+					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
