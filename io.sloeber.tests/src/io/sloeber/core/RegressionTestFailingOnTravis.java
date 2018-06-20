@@ -15,6 +15,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.SerialManager;
+import io.sloeber.providers.Arduino;
 
 @SuppressWarnings("nls")
 public class RegressionTestFailingOnTravis {
@@ -47,7 +48,7 @@ public class RegressionTestFailingOnTravis {
 	@Test
 	public void redirectedJson() {
 		//this board references to arduino avr so install that one to
-		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+	    Arduino.installLatestAVRBoards();
 		PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");

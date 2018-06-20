@@ -19,6 +19,7 @@ public class Arduino extends MCUBoard {
 	private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
 	private static final String NFR52PlatformName = "Arduino NRF52 Boards";
 	private static final String intelPlatformName = "Intel Curie Boards";
+    private static final String jsonFileName ="package_index.json";
 
 	public static MCUBoard gemma() {
 		MCUBoard ret = new Arduino(providerArduino, AVRPlatformName, "gemma");
@@ -155,8 +156,9 @@ public class Arduino extends MCUBoard {
 		return arduino_101;
 	}
 
+
 	private Arduino(String providerName, String platformName, String boardName) {
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor("package_index.json", providerName, platformName,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, providerName, platformName,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -221,5 +223,12 @@ public class Arduino extends MCUBoard {
 
 		return ret;
 	}
+	public static void installLatestAVRBoards() {
+	    PackageManager.installLatestPlatform(jsonFileName,providerArduino, AVRPlatformName);
+	}
+
+    public static void installLatestSamDBoards() {
+        PackageManager.installLatestPlatform(jsonFileName,providerArduino, SAMDPlatformName);   
+    }
 
 }

@@ -21,6 +21,7 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.SerialManager;
+import io.sloeber.providers.Arduino;
 
 @SuppressWarnings("nls")
 public class RegressionTest {
@@ -108,7 +109,7 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void issue687() throws Exception {
-		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -143,7 +144,7 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void are_jantjes_options_taken_into_account() throws Exception {
-		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -186,7 +187,7 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void are_defines_before_includes_taken_into_account() throws Exception {
-		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -223,7 +224,7 @@ public class RegressionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void is_extern_C_taken_into_account() throws Exception {
-		PackageManager.installLatestPlatform("package_index.json", "arduino", "Arduino AVR Boards");
+	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);

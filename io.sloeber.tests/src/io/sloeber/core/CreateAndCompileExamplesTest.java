@@ -25,7 +25,7 @@ import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings({"nls","unused"})
+@SuppressWarnings({"nls"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
@@ -139,56 +139,5 @@ public class CreateAndCompileExamplesTest {
         }
 
 	}
-//
-//	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
-//
-//		IProject theTestProject = null;
-//
-//		NullProgressMonitor monitor = new NullProgressMonitor();
-//		
-//		try {
-//
-//			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
-//					codeDescriptor, new CompileOptions(null), monitor);
-//			Shared.waitForAllJobsToFinish(); // for the indexer
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			totalFails++;
-//			fail("Failed to create the project:" + projectName);
-//			return;
-//		}
-//		try {
-//			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-//			if (Shared.hasBuildErrors(theTestProject)) {
-//				// try again because the libraries may not yet been added
-//				Shared.waitForAllJobsToFinish(); // for the indexer
-//				try {
-//					Thread.sleep(3000);// seen sometimes the libs were still not
-//										// added
-//				} catch (InterruptedException e) {
-//					// ignore
-//				}
-//				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-//				if (Shared.hasBuildErrors(theTestProject)) {
-//					// give up
-//					totalFails++;
-//					fail("Failed to compile the project:" + projectName + " build errors");
-//				} else {
-//					theTestProject.delete(true, null);
-//				}
-//			} else {
-//				theTestProject.delete(true, null);
-//			}
-//		} catch (CoreException e) {
-//			e.printStackTrace();
-//			totalFails++;
-//			try {
-//				theTestProject.close(null);
-//			} catch ( CoreException e1) {
-//				//fully ignore
-//			}
-//			fail("Failed to compile the project:" + projectName + " exception");
-//		}
-//	}
 
 }

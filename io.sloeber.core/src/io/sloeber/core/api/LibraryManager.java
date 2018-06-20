@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -316,6 +317,21 @@ public class LibraryManager {
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
+	
+	   /**
+     * install 1 single library based on the library name
+     * @param libName
+     */
+    public static void installLibrary(String libName) {
+        Set<String> libNamesToInstall = new TreeSet<>();
+        libNamesToInstall.add(libName);
+        Map<String, LibraryDescriptor> libsToInstall = LibraryManager.getLatestInstallableLibraries(libNamesToInstall);
+        if (!libsToInstall.isEmpty()) {
+            for (Entry<String, LibraryDescriptor> curLib : libsToInstall.entrySet()) {
+                curLib.getValue().toLibrary().install(new NullProgressMonitor());
+            }
+        }
+    }
 
 	/**
 	 * Install the latest version of all the libraries belonging to this category If

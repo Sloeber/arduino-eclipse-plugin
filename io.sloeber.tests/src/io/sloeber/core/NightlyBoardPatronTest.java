@@ -17,7 +17,6 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
@@ -25,7 +24,7 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class NightlyBoardPatronTest {
-    private static final boolean reinstall_boards_and_examples = false;
+
     private static int myBuildCounter = 0;
     private Examples myExample;
     private MCUBoard myBoardID;
@@ -42,7 +41,10 @@ public class NightlyBoardPatronTest {
     @SuppressWarnings("rawtypes")
     @Parameters(name = "{index}: {0}")
     public static Collection examples() {
-        WaitForInstallerToFinish();
+        Shared.waitForAllJobsToFinish();
+        Arduino.installLatestSamDBoards();
+        LibraryManager.installLibrary("RTCZero");
+        Shared.waitForAllJobsToFinish();
         Preferences.setUseArduinoToolSelection(true);
         myCompileOptions = new CompileOptions(null);
         MCUBoard zeroBoard = Arduino.zero();
@@ -67,27 +69,8 @@ public class NightlyBoardPatronTest {
 
     }
 
-    /*
-     * In new new installations (of the Sloeber development environment) the
-     * installer job will trigger downloads These mmust have finished before we can
-     * start testing
-     */
 
-    public static void WaitForInstallerToFinish() {
 
-        installAdditionalBoards();
-        Shared.waitForAllJobsToFinish();
-    }
-
-    public static void installAdditionalBoards() {
-        if (reinstall_boards_and_examples) {
-            PackageManager.installAllLatestPlatforms();
-            PackageManager.onlyKeepLatestPlatforms();
-            // deal with removal of json files or libs from json files
-            LibraryManager.removeAllLibs();
-            LibraryManager.installAllLatestLibraries();
-        }
-    }
 
     @Test
     public void testExamples() {

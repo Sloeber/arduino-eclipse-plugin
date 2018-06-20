@@ -592,4 +592,5 @@ public class Libraries {
 		map.remove("EEPROM"); //$NON-NLS-1$
 		return map;
 	}
+
 }
