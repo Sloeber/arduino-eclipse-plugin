@@ -367,7 +367,7 @@ public class InternalPackageManager extends PackageManager {
 	private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
 			String pArchiveFullFileName, IProgressMonitor pMonitor) {
 		// Create an ArchiveInputStream with the correct archiving algorithm
-		String faileToExtractMessage = Messages.Manager_Failed_to_extract + pArchiveFullFileName;
+		String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
 		if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
 			try (ArchiveInputStream inStream = new TarArchiveInputStream(
 					new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
