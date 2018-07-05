@@ -39,7 +39,7 @@ env:
 
 # This is the Github username of the repository of the source we are building.
     #Needs to be inline with the repo being built (i.e. change it).
-    - CI_GITHUB_REPOUSERNAME=Sloeber
+    - CI_GITHUB_REPOUSERNAME=jantje
     #Only for development work on brodykenrick's repo
 #    - CI_GITHUB_REPOUSERNAME=brodykenrick
 jdk:
