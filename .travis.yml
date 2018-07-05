@@ -33,9 +33,9 @@ env:
     # These point to the above nexus server/groupid but need to be encrypted against the repo Travis is getting code from (i.e. change it).
 
     #jantje/arduino-eclipse-plugin
-     - secure: "kC8R35qKesohed2C47R2xO4uVKhRGahuO+7kEDaJwWIn7QlefJSgJ8IK9tGng+IcUUXD4ClKAT1RJgJnnchtO0jpUEy+MIXDQi1PCc2UkIsYa6XMw5Nf0EMppHiJM2LLbf1n/urGmuo/RwKWXLdC7SLuSmqgLD82AbrGA2xXSXM="
-     - secure: "gUpJ6dlh/SBsJP+QlNFbNhchZzKRDmwuWjrId7lTyToVhAzoQSygNS7DfuemfJkhIdHVkZELnvfTx3FaeIfW59zQ2654HMiUrvUINFys+pq6C0vwPyQzAXg4KLn6kExgbn6md5zb8w2fE68Mb2y20jduhzBOAVWvK361lC4oeSI="
-     - secure: "ZNF1Tc17sq5tsChKi4+yAv6mqhxOfq/zZ38TnRYr1zos2G1jCJJNw4zq1ojUGFViCxdt76xwlDYwavjzAMfsdI3/zoPePtaFJj3w8V6y4C10rgGW67bY4HwW2i0sudIbSWQ+skmG2zbVvJLrIMj2c6IXDM13sTW1Dv+Pt4tTaSs="
+    - secure: "kC8R35qKesohed2C47R2xO4uVKhRGahuO+7kEDaJwWIn7QlefJSgJ8IK9tGng+IcUUXD4ClKAT1RJgJnnchtO0jpUEy+MIXDQi1PCc2UkIsYa6XMw5Nf0EMppHiJM2LLbf1n/urGmuo/RwKWXLdC7SLuSmqgLD82AbrGA2xXSXM="
+    - secure: "gUpJ6dlh/SBsJP+QlNFbNhchZzKRDmwuWjrId7lTyToVhAzoQSygNS7DfuemfJkhIdHVkZELnvfTx3FaeIfW59zQ2654HMiUrvUINFys+pq6C0vwPyQzAXg4KLn6kExgbn6md5zb8w2fE68Mb2y20jduhzBOAVWvK361lC4oeSI="
+    - secure: "ZNF1Tc17sq5tsChKi4+yAv6mqhxOfq/zZ38TnRYr1zos2G1jCJJNw4zq1ojUGFViCxdt76xwlDYwavjzAMfsdI3/zoPePtaFJj3w8V6y4C10rgGW67bY4HwW2i0sudIbSWQ+skmG2zbVvJLrIMj2c6IXDM13sTW1Dv+Pt4tTaSs="
 
 # This is the Github username of the repository of the source we are building.
     #Needs to be inline with the repo being built (i.e. change it).
