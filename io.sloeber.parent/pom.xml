@@ -25,7 +25,7 @@
 		<url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
 	</scm> -->
 
-	<!-- Sonatype repos 
+	<!-- Sonatype repos  -->
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sonatype-nexus-snapshots</id>
@@ -37,7 +37,7 @@
 			<name>Sonatype Nexus release repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-	</distributionManagement> -->
+	</distributionManagement>
 
 	<build>
 		<outputDirectory>bin</outputDirectory>
