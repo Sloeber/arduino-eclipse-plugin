@@ -9,8 +9,8 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<github.repo.name>sloeber</github.repo.name>
-		<github.repo.username></github.repo.username>
+		<github.repo.name>Sloeber</github.repo.name>
+		<github.repo.username>Sloeber</github.repo.username>
 	</properties>
 
 	<parent>
