@@ -11,7 +11,7 @@ script:
   - sh -c "if $TRAVIS_SECURE_ENV_VARS; then echo Travis SECURE available -- Deploy; else echo Travis SECURE NOT available --  Verify; fi"
 
   #Execute the maven commands depending on SECURE availabilty and print the elapsed time out periodically.
-  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,photon,NOSDK  -Dtest=RegressionTest -X --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,photon,NOSDK -X -Dtest=RegressionTest --settings settings.xml'; fi"
+  - sh -c "if $TRAVIS_SECURE_ENV_VARS; then ./travis_exec_and_print_time.sh 'mvn deploy -Pall,photon,NOSDK  -Dnexus.view.exhaustForAgents=Apache-Maven.* -Dtest=RegressionTest --settings settings.xml'; else ./travis_exec_and_print_time.sh 'mvn verify -Pall,photon,NOSDK -Dnexus.view.exhaustForAgents=Apache-Maven.* -Dtest=RegressionTest --settings settings.xml'; fi"
 
 #Several usernames and passwords/tokens are required for deployment.
 #When testing on your local/remote setup then you need to set/export env. variables:
@@ -33,9 +33,9 @@ env:
     # These point to the above nexus server/groupid but need to be encrypted against the repo Travis is getting code from (i.e. change it).
 
     #jantje/arduino-eclipse-plugin
-    # - secure: "kC8R35qKesohed2C47R2xO4uVKhRGahuO+7kEDaJwWIn7QlefJSgJ8IK9tGng+IcUUXD4ClKAT1RJgJnnchtO0jpUEy+MIXDQi1PCc2UkIsYa6XMw5Nf0EMppHiJM2LLbf1n/urGmuo/RwKWXLdC7SLuSmqgLD82AbrGA2xXSXM="
-    # - secure: "gUpJ6dlh/SBsJP+QlNFbNhchZzKRDmwuWjrId7lTyToVhAzoQSygNS7DfuemfJkhIdHVkZELnvfTx3FaeIfW59zQ2654HMiUrvUINFys+pq6C0vwPyQzAXg4KLn6kExgbn6md5zb8w2fE68Mb2y20jduhzBOAVWvK361lC4oeSI="
-    # - secure: "ZNF1Tc17sq5tsChKi4+yAv6mqhxOfq/zZ38TnRYr1zos2G1jCJJNw4zq1ojUGFViCxdt76xwlDYwavjzAMfsdI3/zoPePtaFJj3w8V6y4C10rgGW67bY4HwW2i0sudIbSWQ+skmG2zbVvJLrIMj2c6IXDM13sTW1Dv+Pt4tTaSs="
+     - secure: "kC8R35qKesohed2C47R2xO4uVKhRGahuO+7kEDaJwWIn7QlefJSgJ8IK9tGng+IcUUXD4ClKAT1RJgJnnchtO0jpUEy+MIXDQi1PCc2UkIsYa6XMw5Nf0EMppHiJM2LLbf1n/urGmuo/RwKWXLdC7SLuSmqgLD82AbrGA2xXSXM="
+     - secure: "gUpJ6dlh/SBsJP+QlNFbNhchZzKRDmwuWjrId7lTyToVhAzoQSygNS7DfuemfJkhIdHVkZELnvfTx3FaeIfW59zQ2654HMiUrvUINFys+pq6C0vwPyQzAXg4KLn6kExgbn6md5zb8w2fE68Mb2y20jduhzBOAVWvK361lC4oeSI="
+     - secure: "ZNF1Tc17sq5tsChKi4+yAv6mqhxOfq/zZ38TnRYr1zos2G1jCJJNw4zq1ojUGFViCxdt76xwlDYwavjzAMfsdI3/zoPePtaFJj3w8V6y4C10rgGW67bY4HwW2i0sudIbSWQ+skmG2zbVvJLrIMj2c6IXDM13sTW1Dv+Pt4tTaSs="
 
     #Only for development work on brodykenrick's repo
     #brodykenrick/arduino-eclipse-plugin
