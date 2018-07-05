@@ -12,7 +12,7 @@
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
-	<parent>
+<!--	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
 		<relativePath>org.sonatype.oss:oss-parent</relativePath>
@@ -23,9 +23,9 @@
 		<connection>scm:git:git://github.com/${github.repo.username}/arduino-eclipse-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:${github.repo.username}/arduino-eclipse-plugin.git</developerConnection>
 		<url>http://github.com/${github.repo.username}/arduino-eclipse-plugin</url>
-	</scm>
+	</scm> -->
 
-	<!-- Sonatype repos -->
+	<!-- Sonatype repos 
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sonatype-nexus-snapshots</id>
@@ -37,7 +37,7 @@
 			<name>Sonatype Nexus release repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-	</distributionManagement>
+	</distributionManagement> -->
 
 	<build>
 		<outputDirectory>bin</outputDirectory>
