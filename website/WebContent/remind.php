@@ -51,6 +51,11 @@
 <h1>So, you think Jantje and the contributors did a great job?</h1>
 <h2><a href="http://eclipse.baeyens.it/donate.shtml">Why don't you show it?</a></h2>
 <p>Note that 1 dollar a month makes a world of difference to us.</p>
+<a href="http://eclipse.baeyens.it/donate.shtml">
+    <h1>Do you want a Sloeber T-shirt</h1>
+<img alt="Buy a t-shirt" border="0" src="http://baeyens.it/Media/vaderendochter.jpg" width=400 height=300>
+</a>
+
 
 <?php if($ADVERTISE_HIDE_THIS_PAGE){ ?>
 <h2><a href="https://www.patreon.com/bePatron?rid=228464&u=798640"> for 5 dollar a month (exclusive VAT) you can get rid of this reminder.</a> </h2>
