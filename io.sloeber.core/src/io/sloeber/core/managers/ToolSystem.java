@@ -72,7 +72,7 @@ public class ToolSystem {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-	return Manager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
+	return InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
     }
 
 }

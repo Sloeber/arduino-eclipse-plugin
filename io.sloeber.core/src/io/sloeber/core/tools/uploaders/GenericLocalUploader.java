@@ -2,10 +2,9 @@ package io.sloeber.core.tools.uploaders;
 
 import java.io.IOException;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.api.BoardDescriptor;
@@ -15,54 +14,42 @@ import io.sloeber.core.tools.ExternalCommandLauncher;
 public class GenericLocalUploader implements IRealUpload {
 
 	private String myNAmeTag;
-	private IProject myProject;
-	private String myCConf;
-	private MessageConsole myConsole;
-	private MessageConsoleStream myErrconsole;
-	private MessageConsoleStream myOutconsole;
+	private ICConfigurationDescription myConDesc;
 
-	GenericLocalUploader(String NAmeTag, IProject Project, String CConf, MessageConsole Console,
-			MessageConsoleStream Errconsole, MessageConsoleStream Outconsole) {
-		this.myNAmeTag = NAmeTag.toUpperCase();
-		this.myProject = Project;
-		this.myCConf = CConf;
 
-		this.myConsole = Console;
-		this.myErrconsole = Errconsole;
-		this.myOutconsole = Outconsole;
+	GenericLocalUploader(String NAmeTag,  ICConfigurationDescription CConf) {
+		myNAmeTag = NAmeTag.toUpperCase();
+		myConDesc = CConf;
 	}
 
-	protected static void RunConsoledCommand(MessageConsole console, String command, IProgressMonitor monitor)
-			throws IOException {
 
-		ExternalCommandLauncher Step = new ExternalCommandLauncher(command);
-
-		Step.setConsole(console);
-		Step.redirectErrorStream(true);
-		Step.launch(monitor);
-	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor) {
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor, 
+			MessageConsoleStream highStream,
+			MessageConsoleStream outStream,
+			MessageConsoleStream errStream) {
 		int step = 1;
-		String patternTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		String commentTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		String stepPattern = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, patternTag, ""); //$NON-NLS-1$
-		String stepName = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, commentTag, ""); //$NON-NLS-1$
+		String patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String stepPattern = Common.getBuildEnvironmentVariable( myConDesc, patternTag, new String()); 
+		String stepName = Common.getBuildEnvironmentVariable( myConDesc, commentTag, new String()); 
 		do {
 			monitor.subTask("Running " + stepName); //$NON-NLS-1$
-			this.myOutconsole.println(stepPattern);
+			outStream.println(stepPattern);
 			try {
-				RunConsoledCommand(this.myConsole, stepPattern, monitor);
+				ExternalCommandLauncher launchStep = new ExternalCommandLauncher(stepPattern);
+				launchStep.launch(monitor, highStream, outStream, errStream);			
+
 			} catch (IOException e) {
-				this.myErrconsole.print("Error: " + e.getMessage()); //$NON-NLS-1$
+				errStream.print("Error: " + e.getMessage()); //$NON-NLS-1$
 				return false;
 			}
 			step++;
-			patternTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			commentTag = "A.TOOLS." + this.myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			stepPattern = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, patternTag, ""); //$NON-NLS-1$
-			stepName = Common.getBuildEnvironmentVariable(this.myProject, this.myCConf, commentTag, ""); //$NON-NLS-1$
+			patternTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".PATTERN"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			commentTag = "A.TOOLS." + myNAmeTag + ".STEP" + step + ".NAME"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			stepPattern = Common.getBuildEnvironmentVariable(myConDesc, patternTag, ""); //$NON-NLS-1$
+			stepName = Common.getBuildEnvironmentVariable(myConDesc, commentTag, ""); //$NON-NLS-1$
 		} while (!stepPattern.isEmpty());
 
 		return true;

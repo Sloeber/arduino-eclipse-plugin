@@ -27,6 +27,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import io.sloeber.core.api.LaunchConfiguration;
 import io.sloeber.core.api.Sketch;
+import io.sloeber.ui.Messages;
 
 // SWTFactory is a restricted class. Nontheless it is very usefull.
 @SuppressWarnings("restriction")
@@ -52,7 +53,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
      *            The parent composite
      */
     private void createProjectComponent(Composite parent) {
-	Group group = SWTFactory.createGroup(parent, Messages.MainTab_Project, 2, 1, GridData.FILL_HORIZONTAL);
+	Group group = SWTFactory.createGroup(parent, Messages.launch_config_mainTab_project, 2, 1, GridData.FILL_HORIZONTAL);
 
 	// Create text field
 	this.project = SWTFactory.createSingleText(group, 1);
@@ -79,7 +80,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
      *            The text field that should adapt to the selected project
      */
     private static void createProjectSelectionButton(Composite parent, Text text) {
-	Button browse = SWTFactory.createPushButton(parent, Messages.MainTab_browse, null);
+	Button browse = SWTFactory.createPushButton(parent, Messages.launch_config_mainTab_browse, null);
 	browse.addSelectionListener(new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
@@ -97,7 +98,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 				return ""; //$NON-NLS-1$
 			    }
 			});
-		dialog.setTitle(Messages.MainTab_ProjectSelection);
+		dialog.setTitle(Messages.launch_config_mainTab_project_selection);
 
 		// Set the selectable elements of the dialog.
 		// A project may be closed
@@ -144,19 +145,19 @@ public class MainTab extends AbstractLaunchConfigurationTab {
     private String checkErrors() {
 	// Project is specified
 	if (StringUtils.isBlank(this.project.getText())) {
-	    return Messages.MainTab_SpecifyProject;
+	    return Messages.launch_config_mainTab_specify_project;
 	}
 
 	// Project exists
 	IProject proj = LaunchConfiguration.findProject(this.project.getText());
 	if (proj == null) {
-	    return Messages.MainTab_ProjectDoesNotExist;
+	    return Messages.project_does_not_exist;
 	}
 
 	// Project has correct nature
 
 	if (!Sketch.isSketch(proj)) {
-	    return Messages.MainTab_ProjectWrongType;
+	    return Messages.launch_config_mainTab_project_wrong_type;
 	}
 
 	return null;
@@ -164,7 +165,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 
     @Override
     public String getName() {
-	return Messages.MainTab_Main;
+	return Messages.launch_config_mainTab_main;
     }
 
     @Override

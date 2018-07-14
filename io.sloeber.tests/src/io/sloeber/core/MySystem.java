@@ -3,10 +3,10 @@ package io.sloeber.core;
 import static org.junit.Assert.fail;
 
 import io.sloeber.core.api.Other;
-import io.sloeber.core.boards.ArduinoBoards;
-import io.sloeber.core.boards.ESP8266Boards;
-import io.sloeber.core.boards.IBoard;
-import io.sloeber.core.boards.TeensyBoards;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.MCUBoard;
+import io.sloeber.providers.Teensy;
 
 /*
  * Set system specific info here.
@@ -14,34 +14,49 @@ import io.sloeber.core.boards.TeensyBoards;
  */
 @SuppressWarnings("nls")
 public class MySystem {
-	private static String jantjesWindowsMachine = "D:\\arduino\\arduino-PR-beta1.9-BUILD-31\\hardware\\teensy";
-	//D:\\arduino\\arduino-1.8.2Teensy1.38beta2\\hardware\\teensy";
-	private static String jantjesVirtualLinuxMachine = "/home/jantje/programs/arduino-1.8.0/hardware/teensy";
+	private static final String jantjesWindowsMachineHashKey = "1248215851";
+	//the one below is based on one mac address Fysiek adres (MAC):	C0-3F-D5-66-04-58 
+	private static final String jantjesWindowsMachineHashkeyAfterUpdate="139705674";
+	private static final String jantjesLinuxMachineHashKey = "-784776710";
 
 	public static String getTeensyPlatform() {
 		switch (Other.getSystemHash()) {
-		case "1248215851":
-			return jantjesWindowsMachine;
-		case "still need to get the key":
-			return jantjesVirtualLinuxMachine;
+		case jantjesWindowsMachineHashKey:
+		case jantjesWindowsMachineHashkeyAfterUpdate:
+			return "D:\\arduino\\teensy1.42-beta4\\hardware\\teensy";
+		case jantjesLinuxMachineHashKey:
+			return "/home/jan/arduino-1.8.5/hardware/teensy";
 		}
 		return new String();
 	}
 
-	public static IBoard[] getUploadBoards()  {
+	public static String getTeensyBoard_txt() {
+		return getTeensyPlatform() + "/avr/boards.txt";
+	}
+	public static MCUBoard[] getUploadBoards()  {
 		switch (Other.getSystemHash()) {
-		case "still need to get the key": {
-			IBoard[] boards = {   TeensyBoards.teensypp2(),  ESP8266Boards.wemosD1("COM34"),
-					ArduinoBoards.fried(""), ArduinoBoards.yun(""), ArduinoBoards.uno(""),
-					ArduinoBoards.getMega2560Board(""), ArduinoBoards.zero("COM14"), ArduinoBoards.due(""),
-					ArduinoBoards.leonardo(""), ArduinoBoards.arduino_101("") };
+		case jantjesLinuxMachineHashKey: {
+			MCUBoard[] boards = {   Teensy.teensypp2(),  ESP8266.wemosD1("COM34"),
+					Arduino.fried(""), Arduino.yun(""), Arduino.uno(""),
+					Arduino.getMega2560Board(""), Arduino.zero("COM14"), Arduino.due(""),
+					Arduino.leonardo(""), Arduino.arduino_101("") };
 			return boards;
 		}
-		case "1248215851": {
-			IBoard[] boards = {  TeensyBoards.teensypp2(), ESP8266Boards.wemosD1("COM34"),
-					ArduinoBoards.fried("COM5"), ArduinoBoards.yun("COM17"), ArduinoBoards.uno("COM6"),
-					ArduinoBoards.getMega2560Board("COM11"), ArduinoBoards.zero("COM14"), ArduinoBoards.due("COM3"),ArduinoBoards.dueprogramming("COM8"),
-					ArduinoBoards.leonardo("COM19"), ArduinoBoards.arduino_101("") };
+		case jantjesWindowsMachineHashKey: 
+		case jantjesWindowsMachineHashkeyAfterUpdate:{
+			//due native upload gives to mutch trouble even in arduino IDE
+			MCUBoard[] boards = {  
+					Teensy.teensypp2("COM10"),
+					Teensy.Teensy3_1("COM24"), 
+					ESP8266.wemosD1("COM23"),
+					Arduino.fried("COM22"), 
+					Arduino.yun("COM5"), 
+					Arduino.uno("COM6"),
+					Arduino.getMega2560Board("COM11"), 
+					Arduino.zero("COM14"), 
+					Arduino.dueprogramming("COM8"),
+					Arduino.leonardo("COM30"), 
+					Arduino.arduino_101("COM15") };
 			return boards;
 		}
 		}

@@ -31,6 +31,7 @@ import io.sloeber.core.Activator;
  * @author jan
  *
  */
+@SuppressWarnings("unused")
 public class ConfigurationPreferences {
 
 	private static String stringSplitter = "\n";//$NON-NLS-1$

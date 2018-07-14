@@ -1,10 +1,18 @@
 package io.sloeber.ui.monitor.views;
 
+import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,6 +38,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -49,7 +59,9 @@ import io.sloeber.core.api.ISerialUser;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.Activator;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
+import io.sloeber.ui.listeners.ProjectExplorerListener;
 import io.sloeber.ui.monitor.internal.SerialListener;
 
 /**
@@ -58,7 +70,7 @@ import io.sloeber.ui.monitor.internal.SerialListener;
  * serial connection.
  * 
  */
-
+@SuppressWarnings({"unused"})
 public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**
@@ -93,8 +105,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	// The string to send to the serial port
 	protected Text sendString;
-	// This control contains the output of the serial port
-	protected StyledText monitorOutput;
+	//  control contains the output of the serial port
+	static protected StyledText monitorOutput;
 	// Port used when doing actions
 	protected ComboViewer serialPorts;
 	// Add CR? LF? CR+LF? Nothing?
@@ -110,7 +122,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// link to color registry
 	private ColorRegistry colorRegistry = null;
 
-	private Composite parent;
+	static private Composite parent;
 
 	/*
 	 * ************** Below are variables needed for good housekeeping
@@ -121,7 +133,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	protected Map<Serial, SerialListener> serialConnections;
 
 	private static final String MY_FLAG_MONITOR = "FmStatus"; //$NON-NLS-1$
-	String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
+	static final String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
 
 	private static SerialMonitor instance = null;
 
@@ -140,13 +152,13 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), "You can only have one serial monitor")); //$NON-NLS-1$
 		}
 		instance = this;
-		this.serialConnections = new LinkedHashMap<>(MY_MAX_SERIAL_PORTS);
+		serialConnections = new LinkedHashMap<>(MY_MAX_SERIAL_PORTS);
 		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 		ITheme currentTheme = themeManager.getCurrentTheme();
-		this.colorRegistry = currentTheme.getColorRegistry();
-		this.serialColorID = new String[MY_MAX_SERIAL_PORTS];
+		colorRegistry = currentTheme.getColorRegistry();
+		serialColorID = new String[MY_MAX_SERIAL_PORTS];
 		for (int i = 0; i < MY_MAX_SERIAL_PORTS; i++) {
-			this.serialColorID[i] = "io.sloeber.serial.color." + (1 + i); //$NON-NLS-1$
+			serialColorID[i] = "io.sloeber.serial.color." + (1 + i); //$NON-NLS-1$
 
 		}
 		SerialManager.registerSerialUser(this);
@@ -158,7 +170,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = myScope.getInt(MY_FLAG_MONITOR, 0) + 1;
 					myScope.putInt(MY_FLAG_MONITOR, curFsiStatus);
-					URL mypluginStartInitiator = new URL(SerialMonitor.this.uri.replaceAll(" ", "") //$NON-NLS-1$ //$NON-NLS-2$
+					URL mypluginStartInitiator = new URL(uri.replace(" ", new String()) //$NON-NLS-1$ 
 							+ Integer.toString(curFsiStatus));
 					mypluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
@@ -174,11 +186,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	public void dispose() {
 		SerialManager.UnRegisterSerialUser();
 
-		for (Entry<Serial, SerialListener> entry : this.serialConnections.entrySet()) {
+		for (Entry<Serial, SerialListener> entry : serialConnections.entrySet()) {
 			entry.getValue().dispose();
 			entry.getKey().dispose();
 		}
-		this.serialConnections.clear();
+		serialConnections.clear();
 		instance = null;
 	}
 
@@ -188,7 +200,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	@Override
 	public void createPartControl(Composite parent1) {
-		this.parent = parent1;
+		parent = parent1;
 		parent1.setLayout(new GridLayout());
 		GridLayout layout = new GridLayout(5, false);
 		layout.marginHeight = 0;
@@ -197,11 +209,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		top.setLayout(layout);
 		top.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		this.serialPorts = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
+		serialPorts = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
 		GridData minSizeGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		minSizeGridData.widthHint = 150;
-		this.serialPorts.getControl().setLayoutData(minSizeGridData);
-		this.serialPorts.setContentProvider(new IStructuredContentProvider() {
+		serialPorts.getControl().setLayoutData(minSizeGridData);
+		serialPorts.setContentProvider(new IStructuredContentProvider() {
 
 			@Override
 			public void dispose() {
@@ -221,37 +233,37 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				return items.keySet().toArray();
 			}
 		});
-		this.serialPorts.setLabelProvider(new LabelProvider());
-		this.serialPorts.setInput(this.serialConnections);
-		this.serialPorts.addSelectionChangedListener(new ComPortChanged(this));
+		serialPorts.setLabelProvider(new LabelProvider());
+		serialPorts.setInput(serialConnections);
+		serialPorts.addSelectionChangedListener(new ComPortChanged(this));
 
-		this.sendString = new Text(top, SWT.SINGLE | SWT.BORDER);
-		this.sendString.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		sendString = new Text(top, SWT.SINGLE | SWT.BORDER);
+		sendString.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		this.lineTerminator = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
-		this.lineTerminator.setContentProvider(new ArrayContentProvider());
-		this.lineTerminator.setLabelProvider(new LabelProvider());
-		this.lineTerminator.setInput(SerialManager.listLineEndings());
-		this.lineTerminator.getCombo().select(MyPreferences.getLastUsedSerialLineEnd());
-		this.lineTerminator.addSelectionChangedListener(new ISelectionChangedListener() {
+		lineTerminator = new ComboViewer(top, SWT.READ_ONLY | SWT.DROP_DOWN);
+		lineTerminator.setContentProvider(new ArrayContentProvider());
+		lineTerminator.setLabelProvider(new LabelProvider());
+		lineTerminator.setInput(SerialManager.listLineEndings());
+		lineTerminator.getCombo().select(MyPreferences.getLastUsedSerialLineEnd());
+		lineTerminator.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				MyPreferences
-						.setLastUsedSerialLineEnd(SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex());
+						.setLastUsedSerialLineEnd(lineTerminator.getCombo().getSelectionIndex());
 			}
 		});
 
-		this.send = new Button(top, SWT.BUTTON1);
-		this.send.setText(Messages.serialMonitorSend);
-		this.send.addSelectionListener(new SelectionListener() {
+		send = new Button(top, SWT.BUTTON1);
+		send.setText(Messages.serialMonitorSend);
+		send.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int index = SerialMonitor.this.lineTerminator.getCombo().getSelectionIndex();
-				GetSelectedSerial().write(SerialMonitor.this.sendString.getText(), SerialManager.getLineEnding(index));
-				SerialMonitor.this.sendString.setText(""); //$NON-NLS-1$
-				SerialMonitor.this.sendString.setFocus();
+				int index = lineTerminator.getCombo().getSelectionIndex();
+				GetSelectedSerial().write(sendString.getText(), SerialManager.getLineEnding(index));
+				sendString.setText(new String()); 
+				sendString.setFocus();
 			}
 
 			@Override
@@ -259,16 +271,16 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				// nothing needs to be done here
 			}
 		});
-		this.send.setEnabled(false);
+		send.setEnabled(false);
 
-		this.reset = new Button(top, SWT.BUTTON1);
-		this.reset.setText(Messages.serialMonitorReset);
-		this.reset.addSelectionListener(new SelectionListener() {
+		reset = new Button(top, SWT.BUTTON1);
+		reset.setText(Messages.serialMonitorReset);
+		reset.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				GetSelectedSerial().reset();
-				SerialMonitor.this.sendString.setFocus();
+				sendString.setFocus();
 			}
 
 			@Override
@@ -276,21 +288,58 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				// nothing needs to be done here
 			}
 		});
-		this.reset.setEnabled(false);
+		reset.setEnabled(false);
 
 		// register the combo as a Selection Provider
-		getSite().setSelectionProvider(this.serialPorts);
+		getSite().setSelectionProvider(serialPorts);
 
-		this.monitorOutput = new StyledText(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		this.monitorOutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
-		this.monitorOutput.setEditable(false);
+		monitorOutput = new StyledText(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		monitorOutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
+		monitorOutput.setEditable(false);
 		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 		ITheme currentTheme = themeManager.getCurrentTheme();
 		FontRegistry fontRegistry = currentTheme.getFontRegistry();
-		this.monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
-		this.monitorOutput.setText(Messages.serialMonitorNoInput);
+		monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
+		monitorOutput.setText(Messages.serialMonitorNoInput);
+		monitorOutput.addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseUp(MouseEvent e) {
+             // ignore
+            }
+            
+            @Override
+            public void mouseDown(MouseEvent e) {
+                // If right button get selected text save it and start external tool
+                if (e.button==3) {
+                    String selectedText=monitorOutput.getSelectionText();
+                    if(!selectedText.isEmpty()) {
+                        IProject selectedProject = ProjectExplorerListener.getSelectedProject();
+                        if (selectedProject!=null) {
+                            
+                            try {
+                                ICConfigurationDescription activeCfg=CoreModel.getDefault().getProjectDescription(selectedProject).getActiveConfiguration();
+                                String activeConfigName= activeCfg.getName();
+                                IPath buildFolder=selectedProject.findMember(activeConfigName).getLocation();
+                                File dumpFile=buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
+                                FileUtils.writeStringToFile(dumpFile, selectedText);
+                            } catch (Exception e1) {
+                                // ignore
+                                e1.printStackTrace();
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                // ignore
+            }
+        });
 
-		this.parent.getShell().setDefaultButton(this.send);
+		parent.getShell().setDefaultButton(send);
 		makeActions();
 		contributeToActionBars();
 	}
@@ -302,7 +351,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * @return the serial port selected in the combobox
 	 */
 	protected Serial GetSelectedSerial() {
-		return GetSerial(this.serialPorts.getCombo().getText());
+		return GetSerial(serialPorts.getCombo().getText());
 	}
 
 	/**
@@ -314,7 +363,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 *         to Comname of found. null if not found
 	 */
 	private Serial GetSerial(String comName) {
-		for (Entry<Serial, SerialListener> entry : this.serialConnections.entrySet()) {
+		for (Entry<Serial, SerialListener> entry : serialConnections.entrySet()) {
 			if (entry.getKey().toString().matches(comName))
 				return entry.getKey();
 		}
@@ -328,25 +377,25 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(this.clear);
-		manager.add(this.scrollLock);
-		manager.add(this.plotterFilter);
-		manager.add(this.connect);
-		manager.add(this.disconnect);
+		manager.add(clear);
+		manager.add(scrollLock);
+		manager.add(plotterFilter);
+		manager.add(connect);
+		manager.add(disconnect);
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(this.connect);
+		manager.add(connect);
 		manager.add(new Separator());
-		manager.add(this.disconnect);
+		manager.add(disconnect);
 	}
 
 	private void makeActions() {
-		this.connect = new Action() {
+		connect = new Action() {
 			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
-				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(SerialMonitor.this.parent.getShell());
+				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());
 				comportSelector.create();
 				if (comportSelector.open() == Window.OK) {
 					connectSerial(comportSelector.GetComPort(), comportSelector.GetBaudRate());
@@ -354,52 +403,52 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				}
 			}
 		};
-		this.connect.setText(Messages.serialMonitorConnectedTo);
-		this.connect.setToolTipText(Messages.serialMonitorAddConnectionToSeralMonitor);
-		this.connect.setImageDescriptor(
+		connect.setText(Messages.serialMonitorConnectedTo);
+		connect.setToolTipText(Messages.serialMonitorAddConnectionToSeralMonitor);
+		connect.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ADD)); // IMG_OBJS_INFO_TSK));
 
-		this.disconnect = new Action() {
+		disconnect = new Action() {
 			@Override
 			public void run() {
 				disConnectSerialPort(getSerialMonitor().serialPorts.getCombo().getText());
 			}
 		};
-		this.disconnect.setText(Messages.serialMonitorDisconnectedFrom);
-		this.disconnect.setToolTipText(Messages.serialMonitorRemoveSerialPortFromMonitor);
-		this.disconnect.setImageDescriptor(
+		disconnect.setText(Messages.serialMonitorDisconnectedFrom);
+		disconnect.setToolTipText(Messages.serialMonitorRemoveSerialPortFromMonitor);
+		disconnect.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));// IMG_OBJS_INFO_TSK));
-		this.disconnect.setEnabled(this.serialConnections.size() != 0);
+		disconnect.setEnabled(serialConnections.size() != 0);
 
-		this.clear = new Action(Messages.serialMonitorClear) {
+		clear = new Action(Messages.serialMonitorClear) {
 			@Override
 			public void run() {
-				SerialMonitor.this.monitorOutput.setText(""); //$NON-NLS-1$
+				clearMonitor();
 			}
 		};
-		this.clear.setImageDescriptor(ImageDescriptor.createFromURL(IMG_CLEAR));
-		this.clear.setEnabled(true);
+		clear.setImageDescriptor(ImageDescriptor.createFromURL(IMG_CLEAR));
+		clear.setEnabled(true);
 
-		this.scrollLock = new Action(Messages.serialMonitorScrollLock, IAction.AS_CHECK_BOX) {
+		scrollLock = new Action(Messages.serialMonitorScrollLock, IAction.AS_CHECK_BOX) {
 			@Override
 			public void run() {
-				MyPreferences.setLastUsedAutoScroll(!this.isChecked());
+				MyPreferences.setLastUsedAutoScroll(!isChecked());
 			}
 		};
-		this.scrollLock.setImageDescriptor(ImageDescriptor.createFromURL(IMG_LOCK));
-		this.scrollLock.setEnabled(true);
-		this.scrollLock.setChecked(!MyPreferences.getLastUsedAutoScroll());
+		scrollLock.setImageDescriptor(ImageDescriptor.createFromURL(IMG_LOCK));
+		scrollLock.setEnabled(true);
+		scrollLock.setChecked(!MyPreferences.getLastUsedAutoScroll());
 
-		this.plotterFilter = new Action(Messages.serialMonitorFilterPloter, IAction.AS_CHECK_BOX) {
+		plotterFilter = new Action(Messages.serialMonitorFilterPloter, IAction.AS_CHECK_BOX) {
 			@Override
 			public void run() {
-				SerialListener.setPlotterFilter(this.isChecked());
-				MyPreferences.setLastUsedPlotterFilter(this.isChecked());
+				SerialListener.setPlotterFilter(isChecked());
+				MyPreferences.setLastUsedPlotterFilter(isChecked());
 			}
 		};
-		this.plotterFilter.setImageDescriptor(ImageDescriptor.createFromURL(IMG_FILTER));
-		this.plotterFilter.setEnabled(true);
-		this.plotterFilter.setChecked(MyPreferences.getLastUsedPlotterFilter());
+		plotterFilter.setImageDescriptor(ImageDescriptor.createFromURL(IMG_FILTER));
+		plotterFilter.setEnabled(true);
+		plotterFilter.setChecked(MyPreferences.getLastUsedPlotterFilter());
 		SerialListener.setPlotterFilter(MyPreferences.getLastUsedPlotterFilter());
 	}
 
@@ -409,7 +458,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	@Override
 	public void setFocus() {
 		// MonitorOutput.setf .getControl().setFocus();
-		this.parent.getShell().setDefaultButton(this.send);
+		parent.getShell().setDefaultButton(send);
 	}
 
 	/**
@@ -422,16 +471,16 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 *            this is the index number of the opened port
 	 */
 	public void ReportSerialActivity(String stInfo, int style) {
-		int startPoint = this.monitorOutput.getCharCount();
-		this.monitorOutput.append(stInfo);
+		int startPoint = monitorOutput.getCharCount();
+		monitorOutput.append(stInfo);
 		StyleRange styleRange = new StyleRange();
 		styleRange.start = startPoint;
 		styleRange.length = stInfo.length();
 		styleRange.fontStyle = SWT.NORMAL;
-		styleRange.foreground = this.colorRegistry.get(this.serialColorID[style]);
-		this.monitorOutput.setStyleRange(styleRange);
-		if (!this.scrollLock.isChecked()) {
-			this.monitorOutput.setSelection(this.monitorOutput.getCharCount());
+		styleRange.foreground = colorRegistry.get(serialColorID[style]);
+		monitorOutput.setStyleRange(styleRange);
+		if (!scrollLock.isChecked()) {
+			monitorOutput.setSelection(monitorOutput.getCharCount());
 		}
 	}
 
@@ -439,22 +488,22 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * method to make sure the visualization is correct
 	 */
 	void SerialPortsUpdated() {
-		this.disconnect.setEnabled(this.serialConnections.size() != 0);
+		disconnect.setEnabled(serialConnections.size() != 0);
 		Serial curSelection = GetSelectedSerial();
-		this.serialPorts.setInput(this.serialConnections);
-		if (this.serialConnections.size() == 0) {
-			this.send.setEnabled(false);
-			this.reset.setEnabled(false);
+		serialPorts.setInput(serialConnections);
+		if (serialConnections.size() == 0) {
+			send.setEnabled(false);
+			reset.setEnabled(false);
 		} else {
 
-			if (this.serialPorts.getSelection().isEmpty()) // nothing is
+			if (serialPorts.getSelection().isEmpty()) // nothing is
 			// selected
 			{
 				if (curSelection == null) // nothing was selected
 				{
-					curSelection = (Serial) this.serialConnections.keySet().toArray()[0];
+					curSelection = (Serial) serialConnections.keySet().toArray()[0];
 				}
-				this.serialPorts.getCombo().setText(curSelection.toString());
+				serialPorts.getCombo().setText(curSelection.toString());
 				ComboSerialChanged();
 			}
 		}
@@ -469,16 +518,17 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 *            the baud rate to connect to the com port
 	 */
 	public void connectSerial(String comPort, int baudRate) {
-		if (this.serialConnections.size() < MY_MAX_SERIAL_PORTS) {
-			int colorindex = this.serialConnections.size();
+		if (serialConnections.size() < MY_MAX_SERIAL_PORTS) {
+			int colorindex = serialConnections.size();
 			Serial newSerial = new Serial(comPort, baudRate);
 			if (newSerial.IsConnected()) {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				theListener.event(System.getProperty("line.separator") + Messages.serialMonitorConnectedTo + comPort //$NON-NLS-1$
-						+ Messages.serialMonitorAt + baudRate + System.getProperty("line.separator")); //$NON-NLS-1$
-				this.serialConnections.put(newSerial, theListener);
+				String newLine=System.getProperty("line.separator");//$NON-NLS-1$
+				theListener.event( newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) ) 
+						+ newLine); 
+				serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
 				return;
 			}
@@ -492,8 +542,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	public void disConnectSerialPort(String comPort) {
 		Serial newSerial = GetSerial(comPort);
 		if (newSerial != null) {
-			SerialListener theListener = SerialMonitor.this.serialConnections.get(newSerial);
-			SerialMonitor.this.serialConnections.remove(newSerial);
+			SerialListener theListener = serialConnections.get(newSerial);
+			serialConnections.remove(newSerial);
 			newSerial.removeListener(theListener);
 			newSerial.dispose();
 			theListener.dispose();
@@ -505,9 +555,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * 
 	 */
 	public void ComboSerialChanged() {
-		this.send.setEnabled(this.serialPorts.toString().length() > 0);
-		this.reset.setEnabled(this.serialPorts.toString().length() > 0);
-		this.parent.getShell().setDefaultButton(this.send);
+		send.setEnabled(serialPorts.toString().length() > 0);
+		reset.setEnabled(serialPorts.toString().length() > 0);
+		parent.getShell().setDefaultButton(send);
 	}
 
 	/**
@@ -538,7 +588,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						SerialMonitor.this.monitorOutput.setText(""); //$NON-NLS-1$
+						monitorOutput.setText(new String()); 
 					}
 				});
 
@@ -547,4 +597,15 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		}
 	}
 
+	public static List<String> getMonitorContent() {
+		int numLines =monitorOutput.getContent().getLineCount();
+		List<String>ret=new ArrayList<>();
+		for(int curLine=1;curLine<numLines;curLine++) {
+			ret.add(monitorOutput.getContent().getLine(curLine-1));
+		}
+		return ret;
+	}
+	public static void clearMonitor() {
+		monitorOutput.setText(new String());
+	}
 }

@@ -46,14 +46,16 @@
 <div id="header">
   <a href="http://www.eclipse.org/"><img src="https://raw.githubusercontent.com/jantje/arduino-eclipse-plugin/master/io.sloeber.application/splash.bmp" width="300" height="150" border="0" alt="Eclipse Logo" class="logo" /></a>
 </div>
+<div style="float:left; width:80%;">
 <div>
 <h1>So, you think Jantje and the contributors did a great job?</h1>
-<h2><a href="https://www.patreon.com/jantje?ty=h">Why don't you show it?</a></h2>
-<p>Or simply clik the button below!</p>
-<a href="https://www.patreon.com/bePatron?u=798640&redirect_uri=http%3A%2F%2Fpatron.baeyens.it%2Fthanks.php">
-    <img height="40" width="204" src="https://s3-us-west-1.amazonaws.com/widget-images/become-patron-widget-medium%402x.png">
-</a>
+<h2><a href="http://eclipse.baeyens.it/donate.shtml">Why don't you show it?</a></h2>
 <p>Note that 1 dollar a month makes a world of difference to us.</p>
+<a href="http://eclipse.baeyens.it/donate.shtml">
+    <h1>Do you want a Sloeber T-shirt</h1>
+<img alt="Buy a t-shirt" border="0" src="http://baeyens.it/Media/vaderendochter.jpg" width=400 height=300>
+</a>
+
 
 <?php if($ADVERTISE_HIDE_THIS_PAGE){ ?>
 <h2><a href="https://www.patreon.com/bePatron?rid=228464&u=798640"> for 5 dollar a month (exclusive VAT) you can get rid of this reminder.</a> </h2>
@@ -69,7 +71,7 @@ Click <a href="http://eclipse.baeyens.it/how_to.shtml#/n">here to see how to upg
 
 </div>
 
-<div>
+<div >
   <table width="100%">
     <tr>
       <th colspan=2 align=left>Jantje thanks all code contributors (in no particular order)</th>
@@ -80,28 +82,22 @@ Click <a href="http://eclipse.baeyens.it/how_to.shtml#/n">here to see how to upg
       <img src="https://avatars1.githubusercontent.com/u/199473?v=3&s=60" width=30 height=30><a href="https://github.com/rlogiacco">rlogiacco</a><br>
       <img src="https://avatars3.githubusercontent.com/u/19333281?v=3&s=460" width=30 height=30><a href="https://github.com/MarceloLimori">Marcelo Limori</a><br>
       <img src="https://2.gravatar.com/avatar/4416a893377f317cb23a0b0b72e18a3e?d=https%3A%2F%2Fidenticons.github.com%2F00b6b0fffe8118d18c541731d6a094c0.png&amp;r=x&amp;s=60" width=30 height=30><a href="https://github.com/brodykenrick" >brodykenrick</a><br>
-      <img src="https://1.gravatar.com/avatar/05031a297051639ce921bba19024ca15?d=https%3A%2F%2Fidenticons.github.com%2Fb49b0e01582af2658c855692ea3807fc.png&r=x&s=60" width=30 height=30><a href="https://github.com/neuweiler">neuweiler</a><br>
-      <img src="https://1.gravatar.com/avatar/912644f6b65460cdf7b5e3f2ff1e52ba?d=https%3A%2F%2Fidenticons.github.com%2F4dbf38d246b5e8553a14c0536b80e856.png&r=x&s=60" width=30 height=30><a href="https://github.com/Darcade">Darcade</a><br>
-      <img src="https://avatars3.githubusercontent.com/u/2527331?v=3&s=60" width=30 height=30><a href="https://github.com/henols">henols</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/9949033?v=3&s=60" width=30 height=30><a href="https://github.com/Stefan-Code">Stefan-Code</a><br>
-      <img src="https://avatars0.githubusercontent.com/u/4212876?v=3&s=60" width=30 height=30><a href="https://github.com/neuweiler">neuweiler</a><br>
-      <img src="https://avatars3.githubusercontent.com/u/259982?v=3&s=60" width=30 height=30><a href="https://github.com/kigster">kigster</a><br>
-      <img src="https://avatars3.githubusercontent.com/u/2698169?v=3&s=60" width=30 height=30><a href="https://github.com/amorellgarcia">amorellgarcia</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/10581272?v=3&s=460" width=30 height=30><a href="https://github.com/SuperOok">Hauke Fuhrmann</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/1100327?v=3&s=460" width=30 height=30><a href="https://github.com/alexandrezia">Alexandre Zia</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/2027490?v=3&s=60" width=30 height=30><a href="https://github.com/mjmeijer">mjmeijer</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/5672365?v=3&s=60" width=30 height=30><a href="https://github.com/AhmedObaidi">AhmedObaidi</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/1614482?v=3&s=60" width=30 height=30><a href="https://github.com/paulvi">paulvi</a><br>
-      <img src="https://avatars0.githubusercontent.com/u/111074?v=3&s=60" width=30 height=30><a href="https://github.com/tnarik">tnarik</a><br>
-      <img src="https://avatars3.githubusercontent.com/u/1475287?v=3&s=60" width=30 height=30><a href="https://github.com/evil-dog">evil-dog</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/1312932?v=3&s=60" width=30 height=30><a href="https://github.com/nicoverduin">nicoverduin</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/3158323?v=3&s=60" width=30 height=30><a href="https://github.com/riban-bw">riban-bw</a><br>
-      <img src="https://avatars3.githubusercontent.com/u/12892705?v=3&s=60" width=30 height=30><a href="https://github.com/b3ndo">b3ndo</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/2420404?v=3&s=60" width=30 height=30><a href="https://github.com/witold-markowski-sentaca">witold-markowski-sentaca</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/11740256?v=3&s=60" width=30 height=30><a href="https://github.com/jipp">jipp</a><br>
-      <img src="https://avatars1.githubusercontent.com/u/16732352?v=3&s=460" width=30 height=30><a href="https://github.com/georgekankava">George Kankava</a><br>
-      <img src="https://avatars0.githubusercontent.com/u/4579183?v=3&s=460" width=30 height=30><a href="https://github.com/infthi">infthi</a><br>
-      <img src="https://avatars0.githubusercontent.com/u/5371865?v=3&s=460" width=30 height=30><a href="https://github.com/nafep">Stefan Eppe</a><br>
+    </td>
+  </tr>
+  </table>
+</div>
+</div>
+<div style="float:left; width:20%;">
+  <table width="100%">
+    <tr>
+      <th colspan=2 align=left><h2>Following boards are fully supported thanks to board patrons</h2></th>
+    </tr>
+    <tr>
+      <td>
+      <h3>Mini Ultra Pro V3</h3>
+      <a href="http://www.rocketscream.com/blog/product/mini-ultra-pro-v3-with-radio/"><img src="http://www.rocketscream.com/blog/wp-content/uploads/2018/02/DEV-00067-FRONT.jpg" width=120 height=120 ></a><br>
+      Thanks to <br>
+      <img src="https://www.rocketscream.com/blog/wp-content/uploads/2016/02/logo.png"  width=200 height=120><br>
     </td>
   </tr>
   </table>

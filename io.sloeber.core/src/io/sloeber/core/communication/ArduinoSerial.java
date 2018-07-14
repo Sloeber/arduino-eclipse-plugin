@@ -3,17 +3,22 @@ package io.sloeber.core.communication;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-
+@SuppressWarnings("unused")
 public class ArduinoSerial {
+	private static final String MS=Messages.MS;
+
+	private static final String PORT=Messages.PORT; 
 
 	private ArduinoSerial() {
 	}
@@ -28,6 +33,7 @@ public class ArduinoSerial {
 	 *            The baud rate to set
 	 * @return true is successful otherwise false
 	 */
+
 	public static boolean reset_Arduino_by_baud_rate(String comPort, int baudRate, long openTime) {
 		Serial serialPort;
 		try {
@@ -36,7 +42,7 @@ public class ArduinoSerial {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_Unable_To_Open_Port + comPort, e));
+					Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT, comPort) , e));
 			return false;
 		}
 		try {
@@ -49,7 +55,7 @@ public class ArduinoSerial {
 	}
 
 	/**
-	 * Waits for a serial port to appear. It is assumed that the default comport
+	 * Waits for a unknown serial port to appear. It is assumed that the default comport
 	 * is not available on the system
 	 *
 	 * @param originalPorts
@@ -58,7 +64,7 @@ public class ArduinoSerial {
 	 *            The port to return if no new com port is found
 	 * @return the new comport if found else the defaultComPort
 	 */
-	public static String wait_for_com_Port_to_appear(MessageConsoleStream console, List<String> originalPorts,
+	private static String wait_for_com_Port_to_appear(MessageConsoleStream console, List<String> originalPorts,
 			String defaultComPort) {
 
 		List<String> newPorts;
@@ -99,6 +105,7 @@ public class ArduinoSerial {
 			int newPortsCopySize = newPorts.size();
 			if ((newPortsCopy.isEmpty()) && (newPortsCopySize == prefNewPortsCopySize + 1)) {
 				console.println(Messages.ArduinoSerial_Comport_Appeared_and_disappeared);
+				console.println(Messages.ArduinoSerial_Comport_reset_took.replace(MS,Integer.toString( numTries * delayMs))); 
 				return defaultComPort;
 			}
 			prefNewPortsCopySize = newPortsCopySize;
@@ -121,8 +128,40 @@ public class ArduinoSerial {
 		} while (newPortsCopy.isEmpty());
 
 		console.println(
-				Messages.ArduinoSerial_Comport_reset_took + (numTries * delayMs) + Messages.ArduinoSerial_miliseconds);
+				Messages.ArduinoSerial_Comport_reset_took.replace(MS,Integer.toString(numTries * delayMs))); 
 		return newPortsCopy.get(0);
+
+	}
+	/**
+	 * Waits for a known serial port to appear.
+	 * return true if port appeared else false
+
+	 * @param comPort
+	 *            The port to wait for
+	 * 
+	 */
+	private static boolean wait_for_com_Port_to_appear(String comPort) {
+
+		List<String> newPorts;
+		int numTries = 40; // wait for max 10 seconds as arduino does
+		int delayMs = 250;
+		do {
+
+			newPorts = Serial.list();
+			if(newPorts.contains(comPort)) {
+				return true;
+			}
+
+				try {
+					Thread.sleep(delayMs);
+				} catch (InterruptedException e) {
+					// if the sleep fails we'll 
+					// stop searching sooner
+				}
+			
+		} while (--numTries>0);
+
+		return false;
 
 	}
 
@@ -163,19 +202,19 @@ public class ArduinoSerial {
 	 *            The name of the com port to reset
 	 * @return The com port to upload to
 	 */
-	public static String makeArduinoUploadready(MessageConsoleStream console, IProject project, String configName,
+	public static String makeArduinoUploadready(MessageConsoleStream console, IProject project,ICConfigurationDescription confDesc,
 			BoardDescriptor boardDescriptor) {
 		boolean use_1200bps_touch = Common
-				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
+				.getBuildEnvironmentVariable( confDesc, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);
 		boolean bWaitForUploadPort = Common
-				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
+				.getBuildEnvironmentVariable( confDesc, Const.ENV_KEY_WAIT_FOR_UPLOAD_PORT, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);
-		String comPort = boardDescriptor.getUploadPort();
-		String boardName = boardDescriptor.getBoardName();
+		String comPort = boardDescriptor.getActualUploadPort();
+
 
 		boolean bResetPortForUpload = Common
-				.getBuildEnvironmentVariable(project, configName, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)
+				.getBuildEnvironmentVariable( confDesc, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)
 				.equalsIgnoreCase(Const.TRUE);
 
 		/*
@@ -198,30 +237,27 @@ public class ArduinoSerial {
 		}
 		if (use_1200bps_touch) {
 			// Get the list of the current com serial ports
-			console.println(Messages.ArduinoSerial_Using_1200bps_touch + comPort);
+			console.println(Messages.ArduinoSerial_Using_1200bps_touch.replace(PORT, comPort)); 
 
-			if (!reset_Arduino_by_baud_rate(comPort, 1200, 400) /* || */) {
+			if (!reset_Arduino_by_baud_rate(comPort, 1200, 400) ) {
 				console.println(Messages.ArduinoSerial_reset_failed);
 
 			} else {
-				if (boardName.startsWith("Digistump DigiX")) { //$NON-NLS-1$
-					// Give the DUE/DigiX Atmel SAM-BA bootloader time to
-					// switch-in after the reset
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException ex) {
-						// ignore error
-					}
-				}
+
 				if (bWaitForUploadPort) {
 					String newComport = wait_for_com_Port_to_appear(console, originalPorts, comPort);
-					console.println(Messages.ArduinoSerial_Using_comport + newComport
-							+ Messages.ArduinoSerial_From_Now_Onwards);
+					console.println(Messages.ArduinoSerial_Using_comport.replace(PORT,  newComport)); 
 					console.println(Messages.ArduinoSerial_Ending_reset);
 					return newComport;
 				}
+				if (wait_for_com_Port_to_appear(comPort)) {
+					console.println(Messages.ArduinoSerial_port_reappeared.replace(PORT, comPort));  
+				}else {
+					console.println(Messages.ArduinoSerial_port_still_missing.replace(PORT, comPort));   
+				}
+				
 			}
-			console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
@@ -233,27 +269,26 @@ public class ArduinoSerial {
 			serialPort = new Serial(comPort, 9600);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_exception_while_opening_seral_port + comPort, e));
-			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
-			console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+			String error=Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort); 
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,error, e));
+			console.println(error);
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort));
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
 		if (!serialPort.IsConnected()) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_unable_to_open_serial_port + comPort, null));
-			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port + comPort);
-			console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+					Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT,comPort) + comPort, null));
+			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort) );
+			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,comPort));
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
 		}
 
-		console.println(Messages.ArduinoSerial_23);
 		ToggleDTR(serialPort, 100);
 
 		serialPort.dispose();
-		console.println(Messages.ArduinoSerial_Continuing_to_use + comPort);
+		console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
 		console.println(Messages.ArduinoSerial_Ending_reset);
 		return comPort;
 

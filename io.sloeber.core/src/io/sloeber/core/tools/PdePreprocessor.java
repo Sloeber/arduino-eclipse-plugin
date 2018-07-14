@@ -22,8 +22,11 @@ package io.sloeber.core.tools;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -48,7 +51,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-@SuppressWarnings({ "nls", "restriction" })
+@SuppressWarnings({ "nls", "restriction","unused" })
 public class PdePreprocessor {
 	private static String oldGeneratedFile = ".ino.cpp";// somethimes having the
 														// file hidden is
@@ -57,20 +60,31 @@ public class PdePreprocessor {
 	private static final String DEFINE_IN_ECLIPSE = "__IN_ECLIPSE__";
 	private static final String NEWLINE = "\n";
 
-	public static void processProject(IProject iProject) throws CoreException {
+	public static void processProject(boolean canSkip,IProject iProject) throws CoreException {
 		deleteTheGeneratedFileInPreviousBersionsOfSloeber(iProject);
-		boolean projectHasNoInoFiles = true;
-		String methodDeclarations = new String();
-		String includeInoPart = NEWLINE;
-		String header = "//This is a automatic generated file" + NEWLINE;
-		header += "//Please do not modify this file" + NEWLINE;
-		header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE;
-		header += "//This file has been generated on ";
-		header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		header += NEWLINE;
-		header += NEWLINE;
-		header += "#include \"Arduino.h\"" + NEWLINE;
 
+		// loop through all the files in the project to see we need to generate a file
+		//This way we can avoid hitting the indexer when we use .cpp files
+		List<IResource> allResources = new ArrayList<>();
+		List<IResource> inoResources = new ArrayList<>();
+		allResources.addAll(Arrays.asList(iProject.members(0)));
+		for (IResource curResource : allResources) {
+			String extension = curResource.getFileExtension();
+			// only process .pde and .ino files
+			if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
+				inoResources.add(curResource);
+			}
+		}
+
+
+		if (inoResources.isEmpty()) {
+			// delete the generated .ino.cpp file this is to cope with
+			// renaming ino files to cpp files removing the need for
+			// .ino.cpp file
+			deleteTheGeneratedFile(iProject);
+			return;
+		}
+		if(canSkip&&!CCorePlugin.getIndexManager().isIndexerIdle())return;
 		ICProject tt = CoreModel.getDefault().create(iProject);
 		IIndex index = CCorePlugin.getIndexManager().getIndex(tt);
 
@@ -82,38 +96,34 @@ public class PdePreprocessor {
 				e.printStackTrace();
 				return;
 			}
-
+			String methodDeclarations = new String();
+			String includeInoPart = NEWLINE;
+			String header = "//This is a automatic generated file" + NEWLINE;
+			header += "//Please do not modify this file" + NEWLINE;
+			header += "//If you touch this file your change will be overwritten during the next build" + NEWLINE;
+			header += "//This file has been generated on ";
+			header += new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+			header += NEWLINE;
+			header += NEWLINE;
+			header += "#include \"Arduino.h\"" + NEWLINE;
 			// loop through all the files in the project
-			IResource allResources[] = iProject.members(0);
-			for (IResource curResource : allResources) {
-				String extension = curResource.getFileExtension();
-				// only process .pde and .ino files
-				if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
-					projectHasNoInoFiles = false;
+			for (IResource curResource : inoResources) {
 
-					// check whether the indexer is properly configured.
-					IPath path = curResource.getFullPath();
-					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-					ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
-					if (tu == null) {
-						methodDeclarations = extendBodyWithFileNotFund(methodDeclarations, curResource);
-					} else {
-						includeInoPart = extendIncludedInoPartForFile(includeInoPart, curResource);
-						methodDeclarations = extendMethodDeclarationsForFile(methodDeclarations, index, tu);
-						header = extendHeaderForFile(header, index, tu);
-					}
+				// check whether the indexer is properly configured.
+				IPath path = curResource.getFullPath();
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+				ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault().create(file);
+				if (tu == null) {
+					methodDeclarations = extendBodyWithFileNotFund(methodDeclarations, curResource);
+				} else {
+					includeInoPart = extendIncludedInoPartForFile(includeInoPart, curResource);
+					methodDeclarations = extendMethodDeclarationsForFile(methodDeclarations, index, tu);
+					header = extendHeaderForFile(header, index, tu);
 				}
 			}
-			// delete the generated .ino.cpp file this is to cope with
-			// people
-			// renaming the ino files to cpp files removing the need for
-			// .ino.cpp file
-			if (projectHasNoInoFiles) {
-				deleteTheGeneratedFile(iProject);
-			} else {
-				writeTheGeneratedFile(iProject, header + NEWLINE + methodDeclarations + NEWLINE + includeInoPart);
 
-			}
+			writeTheGeneratedFile(iProject, header + NEWLINE + methodDeclarations + NEWLINE + includeInoPart);
+
 		} finally {
 			index.releaseReadLock();
 		}
@@ -159,7 +169,8 @@ public class PdePreprocessor {
 		for (IASTDeclaration curTopDeclaration : topDeclaratons) {
 
 			ICPPASTLinkageSpecification test = curTopDeclaration instanceof ICPPASTLinkageSpecification
-					? (ICPPASTLinkageSpecification) curTopDeclaration : null;
+					? (ICPPASTLinkageSpecification) curTopDeclaration
+					: null;
 			if (test != null) {
 				if (test.getLiteral().equals("\"C\"")) {
 					Path curFile = new Path(curTopDeclaration.getContainingFilename());

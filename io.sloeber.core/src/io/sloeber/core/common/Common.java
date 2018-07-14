@@ -24,7 +24,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 public class Common extends Const {
 	private static final String ENV_PATTERN = "PATTERN";
 	private static final String ENV_PROTOCOL = "PROTOCOL";
@@ -64,7 +64,7 @@ public class Common extends Const {
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String name) {
-		char[] badChars = { ' ', '/', '.', '/', ':', ' ', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
+		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
 
 		String ret = name.trim();
 		for (char curchar : badChars) {

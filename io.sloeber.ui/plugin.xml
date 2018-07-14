@@ -10,14 +10,14 @@
             category="io.sloeber.ui.monitor"
             class="io.sloeber.ui.monitor.views.SerialMonitor"
             icon="icons/serial.png"
-            name="Serial monitor view">
+            name="%serial.monitor.view.name">
       </view>
       <view
             category="io.sloeber.ui.monitor"
             class="io.sloeber.ui.monitor.views.PlotterView"
             icon="icons/plotter.png"
             id="io.sloeber.ui.monitor.views.PlotterView"
-            name="Plotter"
+            name="%plotter.view.name"
             restorable="true">
       </view>
 
@@ -37,109 +37,157 @@
 </themeElementCategory>
 <themeElementCategory
       id="io.sloeber.plotter.themeCategory"
-      label="Plotter"
+      label="%themeElementCategory.plotter.label"
       parentId="io.sloeber.themeCategory">
 <description>
-Fonts and colors used by the sloeber plotter view
+%themeElementCategory.fonts.and.colors.plotter.description
 </description>
 </themeElementCategory>
 <themeElementCategory
       id="io.sloeber.serialMonitor.themeCategory"
-      label="Serial monitor"
+      label="%themeElementCategory.serial.monitor.label"
       parentId="io.sloeber.themeCategory">
 <description>
-Fonts and colors used by the arduino eclipse plugin serial monitor view
+%themeElementCategory.fonts.and.colors.serial.description
 </description>
 </themeElementCategory>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.background" label="Background color" value="COLOR_BLACK">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.background" label="%colorDefinition.background.label" value="COLOR_BLACK">
 <description>
-The background color of the plotter
+%colorDefinition.background.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.foreground" label="Foreground color" value="COLOR_WHITE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.foreground" label="%colorDefinition.foreground.label" value="COLOR_WHITE">
 <description>
-The foreground color of the plotter
+%colorDefinition.foreground.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.grid" label="Grid color" value="COLOR_DARK_CYAN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.grid" label="%colorDefinition.plotter.grid.color.label" value="COLOR_DARK_CYAN">
 <description>
-The grid color of the plotter
+%colorDefinition.plotter.grid.colordescription
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="Channel 1 color" value="COLOR_YELLOW">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.1" label="%colorDefinition.plotter.channel1.label" value="COLOR_YELLOW">
 <description>
-The color used by the first channel of the plotter
+%colorDefinition.plotter.channel1.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.2" label="Channel 2 color" value="COLOR_CYAN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.2" label="%colorDefinition.plotter.channel2.label" value="COLOR_CYAN">
 <description>
-The color used by the second channel of the plotter
+%colorDefinition.plotter.channel2.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="Channel 3 color" value="COLOR_WHITE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.3" label="%colorDefinition.plotter.channel3.label" value="COLOR_WHITE">
 <description>
-The color used by the third channel of the plotter
+%colorDefinition.plotter.channel3.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="Channel 4 color" value="COLOR_GREEN">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.4" label="%colorDefinition.plotter.channel4.label" value="COLOR_GREEN">
 <description>
-The color used by the fourth channel of the plotter
+%colorDefinition.plotter.channel4.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="Channel 5 color" value="COLOR_RED">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.5" label="%colorDefinition.plotter.channel5.label" value="COLOR_RED">
 <description>
-The color used by the fifth channel of the plotter
+%colorDefinition.plotter.channel5.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="Channel 6 color" value="COLOR_BLUE">
+<colorDefinition categoryId="io.sloeber.plotter.themeCategory" id="io.sloeber.plotter.color.6" label="%colorDefinition.plotter.channel6.label" value="COLOR_BLUE">
 <description>
-The color used by the sixth channel of the plotter
+%colorDefinition.plotter.channel6.description
 </description>
 </colorDefinition>
-<fontDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.fontDefinition" label="Font" value="Liberation Sans-Regular-10">
+<fontDefinition
+      categoryId="io.sloeber.serialMonitor.themeCategory"
+      defaultsTo="org.eclipse.jface.textfont"
+      id="io.sloeber.serial.fontDefinition"
+      label="%fontDefinition.serial.font.label">
 <description>
-The font used in the serial monitor
+%fontDefinition.serial.font.description
 </description>
 </fontDefinition>
 
-<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.1" label="Channel 1 color" value="COLOR_BLACK">
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.1" label="%colorDefinition.serial.channel1.label" value="COLOR_BLACK">
 <description>
-The color used by the first serial connection of the serial monitor
+%colorDefinition.serial.channel1.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.2" label="Channel 2 color" value="COLOR_RED">
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.2" label="%colorDefinition.serial.channel2.label" value="COLOR_RED">
 <description>
-The color used by the second serial connection of the serial monitor
+%colorDefinition.serial.channel2.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.3" label="Channel 3 color" value="COLOR_GREEN">
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.3" label="%colorDefinition.serial.channel3.label" value="COLOR_GREEN">
 <description>
-The color used by the third serial connection of the serial monitor
+%colorDefinition.serial.channel3.description
 </description>
 </colorDefinition>
-<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.4" label="Channel 4 color" value="COLOR_BLUE">
+<colorDefinition categoryId="io.sloeber.serialMonitor.themeCategory" id="io.sloeber.serial.color.4" label="%colorDefinition.serial.channel4.label" value="COLOR_BLUE">
 <description>
-The color used by the fourth serial connection of the serial monitor
+%colorDefinition.serial.channel4.description
 </description>
 </colorDefinition>
 <colorDefinition
       categoryId="io.sloeber.serialMonitor.themeCategory"
       id="io.sloeber.serial.color.5"
-      label=" Channel 5 color"
+      label="%colorDefinition.serial.channel5.label"
       value="COLOR_DARK_RED">
    <description>
-      The color used by the fifth serial connection of the serial monitor
+      %colorDefinition.serial.channel5.description
    </description>
 </colorDefinition>
 <colorDefinition
       categoryId="io.sloeber.serialMonitor.themeCategory"
       id="io.sloeber.serial.color.6"
-      label="Channel 6 color"
+      label="%colorDefinition.serial.channel6.label"
       value="COLOR_DARK_YELLOW">
    <description>
-      The color used by the sixth serial connection of the serial monitor
+      %colorDefinition.serial.channel6.description
    </description>
 </colorDefinition>
+    <themeElementCategory
+          id="io.sloeber.ui.uploadConsole.themeCategory"
+          label="%themeElementCategory.upload.console.label"
+          parentId="io.sloeber.themeCategory">
+       <description>
+          %themeElementCategory.font.colors.upload.description
+       </description>
+    </themeElementCategory>
+    <fontDefinition
+          categoryId="io.sloeber.ui.uploadConsole.themeCategory"
+          defaultsTo="org.eclipse.jface.textfont"
+          id="io.sloeber.ui.uploadConsole.fontDefinition"
+          label="%fontDefinition.upload.font.label">
+       <description>
+          %fontDefinition.upload.font.description
+       </description>
+    </fontDefinition>
+    <colorDefinition
+          categoryId="io.sloeber.ui.uploadConsole.themeCategory"
+          id="io.sloeber.ui.uploadConsole.colorDefinition.stderr"
+          label="%colorDefinition.upload.font.error.label"
+          value="COLOR_RED">
+       <description>
+          %colorDefinition.upload.font.error.description
+       </description>
+    </colorDefinition>
+    <colorDefinition
+          categoryId="io.sloeber.ui.uploadConsole.themeCategory"
+          id="io.sloeber.ui.uploadConsole.colorDefinition.stdout"
+          label="%colorDefinition.upload.font.standard.label"
+          value="COLOR_DARK_GREEN">
+       <description>
+          %colorDefinition.upload.font.standard.description
+       </description>
+    </colorDefinition>
+    <colorDefinition
+          categoryId="io.sloeber.ui.uploadConsole.themeCategory"
+          id="io.sloeber.ui.uploadConsole.colorDefinition.high"
+          label="%colorDefinition.upload.font.high.label"
+          value="COLOR_BLACK">
+       <description>
+          %colorDefinition.upload.font.high.description
+       </description>
+    </colorDefinition>
 </extension>
  <extension
        point="org.eclipse.ui.newWizards">
@@ -153,10 +201,10 @@ The color used by the fourth serial connection of the serial monitor
           finalPerspective="io.sloeber.application.perspective"
           icon="icons/new.png"
           id="io.sloeber.eclipse.NewArduinoSketchWizard"
-          name="%wizard.name"
+          name="%wizard.new.sketch.name"
           project="true">
        <description>
-          %wizard.description
+          %wizard.new.sketch.description
        </description>
     </wizard>
     <primaryWizard
@@ -196,9 +244,9 @@ The color used by the fourth serial connection of the serial monitor
              class="io.sloeber.ui.ImportLibraries"
              icon="icons/arduino.png"
              id="io.sloeber.Import_Arduino_Libraries"
-             name="%wizard.name.0">
+             name="%wizard.libraries.import.name">
           <description>
-             %wizard.description.0
+             %wizard.libraries.import.description
           </description>
           <selection
                 class="org.eclipse.core.resources.IResource">
@@ -209,9 +257,9 @@ The color used by the fourth serial connection of the serial monitor
              class="io.sloeber.ui.Import_Source_Folder"
              icon="icons/arduino.png"
              id="io.sloeber.Import_Source_Folder"
-             name="%wizard.name.1">
+             name="%wizard.folder.import.name">
           <description>
-             %wizard.description.1
+             %wizard.folder.import.description
           </description>
           <selection
                 class="org.eclipse.core.resources.IResource">
@@ -223,10 +271,10 @@ The color used by the fourth serial connection of the serial monitor
     <decorator
           class="io.sloeber.ui.ExplorerLabelDecorator"
           id="io.sloeber.core.decorator1"
-          label="embedded development"
+          label="%decorator.label"
           state="true">
        <description>
-          Arduino eclipse plugin projects ->Show "board : port : baut rate"
+          %decorator.description
        </description>
        <enablement>
           <objectClass
@@ -246,19 +294,19 @@ The color used by the fourth serial connection of the serial monitor
           category="io.sloeber.eclipse.ArduinoPreferencePage"
           class="io.sloeber.ui.preferences.PlatformSelectionPage"
           id="io.sloeber.eclipse.loation_page"
-          name="Platforms and Boards">
+          name="%page.preferences.platform..name">
     </page>
     <page
           category="io.sloeber.eclipse.ArduinoPreferencePage"
           class="io.sloeber.ui.preferences.ThirdPartyHardwareSelectionPage"
           id="io.sloeber.eclipse.boards"
-          name="Third party index url&apos;s">
+          name="%page.preferences.third.party.name">
     </page>
     <page
           category="io.sloeber.eclipse.ArduinoPreferencePage"
           class="io.sloeber.ui.preferences.LibrarySelectionPage"
           id="io.sloeber.eclipse.libraries"
-          name="Library Manager">
+          name="%page.preferences.libraries.name">
     </page>
  </extension>
   <extension
@@ -271,30 +319,30 @@ The color used by the fourth serial connection of the serial monitor
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.UploadProjectHandler"
-          description="%command.UploadprojectAction.description"
+          description="%command.upload.description"
           id="io.sloeber.actions.UploadprojectAction"
-          name="%command.UploadprojectAction.name">
+          name="%command.upload.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.NewSketchHandler"
-          description="%command.NewSketchAction.description"
+          description="%command.new.sketch.description"
           id="io.sloeber.actions.NewSketchAction"
-          name="%command.NewSketchAction.name">
+          name="%command.new.sketch.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.BuildHandler"
-          description="%command.ArduinoBuildAction.description"
+          description="%command.build.description"
           id="io.sloeber.actions.ArduinoBuildAction"
-          name="%command.ArduinoBuildAction.name">
+          name="%command.build.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.OpenSerialMonitorHandler"
-          description="%command.OpenSerialMonitorAction.description"
+          description="%command.openSerialMonitorAction.description"
           id="io.sloeber.actions.OpenSerialMonitorAction"
-          name="%command.OpenSerialMonitorAction.name">
+          name="%command.open.serial.monitor.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
@@ -313,16 +361,16 @@ The color used by the fourth serial connection of the serial monitor
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.OpenPlotterHandler"
-          description="%OpenPlotter.description"
+          description="%command.open.Plotter.description"
           id="io.sloeber.actions.OpenPlotterAction"
-          name="%OpenPlotter.label">
+          name="%command.open.Plotter.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.ReattachLibraries"
-          description="%command.ReattachLibraries.description"
+          description="%command.reattachLibraries.description"
           id="io.sloeber.actions.ReattachLibraries"
-          name="%command.ReattachLibraries.name">
+          name="%command.reattachLibraries.name">
     </command>
     <command
           categoryId="io.sloeber.commands"
@@ -338,9 +386,9 @@ The color used by the fourth serial connection of the serial monitor
     <command
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.OpenPreferencesHandler"
-          description="Open Sloeber preferences"
+          description="%command.open.sloeber.preferences.description"
           id="io.sloeber.ui.actions.openPreferences"
-          name="Preferences">
+          name="%command.open.sloeber.preferences.name">
        <commandParameter
              id="io.sloeber.ui.actions.openPreferences.pageId"
              name="Page ID"
@@ -364,19 +412,19 @@ The color used by the fourth serial connection of the serial monitor
           <command
                 commandId="io.sloeber.actions.ArduinoBuildAction"
                 icon="icons/check.png"
-                label="%command.label"
+                label="%command.build.label"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.UploadprojectAction"
                 icon="icons/arrow.png"
-                label="%command.name"
+                label="%command.upload.label"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.NewSketchAction"
                 icon="icons/new.png"
-                label="%command.label.1"
+                label="%command.new.sketch.label"
                 style="push">
           </command>
           <command
@@ -388,13 +436,13 @@ The color used by the fourth serial connection of the serial monitor
           <command
                 commandId="io.sloeber.actions.OpenSerialMonitorAction"
                 icon="icons/ser_mon.png"
-                label="%command.label.2"
+                label="%command.open.serial.monitor.label"
                 style="push">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenPlotterAction"
                 icon="icons/toolbar_plotter.png"
-                label="%OpenPlotter.label"
+                label="%command.open.Plotter.label"
                 style="push">
           </command>
        </toolbar>
@@ -412,46 +460,55 @@ The color used by the fourth serial connection of the serial monitor
           <command
                 commandId="io.sloeber.actions.ArduinoBuildAction"
                 icon="icons/check.png"
-                id="buildProject">
+                id="buildProject"
+                label="%command.build.label"
+                tooltip="%command.build.project.tooltip">
           </command>
           <command
                 commandId="io.sloeber.actions.UploadprojectAction"
                 icon="icons/arrow.png"
                 id="UploadprojectAction"
-                tooltip="%command.tooltip">
+                tooltip="%command.upload.tooltip">
           </command>
           <command
                 commandId="io.sloeber.actions.NewSketchAction"
                 icon="icons/new.png"
-                id="NewSketchAction">
+                id="NewSketchAction"
+                tooltip="%command.new.sketch.description">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenSerialMonitorAction"
                 icon="icons/ser_mon.png"
-                id="OpenSerialMonitorAction">
+                id="OpenSerialMonitorAction"
+                tooltip="%command.open.serial.monitor.tooltip">
           </command>
           <command
                 commandId="io.sloeber.actions.OpenPlotterAction"
                 icon="icons/toolbar_plotter.png"
-                id="OpenPlotterAction">
+                id="OpenPlotterAction"
+                label="%command.open.Plotter.label"
+                tooltip="%command.open.Plotter.description">
           </command>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"
                 icon="icons/library.png"
                 id="AddLibraryAction"
-                style="push">
+                style="push"
+                tooltip="%command.AddLibraryAction.description">
           </command>
           <command
                 commandId="io.sloeber.actions.AddSourceFolderAction"
                 icon="icons/folder.png"
                 id="AddSourceFolderAction"
-                style="push">
+                style="push"
+                tooltip="%command.AddSourceFolder.description ">
           </command>
           <command
                 commandId="io.sloeber.actions.ReattachLibraries"
                 icon="icons/hammer.png"
                 id="ReattachLibrariesAction"
-                style="push">
+                style="push"
+                tooltip="%command.reattachLibraries.description">
           </command>
           <separator
                 name="io.sloeber.core.separator1"
@@ -461,8 +518,9 @@ The color used by the fourth serial connection of the serial monitor
                 commandId="io.sloeber.core.open.link"
                 icon="icons/help.png"
                 id="open.how.toweb.page"
-                label="How To..."
-                style="push">
+                label="%command.how.to.label"
+                style="push"
+                tooltip="%command.how.to.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://eclipse.baeyens.it/how_to.shtml">
@@ -472,8 +530,9 @@ The color used by the fourth serial connection of the serial monitor
                 commandId="io.sloeber.core.open.link"
                 icon="icons/learn.png"
                 id="open.how.toweb.page"
-                label="Learn..."
-                style="push">
+                label="%command.learn.label"
+                style="push"
+                tooltip="%command.learn.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://eclipse.baeyens.it/learn.shtml">
@@ -483,8 +542,9 @@ The color used by the fourth serial connection of the serial monitor
                 commandId="io.sloeber.core.open.link"
                 icon="icons/tape.png"
                 id="open.youTube.page"
-                label="Videos..."
-                style="push">
+                label="%command.videos.label"
+                style="push"
+                tooltip="%command.videos.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://www.youtube.com/playlist?list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF">
@@ -493,8 +553,9 @@ The color used by the fourth serial connection of the serial monitor
           <command
                 commandId="io.sloeber.core.open.link"
                 id="open.upgrade.page"
-                label="Do I need to upgrade? ..."
-                style="push">
+                label="%command.upgrade.info.label"
+                style="push"
+                tooltip="%command.upgrade.info.description">
              <parameter
                    name="io.sloeber.core.link.parameter"
                    value="https://baeyens.it/eclipse/github_status.php?majorVersion=${MAJOR_VERSION}&amp;minorVersion=${MINOR_VERSION}&amp;microVersion=${MICRO_VERSION}&amp;qualifierVersion=${QUALIFIER_VERSION}">
@@ -507,8 +568,9 @@ The color used by the fourth serial connection of the serial monitor
           <command
                 commandId="io.sloeber.ui.actions.openPreferences"
                 icon="icons/preferences.png"
-                label="Preferences"
-                style="push">
+                label="%command.preferences.label"
+                style="push"
+                tooltip="%command.open.sloeber.preferences.description">
              <parameter
                    name="io.sloeber.ui.actions.openPreferences.pageId"
                    value="io.sloeber.eclipse.ArduinoPreferencePage">
@@ -548,14 +610,14 @@ The color used by the fourth serial connection of the serial monitor
      <tab
            class="io.sloeber.ui.project.properties.BoardSelectionPage"
            icon="platform:/plugin/io.sloeber.application/icons/logo_16.png"
-           name="Arduino board selection"
+           name="%tab.board.selection.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
      </tab>
      <tab
            class="io.sloeber.ui.project.properties.CompileProperties"
            icon="icons/preferences.png"
-           name="Compile Options"
+           name="%tab.compile.options.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
            weight="050">
      </tab>
@@ -588,7 +650,7 @@ The color used by the fourth serial connection of the serial monitor
              class="io.sloeber.ui.core.launchconfig.LaunchShortcut"
              icon="icons/16px-upload.png"
              id="io.sloeber.ui.launchconfig.launchShortcut"
-             label="Arduino Launch"
+             label="%launch.arduino.label"
              modes="run, debug">
           <contextualLaunch>
              <enablement>

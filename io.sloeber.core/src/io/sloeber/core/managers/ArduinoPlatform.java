@@ -13,8 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,11 +21,13 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -170,23 +170,23 @@ public class ArduinoPlatform {
 	}
 
 	public File getBoardsFile() {
-		return getInstallPath().resolve(Const.BOARDS_FILE_NAME).toFile();
+		return getInstallPath().append(Const.BOARDS_FILE_NAME).toFile();
 	}
 
 	public File getPlatformFile() {
-		return getInstallPath().resolve(PLATFORM_FILE_NAME).toFile();
+		return getInstallPath().append(PLATFORM_FILE_NAME).toFile();
 	}
 
-	public Path getInstallPath() {
-		String stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
-				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version).toString();
-		return Paths.get(stPath);
+	public IPath getInstallPath() {
+		IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
+				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version);
+		return stPath;
 	}
 
-	public List<Path> getIncludePath() {
-		Path installPath = getInstallPath();
-		return Arrays.asList(installPath.resolve("cores/{build.core}"), //$NON-NLS-1$
-				installPath.resolve(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
+	public List<IPath> getIncludePath() {
+		IPath installPath = getInstallPath();
+		return Arrays.asList(installPath.append("cores/{build.core}"), //$NON-NLS-1$
+				installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
 	}
 
 	public IStatus remove(IProgressMonitor monitor) {
@@ -212,7 +212,7 @@ public class ArduinoPlatform {
 		}
 
 		// Download platform archive
-		return Manager.downloadAndInstall(this, false, monitor);
+		return InternalPackageManager.downloadAndInstall(this, false, monitor);
 
 	}
 

@@ -11,7 +11,6 @@ public class Const {
 	// java stuff so I do not have to add all the time $NON-NLS-1$
 	public static final String DOT = ".";
 	public static final String SLACH = "/";
-	public static final String SPACE = " ";
 	public static final String FALSE = "FALSE";
 	public static final String TRUE = "TRUE";
 	public static final String MENU = "menu";
@@ -28,8 +27,8 @@ public class Const {
 	public static final String ACTION_SIZE = "RECIPE.SIZE";
 	public static final String ACTION_AR = "RECIPE.AR";
 	public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
-	public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
-	public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
+	//public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
+	//public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
 	// properties keys
 

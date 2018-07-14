@@ -12,9 +12,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 
 public class ToolDependency {
 
+	private static final CharSequence NAME = Messages.NAME;
+	private static final CharSequence VERSION =Messages.VERSION;
 	private String packager;
 	private String name;
 	private String version;
@@ -40,9 +43,11 @@ public class ToolDependency {
 	public Tool getTool() {
 		Package pkg = this.platform.getPackage();
 		if (!pkg.getName().equals(this.packager)) {
-			pkg = Manager.getPackage(this.packager);
+			pkg = InternalPackageManager.getPackage(this.packager);
 		}
-
+		if(pkg==null) {
+			return null;
+		}
 		return pkg.getTool(this.name, getVersion());
 	}
 
@@ -50,9 +55,9 @@ public class ToolDependency {
 		Tool tool = getTool();
 		if (tool == null) {
 			return new Status(IStatus.ERROR, Activator.getId(),
-					String.format(Messages.ToolDependency_Tool_not_found, this.name, this.version));
+					Messages.ToolDependency_Tool_not_found.replace(NAME, this.name).replace(VERSION, this.version));
 		}
-		return getTool().install(monitor);
+		return tool.install(monitor);
 	}
 
 }

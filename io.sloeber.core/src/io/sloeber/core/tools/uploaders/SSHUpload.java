@@ -18,37 +18,39 @@ import cc.arduino.packages.ssh.SSH;
 import cc.arduino.packages.ssh.SSHClientSetupChainRing;
 import cc.arduino.packages.ssh.SSHConfigFileSetup;
 import cc.arduino.packages.ssh.SSHPwdSetup;
+import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
 
 public class SSHUpload implements IRealUpload {
 
-	String myHost;
+	private static final String FILE = Messages.FILE;
+	private static final String PORT =Messages.PORT;
+	private static final String HOST =Messages.HOST;
 
-	private MessageConsoleStream myHighLevelConsoleStream;
-	private MessageConsoleStream myOutconsole;
-	private MessageConsoleStream myErrconsole;
+
+	String myHost;
+ 
+
 	private String myUpLoadTool;
 	private IProject myProject;
 
-	SSHUpload(IProject project, String upLoadTool, MessageConsoleStream HighLevelConsoleStream,
-			MessageConsoleStream Outconsole, MessageConsoleStream Errconsole, String host) {
+	SSHUpload(IProject project, String upLoadTool, String host) {
 
-		this.myHost = host;
-
-		this.myHighLevelConsoleStream = HighLevelConsoleStream;
-		this.myErrconsole = Errconsole;
-		this.myOutconsole = Outconsole;
-		this.myUpLoadTool = upLoadTool;
-		this.myProject = project;
+		myHost = host;
+		myUpLoadTool = upLoadTool;
+		myProject = project;
 	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor) {
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor, 
+			MessageConsoleStream highStream,
+			MessageConsoleStream outStream,
+			MessageConsoleStream errStream) {
 		boolean ret = true;
 		if (boardDescriptor.usesProgrammer()) {
-			this.myHighLevelConsoleStream.println(Messages.Upload_error_network);
+			highStream.println(Messages.Upload_error_network);
 			return false;
 		}
 
@@ -58,7 +60,7 @@ public class SSHUpload implements IRealUpload {
 			JSch jSch = new JSch();
 			SSHClientSetupChainRing sshClientSetupChain = new SSHConfigFileSetup(new SSHPwdSetup());
 			BoardPort boardPort = new BoardPort();
-			boardPort.setBoardName(this.myHost);
+			boardPort.setBoardName(myHost);
 			session = sshClientSetupChain.setup(boardPort, jSch);
 			if (session != null) {
 				session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -67,41 +69,41 @@ public class SSHUpload implements IRealUpload {
 
 				scp = new SCP(session);
 				SSH ssh = new SSH(session);
-				this.myHighLevelConsoleStream
-						.println(Messages.Upload_sending_sketch + hexFile + Messages.Upload_to + this.myHost);
-				scpFiles(scp, hexFile);
-				this.myHighLevelConsoleStream.println(Messages.Upload_sketch_on_yun);
+				highStream
+						.println(Messages.Upload_sending_sketch.replace(FILE, hexFile.toString()).replace(PORT, myHost));
+				scpFiles(scp, hexFile,highStream);
+				highStream.println(Messages.Upload_sketch_on_yun);
 
-				String remoteUploadCommand = Common.getBuildEnvironmentVariable(this.myProject,
-						"A.TOOLS." + this.myUpLoadTool.toUpperCase() + "_REMOTE.UPLOAD.PATTERN", //$NON-NLS-1$ //$NON-NLS-2$
+				String remoteUploadCommand = Common.getBuildEnvironmentVariable(myProject,
+						"A.TOOLS." + myUpLoadTool.toUpperCase() + "_REMOTE.UPLOAD.PATTERN", //$NON-NLS-1$ //$NON-NLS-2$
 						"run-avrdude /tmp/sketch.hex "); //$NON-NLS-1$
 
-				this.myHighLevelConsoleStream.println("merge-sketch-with-bootloader.lua /tmp/sketch.hex"); //$NON-NLS-1$
-				ret = ssh.execSyncCommand("merge-sketch-with-bootloader.lua /tmp/sketch.hex", this.myOutconsole, //$NON-NLS-1$
-						this.myErrconsole);
-				this.myHighLevelConsoleStream.println("kill-bridge"); //$NON-NLS-1$
-				ssh.execSyncCommand("kill-bridge", this.myOutconsole, this.myErrconsole); //$NON-NLS-1$
-				this.myHighLevelConsoleStream.println(remoteUploadCommand);
-				ret = ret && ssh.execSyncCommand(remoteUploadCommand, this.myOutconsole, this.myErrconsole);
+				highStream.println("merge-sketch-with-bootloader.lua /tmp/sketch.hex"); //$NON-NLS-1$
+				ret = ssh.execSyncCommand("merge-sketch-with-bootloader.lua /tmp/sketch.hex", outStream, //$NON-NLS-1$
+						errStream);
+				highStream.println("kill-bridge"); //$NON-NLS-1$
+				ssh.execSyncCommand("kill-bridge", outStream, errStream); //$NON-NLS-1$
+				highStream.println(remoteUploadCommand);
+				ret = ret && ssh.execSyncCommand(remoteUploadCommand, outStream, errStream);
 			}
 
 		} catch (JSchException e) {
 			String message = e.getMessage();
 			String errormessage = new String();
-			if (Messages.Upload_auth_cancel.equals(message) || Messages.Upload_auth_fail.equals(message)) {
-				errormessage = new String(Messages.Upload_error_auth_fail) + this.myHost;
+			if ("Auth cancel".equals(message) || "Auth fail".equals(message)) { //$NON-NLS-1$ //$NON-NLS-2$
+				errormessage = Messages.Upload_error_auth_fail.replace(HOST, myHost);
 				// TODO add to ask if if the user wants to remove the password
-				PasswordManager.ErasePassword(this.myHost);
+				PasswordManager.ErasePassword(myHost);
 			}
-			if (e.getMessage().contains(Messages.Upload_connection_refused)) {
-				errormessage = new String(Messages.Upload_error_connection_refused) + this.myHost;
+			if (e.getMessage().contains("Connection refused")) { //$NON-NLS-1$
+				errormessage = Messages.Upload_error_connection_refused.replace(HOST, myHost);
 			}
-			this.myHighLevelConsoleStream.println(errormessage);
-			this.myHighLevelConsoleStream.println(message);
+			highStream.println(errormessage);
+			highStream.println(message);
 
 			return false;
 		} catch (Exception e) {
-			this.myHighLevelConsoleStream.println(e.getMessage());
+			highStream.println(e.getMessage());
 			return false;
 		} finally {
 			if (scp != null) {
@@ -115,7 +117,7 @@ public class SSHUpload implements IRealUpload {
 		return ret;
 	}
 
-	private void scpFiles(SCP scp, IFile hexFile) throws IOException {
+	private static void scpFiles(SCP scp, IFile hexFile,MessageConsoleStream myHighStream) throws IOException {
 		File uploadFile = null;
 		try {
 			scp.open();
@@ -124,7 +126,7 @@ public class SSHUpload implements IRealUpload {
 			scp.sendFile(uploadFile, "sketch.hex"); //$NON-NLS-1$
 			scp.endFolder();
 		} catch (IOException e) {
-			this.myHighLevelConsoleStream.println(Messages.Upload_failed_upload + uploadFile);
+			myHighStream.println(Messages.Upload_failed_upload_file.replace(FILE, uploadFile.toString()));
 			throw (e);
 
 		} finally {

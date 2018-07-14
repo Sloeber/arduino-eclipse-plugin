@@ -46,17 +46,17 @@ public class CodeDescriptor {
 	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
 			+ "TEMPLATE_USE_DEFAULT"; //$NON-NLS-1$
 
-	private CodeTypes codeType;
+	private CodeTypes myCodeType;
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
-	private ArrayList<Path> myExamples = new ArrayList<>();
+	private ArrayList<IPath> myExamples = new ArrayList<>();
 
 	public IPath getTemPlateFoldername() {
-		return this.myTemPlateFoldername;
+		return myTemPlateFoldername;
 	}
 
 	private CodeDescriptor(CodeTypes codeType) {
-		this.codeType = codeType;
+		myCodeType = codeType;
 	}
 
 	public static CodeDescriptor createDefaultIno() {
@@ -67,7 +67,7 @@ public class CodeDescriptor {
 		return new CodeDescriptor(CodeTypes.defaultCPP);
 	}
 
-	public static CodeDescriptor createExample(boolean link, ArrayList<Path> sampleFolders) {
+	public static CodeDescriptor createExample(boolean link, ArrayList<IPath> sampleFolders) {
 		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.sample);
 		codeDescriptor.myMakeLinks = link;
 		codeDescriptor.myExamples = sampleFolders;
@@ -107,26 +107,26 @@ public class CodeDescriptor {
 	 * Save the setting in the last used
 	 */
 	public void save() {
-		if (this.myTemPlateFoldername != null) {
+		if (myTemPlateFoldername != null) {
 			InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
-					this.myTemPlateFoldername.toString());
+					myTemPlateFoldername.toString());
 		}
-		InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, this.codeType.toString());
+		InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, myCodeType.toString());
 		saveLastUsedExamples();
 	}
 
-	/*
+	/**
 	 * given the source descriptor, add the sources to the project returns a set
 	 * of libraries that need to be installed
-	 */
+	 **/
 	@SuppressWarnings("nls")
 	public Set<String> createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
 		Set<String> libraries = new TreeSet<>();
 
-		this.save();
+		save();
 		String Include = "Arduino.h"; //$NON-NLS-1$
 
-		switch (this.codeType) {
+		switch (myCodeType) {
 		case defaultIno:
 			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
 					Stream.openContentStream(project.getName(), Include,
@@ -144,7 +144,7 @@ public class CodeDescriptor {
 					monitor, false);
 			break;
 		case CustomTemplate:
-			IPath folderName = this.myTemPlateFoldername;
+			IPath folderName = myTemPlateFoldername;
 			String files[] = folderName.toFile().list();
 			if (files == null) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
@@ -167,8 +167,8 @@ public class CodeDescriptor {
 			break;
 		case sample:
 			try {
-				for (Path curPath : this.myExamples) {
-					if (this.myMakeLinks) {
+				for (IPath curPath : myExamples) {
+					if (myMakeLinks) {
 						Helpers.linkDirectory(project, curPath, new Path("/")); //$NON-NLS-1$
 					} else {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
@@ -190,17 +190,17 @@ public class CodeDescriptor {
 				.getGlobalString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
 
 		for (String curpath : examplePathNames) {
-			this.myExamples.add(new Path(curpath));
+			myExamples.add(new Path(curpath));
 		}
 	}
 
-	public ArrayList<Path> getExamples() {
-		return this.myExamples;
+	public ArrayList<IPath> getExamples() {
+		return myExamples;
 	}
 
 	private void saveLastUsedExamples() {
-		if (this.myExamples != null) {
-			String toStore = StringUtils.join(this.myExamples, "\n"); //$NON-NLS-1$
+		if (myExamples != null) {
+			String toStore = StringUtils.join(myExamples, "\n"); //$NON-NLS-1$
 			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, toStore);
 		} else {
 			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, new String());
@@ -209,7 +209,7 @@ public class CodeDescriptor {
 	}
 
 	public CodeTypes getCodeType() {
-		return this.codeType;
+		return myCodeType;
 	}
 
 	/**
@@ -222,9 +222,9 @@ public class CodeDescriptor {
 	 *         other cases null
 	 */
 	public String getExampleName() {
-		switch (this.codeType) {
+		switch (myCodeType) {
 		case sample:
-			return this.myExamples.get(0).lastSegment();
+			return myExamples.get(0).lastSegment();
 		default:
 			break;
 		}
@@ -241,9 +241,9 @@ public class CodeDescriptor {
 	 *         other cases null
 	 */
 	public String getLibraryName() {
-		switch (this.codeType) {
+		switch (myCodeType) {
 		case sample:
-			return getLibraryName(this.myExamples.get(0));
+			return getLibraryName(myExamples.get(0));
 		default:
 			break;
 		}
@@ -251,7 +251,7 @@ public class CodeDescriptor {
 	}
 
 	@SuppressWarnings("nls")
-	public static String getLibraryName(Path examplePath) {
+	public static String getLibraryName(IPath examplePath) {
 		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
 			return examplePath.removeLastSegments(3).lastSegment();
 		}
@@ -259,5 +259,27 @@ public class CodeDescriptor {
 			return examplePath.removeLastSegments(4).lastSegment();
 		}
 		return examplePath.removeLastSegments(2).lastSegment();
+	}
+
+	public boolean isLinkedExample() {
+		
+		return (myCodeType==CodeTypes.sample)&&myMakeLinks;
+	}
+	/**
+	 * returns the path of the first linked example.
+	 * This method is used to add a include folders to the FIRST linked example
+	 * You could argue that ALL linked examples should be in the
+	 * include path ...
+	 * I don't want to support this use case because if you want to do 
+	 * so you should know what you are doing and you don't need this
+	 * 
+	 * and if you do need this; do it yourself or become a serious patron
+	 * 
+	 * @return the path to the first linked example or NULL
+	 */
+	public IPath getLinkedExamplePath()
+	{
+		if(!isLinkedExample())return null;
+		return myExamples.get(0);
 	}
 }

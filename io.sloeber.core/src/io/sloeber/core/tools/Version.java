@@ -1,5 +1,5 @@
 package io.sloeber.core.tools;
-
+@SuppressWarnings("unused") 
 public class Version {
 	/**
 	 * compares 2 strings as if they are version numbers if version1<version2
@@ -19,8 +19,8 @@ public class Version {
 			return 1;
 		}
 
-		String[] v1 = version1.split("\\."); //$NON-NLS-1$
-		String[] v2 = version2.split("\\."); //$NON-NLS-1$
+		String[] v1 = version1.split("[\\.\\+-]"); //$NON-NLS-1$
+		String[] v2 = version2.split("[\\.\\+-]"); //$NON-NLS-1$
 		for (int i = 0; i < Math.max(v1.length, v2.length); ++i) {
 			if (v1.length <= i) {
 				return v2.length < i ? 0 : -1;
@@ -41,7 +41,21 @@ public class Version {
 					return 1;
 				}
 			} catch (NumberFormatException e) {
-				// not numbers, do string compares
+				// not numbers try number string like 6r2
+				try {
+				int vi1 = Integer.parseInt(v1[i].replaceAll("\\D", " " ).split(" ")[0]);  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+				int vi2 = Integer.parseInt(v2[i].replaceAll("\\D", " " ).split(" ")[0]); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (vi1 < vi2) {
+					return -1;
+				}
+
+				if (vi1 > vi2) {
+					return 1;
+				}}
+				catch(Exception e2) {
+					//
+				}
+				//do string compares
 				int c = v1[i].compareTo(v2[i]);
 				if (c < 0) {
 					return -1;

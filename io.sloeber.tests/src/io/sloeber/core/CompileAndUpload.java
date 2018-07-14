@@ -6,40 +6,46 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Sketch;
-import io.sloeber.core.boards.IBoard;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.providers.MCUBoard;
+import io.sloeber.ui.monitor.SerialConnection;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CompileAndUpload {
-	private static final boolean reinstall_boards_and_libraries = true;
+	private static final boolean reinstall_boards_and_libraries = false;
 	private static int mCounter = 0;
-	private IBoard myBoard;
+	private MCUBoard myBoard;
 	private String myName;
 	private static String interval = "1500";// change between 1500 and 100
 
-	public CompileAndUpload(String name, IBoard board) {
+	public CompileAndUpload(String name, MCUBoard board) {
 		this.myBoard = board;
 		this.myName = name;
 
@@ -51,7 +57,8 @@ public class CompileAndUpload {
 		WaitForInstallerToFinish();
 
 		try {
-			File file = ConfigurationPreferences.getInstallationPath().append("test.properties").toFile();
+			File file = ConfigurationPreferences.getInstallationPath()
+					.append("test.properties").toFile();
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -71,7 +78,8 @@ public class CompileAndUpload {
 			}
 			properties.put(key, interval);
 			try (FileOutputStream fileOutput = new FileOutputStream(file);) {
-				properties.store(fileOutput, "This is a file with values for unit testing");
+				properties.store(fileOutput,
+						"This is a file with values for unit testing");
 				fileOutput.close();
 			}
 
@@ -79,25 +87,21 @@ public class CompileAndUpload {
 			e1.printStackTrace();
 		}
 
-
-
-		IBoard[] boards =MySystem.getUploadBoards();
+		MCUBoard[] boards = MySystem.getUploadBoards();
 		// , new NodeMCUBoard()
 		LinkedList<Object[]> examples = new LinkedList<>();
 
-		for (IBoard curBoard : boards) {
-			examples.add(new Object[] { curBoard.getName(), curBoard });
+		for (MCUBoard curBoard : boards) {
+			examples.add(new Object[]{curBoard.getName(), curBoard});
 		}
 
 		return examples;
 	}
 
-
-
 	/*
 	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we can
-	 * start testing
+	 * installer job will trigger downloads These mmust have finished before we
+	 * can start testing
 	 */
 
 	public static void WaitForInstallerToFinish() {
@@ -108,13 +112,15 @@ public class CompileAndUpload {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { "http://arduino.esp8266.com/stable/package_esp8266com_index.json",
-				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json" };
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		String[] packageUrlsToAdd = {
+				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json"};
+		PackageManager.addPackageURLs(
+				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
-			BoardsManager.installAllLatestPlatforms();
+			PackageManager.installAllLatestPlatforms();
 		}
-		BoardsManager.referenceLocallInstallation(Shared.getTeensyPlatform());
+		PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 
 	}
 
@@ -122,21 +128,29 @@ public class CompileAndUpload {
 	public void testExamples() {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
 		CompileOptions compileOptions = new CompileOptions(null);
-		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval);
-		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder), compileOptions);
+		DateTimeFormatter df =  DateTimeFormatter
+				.ofPattern("YYYY/MM/dd/MM-HH-mm-ss");
+		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());
+		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval
+				+ " -DSERIAlDUMP=" + SerialDumpContent);
+		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder),
+				compileOptions, SerialDumpContent);
 
 	}
 
-	public void Build_Verify_upload(CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
+	public void Build_Verify_upload(CodeDescriptor codeDescriptor,
+			CompileOptions compileOptions, String SerialDumpContent) {
 
 		IProject theTestProject = null;
-
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%s", new Integer(mCounter++), this.myName);
+		String projectName = String.format("%05d_%s", new Integer(mCounter++),
+				this.myName);
 		try {
 
-			theTestProject = this.myBoard.getBoardDescriptor().createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
+			theTestProject = this.myBoard.getBoardDescriptor().createProject(
+					projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(),
+					codeDescriptor, compileOptions, monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -154,10 +168,12 @@ public class CompileAndUpload {
 				} catch (InterruptedException e) {
 					// ignore
 				}
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD,
+						monitor);
 				if (Shared.hasBuildErrors(theTestProject)) {
 					// give up
-					fail("Failed to compile the project:" + projectName + " build errors");
+					fail("Failed to compile the project:" + projectName
+							+ " build errors");
 				}
 			}
 
@@ -165,6 +181,51 @@ public class CompileAndUpload {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + projectName + " exception");
 		}
-		Sketch.upload(theTestProject);
+		IStatus uploadStatus = Sketch.syncUpload(theTestProject);
+		if (!uploadStatus.isOK()) {
+			fail("Failed to upload:" + projectName);
+		}
+		//Wait a while for the board to recover from the upload
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		verifySerialOutput(SerialDumpContent);
+	}
+
+	public boolean serialOutputMismatch;
+	public void verifySerialOutput(String serialDumpContent) {
+		String comPort = myBoard.getBoardDescriptor().getActualUploadPort();
+		Display display = SerialConnection.getDisplay();
+		display.asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				SerialConnection.show();
+				SerialConnection.clearMonitor();
+				SerialConnection.add(comPort, 115200);
+			}
+		});
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		serialOutputMismatch=true;
+		display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				SerialConnection.remove(comPort);
+				List<String> lines = SerialConnection.getContent();
+				serialOutputMismatch=(! lines.contains(serialDumpContent));
+				if(serialOutputMismatch) {
+					System.err.println(lines);
+				}
+				}	
+		});
+		if(serialOutputMismatch) {
+			fail("Serial output does not match epectation "+serialDumpContent);
+		}
 	}
 }

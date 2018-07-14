@@ -19,7 +19,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import io.sloeber.ui.preferences.PreferenceUtils;
-
+@SuppressWarnings({"unused"})
 public class OpenPreferencesHandler extends AbstractHandler {
 
 	@Override

@@ -40,7 +40,7 @@ import com.jcraft.jsch.Session;
 
 import cc.arduino.packages.BoardPort;
 
-@SuppressWarnings({ "nls", "unqualified-field-access" })
+@SuppressWarnings({ "nls" })
 public class SSHConfigFileSetup implements SSHClientSetupChainRing {
 
 	private final SSHClientSetupChainRing nextChainRing;

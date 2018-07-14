@@ -1,7 +1,10 @@
 
 package io.sloeber.ui.preferences;
 
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,12 +36,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
-import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.BoardsManager.PlatformTree;
-import io.sloeber.core.api.BoardsManager.PlatformTree.IndexFile;
-import io.sloeber.core.api.BoardsManager.PlatformTree.InstallableVersion;
-import io.sloeber.core.api.BoardsManager.PlatformTree.Package;
-import io.sloeber.core.api.BoardsManager.PlatformTree.Platform;
+import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.PackageManager.PlatformTree;
+import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
+import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
+import io.sloeber.core.api.PackageManager.PlatformTree.Package;
+import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -49,7 +52,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	public PlatformSelectionPage() {
 	}
 
-	protected PlatformTree myPlatformTree = new BoardsManager.PlatformTree();
+	protected PlatformTree myPlatformTree = new PackageManager.PlatformTree();
 	protected FilteredTree myGuiplatformTree;
 	protected boolean myHideJson = MyPreferences.getHideJson();
 	protected TreeViewer viewer;
@@ -65,7 +68,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		control.setLayout(new GridLayout());
 
 		Button btnCheckButton = new Button(control, SWT.CHECK);
-		btnCheckButton.setText("Hide 3th party json files"); //$NON-NLS-1$
+		btnCheckButton.setText(Messages.PlatformSelectionPage_hide_third_party_url); 
 		btnCheckButton.setSelection(this.myHideJson);
 		btnCheckButton.addListener(SWT.Selection, new Listener() {
 
@@ -224,7 +227,9 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						}
 						if (parentElement instanceof Platform) {
 							Collection<InstallableVersion> versions = ((Platform) parentElement).getVersions();
-							return versions.toArray(new Object[versions.size()]);
+							InstallableVersion arrayVersions[]= versions.toArray(new InstallableVersion[versions.size()]);
+							Arrays.sort(arrayVersions, Collections.reverseOrder());
+							return arrayVersions;
 						}
 
 						return null;
@@ -249,11 +254,19 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 						}
 						if (element instanceof Package) {
+						    String NULL="NULL"; //$NON-NLS-1$
 							Package pkg = (Package) element;
-
-							return Messages.packageTooltip.replaceAll("\\$\\{MAINTAINER}", pkg.getMaintainer()) //$NON-NLS-1$
-									.replaceAll("\\$\\{EMAIL}", pkg.getEmail()) //$NON-NLS-1$
-									.replaceAll("\\$\\{URL}", pkg.getWebsiteURL().toString()); //$NON-NLS-1$
+							String maintainer=pkg.getMaintainer();
+							String email=pkg.getEmail();
+							URL weburl=pkg.getWebsiteURL();
+							String weburlString=NULL; 
+							if(maintainer==null)maintainer=NULL; 
+							if(email==null)email=NULL; 
+							if(weburl!=null) weburlString=weburl.toString();
+						
+							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer)
+									.replace(Messages.EMAIL, email)
+									.replace(Messages.URL, weburlString);
 
 						}
 						if (element instanceof Platform) {
@@ -318,7 +331,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 	protected IStatus updateInstallation(IProgressMonitor monitor) {
 		MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_platforms, null);
-		BoardsManager.setPlatformTree(this.myPlatformTree, monitor, status);
+		PackageManager.setPlatformTree(this.myPlatformTree, monitor, status);
 		return status;
 	}
 

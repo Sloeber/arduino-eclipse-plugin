@@ -15,7 +15,7 @@
 <provider
       class="io.sloeber.core.toolchain.ArduinoLanguageProvider"
       id="io.sloeber.languageSettingsProvider"
-      name="Arduino Compiler Settings"
+      name="%provider.compoler.settings.name"
       parameter='${COMMAND} -E -P -v -dD -D__IN_ECLIPSE__ "${INPUTS}"'
       prefer-non-shared="true">
 <language-scope id="org.eclipse.cdt.core.gcc"/>
@@ -46,31 +46,6 @@
              id="org.eclipse.cdt.core.ccnature">
        </requires-nature>
    </extension>
-<!--
-####################################################################################### 
-#    Property Pages                                                                   # 
-####################################################################################### 
--->
-	
-  
-
-   
-<!--
-####################################################################################### 
-#    Wizard Pages                                                                     # 
-####################################################################################### 
--->
-
-<!-- New sketch wizard -->
-
-<!-- Arduino Library import wizard -->
-
-
-<!--
-####################################################################################### 
-#    Preference Pages                                                                 # 
-####################################################################################### 
--->
 
 <!--
 ####################################################################################### 
@@ -84,17 +59,10 @@
             delegate="io.sloeber.core.api.LaunchConfiguration"
             id="io.sloeber.tools.arduinoLaunchConfiguration"
             modes="run, debug"
-            name="Arduino Launch"
+            name="%launchConfigurationType.arduio.name"
             public="true">
       </launchConfigurationType>
    </extension>
-
-<!-- Launch Configuration Tab Group -->
-   
-<!-- Launch Configuration Image -->
-   
-<!-- Launch Shortcut -->
-   
 <!--
 ####################################################################################### 
 #    Arduino Plugin Commands                                                              # 
@@ -117,26 +85,9 @@
 </extension>
 
 
-<!--
-####################################################################################### 
-#    Action Sets (Toolbar & Main Menu)                                                # 
-####################################################################################### 
--->
 
-<!-- Menu -->  	
-
-<!-- Toolbar --> 
- <!-- ******************* -->
-<!-- ******************* -->
-<!-- ******************* -->
- 
  
 <!-- 
-				icon="icons/upload.gif" 
-				icon="icons/newSketch.gif"
-				icon="icons/openSerial.gif"
- 
-
 
 ####################################################################################### 
 ####################################################################################### 
@@ -178,7 +129,7 @@
         macroOutputFileExtValue="$(suffix $(notdir $@)"
         macroOutputFileNameValue="$(notdir $@)"
         macroOutputFileRelPathValue="$@"
-        name="%builder.name"
+        name="%toolchain.builder.name"
         parallelBuildCmd="-j*"
         reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
         variableFormat="${=}">
@@ -195,10 +146,10 @@
            cleanCommand="rm -f"
            id="io.sloeber.core.configuration.release"
            languageSettingsProviders="io.sloeber.languageSettingsProvider"
-           name="%configuration.name"
-           prebuildStep="io.sloeber.core.command.generate.cpp">
+           name="%configuration.name">
         <toolChain
               archList="all"
+              configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberBuildVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
               languageSettingsProviders="io.sloeber.languageSettingsProvider"
@@ -214,12 +165,12 @@
            </targetPlatform>
            <builder
                  id="io.sloeber.sketch.builder"
-                 name="%builder.name.0"
+                 name="%toolchain.gnu.builder.name"
                  superClass="io.sloeber.gnu.builder">
            </builder>
            <optionCategory
                  id="io.sloeber.core.optionCategory.includePaths"
-                 name="%optionCategory.name">
+                 name="%optionCategory.include.name">
            </optionCategory>
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
@@ -369,11 +320,11 @@
                  commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE_PATH} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3} ${JANTJE.EXTRA.ARCHIVE} ${JANTJE.EXTRA.ALL}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.ar"
-                 name="%tool.name.1">
+                 name="%tool.archiver.name">
               <outputType
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
-                    name="%outputType.name.3"
+                    name="%outputType.archiver.name"
                     outputNames="${A.ARCHIVE_FILE_PATH}"
                     outputs="ar"
                     primaryOutput="true">
@@ -383,7 +334,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.tool.archiver.input"
                     multipleOfType="true"
-                    name="%inputType.name.1"
+                    name="%inputType.archiver.name"
                     primaryInput="false"
                     sources="o">
               </inputType>
@@ -391,15 +342,15 @@
            <tool
                  announcement="%tool.Arduino.combiner.announcement"
                  command="${A.RECIPE.C.COMBINE.PATTERN}"
-                 commandLinePattern="${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3} ${JANTJE.EXTRA.ALL} ${JANTJE.EXTRA.LINK}"
+                 commandLinePattern="${A.JANTJE.PRE.LINK}${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3} ${JANTJE.EXTRA.ALL} ${JANTJE.EXTRA.LINK}${A.JANTJE.POST.LINK}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
-                 name="%tool.name.2"
+                 name="%tool.combiner.name"
                  natureFilter="both">
               <outputType
                     buildVariable="ELF"
                     id="io.sloeber.tool.combiner.output"
-                    name="%outputType.name.4"
+                    name="%outputType.elf.name"
                     outputNames="${ProjName}.elf"
                     outputs="elf"
                     primaryOutput="true">
@@ -408,7 +359,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.tool.combiner.ob.input"
                     multipleOfType="true"
-                    name="%inputType.name.2"
+                    name="%inputType.linker.name"
                     primaryInput="true"
                     sources="O">
                  <additionalInput
@@ -418,19 +369,19 @@
               </inputType>
            </tool>
            <tool
-                 announcement="%tool.announcement.3"
+                 announcement="%tool.obcopy.announcement"
                  command="all objcopy commands"
                  commandLinePattern="${JANTJE.OBJCOPY}"
                  id="io.sloeber.tool.objcopy.eep"
                  isAbstract="false"
-                 name="%tool.name.3"
+                 name="%tool.objcopy.name"
                  natureFilter="both">
               <inputType
                     buildVariable="ELF"
                     dependencyExtensions="elf"
                     id="io.sloeber.tool.objcopy.eep.input"
                     multipleOfType="true"
-                    name="%inputType.name.3"
+                    name="%inputType.objcopy.name"
                     primaryInput="true"
                     sourceContentType="io.sloeber.tool.combiner.output"
                     sources="elf">
@@ -439,17 +390,17 @@
                     buildVariable="HEX"
                     id="io.sloeber.tool.objcopy.output"
                     multipleOfType="false"
-                    name="%outputType.name.5"
+                    name="%outputType.hexdump.name"
                     outputNames="${ProjName}.hex"
                     outputs="hex">
               </outputType>
            </tool>
            <tool
-                 announcement="%tool.announcement.5"
+                 announcement="%tool.printsize.announcement"
                  command="${JANTJE.SIZE.SWITCH} "
                  commandLinePattern="${COMMAND}"
                  id="io.sloeber.tool.size"
-                 name="%tool.name.5">
+                 name="%tool.printsize.name">
               <inputType
                     buildVariable="HEX"
                     dependencyExtensions="hex"
@@ -487,12 +438,12 @@
           base-type="org.eclipse.core.runtime.text"
           file-extensions="eep"
           id="io.sloeber.contenttype.eeprom"
-          name="%content-type.name">
+          name="%content-type.hexdump.name">
     </content-type>
 		<content-type id="io.sloeber.contenttype.hex"
 			base-type="org.eclipse.core.runtime.text"
 			file-extensions="hex"
-			name="%content-type.name.0">
+			name="%content-type.hexdump.flash.name">
 		</content-type>
 	</extension>
 
@@ -513,7 +464,7 @@ priority="high"/>
  </extension>
  <extension
        id="io.sloeber.core.inoToCpp"
-       name="Convert Ino to CPP files"
+       name="%builder.ino.to.cpp"
        point="org.eclipse.core.resources.builders">
     <builder
           callOnEmptyDelta="true"

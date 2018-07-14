@@ -71,7 +71,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		desc.setLayoutData(layoutData);
 		desc.setBackground(parent.getBackground());
-		desc.setText(Messages.LibraryPreferencePage_add_remove);
+		desc.setText(Messages.library_preference_page_add_remove);
 		this.createTree(control);
 
 		return control;

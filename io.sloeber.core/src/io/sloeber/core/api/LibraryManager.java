@@ -9,46 +9,57 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
+import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.LibraryIndex;
-import io.sloeber.core.managers.Manager;
-import io.sloeber.core.managers.Messages;
 import io.sloeber.core.tools.Version;
+
 /**
- * This class is the main entry point for libraries.
- * It handles
- *   private libraries
- *   hardware libraries
- *   installed libraries
+ * This class is the main entry point for libraries. It handles private
+ * libraries hardware libraries installed libraries
  *
  * @author jan
  *
  */
 public class LibraryManager {
+	private static final String INO = "ino"; //$NON-NLS-1$
+	private static final String PDE = "pde";//$NON-NLS-1$
+	private static final String CPP = "cpp";//$NON-NLS-1$
+	private static final String C = "c";//$NON-NLS-1$
+	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
+	private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
+	private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
+	private static final String FILE = Messages.FILE;
+
 	static private List<LibraryIndex> libraryIndices;
 	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
 
 	static public List<LibraryIndex> getLibraryIndices() {
 		if (libraryIndices == null) {
-			Manager.getPackageIndices();
+			InternalPackageManager.getPackageIndices();
 		}
 		return libraryIndices;
 	}
@@ -277,7 +288,7 @@ public class LibraryManager {
 		if (libindex == null)
 			return;
 
-		for (String library : Defaults.INSTALLED_LIBRARIES) {
+		for (String library : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
 			Library toInstalLib = libindex.getLatestLibrary(library);
 			if (toInstalLib != null) {
 				toInstalLib.install(monitor);
@@ -302,10 +313,25 @@ public class LibraryManager {
 			libraryIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace("${FILE}", jsonFile.getAbsolutePath()), e)); //$NON-NLS-1$
+					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e)); 
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
+	
+	   /**
+     * install 1 single library based on the library name
+     * @param libName
+     */
+    public static void installLibrary(String libName) {
+        Set<String> libNamesToInstall = new TreeSet<>();
+        libNamesToInstall.add(libName);
+        Map<String, LibraryDescriptor> libsToInstall = LibraryManager.getLatestInstallableLibraries(libNamesToInstall);
+        if (!libsToInstall.isEmpty()) {
+            for (Entry<String, LibraryDescriptor> curLib : libsToInstall.entrySet()) {
+                curLib.getValue().toLibrary().install(new NullProgressMonitor());
+            }
+        }
+    }
 
 	/**
 	 * Install the latest version of all the libraries belonging to this category If
@@ -398,8 +424,8 @@ public class LibraryManager {
 	}
 
 	/**
-	 * Check wether a library is installed.
-	 * The check looks at the library installation place at the disk.
+	 * Check wether a library is installed. The check looks at the library
+	 * installation place at the disk.
 	 *
 	 * @return true if at least one library is installed
 	 */
@@ -409,5 +435,162 @@ public class LibraryManager {
 		}
 		return false;
 	}
+
+	/**
+	 * find all examples that are delivered with a library This does not include the
+	 * libraries delivered with hardware
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllLibraryExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		String libLocations[] = InstancePreferences.getPrivateLibraryPaths();
+
+		File CommonLibLocation = ConfigurationPreferences.getInstallationPathLibraries().toFile();
+		if (CommonLibLocation.exists()) {
+			examples.putAll(getLibExampleFolders(CommonLibLocation));
+		}
+
+		// get the examples from the user provide library locations
+		if (libLocations != null) {
+			for (String curLibLocation : libLocations) {
+				File curFile = new File(curLibLocation);
+				if (curFile.exists()) {
+					examples.putAll(getLibExampleFolders(curFile));
+				}
+			}
+		}
+		return examples;
+	}
+
+	/***
+	 * finds all the example folders for both the version including and without
+	 * version libraries
+	 *
+	 * @param location
+	 *            The parent folder of the libraries
+	 */
+	private static TreeMap<String, IPath> getLibExampleFolders(File LibRoot) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+		if (LibRoot == null) {
+			return examples;
+		}
+		String[] Libs = LibRoot.list();
+		if (Libs == null) {
+			// Either dir does not exist or is not a directory
+			return examples;
+		}
+		for (String curLib : Libs) {
+			String libID = LIBRARY_DESCRIPTOR_PREFIX + '/' + curLib;
+			File Lib_examples = LibRoot.toPath().resolve(curLib).resolve("examples").toFile();//$NON-NLS-1$
+			File Lib_Examples = LibRoot.toPath().resolve(curLib).resolve("Examples").toFile();//$NON-NLS-1$
+			if (Lib_examples.isDirectory()) {
+				examples.putAll(getExamplesFromFolder(libID, Lib_examples));
+			} else if (Lib_Examples.isDirectory()) {
+				examples.putAll(getExamplesFromFolder(libID, Lib_Examples));
+			} else // nothing found directly so maybe this is a version
+					// based lib
+			{
+				String[] versions = LibRoot.toPath().resolve(curLib).toFile().list();
+				if (versions != null) {
+					if (versions.length == 1) {// There can only be 1
+						// version of a lib
+						Lib_examples = LibRoot.toPath().resolve(curLib).resolve(versions[0]).resolve("examples") //$NON-NLS-1$
+								.toFile();
+						Lib_Examples = LibRoot.toPath().resolve(curLib).resolve(versions[0]).resolve("Examples") //$NON-NLS-1$
+								.toFile();
+						if (Lib_examples.isDirectory()) {
+							examples.putAll(getExamplesFromFolder(libID, Lib_examples));
+						} else if (Lib_Examples.isDirectory()) {
+							examples.putAll(getExamplesFromFolder(libID, Lib_Examples));
+						}
+					}
+				}
+			}
+		}
+
+		return examples;
+	}
+
+	/**
+	 * This method adds a folder recursively examples. Leaves containing ino files
+	 * are assumed to be examples
+	 *
+	 * @param File
+	 */
+	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, File location) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		File[] children = location.listFiles();
+		if (children == null) {
+			// Either dir does not exist or is not a directory
+			return examples;
+		}
+		for (File exampleFolder : children) {
+			String extension = FilenameUtils.getExtension(exampleFolder.toString());
+			if (exampleFolder.isDirectory()) {
+				examples.putAll(getExamplesFromFolder(prefix + '/' + exampleFolder.getName(), exampleFolder));
+			} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)
+					|| CPP.equalsIgnoreCase(extension) || C.equalsIgnoreCase(extension)) {
+				examples.put(prefix, new Path(location.toString()));
+			}
+		}
+		return examples;
+	}
+
+	/*
+	 * Get the examples of the libraries from the selected hardware These may be
+	 * referenced libraries
+	 */
+	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescriptor boardDescriptor) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		if (boardDescriptor != null) {
+			IPath platformPath = boardDescriptor.getreferencingPlatformPath();
+			if (platformPath.toFile().exists()) {
+				examples.putAll(getLibExampleFolders(platformPath.append(LIBRARY_PATH_SUFFIX).toFile()));
+			}
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples that are delivered with the Arduino IDE
+	 *
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllArduinoIDEExamples() {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		File exampleLocation = ConfigurationPreferences.getInstallationPathExamples().toFile();
+
+		if (exampleLocation.exists()) {
+			examples.putAll(getExamplesFromFolder(EXAMPLE_DESCRIPTOR_PREFIX , exampleLocation));
+		}
+		return examples;
+	}
+
+	/**
+	 * find all examples for this type of board. That is the examples provided by
+	 * Arduino The examples provided by the common libraries The examples provided
+	 * by the private libraries The examples provided by the platform the board
+	 * belongs to
+	 *
+	 * If the boardID is null there will be no platform examples
+	 *
+	 * @param boardDescriptor
+	 * @return
+	 */
+	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardDescriptor) {
+		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		// Get the examples of the library manager installed libraries
+
+		examples.putAll(getAllLibraryExamples());
+		examples.putAll(getAllArduinoIDEExamples());
+		// This one should be the last as hasmap overwrites doubles. This way
+		// hardware libraries are preferred to others
+		examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
+
+		return examples;
+	}
+
 
 }

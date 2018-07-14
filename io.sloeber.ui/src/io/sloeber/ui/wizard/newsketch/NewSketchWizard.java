@@ -26,6 +26,7 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
+import io.sloeber.ui.helpers.MyPreferences;
 
 /**
  * This class is the class related to the new arduino sketch
@@ -121,9 +122,11 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		BoardDescriptor boardID = this.mArduinoPage.getBoardID();
 		CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
 		try {
+			CompileOptions compileOptions = new CompileOptions(null);
+			compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
 			this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
 					(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, new CompileOptions(null),
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, compileOptions,
 					monitor);
 
 		} catch (Exception e) {

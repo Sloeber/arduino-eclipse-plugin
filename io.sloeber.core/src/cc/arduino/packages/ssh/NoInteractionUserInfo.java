@@ -31,7 +31,7 @@ package cc.arduino.packages.ssh;
 
 import com.jcraft.jsch.UserInfo;
 
-@SuppressWarnings({ "unqualified-field-access" })
+//@SuppressWarnings({ "unqualified-field-access" })
 public class NoInteractionUserInfo implements UserInfo {
 
 	private final String password;

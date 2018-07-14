@@ -30,9 +30,10 @@ import org.osgi.framework.ServiceReference;
 
 import io.sloeber.core.api.Serial;
 import io.sloeber.ui.Activator;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.monitor.internal.PlotterListener;
-
+@SuppressWarnings({"unused"})
 public class PlotterView extends ViewPart implements ServiceListener {
 
 	MyPlotter myPlotter = null;
@@ -99,7 +100,7 @@ public class PlotterView extends ViewPart implements ServiceListener {
 			this.myPlotter.setLineWidth(i, 1);
 			this.myPlotter.setBaseOffset(i, 0);
 			this.myPlotter.setTailSize(i, tailSize);
-			this.myPlotter.SetChannelName(i, Messages.plotterViewChannel + Integer.toString(i));
+			this.myPlotter.SetChannelName(i, Messages.plotterViewChannel.replace(Messages.NUMBER, Integer.toString(i)));
 		}
 
 		PlotterView.this.myPlotter.setShowLabels(true);
@@ -236,7 +237,7 @@ public class PlotterView extends ViewPart implements ServiceListener {
 		final Object service = FrameworkUtil.getBundle(getClass()).getBundleContext().getService(reference);
 		if (service instanceof Serial && service == this.mySerial) {
 			this.mySerial.removeListener(this.myPlotterListener);
-			this.myPlotter.setStatus(Messages.plotterViewDisconnectedFrom + this.mySerial.toString());
+			this.myPlotter.setStatus(Messages.plotterViewDisconnectedFrom.replace(Messages.PORT, this.mySerial.toString()));
 			this.myPlotter.setShowLabels(true);
 			this.myPlotter.setnewBackgroundImage();
 			this.myPlotterListener.dispose();
@@ -282,7 +283,7 @@ public class PlotterView extends ViewPart implements ServiceListener {
 				public void run() {
 					PlotterView.this.mySerial.addListener(PlotterView.this.myPlotterListener);
 					PlotterView.this.myPlotter
-							.setStatus(Messages.plotterViewConnectedTo + PlotterView.this.mySerial.toString());
+							.setStatus(Messages.plotterViewConnectedTo.replace(Messages.PORT, PlotterView.this.mySerial.toString()));
 					PlotterView.this.myPlotter.setShowLabels(true);
 					PlotterView.this.myPlotter.setnewBackgroundImage();
 				}

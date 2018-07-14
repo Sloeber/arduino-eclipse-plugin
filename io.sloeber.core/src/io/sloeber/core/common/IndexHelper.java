@@ -15,7 +15,7 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-
+@SuppressWarnings("unused")
 public class IndexHelper {
 	/**
 	 * given a list of names from the indexer. Find a function call and return

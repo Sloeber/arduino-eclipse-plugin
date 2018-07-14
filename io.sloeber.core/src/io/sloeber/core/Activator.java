@@ -36,7 +36,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
-import io.sloeber.core.managers.Manager;
+import io.sloeber.core.managers.InternalPackageManager;
 
 abstract class FamilyJob extends Job {
 	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
@@ -58,7 +58,7 @@ abstract class FamilyJob extends Job {
  * @author Jan Baeyens
  *
  */
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","unused"})
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
@@ -86,7 +86,6 @@ public class Activator extends AbstractUIPlugin {
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
 		installPath.toFile().mkdirs();
 		IPath downloadPath = ConfigurationPreferences.getInstallationPathDownload();
-		System.out.println("arduinoPlugin folders created");
 		downloadPath.toFile().mkdirs();
 		testKnownIssues();
 		initializeImportantVariables();
@@ -109,6 +108,19 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void testKnownIssues() {
+
+		{
+			org.osgi.service.prefs.Preferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core")
+					.node("indexer");
+			myScope.put("indexAllFiles", "false");
+			myScope.put("indexUnusedHeadersWithDefaultLang", "false");
+			try {
+				myScope.flush();
+			} catch (BackingStoreException e) {
+				e.printStackTrace();
+			}
+		}
+
 		String errorString = new String();
 		String addString = new String();
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
@@ -219,7 +231,7 @@ public class Activator extends AbstractUIPlugin {
 				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 				addFileAssociations();
 				makeOurOwnCustomBoards_txt();
-				Manager.startup_Pluging(monitor);
+				InternalPackageManager.startup_Pluging(monitor);
 				monitor.setTaskName("Done!");
 				SloeberNetworkDiscovery.start();
 				registerListeners();
@@ -391,7 +403,7 @@ public class Activator extends AbstractUIPlugin {
 			String content= IOUtils.toString( url);
 			isPatron = new Boolean(content.length() < 200);
 
-		} catch (@SuppressWarnings("unused") Exception e) {
+		} catch ( Exception e) {
 			//Ignore the download error. This will make the code try again later
 		}
 		if (isPatron != null) {

@@ -38,7 +38,7 @@ public class Import_Source_Folder_Page extends WizardResourceImportPage {
 
 		setImportProject(project);
 		if (this.mProject == null) {
-			setTitle(Messages.Handler_No_project_found);
+			setTitle(Messages.no_project_found);
 			setDescription(Messages.ui_import_no_arduino_project_help);
 		} else {
 			setTitle(Messages.ui_import_source_folder);

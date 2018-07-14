@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.core.api.MessageConsumer;
 import io.sloeber.ui.Activator;
-import io.sloeber.ui.monitor.views.Messages;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.monitor.views.MyPlotter;
-
+@SuppressWarnings({"unused"})
 public class PlotterListener implements MessageConsumer {
 
 	MyPlotter myPlotter;
@@ -108,8 +108,7 @@ public class PlotterListener implements MessageConsumer {
 			if (found) {
 				int bytestoRead = this.myReceivedSerialData.getShort();
 				if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-					Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serialListenerErrorInputPart1
-							+ bytestoRead / 2 + ' ' + Messages.serialListenerErrorInputPart2));
+					Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serial_listener_error.replace(Messages.NUMBER,Integer.toString( bytestoRead / 2))));
 				} else {
 					if (bytestoRead < this.myReceivedSerialData.remaining()) {
 						// all data is available

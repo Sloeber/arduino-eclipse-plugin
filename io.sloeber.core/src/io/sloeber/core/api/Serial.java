@@ -45,7 +45,7 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-
+@SuppressWarnings("unused")
 public class Serial implements SerialPortEventListener {
 
     // PApplet parent;
@@ -209,7 +209,7 @@ public class Serial implements SerialPortEventListener {
 			if (this.port.isOpened()) {
 				try {
 					this.port.closePort();
-				} catch (@SuppressWarnings("unused") SerialPortException e) {
+				} catch (SerialPortException e) {
 					// e.printStackTrace();
 				}
 			}

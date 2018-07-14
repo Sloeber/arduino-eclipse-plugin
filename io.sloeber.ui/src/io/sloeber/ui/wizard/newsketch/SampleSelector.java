@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.LibraryManager;
 import io.sloeber.ui.Messages;
 
 public class SampleSelector {
@@ -91,7 +91,7 @@ public class SampleSelector {
 
 		});
 		Label label1 = new Label(composite, SWT.NONE);
-		label1.setText(Messages.SampleSelector_num_selected);
+		label1.setText(Messages.sampleSelector_num_selected);
 		this.numSelectedLabel = new Label(composite, SWT.NONE);
 		this.numSelectedLabel.setText(Integer.toString(this.numSelected));
 		theGriddata = new GridData(SWT.LEFT, SWT.TOP, true, false);
@@ -117,15 +117,15 @@ public class SampleSelector {
 	 * @param mPlatformPathPath
 	 */
 
-	public void AddAllExamples(BoardDescriptor platformPath, ArrayList<Path> arrayList) {
+	public void AddAllExamples(BoardDescriptor platformPath, ArrayList<IPath> arrayList) {
 		this.numSelected = 0;
-		this.examples = BoardsManager.getAllExamples(platformPath);
+		this.examples = LibraryManager.getAllExamples(platformPath);
 
 		this.sampleTree.removeAll();
 
 		// Add the examples to the tree
 		for (Map.Entry<String, IPath> entry : this.examples.entrySet()) {
-			String keys[] = entry.getKey().split("\\?"); //$NON-NLS-1$
+			String keys[] = entry.getKey().split("/"); //$NON-NLS-1$
 			TreeItem curItems[] = this.sampleTree.getItems();
 			TreeItem curItem = findItem(curItems, keys[0]);
 			if (curItem == null) {
@@ -191,7 +191,7 @@ public class SampleSelector {
 	 *
 	 * @param arrayList
 	 */
-	private void setLastUsedExamples(ArrayList<Path> arrayList) {
+	private void setLastUsedExamples(ArrayList<IPath> arrayList) {
 
 		TreeItem[] startIems = this.sampleTree.getItems();
 		for (TreeItem curItem : startIems) {
@@ -200,10 +200,10 @@ public class SampleSelector {
 		this.numSelectedLabel.setText(Integer.toString(this.numSelected));
 	}
 
-	private void recursiveSetExamples(TreeItem curTreeItem, ArrayList<Path> arrayList) {
+	private void recursiveSetExamples(TreeItem curTreeItem, ArrayList<IPath> arrayList) {
 		for (TreeItem curchildTreeItem : curTreeItem.getItems()) {
 			if (curchildTreeItem.getItems().length == 0) {
-				for (Path curLastUsedExample : arrayList) {
+				for (IPath curLastUsedExample : arrayList) {
 					Path ss = (Path) curchildTreeItem.getData(EXAMPLEPATH);
 					if (curLastUsedExample.equals(ss)) {
 						curchildTreeItem.setChecked(true);
@@ -224,9 +224,9 @@ public class SampleSelector {
 		}
 	}
 
-	public ArrayList<Path> GetSampleFolders() {
+	public ArrayList<IPath> GetSampleFolders() {
 		this.sampleTree.getItems();
-		ArrayList<Path> ret = new ArrayList<>();
+		ArrayList<IPath> ret = new ArrayList<>();
 		for (TreeItem curTreeItem : this.sampleTree.getItems()) {
 			ret.addAll(recursiveGetSelectedExamples(curTreeItem));
 		}

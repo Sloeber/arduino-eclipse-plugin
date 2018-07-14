@@ -7,20 +7,21 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 public class Tool {
 
 	private static final String TOOLS = "tools"; //$NON-NLS-1$
+	private static final String KEY = Messages.KEY;
 	private String name;
 	private String version;
 	private List<ToolSystem> systems;
@@ -50,9 +51,9 @@ public class Tool {
 		return this.systems;
 	}
 
-	public Path getInstallPath() {
-		return Paths.get(ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
-				.append(this.name).append(this.version).toString());
+	public IPath getInstallPath() {
+		return ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
+				.append(this.name).append(this.version);
 
 	}
 
@@ -72,7 +73,7 @@ public class Tool {
 		}
 
 		// No valid system
-		return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system + this.name);
+		return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system.replace(KEY, this.name));
 	}
 
 	// public Properties getToolProperties() {

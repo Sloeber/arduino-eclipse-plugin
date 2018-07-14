@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.core.api.MessageConsumer;
 import io.sloeber.ui.Activator;
-import io.sloeber.ui.monitor.views.Messages;
+import io.sloeber.ui.Messages;
 import io.sloeber.ui.monitor.views.SerialMonitor;
-
+@SuppressWarnings({"unused"})
 public class SerialListener implements MessageConsumer {
 	private static boolean myPlotterFilterFlag = false;
 	SerialMonitor theMonitor;
@@ -84,8 +84,7 @@ public class SerialListener implements MessageConsumer {
 					int bytestoRead = this.myReceivedSerialData.getShort(curByte + 2);
 					if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
 						Activator.log(
-								new Status(IStatus.WARNING, Activator.getId(), Messages.serialListenerErrorInputPart1
-										+ bytestoRead / 2 + ' ' + Messages.serialListenerErrorInputPart2));
+								new Status(IStatus.WARNING, Activator.getId(), Messages.serial_listener_error.replace(Messages.NUMBER,Integer.toString( bytestoRead / 2))));
 					} else {
 						if (bytestoRead + 4 <= this.myReceivedSerialData.remaining()) {
 							int numChannels = bytestoRead / 2;

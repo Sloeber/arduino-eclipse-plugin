@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -43,10 +44,13 @@ public class TxtFile {
 
 	private static final String TXT_NAME_KEY_TAG = "name"; //$NON-NLS-1$
 	private static final String MENU = Const.MENU;
-	private static final String MENUITEMID = "\\$\\{MENUITEMID}"; //$NON-NLS-1$
-	private static final String MENUID = "\\$\\{MENUID}"; //$NON-NLS-1$
-	private static final String BOARDID = "\\$\\{BOARDID}"; //$NON-NLS-1$
-	private static final String MENUITEMNAME = "\\$\\{MENUITEMNAME}";//$NON-NLS-1$
+	private static final String MENUITEMID = Messages.MENUITEMID;
+	private static final String MENUID =  Messages.MENUID;
+	private static final String BOARDID =  Messages.BOARDID;
+	private static final String MENUITEMNAME =  Messages.MENUITEMNAME;
+	private static final String NAME = Messages.NAME;
+	private static final String ID = Messages.ID;
+	private static final String FILE = Messages.FILE;
 	Map<String, String> settings = null;
 	private LinkedHashMap<String, Map<String, String>> fileContent = new LinkedHashMap<>(); // all
 	// the
@@ -199,7 +203,7 @@ public class TxtFile {
 	 *
 	 */
 	public String[] getAllNames(String[] toaddNames) {
-		if (this.mLastLoadedTxtFile.equals(new String())) {
+		if (this.mLastLoadedTxtFile.toString().equals(new String())) {
 			return toaddNames;
 		}
 		HashSet<String> allNames = new HashSet<>();
@@ -263,7 +267,7 @@ public class TxtFile {
 
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.Boards_Failed_to_read_boards + this.mLastLoadedTxtFile.getName(), e));
+					Messages.Boards_Failed_to_read_boards.replace(FILE, mLastLoadedTxtFile.getName()), e));
 		}
 		return true;
 	}
@@ -376,7 +380,7 @@ public class TxtFile {
 				}
 			}
 		}
-		return MENU + " ID " + menuID + Messages.Boards_not_found; //$NON-NLS-1$
+		return  Messages.Boards_menu_ID_not_found.replace(ID,menuID );
 	}
 
 	public String getMenuItemNameFromMenuItemID(String boardID, String menuID, String menuItemID) {
@@ -453,7 +457,7 @@ public class TxtFile {
 				}
 			}
 		}
-		return MENU + Messages.Boards_name + menuName + Messages.Boards_not_found;
+		return Messages.Boards_menu_name_not_found.replace(NAME,menuName );
 	}
 
 	public String getMenuItemIDFromMenuItemName(String boardID, String menuID, String menuItemName) {
@@ -480,7 +484,7 @@ public class TxtFile {
 				}
 			}
 		}
-		return Messages.getMenuItemIDFromMenuItemName.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)
+		return Messages.Boards_Get_menu_item_id_from_name_failed.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)
 				.replaceAll(BOARDID, boardID);
 	}
 

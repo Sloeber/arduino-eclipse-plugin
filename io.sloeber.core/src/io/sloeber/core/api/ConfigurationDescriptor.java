@@ -30,11 +30,6 @@ public class ConfigurationDescriptor {
     }
 
     static public ArrayList<ConfigurationDescriptor> getReleaseAndDebug() {
-	// TODO: Consider renaming Release to ArduinoIDEConfig
-	// JABA:I don't think his is a good idea "standard" or "arduino" may be
-	// better
-	// Note that changing Release invalidates all existing workspaces. So if
-	// we change this timing will be very important.
 	ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<>();
 
 	ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor("Release",

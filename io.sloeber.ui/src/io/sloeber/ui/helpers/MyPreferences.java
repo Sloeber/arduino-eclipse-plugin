@@ -25,7 +25,9 @@ public class MyPreferences {
 	public static final String KEY_BUILD_BEFORE_UPLOAD_OPTION = "Build before upload option"; //$NON-NLS-1$
 	public static final String NODE_ARDUINO = "io.sloeber.core.ui"; //$NON-NLS-1$
 	public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor"; //$NON-NLS-1$
-	private static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
+	public static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
+	public static final String KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS = "Enable parallel build for new projects"; //$NON-NLS-1$
+
 	public static final boolean DEFAULT_OPEN_SERIAL_WITH_MONITOR = true;
 	// Serial monitor keys
 	private static final String KEY_SERIAL_RATE = "Serial monitor last selected rate"; //$NON-NLS-1$
@@ -63,9 +65,9 @@ public class MyPreferences {
 			@Override
 			public void run() {
 
-				MessageDialog dialog = new MessageDialog(null, Messages.buildBeforeUpload, null,
-						Messages.doYouWantToBuildBeforeUpload, MessageDialog.QUESTION,
-						new String[] { "Yes", "No", "Always", "Never" }, 0); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				MessageDialog dialog = new MessageDialog(null, Messages.build_before_upload, null,
+						Messages.do_you_want_to_build_before_upload, MessageDialog.QUESTION,
+						new String[] { Messages.yes, Messages.no, Messages.always, Messages.never }, 0);
 
 				switch (dialog.open()) {
 				case 0:
@@ -177,6 +179,11 @@ public class MyPreferences {
 
 	}
 
+	public static boolean getEnableParallelBuildForNewProjects() {
+		return getGlobalBoolean(KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS, false);
+
+	}
+
 	/**
 	 * This method returns the index of the last used line ending options are CR
 	 * LF CR+LF none
@@ -210,8 +217,10 @@ public class MyPreferences {
 		setGlobalValue(KEY_CLEAN_MONITOR_AFTER_UPLOAD, newFilter);
 	}
 
-	public static String getCleanSerialMonitorAfterUploadKey() {
-		return KEY_CLEAN_MONITOR_AFTER_UPLOAD;
+
+	public static void setEnableParallelBuildForNewProjects(boolean newSetting) {
+		setGlobalValue(KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS, newSetting);
+
 	}
 
 	public static boolean getLastUsedPlotterFilter() {

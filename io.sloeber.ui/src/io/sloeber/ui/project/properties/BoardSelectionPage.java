@@ -27,11 +27,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.common.Const;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
@@ -45,6 +44,7 @@ import io.sloeber.ui.Messages;
  * @see ArduinoProperties ArduinoSettingsPage
  *
  */
+@SuppressWarnings({"unused"})
 public class BoardSelectionPage extends AbstractCPropertyTab {
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 
@@ -117,8 +117,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			BoardSelectionPage.this.myBoardID.setBoardName(getBoardName());
 
 			for (LabelCombo curLabelCombo : BoardSelectionPage.this.mBoardOptionCombos) {
-				curLabelCombo
-						.setItems(BoardSelectionPage.this.myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
+				curLabelCombo.setItems(BoardSelectionPage.this.myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
 				curLabelCombo.setLabel(BoardSelectionPage.this.myBoardID.getMenuNameFromMenuID(curLabelCombo.getID()));
 			}
 
@@ -143,6 +142,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
 		draw(parent);
+
 	}
 
 	public void setListener(Listener BoardSelectionChangedListener) {
@@ -166,12 +166,16 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	public void draw(Composite composite) {
 		// create the desired layout for this wizard page
-		if (this.myBoardID == null) {
-			this.myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+		if (myBoardID == null) {
+			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+			if (myBoardID.getActualCoreCodePath() == null) {
+				Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+						Messages.BoardSelectionPage_failed_to_find_platform.replace(Messages.PLATFORM ,myBoardID.getReferencingPlatformFile().toString())));  
+			}
 		}
 		ICConfigurationDescription confdesc = getConfdesc();
 
-		String[] allBoardsFileNames = BoardsManager.getAllBoardsFiles();
+		String[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
 		for (String curBoardFile : allBoardsFileNames) {
 			this.mAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
 		}
@@ -190,8 +194,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 
 		// create a combo to select the boards
-		createLabel(composite, this.ncol, "The platform you want to use"); //$NON-NLS-1$
-		new Label(composite, SWT.NONE).setText("Platform folder:"); //$NON-NLS-1$
+		createLabel(composite, this.ncol, Messages.BoardSelectionPage_platform_you_want_to_use); 
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_platform_folder); 
 
 		this.mControlBoardsTxtFile = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
@@ -205,9 +209,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		// -------
 
 		// ------
-		createLabel(composite, this.ncol, "Your Arduino board specifications"); //$NON-NLS-1$
+		createLabel(composite, this.ncol, Messages.BoardSelectionPage_arduino_board_specification); 
 
-		new Label(composite, SWT.NONE).setText("Board:"); //$NON-NLS-1$
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_board); 
 		this.mcontrolBoardName = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
@@ -216,7 +220,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mcontrolBoardName.setEnabled(false);
 
 		// ------
-		new Label(composite, SWT.NONE).setText("Upload Protocol:"); //$NON-NLS-1$
+		new Label(composite, SWT.NONE).setText(Messages.BoardSelectionPage_upload_protocol); 
 		this.mControlUploadProtocol = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		theGriddata = new GridData();
 		theGriddata.horizontalAlignment = SWT.FILL;
@@ -230,30 +234,30 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		this.mControlUploadPort
 				.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
 		this.mPwdButton = new org.eclipse.swt.widgets.Button(composite, SWT.PUSH | SWT.CENTER);
-		this.mPwdButton.setText(Messages.Set_or_Remove_password);
+		this.mPwdButton.setText(Messages.set_or_remove_password);
 		this.mPwdButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
 				switch (e.type) {
-				case SWT.Selection:
-					String host = getUpLoadPort().split(Const.SPACE)[0];
-					if (host.equals(getUpLoadPort())) {
+					case SWT.Selection :
+						String host = getUpLoadPort().split(" ")[0]; //$NON-NLS-1$
+						if (host.equals(getUpLoadPort())) {
 						Activator.log(
 								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
-					} else {
-						PasswordManager passwordManager = new PasswordManager();
+						} else {
+							PasswordManager passwordManager = new PasswordManager();
 						PasswordDialog dialog = new PasswordDialog(composite.getShell());
-						passwordManager.setHost(host);
-						dialog.setPasswordManager(passwordManager);
-						dialog.open();
-					}
-					break;
+							passwordManager.setHost(host);
+							dialog.setPasswordManager(passwordManager);
+							dialog.open();
+						}
+						break;
 				}
 			}
 		});
 		createLine(composite, this.ncol);
 
-		TreeMap<String, String> menus = BoardsManager.getAllmenus();
+		TreeMap<String, String> menus = PackageManager.getAllmenus();
 
 		this.mBoardOptionCombos = new LabelCombo[menus.size()];
 		int index = 0;

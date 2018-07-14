@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Application
+Bundle-Name: Sloeber Application
 Bundle-SymbolicName: io.sloeber.application;singleton:=true
 Bundle-Version: 4.2.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
@@ -9,3 +9,5 @@ Require-Bundle: org.eclipse.core.runtime,
  io.sloeber.core,
  io.sloeber.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: Sloeber.io
+Automatic-Module-Name: io.sloeber.application

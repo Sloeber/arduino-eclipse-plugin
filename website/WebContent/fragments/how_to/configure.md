@@ -1,8 +1,23 @@
 This section contains Detailed instructions on how to configure the Sloeber IDE.
 ===
 
+**V3 and later** fully auto-configures. There is no longer a need to configure Sloeber.  
+  
+**Party success**
+ 
+ 1. drink a beer
+ 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks").  
+.  
+.  
+.  
+.  
+.  
+
+  
+  
+Below is the configuration needed for older versions kept here for historical reasons.
+-  
 This section assumes you have installed the Arduino Eclipse plugin or product and started it fine.
-In **V3** there configuration is done 100% automatically.  
 **In V1 and V2 you need to specify which Arduino IDE you use**  
  1. Start Eclipse that contains the plugin. c:/eclipse/Eclipse or c:/eclipse/sloeber for the product
  2. Open a workspace of your choice C:/workspace
@@ -29,7 +44,4 @@ In **V3** there configuration is done 100% automatically.
   ![file types](http://iloapp.baeyens.it/data/_gallery/public/1/1320784770_resized.png)  
   
  
- **Party success**
- 
- 1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")
+

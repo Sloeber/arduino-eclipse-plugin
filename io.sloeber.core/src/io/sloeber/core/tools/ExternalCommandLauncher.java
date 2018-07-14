@@ -20,21 +20,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -60,20 +55,14 @@ import io.sloeber.core.common.Const;
  * @since 2.2
  *
  */
+@SuppressWarnings("unused") 
 public class ExternalCommandLauncher {
+	private static final String COMMAND=Messages.COMMAND;
 
 	/** Lock for internal synchronization */
-	protected final Object fRunLock;
+	protected final Object myRunLock;
 
-	private final ProcessBuilder fProcessBuilder;
-
-	private List<String> fStdOut;
-	private List<String> fStdErr;
-
-	private MessageConsole fConsole = null;
-
-	private final static int COLOR_STDOUT = SWT.COLOR_DARK_GREEN;
-	private final static int COLOR_STDERR = SWT.COLOR_DARK_RED;
+	private final ProcessBuilder myProcessBuilder;
 
 	/**
 	 * A runnable class that will read a Stream until EOF, storing each line in
@@ -82,7 +71,6 @@ public class ExternalCommandLauncher {
 	private class LogStreamRunner implements Runnable {
 
 		private final BufferedReader fReader;
-		private final List<String> fLog;
 		private MessageConsoleStream fConsoleOutput = null;
 
 		/**
@@ -101,9 +89,9 @@ public class ExternalCommandLauncher {
 		 *            <code>OutputStream</code> for secondary console output, or
 		 *            <code>null</code> for no console output.
 		 */
-		public LogStreamRunner(InputStream instream, List<String> log, MessageConsoleStream consolestream) {
+		public LogStreamRunner(InputStream instream,
+				MessageConsoleStream consolestream) {
 			this.fReader = new BufferedReader(new InputStreamReader(instream));
-			this.fLog = log;
 			this.fConsoleOutput = consolestream;
 		}
 
@@ -118,14 +106,13 @@ public class ExternalCommandLauncher {
 				for (;;) {
 					// Processes a new process output line.
 					// If a Listener has been registered, call it
-					String line = this.fReader.readLine();
-					if (line != null) {
-						// Add the line to the total output
-						this.fLog.add(line);
+					int read = this.fReader.read();
+					if (read != -1) {
+						String readChar = new String() + (char) read;
 
 						// And print to the console (if active)
 						if (this.fConsoleOutput != null) {
-							this.fConsoleOutput.print(line + '\n');
+							this.fConsoleOutput.print(readChar);
 						}
 					} else {
 						break;
@@ -133,7 +120,8 @@ public class ExternalCommandLauncher {
 				}
 			} catch (IOException e) {
 				// This is unlikely to happen, but log it nevertheless
-				IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
+				IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+						Messages.command_io, e);
 				Common.log(status);
 			} finally {
 				try {
@@ -142,9 +130,9 @@ public class ExternalCommandLauncher {
 					// can't do anything
 				}
 			}
-			synchronized (ExternalCommandLauncher.this.fRunLock) {
+			synchronized (ExternalCommandLauncher.this.myRunLock) {
 				// Notify the caller that this thread is finished
-				ExternalCommandLauncher.this.fRunLock.notifyAll();
+				ExternalCommandLauncher.this.myRunLock.notifyAll();
 			}
 		}
 	}
@@ -160,43 +148,20 @@ public class ExternalCommandLauncher {
 	 */
 	public ExternalCommandLauncher(String command) {
 		Assert.isNotNull(command);
-		this.fRunLock = this;
-		String[] commandParts = command.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+		this.myRunLock = this;
+		String[] commandParts = command
+				.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+		//TODO do we really want to remove the quotes?
 		for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
-			if (commandParts[curCommand].startsWith("\"") && commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$ //$NON-NLS-2$
-				commandParts[curCommand] = commandParts[curCommand].substring(1, commandParts[curCommand].length() - 1);
+			if (commandParts[curCommand].startsWith("\"") //$NON-NLS-1$
+					&& commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$
+				commandParts[curCommand] = commandParts[curCommand].substring(1,
+						commandParts[curCommand].length() - 1);
 			}
 
 		}
-		this.fProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
-	}
-
-	public ExternalCommandLauncher(List<String> command) {
-		Assert.isNotNull(command);
-		this.fRunLock = this;
-		this.fProcessBuilder = new ProcessBuilder(command);
-	}
-
-	/**
-	 * Launch the external program.
-	 * <p>
-	 * This method blocks until the external program has finished.
-	 * <p>
-	 * The output from <code>stdout</code> can be retrieved with
-	 * {@link #getStdOut()}, the output from <code>stderr</code> likewise with
-	 * {@link #getStdErr()}.
-	 * </p>
-	 *
-	 * @see java.lang.Process
-	 * @see java.lang.ProcessBuilder#start()
-	 *
-	 * @return Result code of the external program. Usually <code>0</code> means
-	 *         successful.
-	 * @throws IOException
-	 *             An Exception from the underlying Process.
-	 */
-	public int launch() throws IOException {
-		return launch(new NullProgressMonitor());
+		myProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
+		myProcessBuilder.redirectErrorStream(true);
 	}
 
 	/**
@@ -221,85 +186,53 @@ public class ExternalCommandLauncher {
 	 * @throws IOException
 	 *             An Exception from the underlying Process.
 	 */
-	@SuppressWarnings("resource")
-	public int launch(IProgressMonitor inMonitor) throws IOException {
-		IProgressMonitor monitor = inMonitor;
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
-		}
+	public int launch(IProgressMonitor monitor, MessageConsoleStream highStream,
+			MessageConsoleStream stdoutStream,
+			MessageConsoleStream stderrStream) throws IOException {
+
 		Process process = null;
-		final MessageConsoleStream defaultConsoleStream;
-		final MessageConsoleStream stdoutConsoleStream;
-		final MessageConsoleStream stderrConsoleStream;
 
-		// Init the console output if a console has been set
-		// This will set the low / high water marks,
-		// get three MessageStreams for the console
-		// (default in black, stdout in dark green, stderr in dark red)
-		// and print a small header (incl. command name and all args)
-		if (this.fConsole != null) {
-			// Limit the size of the console
-			this.fConsole.setWaterMarks(8192, 16384);
-
-			// and get the output streams
-			defaultConsoleStream = this.fConsole.newMessageStream();
-			stdoutConsoleStream = this.fConsole.newMessageStream();
-			stderrConsoleStream = this.fConsole.newMessageStream();
-
-			// Set colors for the streams. This needs to be done in the UI
-			// thread (in which we may not be)
-			Display display = PlatformUI.getWorkbench().getDisplay();
-			if (display != null && !display.isDisposed()) {
-				display.syncExec(new Runnable() {
-					@Override
-					public void run() {
-						stdoutConsoleStream
-								.setColor(PlatformUI.getWorkbench().getDisplay().getSystemColor(COLOR_STDOUT));
-						stderrConsoleStream
-								.setColor(PlatformUI.getWorkbench().getDisplay().getSystemColor(COLOR_STDERR));
-					}
-				});
-			}
-			// Now print the Command line before any output is written to
-			// the console.
-			defaultConsoleStream.println();
-			defaultConsoleStream.println();
-			defaultConsoleStream.print(Messages.command_launching);
-			List<String> commandAndOptions = this.fProcessBuilder.command();
-			for (String str : commandAndOptions) {
-				defaultConsoleStream.print(str + Const.SPACE);
-			}
-			defaultConsoleStream.println();
-			defaultConsoleStream.println(Messages.command_output);
-		} else {
-			// No console output requested, set all streams to null
-			defaultConsoleStream = null;
-			stdoutConsoleStream = null;
-			stderrConsoleStream = null;
+		highStream.println();
+		highStream.println();
+		highStream.print(Messages.command_launching + ' ');
+		List<String> commandAndOptions = myProcessBuilder.command();
+		for (String str : commandAndOptions) {
+			highStream.print(str + ' ');
 		}
+		highStream.println();
+		highStream.println(Messages.command_output);
 
 		// Get the name of the command (without the path)
 		// This is used upon exit to print a nice exit message
-		String command = this.fProcessBuilder.command().get(0);
-		String commandname = command.substring(command.lastIndexOf(File.separatorChar) + 1);
+		String command = commandAndOptions.get(0);
+		String commandname = command
+				.substring(command.lastIndexOf(File.separatorChar) + 1);
 
 		// After the setup we can now start the command
 		try {
-			monitor.beginTask(Messages.command_launching + this.fProcessBuilder.command().get(0), 100);
+			monitor.beginTask(Messages.command_launching + ' ' + command, 100);
 
-			this.fStdOut = new ArrayList<>();
-			this.fStdErr = new ArrayList<>();
+			myProcessBuilder
+					.directory(Common.getWorkspaceRoot().toPath().toFile());
+			try {
+				process = myProcessBuilder.start();
+			} catch (IOException ioe) {
+				String errorMessage = ioe.getMessage();
+				if (errorMessage == null) {
+					errorMessage = "no error message given"; //$NON-NLS-1$
+				}
+				stderrStream.println(errorMessage);
+				ioe.printStackTrace();
+				throw ioe;
+			}
 
-			this.fProcessBuilder.directory(Common.getWorkspaceRoot().toPath().toFile());
-			process = this.fProcessBuilder.start();
+			Thread stdoutRunner = new Thread(new LogStreamRunner(
+					process.getInputStream(), stdoutStream));
+			Thread stderrRunner = new Thread(new LogStreamRunner(
+					process.getErrorStream(), stderrStream));
 
-			Thread stdoutRunner = new Thread(
-					new LogStreamRunner(process.getInputStream(), this.fStdOut, stdoutConsoleStream));
-			Thread stderrRunner = new Thread(
-					new LogStreamRunner(process.getErrorStream(), this.fStdErr, stderrConsoleStream));
-
-			synchronized (this.fRunLock) {
-				// Wait either for the logrunners to terminate or the user to
+			synchronized (myRunLock) {
+				// Wait either for the longrunners to terminate or the user to
 				// cancel the job.
 				// The monitor is polled 10 times / sec.
 				stdoutRunner.start();
@@ -308,14 +241,14 @@ public class ExternalCommandLauncher {
 				monitor.worked(5);
 
 				while (stdoutRunner.isAlive() || stderrRunner.isAlive()) {
-					this.fRunLock.wait(100);
+					myRunLock.wait(100);
 					if (monitor.isCanceled() == true) {
 						process.destroy();
 						process.waitFor();
 
-						if (defaultConsoleStream != null) {
+						if (highStream != null) {
 							// Write an Abort Message to the console (if active)
-							defaultConsoleStream.println(commandname + Messages.command_aborted);
+							highStream.println( Messages.command_aborted.replace(COMMAND, commandname)); 
 						}
 						return -1;
 					}
@@ -324,25 +257,13 @@ public class ExternalCommandLauncher {
 
 			// external process finished normally
 			monitor.worked(95);
-			if (defaultConsoleStream != null) {
-				defaultConsoleStream.println(commandname + Messages.command_finished);
-			}
+			highStream.println(  Messages.command_finished.replace(COMMAND, commandname)); 
+
 		} catch (InterruptedException e) {
 			// This thread was interrupted from outside
 			// consider this to be a failure of the external programm
-			if (defaultConsoleStream != null) {
-				// Write an Abort Message to the console (if active)
-				defaultConsoleStream.println(commandname + Messages.command_interupted);
-			}
+			highStream.println( Messages.command_interupted.replace(COMMAND, commandname));
 			return -1;
-		} finally {
-			monitor.done();
-			if (defaultConsoleStream != null)
-				defaultConsoleStream.close();
-			if (stdoutConsoleStream != null)
-				stdoutConsoleStream.close();
-			if (stderrConsoleStream != null)
-				stderrConsoleStream.close();
 		}
 		// if we make it to here, the process has run without any Exceptions
 		// Wait for the process to finish and then get the return value.
@@ -356,71 +277,6 @@ public class ExternalCommandLauncher {
 			// plugin.
 			return -1;
 		}
-	}
-
-	/**
-	 * Returns the <code>stdout</code> output from the last external Program
-	 * launch.
-	 *
-	 * @return <code>List&lt;String&gt;</code> with all lines or
-	 *         <code>null</code> if the external program has never been launched
-	 */
-	public List<String> getStdOut() {
-		return this.fStdOut;
-	}
-
-	/**
-	 * Returns the <code>stderr</code> output from the last external Program
-	 * launch.
-	 *
-	 * @return <code>List&lt;String&gt;</code> with all lines or
-	 *         <code>null</code> if the external program has never been launched
-	 */
-	public List<String> getStdErr() {
-		return this.fStdErr;
-	}
-
-	/**
-	 * Redirects the <code>stderr</code> output to <code>stdout</code>.
-	 * <p>
-	 * Use this either when not sure which stream an external program writes its
-	 * output to (some programs, like avr-size.exe write their help output to
-	 * stderr), or when you like any error messages inserted into the normal
-	 * output stream for analysis
-	 * </p>
-	 * <p>
-	 * Note: The redirection takes place at system level, so a command output
-	 * listener will only receive the mixed output.
-	 * </p>
-	 *
-	 * @see ProcessBuilder#redirectErrorStream(boolean)
-	 *
-	 * @param redirect
-	 *            <code>true</code> to redirect <code>stderr</code> to
-	 *            <code>stdout</code>
-	 */
-	public void redirectErrorStream(boolean redirect) {
-		this.fProcessBuilder.redirectErrorStream(redirect);
-	}
-
-	/**
-	 * Sets a Console where all output of the external command will go.
-	 * <p>
-	 * This is mostly for debugging. The output to the console is in addition to
-	 * the normal logging of this class.
-	 * </p>
-	 * <p>
-	 * This method must be called before the {@link #launch()} method. Once the
-	 * external command has been launched, calling this method will not have any
-	 * effect.
-	 * </p>
-	 *
-	 * @param console
-	 *            <code>MessageConsole</code> or <code>null</code> to disable
-	 *            console output.
-	 */
-	public void setConsole(MessageConsole console) {
-		this.fConsole = console;
 	}
 
 }

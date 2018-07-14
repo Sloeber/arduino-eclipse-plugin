@@ -16,10 +16,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -55,6 +55,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private BooleanFieldEditor useArduinoToolchainSelectionEditor;
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
+	private BooleanFieldEditor enableParallelBuildForNewProjects;
 
 	public PreferencePage() {
 		super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -109,14 +110,14 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
 		Preferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
-		BoardsManager.setPrivateHardwarePaths(hardWarePaths);
+		PackageManager.setPrivateHardwarePaths(hardWarePaths);
 		LibraryManager.setPrivateLibraryPaths(libraryPaths);
 		return ret;
 	}
 
 	@Override
 	public void init(IWorkbench workbench) {
-		String hardWarePaths = BoardsManager.getPrivateHardwarePathsString();
+		String hardWarePaths = PackageManager.getPrivateHardwarePathsString();
 		String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
 		boolean autoImport = Preferences.getAutoImportLibraries();
 		boolean pragmaOnceHeaders = Preferences.getPragmaOnceHeaders();
@@ -150,7 +151,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Dialog.applyDialogFont(parent);
 		createLine(parent, 4);
 		String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
-				{ "Yes", TRUE }, { "No", FALSE } }; //$NON-NLS-1$ //$NON-NLS-2$
+				{ Messages.yes, TRUE }, { Messages.no, FALSE } }; 
 		this.buildBeforeUploadOptionEditor = new ComboFieldEditor(MyPreferences.KEY_BUILD_BEFORE_UPLOAD_OPTION,
 				Messages.ui_build_before_upload, YesNoAskOptions, parent);
 		addField(this.buildBeforeUploadOptionEditor);
@@ -178,9 +179,13 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 				BooleanFieldEditor.DEFAULT, parent);
 		addField(this.pragmaOnceHeaderOptionEditor);
 
-		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.getCleanSerialMonitorAfterUploadKey(),
-				Messages.ui_Clean_Serial_Monitor_After_Upload, BooleanFieldEditor.DEFAULT, parent);
+		this.cleanSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.KEY_CLEAN_MONITOR_AFTER_UPLOAD,
+				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.cleanSerialMonitorAfterUploadEditor);
+
+		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
+				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
+		addField(this.enableParallelBuildForNewProjects);
 
 		createLine(parent, 4);
 		Label label = new Label(parent, SWT.LEFT);

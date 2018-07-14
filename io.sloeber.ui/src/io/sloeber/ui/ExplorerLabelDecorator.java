@@ -53,12 +53,12 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 				ICConfigurationDescription configurationDescription = prjDesc.getActiveConfiguration();
 				BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
 				String boardName = boardDescriptor.getBoardName();
-				String portName = boardDescriptor.getUploadPort();
+				String portName = boardDescriptor.getActualUploadPort();
 				if (portName.isEmpty()) {
-					portName = "no port"; //$NON-NLS-1$
+					portName = Messages.decorator_no_port; 
 				}
 				if (boardName.isEmpty()) {
-					boardName = "no Board"; //$NON-NLS-1$
+					boardName = Messages.decorator_no_platform; 
 				}
 				return text + ' ' + boardName + ' ' + ':' + portName;
 			}

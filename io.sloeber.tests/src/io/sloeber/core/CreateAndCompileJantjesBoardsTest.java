@@ -1,7 +1,5 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,73 +8,63 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
-import io.sloeber.core.boards.GenericJantjeBoard;
-import io.sloeber.core.boards.IBoard;
+import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.PackageManager;
+import io.sloeber.providers.Jantje;
+import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileJantjesBoardsTest {
-	private static int mCounter = 0;
 	private CodeDescriptor myCodeDescriptor;
-	private String myName;
-	private boolean myUsesSerial1;
-	private boolean myUsesKeyboard;
-	private boolean myUsesSerial;
-	private static int totalFails = 0;
 
-	public CreateAndCompileJantjesBoardsTest(String name, CodeDescriptor codeDescriptor,
-			boolean usesSerial, boolean usesSerial1, boolean usesKeyboard) {
+	private Examples myExample;
+    private static int myBuildCounter = 0;
+    private static int myTotalFails = 0;
+    private static int maxFails = 200;
+    private static int mySkipAtStart = 0;
 
-		this.myCodeDescriptor = codeDescriptor;
-		this.myName = name;
-		this.myUsesSerial = usesSerial;
-		this.myUsesSerial1 = usesSerial1;
-		this.myUsesKeyboard = usesKeyboard;
+	public CreateAndCompileJantjesBoardsTest( CodeDescriptor codeDescriptor, Examples example) {
+
+		myCodeDescriptor = codeDescriptor;
+
+		myExample = example;
 
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		String[] packageUrlsToAdd = { "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json"};
-		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		String[] packageUrlsToAdd = {
+				"https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json" };
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		PackageManager.installLatestPlatform(Jantje.getJsonFileName(), Jantje.getPackageName(),
+				Jantje.getPlatformName());
 
-		LinkedList<Object[]> examples = new LinkedList<>();
 		Shared.waitForAllJobsToFinish();
-		BoardsManager.installLatestPlatform(GenericJantjeBoard.getJsonFileName(), GenericJantjeBoard.getPackageName(), GenericJantjeBoard.getPlatformName());
+		LinkedList<Object[]> examples = new LinkedList<>();
 
-
-		TreeMap<String, IPath> exampleFolders = BoardsManager.getAllArduinoIDEExamples();
+		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			if(!skipExample(curexample.getKey())) {
-			ArrayList<Path> paths = new ArrayList<>();
+			String fqn = curexample.getKey().trim();
+			IPath examplePath = curexample.getValue();
+			Examples example = new Examples(fqn, null, examplePath);
+			if (!skipExample(example)) {
+				ArrayList<IPath> paths = new ArrayList<>();
 
-			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
-			String inoName = curexample.getKey().trim();
-			Boolean usesSerial = new Boolean(Examples.getUsesSerialExamples().contains(inoName));
-			Boolean usesSerial1 = new Boolean(Examples.getUsesSerial1Examples().contains(inoName));
-			Boolean usesKeyboard = new Boolean(Examples.getUsesKeyboardExamples().contains(inoName));
+				paths.add(examplePath);
+				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-			Object[] theData = new Object[] { "Example:" + inoName, codeDescriptor, usesSerial, usesSerial1,
-					usesKeyboard };
-			examples.add(theData);
+				Object[] theData = new Object[] { codeDescriptor, example };
+				examples.add(theData);
 			}
 		}
 
@@ -84,182 +72,135 @@ public class CreateAndCompileJantjesBoardsTest {
 
 	}
 
-	private static boolean skipExample(String curexample) {
-		String searchName=curexample.trim().replace('?', '_');
-		searchName=searchName.replace(' ', '_');
-		searchName=searchName.replace('.', '_');
-		switch (searchName) {
-		case "examples__10_StarterKit_BasicKit_p13_TouchSensorLamp":
+	private static boolean skipExample(Examples example) {
+		switch (example.getFQN()) {
+		case "example/10.StarterKit/BasicKit/p13_TouchSensorLamp":
 			return true;
-		case "examples__09_USB_KeyboardAndMouseControl":
+		case "example/09.USB/KeyboardAndMouseControl":
 			return true;
-		case "examples__09_USB__Mouse_JoystickMouseControl":
+		case "example/09.USB/Mouse/JoystickMouseControl":
 			return true;
-		case "examples__09_USB__Mouse_ButtonMouseControl":
+		case "example/09.USB/Mouse/ButtonMouseControl":
 			return true;
-		case "examples__09_USB__Keyboard_KeyboardSerial":
+		case "example/09.USB/Keyboard/KeyboardSerial":
 			return true;
-		case "examples__09_USB__Keyboard_KeyboardReprogram":
+		case "example/09.USB/Keyboard/KeyboardReprogram":
 			return true;
-		case "examples__09_USB__Keyboard_KeyboardMessage":
+		case "example/09.USB/Keyboard/KeyboardMessage":
 			return true;
-		case "examples__09_USB__Keyboard_KeyboardLogout":
+		case "example/09.USB/Keyboard/KeyboardLogout":
 			return true;
 		}
 		return false;
 	}
 
-	public void testExample(IBoard board) {
-		// Stop after X fails because
-		// the fails stays open in eclipse and it becomes really slow
-		// There are only a number of issues you can handle
-		// best is to focus on the first ones and then rerun starting with the
-		// failures
-		if (this.myUsesSerial && !board.supportsSerial()) {
-			System.out.println("!TEST SKIPPED due to Serial " + this.myName + " " + board.getName());
-			return;
-		}
-		if (this.myUsesSerial1 && !board.supportsSerial1()) {
-			System.out.println("!TEST SKIPPED due to Serial1 " + this.myName + " " + board.getName());
-			return;
-		}
-		if (this.myUsesKeyboard && !board.supportsKeyboard()) {
-			System.out.println("!TEST SKIPPED due to keyboard " + this.myName + " " + board.getName());
-			return;
-		}
-		if (totalFails < 40) {
-			BuildAndVerify(board.getBoardDescriptor());
-		} else {
-			fail("To many fails. Stopping test");
-		}
-
+	public void testExample(MCUBoard board) {
+        // Stop after X fails because
+        // the fails stays open in eclipse and it becomes really slow
+        // There are only a number of issues you can handle
+        // best is to focus on the first ones and then rerun starting with the
+        // failures
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        //because we run all examples on all boards we need to filter incompatible combinations
+        //like serial examples on gemma
+        if (!board.isExampleSupported(myExample)) {
+            return;
+        }
+        if (!Shared.BuildAndVerify(myBuildCounter, board.getBoardDescriptor(), myCodeDescriptor, null)) {
+            myTotalFails++;
+        }
 	}
 
 	@Test
 	public void testJantjeYun() {
-		testExample(new GenericJantjeBoard("yun"));
+		testExample(new Jantje("yun"));
 	}
 
 	@Test
 	public void testJantjeUno() {
-		testExample(new GenericJantjeBoard("uno"));
+		testExample(new Jantje("uno"));
 	}
 
 	@Test
 	public void testJantjeDiecimila() {
-		testExample(new GenericJantjeBoard("diecimila"));
+		testExample(new Jantje("diecimila"));
 	}
 
 	@Test
 	public void testJantjeNano() {
-		testExample(new GenericJantjeBoard("nano"));
+		testExample(new Jantje("nano"));
 	}
 
 	@Test
 	public void testJantjeMega() {
-		testExample(new GenericJantjeBoard("mega"));
+		testExample(new Jantje("mega"));
 	}
+
 	@Test
 	public void testJantjeMegaADK() {
-		testExample(new GenericJantjeBoard("megaADK"));
+		testExample(new Jantje("megaADK"));
 	}
+
 	@Test
 	public void testJantjeLeonardo() {
-		testExample(new GenericJantjeBoard("leonardo"));
+		testExample(new Jantje("leonardo"));
 	}
+
 	@Test
 	public void testJantjeMicro() {
-		testExample(new GenericJantjeBoard("micro"));
+		testExample(new Jantje("micro"));
 	}
+
 	@Test
 	public void testJantjeEsplora() {
-		testExample(new GenericJantjeBoard("esplora"));
+		testExample(new Jantje("esplora"));
 	}
+
 	@Test
 	public void testJantjeMini() {
-		testExample(new GenericJantjeBoard("mini"));
+		testExample(new Jantje("mini"));
 	}
+
 	@Test
 	public void testJantjeEthernet() {
-		testExample(new GenericJantjeBoard("ethernet"));
+		testExample(new Jantje("ethernet"));
 	}
+
 	@Test
 	public void testJantje_fio() {
-		testExample(new GenericJantjeBoard("fio"));
+		testExample(new Jantje("fio"));
 	}
+
 	@Test
 	public void testJantje_bt() {
-		testExample(new GenericJantjeBoard("bt"));
+		testExample(new Jantje("bt"));
 	}
+
 	@Test
 	public void testJantje_LilyPadUSB() {
-		testExample(new GenericJantjeBoard("LilyPadUSB"));
+		testExample(new Jantje("LilyPadUSB"));
 	}
+
 	@Test
 	public void testJantje_lilypad() {
-		testExample(new GenericJantjeBoard("lilypad"));
+		testExample(new Jantje("lilypad"));
 	}
+
 	@Test
 	public void testJantje_pro() {
-		testExample(new GenericJantjeBoard("pro"));
+		testExample(new Jantje("pro"));
 	}
+
 	@Test
 	public void testJantje_atmegang() {
-		testExample(new GenericJantjeBoard("atmegang"));
+		testExample(new Jantje("atmegang"));
 	}
+
 	@Test
 	public void testJantje_robotControl() {
-		testExample(new GenericJantjeBoard("robotControl"));
+		testExample(new Jantje("robotControl"));
 	}
 
-
-
-	public void BuildAndVerify(BoardDescriptor boardDescriptor) {
-
-		IProject theTestProject = null;
-
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_:%s_%s", new Integer(mCounter++), this.myName,
-				boardDescriptor.getBoardID());
-		try {
-
-			theTestProject = boardDescriptor.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), this.myCodeDescriptor, new CompileOptions(null),
-					monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			totalFails++;
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				// try again because the libraries may not yet been added
-				Shared.waitForAllJobsToFinish(); // for the indexer
-				try {
-					Thread.sleep(3000);// seen sometimes the libs were still not
-										// added
-				} catch (InterruptedException e) {
-					// ignore
-				}
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (Shared.hasBuildErrors(theTestProject)) {
-					// give up
-					totalFails++;
-					fail("Failed to compile the project:" + projectName + " build errors");
-				} else {
-					theTestProject.delete(true, null);
-				}
-			} else {
-				theTestProject.delete(true, null);
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			totalFails++;
-			fail("Failed to compile the project:" + projectName + " exception");
-		}
-	}
 
 }
