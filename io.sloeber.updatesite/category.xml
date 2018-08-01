@@ -96,7 +96,8 @@
       </description>
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
-   <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-   <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.4" enabled="true" />
-   <repository-reference location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/releases/photon" enabled="true" />
+   <repository-reference location="http://eclipse.baeyens.it/update/V4/nightly" enabled="false" />
+   <repository-reference location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
+   <repository-reference location="http://build.eclipse.org/technology/babel/update-site/I20180721-0600/photon/" enabled="true" />
 </site>
