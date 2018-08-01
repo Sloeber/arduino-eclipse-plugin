@@ -98,6 +98,5 @@
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.4" enabled="true" />
-   <repository-reference location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates" enabled="true" />
    <repository-reference location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen" enabled="true" />
 </site>
