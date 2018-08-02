@@ -8,12 +8,11 @@
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
-Info: http://eclipse.baeyens.it/
-Source: https://github.com/jantje/arduino-eclipse-plugin
-Binaries: http://eclipse.baeyens.it/download.php
+Info: http://sloeber.io/
+Source: https://github.com/sloeber/arduino-eclipse-plugin
 
-Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler,
-darcade, amorellgarcia, MarceloLimori
+
+Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia
 
 https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </text>
