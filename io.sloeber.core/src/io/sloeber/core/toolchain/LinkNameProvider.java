@@ -26,7 +26,7 @@ public class LinkNameProvider implements IManagedOutputNameProviderJaba {
 		.equalsIgnoreCase(Const.TRUE);
 	IPath[] outputNames = new IPath[primaryInputNames.length];
 	for (int curPath = 0; curPath < outputNames.length; curPath++) {
-	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_NAME) && (bUseArchiver)) {
+	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH) && (bUseArchiver)) {
 		return null;
 	    }
 	    if (primaryInputNames[curPath].toString().endsWith(".ino")) { //$NON-NLS-1$

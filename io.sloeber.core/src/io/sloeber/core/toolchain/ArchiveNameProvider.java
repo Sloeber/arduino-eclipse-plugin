@@ -27,7 +27,7 @@ public class ArchiveNameProvider implements IManagedOutputNameProviderJaba {
 		.getBuildEnvironmentVariable(project, cConf.getName(), Const.ENV_KEY_USE_ARCHIVER, Const.TRUE)
 		.equalsIgnoreCase(Const.TRUE);
 	for (int curPath = 0; curPath < primaryInputNames.length; curPath++) {
-	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_NAME) && (bUseArchiver)) {
+	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH) && (bUseArchiver)) {
 		outputNames[curPath] = Helpers.GetOutputName(primaryInputNames[curPath]).addFileExtension("o"); //$NON-NLS-1$
 	    } else {
 		return null;

@@ -65,11 +65,6 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             // boards that need to be fixed
             "RedBear Duo (Native USB Port)", "RedBear Duo (RBLink USB Port)",
 
-            // needs support for commands before compiling
-    //        "Nucleo-144", "Nucleo-64", "Nucleo-32", "Discovery",
-
-            // variant content should not be part of the archive
-            "UDOO Neo (Cortex M4)",
 
             // issue #660
             "Engimusing EFM32WG840", "Engimusing EFM32WG842",
