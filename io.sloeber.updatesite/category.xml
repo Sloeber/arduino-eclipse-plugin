@@ -6,7 +6,7 @@
    <feature url="features/org.eclipse.cdt_0.0.0.qualifier.jar" id="org.eclipse.cdt" version="0.0.0">
       <category name="Dependencies"/>
    </feature>
-   <feature url="features/io.sloeber.feature_4.2.0.qualifier.jar" id="io.sloeber.feature" version="4.2.0.qualifier">
+   <feature url="features/io.sloeber.feature_4.3.0.qualifier.jar" id="io.sloeber.feature" version="4.3.0.qualifier">
       <category name="Sloeber"/>
    </feature>
    <bundle id="ilg.gnumcueclipse.codered" version="0.0.0">
@@ -84,10 +84,10 @@
    <bundle id="ilg.gnumcueclipse.templates.stm" version="0.0.0">
       <category name="Dependencies"/>
    </bundle>
-   <bundle id="io.sloeber.product" version="4.2.0.qualifier">
+   <bundle id="io.sloeber.product" version="4.3.0.qualifier">
       <category name="Sloeber"/>
    </bundle>
-   <bundle id="io.sloeber.application" version="4.2.0.qualifier">
+   <bundle id="io.sloeber.application" version="4.3.0.qualifier">
       <category name="Dependencies"/>
    </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
