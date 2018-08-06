@@ -38,7 +38,9 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private BoardDescriptor mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
-            "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json", };
+            "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json", 
+            //Third party url implies this is outdated (it also doesn't work)
+            "http://downloads.arduino.cc/packages/package_mkr1000_index.json"};
     private static final String[] packageUrlsToIgnoreonWindows = {
             // following packages did not work in the arduino ide on windows at last test
             "https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
@@ -139,8 +141,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
                 "https://openpanzerproject.github.io/OpenPanzerBoards/package_openpanzer_index.json",
                 "https://per1234.github.io/Ariadne-Bootloader/package_codebendercc_ariadne-bootloader_index.json",
                 "https://per1234.github.io/wirino/package_per1234_wirino_index.json",
-                "https://raw.githubusercontent.com//Arduino_Boards/master/package_aloriumtech_index.json",
-                "https://raw.githubusercontent.com//SAM15x15/master/package_avdweb_nl_index.json",
+                "https://raw.githubusercontent.com/AloriumTechnology/Arduino_Boards/master/package_aloriumtech_index.json",
+                "https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
                 "https://raw.githubusercontent.com/CytronTechnologies/Cytron-Arduino-URL/master/package_cytron_index.json",
                 "https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_index.json",
                 "https://raw.githubusercontent.com/DFRobot/DFRobotDuinoBoard/master/package_dfrobot_iot_mainboard.json",
