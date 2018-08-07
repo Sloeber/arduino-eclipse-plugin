@@ -94,6 +94,19 @@ Start Sloeber look left bottom of the splash. It should contain the version numb
 If it does not you are or running a very old version or the plugin.   
 In Sloeber you can select help->about. Click on installation details. in the installed software you should find Sloeber and version numbers.  
 
+**Why should I upgrade**  
+You are happy with your current Sloeber. You have everything setup right. Why would you upgrade?  
+I agree upgrading is a hassle someone else puts on your agenda. (I'm sorry)  
+You don't have to take this crap. (I agree)  
+
+But..... if you run into a issue and ask for help, you will be asked which version you are running. If your answer is V1.0 ... (I don't have to take this crap)  
+So at this point in time you have 2 options, fix the issue yourself or upgrade (to get help).    
+Can you imagine an upgrade from Sloeber V1.0 to V4.3? (I can not!)  
+  
+My advice? You do not need to upgrade to the latest and greatest as soon as it is released. But do upgrade from time to time to avoid the extra load of a technology jump when you need to upgrade.  
+Installing a new sloeber product next to your current one is a great fast way to see why you should upgrade.
+
+
  **Party success**
 
  1. drink a beer
