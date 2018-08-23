@@ -17,7 +17,7 @@ public class Arduino extends MCUBoard {
 	private static final String AVRPlatformName = "Arduino AVR Boards";
 	private static final String SAMDPlatformName = "Arduino SAMD Boards (32-bits ARM Cortex-M0+)";
 	private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
-	private static final String NFR52PlatformName = "Arduino NRF52 Boards";
+	private static final String NFR52PlatformName = "Arduino nRF52 Boards";
 	private static final String intelPlatformName = "Intel Curie Boards";
     private static final String jsonFileName ="package_index.json";
 

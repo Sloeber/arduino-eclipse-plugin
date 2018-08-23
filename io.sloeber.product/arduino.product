@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE (product version)" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.2.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE (product version)" uid="io.sloeber.product" id="io.sloeber.application.product" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
       <text>
          RCP product for creating emebedded sofware with Eclipse for the Arduino board and other hardware.
 
-Info: http://eclipse.baeyens.it/
-Source: https://github.com/jantje/arduino-eclipse-plugin
-Binaries: http://eclipse.baeyens.it/download.php
+Info: http://sloeber.io/
+Source: https://github.com/sloeber/arduino-eclipse-plugin
 
-Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler,
-darcade, amorellgarcia, MarceloLimori
+
+Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia
 
 https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </text>
@@ -364,12 +363,9 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/eclipse/updates/4.7" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/oxygen" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="false" />
+      <repository location="http://download.eclipse.org/releases/photon" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-      <repository location="http://gnuarmeclipse.sourceforge.net/updates" enabled="true" />
    </repositories>
 
    <preferencesInfo>

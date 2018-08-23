@@ -26,7 +26,7 @@ Detailed installation instructions
  
 **install Arduino Eclipse product**
 
- 1. [Download the product version for your platform from ](http://eclipse.baeyens.it/download.php) 
+ 1. [Download the product version for your platform from ](http://eclipse.baeyens.it/) 
  2. Unpack the file downloaded in a folder without spaces ( I assume c:/eclipse) 
   
 
