@@ -1,7 +1,6 @@
 <?php
 require 'fragments/file-buttons.php';
-$STABLE_MAJOR_VERSION = "3";
-$STABLE_MINOR_VERSION = "0";
+include 'globals.txt';
 $OS = "unknown";
 $ARCH = "unknown";
 $MAJOR_VERSION = "unknown";
@@ -10,18 +9,18 @@ $MICRO_VERSION = "unknown";
 $QUALIFIER_VERSION = "unknown";
 
 if (isset ( $_GET ["os"] ))
-	$OS = $_GET ["os"];
-if (isset ( $_GET ["arch"] ))
-	$ARCH = $_GET ["arch"];
-if (isset ( $_GET ["majorVersion"] ))
-	$MAJOR_VERSION = $_GET ["majorVersion"];
-if (isset ( $_GET ["minorVersion"] ))
-	$MINOR_VERSION = $_GET ["minorVersion"];
-if (isset ( $_GET ["microVersion"] ))
-	$MICRO_VERSION = $_GET ["microVersion"];
-if (isset ( $_GET ["qualifierVersion"] ))
-	$QUALIFIER_VERSION = $_GET ["qualifierVersion"];
-?>
+    $OS = $_GET ["os"];
+    if (isset ( $_GET ["arch"] ))
+        $ARCH = $_GET ["arch"];
+        if (isset ( $_GET ["majorVersion"] ))
+            $MAJOR_VERSION = $_GET ["majorVersion"];
+            if (isset ( $_GET ["minorVersion"] ))
+                $MINOR_VERSION = $_GET ["minorVersion"];
+                if (isset ( $_GET ["microVersion"] ))
+                    $MICRO_VERSION = $_GET ["microVersion"];
+                    if (isset ( $_GET ["qualifierVersion"] ))
+                        $QUALIFIER_VERSION = $_GET ["qualifierVersion"];
+                        ?>
 
 
 
@@ -71,10 +70,10 @@ if (isset ( $_GET ["qualifierVersion"] ))
         <?php	echo "<h1>You are running version $MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION.$QUALIFIER_VERSION on $OS</h1>"; ?>
 </div>
    <?php
-			if (($MAJOR_VERSION == $STABLE_MAJOR_VERSION) and ($MINOR_VERSION == $STABLE_MINOR_VERSION)) {
-				echo "you are on the latest stable version $STABLE_MAJOR_VERSION.$STABLE_MINOR_VERSION. There is no need to upgrade.<br>";
+			if (($MAJOR_VERSION == $STABLE_VERSION_MAJOR) and ($MINOR_VERSION == $STABLE_VERSION_MINOR)) {
+				echo "you are on the latest stable version $STABLE_VERSION_MAJOR.$STABLE_VERSION_MINOR. There is no need to upgrade.<br>";
 			} else {
-				echo "Please consider upgrading to the latest stable.<br>";
+				echo "Please consider upgrading to the latest stable  $STABLE_VERSION_MAJOR.$STABLE_VERSION_MINOR.<br>";
 				if ($MAJOR_VERSION == "1") {
 					echo "<strong>Are you really still running V1??? Why???</strong><br>";
 				} elseif ($MAJOR_VERSION == "2") {
