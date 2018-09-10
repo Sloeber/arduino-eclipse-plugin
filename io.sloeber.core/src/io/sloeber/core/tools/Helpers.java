@@ -75,7 +75,7 @@ import io.sloeber.core.managers.ToolDependency;
  *
  */
 public class Helpers extends Common {
-	private static final String ARDUINO_CORE_BUILD_FOLDER_NAME = "core";
+	
 
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
@@ -396,15 +396,15 @@ public class Helpers extends Common {
 
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
 		if(corePath!=null) {
-		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_NAME + '/' + ARDUINO_CORE_BUILD_FOLDER_NAME,
+		addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH,
 				configurationDescription,true);
 		IPath variantPath = boardDescriptor.getActualVariantPath();
 		if (variantPath == null) {
 			// remove the existing link
-			Helpers.removeCodeFolder(project, ARDUINO_CODE_FOLDER_NAME + "/variant");
+			Helpers.removeCodeFolder(project, ARDUINO_VARIANT_FOLDER_PATH);
 		} else {
 			IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
-			Helpers.addCodeFolder(project, redirectVariantPath, ARDUINO_CODE_FOLDER_NAME + "/variant",
+			Helpers.addCodeFolder(project, redirectVariantPath, ARDUINO_VARIANT_FOLDER_PATH,
 					configurationDescription,false);
 		}
 		}

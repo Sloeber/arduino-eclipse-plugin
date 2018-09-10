@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.2.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
-Info: http://eclipse.baeyens.it/
-Source: https://github.com/jantje/arduino-eclipse-plugin
-Binaries: http://eclipse.baeyens.it/download.php
+Info: http://sloeber.io/
+Source: https://github.com/sloeber/arduino-eclipse-plugin
 
-Contributors (github users): jantje, brodykenrick, wimjongman, neuweiler,
-darcade, amorellgarcia, MarceloLimori
+
+Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia
 
 https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
       </text>

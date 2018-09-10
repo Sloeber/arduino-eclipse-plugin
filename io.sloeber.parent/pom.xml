@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
-	<version>4.2.0-SNAPSHOT</version>
+	<version>4.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -120,6 +120,7 @@
 			<modules>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
+				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product</module>
 				<module>../io.sloeber.updatesite</module>
 				<module>../io.sloeber.application</module>
