@@ -97,5 +97,4 @@
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
    <repository-reference location="http://download.eclipse.org/releases/photon" enabled="true" />
-   <repository-reference location="http://build.eclipse.org/technology/babel/update-site/I20180721-0600/photon/" enabled="true" />
 </site>

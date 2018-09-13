@@ -366,6 +366,7 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="false" />
       <repository location="http://download.eclipse.org/releases/photon" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
+      <repository location="http://build.eclipse.org/technology/babel/update-site/I20180721-0600/photon/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
