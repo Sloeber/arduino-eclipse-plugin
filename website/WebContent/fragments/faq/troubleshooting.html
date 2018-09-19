@@ -95,39 +95,7 @@ This way we all become smarter.<br>
   <accordion-group heading="I can not cancel the upload to the Arduino board.">
 
 Someone reported that pressing the cancel button during upload to Arduino locks the com port.  Even if the upload is not working.  To solve the lock problem in windows unplug the Arduino  -after all connections to the com port have been closed -from your pc and replug.<br>
-  </accordion-group>
-  <accordion-group heading="Deleting a library corrupts my project.">
-  This should be fixed from Mars onwards.  <br>
-    <br>
-    <br>
-  To help to fix this bug please vote at <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=372807">bugzille CDT project</a> (You need an account -no charge)<br>
-This problem should not occur in V2. <br>
-<h3>To work around</h3>
-Before you delete the library:  Right click the library. Select &quot;Resource configurations&quot;-&gt;exclude from build. Select all chackboxes (normally you only have release).
-Select OK.<br>Now the library you want to delete will be the last entry in your project and is grayed out.
-<br>You can safely delete it now.
-<h3>To reproduce do the following:</h3>
-Create a Arduino sketch project using the wizard.
-<br>Look at the project properties. They should look like the image below<br>
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707813_resized.png"><br>
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707816_resized.png"/>
-add a Arduino lirary to your Arduino sketch project.
-Look at the project properties. They should look like the image below<br>
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707814_resized.png"><br>
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707817_resized.png"/>
-Delete the Arduino Library
-<br>The project properties should look like any of the 2 above but they look like
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707815_resized.png"/>
-<img alt="The include properties after project creation" src="http://iloapp.baeyens.it/data/_gallery//public/1/1328707818_resized.png"/><br>
 
-Note that the images above show it for &quot;GNU C&quot;  but the same counts for &quot;GNU C++&quot;. Also note this is a pre V2 setup. From V2 onwards some names are different.<br>
-First deleting all the incorrect values and then setting the correct values back solves the issue.<br>
-<br>
-  </accordion-group>
-  <accordion-group heading="The indexer states Serial does not exist.">
-  This is actually the same problem as <a href="#bugs">Eclipse tells me there are bugs in my code but it compiles ok.</a><br>
-<br>
-  </accordion-group>
   <accordion-group heading="I can't download the plugin. Is your site down?">
   <p>update: When downloading the product: My web site provider stops downloads. Use a browser that restarts where it stopped downloading (like firefox or internet explorer not chrome)</p>
   As you are reading this: "obviously my site is not down". The download via Eclipse is standard HTTP just like this page is to the browser. If you can access this page you can download the plugin.<br>
@@ -159,17 +127,5 @@ Run following terminal commands to fix the problem:<br>
 <br>$ sudo chmod 777 /var/lock<br>
 for more info see <a href="http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1211165807/6">http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1211165807/6</a>
   </accordion-group>
-  <accordion-group heading="How can I find the latest version when installing?">
 
-To find the latest version when installing a Eclipse plugin. In the "install new software" dialog make sure
-<ul><li>
-only the latest version is checked
-</li><li>
-Group items by category is not checked
-</li><li>
-hide items that are already installed is not checked
-</li></ul>
-Below is an example of the settings. 1.2.5.5 is probably not the latest version.<br>
-<img alt="The settings to find the latestversion" src="http://iloapp.baeyens.it/data/_gallery//public/1/134852263644133400_resized.png?width=575&height=540">
-  </accordion-group>
 </accordion>
