@@ -44,11 +44,6 @@
             <a href="#a" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">Decide on what to install</a>
              <a href="#c1" ng-class="tab.c4" class="list-group-item small" ng-click="select('c4')">Install V4 plugin</a>
             <a href="#d1" ng-class="tab.d4" class="list-group-item small" ng-click="select('d4')">Install V4 product</a>
-            <a href="#c1" ng-class="tab.c1" class="list-group-item small" ng-click="select('c1')">Install V3 plugin</a>
-            <a href="#d1" ng-class="tab.d1" class="list-group-item small" ng-click="select('d1')">Install V3 product</a>
-            <a href="#c" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">Install V2 plugin</a>
-            <a href="#d" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">Install V2 product</a>
-            <a href="#b" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">Install V1 plugin</a>
             <a href="#e" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Configure</a>
             <a href="#f" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Create sketch</a>
             <a href="#lib" ng-class="tab.lib" class="list-group-item small" ng-click="select('lib')">Add a library to a sketch</a>
@@ -65,11 +60,6 @@
         <div class="col-md-9 col-md-pull-3">
           <section ng-show="tab.welcome">Welcome<br/>Select the how to on the right for instructions.</section>
           <section ng-show="tab.a" marked ng-include="'fragments/how_to/install_advice.md'"></section>
-          <section ng-show="tab.b" marked ng-include="'fragments/how_to/install_V1_plugin.md'"></section>
-          <section ng-show="tab.c" marked ng-include="'fragments/how_to/install_V2_plugin.md'"></section>
-          <section ng-show="tab.d" marked ng-include="'fragments/how_to/install_V2_product.md'"></section>
-          <section ng-show="tab.c1" marked ng-include="'fragments/how_to/install_V3_plugin.md'"></section>
-          <section ng-show="tab.d1" marked ng-include="'fragments/how_to/install_V3_product.md'"></section>
           <section ng-show="tab.c4" marked ng-include="'fragments/how_to/install_V4_plugin.md'"></section>
           <section ng-show="tab.d4" marked ng-include="'fragments/how_to/install_V4_product.md'"></section>
           <section ng-show="tab.e" marked ng-include="'fragments/how_to/configure.md'"></section>
