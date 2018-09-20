@@ -146,7 +146,7 @@ Here's a "line block":
 
 and images can be specified like so:
 
-![example image](http://iloapp.baeyens.it/data/_gallery/public/6/141790480451146300_resized.png "An exemplary image")
+![example image](http://eclipse.baeyens.it/img/thanks.png "An exemplary image")
 
 Inline math equations go in like so: $\omega = d\phi / dt$. Display
 math should get its own line and be put in in double-dollarsigns:

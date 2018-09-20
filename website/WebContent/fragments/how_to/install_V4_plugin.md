@@ -25,15 +25,14 @@ You want the CDT IDE version
  **using the marketplace (preferrred)**  
  4. select help->Eclipse marketplace ..  
  5. search for arduino sloeber  
- 6. select install for "The Arduino Eclipse plugin named Sloeber.  
+ 6. select install for "The Arduino Eclipse plugin named Sloeber."  
  7. follow the on screen instructions.  
  **using the old update site way**  
  4. Select help->install new software  
  5. as Site enter :  http://eclipse.baeyens.it/update/V4/stable  
  6. wait for the page to load.  
- 7. **uncheck "group items by category"**  
- ![install plugin](http://iloapp.baeyens.it/data/_gallery/public/6/141797573364988100_resized.png)  
- 8. Select the Arduino Eclipse extensions  
+ ![install plugin](http://eclipse.baeyens.it/img/install_plugin.png)  
+ 8. Select "Sloeber, the eclipse arduino IDE (plugin version)"  
  9. Select next  
  10. when Eclipse tells you the project is not signed select OK  
  11. when Eclipse asks you to restart select ok  
