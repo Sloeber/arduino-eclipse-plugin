@@ -390,7 +390,7 @@
 				<platform-version-name>oxygen</platform-version-name>
 			</properties>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 
 			<repositories>
@@ -433,7 +433,31 @@
 
 			</repositories>
 		</profile>
+			
+		<profile>
+			<id>latest</id>
+			<properties>
+				<platform-version-name>latest</platform-version-name>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 
+			<repositories>
+				<repository>
+					<id>platform_latest</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/eclipse/updates/latest</url>
+				</repository>
+
+				<repository>
+					<id>release-train_latest</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/latest</url>
+				</repository>
+
+			</repositories>
+		</profile>
 
 	</profiles>
 
