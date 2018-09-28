@@ -1,7 +1,12 @@
 package io.sloeber.ui.preferences;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -21,6 +26,7 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Other;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
+import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -107,7 +113,17 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		String hardWarePaths[] = getPreferenceStore().getString(KEY_PRIVATE_HARDWARE_PATHS).split(File.pathSeparator);
 		String libraryPaths[] = getPreferenceStore().getString(KEY_PRIVATE_LIBRARY_PATHS).split(File.pathSeparator);
 
-		Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
+		String filteredList[] =filterUnwantedPaths(hardWarePaths);
+		if (filteredList!=null) {
+		    hardWarePaths=filteredList;
+		    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Invalid_Private_Hardware_folder));
+		}
+		filteredList=filterUnwantedPaths(libraryPaths);
+        if (filteredList!=null) {
+            libraryPaths=filteredList;
+            Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Invalid_Private_Library_folder));
+        }
+        Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
 		Preferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
 		PackageManager.setPrivateHardwarePaths(hardWarePaths);
@@ -115,7 +131,32 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		return ret;
 	}
 
-	@Override
+	/**
+	 * Given a set of paths modify the set removing the unwanted paths
+	 * Current implementation filters all path that are the arduinoPlugin folder or subfolders of it
+	 * @param paths a list of path strings that need filtering
+	 * @return null if no filtering is needed else filtered list
+	 */
+	private static String[] filterUnwantedPaths(String[] paths) {
+	    IPath unWanted=PackageManager.getInstallationPath();
+	    ArrayList<String> filteredList = new ArrayList<>();
+	    boolean filtered=false;
+	    for (int i = 0; i < paths.length; i++) {
+            Path curPath = new Path(paths[i]);
+            if(unWanted.isPrefixOf(curPath)) {
+                filtered=true;
+            }else {
+                filteredList.add(paths[i]);
+            }
+        }
+        if(filtered) {
+            return filteredList.toArray(new String[0]);  
+        }
+
+        return null;
+    }
+
+    @Override
 	public void init(IWorkbench workbench) {
 		String hardWarePaths = PackageManager.getPrivateHardwarePathsString();
 		String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
