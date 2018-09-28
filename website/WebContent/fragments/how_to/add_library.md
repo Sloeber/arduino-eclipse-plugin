@@ -8,38 +8,33 @@ In your project there is a subfolder called libraries. This folder contains the 
 Adding a library to this folder is what we call importing a library.
 It is very easy to import a library into your project.
 
-Note that in all versions the libraries are linked; so changing library code changes the code for all your projects.
+Note that in all versions the libraries are linked; so **changing library code changes the code for all your projects**.
 
-V4
+Use the include statement
 -----
 Simply add the include statement to your code.
 Save your file.
 The automatic library includer will import the library into your project and install the library if not yet installed (only if the library folder name is header - ".h".)
 You may have to wait a while before the indexer has indexed the source code and the library includer can kick in.
-The auto import and auto install can be disabled in windows->preferences->arduino settings.
+The auto import and auto install can be disabled in windows->preferences->arduino settings.  
+Sometimes the includer imports unneeded libraries or libraries may no longer be needed. In this case you can delete the libraries folder or individual libraries. As it are all links the libraries are not deleted, only the links.
 
-V3
------
-Simply add the include statement to your code.
-Save your file.
-The automatic library includer will import the library into your project if the library is installed.
-You may have to wait a while before the indexer has indexed the source code and the library includer can kick in.
-The auto import can be disabled in windows->preferences->arduino settings.
-From V3 onwards all libraries are shown in one list. There is no longer the grouping of "arduino libs" "Arduino hardware libs"...
 
-V2 and V3
+
+Import manually
 -----
 
+If the includer does not find the library or you turned off "auto import libraries" in the preferences, you can add a library to a project using "import library".  
 Select the project you want the library to add to. In the main menu select "Arduino->add a library to the selected project".
 A dialog box will pop up showing all available libraries.
-![import library](http://iloapp.baeyens.it/data/_gallery/public/1/137950377839940200_resized.png)
+![import library](http://eclipse.baeyens.it/img/import_libraries.png)
 
 
 Note: that in contrast to the arduino IDE you will still need to add the include directives to your ino file.
-Note: from march 2015 there is no more subsections (hardware/arduino/library) Al libraries are sorted alphabetically.
+
 
 
  **Party success**
 
  1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")
+ 2. [Support jantje](http://eclipse.baeyens.it/donate.html "thanks")
