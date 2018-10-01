@@ -369,12 +369,11 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://download.eclipse.org/eclipse/updates/4.7" enabled="true" />
-      <repository location="http://download.eclipse.org/releases/oxygen" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="false" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://download.eclipse.org/nebula/snapshot" enabled="true" />
-      <repository location="http://gnuarmeclipse.sourceforge.net/updates" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="false" />
+      <repository location="http://download.eclipse.org/releases/photon/" enabled="true" />
+      <repository location="http://download.eclipse.org/nebula/snapshot/" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.7/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
