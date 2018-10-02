@@ -371,9 +371,9 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    <repositories>
       <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="false" />
-      <repository location="http://download.eclipse.org/releases/photon/" enabled="true" />
-      <repository location="http://download.eclipse.org/nebula/snapshot/" enabled="true" />
       <repository location="http://download.eclipse.org/eclipse/updates/4.7/" enabled="true" />
+      <repository location="http://download.eclipse.org/releases/latest/" enabled="true" />
+      <repository location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
