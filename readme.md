@@ -144,7 +144,7 @@ To install nebula you need the snapshot
 > Help → Install New Software
 
 There have to enter the following URL and press ENTER.
- * http://download.eclipse.org/nebula/snapshot
+ * http://download.eclipse.org/nebula/releases/latest/
 
  Now you have to open up the *Nebula Release all widgets and examples* Category and select *Nebula widgets*.
 Then press next and follow the instructions.
