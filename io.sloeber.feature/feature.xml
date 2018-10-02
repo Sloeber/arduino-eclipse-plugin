@@ -32,12 +32,6 @@ Trump211
 If you do not agree with this policy, please do not install this software.
    </license>
 
-   <url>
-      <discovery label="CDT the eclipse C/C++ development environment" url="http://download.eclipse.org/tools/cdt/releases/9.5/"/>
-      <discovery label="GNU MCU Eclipse" url="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/"/>
-      <discovery label="Nebula for the xy plotter" url="http://download.eclipse.org/nebula/releases/latest/"/>
-   </url>
-
    <requires>
       <import feature="org.eclipse.cdt" version="9.5.0" match="greaterOrEqual"/>
    </requires>
