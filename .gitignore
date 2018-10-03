@@ -1,6 +1,5 @@
-*/.settings/
 .log
-**/.settings/
 **/bin/*
 **/target/*
 /log.txt
+workspace/*
