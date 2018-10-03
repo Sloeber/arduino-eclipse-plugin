@@ -9,85 +9,7 @@
    <feature url="features/io.sloeber.feature_4.3.1.qualifier.jar" id="io.sloeber.feature" version="4.3.1.qualifier">
       <category name="Sloeber"/>
    </feature>
-   <bundle id="ilg.gnumcueclipse.codered" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.core" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.core" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.jlink" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.openocd" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.pyocd" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.qemu" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.gdbjtag.restart" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.debug.packs" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.managedbuild.cross" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.managedbuild.cross.arm" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.managedbuild.cross.riscv" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.managedbuild.packs" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.packs" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.packs.core" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.packs.data" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.packs.ui" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.ad" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.core" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.cortexm" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.freescale" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.freescale.pe" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.sifive" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
-   <bundle id="ilg.gnumcueclipse.templates.stm" version="0.0.0">
-      <category name="Dependencies"/>
-   </bundle>
    <bundle id="io.sloeber.product" version="4.3.1.qualifier">
-      <category name="Sloeber"/>
-   </bundle>
-   <bundle id="io.sloeber.application" version="4.3.1.qualifier">
       <category name="Dependencies"/>
    </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
@@ -96,5 +18,9 @@
       </description>
    </category-def>
    <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
-   <repository-reference location="http://download.eclipse.org/releases/photon" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/releases/latest/" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.5/" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
+   <repository-reference location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/" enabled="true" />
+   <repository-reference location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/" enabled="true" />
 </site>
