@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE (product version)" uid="io.sloeber.product" id="io.sloeber.application.product" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
       <text>
-         RCP product for creating emebedded sofware with Eclipse for the Arduino board and other hardware.
+         Sloeber, the Eclipse IDE for Arduino Developers
 
-Info: http://sloeber.io/
+Info: https://sloeber.io/
 Source: https://github.com/sloeber/arduino-eclipse-plugin
 
 
 Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia
 
-https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
+https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </text>
    </aboutInfo>
 
@@ -363,10 +363,13 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </configurations>
 
    <repositories>
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly" enabled="false" />
-      <repository location="http://download.eclipse.org/releases/photon" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable" enabled="true" />
-      <repository location="http://build.eclipse.org/technology/babel/update-site/I20180721-0600/photon/" enabled="true" />
+      <repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
+      <repository location="http://download.eclipse.org/releases/latest/" enabled="true" />
+      <repository location="http://download.eclipse.org/tools/cdt/releases/9.5/" enabled="true" />
+      <repository location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/" enabled="true" />
+      <repository location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
    </repositories>
 
    <preferencesInfo>

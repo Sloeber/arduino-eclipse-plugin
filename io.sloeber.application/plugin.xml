@@ -111,14 +111,6 @@
                value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_256.png">
          </property>
          <property
-               name="aboutText"
-               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://sloeber.io/&#x0A;Source: https://github.com/sloeber/arduino-eclipse-plugin&#x0A;&#x0A;&#x0A;Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia&#x0A;&#x0A;https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors">
-         </property>
-         <property
-               name="aboutImage"
-               value="icons/eclipse_lg.png">
-         </property>
-         <property
                name="startupForegroundColor"
                value="C8D5EA">
          </property>
@@ -133,6 +125,14 @@
          <property
                name="appName"
                value="Sloeber, the Eclipse Arduino IDE">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/eclipse_lg.png">
+         </property>
+         <property
+               name="aboutText"
+               value="Sloeber, the Eclipse IDE for Arduino Developers&#x0A;&#x0A;Info: https://sloeber.io/&#x0A;Source: https://github.com/sloeber/arduino-eclipse-plugin&#x0A;&#x0A;&#x0A;Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia&#x0A;&#x0A;https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors">
          </property>
          <property
                name="preferenceCustomization"

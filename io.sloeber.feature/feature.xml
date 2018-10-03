@@ -2,10 +2,10 @@
 <feature
       id="io.sloeber.feature"
       label="%featureName"
-      version="4.3.0.qualifier"
+      version="4.3.1.qualifier"
       provider-name="%provider">
 
-   <description url="http://baeyens.it/eclipse/">
+   <description url="http://sloeber.io">
       %description
    </description>
 
@@ -32,13 +32,8 @@ Trump211
 If you do not agree with this policy, please do not install this software.
    </license>
 
-   <url>
-      <discovery label="jan&apos;s site with plenty of documentation" url="https://eclipse.baeyens.it/"/>
-   </url>
-
    <requires>
-      <import feature="org.eclipse.cdt" version="8.0.0" match="greaterOrEqual"/>
-      <import plugin="ilg.gnumcueclipse.debug.gdbjtag.openocd"/>
+      <import feature="org.eclipse.cdt" version="9.5.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -67,6 +62,14 @@ If you do not agree with this policy, please do not install this software.
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="io.sloeber.core.nl1"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>

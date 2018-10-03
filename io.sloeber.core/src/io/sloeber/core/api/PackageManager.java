@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -801,6 +802,8 @@ public class PackageManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+	}
+	public static IPath getInstallationPath() {
+	    return ConfigurationPreferences.getInstallationPath();
 	}
 }
