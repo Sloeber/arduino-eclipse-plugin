@@ -432,6 +432,22 @@
 
 			</repositories>
 		</profile>
+
+			<repositories>
+				<repository>
+					<id>2018-09</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/eclipse/updates/4.9</url>
+				</repository>
+
+				<repository>
+					<id>release-train_2018-09</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/2018-09</url>
+				</repository>
+
+			</repositories>
+		</profile>
 			
 		<profile>
 			<id>latest</id>
