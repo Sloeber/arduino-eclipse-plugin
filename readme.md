@@ -31,7 +31,7 @@ Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.ap
 ```bash
 git clone https://github.com/jantje/arduino-eclipse-plugin
 cd arduino-eclipse-plugin
-mvn clean -Dtest=RegressionTest verify
+mvn clean verify -DskipTests=true
 ```
 
 ### Running the build from source IDE/Plugin
@@ -63,27 +63,24 @@ Mac OSX and Linux
 
 You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediately)
 
-* oxygen
-* neon (builds against the neon repositories (4.6))
-* luna (builds agains the luna repositories (4.4))
-* mars (builds agains the mars repositories (4.5))
+* latest (default, builds against the latest versions)
+* 2018-09 (builds against the 2018-09 release. Eclipse stopped naming their releases)
+* photon (builds against the photon (4.8) repositories) 
+* oxygen (builds against the oxygen (4.7) repositories)
+* SDK (builds a Sloeber you can program Sloeber in. With Java.)
 * win32 (builds for 32 bit windows)
 * win64
-* linux32
 * linux64
 * mac64
 
 ##### Examples
-    mvn verify -Plinux32 -Dtest=RegressionTest (builds for neon and linux 32 bits)
-    mvn verify -Pwin32,mars,linux32 -Dtest=RegressionTest
-
+    mvn clean verify -Plinux32 -DskipTests=true (builds for neon and linux 32 bits)
+    mvn clean verify -PSDK.latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
+    mvn clean verify -P2018-09,linux64 -DskipTests=true (builds against 2018-09 and produces linux64 product) 
+    
 To build for neon and the platform you are running on:
 
-    mvn clean verify -Dtest=RegressionTest
-
-### what is this -Dtest=RegressionTest about
-     mvn builds and run tests automagically. However many junit tests in Sloeber are very extensive and will always have failures.
-     By adding -Dtest=RegressionTest anly the regression test is run and this test should be successfull.
+    mvn clean verify -DskipTests=true
 
 ### Setting up a repository
 
@@ -96,103 +93,18 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
  * Make changes
- * Run ```mvn clean verify -Dtest=RegressionTest``` to build
- * Open the self-contained IDE and verify your fix
- * (Anything special about Travis CI & builds?)
+ * Run ```mvn clean verify -PSDK,latest -DskipTests=true``` to build
 
-#### Adding Eclipse PDE (Plugin Development Environment)
+After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names)
 
-You should already have a supported Eclipse version installed (the CDT package makes a good start point). Let's add:
-
-> Help → Install New Software → Work with: → All Available Sites
-
-Now search/select the *Eclipse Plug-in Development Environment*
-
-Note: This may take a while to download all the available packages.
-
-![alt text](images_plugin_dev_setup/adding_pde.png "Adding the Plugin Development Environment")
+    Note that Sloeber itself is NOT included in the Sloeber SDK. 
 
 
-#### Adding Eclipse JDT (Java Development Tools)
-
-If you're not using Eclipse with the JDT you'll need to install them. To do this you first need to open the Dialog for installing new Software:
-
-> Help → Install New Software
-
-There you select for *Work with:*  *YOUR_ECLIPSE_RELEASE - http://download.eclipse.org/releases/YOUR_ECLIPSE_RELEASE*
-
-After that, select
-
-> Programming Languages → Eclipse Java Development Tools
-
-#### Add EGit - Eclipse Git Team Provider
-
-To install EGit you'll need to do the following:
-
-> Help → Install New Software
-
-There have to enter the following URL and press ENTER.
-
- * http://download.eclipse.org/egit/updates
-
-Now you have to open up the *Eclipse Git Team Provider* Category and select *Eclipse Git Team Provider*.
-Then press next and follow the instructions.
-
-#### Add nebula (for the plotter)
-To install nebula you need the snapshot
-
-> Help → Install New Software
-
-There have to enter the following URL and press ENTER.
- * http://download.eclipse.org/nebula/releases/latest/
-
- Now you have to open up the *Nebula Release all widgets and examples* Category and select *Nebula widgets*.
-Then press next and follow the instructions.
-
-
-### Importing an Arduino Plugin Project into Eclipse
-
-After you installed all the plugins you'll need to restart Eclipse.
-
-Eventually your plugin source code will be ready to be used with Eclipse. There are two ways to import your projects into Eclipse:
-
-#### 1. Via a Command Line
-
-If you're using Windows you should first install [GitHub for Windows](http://windows.github.com/).
-
-First you should open a command line, and change the directory to the directory where you want to store your Project.
-
-Now you have to clone your Fork:
-
-```bash
-git clone https://github.com/YOUR_FORK/arduino-eclipse-plugin.git
-```
-
-After that you should import the Project to Eclipse:
-
-> File → Import → Plug-in Development → Plug-ins and Fragments
-
-You should select all as shown in this picture.
-
-![alt text](images_plugin_dev_setup/plugins_import_config.png "Adding the Plugin Development Environment")
-
-You may need to change the directory to match the directory where you cloned the project into.
-
-Press Next.
-
-In the next window you have to select which Plug-in fragments you want to import.
-Select all that are appropriate:
-
-![alt text](images_plugin_dev_setup/plugins_select.png "Adding the Plugin Development Environment")
-
-Now press Finish, and it should import the selected Projects.
-
-
-#### 2. Via EGit interface.
+### Install the projects into the SDK via the EGit interface.
 
 > File → Import → Git → Projects from Git → Clone URI
 
-* Now type your fork in to URI, for example: ```https://github.com/YOUR_FORK/arduino-eclipse-plugin.git```
+* Now type your fork in to URI, for example: ```https://github.com/YOUR_USER/arduino-eclipse-plugin.git```
 * Press "Next".
 * Branch Selection: master
 * Local destination: ```/home/your_name/git/arduino-eclipse-plugin``` or ```c:\git\arduino-eclipse-plugin```
@@ -207,16 +119,6 @@ Now press Finish, and it should import the selected Projects.
 After all it should look like this:
 
 ![alt text](images_plugin_dev_setup/Imported_projects.png "Projects imported")
-
-### Set the Code Formatting
-
-To avoid having changes all the time because of different formatting this project uses the standard "Eclipse [built-in]".
-
-Go to
-
-> Window → Preferences → Java → Code Style → Formatter
-
-and check this setting.
 
 ### Set the Warning Level
 
