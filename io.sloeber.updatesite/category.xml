@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.nebula.widgets.oscilloscope.feature_0.0.0.qualifier.jar" id="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
-   <feature url="features/org.eclipse.cdt_0.0.0.qualifier.jar" id="org.eclipse.cdt" version="0.0.0">
-      <category name="Dependencies"/>
-   </feature>
    <feature url="features/io.sloeber.feature_4.3.1.qualifier.jar" id="io.sloeber.feature" version="4.3.1.qualifier">
       <category name="Sloeber"/>
    </feature>
-   <bundle id="io.sloeber.product" version="4.3.1.qualifier">
-      <category name="Dependencies"/>
-   </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
       <description>
          Sloeber, Arduino development in the Eclipse IDE.
       </description>
    </category-def>
-   <category-def name="Dependencies" label="Dependencies (will be automatically installed when needed)"/>
+   <repository-reference location="http://download.eclipse.org/eclipse/updatest/4.9/" enabled="true" />
    <repository-reference location="http://download.eclipse.org/releases/latest/" enabled="true" />
    <repository-reference location="http://download.eclipse.org/tools/cdt/releases/9.5/" enabled="true" />
    <repository-reference location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />

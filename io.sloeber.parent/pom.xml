@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>0.24.0</tycho.version>
+		<tycho.version>1.1.0</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 	</properties>
 
@@ -123,7 +123,6 @@
 				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product</module>
 				<module>../io.sloeber.updatesite</module>
-				<module>../io.sloeber.application</module>
 				<module>../io.sloeber.ui.nl1</module>
 				<module>../io.sloeber.ui</module>
 				<module>../io.sloeber.tests</module>
@@ -447,7 +446,7 @@
 				<repository>
 					<id>platform_latest</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/latest</url>
+					<url>http://download.eclipse.org/eclipse/updates/4.9</url>
 				</repository>
 
 				<repository>
@@ -467,13 +466,6 @@
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/nebula/releases/latest/</url>
 		</repository>
-
-		<repository>
-			<id>cdt</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/cdt/releases/9.5/</url>
-		</repository>
-
 
 		<repository>
 			<id>gnumcu</id>

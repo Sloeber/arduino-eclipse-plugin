@@ -367,12 +367,14 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
    </configurations>
-
+   
    <repositories>
-      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="true" />
-      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="false" />
-      <repository location="http://download.eclipse.org/eclipse/updates/4.7/" enabled="true" />
+      <repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/" enabled="true" />
+      <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
+      <repository location="http://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
+      <repository location="http://download.eclipse.org/eclipse/updates/4.9/" enabled="true" />
       <repository location="http://download.eclipse.org/releases/latest/" enabled="true" />
+      <repository location="http://gnu-mcu-eclipse.netlify.com/v4-neon-updates/" enabled="true" />
       <repository location="http://download.eclipse.org/nebula/releases/latest/" enabled="true" />
    </repositories>
 
