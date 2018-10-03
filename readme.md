@@ -34,19 +34,7 @@ cd arduino-eclipse-plugin
 mvn clean verify -DskipTests=true
 ```
 
-### Running the build from source IDE/Plugin
-
-Sloeber can be started, e.g. on a 64-bit mac, with:
-
-```bash
-open io.sloeber.product/target/products/io.sloeber.product/macosx/cocoa/x86_64/sloeber/sloeber-ide.app
-```
-
-On Linux you can start Sloeber using the provided shell script:
-
-```bash
-./build_then_launch_plugin.sh
-```
+### Running the Sloeber you just build
 
 Windows
 
@@ -57,7 +45,6 @@ Mac OSX and Linux
 
  * ./build_then_launch_plugin.sh
 
-=======
 
 ## Build Options
 
@@ -82,8 +69,7 @@ To build for latest and the platform you are running on:
 
     mvn clean verify -DskipTests=true
 
-### Setting up a repository
-
+### Importing your build into another Eclipse
 If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/io.sloeber.product/target/repository```
 
 ![alt text](images_plugin_dev_setup/add_local_repository.png "Adding a local repository")
