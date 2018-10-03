@@ -78,7 +78,6 @@ If you want to import the latest code based plugin to another Eclipse setup you 
 
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
- * Make changes
  * Run ```mvn clean verify -PSDK,latest -DskipTests=true``` to build
 
 After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names)
@@ -88,13 +87,10 @@ After the build, find the Sloeber SDK product in the io.sloeber.product.sdk targ
 
 ### Install the projects into the SDK via the EGit interface.
 
-> File → Import → Git → Projects from Git → Clone URI
+> File → Import → Git → Projects from Git → Existing local repository
 
-* Now type your fork in to URI, for example: ```https://github.com/YOUR_USER/arduino-eclipse-plugin.git```
+* Now add the repository you just cloned 
 * Press "Next".
-* Branch Selection: master
-* Local destination: ```/home/your_name/git/arduino-eclipse-plugin``` or ```c:\git\arduino-eclipse-plugin```
-* The rest of page unchanged.
 * Next
 * Select a wizard: Import Existing Projects
 * Next
@@ -131,9 +127,8 @@ My current settings are as follows:
  * Null analysis: Set all active (not greyed out) to Warning.
  * Potential programming problems: Set all to Warning.
 
-### Running the Plugin
-
-Then running is very simple - just right click io.sloeber.core and select:
+### Running Sloeber with local changes (Testing your stuff)
+Running is very simple - just right click io.sloeber.core and select:
 
 > Run as → Eclipse Application
 
