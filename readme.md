@@ -1,4 +1,4 @@
-#Sloeber, the Arduino IDE for Eclipse                   <img style="float: right" src="https://avatars2.githubusercontent.com/u/25158881?v=3&s=200" height="50"/>
+# Sloeber, the Arduino IDE for Eclipse                   <img style="float: right" src="https://avatars2.githubusercontent.com/u/25158881?v=3&s=200" height="50"/>
 
 The Eclipse IDE (Integrated Developement Environment) is a full featured programming editor with many fantastic features to help you code more quickly and easily. The Arduino IDE is great for what it does – but it doesn't do much to help writing, navigating and understanding your (and other people's) code.
 
