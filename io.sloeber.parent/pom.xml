@@ -104,11 +104,12 @@
 			<modules>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
+				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product.sdk</module>
 				<module>../io.sloeber.updatesite</module>
-				<module>../io.sloeber.application</module>
 				<module>../io.sloeber.ui.nl1</module>
 				<module>../io.sloeber.ui</module>
+				<module>../io.sloeber.tests</module>
 			</modules>
 		</profile>
 
@@ -255,32 +256,6 @@
 			</build>
 		</profile>
 
-
-		<profile>
-			<id>linux32</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
-								spec -->
-							<environments>
-								<environment>
-									<os>linux</os>
-									<ws>gtk</ws>
-									<arch>x86</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
 		<profile>
 			<id>linux64</id>
 			<build>
@@ -298,32 +273,6 @@
 									<os>linux</os>
 									<ws>gtk</ws>
 									<arch>x86_64</arch>
-								</environment>
-							</environments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>mac32</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
-								spec -->
-							<environments>
-								<!-- Mac -->
-								<environment>
-									<os>macosx</os>
-									<ws>cocoa</ws>
-									<arch>x86</arch>
 								</environment>
 							</environments>
 						</configuration>
@@ -356,31 +305,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-
-		<profile>
-			<id>neon</id>
-			<properties>
-				<platform-version-name>neon</platform-version-name>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>platform_neon</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/eclipse/updates/4.6</url>
-				</repository>
-
-				<repository>
-					<id>release-train_neon</id>
-					<layout>p2</layout>
-					<url> http://download.eclipse.org/releases/neon</url>
-				</repository>
-
-			</repositories>
 		</profile>
 
 		<profile>
@@ -433,6 +357,16 @@
 			</repositories>
 		</profile>
 
+
+		<profile>
+			<id>2018-09</id>
+			<properties>
+				<platform-version-name>2018-09</platform-version-name>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			
 			<repositories>
 				<repository>
 					<id>2018-09</id>

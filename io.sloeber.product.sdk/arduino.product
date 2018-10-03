@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
       <text>
          Sloeber, the Eclipse IDE for Arduino Developers
 
-Info: http://sloeber.io/
+Info: https://sloeber.io/
 Source: https://github.com/sloeber/arduino-eclipse-plugin
 
 
 Contributors (github users): jantje, wimjongman, rlogiacco, MarceloLimori, brodykenrick, neuweiler, darcade, amorellgarcia
 
-https://github.com/jantje/arduino-eclipse-plugin/graphs/contributors
+https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </text>
    </aboutInfo>
 
@@ -346,8 +346,9 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.ssh" installMode="root"/>
       <feature id="org.eclipse.rse.core" installMode="root"/>
       <feature id="org.eclipse.cdt.native" installMode="root"/>
-      <feature id="ilg.gnuarmeclipse.debug.gdbjtag.openocd" installMode="root"/>
-      <feature id="ilg.gnuarmeclipse.managedbuild.cross" installMode="root"/>
+      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature"/>
+
+      <!-- SDK Features are below -->
       <feature id="org.eclipse.jdt" installMode="root"/>
       <feature id="org.eclipse.jdt.source" installMode="root"/>
       <feature id="org.eclipse.platform.source" installMode="root"/>
@@ -358,16 +359,16 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </features>
 
    <configurations>
-      <plugin id="io.sloeber.application" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
       <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
    </configurations>
-   
+
    <repositories>
       <repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/" enabled="true" />
       <repository location="http://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
