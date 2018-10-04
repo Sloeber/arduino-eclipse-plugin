@@ -7,22 +7,17 @@ Bundle-Activator: io.sloeber.ui.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.console,
- org.eclipse.core.resources,
- org.eclipse.ui.workbench,
  io.sloeber.core,
  org.eclipse.cdt.ui,
  org.eclipse.cdt.core,
  org.eclipse.ui.forms,
  org.eclipse.ui.ide,
  org.eclipse.debug.ui,
- org.eclipse.ui.navigator
+ org.eclipse.nebula.widgets.oscilloscope;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: io.sloeber.core.api,
- org.apache.commons.io;version="2.2.0",
- org.apache.commons.lang,
- org.eclipse.nebula.widgets.oscilloscope.multichannel,
- org.eclipse.ui.dialogs
+Import-Package: org.apache.commons.io;version="2.2.0",
+ org.apache.commons.lang
 Bundle-Vendor: Sloeber.io
 Export-Package: io.sloeber.ui;x-internal:=true,
  io.sloeber.ui.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
