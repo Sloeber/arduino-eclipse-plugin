@@ -104,6 +104,7 @@
 			<modules>
 				<module>../io.sloeber.feature</module>
 				<module>../io.sloeber.core</module>
+				<module>../io.sloeber.application</module>
 				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product.sdk</module>
 				<module>../io.sloeber.ui.nl1</module>
@@ -119,6 +120,7 @@
 			</activation>
 			<modules>
 				<module>../io.sloeber.feature</module>
+				<module>../io.sloeber.application</module>
 				<module>../io.sloeber.core</module>
 				<module>../io.sloeber.core.nl1</module>
 				<module>../io.sloeber.product</module>
