@@ -44,7 +44,7 @@ public class CreateAndCompileExamplesTest {
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Parameters(name = "{index}: {0}")
+	@Parameters(name = "{0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
 
@@ -88,7 +88,7 @@ public class CreateAndCompileExamplesTest {
             if (board != null) {
                 BoardDescriptor curBoard = board.getBoardDescriptor();
                 if (curBoard != null) {
-                    Object[] theData = new Object[] { fqn.trim(), curBoard, codeDescriptor };
+                    Object[] theData = new Object[] { Shared.getCounterName(fqn.trim()), curBoard, codeDescriptor };
                     examples.add(theData);
                 }
             }

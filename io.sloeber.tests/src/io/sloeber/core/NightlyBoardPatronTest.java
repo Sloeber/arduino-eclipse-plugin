@@ -39,7 +39,7 @@ public class NightlyBoardPatronTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Parameters(name = "{index}: {0}")
+    @Parameters(name = "{0}")
     public static Collection examples() {
         Shared.waitForAllJobsToFinish();
         Arduino.installLatestSamDBoards();
@@ -58,7 +58,7 @@ public class NightlyBoardPatronTest {
             if (fqn.contains("RTCZero")) {
                 Examples example = new Examples(fqn, null, examplePath);
 
-                Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + zeroBoard.getName(),
+                Object[] theData = new Object[] {Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getName()),
                         zeroBoard, example };
                 examples.add(theData);
             }
