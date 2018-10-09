@@ -23,7 +23,7 @@ public class MySystem {
 		switch (Other.getSystemHash()) {
 		case jantjesWindowsMachineHashKey:
 		case jantjesWindowsMachineHashkeyAfterUpdate:
-			return "D:\\arduino\\teensy1.42-beta4\\hardware\\teensy-latest";
+			return "D:\\arduino\\teensy-latest\\hardware\\teensy";
 		case jantjesLinuxMachineHashKey:
 			return "/home/jan/arduino-1.8.5/hardware/teensy-latest";
 		}
