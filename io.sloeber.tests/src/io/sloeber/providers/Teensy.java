@@ -131,4 +131,17 @@ public class Teensy extends MCUBoard {
 		}
 		return ret;
 	}
+	
+	public static MCUBoard[] getAllBoards() {
+		// hardcode this stuff now because I want to release 4.3.1
+		// shoulds be something like
+		// return
+		// PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName()
+		// , options);
+		MCUBoard[] boards = { Teensy.Teensy3_6(), Teensy.Teensy3_5(), Teensy.Teensy3_1(), Teensy.Teensy3_0(),
+				Teensy.Teensy_LC(), Teensy.teensypp2(), Teensy.teensy2() };
+		return boards;
+
+
+    }
 }

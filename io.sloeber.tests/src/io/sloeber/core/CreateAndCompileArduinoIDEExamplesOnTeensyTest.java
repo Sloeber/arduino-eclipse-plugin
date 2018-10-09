@@ -15,6 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.MCUBoard;
@@ -24,26 +25,30 @@ import io.sloeber.providers.Teensy;
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	private CodeDescriptor myCodeDescriptor;
-	private Examples myExample;
+
+	private String myTestName;
+	private BoardDescriptor myBoardDescriptor;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;
     private static int mySkipAtStart = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(CodeDescriptor codeDescriptor, Examples example) {
+	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String testName,CodeDescriptor codeDescriptor,BoardDescriptor board) {
 
 		myCodeDescriptor = codeDescriptor;
-		myExample = example;
+		myTestName=testName;
+		myBoardDescriptor=board;
 	}
 
 	@SuppressWarnings("rawtypes")
-	@Parameters(name = "{index}: {0}")
+	@Parameters(name = "{0}")
 	public static Collection examples() {
 		installAdditionalBoards();
 
 		Shared.waitForAllJobsToFinish();
 		LinkedList<Object[]> examples = new LinkedList<>();
-
+		 MCUBoard[] allBoards=Teensy.getAllBoards();
+		 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
@@ -54,8 +59,16 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 				paths.add(examplePath);
 				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-				Object[] theData = new Object[] {  codeDescriptor, example };
-				examples.add(theData);
+				for (MCUBoard curBoard : allBoards) {
+					if (curBoard.isExampleSupported(example)) {
+						String projectName = Shared.getProjectName(codeDescriptor, example, curBoard);
+						Map<String, String> boardOptions = curBoard.getBoardOptions(example);
+						BoardDescriptor boardDescriptor = curBoard.getBoardDescriptor();
+						boardDescriptor.setOptions(boardOptions);
+						Object[] theData = new Object[] { projectName, codeDescriptor, boardDescriptor };
+						examples.add(theData);
+					}
+				}
 			}
 		}
 
@@ -77,7 +90,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	}
 
-	public void testExample(MCUBoard board) {
+	public void testExample() {
 		// Stop after X fails because
 		// the fails stays open in eclipse and it becomes really slow
 		// There are only a number of issues you can handle
@@ -85,55 +98,16 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		// failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-        Map<String,String> boardOptions=board.getBoardOptions(myExample);
-        BoardDescriptor boardDescriptor=board.getBoardDescriptor();
-        boardDescriptor.setOptions(boardOptions);
-        if (!Shared.BuildAndVerify( boardDescriptor, myCodeDescriptor, null)) {
+        if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
         }
 	}
 
 	@Test
-	public void testArduinoIDEExamplesOnTeensy3_6() {
+	public void testArduinoIDEExamplesOnTeensy() {
 		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.Teensy3_6());
+			testExample();
 	}
 
-	@Test
-	public void testArduinoIDEExamplesOnTeensy3_5() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.Teensy3_5());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensy3_1() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.Teensy3_1());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensy3_0() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.Teensy3_0());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensyLC() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.Teensy_LC());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensyPP2() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.teensypp2());
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensy2() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample(Teensy.teensy2());
-
-	}
 
 }
