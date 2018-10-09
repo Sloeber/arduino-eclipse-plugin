@@ -133,8 +133,9 @@ public class CreateAndCompileExamplesTest {
         // failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-       // String projectName = String.format("%05d_%s", new Integer(myBuildCounter++), this.myName);
-        if (!Shared.BuildAndVerify( myBuildCounter++,myBoardDescriptor, myCodeDescriptor)) {
+       
+        myBuildCounter++;
+        if (!Shared.BuildAndVerify( myBoardDescriptor, myCodeDescriptor)) {
             myTotalFails++;
         }
 

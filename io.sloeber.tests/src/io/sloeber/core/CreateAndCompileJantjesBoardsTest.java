@@ -107,7 +107,7 @@ public class CreateAndCompileJantjesBoardsTest {
         if (!board.isExampleSupported(myExample)) {
             return;
         }
-        if (!Shared.BuildAndVerify(myBuildCounter, board.getBoardDescriptor(), myCodeDescriptor, null)) {
+        if (!Shared.BuildAndVerify( board.getBoardDescriptor(), myCodeDescriptor, null)) {
             myTotalFails++;
         }
 	}

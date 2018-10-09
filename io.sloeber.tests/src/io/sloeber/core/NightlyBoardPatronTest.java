@@ -86,7 +86,7 @@ public class NightlyBoardPatronTest {
         Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
         BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        Shared.BuildAndVerify(myBuildCounter,myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions);
+        Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions);
 
     }
 

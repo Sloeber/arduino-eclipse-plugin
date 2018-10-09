@@ -88,7 +88,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
         Map<String,String> boardOptions=board.getBoardOptions(myExample);
         BoardDescriptor boardDescriptor=board.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        if (!Shared.BuildAndVerify(myBuildCounter, boardDescriptor, myCodeDescriptor, null)) {
+        if (!Shared.BuildAndVerify( boardDescriptor, myCodeDescriptor, null)) {
             myTotalFails++;
         }
 	}

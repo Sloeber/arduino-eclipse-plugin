@@ -293,7 +293,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        Shared.BuildAndVerify(myBuildCounter, this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder), null);
+        Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder), null);
 
     }
 
