@@ -231,4 +231,40 @@ public class Arduino extends MCUBoard {
         PackageManager.installLatestPlatform(jsonFileName,providerArduino, SAMDPlatformName);   
     }
 
+    public static MCUBoard[] getAllBoards() {
+    	//hardcode this stuff now because I want to release 4.3.1
+    	//shoulds be something like 
+        //return PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName() , options);
+    	MCUBoard[] boards = {         Arduino.uno(),
+    	        Arduino.leonardo(),
+    	        Arduino.esplora(),
+    	        Arduino.yun(),
+    	        Arduino.getAvrBoard("diecimila"),
+    	        Arduino.getMega2560Board(),
+    	        Arduino.MegaADK(),
+    	        Arduino.getAvrBoard("leonardoeth"),
+    	        Arduino.getAvrBoard("micro"),
+    	        Arduino.getAvrBoard("mini"),
+    	        Arduino.getAvrBoard("ethernet"),
+    	        Arduino.getAvrBoard("fio"),
+    	        Arduino.getAvrBoard("bt"),
+    	        Arduino.getAvrBoard("LilyPadUSB"),
+    	        Arduino.getAvrBoard("lilypad"),
+    	        Arduino.getAvrBoard("pro"),
+    	        Arduino.getAvrBoard("atmegang"),
+    	        Arduino.getAvrBoard("robotControl"),
+    	        Arduino.getAvrBoard("robotMotor"),
+    	        Arduino.getAvrBoard("gemma"),
+    	        Arduino.adafruitnCirquitPlayground(),
+    	        Arduino.getAvrBoard("yunmini"),
+    	        Arduino.getAvrBoard("chiwawa"),
+    	        Arduino.getAvrBoard("one"),
+    	        Arduino.getAvrBoard("unowifi"), };
+		return boards;
+   			
+    }
+
+    
+    
+    
 }

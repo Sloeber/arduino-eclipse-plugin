@@ -36,6 +36,7 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
+import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class Shared {
@@ -43,6 +44,7 @@ public class Shared {
 	public final static String	ESP8266_BOARDS_URL	= "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 	public static boolean deleteProjects=true;
 	private static int myBuildCounter;
+	private static int myTestCounter;
 
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
@@ -98,20 +100,23 @@ public class Shared {
 	 * @return
 	 */
 	public static boolean BuildAndVerify(  BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
-		myBuildCounter++;
+		
 	    String projectName = String.format("%05d_%s",new Integer( myBuildCounter), boardDescriptor.getBoardID());
 	    if(codeDescriptor.getExampleName()!=null) {
 	        projectName= String.format("%05d_%s_%s",new Integer( myBuildCounter),codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
 	   }
+	  
 	  CompileOptions localCompileOptions=compileOptions;
 	  if(compileOptions==null) {
 	      localCompileOptions=new CompileOptions(null);
 	  }
 	  return BuildAndVerify( projectName,  boardDescriptor,  codeDescriptor, localCompileOptions);
 	}
+	
 	public static boolean BuildAndVerify(String projectName, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
+		myBuildCounter++;
 		
 		try {
 		    compileOptions.setEnableParallelBuild(true);
@@ -211,5 +216,19 @@ public class Shared {
 				coreWrong.toFile().renameTo(coreGood.toFile());
 			}
 		}
+	}
+
+	public static String getCounterName(String name) {
+		String counterName = String.format("%05d_%s",new Integer( myTestCounter++),  name);
+		return counterName;
+	}
+
+	public static boolean  increaseBuildCounter() {
+		myBuildCounter++;
+		return true;
+	}
+
+	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
+		return String.format("%05d_%s_%s",new Integer( myTestCounter++),codeDescriptor.getExampleName(), board.getBoardDescriptor().getBoardID());
 	}
 }

@@ -54,6 +54,17 @@ public class Jantje extends MCUBoard {
         return super.isExampleSupported(example);
     }
 
+    public static MCUBoard[] getAllBoards() {
+    	//hardcode this stuff now because I want to release 4.3.1
+    	//shoulds be something like 
+        //return PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName() , options);
+    	MCUBoard[] boards = {  new Jantje("yun"),new Jantje("uno"),new Jantje("diecimila"),new Jantje("nano"),new Jantje("mega"),new Jantje("megaADK"),new Jantje("leonardo"),new Jantje("micro"),
+        		new Jantje("esplora"),new Jantje("mini"),new Jantje("ethernet"),new Jantje("fio"),new Jantje("bt"),new Jantje("LilyPadUSB"),new Jantje("lilypad"),new Jantje("pro"),
+        		new Jantje("atmegang"),new Jantje("robotControl") };
+		return boards;
+   			
 
+
+    }
 
 }
