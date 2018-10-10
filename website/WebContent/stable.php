@@ -2,6 +2,9 @@
 require 'fragments/file-buttons.php';
 include 'globals.txt';
 $version = $STABLE_VERSION_MAJOR.".".$STABLE_VERSION_MINOR;
+if( $STABLE_VERSION_PATCH!=0){
+    $version=$version.".".$STABLE_VERSION_PATCH;
+}
 
 if (isset ( $_GET ["OS"] ))
     $OS = $_GET ["OS"];
