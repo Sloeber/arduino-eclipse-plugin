@@ -8,18 +8,19 @@ With Sloeber you have a real development environment which allows you to modify 
 **start by having a project**  
 For sake of this demo I created a empty workspace and created a sketch in there.
 Here is what it looks like on my system:  
-![freshly created sketch in empty workspace](http://eclipse.baeyens.it/img/lib_demo_1.png?width=750&height=480)  
+ <img src="http://eclipse.baeyens.it/img/lib_demo_1.PNG" alt="freshly created sketch in empty workspace" height="400" width="600">   
+
 
 **write your first version of the library code**  
 In most cases you will start by simply creating a class (right click the project and select new class) into an existing project.  
 Later you will decide that this class/code is worth to be upgraded to a library.  
 So we create a class in our project with the name of the library we want to create.  
-![My first lib class](http://eclipse.baeyens.it/img/lib_demo_2.png?width=750&height=380)  
+ <img src="http://eclipse.baeyens.it/img/lib_demo_2.PNG" alt="My first lib class" height="400" width="600">    
   
 **Outside of eclipse: create a subfolder with the library name in one of your private library folders**  
 As I have C:\Users\jan\Documents\Arduino\libraries listed as a private Library;  I created a folder in C:\Users\jan\Documents\Arduino\libraries with the name Libcodeclass. 
-Add a file with extension .h in the folder (I used findMe.h)  
-![Create a llibrary placeholder](http://eclipse.baeyens.it/img/lib_demo_3?width=750&height=380)  
+Add a file with extension .h in the folder (I used findMe.h)   
+ <img src="http://eclipse.baeyens.it/img/lib_demo_3.PNG" alt="Create a llibrary placeholder" height="400" width="600">  
   
 Note that it is a good practice to have the same name for the folder as for the header file (that is even with casing).  
   
@@ -27,24 +28,27 @@ Note that it is a good practice to have the same name for the folder as for the 
 Because we created a "folder containing code" on disk the plugin can add the "library" (with the foldername) to the project.  
 Click Arduino in the menu bar, select "Add a library to the selected project" and select the "library" (folder) you created above (LibCodeDemo).  
   
-![Add the library to your project](http://eclipse.baeyens.it/img/lib_demo_4.png?width=750&height=480)  
+ <img src="http://eclipse.baeyens.it/img/lib_demo_4.png" alt="Add the library to your project" >    
+  
 >If the library is not showing up.  
 Check wether the root folder is actualy a private library folder.  
 Check if you added the header file to your library.  
   
 Select Finish and your project should look something like:  
   
-![a empty library folder](http://eclipse.baeyens.it/img/lib_demo_5.png?width=750&height=380)  
+ <img src="http://eclipse.baeyens.it/img/lib_demo_5.PNG" alt="a empty library folder" height="400" width="600">   
+ 
 Note the small arrow in the folder icon which indicates this is a linked folder.  
   
 **Drag and drop the class to the library folder**  
 Drag and drop the header file and source code to the library folder.  
 Do not forget to delete the findMe.h file.  
-![we are done](http://eclipse.baeyens.it/img/lib_demo_6.png?width=750&height=480)  
+ <img src="http://eclipse.baeyens.it/img/lib_demo_6.PNG" alt="we are done" height="400" width="600">   
+  
   
 That is all there is to it.  
 
->IMPORTANT Your library code is now no longer in your workspace!!
+>IMPORTANT Your library code is no longer in your workspace folder on disk!!
 
 
 
