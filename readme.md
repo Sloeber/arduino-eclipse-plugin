@@ -62,7 +62,7 @@ You can control the maven build with the following profiles: (this list may not 
 
 ##### Examples
     mvn clean verify -Plinux32 -DskipTests=true (builds for neon and linux 32 bits)
-    mvn clean verify -PSDK.latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
+    mvn clean verify -PSDK,latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
     mvn clean verify -P2018-09,linux64 -DskipTests=true (builds against 2018-09 and produces linux64 product) 
     
 To build for latest and the platform you are running on:
