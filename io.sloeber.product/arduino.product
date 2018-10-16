@@ -36,7 +36,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/io.sloeber.application/icons/logo_16.png" i32="/io.sloeber.application/icons/logo_32.png" i48="/io.sloeber.application/icons/logo_48.png" i256="/io.sloeber.application/icons/logo_256.png"/>
+   <windowImages i16="/io.sloeber.application/icons/logo_16.png" i32="/io.sloeber.application/icons/logo_32.png" i48="/io.sloeber.application/icons/logo_48.png" i64="/io.sloeber.application/icons/logo_64.png" i128="/io.sloeber.application/icons/logo_128.png" i256="/io.sloeber.application/icons/logo_256.png"/>
 
    <splash
       location="io.sloeber.application"
