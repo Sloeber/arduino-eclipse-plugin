@@ -46,10 +46,10 @@
           <div class="list-group hidden-print">
             <a href="#" ng-class="tab.welcome" class="list-group-item small" ng-click="select('welcome')">Overview</a>
             <a href="#" ng-class="tab.a" class="list-group-item small" ng-click="select('a')">V1? V2? V3? V4? Product? Eclipse</a>
-            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">V1</a>
-            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">V2</a>
-            <a href="#" ng-class="tab.cc" class="list-group-item small" ng-click="select('cc')">V3</a>
-            <a href="#" ng-class="tab.ccc" class="list-group-item small" ng-click="select('cc')">V4</a>
+            <a href="#" ng-class="tab.b" class="list-group-item small" ng-click="select('b')">V1 (not recommended)</a>
+            <a href="#" ng-class="tab.c" class="list-group-item small" ng-click="select('c')">V2 (not recommended)</a>
+            <a href="#" ng-class="tab.cc" class="list-group-item small" ng-click="select('cc')">V3 (not recommended)</a>
+            <a href="#" ng-class="tab.ccc" class="list-group-item small" ng-click="select('ccc')">V4 (recommended)</a>
             <a href="#" ng-class="tab.d" class="list-group-item small" ng-click="select('d')">All os comments</a>
             <a href="#" ng-class="tab.e" class="list-group-item small" ng-click="select('e')">Linux comments</a>
             <a href="#" ng-class="tab.f" class="list-group-item small" ng-click="select('f')">Mac comments</a>
