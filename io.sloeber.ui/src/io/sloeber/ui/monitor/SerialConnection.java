@@ -43,7 +43,7 @@ public class SerialConnection {
 	 * @return a string for each content line
 	 */
 	public static List<String> getContent() {
-		return SerialMonitor.getSerialMonitor().getMonitorContent();
+		return SerialMonitor.getMonitorContent();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class SerialConnection {
 	 */
 	public static void clearMonitor() {
 
-		SerialMonitor.getSerialMonitor().clearMonitor();
+		SerialMonitor.clearMonitor();
 
 	}
 	/**

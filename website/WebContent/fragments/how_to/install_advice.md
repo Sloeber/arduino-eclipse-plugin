@@ -32,7 +32,8 @@ V4 needs java 8
 
 32 or 64 bit
 ===
-If you are not sure take the 32 bit version. If the Arduino IDE is working on your system you have 32 bit java on your system and you are good to go. If you install the 64 bit version you also may have to install a 64 bit java.
+Eclipse is stopping 32 bit support so if you use a 64 bit system use the 64 bit version. Note you need the java 64(/32) bit version when running 64(/32) bit Sloeber.  
+On linux V4.3 is reported to fail.  
 
 
  **Party success**
