@@ -47,11 +47,6 @@ public class OpenSerialDialogBox extends Dialog {
 	layout.numColumns = 2;
 	parent.setLayout(layout);
 
-	// The text fields will grow with the size of the dialog
-	GridData gridData = new GridData();
-	gridData.grabExcessHorizontalSpace = true;
-	gridData.horizontalAlignment = GridData.FILL;
-
 	// Create the serial port combo box to allow to select a serial port
 	Label label1 = new Label(parent, SWT.NONE);
 	label1.setText(Messages.openSerialDialogBoxSerialPortToConnectTo);
@@ -59,7 +54,7 @@ public class OpenSerialDialogBox extends Dialog {
 
 	// Always allow to provide your com port name https://github.com/Sloeber/arduino-eclipse-plugin/issues/1034
 	mySerialPorts = new ComboViewer(parent, SWT.DROP_DOWN);
-	mySerialPorts.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
+	mySerialPorts.getControl().setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 	mySerialPorts.setContentProvider(new ArrayContentProvider());
 	mySerialPorts.setLabelProvider(new LabelProvider());
 	mySerialPorts.setInput(SerialManager.listComPorts());
@@ -68,7 +63,7 @@ public class OpenSerialDialogBox extends Dialog {
 	Label label2 = new Label(parent, SWT.NONE);
 	label2.setText(Messages.openSerialDialogBoxSelectTheBautRate);
 	myBaudRates = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
-	myBaudRates.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
+	myBaudRates.getControl().setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 	myBaudRates.setContentProvider(new ArrayContentProvider());
 	myBaudRates.setLabelProvider(new LabelProvider());
 	myBaudRates.setInput(SerialManager.listBaudRates());
