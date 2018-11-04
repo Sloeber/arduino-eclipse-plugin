@@ -28,14 +28,11 @@ import io.sloeber.ui.Messages;
 public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	final Shell shell = new Shell();
-	Composite mParentComposite = null;
-
-	protected LabelCombo mCodeSourceOptionsCombo; // ComboBox Containing all the
-	// sketch creation options
-
-	protected DirectoryFieldEditor mTemplateFolderEditor;
-	protected SampleSelector mExampleEditor = null;
-	protected Button mCheckBoxUseCurrentLinkSample;
+	private Composite myParentComposite = null;
+	protected LabelCombo myCodeSourceOptionsCombo; 
+	protected DirectoryFieldEditor myTemplateFolderEditor;
+	protected SampleSelector myExampleEditor = null;
+	protected Button myCheckBoxUseCurrentLinkSample;
 	private BoardDescriptor myBoardDescriptor = null;
 	private CodeDescriptor myCodedescriptor = CodeDescriptor.createLastUsed();
 
@@ -55,8 +52,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	public void handleBoarDescriptorChange() {
 
-		if (mExampleEditor != null) {
-			mExampleEditor.AddAllExamples(myBoardDescriptor, myCodedescriptor.getExamples());
+		if (myExampleEditor != null) {
+			myExampleEditor.AddAllExamples(myBoardDescriptor, myCodedescriptor.getExamples());
 		}
 
 		validatePage();
@@ -76,7 +73,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public void createControl(Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.NULL);
-		mParentComposite = composite;
+		myParentComposite = composite;
 
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 4;
@@ -91,16 +88,16 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 			}
 		};
-		mCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, null, 4, true);
-		mCodeSourceOptionsCombo.addListener(comboListener);
+		myCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, null, 4, true);
+		myCodeSourceOptionsCombo.addListener(comboListener);
 
-		mCodeSourceOptionsCombo.setItems(getCodeTypeDescriptions());
+		myCodeSourceOptionsCombo.setItems(getCodeTypeDescriptions());
 
-		mTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, //$NON-NLS-1$
+		myTemplateFolderEditor = new DirectoryFieldEditor("temp1", Messages.ui_new_sketch_custom_template_location, //$NON-NLS-1$
 				composite);
 
-		mExampleEditor = new SampleSelector(composite, SWT.FILL, Messages.ui_new_sketch_select_example_code, 4);
-		mExampleEditor.addchangeListener(new Listener() {
+		myExampleEditor = new SampleSelector(composite, SWT.FILL, Messages.ui_new_sketch_select_example_code, 4);
+		myExampleEditor.addchangeListener(new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
@@ -110,10 +107,10 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 		});
 
-		mTemplateFolderEditor.getTextControl(composite).addListener(SWT.Modify, comboListener);
+		myTemplateFolderEditor.getTextControl(composite).addListener(SWT.Modify, comboListener);
 
-		mCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
-		mCheckBoxUseCurrentLinkSample.setText(Messages.ui_new_sketch_link_to_sample_code);
+		myCheckBoxUseCurrentLinkSample = new Button(composite, SWT.CHECK);
+		myCheckBoxUseCurrentLinkSample.setText(Messages.ui_new_sketch_link_to_sample_code);
 
 		//
 		// End of special controls
@@ -134,26 +131,26 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 *       Checkbox settings
 	 */
 	protected void SetControls() {
-		switch (CodeTypes.values()[Math.max(0, mCodeSourceOptionsCombo.getSelectionIndex())]) {
+		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
 		case defaultIno:
-			mTemplateFolderEditor.setEnabled(false, mParentComposite);
-			mExampleEditor.setEnabled(false);
-			mCheckBoxUseCurrentLinkSample.setEnabled(false);
+			myTemplateFolderEditor.setEnabled(false, myParentComposite);
+			myExampleEditor.setEnabled(false);
+			myCheckBoxUseCurrentLinkSample.setEnabled(false);
 			break;
 		case defaultCPP:
-			mTemplateFolderEditor.setEnabled(false, mParentComposite);
-			mExampleEditor.setEnabled(false);
-			mCheckBoxUseCurrentLinkSample.setEnabled(false);
+			myTemplateFolderEditor.setEnabled(false, myParentComposite);
+			myExampleEditor.setEnabled(false);
+			myCheckBoxUseCurrentLinkSample.setEnabled(false);
 			break;
 		case CustomTemplate:
-			mTemplateFolderEditor.setEnabled(true, mParentComposite);
-			mExampleEditor.setEnabled(false);
-			mCheckBoxUseCurrentLinkSample.setEnabled(false);
+			myTemplateFolderEditor.setEnabled(true, myParentComposite);
+			myExampleEditor.setEnabled(false);
+			myCheckBoxUseCurrentLinkSample.setEnabled(false);
 			break;
 		case sample:
-			mTemplateFolderEditor.setEnabled(false, mParentComposite);
-			mExampleEditor.setEnabled(true);
-			mCheckBoxUseCurrentLinkSample.setEnabled(true);
+			myTemplateFolderEditor.setEnabled(false, myParentComposite);
+			myExampleEditor.setEnabled(true);
+			myCheckBoxUseCurrentLinkSample.setEnabled(true);
 			break;
 		default:
 			break;
@@ -165,16 +162,16 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 *       create the project. If so enable the finish button.
 	 */
 	protected void validatePage() {
-		if (mCodeSourceOptionsCombo == null) {
+		if (myCodeSourceOptionsCombo == null) {
 			return;
 		}
-		switch (CodeTypes.values()[Math.max(0, mCodeSourceOptionsCombo.getSelectionIndex())]) {
+		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
 		case defaultIno:
 		case defaultCPP:
 			setPageComplete(true);// default always works
 			break;
 		case CustomTemplate:
-			IPath templateFolder = new Path(mTemplateFolderEditor.getStringValue());
+			IPath templateFolder = new Path(myTemplateFolderEditor.getStringValue());
 			File cppFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_CPP).toFile();
 			File headerFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_H).toFile();
 			File inoFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_INO).toFile();
@@ -182,7 +179,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			setPageComplete(existFile);
 			break;
 		case sample:
-			setPageComplete(mExampleEditor.isSampleSelected());
+			setPageComplete(myExampleEditor.isSampleSelected());
 			break;
 		default:
 			setPageComplete(false);
@@ -201,22 +198,22 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		// settings are saved when the files are created and the use this as
 		// default flag is set
 		//
-		mTemplateFolderEditor.setStringValue(myCodedescriptor.getTemPlateFoldername().toString());
-		mCodeSourceOptionsCombo.select(myCodedescriptor.getCodeType().ordinal());
+		myTemplateFolderEditor.setStringValue(myCodedescriptor.getTemPlateFoldername().toString());
+		myCodeSourceOptionsCombo.select(myCodedescriptor.getCodeType().ordinal());
 	}
 
 	public CodeDescriptor getCodeDescription() {
 
-		switch (CodeTypes.values()[mCodeSourceOptionsCombo.getSelectionIndex()]) {
+		switch (CodeTypes.values()[myCodeSourceOptionsCombo.getSelectionIndex()]) {
 		case defaultIno:
 			return CodeDescriptor.createDefaultIno();
 		case defaultCPP:
 			return CodeDescriptor.createDefaultCPP();
 		case CustomTemplate:
-			return CodeDescriptor.createCustomTemplate(new Path(mTemplateFolderEditor.getStringValue()));
+			return CodeDescriptor.createCustomTemplate(new Path(myTemplateFolderEditor.getStringValue()));
 		case sample:
-			ArrayList<IPath> sampleFolders = mExampleEditor.GetSampleFolders();
-			boolean link = mCheckBoxUseCurrentLinkSample.getSelection();
+			ArrayList<IPath> sampleFolders = myExampleEditor.GetSampleFolders();
+			boolean link = myCheckBoxUseCurrentLinkSample.getSelection();
 			return CodeDescriptor.createExample(link, sampleFolders);
 		}
 		// make sure this never happens
