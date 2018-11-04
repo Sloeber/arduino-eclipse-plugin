@@ -15,7 +15,7 @@ public class LabelCombo {
 	private GridData myLabelGriddata;
 	private String myID = new String();
 	private Label myLabel;
-	public Combo myCombo;
+	private Combo myCombo;
 	private String myValue = ""; //$NON-NLS-1$
 	private String myMenuName;
 	private Listener myListener = null;
@@ -111,5 +111,13 @@ public class LabelCombo {
 	public void setLabel(String newLabel) {
 		myLabel.setText(newLabel);
 
+	}
+
+	public int getSelectionIndex() {
+		return myCombo.getSelectionIndex();
+	}
+
+	public void select(int ordinal) {
+		myCombo.select(ordinal);
 	}
 }
