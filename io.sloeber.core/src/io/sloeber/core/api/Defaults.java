@@ -1,5 +1,6 @@
 package io.sloeber.core.api;
 
+import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
@@ -24,11 +25,17 @@ public class Defaults {
 	 */
 	public static String getPrivateLibraryPath() {
 		IPath homPath = new Path(System.getProperty("user.home"));
+		if(SystemUtils.IS_OS_MAC ) {
+			homPath=homPath.append("Documents");
+		}
 		return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString();
 	}
 
 	public static String getPrivateHardwarePath() {
 		IPath homPath = new Path(System.getProperty("user.home"));
+		if(SystemUtils.IS_OS_MAC ) {
+			homPath=homPath.append("Documents");
+		}
 		return homPath.append("Arduino").append(Const.ARDUINO_HARDWARE_FOLDER_NAME).toString();
 	}
 
