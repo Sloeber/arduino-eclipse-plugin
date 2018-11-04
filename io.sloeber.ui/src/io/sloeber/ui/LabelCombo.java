@@ -14,6 +14,11 @@ public class LabelCombo {
 	private GridData mComboGriddata;
 	private GridData mLabelGriddata;
 	private String myID = new String();
+	private Label mLabel;
+	public Combo mCombo;
+	private String myValue = ""; //$NON-NLS-1$
+	private String mMenuName;
+	private Listener myListener = null;
 
 	/**
 	 * Create a combo box with a label in front of it.
@@ -49,11 +54,7 @@ public class LabelCombo {
 		myListener = listener;
 	}
 
-	private Label mLabel;
-	public Combo mCombo;
-	private String myValue = ""; //$NON-NLS-1$
-	private String mMenuName;
-	private Listener myListener = null;
+
 
 	public String getValue() {
 		myValue = mCombo.getText().trim();
