@@ -18,12 +18,12 @@ import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class OpenSerialDialogBox extends Dialog {
-    private ComboViewer serialPorts;
-    private ComboViewer baudRates;
-    private Button dtrCheckbox;
-    private String selectedPort;
-    private int selectedRate;
-    private boolean selectedDtr;
+    private ComboViewer mySerialPorts;
+    private ComboViewer myBaudRates;
+    private Button myDtrCheckbox;
+    private String mySelectedPort;
+    private int mySelectedRate;
+    private boolean mySelectedDtr;
 
     protected OpenSerialDialogBox(Shell parentShell) {
 	super(parentShell);
@@ -33,11 +33,11 @@ public class OpenSerialDialogBox extends Dialog {
     protected void okPressed() {
 	// I need to save these values in local variables as the GUI stuff is
 	// deleted after he close
-	selectedRate = Integer.parseInt(baudRates.getCombo().getText());
-	selectedPort = serialPorts.getCombo().getText();
-	selectedDtr = dtrCheckbox.getSelection();
-	MyPreferences.setLastUsedBaudRate(baudRates.getCombo().getText());
-	MyPreferences.setLastUsedPort(selectedPort);
+	mySelectedRate = Integer.parseInt(myBaudRates.getCombo().getText());
+	mySelectedPort = mySerialPorts.getCombo().getText();
+	mySelectedDtr = myDtrCheckbox.getSelection();
+	MyPreferences.setLastUsedBaudRate(myBaudRates.getCombo().getText());
+	MyPreferences.setLastUsedPort(mySelectedPort);
 	super.okPressed();
     }
 
@@ -58,42 +58,42 @@ public class OpenSerialDialogBox extends Dialog {
 
 
 	// Always allow to provide your com port name https://github.com/Sloeber/arduino-eclipse-plugin/issues/1034
-	serialPorts = new ComboViewer(parent, SWT.DROP_DOWN);
-	serialPorts.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
-	serialPorts.setContentProvider(new ArrayContentProvider());
-	serialPorts.setLabelProvider(new LabelProvider());
-	serialPorts.setInput(SerialManager.listComPorts());
+	mySerialPorts = new ComboViewer(parent, SWT.DROP_DOWN);
+	mySerialPorts.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
+	mySerialPorts.setContentProvider(new ArrayContentProvider());
+	mySerialPorts.setLabelProvider(new LabelProvider());
+	mySerialPorts.setInput(SerialManager.listComPorts());
 
 	// Create baud rate selection combo box to select the baud rate
 	Label label2 = new Label(parent, SWT.NONE);
 	label2.setText(Messages.openSerialDialogBoxSelectTheBautRate);
-	baudRates = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
-	baudRates.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
-	baudRates.setContentProvider(new ArrayContentProvider());
-	baudRates.setLabelProvider(new LabelProvider());
-	baudRates.setInput(SerialManager.listBaudRates());
+	myBaudRates = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
+	myBaudRates.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
+	myBaudRates.setContentProvider(new ArrayContentProvider());
+	myBaudRates.setLabelProvider(new LabelProvider());
+	myBaudRates.setInput(SerialManager.listBaudRates());
 
-	baudRates.getCombo().setText(MyPreferences.getLastUsedRate());
-	serialPorts.getCombo().setText(MyPreferences.getLastUsedPort());
+	myBaudRates.getCombo().setText(MyPreferences.getLastUsedRate());
+	mySerialPorts.getCombo().setText(MyPreferences.getLastUsedPort());
 
-	dtrCheckbox = new Button(parent, SWT.CHECK);
-	dtrCheckbox.setText(Messages.openSerialDialogBoxDtr);
-	dtrCheckbox.setSelection(true);
+	myDtrCheckbox = new Button(parent, SWT.CHECK);
+	myDtrCheckbox.setText(Messages.openSerialDialogBoxDtr);
+	myDtrCheckbox.setSelection(true);
 
 	return parent;
 
     }
 
     public String GetComPort() {
-	return selectedPort;
+	return mySelectedPort;
     }
 
     public int GetBaudRate() {
-	return selectedRate;
+	return mySelectedRate;
     }
 
     public boolean GetDtr() {
-	return selectedDtr;
+	return mySelectedDtr;
     }
 
 }
