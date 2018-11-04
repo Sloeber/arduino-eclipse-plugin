@@ -33,7 +33,7 @@ public class LabelCombo {
 		myLabel = new Label(composite, SWT.NONE);
 		myLabel.setText(menuName + " :"); //$NON-NLS-1$
 		myLabelGriddata = new GridData();
-		myLabelGriddata.horizontalSpan = 1;// (ncol - 1);
+		myLabelGriddata.horizontalSpan = 1;
 		myLabelGriddata.horizontalAlignment = SWT.FILL;
 		myLabel.setLayoutData(myLabelGriddata);
 		if (fixedList) {
@@ -42,7 +42,7 @@ public class LabelCombo {
 			myCombo = new Combo(composite, SWT.BORDER);
 		}
 		myComboGriddata = new GridData();
-		myComboGriddata.horizontalSpan = horSpan;// (ncol - 1);
+		myComboGriddata.horizontalSpan = horSpan;
 		myComboGriddata.horizontalAlignment = SWT.FILL;
 		myCombo.setLayoutData(myComboGriddata);
 		myMenuName = menuName;
@@ -119,5 +119,14 @@ public class LabelCombo {
 
 	public void select(int ordinal) {
 		myCombo.select(ordinal);
+	}
+
+	public String getText() {
+		return myCombo.getText();
+	}
+
+	public void setText(String text) {
+		myCombo.setText(text);
+		
 	}
 }
