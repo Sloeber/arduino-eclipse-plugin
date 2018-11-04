@@ -11,13 +11,13 @@ import org.eclipse.swt.widgets.Listener;
  * a class containing a label and a combobox in one. This makes it easier to make both visible together
  */
 public class LabelCombo {
-	private GridData mComboGriddata;
-	private GridData mLabelGriddata;
+	private GridData myComboGriddata;
+	private GridData myLabelGriddata;
 	private String myID = new String();
-	private Label mLabel;
-	public Combo mCombo;
+	private Label myLabel;
+	public Combo myCombo;
 	private String myValue = ""; //$NON-NLS-1$
-	private String mMenuName;
+	private String myMenuName;
 	private Listener myListener = null;
 
 	/**
@@ -30,74 +30,74 @@ public class LabelCombo {
 	 */
 	public LabelCombo(Composite composite, String menuName, String ID, int horSpan, boolean fixedList) {
 		myID = ID;
-		mLabel = new Label(composite, SWT.NONE);
-		mLabel.setText(menuName + " :"); //$NON-NLS-1$
-		mLabelGriddata = new GridData();
-		mLabelGriddata.horizontalSpan = 1;// (ncol - 1);
-		mLabelGriddata.horizontalAlignment = SWT.FILL;
-		mLabel.setLayoutData(mLabelGriddata);
+		myLabel = new Label(composite, SWT.NONE);
+		myLabel.setText(menuName + " :"); //$NON-NLS-1$
+		myLabelGriddata = new GridData();
+		myLabelGriddata.horizontalSpan = 1;// (ncol - 1);
+		myLabelGriddata.horizontalAlignment = SWT.FILL;
+		myLabel.setLayoutData(myLabelGriddata);
 		if (fixedList) {
-			mCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
+			myCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		} else {
-			mCombo = new Combo(composite, SWT.BORDER);
+			myCombo = new Combo(composite, SWT.BORDER);
 		}
-		mComboGriddata = new GridData();
-		mComboGriddata.horizontalSpan = horSpan;// (ncol - 1);
-		mComboGriddata.horizontalAlignment = SWT.FILL;
-		mCombo.setLayoutData(mComboGriddata);
-		mMenuName = menuName;
+		myComboGriddata = new GridData();
+		myComboGriddata.horizontalSpan = horSpan;// (ncol - 1);
+		myComboGriddata.horizontalAlignment = SWT.FILL;
+		myCombo.setLayoutData(myComboGriddata);
+		myMenuName = menuName;
 
 	}
 
 	public void addListener(Listener listener) {
-		mCombo.addListener(SWT.Modify, listener);
+		myCombo.addListener(SWT.Modify, listener);
 		myListener = listener;
 	}
 
 
 
 	public String getValue() {
-		myValue = mCombo.getText().trim();
+		myValue = myCombo.getText().trim();
 		return myValue;
 	}
 
 	public String getMenuName() {
-		return mMenuName.trim();
+		return myMenuName.trim();
 	}
 
 	public void setValue(String value) {
 		myValue = value;
-		mCombo.setText(value);
+		myCombo.setText(value);
 	}
 
 	public void setVisible(boolean visible) {
-		boolean newvisible = visible && (mCombo.getItemCount() > 0);
-		mLabel.setVisible(newvisible);
-		mCombo.setVisible(newvisible);
-		mComboGriddata.exclude = !newvisible;
-		mLabelGriddata.exclude = !newvisible;
+		boolean newvisible = visible && (myCombo.getItemCount() > 0);
+		myLabel.setVisible(newvisible);
+		myCombo.setVisible(newvisible);
+		myComboGriddata.exclude = !newvisible;
+		myLabelGriddata.exclude = !newvisible;
 	}
 
 	public boolean isValid() {
-		return !mCombo.getText().isEmpty() || mCombo.getItemCount() == 0;
+		return !myCombo.getText().isEmpty() || myCombo.getItemCount() == 0;
 	}
 
 	public void setEnabled(boolean enabled) {
-		mCombo.setEnabled(enabled);
+		myCombo.setEnabled(enabled);
 	}
 
 	public void setItems(String[] items) {
 		if (myListener != null)
-			mCombo.removeListener(SWT.Modify, myListener);
-		mCombo.setItems(items);
-		mCombo.setText(myValue);
+			myCombo.removeListener(SWT.Modify, myListener);
+		myCombo.setItems(items);
+		myCombo.setText(myValue);
 		if (myListener != null)
-			mCombo.addListener(SWT.Modify, myListener);
+			myCombo.addListener(SWT.Modify, myListener);
 
 	}
 
 	public void add(String item) {
-		mCombo.add(item);
+		myCombo.add(item);
 	}
 
 	public String getID() {
@@ -105,11 +105,11 @@ public class LabelCombo {
 	}
 
 	public boolean isVisible() {
-		return (mCombo.getItemCount() > 0);
+		return (myCombo.getItemCount() > 0);
 	}
 
 	public void setLabel(String newLabel) {
-		mLabel.setText(newLabel);
+		myLabel.setText(newLabel);
 
 	}
 }

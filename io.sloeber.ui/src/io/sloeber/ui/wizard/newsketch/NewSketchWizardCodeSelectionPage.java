@@ -134,7 +134,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 *       Checkbox settings
 	 */
 	protected void SetControls() {
-		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
+		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.myCombo.getSelectionIndex())]) {
 		case defaultIno:
 			this.mTemplateFolderEditor.setEnabled(false, this.mParentComposite);
 			this.mExampleEditor.setEnabled(false);
@@ -168,7 +168,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		if (this.mCodeSourceOptionsCombo == null) {
 			return;
 		}
-		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex())]) {
+		switch (CodeTypes.values()[Math.max(0, this.mCodeSourceOptionsCombo.myCombo.getSelectionIndex())]) {
 		case defaultIno:
 		case defaultCPP:
 			setPageComplete(true);// default always works
@@ -202,12 +202,12 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		// default flag is set
 		//
 		this.mTemplateFolderEditor.setStringValue(this.myCodedescriptor.getTemPlateFoldername().toString());
-		this.mCodeSourceOptionsCombo.mCombo.select(this.myCodedescriptor.getCodeType().ordinal());
+		this.mCodeSourceOptionsCombo.myCombo.select(this.myCodedescriptor.getCodeType().ordinal());
 	}
 
 	public CodeDescriptor getCodeDescription() {
 
-		switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.mCombo.getSelectionIndex()]) {
+		switch (CodeTypes.values()[this.mCodeSourceOptionsCombo.myCombo.getSelectionIndex()]) {
 		case defaultIno:
 			return CodeDescriptor.createDefaultIno();
 		case defaultCPP:
