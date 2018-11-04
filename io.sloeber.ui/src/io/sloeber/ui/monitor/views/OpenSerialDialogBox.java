@@ -56,17 +56,13 @@ public class OpenSerialDialogBox extends Dialog {
 	Label label1 = new Label(parent, SWT.NONE);
 	label1.setText(Messages.openSerialDialogBoxSerialPortToConnectTo);
 
-	// If there are no comports allow to provide one
-	String[] comPorts = SerialManager.listComPorts();
-	if (comPorts.length == 0) {
-	    this.serialPorts = new ComboViewer(parent, SWT.DROP_DOWN);
-	} else {
-	    this.serialPorts = new ComboViewer(parent, SWT.READ_ONLY | SWT.DROP_DOWN);
-	}
+
+	// Always allow to provide your com port name https://github.com/Sloeber/arduino-eclipse-plugin/issues/1034
+	this.serialPorts = new ComboViewer(parent, SWT.DROP_DOWN);
 	this.serialPorts.getControl().setLayoutData(new GridData(SWT.LEFT, SWT.NONE, false, false));
 	this.serialPorts.setContentProvider(new ArrayContentProvider());
 	this.serialPorts.setLabelProvider(new LabelProvider());
-	this.serialPorts.setInput(comPorts);
+	this.serialPorts.setInput(SerialManager.listComPorts());
 
 	// Create baud rate selection combo box to select the baud rate
 	Label label2 = new Label(parent, SWT.NONE);
