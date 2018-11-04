@@ -15,7 +15,15 @@ public class LabelCombo {
 	private GridData mLabelGriddata;
 	private String myID = new String();
 
-	public LabelCombo(Composite composite, String menuName, String ID, int horSpan, boolean readOnly) {
+	/**
+	 * Create a combo box with a label in front of it.
+	 * @param composite
+	 * @param menuName
+	 * @param ID
+	 * @param horSpan
+	 * @param fixedList if true only items of the list can be selected. If false you can type any text you want
+	 */
+	public LabelCombo(Composite composite, String menuName, String ID, int horSpan, boolean fixedList) {
 		this.myID = ID;
 		this.mLabel = new Label(composite, SWT.NONE);
 		this.mLabel.setText(menuName + " :"); //$NON-NLS-1$
@@ -23,7 +31,7 @@ public class LabelCombo {
 		this.mLabelGriddata.horizontalSpan = 1;// (ncol - 1);
 		this.mLabelGriddata.horizontalAlignment = SWT.FILL;
 		this.mLabel.setLayoutData(this.mLabelGriddata);
-		if (readOnly) {
+		if (fixedList) {
 			this.mCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		} else {
 			this.mCombo = new Combo(composite, SWT.BORDER);
