@@ -50,7 +50,7 @@ public class NewSketchWizardBoardPage extends WizardPage {
 	Composite composite = new Composite(parent, SWT.NULL);
 	this.mPageLayout.draw(composite);
 	setControl(composite);
-	this.mPageLayout.mFeedbackControl.addListener(SWT.Modify, this.completeListener);
+	this.mPageLayout.myFeedbackControl.addListener(SWT.Modify, this.completeListener);
 	setPageComplete(this.mPageLayout.isPageComplete());
     }
 
