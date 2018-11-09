@@ -44,27 +44,30 @@ import io.sloeber.ui.Messages;
  * @see ArduinoProperties ArduinoSettingsPage
  *
  */
-@SuppressWarnings({"unused"})
+
 public class BoardSelectionPage extends AbstractCPropertyTab {
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 
 	private static final String FALSE = "FALSE"; //$NON-NLS-1$
 
 	// global stuff to allow to communicate outside this class
-	public Text mFeedbackControl;
+	public Text myFeedbackControl;
 
 	// GUI elements
-	protected LabelCombo mControlBoardsTxtFile;
-	protected LabelCombo mcontrolBoardName;
-	protected LabelCombo mControlUploadProtocol;
-	protected LabelCombo mControlUploadPort;
-	protected LabelCombo[] mBoardOptionCombos = null;
-	protected Listener mBoardSelectionChangedListener = null;
+	protected LabelCombo myControlBoardsTxtFile;
+	protected LabelCombo mycontrolBoardName;
+	protected LabelCombo myControlUploadProtocol;
+	protected LabelCombo myControlUploadPort;
+	protected LabelCombo[] myBoardOptionCombos = null;
+	protected Listener myBoardSelectionChangedListener = null;
 	protected BoardDescriptor myBoardID = null;
+	private Composite myComposite;
+	private TreeMap<String, String> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private org.eclipse.swt.widgets.Button myPasswordButton;
 
 	/**
-	 * Get the configuration we are currently working in. The configuration is
-	 * null if we are in the create sketch wizard.
+	 * Get the configuration we are currently working in. The configuration is null
+	 * if we are in the create sketch wizard.
 	 *
 	 * @return the configuration to save info into
 	 */
@@ -75,7 +78,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return null;
 	}
 
-	private Listener boardFileModifyListener = new Listener() {
+	private Listener myBoardFileModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 
@@ -86,34 +89,33 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			 * Change the list of available boards
 			 */
 			String CurrentBoard = getBoardName();
-			mcontrolBoardName.setItems(myBoardID.getCompatibleBoards());
-			mcontrolBoardName.setText(CurrentBoard);
+			mycontrolBoardName.setItems(myBoardID.getCompatibleBoards());
+			mycontrolBoardName.setText(CurrentBoard);
 
 			/*
 			 * Change the list of available upload protocols
 			 */
 			String CurrentUploadProtocol = getUpLoadProtocol();
-			mControlUploadProtocol
-					.setItems(myBoardID.getUploadProtocols());
-			mControlUploadProtocol.setText(CurrentUploadProtocol);
+			myControlUploadProtocol.setItems(myBoardID.getUploadProtocols());
+			myControlUploadProtocol.setText(CurrentUploadProtocol);
 
-			if (mControlUploadProtocol.getText().isEmpty()) {
+			if (myControlUploadProtocol.getText().isEmpty()) {
 				myBoardID.setUploadProtocol(Defaults.getDefaultUploadProtocol());
-				mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
+				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
 
-			boardModifyListener.handleEvent(null);
+			myBoardModifyListener.handleEvent(null);
 		}
 
 	};
 
-	protected Listener boardModifyListener = new Listener() {
+	protected Listener myBoardModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 
 			myBoardID.setBoardName(getBoardName());
 
-			for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+			for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 				curLabelCombo.setItems(myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
 				curLabelCombo.setLabel(myBoardID.getMenuNameFromMenuID(curLabelCombo.getID()));
 			}
@@ -122,18 +124,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			enableControls();
 		}
 	};
-	protected Listener labelComboListener = new Listener() {
+	protected Listener myLabelComboListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 			isPageComplete();
 		}
 	};
 
-	private Composite mComposite;
 
-	private TreeMap<String, String> mAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
-	private org.eclipse.swt.widgets.Button mPwdButton;
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -143,19 +141,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	public void setListener(Listener BoardSelectionChangedListener) {
-		mBoardSelectionChangedListener = BoardSelectionChangedListener;
+		myBoardSelectionChangedListener = BoardSelectionChangedListener;
 	}
 
-	private  void createLabel(int ncol, String t) {
-		Label line = new Label(mComposite, SWT.HORIZONTAL | SWT.BOLD);
-		line.setText(t);
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = ncol;
-		line.setLayoutData(gridData);
-	}
 
-	private  void createLine() {
-		Label line = new Label(mComposite, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
+	private void createLine() {
+		Label line = new Label(myComposite, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
 		line.setLayoutData(gridData);
@@ -166,66 +157,63 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		if (usercomp != null) {
 			inComp = usercomp;
 		}
-		mComposite =inComp;		
+		myComposite = inComp;
 		if (myBoardID == null) {
 			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 			if (myBoardID.getActualCoreCodePath() == null) {
-				Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-						Messages.BoardSelectionPage_failed_to_find_platform.replace(Messages.PLATFORM ,myBoardID.getReferencingPlatformFile().toString())));  
+				Activator.log(
+						new Status(IStatus.ERROR, Activator.getId(), Messages.BoardSelectionPage_failed_to_find_platform
+								.replace(Messages.PLATFORM, myBoardID.getReferencingPlatformFile().toString())));
 			}
 		}
-		
 
 		String[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
 		for (String curBoardFile : allBoardsFileNames) {
-			mAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
+			myAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
 		}
-		if (mAllBoardsFiles.isEmpty()) {
+		if (myAllBoardsFiles.isEmpty()) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
 		}
-		
 
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 3;
-		mComposite.setLayout(theGridLayout);
+		myComposite.setLayout(theGridLayout);
 
-
-		//createLabel(mComposite, 3, Messages.BoardSelectionPage_platform_you_want_to_use); 
-		mControlBoardsTxtFile=new LabelCombo(mComposite, Messages.BoardSelectionPage_platform_folder, null, 2, true);
-		mControlBoardsTxtFile.setItems(mAllBoardsFiles.keySet().toArray(new String[0]));
+		myControlBoardsTxtFile = new LabelCombo(myComposite, Messages.BoardSelectionPage_platform_folder, null, 2, true);
+		myControlBoardsTxtFile.setItems(myAllBoardsFiles.keySet().toArray(new String[0]));
 		createLine();
 
-		//createLabel(mComposite, 3, Messages.BoardSelectionPage_arduino_board_specification); 
-		mcontrolBoardName=new LabelCombo(mComposite, Messages.BoardSelectionPage_board, null, 2, true);
-		mcontrolBoardName.setItems(mAllBoardsFiles.keySet().toArray(new String[0]));
 
-		mControlUploadProtocol=new LabelCombo(mComposite, Messages.BoardSelectionPage_upload_protocol, null, 2, true);
-		mControlUploadProtocol.setItems(mAllBoardsFiles.keySet().toArray(new String[0]));
+		mycontrolBoardName = new LabelCombo(myComposite, Messages.BoardSelectionPage_board, null, 2, true);
+		mycontrolBoardName.setItems(myAllBoardsFiles.keySet().toArray(new String[0]));
+
+		myControlUploadProtocol = new LabelCombo(myComposite, Messages.BoardSelectionPage_upload_protocol, null, 2,
+				true);
+		myControlUploadProtocol.setItems(myAllBoardsFiles.keySet().toArray(new String[0]));
 
 		// ----
-		mControlUploadPort = new LabelCombo(mComposite, Messages.ui_port, null, 1, false);
+		myControlUploadPort = new LabelCombo(myComposite, Messages.ui_port, null, 1, false);
 
-		mControlUploadPort
-				.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
-		mPwdButton = new org.eclipse.swt.widgets.Button(mComposite, SWT.PUSH | SWT.CENTER);
-		mPwdButton.setText(Messages.set_or_remove_password);
-		mPwdButton.addListener(SWT.Selection, new Listener() {
+		myControlUploadPort.setItems(ArrayUtil.addAll(SerialManager.listNetworkPorts(), SerialManager.listComPorts()));
+		myPasswordButton = new org.eclipse.swt.widgets.Button(myComposite, SWT.PUSH | SWT.CENTER);
+		myPasswordButton.setText(Messages.set_or_remove_password);
+		myPasswordButton.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
 				switch (e.type) {
-					case SWT.Selection :
-						String host = getUpLoadPort().split(" ")[0]; //$NON-NLS-1$
-						if (host.equals(getUpLoadPort())) {
+				case SWT.Selection:
+					String host = getUpLoadPort().split(" ")[0]; //$NON-NLS-1$
+					if (host.equals(getUpLoadPort())) {
 						Activator.log(
 								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
-						} else {
-							PasswordManager passwordManager = new PasswordManager();
-						PasswordDialog dialog = new PasswordDialog(mComposite.getShell());
-							passwordManager.setHost(host);
-							dialog.setPasswordManager(passwordManager);
-							dialog.open();
-						}
-						break;
+					} else {
+						PasswordManager passwordManager = new PasswordManager();
+						PasswordDialog dialog = new PasswordDialog(myComposite.getShell());
+						passwordManager.setHost(host);
+						dialog.setPasswordManager(passwordManager);
+						dialog.open();
+					}
+					break;
 				}
 			}
 		});
@@ -233,33 +221,31 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		TreeMap<String, String> menus = PackageManager.getAllmenus();
 
-		mBoardOptionCombos = new LabelCombo[menus.size()];
+		myBoardOptionCombos = new LabelCombo[menus.size()];
 		int index = 0;
 		for (Map.Entry<String, String> curMenu : menus.entrySet()) {
-			mBoardOptionCombos[index] = new LabelCombo(mComposite, curMenu.getValue(), curMenu.getKey(),
-					2, true);
-			mBoardOptionCombos[index++].addListener(labelComboListener);
+			myBoardOptionCombos[index] = new LabelCombo(myComposite, curMenu.getValue(), curMenu.getKey(), 2, true);
+			myBoardOptionCombos[index++].addListener(myLabelComboListener);
 
 		}
 
 		// Create the control to alert parents of changes
-		mFeedbackControl = new Text(mComposite, SWT.None);
-		mFeedbackControl.setVisible(false);
-		mFeedbackControl.setEnabled(false);
+		myFeedbackControl = new Text(myComposite, SWT.None);
+		myFeedbackControl.setVisible(false);
+		myFeedbackControl.setEnabled(false);
 		GridData theGriddata;
 		theGriddata = new GridData();
 		theGriddata.horizontalSpan = 0;
-		mFeedbackControl.setLayoutData(theGriddata);
+		myFeedbackControl.setLayoutData(theGriddata);
 		// End of special controls
-
 
 		setValues();
 
-		mcontrolBoardName.addListener(SWT.Modify, boardModifyListener);
-		mControlBoardsTxtFile.addListener(SWT.Modify, boardFileModifyListener);
+		mycontrolBoardName.addListener(SWT.Modify, myBoardModifyListener);
+		myControlBoardsTxtFile.addListener(SWT.Modify, myBoardFileModifyListener);
 
 		enableControls();
-		Dialog.applyDialogFont(mComposite);
+		Dialog.applyDialogFont(myComposite);
 	}
 
 	private static String tidyUpLength(String longName) {
@@ -278,21 +264,21 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		boolean MenuOpionsValidAndComplete = true;
 		boolean ret = true;
-		int selectedBoardFile = mControlBoardsTxtFile.getSelectionIndex();
+		int selectedBoardFile = myControlBoardsTxtFile.getSelectionIndex();
 		if (selectedBoardFile == -1)
 			return false;
 
-		for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			MenuOpionsValidAndComplete = MenuOpionsValidAndComplete && curLabelCombo.isValid();
 		}
 
 		ret = !getBoardName().isEmpty() && MenuOpionsValidAndComplete;
-		if (!mFeedbackControl.getText().equals(ret ? TRUE : FALSE)) {
-			mFeedbackControl.setText(ret ? TRUE : FALSE);
+		if (!myFeedbackControl.getText().equals(ret ? TRUE : FALSE)) {
+			myFeedbackControl.setText(ret ? TRUE : FALSE);
 		}
 		if (ret) {
-			if (mBoardSelectionChangedListener != null) {
-				mBoardSelectionChangedListener.handleEvent(new Event());
+			if (myBoardSelectionChangedListener != null) {
+				myBoardSelectionChangedListener.handleEvent(new Event());
 			}
 		}
 
@@ -300,23 +286,22 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	protected void enableControls() {
-		mComposite.setEnabled(false);
-		mComposite.setVisible(false);
-		for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+		myComposite.setEnabled(false);
+		myComposite.setVisible(false);
+		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			curLabelCombo.setVisible(true);
 		}
 
-		Display display=mComposite.getDisplay();
-		mComposite.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-		mComposite.pack();
-		mComposite.layout(true, true);
-		mComposite.requestLayout();
-		
-		mComposite.setEnabled(true);
-		mComposite.setVisible(true);
+		Display display = myComposite.getDisplay();
+		myComposite.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+		myComposite.pack();
+		myComposite.layout(true, true);
+		myComposite.requestLayout();
 
-		mComposite.redraw();
-		
+		myComposite.setEnabled(true);
+		myComposite.setVisible(true);
+
+		myComposite.redraw();
 
 		// mComposite.getShell().pack();
 		// mComposite.getShell().redraw();
@@ -349,33 +334,32 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	private void setValues() {
 
-		mControlBoardsTxtFile.setText(tidyUpLength(myBoardID.getReferencingBoardsFile().toString()));
-		mcontrolBoardName.setItems(myBoardID.getCompatibleBoards());
-		mcontrolBoardName.setText(myBoardID.getBoardName());
+		myControlBoardsTxtFile.setText(tidyUpLength(myBoardID.getReferencingBoardsFile().toString()));
+		mycontrolBoardName.setItems(myBoardID.getCompatibleBoards());
+		mycontrolBoardName.setText(myBoardID.getBoardName());
 
 		String CurrentUploadProtocol = getUpLoadProtocol();
-		mControlUploadProtocol.setItems(myBoardID.getUploadProtocols());
-		mControlUploadProtocol.setText(CurrentUploadProtocol);
+		myControlUploadProtocol.setItems(myBoardID.getUploadProtocols());
+		myControlUploadProtocol.setText(CurrentUploadProtocol);
 		if (getUpLoadProtocol().isEmpty()) {
-			mControlUploadProtocol.setText(myBoardID.getProgrammer());
-			if (mControlUploadProtocol.getText().isEmpty()) {
-				mControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
+			myControlUploadProtocol.setText(myBoardID.getProgrammer());
+			if (myControlUploadProtocol.getText().isEmpty()) {
+				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
 		}
 
-		mControlUploadPort.setValue(myBoardID.getUploadPort());
+		myControlUploadPort.setValue(myBoardID.getUploadPort());
 
 		// set the options in the combo boxes before setting the value
 		Map<String, String> options = myBoardID.getOptions();
 
-		for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			curLabelCombo.setItems(myBoardID.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
 			if (options != null) {
 				String value = options.get(curLabelCombo.getID());
 				if (value != null) {
 					try {
-						curLabelCombo
-								.setValue(myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
+						curLabelCombo.setValue(myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
 					} catch (Exception e) {
 						// When this fails no default value will be set
 						// so nothing to do here
@@ -428,17 +412,17 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	@Override
 	public void handleTabEvent(int kind, Object data) {
 		if (kind == 222) {
-			mFeedbackControl.addListener(SWT.Modify, new ArduinoSelectionPageListener((AbstractPage) data));
+			myFeedbackControl.addListener(SWT.Modify, new ArduinoSelectionPageListener((AbstractPage) data));
 		}
 		super.handleTabEvent(kind, data);
 	}
 
 	protected File getSelectedBoardsFile() {
-		if (mControlBoardsTxtFile == null) {
+		if (myControlBoardsTxtFile == null) {
 			return null;
 		}
-		String selectedText = mControlBoardsTxtFile.getText().trim();
-		String longText = mAllBoardsFiles.get(selectedText);
+		String selectedText = myControlBoardsTxtFile.getText().trim();
+		String longText = myAllBoardsFiles.get(selectedText);
 		if (longText == null) {
 			return null;// this should not happen
 		}
@@ -446,32 +430,32 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	public String getUpLoadPort() {
-		if (mControlUploadPort == null) {
+		if (myControlUploadPort == null) {
 			return new String();
 		}
-		return mControlUploadPort.getValue();
+		return myControlUploadPort.getValue();
 	}
 
 	protected String getBoardName() {
-		if (mcontrolBoardName == null) {
+		if (mycontrolBoardName == null) {
 			return null;
 		}
-		return mcontrolBoardName.getText().trim();
+		return mycontrolBoardName.getText().trim();
 	}
 
 	protected String getUpLoadProtocol() {
-		if (mControlUploadProtocol == null) {
+		if (myControlUploadProtocol == null) {
 			return Defaults.getDefaultUploadProtocol();
 		}
-		return mControlUploadProtocol.getText().trim();
+		return myControlUploadProtocol.getText().trim();
 	}
 
 	private Map<String, String> getOptions() {
-		if (mBoardOptionCombos == null) {
+		if (myBoardOptionCombos == null) {
 			return null;
 		}
 		Map<String, String> options = new HashMap<>();
-		for (LabelCombo curLabelCombo : mBoardOptionCombos) {
+		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			if (curLabelCombo.isVisible()) {
 				options.put(curLabelCombo.getID(),
 						myBoardID.getMenuItemIDFromMenuItemName(curLabelCombo.getValue(), curLabelCombo.getID()));
@@ -484,7 +468,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		if (myBoardID == null) {
 			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 		}
-		if (mBoardOptionCombos != null) {// only update the values if the
+		if (myBoardOptionCombos != null) {// only update the values if the
 			// page has been drawn
 			myBoardID.setreferencingBoardsFile(getSelectedBoardsFile());
 			myBoardID.setBoardName(getBoardName());
