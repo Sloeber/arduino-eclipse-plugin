@@ -129,4 +129,9 @@ public class LabelCombo {
 		myCombo.setText(text);
 		
 	}
+
+	public void addListener(int event, Listener comboListener) {
+		myCombo.addListener( event,  comboListener);
+		
+	}
 }
