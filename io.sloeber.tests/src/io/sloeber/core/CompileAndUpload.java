@@ -208,7 +208,7 @@ public class CompileAndUpload {
 		});
 
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -220,7 +220,9 @@ public class CompileAndUpload {
 				List<String> lines = SerialConnection.getContent();
 				serialOutputMismatch=(! lines.contains(serialDumpContent));
 				if(serialOutputMismatch) {
+					System.err.println("recieved from: "+comPort);
 					System.err.println(lines);
+					System.err.println("End of serial input");
 				}
 				}	
 		});
