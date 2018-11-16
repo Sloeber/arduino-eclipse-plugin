@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -24,7 +26,7 @@ public class Stream {
 	/**
 	 * Initialize the file contents to contents of the given resource.
 	 */
-	public static InputStream openContentStream(String title, String Include, String Resource, boolean isFile)
+	public static InputStream openContentStream(String Resource, boolean isFile,Map<String, String> replacers)
 			throws CoreException {
 
 		/* We want to be truly OS-agnostic */
@@ -50,7 +52,9 @@ public class Stream {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(input));) {
 
 				while ((line = reader.readLine()) != null) {
-					line = line.replaceAll("\\{title\\}", title).replaceAll("\\{Include\\}", Include); //$NON-NLS-1$ //$NON-NLS-2$
+					for (Entry<String, String> currentReplace : replacers.entrySet()) {
+						line = line.replaceAll(currentReplace.getKey(), currentReplace.getValue());
+					}
 					stringBuffer.append(line);
 					stringBuffer.append(newline);
 				}

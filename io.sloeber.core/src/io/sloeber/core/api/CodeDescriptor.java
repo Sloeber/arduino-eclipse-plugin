@@ -3,7 +3,9 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
@@ -50,9 +52,26 @@ public class CodeDescriptor {
 	private IPath myTemPlateFoldername;
 	private boolean myMakeLinks = false;
 	private ArrayList<IPath> myExamples = new ArrayList<>();
+	private Map< String,  String> myReplacers=null;
 
 	public IPath getTemPlateFoldername() {
 		return myTemPlateFoldername;
+	}
+
+	/**
+	 * set key value pairs that will be used to do a replace all in the code
+	 * the key is the search key and the value is the replacement
+	 * The keys are regular expressions.
+	 * The idea is to use clear keys like #include {include} in the source code
+	 * note that the keys 
+	 * \{include\} \{title\} \{SerialMonitorSerial\}
+	 * are already used. Please use other keys as your replacements will overwrite the
+	 * ones already used
+	 * 
+	 * @param myReplacers a list of find an replace key value pairs. null is no replace needed
+	 */
+	public void setReplacers(Map<String, String> myReplacers) {
+		this.myReplacers = myReplacers;
 	}
 
 	private CodeDescriptor(CodeTypes codeType) {
@@ -124,23 +143,26 @@ public class CodeDescriptor {
 		Set<String> libraries = new TreeSet<>();
 
 		save();
-		String Include = "Arduino.h"; //$NON-NLS-1$
+		Map<String, String> replacers=new TreeMap<>();
+		replacers.put("\\{Include\\}", "Arduino.h");
+		replacers.put("\\{title\\}",project.getName());
+		if(myReplacers!=null) {
+		  replacers.putAll(myReplacers);
+		}
+
 
 		switch (myCodeType) {
 		case defaultIno:
 			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
-					Stream.openContentStream(project.getName(), Include,
-							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false),
+					Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false,replacers),
 					monitor, false);
 			break;
 		case defaultCPP:
 			Helpers.addFileToProject(project, new Path(project.getName() + ".cpp"),
-					Stream.openContentStream(project.getName(), Include,
-							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false),
+					Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_CPP, false,replacers),
 					monitor, false);
 			Helpers.addFileToProject(project, new Path(project.getName() + ".h"),
-					Stream.openContentStream(project.getName(), Include,
-							"/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false),
+					Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_H, false,replacers),
 					monitor, false);
 			break;
 		case CustomTemplate:
@@ -158,7 +180,7 @@ public class CodeDescriptor {
 							renamedFile = project.getName() + ".ino";
 						}
 						Helpers.addFileToProject(project, new Path(renamedFile),
-								Stream.openContentStream(project.getName(), Include, sourceFile.toString(), true),
+								Stream.openContentStream( sourceFile.toString(), true,replacers),
 								monitor, false);
 					}
 				}
