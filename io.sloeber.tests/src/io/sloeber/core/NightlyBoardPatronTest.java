@@ -47,7 +47,7 @@ public class NightlyBoardPatronTest {
         Shared.waitForAllJobsToFinish();
         Preferences.setUseArduinoToolSelection(true);
         myCompileOptions = new CompileOptions(null);
-        MCUBoard zeroBoard = Arduino.zero();
+        MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
         LinkedList<Object[]> examples = new LinkedList<>();
         TreeMap<String, IPath> exampleFolders = LibraryManager.getAllLibraryExamples();

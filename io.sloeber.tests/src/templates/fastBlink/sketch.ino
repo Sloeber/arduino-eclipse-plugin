@@ -9,9 +9,18 @@
 #elif  ARDUINO_AVR_LILYPAD_USB
 #undef LED_BUILTIN
 #define LED_BUILTIN 5
+#elif TEENSYDUINO
+#define LED_BUILTIN 6
 #else
+#undef LED_BUILTIN
 #define LED_BUILTIN 13
 #endif
+
+//the define below makes sure we can use other serial ports than Serial
+//like serialUSB for rocketScream
+//and still can use the open srial monitor toolbutton
+//finding the correct serial baud rate in the code
+#define Serial {SerialMonitorSerial}
 
 #ifndef INTERVAL
 #define INTERVAL 100

@@ -57,7 +57,7 @@ public class CreateAndCompileExamplesTest {
 				Arduino.primo(),
 				Arduino.getMega2560Board(),
 				Arduino.gemma(),
-				Arduino.zero(),
+				Arduino.zeroProgrammingPort(),
 				Arduino.mkrfox1200(),
 				Arduino.due() };
 

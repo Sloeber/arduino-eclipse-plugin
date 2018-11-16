@@ -57,7 +57,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
 				Adafruit.feather(), Arduino.adafruitnCirquitPlayground(),
 				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
-				Arduino.zero(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101()};
+				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);

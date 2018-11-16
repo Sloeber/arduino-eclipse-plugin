@@ -13,6 +13,7 @@ public  class MCUBoard {
 	protected BoardDescriptor myBoardDescriptor = null;
 	public BoardAttributes myAttributes=new BoardAttributes();
 	public String mySlangName;
+	public String mySerialPort="Serial";
 
 
 	public BoardDescriptor getBoardDescriptor() {

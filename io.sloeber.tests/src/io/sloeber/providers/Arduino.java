@@ -46,12 +46,12 @@ public class Arduino extends MCUBoard {
 		return new Arduino(providerArduino, AVRPlatformName, boardID);
 	}
 
-	public static MCUBoard fried() {
+	public static MCUBoard fried2016() {
 		return new Arduino(providerArduino, AVRPlatformName, "LilyPadUSB");
 	}
 
-	public static MCUBoard fried(String uploadPort) {
-		MCUBoard fried = fried();
+	public static MCUBoard fried2016(String uploadPort) {
+		MCUBoard fried = fried2016();
 		fried.myBoardDescriptor.setUploadPort(uploadPort);
 		return fried;
 	}
@@ -92,14 +92,14 @@ public class Arduino extends MCUBoard {
 		return yun;
 	}
 
-	public static MCUBoard zero() {
+	public static MCUBoard zeroProgrammingPort() {
 		MCUBoard zero = new Arduino(providerArduino, SAMDPlatformName, "arduino_zero_edbg");
-		zero.mySlangName="zero";
+		zero.mySlangName="zero programming";
 		return zero;
 	}
 
-	public static MCUBoard zero(String uploadPort) {
-		MCUBoard zero = zero();
+	public static MCUBoard zeroProgrammingPort(String uploadPort) {
+		MCUBoard zero = zeroProgrammingPort();
 		zero.myBoardDescriptor.setUploadPort(uploadPort);
 		return zero;
 	}
@@ -263,6 +263,19 @@ public class Arduino extends MCUBoard {
 		return boards;
    			
     }
+	public static MCUBoard zeroNatviePort() {
+		MCUBoard zero = new Arduino(providerArduino, SAMDPlatformName, "arduino_zero_native");
+		zero.mySlangName="zero Native";
+		zero.mySerialPort="SerialUSB";
+		return zero;
+	}
+
+
+	public static MCUBoard zeroNatviePort(String uploadPort) {
+		MCUBoard zero = zeroNatviePort();
+		zero.myBoardDescriptor.setUploadPort(uploadPort);
+		return zero;
+	}
 
     
     

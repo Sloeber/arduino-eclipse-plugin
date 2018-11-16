@@ -13,7 +13,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -133,8 +135,11 @@ public class CompileAndUpload {
 		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());
 		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval
 				+ " -DSERIAlDUMP=" + SerialDumpContent);
-		Build_Verify_upload(CodeDescriptor.createCustomTemplate(templateFolder),
-				compileOptions, SerialDumpContent);
+		CodeDescriptor codeDescriptor=CodeDescriptor.createCustomTemplate(templateFolder);
+		Map<String, String> replacers=new TreeMap<>();
+		replacers.put("\\{SerialMonitorSerial\\}", myBoard.mySerialPort);
+		codeDescriptor.setReplacers(replacers);
+		Build_Verify_upload(codeDescriptor,	compileOptions, SerialDumpContent);
 
 	}
 
