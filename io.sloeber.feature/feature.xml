@@ -32,13 +32,9 @@ Trump211
 If you do not agree with this policy, please do not install this software.
    </license>
 
-   <includes
-         id="org.eclipse.nebula.widgets.oscilloscope.feature"
-         version="0.0.0"
-         search-location="both"/>
-
    <requires>
       <import feature="org.eclipse.cdt" version="9.5.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.nebula.widgets.oscilloscope.feature" version="1.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
