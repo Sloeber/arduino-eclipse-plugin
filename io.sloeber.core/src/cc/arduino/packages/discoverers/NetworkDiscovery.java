@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
-import java.util.logging.ConsoleHandler;
 
 import javax.jmdns.JmmDNS;
 import javax.jmdns.ServiceEvent;
