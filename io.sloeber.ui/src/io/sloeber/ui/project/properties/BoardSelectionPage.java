@@ -17,10 +17,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -131,19 +133,18 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 	};
 
-
+	private ScrolledComposite myScrolledComposite;
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
-		draw(parent);
+		draw(usercomp);
 
 	}
 
 	public void setListener(Listener BoardSelectionChangedListener) {
 		myBoardSelectionChangedListener = BoardSelectionChangedListener;
 	}
-
 
 	private void createLine() {
 		Label line = new Label(myComposite, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
@@ -153,11 +154,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	public void draw(Composite parent) {
-		Composite inComp = parent;
-		if (usercomp != null) {
-			inComp = usercomp;
-		}
-		myComposite = inComp;
+		parent.setLayout(new FillLayout());
+		myScrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		myScrolledComposite.setExpandVertical(true);
+		myScrolledComposite.setExpandHorizontal(true);
+
+		myComposite = new Composite(myScrolledComposite, SWT.NONE);
 		if (myBoardID == null) {
 			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 			if (myBoardID.getActualCoreCodePath() == null) {
@@ -179,10 +181,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		theGridLayout.numColumns = 3;
 		myComposite.setLayout(theGridLayout);
 
-		myControlBoardsTxtFile = new LabelCombo(myComposite, Messages.BoardSelectionPage_platform_folder, null, 2, true);
+		myControlBoardsTxtFile = new LabelCombo(myComposite, Messages.BoardSelectionPage_platform_folder, null, 2,
+				true);
 		myControlBoardsTxtFile.setItems(myAllBoardsFiles.keySet().toArray(new String[0]));
 		createLine();
-
 
 		mycontrolBoardName = new LabelCombo(myComposite, Messages.BoardSelectionPage_board, null, 2, true);
 		mycontrolBoardName.setItems(myAllBoardsFiles.keySet().toArray(new String[0]));
@@ -246,6 +248,10 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		enableControls();
 		Dialog.applyDialogFont(myComposite);
+		myScrolledComposite.setContent(myComposite);
+		Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		myScrolledComposite.setMinSize(point);
+
 	}
 
 	private static String tidyUpLength(String longName) {
@@ -286,26 +292,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	}
 
 	protected void enableControls() {
-		myComposite.setEnabled(false);
-		myComposite.setVisible(false);
 		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			curLabelCombo.setVisible(true);
 		}
-
-		Display display = myComposite.getDisplay();
-		myComposite.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
-		myComposite.pack();
-		myComposite.layout(true, true);
-		myComposite.requestLayout();
-
-		myComposite.setEnabled(true);
-		myComposite.setVisible(true);
-
-		myComposite.redraw();
-
-		// mComposite.getShell().pack();
-		// mComposite.getShell().redraw();
-
+		Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		myScrolledComposite.setMinSize(point);
 	}
 
 	@Override

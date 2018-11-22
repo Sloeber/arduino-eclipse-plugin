@@ -108,7 +108,7 @@
             name="Sloeber, the Eclipse Arduino IDE">
          <property
                name="windowImages"
-               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_256.png">
+               value="icons/logo_16.png,icons/logo_32.png,icons/logo_48.png,icons/logo_64.png,icons/logo_128.png,icons/logo_256.png">
          </property>
          <property
                name="startupForegroundColor"
