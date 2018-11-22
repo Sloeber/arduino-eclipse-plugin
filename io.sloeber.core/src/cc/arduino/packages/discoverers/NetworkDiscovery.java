@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
+import java.util.logging.ConsoleHandler;
 
 import javax.jmdns.JmmDNS;
 import javax.jmdns.ServiceEvent;
@@ -141,7 +142,6 @@ public class NetworkDiscovery implements Discovery, ServiceListener {
   @SuppressWarnings("nls")
 @Override
   public void start() {
-	  if(1==1) return;
     this.jmdns = JmmDNS.Factory.getInstance();
     this.jmdns.addServiceListener("_arduino._tcp.local.", this);
     this.reachabilityTimer =  new Timer();
@@ -151,14 +151,6 @@ public class NetworkDiscovery implements Discovery, ServiceListener {
   @Override
   public void stop() {
     this.jmdns.unregisterAllServices();
-    // we don't close the JmmDNS instance as it's too slow
-    /*
-    try {
-      jmdns.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    */
     this.reachabilityTimer.cancel();
   }
 
