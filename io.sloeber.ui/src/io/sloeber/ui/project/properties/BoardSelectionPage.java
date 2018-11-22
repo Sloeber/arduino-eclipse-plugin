@@ -250,7 +250,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		Dialog.applyDialogFont(myComposite);
 		myScrolledComposite.setContent(myComposite);
 		Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		// myComposite.setSize(point);
 		myScrolledComposite.setMinSize(point);
 
 	}
