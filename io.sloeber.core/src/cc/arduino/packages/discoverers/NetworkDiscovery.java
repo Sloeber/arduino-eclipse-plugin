@@ -141,6 +141,7 @@ public class NetworkDiscovery implements Discovery, ServiceListener {
   @SuppressWarnings("nls")
 @Override
   public void start() {
+	  if(1==1) return;
     this.jmdns = JmmDNS.Factory.getInstance();
     this.jmdns.addServiceListener("_arduino._tcp.local.", this);
     this.reachabilityTimer =  new Timer();
