@@ -160,10 +160,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myScrolledComposite.setExpandHorizontal(true);
 
 		myComposite = new Composite(myScrolledComposite, SWT.NONE);
-//	inComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//	inComp.setLayout(new GridLayout(1, false));
-
-//		myComposite = inComp;
 		if (myBoardID == null) {
 			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
 			if (myBoardID.getActualCoreCodePath() == null) {
