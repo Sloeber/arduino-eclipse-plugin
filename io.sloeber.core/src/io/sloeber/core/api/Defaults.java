@@ -16,6 +16,13 @@ public class Defaults {
 	public static final String DEFAULT = "Default";
 	private static final String LIBRARY_PATH_SUFFIX = "libraries";
 
+	public static final boolean updateJsonFiles = true;
+	public static final boolean useBonjour=true;
+	public static final boolean autoInstallLibraries = true;
+	public static final boolean useArduinoToolSelection= true;
+	
+
+
 	/**
 	 * Arduino has the default libraries in the user home directory in subfolder
 	 * Arduino/libraries. As the home directory is platform dependent getting
@@ -43,7 +50,7 @@ public class Defaults {
 		return DEFAULT;
 	}
 
-	public static boolean  getUseArduinoToolSelection() {
-		return true;
+
+
+	
 	}
-}

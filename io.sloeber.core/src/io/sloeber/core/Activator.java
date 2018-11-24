@@ -231,9 +231,13 @@ public class Activator extends AbstractUIPlugin {
 				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
 				addFileAssociations();
 				makeOurOwnCustomBoards_txt();
+
 				InternalPackageManager.startup_Pluging(monitor);
+
 				monitor.setTaskName("Done!");
-				SloeberNetworkDiscovery.start();
+				if (InstancePreferences.useBonjour()) {
+					SloeberNetworkDiscovery.start();
+				}
 				registerListeners();
 				return Status.OK_STATUS;
 			}

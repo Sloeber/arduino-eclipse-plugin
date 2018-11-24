@@ -25,6 +25,7 @@ public class InstancePreferences {
 	public static final String KEY_AUTO_IMPORT_LIBRARIES = "Automatically import libraries"; //$NON-NLS-1$
 	private static final String KEY_PRAGMA_ONCE_HEADER = "add pragma once to headers"; //$NON-NLS-1$
 	private static final String KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM="Use the algoritm to find the toolchain like Arduino IDE"; //$NON-NLS-1$
+	private static final String KEY_USE_BONJOUR="use bonjour service to find devices"; //$NON-NLS-1$
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
@@ -34,32 +35,23 @@ public class InstancePreferences {
 	 * @return true if libraries need to be added else false.
 	 */
 	public static boolean getAutomaticallyImportLibraries() {
-		return getGlobalBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
+		return getBoolean(KEY_AUTO_IMPORT_LIBRARIES, true);
 	}
 
 	public static void setAutomaticallyImportLibraries(boolean value) {
-		setGlobalValue(KEY_AUTO_IMPORT_LIBRARIES, value);
+		setValue(KEY_AUTO_IMPORT_LIBRARIES, value);
 	}
 
-	public static String getGlobalString(String key, String defaultValue) {
+	public static String getString(String key, String defaultValue) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		return myScope.get(key, defaultValue);
 	}
 
-	protected static boolean getGlobalBoolean(String key, boolean def) {
+	private static boolean getBoolean(String key, boolean def) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		return myScope.getBoolean(key, def);
 	}
 
-	protected static int getGlobalInt(String key) {
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		return myScope.getInt(key, 0);
-	}
-
-	protected static long getGlobalLong(String key) {
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		return myScope.getLong(key, 0);
-	}
 
 	public static void setGlobalValue(String key, String value) {
 
@@ -74,19 +66,9 @@ public class InstancePreferences {
 		}
 	}
 
-	protected static void setGlobalValue(String key, int value) {
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putInt(key, value);
-		try {
-			myScope.flush();
-		} catch (BackingStoreException e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					"failed to set global variable of type int " + key)); //$NON-NLS-1$
-			e.printStackTrace();
-		}
-	}
 
-	protected static void setGlobalValue(String key, boolean value) {
+
+	private static void setValue(String key, boolean value) {
 		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 		myScope.putBoolean(key, value);
 		try {
@@ -98,24 +80,13 @@ public class InstancePreferences {
 		}
 	}
 
-	protected static void setGlobalValue(String key, long value) {
-		IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-		myScope.putLong(key, value);
-		try {
-			myScope.flush();
-		} catch (BackingStoreException e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					"failed to set global variable of type long " + key)); //$NON-NLS-1$
-			e.printStackTrace();
-		}
-	}
 
 	public static String[] getPrivateLibraryPaths() {
 		return getPrivateLibraryPathsString().split(File.pathSeparator);
 	}
 
 	public static String getPrivateLibraryPathsString() {
-		return getGlobalString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
+		return getString(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
 	}
 
 	public static void setPrivateLibraryPaths(String[] folderName) {
@@ -127,7 +98,7 @@ public class InstancePreferences {
 	}
 
 	public static String getPrivateHardwarePathsString() {
-		return getGlobalString(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath());
+		return getString(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath());
 	}
 
 	public static void setPrivateHardwarePaths(String[] folderName) {
@@ -135,20 +106,41 @@ public class InstancePreferences {
 	}
 
 	public static void setPragmaOnceHeaders(boolean booleanValue) {
-		setGlobalValue(KEY_PRAGMA_ONCE_HEADER, booleanValue);
+		setValue(KEY_PRAGMA_ONCE_HEADER, booleanValue);
 	}
 
 	public static boolean getPragmaOnceHeaders() {
-		return getGlobalBoolean(KEY_PRAGMA_ONCE_HEADER, true);
+		return getBoolean(KEY_PRAGMA_ONCE_HEADER, true);
 	}
 
 	public static void setUseArduinoToolSelection(boolean booleanValue) {
-		setGlobalValue(KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM, booleanValue);
+		setValue(KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM, booleanValue);
 
 	}
 
 	public static boolean getUseArduinoToolSelection() {
-		return getGlobalBoolean(KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM, Defaults.getUseArduinoToolSelection());
+		return getBoolean(KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM, Defaults.useArduinoToolSelection);
+	}
+	/**
+	 * Setting to see wether user wants bonjour service to be run on
+	 * its's system.
+	 * Bonjour is a mac protocol that allows you to do network discovery 
+	 * for yun, esp8266 and some other boards
+	 * If not enabled you will need another way to identify the boards
+	 * Note that this service doesn't work properly on window 10
+	 * default is enabled
+	 * 
+	 * @return true if network search for bonjour is requested by the user
+	 */
+	public static boolean useBonjour() {
+		return getBoolean(KEY_USE_BONJOUR, Defaults.useBonjour);
 	}
 
+	/**
+	 * Set the user preference to search for bonjour devices or not
+	 * @param newFlag true is search for bonjour
+	 */
+	public static void setUseBonjour(boolean newFlag) {
+		setValue(KEY_USE_BONJOUR, newFlag);
+	}
 }
