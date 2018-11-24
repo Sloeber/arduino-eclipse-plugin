@@ -543,6 +543,9 @@ public class PackageManager {
 			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still busy", null)); //$NON-NLS-1$
 			return status;
 		}
+		if(!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
+		   loadJsons(true);
+		}
 		try {
 			InternalPackageManager.setReady(false);
 
