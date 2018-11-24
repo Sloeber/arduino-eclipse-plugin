@@ -156,6 +156,7 @@ public class Messages extends NLS {
     public static String ui_url_for_index_file;
     public static String ui_use_arduino_toolchain_selection;
     public static String ui_workspace_settings;
+    public static String ui_enable_bonjour;
 
     public static String yes;
     static {

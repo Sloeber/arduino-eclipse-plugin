@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -39,14 +40,14 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 	@Override
 	public boolean performOk() {
 		PackageManager.setJsonURLs(this.urlsText.getText().split(System.lineSeparator()));
-		Preferences.setUpdateJsonFilesFlag(this.upDateJsons.getBooleanValue());
+		Preferences.setUpdateJsonFiles(this.upDateJsons.getBooleanValue());
 		return super.performOk();
 	}
 
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.urlsText.setText(PackageManager.getDefaultURLs());
+		this.urlsText.setText(PackageManager.getDefaultURLs());	
 	}
 
 	@Override
@@ -68,6 +69,10 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 		this.upDateJsons = new BooleanFieldEditor(KEY_UPDATE_JASONS, Messages.json_update, BooleanFieldEditor.DEFAULT,
 				parent);
 		addField(this.upDateJsons);
+		IPreferenceStore prefstore=getPreferenceStore();
+		prefstore.setValue(KEY_UPDATE_JASONS, Preferences.getUpdateJsonFiles());
+		prefstore.setDefault(KEY_UPDATE_JASONS, true);
+		
 		final Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		link.setText(Messages.json_find);
 		link.setHref("https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls"); //$NON-NLS-1$

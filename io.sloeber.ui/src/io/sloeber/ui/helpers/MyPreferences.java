@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.service.prefs.BackingStoreException;
 
+import io.sloeber.core.api.Defaults;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 
@@ -27,7 +28,8 @@ public class MyPreferences {
 	public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor"; //$NON-NLS-1$
 	public static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
 	public static final String KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS = "Enable parallel build for new projects"; //$NON-NLS-1$
-
+	public static final String KEY_AUTO_INSTALL_LIBRARIES = "Gui entry for install libraries"; //$NON-NLS-1$
+	
 	public static final boolean DEFAULT_OPEN_SERIAL_WITH_MONITOR = true;
 	// Serial monitor keys
 	private static final String KEY_SERIAL_RATE = "Serial monitor last selected rate"; //$NON-NLS-1$
@@ -36,6 +38,7 @@ public class MyPreferences {
 	private static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting"; //$NON-NLS-1$
 	private static final String KEY_LAST_USED_PLOTTER_FILTER_MENU_OPTION = "Board plotter filter on off"; //$NON-NLS-1$
 	private static final String KEY_HIDE_JSON_FILES = "Hide json files in preferences platform selection page"; //$NON-NLS-1$
+	
 
 	/***
 	 * get the stored option whether a build before the upload is wanted or not.
@@ -256,5 +259,9 @@ public class MyPreferences {
 
 	public static void setHideJson(boolean state) {
 		setGlobalValue(KEY_HIDE_JSON_FILES, state);
+	}
+	
+	public static boolean getAutomaticallyInstallLibrariesOption() {
+		return getGlobalBoolean(KEY_AUTO_INSTALL_LIBRARIES,Defaults.autoInstallLibraries);
 	}
 }

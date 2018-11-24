@@ -46,11 +46,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 	private static final String FALSE = "FALSE"; //$NON-NLS-1$
 	private static final String KEY_AUTO_IMPORT_LIBRARIES = "Gui entry for import libraries"; //$NON-NLS-1$
-	private static final String KEY_AUTO_INSTALL_LIBRARIES = "Gui entry for install libraries"; //$NON-NLS-1$
 	private static final String KEY_PRAGMA_ONCE_HEADERS = "Gui entry for add pragma once"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_HARDWARE_PATHS = "Gui entry for private hardware paths"; //$NON-NLS-1$
 	private static final String KEY_PRIVATE_LIBRARY_PATHS = "Gui entry for private library paths"; //$NON-NLS-1$
 	private static final String KEY_TOOLCHAIN_SELECTION = "Gui entry for toolchain selection"; //$NON-NLS-1$
+	private static final String KEY_USE_BONJOUR = "Gui entry for usage of bonjour"; //$NON-NLS-1$
 
 	private PathEditor arduinoPrivateLibPathPathEditor;
 	private PathEditor arduinoPrivateHardwarePathPathEditor;
@@ -62,6 +62,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
 	private BooleanFieldEditor enableParallelBuildForNewProjects;
+	private BooleanFieldEditor enableBonjour;
 
 	public PreferencePage() {
 		super(org.eclipse.jface.preference.FieldEditorPreferencePage.GRID);
@@ -72,11 +73,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		preferences.setDefault(MyPreferences.KEY_OPEN_SERIAL_WITH_MONITOR,
 				MyPreferences.DEFAULT_OPEN_SERIAL_WITH_MONITOR);
 		preferences.setDefault(KEY_AUTO_IMPORT_LIBRARIES, true);
-		preferences.setDefault(KEY_AUTO_INSTALL_LIBRARIES, true);
 		preferences.setDefault(KEY_PRAGMA_ONCE_HEADERS, true);
+		preferences.setDefault(KEY_USE_BONJOUR, Defaults.useBonjour);
 		preferences.setDefault(KEY_PRIVATE_HARDWARE_PATHS, Defaults.getPrivateHardwarePath());
 		preferences.setDefault(KEY_PRIVATE_LIBRARY_PATHS, Defaults.getPrivateLibraryPath());
-		preferences.setDefault(KEY_TOOLCHAIN_SELECTION, Defaults.getUseArduinoToolSelection());
+		preferences.setDefault(KEY_TOOLCHAIN_SELECTION, Defaults.useArduinoToolSelection);
+		preferences.setDefault(MyPreferences.KEY_AUTO_INSTALL_LIBRARIES, Defaults.autoInstallLibraries);
 
 		setPreferenceStore(preferences);
 	}
@@ -126,6 +128,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
 		Preferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
+		Preferences.setUseBonjour(enableBonjour.getBooleanValue());
 		PackageManager.setPrivateHardwarePaths(hardWarePaths);
 		LibraryManager.setPrivateLibraryPaths(libraryPaths);
 		return ret;
@@ -163,12 +166,16 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		boolean autoImport = Preferences.getAutoImportLibraries();
 		boolean pragmaOnceHeaders = Preferences.getPragmaOnceHeaders();
 		boolean useArduinoToolchainSelection =Preferences.getUseArduinoToolSelection();
+		boolean useBonjour=Preferences.useBonjour();
+
 
 		getPreferenceStore().setValue(KEY_AUTO_IMPORT_LIBRARIES, autoImport);
 		getPreferenceStore().setValue(KEY_PRAGMA_ONCE_HEADERS, pragmaOnceHeaders);
 		getPreferenceStore().setValue(KEY_PRIVATE_HARDWARE_PATHS, hardWarePaths);
 		getPreferenceStore().setValue(KEY_PRIVATE_LIBRARY_PATHS, libraryPaths);
 		getPreferenceStore().setValue(KEY_TOOLCHAIN_SELECTION, useArduinoToolchainSelection);
+		getPreferenceStore().setValue(KEY_USE_BONJOUR, useBonjour);
+
 
 	}
 
@@ -212,7 +219,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.automaticallyImportLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_IMPORT_LIBRARIES,
 				Messages.ui_auto_import_libraries, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.automaticallyImportLibrariesOptionEditor);
-		this.automaticallyInstallLibrariesOptionEditor = new BooleanFieldEditor(KEY_AUTO_INSTALL_LIBRARIES,
+		this.automaticallyInstallLibrariesOptionEditor = new BooleanFieldEditor(MyPreferences.KEY_AUTO_INSTALL_LIBRARIES,
 				Messages.ui_auto_install_libraries, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.automaticallyInstallLibrariesOptionEditor);
 
@@ -227,7 +234,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
 				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableParallelBuildForNewProjects);
-
+		
+		
+		this.enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
+				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, parent);
+		addField(this.enableBonjour);
+		
 		createLine(parent, 4);
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText("Your HashKey: " + Other.getSystemHash()); //$NON-NLS-1$
@@ -265,11 +277,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		line.setLayoutData(gridData);
 	}
 
-	public static boolean getAutomaticallyInstallLibrariesOption() {
-		ScopedPreferenceStore preferences = new ScopedPreferenceStore(InstanceScope.INSTANCE,
-				MyPreferences.NODE_ARDUINO);
-		preferences.setDefault(KEY_AUTO_INSTALL_LIBRARIES, true);
-		return preferences.getBoolean(KEY_AUTO_INSTALL_LIBRARIES);
-	}
+
 
 }
