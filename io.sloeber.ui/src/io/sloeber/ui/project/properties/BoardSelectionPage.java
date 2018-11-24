@@ -200,6 +200,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myPasswordButton = new org.eclipse.swt.widgets.Button(myComposite, SWT.PUSH | SWT.CENTER);
 		myPasswordButton.setText(Messages.set_or_remove_password);
 		myPasswordButton.addListener(SWT.Selection, new Listener() {
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void handleEvent(Event e) {
 				switch (e.type) {
