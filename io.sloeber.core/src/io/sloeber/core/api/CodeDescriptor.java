@@ -101,12 +101,12 @@ public class CodeDescriptor {
 
 	public static CodeDescriptor createLastUsed() {
 
-		String typeDescriptor = InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
+		String typeDescriptor = InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
 				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescriptor ret = new CodeDescriptor(codeType);
 		ret.myTemPlateFoldername = new Path(
-				InstancePreferences.getGlobalString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
+				InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();
 		return ret;
 	}
@@ -209,7 +209,7 @@ public class CodeDescriptor {
 	@SuppressWarnings("nls")
 	private void loadLastUsedExamples() {
 		String examplePathNames[] = InstancePreferences
-				.getGlobalString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
+				.getString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
 
 		for (String curpath : examplePathNames) {
 			myExamples.add(new Path(curpath));
