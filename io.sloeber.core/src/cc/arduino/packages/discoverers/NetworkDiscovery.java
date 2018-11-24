@@ -29,6 +29,7 @@
 
 package cc.arduino.packages.discoverers;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,8 +49,9 @@ public class NetworkDiscovery implements Discovery, ServiceListener {
 
   private final List<BoardPort> reachableBoardPorts = new LinkedList<>();
   private final List<BoardPort> boardPortsDiscoveredWithJmDNS = new LinkedList<>();
-  private Timer reachabilityTimer;
+  private Timer reachabilityTimer=null;
   private JmmDNS jmdns = null;
+  
 
   private void removeDuplicateBoards(BoardPort newBoard) {
     synchronized (this.boardPortsDiscoveredWithJmDNS) {
@@ -140,18 +142,36 @@ public class NetworkDiscovery implements Discovery, ServiceListener {
 
   @SuppressWarnings("nls")
 @Override
-  public void start() {
-    this.jmdns = JmmDNS.Factory.getInstance();
-    this.jmdns.addServiceListener("_arduino._tcp.local.", this);
-    this.reachabilityTimer =  new Timer();
-    new BoardReachabilityFilter(this).start(this.reachabilityTimer);
-  }
+	public void start() {
+		if (jmdns == null) {
+			this.jmdns = JmmDNS.Factory.getInstance();
+			this.jmdns.addServiceListener("_arduino._tcp.local.", this);
+			if (reachabilityTimer == null) {
+				this.reachabilityTimer = new Timer();
+				new BoardReachabilityFilter(this).start(this.reachabilityTimer);
+			}
+		}
+	}
 
-  @Override
-  public void stop() {
-    this.jmdns.unregisterAllServices();
-    this.reachabilityTimer.cancel();
-  }
+	@Override
+	public void stop() {
+		if (reachabilityTimer != null) {
+			this.reachabilityTimer.cancel();
+			reachabilityTimer = null;
+		}
+		if (jmdns != null) {
+			this.jmdns.unregisterAllServices();
+
+			try {
+				this.jmdns.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		jmdns = null;
+		reachabilityTimer = null;
+	}
 
   @Override
   public List<BoardPort> listDiscoveredBoards() {
