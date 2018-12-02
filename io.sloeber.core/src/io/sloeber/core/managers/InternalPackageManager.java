@@ -145,15 +145,11 @@ public class InternalPackageManager extends PackageManager {
 			}
 		}
 
-		// on Windows fix esp8266 platform.txt file
-		// replace -DARDUINO_BOARD="{build.board}" with
+		// always replace -DARDUINO_BOARD="{build.board}" with
 		// -DARDUINO_BOARD="\"{build.board}\""
-		if (SystemUtils.IS_OS_WINDOWS) {
-			if ("esp8266".equals(platform.getArchitecture()) && "esp8266".equals(platform.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
-				FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
-						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
-			}
-		}
+		FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
+				"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
+
 		return mstatus;
 
 	}
