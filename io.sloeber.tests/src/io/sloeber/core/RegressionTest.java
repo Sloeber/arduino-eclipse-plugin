@@ -2,7 +2,9 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -22,9 +24,12 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class RegressionTest {
+	private static final boolean reinstall_boards_and_libraries = false;
 
 	/*
 	 * In new new installations (of the Sloeber development environment) the
@@ -39,9 +44,18 @@ public class RegressionTest {
 	}
 
 	public static void installAdditionalBoards() {
+
+		String[] packageUrlsToAdd = {
+				"http://arduino.esp8266.com/stable/package_esp8266com_index.json"};
+		PackageManager.addPackageURLs(
+				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		if (reinstall_boards_and_libraries) {
+			PackageManager.installAllLatestPlatforms();
+		}
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
+
 	}
 
 
@@ -135,6 +149,39 @@ public class RegressionTest {
 
 	}
 
+	
+	/**
+	 * support void loop{};
+	 * @throws Exception
+	 */
+	@SuppressWarnings("static-method")
+	@Test
+	public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
+		MCUBoard unoBoard = ESP8266.nodeMCU();
+	
+		String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
+		IPath templateFolder = Shared.getTemplateFolder(projectName);
+		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		try {
+			IProject theTestProject = unoBoard.getBoardDescriptor().createProject(projectName, null,
+					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null),
+					new NullProgressMonitor());
+			Shared.waitForAllJobsToFinish(); // for the indexer
+			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+			if (Shared.hasBuildErrors(theTestProject)) {
+				fail("Failed to compile the project:" + projectName + " issue1047 is not fixed");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("Failed to create the project:" + projectName);
+			return;
+		}
+
+	}
+
+	
+	
+	
 	/**
 	 * This test will fail if the arduino compile option are not taken into
 	 * account To do sa a bunch of defines are added to the command line and the
