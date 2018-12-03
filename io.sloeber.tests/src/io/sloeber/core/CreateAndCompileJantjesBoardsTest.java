@@ -42,12 +42,11 @@ public class CreateAndCompileJantjesBoardsTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{0}")
 	public static Collection examples() {
-		String[] packageUrlsToAdd = {
-				"https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json" };
+		String[] packageUrlsToAdd = {Jantje.jsonURL };
 		MCUBoard[] allBoards=Jantje.getAllBoards();
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		PackageManager.installLatestPlatform(Jantje.getJsonFileName(), Jantje.getPackageName(),
-				Jantje.getPlatformName());
+		Jantje.installLatestLocalDebugBoards();
+
 
 		Shared.waitForAllJobsToFinish();
 		LinkedList<Object[]> examples = new LinkedList<>();

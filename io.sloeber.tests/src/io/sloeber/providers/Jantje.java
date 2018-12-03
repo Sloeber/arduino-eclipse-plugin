@@ -12,21 +12,18 @@ import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class Jantje extends MCUBoard {
 
+	private static final String provider = "Jantje";
+	private static final String packageName = "Jantje";
+	private static final String localDebugPlatformName = "Arduino avr Boards (local debug)";
+    private static final String jsonFileName ="package_jantje_index.json";
+    public static final String jsonURL ="http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
 
-	public static String getJsonFileName() {
-		return  "package_jantje_index.json";
-	}
-	public static String getPackageName() {
-		return "Jantje";
-	}
-	public static String getPlatformName() {
-		return "Arduino avr Boards (local debug)";
-	}
+
 	public Jantje(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(getJsonFileName(),getPackageName(),getPlatformName() ,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName,packageName,localDebugPlatformName ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -62,9 +59,11 @@ public class Jantje extends MCUBoard {
         		new Jantje("esplora"),new Jantje("mini"),new Jantje("ethernet"),new Jantje("fio"),new Jantje("bt"),new Jantje("LilyPadUSB"),new Jantje("lilypad"),new Jantje("pro"),
         		new Jantje("atmegang"),new Jantje("robotControl") };
 		return boards;
-   			
-
-
     }
+    
+	public static void installLatestLocalDebugBoards() {
+	    PackageManager.installLatestPlatform(jsonFileName,provider, localDebugPlatformName);
+	}
+
 
 }
