@@ -9,6 +9,11 @@ import io.sloeber.core.api.PackageManager;
 
 @SuppressWarnings("nls")
 public class ESP8266 extends MCUBoard {
+	private static final String provider = "esp8266";
+	private static final String esp8266PlatformName = "esp8266";
+    private static final String jsonFileName ="package_esp8266com_index.json";
+    public static final String jsonURL ="http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+    
 
 	public static MCUBoard wemosD1() {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -49,6 +54,10 @@ public class ESP8266 extends MCUBoard {
 			fail(boardName + " Board not found");
 		}
 
+	}
+	
+	public static void installLatestESP8266Boards() {
+	    PackageManager.installLatestPlatform(jsonFileName,provider, esp8266PlatformName);
 	}
 
 }

@@ -45,17 +45,18 @@ public class RegressionTest {
 
 	public static void installAdditionalBoards() {
 
-		String[] packageUrlsToAdd = {
-				"http://arduino.esp8266.com/stable/package_esp8266com_index.json"};
-		PackageManager.addPackageURLs(
-				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		String[] packageUrlsToAdd = { ESP8266.jsonURL };
+		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
+			PackageManager.removeAllInstalledPlatforms();
 			PackageManager.installAllLatestPlatforms();
+		} else {
+			// make sure esp8266 boards are available
+			ESP8266.installLatestESP8266Boards();
 		}
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
-
 	}
 
 
