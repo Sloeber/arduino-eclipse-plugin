@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber, the Eclipse Arduino IDE" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
@@ -347,8 +347,6 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <feature id="org.eclipse.rse.core" installMode="root"/>
       <feature id="org.eclipse.cdt.native" installMode="root"/>
       <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature"/>
-
-      <!-- SDK Features are below -->
       <feature id="org.eclipse.jdt" installMode="root"/>
       <feature id="org.eclipse.jdt.source" installMode="root"/>
       <feature id="org.eclipse.platform.source" installMode="root"/>
