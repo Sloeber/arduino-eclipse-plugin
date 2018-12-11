@@ -661,7 +661,7 @@ public class InternalPackageManager extends PackageManager {
 
 		activeUrls.removeAll(packageUrlsToRemove);
 
-		ConfigurationPreferences.setJsonURLs(activeUrls.toArray(null));
+		ConfigurationPreferences.setJsonURLs(activeUrls.toArray((String[])null));
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {
