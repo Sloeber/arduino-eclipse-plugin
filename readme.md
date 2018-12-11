@@ -11,11 +11,9 @@ It works on MS Windows, Mac OSX and Linux.
 # Support us
 We need your support to continue developing this software. This is the truth.
 
-If you use this software professionally how about showing some professional courtesy [and send some of the cash you make our way](http://eclipse.baeyens.it/donate.shtml). For example, $250 monthly for a site with multiple developers or $15 per month per individual developer.
+If you use this software professionally then we request your help. [Send some of the cash you make our way](http://eclipse.baeyens.it/donate.shtml).
 
-If you use this software as a hobbiest [then how about $5 monthly?](http://eclipse.baeyens.it/donate.shtml) 
-
-Ethically speaking, you are only entitled to support if you cough up some dough, although we will always support poor basterds like ourselves.
+If you use this software as a hobbiest [then how about $5 monthly?  :kissing_heart:](http://eclipse.baeyens.it/donate.shtml) 
 
 # Downloads
 If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://sloeber.io/.
