@@ -6,7 +6,17 @@ Also the build servers we use (jekins and travis) are linux servers. As part of 
 
 **However some tips may come in handy:**
 
-My Linux comes with make in the path. I have not yet heard of someone having the make issue on Linux. If you do experience the make issue on a Linux flavor please contact me.
+If Sloeber does not find *make* install make using your package manager.
+For instance in ubuntu I had to run  
+>sudo apt install make.
+
+Some linux flavors do not come with a 32 compatibility runtime. Many tools in the toolchain are 32 bit. So if you run a 64 bit linux (which is very likely) you may have to install the *32 bit architecture*.  
+If Sloeber fails to find the compiler but it is on your system ... this is probably the case.  
+In ubuntu run following commands  :  
+
+>sudo dpkg --add-architecture i386  
+sudo apt-get update  
+sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 `  
 
 I never got the Leonardo nor the yun to be recognized on my Linux system. As a result upload issues with these boards have been reported on Linux. The problem seems to be a timing issues in the reset. It seems to work for most people.
 If it doesn't you are back to pressing and releasing the reset button for the leonardo.

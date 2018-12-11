@@ -26,5 +26,6 @@ V3 will download the make.exe in the ArduinoPlugin folder of your eclipse instal
 Linux and Mac
 ======
 On most Linux and MAC systems make is already available.  
+On Ubuntu I had to install make using sudo apt install make    
 We never got a bug report on this. 
 
