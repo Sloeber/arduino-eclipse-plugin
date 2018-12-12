@@ -69,20 +69,8 @@ public class CreateAndCompileExamplesTest {
 			paths.add(new Path(curexample.getValue().toString()));
 			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-			String fqn = curexample.getKey();
-			String libName = "";
-			if (examples.size() == 82) {// use this for debugging based on the
-										// project number
-				// use this to put breakpoint
-				int a = 0;
-				a = a + 1;
-			}
-			try {
-				libName = fqn.split(" ")[0].trim();
-			} catch (Exception e) {
-				// ignore error
-			}
-			Examples example=new Examples(fqn,libName,curexample.getValue());
+			String fqn=curexample.getKey();
+			Examples example=new Examples(fqn,curexample.getValue());
             // with the current amount of examples only do one
             MCUBoard board = Examples.pickBestBoard(example, myBoards);
             if (board != null) {

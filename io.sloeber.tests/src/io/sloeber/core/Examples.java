@@ -18,13 +18,10 @@ public class Examples {
 		return myRequiredBoardAttributes;
 	}
 
-	public Examples(String fqn, String libName, IPath path) {
-		myFQN = fqn;
-		myLibName = libName;
-		myPath = path;
-		if (myLibName == null) {
-			getLibNameFromPath();
-		}
+	public Examples(String fqn, IPath path) {
+		myFQN=fqn;
+		myPath=path;
+		getLibNameFromPath();
 		myRequiredBoardAttributes = new BoardAttributes();
 		myRequiredBoardAttributes.serial = examplesUsingSerial().contains(myFQN);
 		myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(myFQN);

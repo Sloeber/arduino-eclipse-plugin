@@ -27,7 +27,7 @@ public class MySystem {
 		case jantjeWindowsMachineHashkeyAfterSecondUpdate:
 			return "C:\\test\\teensy-latest\\hardware\\teensy";
 		case jantjesLinuxMachineHashKey:
-			return "/home/jan/arduino-1.8.5/hardware/teensy-latest";
+			return "/home/jan/nas/linux/arduino/arduino-1.8.8-linux64/arduino-1.8.8/hardware/teensy";
 		}
 		return new String();
 	}

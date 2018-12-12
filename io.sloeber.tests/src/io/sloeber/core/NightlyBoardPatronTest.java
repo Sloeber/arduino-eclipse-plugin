@@ -56,7 +56,7 @@ public class NightlyBoardPatronTest {
             IPath examplePath = curexample.getValue();
             //for patron Keith Willis. Thanks Keith
             if (fqn.contains("RTCZero")) {
-                Examples example = new Examples(fqn, null, examplePath);
+                Examples example = new Examples(fqn,  examplePath);
 
                 Object[] theData = new Object[] {Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getName()),
                         zeroBoard, example };
