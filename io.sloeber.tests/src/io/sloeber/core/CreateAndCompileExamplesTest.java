@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.providers.Adafruit;
@@ -135,7 +136,7 @@ public class CreateAndCompileExamplesTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
        
         myBuildCounter++;
-        if (!Shared.BuildAndVerify( myBoardDescriptor, myCodeDescriptor)) {
+        if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
         }
 
