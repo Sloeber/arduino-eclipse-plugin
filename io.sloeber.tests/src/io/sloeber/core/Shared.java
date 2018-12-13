@@ -40,12 +40,11 @@ import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class Shared {
-	public final static String	ADAFRUIT_BOARDS_URL	= "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
-	public final static String	ESP8266_BOARDS_URL	= "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
-	public static boolean deleteProjects=true;
+	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
+	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+	public static boolean deleteProjects = true;
 	private static int myBuildCounter;
 	private static int myTestCounter;
-
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
@@ -89,37 +88,38 @@ public class Shared {
 		return new Path(new String());
 	}
 
-	public static boolean BuildAndVerify(  BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
-	    return BuildAndVerify(    boardDescriptor,  codeDescriptor, null) ;
+	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
+		return BuildAndVerify(boardDescriptor, codeDescriptor, null);
 	}
+
 	/**
 	 * Convenience method to call BuildAndVerify with default project name and null as compile options
 	 * @param boardDescriptor
 	 * @param codeDescriptor
-	 * @param compileOptions can be null
+	 * @param compileOptions  can be null
 	 * @return
 	 */
-	public static boolean BuildAndVerify(  BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
-		
-	    String projectName = String.format("%05d_%s",new Integer( myBuildCounter), boardDescriptor.getBoardID());
-	    if(codeDescriptor.getExampleName()!=null) {
-	        projectName= String.format("%05d_%s_%s",new Integer( myBuildCounter),codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
-	   }
-	  
-	  CompileOptions localCompileOptions=compileOptions;
-	  if(compileOptions==null) {
-	      localCompileOptions=new CompileOptions(null);
-	  }
-	  return BuildAndVerify( projectName,  boardDescriptor,  codeDescriptor, localCompileOptions);
+	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
+
+		String projectName = String.format("%05d_%s", new Integer(myBuildCounter), boardDescriptor.getBoardID());
+		if (codeDescriptor.getExampleName() != null) {
+			projectName = String.format("%05d_%s_%s", new Integer(myBuildCounter), codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
+		}
+
+		CompileOptions localCompileOptions = compileOptions;
+		if (compileOptions == null) {
+			localCompileOptions = new CompileOptions(null);
+		}
+		return BuildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
 	}
-	
-	public static boolean BuildAndVerify(String projectName, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,CompileOptions compileOptions) {
+
+	public static boolean BuildAndVerify(String projectName, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		myBuildCounter++;
-		
+
 		try {
-		    compileOptions.setEnableParallelBuild(true);
+			compileOptions.setEnableParallelBuild(true);
 			theTestProject = boardDescriptor.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
 			waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
@@ -131,25 +131,31 @@ public class Shared {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 			if (hasBuildErrors(theTestProject)) {
 				waitForAllJobsToFinish(); // for the indexer
+				Thread.sleep(2000);
 				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				if (hasBuildErrors(theTestProject)) {
-					fail("Failed to compile the project:" + projectName + " build errors");
-					theTestProject.close(null);
-					return false;
+					waitForAllJobsToFinish(); // for the indexer
+					Thread.sleep(2000);
+					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+					if (hasBuildErrors(theTestProject)) {
+						fail("Failed to compile the project:" + projectName + " build errors");
+						theTestProject.close(null);
+						return false;
+					}
 				}
 			}
-		} catch (CoreException e) {
+		} catch (CoreException | InterruptedException e) {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + boardDescriptor.getBoardName() + " exception");
 			return false;
 		}
 		try {
-		    if(deleteProjects) {
-			theTestProject.delete(true, true, null);
-		    }
-		    else {
-		        theTestProject.close(null);
-		    }
+			if (deleteProjects) {
+				theTestProject.delete(true, true, null);
+			} 
+			else {
+				theTestProject.close(null);
+			}
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -161,7 +167,14 @@ public class Shared {
 	 */
 	public static void applyKnownWorkArounds() {
 		/*
-		 * for chipkit PONTECH UAV100 board boards.txt contains usbono_pic32.compiler.c.extra_flags=-G1024 -Danything=1 and platform.txt contains ... {compiler.define} "{compiler.cpp.extra_flags}" {build.extra_flags} ... resulting in ... "-G1024 -Danything=1" ... Arduino IDE magically makes this ... "-G1024" -Danything=1 ... But I refuse to do this type of smart parsing because modifying text files is lots easier therefore as a workaround I replace "{compiler.cpp.extra_flags}" in platform.txt with {compiler.cpp.extra_flags}
+		 * for chipkit PONTECH UAV100 board boards.txt contains
+		 * usbono_pic32.compiler.c.extra_flags=-G1024 -Danything=1 and platform.txt
+		 * contains ... {compiler.define} "{compiler.cpp.extra_flags}"
+		 * {build.extra_flags} ... resulting in ... "-G1024 -Danything=1" ... Arduino
+		 * IDE magically makes this ... "-G1024" -Danything=1 ... But I refuse to do
+		 * this type of smart parsing because modifying text files is lots easier
+		 * therefore as a workaround I replace "{compiler.cpp.extra_flags}" in
+		 * platform.txt with {compiler.cpp.extra_flags}
 		 */
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
 		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32").resolve("2.0.1").resolve("platform.txt");
@@ -219,16 +232,16 @@ public class Shared {
 	}
 
 	public static String getCounterName(String name) {
-		String counterName = String.format("%05d_%s",new Integer( myTestCounter++),  name);
+		String counterName = String.format("%05d_%s", new Integer(myTestCounter++), name);
 		return counterName;
 	}
 
-	public static boolean  increaseBuildCounter() {
+	public static boolean increaseBuildCounter() {
 		myBuildCounter++;
 		return true;
 	}
 
 	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
-		return String.format("%05d_%s_%s",new Integer( myTestCounter++),codeDescriptor.getExampleName(), board.getBoardDescriptor().getBoardID());
+		return String.format("%05d_%s_%s", new Integer(myTestCounter++), codeDescriptor.getExampleName(), board.getBoardDescriptor().getBoardID());
 	}
 }
