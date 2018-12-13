@@ -7,7 +7,7 @@ import io.sloeber.core.api.PackageManager;
 public class Adafruit extends MCUBoard {
 
 	private static final String AVRPlatformName = "Adafruit AVR Boards";
-	//private static final String SAMDPlatformName = "Adafruit SAMD Boards";
+	private static final String SAMDPlatformName = "Adafruit SAMD Boards";
 	//private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
 	private static final String NFR52PlatformName = "Adafruit nRF52";
 	//private static final String XICEDPlatformName = "Adafruit WICED";
@@ -28,7 +28,7 @@ public class Adafruit extends MCUBoard {
 
 
 	public static MCUBoard feather() {
-		MCUBoard ret= new Adafruit(NFR52PlatformName,"feather52");
+		MCUBoard ret= new Adafruit(NFR52PlatformName,"feather52832");
 		ret.mySlangName="feather";
 		return ret;
 	}
@@ -37,6 +37,12 @@ public class Adafruit extends MCUBoard {
 	public static MCUBoard trinket8MH() {
 		MCUBoard ret= new Adafruit(AVRPlatformName,"trinket3");
 		ret.mySlangName="trinket";
+		return ret;
+	}
+	
+	public static MCUBoard featherMO() {
+		MCUBoard ret= new Adafruit(SAMDPlatformName,"adafruit_feather_m0");
+		ret.mySlangName="FeatherM0";
 		return ret;
 	}
 

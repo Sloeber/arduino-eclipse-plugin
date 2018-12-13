@@ -36,11 +36,11 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings({"nls","unused"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
-	private static final boolean reinstall_boards_and_examples = true;
+	private static final boolean reinstall_boards_and_examples = false;
 	private static int myCounter = 0;
 	private Examples myExample;
 	private MCUBoard myBoardID;
-	private static int skipAtStart = 1100;
+	private static int skipAtStart = 80;
 	private static int myTotalFails = 0;
 	private static int maxFails = 40;
 
@@ -55,7 +55,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		WaitForInstallerToFinish();
 		Preferences.setUseArduinoToolSelection(true);
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
-				Adafruit.feather(), Arduino.adafruitnCirquitPlayground(),
+				Adafruit.feather(),Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(),
 				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
 				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101()};
 
@@ -64,7 +64,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn, null, examplePath);
+			Examples example = new Examples(fqn,  examplePath);
 
 			// with the current amount of examples only do one
 			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
@@ -115,7 +115,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	@Test
 	public void testExamples() {
 
-		if (myTotalFails > maxFails) {
+		if (myTotalFails >= maxFails) {
 			// Stop after X fails because
 			// the fails stays open in eclipse and it becomes really slow
 			// There are only a number of issues you can handle

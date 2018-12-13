@@ -30,7 +30,9 @@ public class Teensy extends MCUBoard {
 	}
 
 	public static MCUBoard Teensy3_6() {
-		return new Teensy(Teensy3_6_ID);
+		MCUBoard board =  new Teensy(Teensy3_6_ID);
+		board.mySlangName="teensy3";
+		return board;
 	}
 
 	public static MCUBoard Teensy3_1() {

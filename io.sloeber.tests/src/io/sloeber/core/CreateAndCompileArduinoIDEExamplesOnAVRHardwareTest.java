@@ -49,7 +49,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
         for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
             String fqn = curexample.getKey().trim();
             IPath examplePath = curexample.getValue();
-            Examples example = new Examples(fqn, null, examplePath);
+            Examples example = new Examples(fqn,  examplePath);
             if (!skipExample(example)) {
                 ArrayList<IPath> paths = new ArrayList<>();
 

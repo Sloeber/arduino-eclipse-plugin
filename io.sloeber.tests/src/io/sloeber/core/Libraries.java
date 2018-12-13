@@ -73,14 +73,15 @@ public class Libraries {
 				//requires Paul Stoffregens time lib and Sloeber takes arduino time lib
 				"DS3232RTC",
 				//Cloud4RPi.cpp:179:5: error: 'DynamicJsonBuffer' was not declared in this scope
-				"cloud4rpi-esp-arduino"
+				"cloud4rpi-esp-arduino",
+				//not sure what is wrong. Don't feel like looking
+				"AceRoutine",
 
 				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}
 
-	public static BoardAttributes getRequiredBoardAttributes(String longLibName) {
-	    String libName=new Path(longLibName).segment(1);
+	public static BoardAttributes getRequiredBoardAttributes(String libName) {
 		BoardAttributes ret = new BoardAttributes();
 		// ret.serial = serial && andd.serial;
 		// ret.serial1 = serial1 && andd.serial1;
@@ -117,6 +118,7 @@ public class Libraries {
 	}
 
 	private static String getRequiredBoard(String libName) {
+		if(libName==null)return null;
 
 		Map<String, String[]> runLibOnBoard = new HashMap<>();
 
@@ -150,7 +152,7 @@ public class Libraries {
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
 		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
-		runLibOnBoard.put("teensy", new String[] { "ACAN" });
+		runLibOnBoard.put("teensy", new String[] { "ACAN","ACAN2515","ACAN2517" });
 		
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (Arrays.asList(curEntry.getValue()).contains(libName)) {

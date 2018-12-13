@@ -8,33 +8,33 @@ The Sloeber IDE bridges that gap and helps move you to a more powerful developme
 
 It works on MS Windows, Mac OSX and Linux.
 
-## What if I am not a developer?
+# Support us
+We need your support to continue developing this software. This is the truth.
 
+If you use this software professionally then we request your help. [Send some of the cash you make our way](http://eclipse.baeyens.it/donate.shtml).
+
+If you use this software as a hobbiest [then how about $5 monthly?  :kissing_heart:](http://eclipse.baeyens.it/donate.shtml) 
+
+# Downloads
 If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://sloeber.io/.
 
-## What if I am a developer?
+# Build from source
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
-Also subscribe to the developers list by [clicking here](http://www.freelists.org/list/eclipse-arduino-dev) or by sending a mail with subject _Subscribe_ to [eclipse-arduino-dev@freelists.org](mailto:eclipse-arduino-dev@freelists.org?subject=Subscribe) (this is not for support questions)
 
-## There are lots of issues in the release that seem fixed.
-We close issues when they have been validated as part of the nightly. Therefore the open list no longer contains items fixed in the nightly. Known issue fixed in the last nightly can be found with this query:
-is:issue is:closed -label:"status: fixed in nightly"
+Contributors (people that help us build Sloeber) may join [our Slack Channel](https://sloeber.slack.com/).
 
-## Quick Installation
-### Prerequisites
-
+## Prerequisites
 Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi).
 
-### Build from the command line from source for your os and the default eclipse instance
-
+## Build from the command line from source for your os and the default eclipse instance
 ```bash
 git clone https://github.com/jantje/arduino-eclipse-plugin
 cd arduino-eclipse-plugin
 mvn clean verify -DskipTests=true
 ```
 
-### Running the Sloeber you just build
+## Running the Sloeber you just build
 
 Windows
 
@@ -48,7 +48,7 @@ Mac OSX and Linux
 
 ## Build Options
 
-You can control the maven build with the following profiles: (this list may not be complete as new eclipse versions are added nearly immediately)
+You can control the maven build with the following profiles:
 
 * latest (default, builds against the latest versions)
 * 2018-09 (builds against the 2018-09 release. Eclipse stopped naming their releases)
@@ -60,8 +60,8 @@ You can control the maven build with the following profiles: (this list may not 
 * linux64
 * mac64
 
-##### Examples
-    mvn clean verify -Plinux32 -DskipTests=true (builds for neon and linux 32 bits)
+### Examples
+    mvn clean verify -Plinux32,latest -DskipTests=true (builds for neon and linux 32 bits)
     mvn clean verify -PSDK,latest -DskipTests=true (builds the Sloeber SDK. For Sloeber programmers.)
     mvn clean verify -P2018-09,linux64 -DskipTests=true (builds against 2018-09 and produces linux64 product) 
     
@@ -69,13 +69,12 @@ To build for latest and the platform you are running on:
 
     mvn clean verify -DskipTests=true
 
-### Importing your build into another Eclipse
+# Importing your build into another Eclipse
 If you want to import the latest code based plugin to another Eclipse setup you have then it is possible to setup a local repository to install the plugin you have just built. Just add a local repository with location ```arduino-eclipse-plugin/io.sloeber.product/target/repository```
 
 ![alt text](images_plugin_dev_setup/add_local_repository.png "Adding a local repository")
 
-## Developing (Improving) the Plugin
-
+# Developing (Improving) the Plugin
  * Fork the repository on GitHub (https://help.github.com/articles/fork-a-repo) for your changes. Note that your git link should look like this: https://github.com/YOUR_FORK/arduino-eclipse-plugin.git –– we will use it later.
  * Checkout locally
  * Run ```mvn clean verify -PSDK,latest -DskipTests=true``` to build
@@ -85,7 +84,7 @@ After the build, find the Sloeber SDK product in the io.sloeber.product.sdk targ
     Note that Sloeber itself is NOT included in the Sloeber SDK. 
 
 
-### Install the projects into the SDK via the EGit interface.
+## Install the projects into the SDK via the EGit interface.
 
 > File → Import → Git → Projects from Git → Existing local repository
 
@@ -102,7 +101,7 @@ After all it should look like this:
 
 ![alt text](images_plugin_dev_setup/Imported_projects.png "Projects imported")
 
-### Set the Warning Level
+## Set the Warning Level
 
 We want to keep the chance of missing a problem in the code to a minimum and to keep clean and tidy code. Development is
 aiming to keep compiler warnings to a minimum (items that show up in the Problems tab under Warnings) with specific settings.
@@ -147,3 +146,8 @@ Now, just set up fresh again with your project settings, Preferences/Arduino, to
 All should work. You can set breakpoints in the launching Eclipse if you ran as debug. Happy developing!
 
 [<img border="0" style="border-width: 0px" src="http://with-eclipse.github.io/with-eclipse-1.jpg">](http://with-eclipse.github.io/)
+
+# FAQ
+## There are lots of issues in the release that seem fixed.
+We close issues when they have been validated as part of the nightly. Therefore the open list no longer contains items fixed in the nightly. Known issue fixed in the last nightly can be found with this query:
+is:issue is:closed -label:"status: fixed in nightly"
