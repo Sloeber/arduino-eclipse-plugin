@@ -644,7 +644,7 @@ public class PackageManager {
 		if (!jsonFile.exists() || forceDownload) {
 			jsonFile.getParentFile().mkdirs();
 			try {
-				myCopy(new URL(url.trim()), jsonFile, false);
+				mySafeCopy(new URL(url.trim()), jsonFile, false);
 			} catch (IOException e) {
 				Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
 			}
@@ -758,6 +758,32 @@ public class PackageManager {
 		}
 	}
 
+	
+	
+	/**
+	 * copy a url locally taking into account redirections in such a way that if
+	 * there is already a file it does not get lost if the download fails
+	 *
+	 * @param url
+	 * @param localFile
+	 * @throws IOException
+	 */
+	protected static void mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
+		File savedFile = null;
+		if (localFile.exists()) {
+			savedFile = File.createTempFile(localFile.getName(), url.getFile());
+			Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
+		}
+		try {
+			myCopy(url, localFile, report_error);
+		} catch (Exception e) {
+			if (null != savedFile) {
+				Files.move(savedFile.toPath(), localFile.toPath(), REPLACE_EXISTING);
+			}
+			throw e;
+		}
+	}
+	
 	public static String[] getJsonURLList() {
 		return ConfigurationPreferences.getJsonURLList();
 	}
