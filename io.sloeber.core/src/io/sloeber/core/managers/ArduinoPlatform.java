@@ -212,7 +212,10 @@ public class ArduinoPlatform {
 		}
 
 		// Download platform archive
-		return InternalPackageManager.downloadAndInstall(this, false, monitor);
+		System.out.println("start installing platform "+name + " "+architecture +"("+version+")");
+		IStatus ret= InternalPackageManager.downloadAndInstall(this, false, monitor);
+		System.out.println("done installing platform "+name + " "+architecture +"("+version+")");
+		return ret;
 
 	}
 
