@@ -40,7 +40,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	private static int myCounter = 0;
 	private Examples myExample;
 	private MCUBoard myBoardID;
-	private static int skipAtStart = 80;
+	private static int skipAtStart = 190;
 	private static int myTotalFails = 0;
 	private static int maxFails = 40;
 
@@ -57,7 +57,8 @@ public class CreateAndCompileLibraryExamplesTest {
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
 				Adafruit.feather(),Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(),
 				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
-				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101()};
+				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,
+				Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101(),Arduino.zeroProgrammingPort()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
@@ -109,6 +110,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		} else {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
+		PackageManager.installAllLatestPlatforms();
 
 	}
 

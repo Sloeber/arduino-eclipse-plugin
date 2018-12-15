@@ -412,6 +412,7 @@ public class Examples {
 		case "Library/ArduinoThread/SensorThread":
 			return "due";
 		case "Library/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
+		case "library/Adafruit_NeoPXL8/strandtest":
 			return "zero";
 		case "Library/BLEPeripheral/iBeacon":
 			return "feather52";
