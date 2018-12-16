@@ -21,6 +21,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
@@ -48,6 +49,7 @@ public class CreateAndCompileExamplesTest {
 	@Parameters(name = "{0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
+		SerialManager.stopNetworkScanning();
 
 		MCUBoard myBoards[] = { Arduino.leonardo(),
 				Arduino.uno(),

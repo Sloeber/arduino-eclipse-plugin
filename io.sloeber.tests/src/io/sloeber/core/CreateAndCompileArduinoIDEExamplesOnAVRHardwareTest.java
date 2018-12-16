@@ -16,6 +16,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.MCUBoard;
 
@@ -42,6 +43,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
     @Parameters(name = " {0}")
     public static Collection examples() {
         Shared.waitForAllJobsToFinish();
+        SerialManager.stopNetworkScanning();
         LinkedList<Object[]> examples = new LinkedList<>();
         MCUBoard[] allBoards=Arduino.getAllBoards();
 

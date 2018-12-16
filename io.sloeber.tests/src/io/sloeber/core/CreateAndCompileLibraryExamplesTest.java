@@ -27,6 +27,7 @@ import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
@@ -53,6 +54,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
+		SerialManager.stopNetworkScanning();
 		Preferences.setUseArduinoToolSelection(true);
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
 				Adafruit.feather(),Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(),

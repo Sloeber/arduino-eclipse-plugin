@@ -18,6 +18,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
@@ -46,6 +47,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		installAdditionalBoards();
 
 		Shared.waitForAllJobsToFinish();
+		SerialManager.stopNetworkScanning();
 		LinkedList<Object[]> examples = new LinkedList<>();
 		 MCUBoard[] allBoards=Teensy.getAllBoards();
 		 

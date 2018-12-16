@@ -22,6 +22,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.SerialManager;
 
 @SuppressWarnings("nls")
 @RunWith(Parameterized.class)
@@ -200,6 +201,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     public static Collection boards() {
         // build the Arduino way
         Preferences.setUseArduinoToolSelection(true);
+        SerialManager.stopNetworkScanning();
         installAdditionalBoards();
 
         List<BoardDescriptor> boards = new ArrayList<>();
