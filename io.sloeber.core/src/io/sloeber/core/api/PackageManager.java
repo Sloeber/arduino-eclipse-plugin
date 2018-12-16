@@ -771,7 +771,7 @@ public class PackageManager {
 	protected static void mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
 		File savedFile = null;
 		if (localFile.exists()) {
-			savedFile = File.createTempFile(localFile.getName(), url.getFile());
+			savedFile = File.createTempFile(localFile.getName(), "Sloeber"); //$NON-NLS-1$
 			Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
 		}
 		try {
