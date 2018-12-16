@@ -94,7 +94,7 @@ public class Arduino extends MCUBoard {
 
 	public static MCUBoard zeroProgrammingPort() {
 		MCUBoard zero = new Arduino(providerArduino, SAMDPlatformName, "arduino_zero_edbg");
-		zero.mySlangName="zero programming";
+		zero.mySlangName="zero";
 		return zero;
 	}
 
