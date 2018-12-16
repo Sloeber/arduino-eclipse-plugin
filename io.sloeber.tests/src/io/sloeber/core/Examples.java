@@ -264,7 +264,17 @@ public class Examples {
 		// usi!ng non exsisting methods
 		ret.add("Library/CAN-BUS_Shield/gpioRead");
 		ret.add("Library/CAN-BUS_Shield/gpioWrite");
+		//using defines inino file to generate functions (not supported in Sloeber)
+		ret.add("Library/Adafruit_VEML6070_Library/unittests");
+		//uses a non existing header
+		ret.add("Library/AESLib/complex");
+		//using wrong sdfat librarie
+		ret.add("Library/Arduino_OPL2_SimpleTone");
+		ret.add("Library/Arduino_OPL2_Teensy_PlayDRO");
+		ret.add("Library/Arduino_OPL2_Teensy_PlayIMF");
 		// I don't recall why following examples didn't work
+		ret.add("Library/arduino_ess_ess_yun");
+		ret.add("Library/arduino_ess_linkit_one_dweet");
 		ret.add("Library/AD7193/AD7193_VoltageMeasurePsuedoDifferential_Example");
 		ret.add("Library/bunny_cuberotate/cuberotate");
 		ret.add("Library/XPT2046_Touchscreen/ILI9341Test");
@@ -412,7 +422,7 @@ public class Examples {
 		case "Library/ArduinoThread/SensorThread":
 			return "due";
 		case "Library/AudioFrequencyMeter/SimpleAudioFrequencyMeter":
-		case "library/Adafruit_NeoPXL8/strandtest":
+		case "Library/Adafruit_NeoPXL8/strandtest":
 			return "zero";
 		case "Library/BLEPeripheral/iBeacon":
 			return "feather52";

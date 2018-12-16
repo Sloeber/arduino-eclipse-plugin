@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.core.runtime.Path;
-
 @SuppressWarnings("nls")
 public class Libraries {
 
@@ -76,7 +74,10 @@ public class Libraries {
 				"cloud4rpi-esp-arduino",
 				//not sure what is wrong. Don't feel like looking
 				"AceRoutine",
-
+				//source is in scr instead of src
+				"ADC_SEQR",
+				//uses StaticJsonBuffer I do not have
+				"AmazonDRS",
 				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}
@@ -153,6 +154,9 @@ public class Libraries {
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
 		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
 		runLibOnBoard.put("teensy", new String[] { "ACAN","ACAN2515","ACAN2517" });
+		
+		runLibOnBoard.put("Adafruit_Metro_M4", new String[] { "Adafruit_QSPI" });
+		 
 		
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
 			if (Arrays.asList(curEntry.getValue()).contains(libName)) {
