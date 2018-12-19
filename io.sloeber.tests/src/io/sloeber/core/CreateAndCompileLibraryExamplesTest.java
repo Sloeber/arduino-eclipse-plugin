@@ -10,11 +10,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -23,7 +20,6 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -38,15 +34,15 @@ import io.sloeber.providers.Teensy;
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
-	private static int myCounter = 0;
+	private static int myBuildCounter = 0;
 	private Examples myExample;
-	private MCUBoard myBoardID;
-	private static int skipAtStart = 190;
+	private MCUBoard myBoard;
+	private static int mySkipAtStart = 210;
 	private static int myTotalFails = 0;
 	private static int maxFails = 40;
 
 	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
-		myBoardID = boardID;
+		myBoard = boardID;
 		myExample = example;
 	}
 
@@ -119,21 +115,9 @@ public class CreateAndCompileLibraryExamplesTest {
 	@Test
 	public void testExamples() {
 
-		if (myTotalFails >= maxFails) {
-			// Stop after X fails because
-			// the fails stays open in eclipse and it becomes really slow
-			// There are only a number of issues you can handle
-			// best is to focus on the first ones and then rerun
-			// with a adapted skipAtStart
-//			fail("To many fails. Stopping test");
-			//failing is annoying when doing fixing
-			return;
-		}
-		if (skipAtStart >= myCounter++) {
-			// skip these
-			return;
-		}
-		if (!myBoardID.isExampleSupported(myExample)) {
+		Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+		if (!myBoard.isExampleSupported(myExample)) {
 			fail("Trying to run a test on unsoprted board");
 			return;
 		}
@@ -142,57 +126,13 @@ public class CreateAndCompileLibraryExamplesTest {
 		paths.add(myExample.getPath());
 		CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
 
-		Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
-		BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
+		Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
+		BoardDescriptor boardDescriptor = myBoard.getBoardDescriptor();
 		boardDescriptor.setOptions(boardOptions);
-		BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor);
+        if (!Shared.BuildAndVerify( boardDescriptor, codeDescriptor, new CompileOptions(null))) {
+            myTotalFails++;
+        }
 
-	}
-
-	public void BuildAndVerify(BoardDescriptor boardid, CodeDescriptor codeDescriptor) {
-
-		IProject theTestProject = null;
-
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%1.100s", new Integer(myCounter), myExample.getFQN());
-		try {
-			theTestProject = boardid.createProject(projectName, null, ConfigurationDescriptor.getDefaultDescriptors(),
-					codeDescriptor, new CompileOptions(null), monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			myTotalFails++;
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				// try again because the libraries may not yet been added
-				Shared.waitForAllJobsToFinish(); // for the indexer
-				try {
-					Thread.sleep(3000);// seen sometimes the libs were still not
-										// added
-				} catch (InterruptedException e) {
-					// ignore
-				}
-				theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-				if (Shared.hasBuildErrors(theTestProject)) {
-					// give up
-					myTotalFails++;
-					theTestProject.close(null);
-					fail("Failed to compile the project:" + projectName + " build errors");
-				} else {
-					theTestProject.delete(true, null);
-				}
-			} else {
-				theTestProject.delete(true, null);
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			myTotalFails++;
-			fail("Failed to compile the project:" + projectName + " exception");
-		}
 	}
 
 }

@@ -25,7 +25,7 @@ public class BoardAttributes {
      */
     public boolean mo_mcu = false;
     public boolean esp8266_mcu = false;
-    public String boardID = null;
+    public String boardName = null;
 
     public boolean compatibleWithExampleRequirements(BoardAttributes example) {
         boolean ret = worksOutOfTheBox;
@@ -42,8 +42,8 @@ public class BoardAttributes {
         ret = ret && matches(example.inputPullDown, inputPullDown);
         ret = ret && matches(example.mo_mcu, mo_mcu);
         ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
-        if (example.boardID != null) {
-            ret = ret && example.boardID.equals(boardID);
+        if (example.boardName != null) {
+            ret = ret && example.boardName.equals(boardName);
         }
 
         return ret;
@@ -79,14 +79,14 @@ public class BoardAttributes {
         ret.mo_mcu = mo_mcu || or.mo_mcu;
         ret.esp8266_mcu = esp8266_mcu || or.esp8266_mcu;
         // other special fields
-        if (boardID == null) {
-            ret.boardID = or.boardID;
+        if (boardName == null) {
+            ret.boardName = or.boardName;
         } else {
-            if (or.boardID == null) {
-                ret.boardID = boardID;
+            if (or.boardName == null) {
+                ret.boardName = boardName;
             } else {
-                if (or.boardID.equals(boardID)) {
-                    ret.boardID = boardID;
+                if (or.boardName.equals(boardName)) {
+                    ret.boardName = boardName;
                 } else {
                     ret.worksOutOfTheBox = false;
                 }

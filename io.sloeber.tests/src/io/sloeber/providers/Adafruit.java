@@ -43,7 +43,14 @@ public class Adafruit extends MCUBoard {
 	public static MCUBoard featherMO() {
 		MCUBoard ret= new Adafruit(SAMDPlatformName,"adafruit_feather_m0");
 		ret.mySlangName="FeatherM0";
+		ret.myAttributes.mo_mcu=true;
 		return ret;
 	}
-
+	public static MCUBoard metroM4() {
+		MCUBoard ret= new Adafruit(SAMDPlatformName,"adafruit_metro_m4");
+		ret.mySlangName="metroM4";
+		ret.myAttributes.mo_mcu=true;
+		return ret;
+	}
+	
 }

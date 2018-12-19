@@ -39,7 +39,7 @@ public  class MCUBoard {
 				}
 			}
 		}
-		myAttributes.boardID=myBoardDescriptor.getBoardID();
+		myAttributes.boardName=myBoardDescriptor.getBoardID();
 		return myAttributes.compatibleWithExampleRequirements(example.getRequiredBoardAttributes());
 	}
 
