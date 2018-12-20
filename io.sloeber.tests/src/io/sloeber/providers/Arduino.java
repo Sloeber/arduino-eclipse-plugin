@@ -20,6 +20,9 @@ public class Arduino extends MCUBoard {
 	private static final String NFR52PlatformName = "Arduino nRF52 Boards";
 	private static final String intelPlatformName = "Intel Curie Boards";
     private static final String jsonFileName ="package_index.json";
+    
+    public static final String circuitplay32ID="circuitplay32u4cat";
+    public static final String unoID="uno";
 
 	public static MCUBoard gemma() {
 		MCUBoard ret = new Arduino(providerArduino, AVRPlatformName, "gemma");
@@ -36,7 +39,7 @@ public class Arduino extends MCUBoard {
 	}
 
 	public static MCUBoard adafruitnCirquitPlayground() {
-		return new Arduino(providerArduino, AVRPlatformName, "circuitplay32u4cat");
+		return new Arduino(providerArduino, AVRPlatformName, circuitplay32ID);
 	}
 	public static MCUBoard cirquitPlaygroundExpress() {
 		return new Arduino(providerArduino, SAMDPlatformName, "adafruit_circuitplayground_m0");
@@ -133,7 +136,7 @@ public class Arduino extends MCUBoard {
 	}
 
 	public static MCUBoard uno() {
-		MCUBoard uno = new Arduino(providerArduino, AVRPlatformName, "uno");
+		MCUBoard uno = new Arduino(providerArduino, AVRPlatformName, unoID);
 		uno.mySlangName="uno";
 		return uno;
 	}

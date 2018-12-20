@@ -94,7 +94,7 @@ public class CompileAndUpload {
 		LinkedList<Object[]> examples = new LinkedList<>();
 
 		for (MCUBoard curBoard : boards) {
-			examples.add(new Object[]{curBoard.getName(), curBoard});
+			examples.add(new Object[]{curBoard.getID(), curBoard});
 		}
 
 		return examples;

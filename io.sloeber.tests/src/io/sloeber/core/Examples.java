@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
@@ -363,7 +364,7 @@ public class Examples {
 		ret.add("Library/AD_Sensors/MapAndConstrainAnalogSensor");
 		// ess-yun.ino:17:12: error: no matching function for call to
 		// 'HttpClient::HttpClient()'
-		ret.add("Library/arduino_ess/ess_yun");
+		ret.add("Library/arduino-ess/ess-yun");
 		// I have no linket board in test setup
 		ret.add("Library/arduino_ess/linkit_one_dweet");
 
@@ -390,11 +391,15 @@ public class Examples {
 			if (example.getRequiredBoardAttributes().boardName != null) {
 				String wantedBoardName = example.getRequiredBoardAttributes().boardName;
 				for (MCUBoard curBoard : myBoards) {
-					if (curBoard.getName().equals(wantedBoardName)) {
+					if (curBoard.getID().equals(wantedBoardName)) {
 						return curBoard;
 					}
 				}
 			} else {
+				//examples using DHT_sensor_library libraries are not found as the include is DHT.h
+				if(!libName.equals("DHT_sensor_library")&&fqn.contains("DHT")) {
+					return null;
+				}
 				// if the boardname is in the libname or ino name pick this one
 				for (MCUBoard curBoard : myBoards) {
 					String curBoardName = curBoard.getSlangName().toLowerCase();
@@ -418,6 +423,14 @@ public class Examples {
 				if (example.getFQN().toLowerCase().contains("teensy")) {
 					for (MCUBoard curBoard : myBoards) {
 						if (Teensy.class.isInstance(curBoard)) {
+							return curBoard;
+						}
+					}
+				}
+				// if the example name contains ESP try ESP8266 board
+				if (example.getFQN().toLowerCase().contains("ESP")) {
+					for (MCUBoard curBoard : myBoards) {
+						if (ESP8266.class.isInstance(curBoard)) {
 							return curBoard;
 						}
 					}

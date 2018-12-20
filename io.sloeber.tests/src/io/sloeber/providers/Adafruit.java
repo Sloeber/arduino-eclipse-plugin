@@ -11,6 +11,8 @@ public class Adafruit extends MCUBoard {
 	//private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";
 	private static final String NFR52PlatformName = "Adafruit nRF52";
 	//private static final String XICEDPlatformName = "Adafruit WICED";
+	public static final String metroM4SlangName="metroM4";
+	public static final String metroM4ID="adafruit_metro_m4";
 
 
 	public static String getnRF52PlatformName() {
@@ -46,9 +48,10 @@ public class Adafruit extends MCUBoard {
 		ret.myAttributes.mo_mcu=true;
 		return ret;
 	}
+
 	public static MCUBoard metroM4() {
-		MCUBoard ret= new Adafruit(SAMDPlatformName,"adafruit_metro_m4");
-		ret.mySlangName="metroM4";
+		MCUBoard ret= new Adafruit(SAMDPlatformName,metroM4ID);
+		ret.mySlangName=metroM4SlangName;
 		ret.myAttributes.mo_mcu=true;
 		return ret;
 	}

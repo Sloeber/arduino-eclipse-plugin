@@ -58,7 +58,7 @@ public class NightlyBoardPatronTest {
             if (fqn.contains("RTCZero")) {
                 Examples example = new Examples(fqn,  examplePath);
 
-                Object[] theData = new Object[] {Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getName()),
+                Object[] theData = new Object[] {Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getID()),
                         zeroBoard, example };
                 examples.add(theData);
             }

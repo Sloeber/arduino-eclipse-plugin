@@ -13,13 +13,13 @@ import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class Teensy extends MCUBoard {
 
-	private final static String Teensy3_0_ID = "teensy30";
-	private final static String Teensy3_1_ID = "teensy31";
-	private final static String Teensy_PP2_ID = "teensypp2";
-	private final static String Teensy_2_ID = "teensy2";
-	private final static String Teensy3_5_ID = "teensy35";
-	private final static String Teensy3_6_ID = "teensy36";
-	private final static String Teensy_LC_ID = "teensyLC";
+	public final static String Teensy3_0_ID = "teensy30";
+	public final static String Teensy3_1_ID = "teensy31";
+	public final static String Teensy_PP2_ID = "teensypp2";
+	public final static String Teensy_2_ID = "teensy2";
+	public final static String Teensy3_5_ID = "teensy35";
+	public final static String Teensy3_6_ID = "teensy36";
+	public final static String Teensy_LC_ID = "teensyLC";
 
 	public static MCUBoard Teensy_LC() {
 		return new Teensy(Teensy_LC_ID);

@@ -92,6 +92,8 @@ public class Libraries {
 				"ArduinoECCX08",
 				//getRequest.ino:29:45: error: no matching function for call to 'ESPAT::get(const char [16])'
 				"ArduinoESPAT",
+				//ESPAsyncE131.h:23:25: fatal error: ESPAsyncUDP.h: No such file or directory
+				"ESP_Async_E1.31",
 				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}
@@ -145,12 +147,12 @@ public class Libraries {
 				new String[] { "DS1307RTC", "ESPMail", "EspSaveCrash", "FlashStorage", "Fram", "Geometry" });
 		runLibOnBoard.put("macro's confuse indexer", new String[] { "EnableInterrupt", "Eventually" });
 
-		runLibOnBoard.put(Arduino.uno().getName(),
+		runLibOnBoard.put(Arduino.unoID,
 				new String[] { "A4963", "Adafruit_Motor_Shield_library", "Adafruit_Motor_Shield_library_V2",
 						"AccelStepper", "Arduino_Uno_WiFi_Dev_Ed_Library", "ardyno", "AVR_Standard_C_Time_Library",
 						"DDS", "EtherSia", "ExodeCore", "FingerLib", "HamShield" });
 		runLibOnBoard.put("esplora", new String[] { "Esplora" });
-		runLibOnBoard.put(Arduino.adafruitnCirquitPlayground().getName(),
+		runLibOnBoard.put(Arduino.circuitplay32ID,
 				new String[] { "Adafruit_Circuit_Playground", "Adafruit_BluefruitLE_nRF51", "Adafruit_GPS_Library","Adafruit_composite_video_Library" });
 		runLibOnBoard.put("nodemcu",
 				new String[] { "Adafruit_IO_Arduino", "CMMC_Easy", "CMMC_MQTT_Connector", "CMMC_OTA",
@@ -167,9 +169,9 @@ public class Libraries {
 				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
 		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
-		runLibOnBoard.put(Teensy.Teensy3_6().getName(), new String[] { "ACAN","ACAN2515","ACAN2517" });
+		runLibOnBoard.put(Teensy.Teensy3_6_ID, new String[] { "ACAN","ACAN2515","ACAN2517" });
 		
-		runLibOnBoard.put(Adafruit.metroM4().getName(), new String[] { "Adafruit_QSPI" ,"Adafruit_mp3"});
+		runLibOnBoard.put(Adafruit.metroM4ID, new String[] { "Adafruit_QSPI" ,"Adafruit_mp3"});
 		 
 		
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {

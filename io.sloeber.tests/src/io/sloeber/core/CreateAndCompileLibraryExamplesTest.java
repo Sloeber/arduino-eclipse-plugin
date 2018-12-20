@@ -19,7 +19,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -30,16 +29,19 @@ import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings({"nls","unused"})
+@SuppressWarnings({"nls"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
+	private static final  int maxFails = 100;
+	private static final  int mySkipAtStart = 0;
+	
 	private static int myBuildCounter = 0;
+	private static int myTotalFails = 0;
 	private Examples myExample;
 	private MCUBoard myBoard;
-	private static int mySkipAtStart = 210;
-	private static int myTotalFails = 0;
-	private static int maxFails = 40;
+	
+	
 
 	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
 		myBoard = boardID;
@@ -69,7 +71,7 @@ public class CreateAndCompileLibraryExamplesTest {
 			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
 
 			if (curBoard != null) {
-				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getName(), curBoard,
+				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
 						example };
 				examples.add(theData);
 			}
@@ -119,6 +121,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 		if (!myBoard.isExampleSupported(myExample)) {
 			fail("Trying to run a test on unsoprted board");
+			myTotalFails++;
 			return;
 		}
 		ArrayList<IPath> paths = new ArrayList<>();
@@ -129,7 +132,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
 		BoardDescriptor boardDescriptor = myBoard.getBoardDescriptor();
 		boardDescriptor.setOptions(boardOptions);
-        if (!Shared.BuildAndVerify( boardDescriptor, codeDescriptor, new CompileOptions(null))) {
+        if (!Shared.BuildAndVerify( boardDescriptor, codeDescriptor)) {
             myTotalFails++;
         }
 
