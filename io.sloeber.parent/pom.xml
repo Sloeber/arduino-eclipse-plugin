@@ -381,7 +381,7 @@
 			</repositories>
 		</profile>
 		
-		<!-- Latest must be the same as the previous one -->	
+		<!-- Latest must be the same as the previous one. -->	
 		<profile>
 			<id>latest</id> 
 			<properties>
