@@ -58,6 +58,8 @@ public class RegressionTestFailingOnTravis {
 			fail("redirect Json ");
 			return;
 		}
-		Shared.BuildAndVerify("redirect_json",boardid,CodeDescriptor.createDefaultIno(),new CompileOptions(null));
+		if(!Shared.BuildAndVerify("redirect_json",boardid,CodeDescriptor.createDefaultIno(),new CompileOptions(null))) {
+            fail(Shared.getLastFailMessage() );
+		}
 	}
 }

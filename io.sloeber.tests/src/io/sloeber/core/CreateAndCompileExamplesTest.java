@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -128,6 +130,7 @@ public class CreateAndCompileExamplesTest {
         myBuildCounter++;
         if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
+            fail(Shared.getLastFailMessage() );
         }
 
 	}

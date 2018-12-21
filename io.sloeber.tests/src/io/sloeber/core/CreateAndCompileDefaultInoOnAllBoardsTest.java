@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -295,7 +297,10 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder), null);
+        if(!Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder))) {
+            myTotalFails++;
+            fail(Shared.getLastFailMessage() );
+        }
 
     }
 

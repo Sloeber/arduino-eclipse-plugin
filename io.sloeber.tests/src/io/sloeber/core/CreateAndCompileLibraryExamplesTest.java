@@ -134,6 +134,7 @@ public class CreateAndCompileLibraryExamplesTest {
 		boardDescriptor.setOptions(boardOptions);
         if (!Shared.BuildAndVerify( boardDescriptor, codeDescriptor)) {
             myTotalFails++;
+            fail(Shared.getLastFailMessage() );
         }
 
 	}

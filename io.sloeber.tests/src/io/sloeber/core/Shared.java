@@ -45,6 +45,7 @@ public class Shared {
 	public static boolean deleteProjects = true;
 	private static int myBuildCounter;
 	private static int myTestCounter;
+	private static String myLastFailMessage=new String();
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
@@ -143,7 +144,7 @@ public class Shared {
 			waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
+			myLastFailMessage= "Failed to create the project:" + projectName;
 			return false;
 		}
 		try {
@@ -157,7 +158,7 @@ public class Shared {
 					Thread.sleep(2000);
 					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 					if (hasBuildErrors(theTestProject)) {
-						fail("Failed to compile the project:" + projectName + " build errors");
+						myLastFailMessage= "Failed to compile the project:" + projectName + " build errors";
 						theTestProject.close(null);
 						return false;
 					}
@@ -165,7 +166,7 @@ public class Shared {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Failed to compile the project:" + boardDescriptor.getBoardName() + " exception");
+			myLastFailMessage= "Failed to compile the project:" + boardDescriptor.getBoardName() + " exception";
 			return false;
 		}
 		try {
@@ -271,5 +272,10 @@ public class Shared {
 	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
 		return String.format("%05d_%s_%s", new Integer(myTestCounter++), codeDescriptor.getExampleName(),
 				board.getBoardDescriptor().getBoardID());
+	}
+
+	public static String getLastFailMessage() {
+		// TODO Auto-generated method stub
+		return myLastFailMessage;
 	}
 }

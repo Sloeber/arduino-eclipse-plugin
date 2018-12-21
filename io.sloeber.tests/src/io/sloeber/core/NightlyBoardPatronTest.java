@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -86,7 +88,10 @@ public class NightlyBoardPatronTest {
         Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
         BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions);
+        if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions)) {
+            myTotalFails++;
+            fail(Shared.getLastFailMessage() );
+        }
 
     }
 

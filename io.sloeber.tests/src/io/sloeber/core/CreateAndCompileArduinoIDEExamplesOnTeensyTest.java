@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -102,6 +104,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
         if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
+            fail(Shared.getLastFailMessage() );
         }
 	}
 

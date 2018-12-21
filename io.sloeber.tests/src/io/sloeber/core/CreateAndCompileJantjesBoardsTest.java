@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -109,8 +111,9 @@ public class CreateAndCompileJantjesBoardsTest {
         //because we run all examples on all boards we need to filter incompatible combinations
         //like serial examples on gemma
 
-        if (!Shared.BuildAndVerify( myBoard, myCodeDescriptor, null)) {
+        if (!Shared.BuildAndVerify( myBoard, myCodeDescriptor)) {
             myTotalFails++;
+            fail(Shared.getLastFailMessage() );
         }
 	}
 

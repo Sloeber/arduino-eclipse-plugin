@@ -1,5 +1,7 @@
 package io.sloeber.core;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -93,6 +95,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 
         if (!Shared.BuildAndVerify( myProjectName,myBoard.getBoardDescriptor(), myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
+            fail(Shared.getLastFailMessage() );
         }
     }
 
