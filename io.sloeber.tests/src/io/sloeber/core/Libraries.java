@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP32;
 import io.sloeber.providers.Teensy;
 
 @SuppressWarnings("nls")
@@ -94,6 +95,10 @@ public class Libraries {
 				"ArduinoESPAT",
 				//ESPAsyncE131.h:23:25: fatal error: ESPAsyncUDP.h: No such file or directory
 				"ESP_Async_E1.31",
+				//doesn't work in arduino ide
+				"AIOModule",
+				//ned to fix issue
+				"Blynk_For_Chinese",
 				};
 		return Arrays.asList(skipLibs).contains(libName);
 	}
@@ -166,12 +171,13 @@ public class Libraries {
 						"AzureIoTHub", "AzureIoTProtocol_HTTP", "AzureIoTProtocol_MQTT", "Adafruit_AM_radio_library" });
 		runLibOnBoard.put("mkrfox1200", new String[] { "Arduino_SigFox_for_MKRFox1200" });
 		runLibOnBoard.put("due",
-				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer" });
+				new String[] { "Audio", "AutoAnalogAudio", "dcf77_xtal", "due_can", "DueFlashStorage", "DueTimer"});
 		runLibOnBoard.put("espresso_lite_v2", new String[] { "ESPert", "ESPectro" });
-		runLibOnBoard.put("esp32", new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
+		runLibOnBoard.put(ESP32.esp32ID, new String[] { "EasyBuzzer_Beep_leonardo", "ESPUI","Basecamp" });
 		runLibOnBoard.put(Teensy.Teensy3_6_ID, new String[] { "ACAN","ACAN2515","ACAN2517" });
 		
 		runLibOnBoard.put(Adafruit.metroM4ID, new String[] { "Adafruit_QSPI" ,"Adafruit_mp3"});
+		runLibOnBoard.put(Arduino.ethernetID, new String[] { "Blynk_For_Chinese" });
 		 
 		
 		for (Entry<String, String[]> curEntry : runLibOnBoard.entrySet()) {
