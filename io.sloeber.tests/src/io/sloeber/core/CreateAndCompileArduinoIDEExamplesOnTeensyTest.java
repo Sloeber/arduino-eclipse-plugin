@@ -102,19 +102,15 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	}
 
-	public void testExample() {
+
+	@Test
+	public void testArduinoIDEExamplesOnTeensy() {
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
         if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }
-	}
-
-	@Test
-	public void testArduinoIDEExamplesOnTeensy() {
-		if (!MySystem.getTeensyPlatform().isEmpty())
-			testExample();
 	}
 
 
