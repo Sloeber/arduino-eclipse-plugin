@@ -1,4 +1,12 @@
 package io.sloeber.core;
+/*
+ * This test compiles all examples on all Teensy hardware
+ * For this test to be able to run you need to specify the
+ * teensy install folder of your system in MySystem.java
+ * 
+ * At the time of writing no examples are excluded 
+ * only the private static method skipExample allows to skip examples
+ */
 
 import static org.junit.Assert.fail;
 
@@ -95,11 +103,6 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	}
 
 	public void testExample() {
-		// Stop after X fails because
-		// the fails stays open in eclipse and it becomes really slow
-		// There are only a number of issues you can handle
-		// best is to focus on the first ones and then rerun starting with the
-		// failures
         Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
         if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
