@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class Adafruit extends MCUBoard {
-
+	public final static String packageURL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
 	private static final String AVRPlatformName = "Adafruit AVR Boards";
 	private static final String SAMDPlatformName = "Adafruit SAMD Boards";
 	//private static final String SAMPlatformName = "Arduino SAM Boards (32-bits ARM Cortex-M3)";

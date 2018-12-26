@@ -40,8 +40,6 @@ import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
 public class Shared {
-	public final static String ADAFRUIT_BOARDS_URL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
-	public final static String ESP8266_BOARDS_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 	public static boolean deleteProjects = true;
 	private static int myBuildCounter;
 	private static int myTestCounter;
@@ -116,11 +114,11 @@ public class Shared {
 		String projectName = String.format("%05d_%s", new Integer(myBuildCounter ), boardDescriptor.getBoardID());
 		if (codeDescriptor.getExampleName() != null) {
 			if (codeDescriptor.getExamples().get(0).toOSString().toLowerCase().contains("libraries")) {
-				projectName = String.format("%05d_%s_%s_%s", new Integer(myBuildCounter ),
-						codeDescriptor.getLibraryName(), codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
+				projectName = String.format("%05d_Library_%s_%s", new Integer(myBuildCounter ),
+						codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
 			} else {
-				projectName = String.format("%05d_%s_%s", new Integer(myBuildCounter),
-						codeDescriptor.getExampleName(), boardDescriptor.getBoardID());
+				projectName = String.format("%05d_%s", new Integer(myBuildCounter),
+						codeDescriptor.getExampleName());
 			}
 		}
 
