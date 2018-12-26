@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.providers.ESP8266;
+import io.sloeber.providers.ESP32;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
@@ -366,8 +366,21 @@ public class Examples {
 		// 'HttpClient::HttpClient()'
 		ret.add("Library/arduino-ess/ess-yun");
 		// I have no linket board in test setup
-		ret.add("Library/arduino_ess/linkit_one_dweet");
-
+		ret.add("Library/arduino-ess/linkit-one-dweet");
+        //cores\arduino/WString.h:38:74: error: statement-expressions 
+		ret.add("Library/ArduinoTrace/TraceFromGlobalScope");
+		// no matching function for call to 'aREST::handle(EthernetClient&)'
+		ret.add("Library/aREST/Ethernet");
+		// AsciiMassage_servos.ino:75:37: error: no matching function for call to
+		// 'AsciiMassagePacker::streamEmpty(const char [6])'
+		ret.add("Library/AsciiMassage/AsciiMassage_servos");
+		// \BH1750FVI_Simple.ino:33:10: error: 'class Serial_' has no member named
+		// 'printf'
+		ret.add("Library/BH1750FVI/BH1750FVI_Simple");
+		// * This example not complete at all, TODO.
+		ret.add("Library/Blinker/Blinker_AUTO/AUTO_MQTT");
+		// 3: error: 'StaticJsonBuffer' was not declared in this scope
+		ret.add("Library/Boodskap_Message_library/SimpleMessageUsage");
 		return ret;
 	}
 
@@ -396,8 +409,9 @@ public class Examples {
 					}
 				}
 			} else {
-				//examples using DHT_sensor_library libraries are not found as the include is DHT.h
-				if(!libName.equals("DHT_sensor_library")&&fqn.contains("DHT")) {
+				// examples using DHT_sensor_library libraries are not found as the include is
+				// DHT.h
+				if (!libName.equals("DHT_sensor_library") && fqn.contains("DHT")) {
 					return null;
 				}
 				// if the boardname is in the libname or ino name pick this one
@@ -427,14 +441,24 @@ public class Examples {
 						}
 					}
 				}
-				// if the example name contains ESP try ESP8266 board
-				if (example.getFQN().toLowerCase().contains("ESP")) {
+				// if the example name contains ESP32 try ESP32 board
+				if (example.getFQN().toLowerCase().contains("esp32")) {
 					for (MCUBoard curBoard : myBoards) {
-						if (ESP8266.class.isInstance(curBoard)) {
+						if (ESP32.class.isInstance(curBoard)) {
 							return curBoard;
 						}
 					}
 				}
+				// if the example name contains ESP try ESP8266 board
+//				if (example.getFQN().toLowerCase().contains("esp")) {
+//					for (MCUBoard curBoard : myBoards) {
+//						if (ESP8266.class.isInstance(curBoard)) {
+//							return curBoard;
+//						}
+//					}
+//				}
+//causes issues with response
+				
 				// Out of guesses based on the name. Take the first ok one
 				for (MCUBoard curBoard : myBoards) {
 					if (curBoard.isExampleSupported(example)) {
