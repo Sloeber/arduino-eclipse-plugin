@@ -14,7 +14,7 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
 
 @SuppressWarnings("nls")
@@ -28,7 +28,7 @@ public class RegressionTestFailingOnTravis {
 	@BeforeClass
 	public static void WaitForInstallerToFinish() {
 		Shared.waitForAllJobsToFinish();
-		SerialManager.stopNetworkScanning();
+		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 	}
 

@@ -21,7 +21,7 @@ import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Jantje;
 import io.sloeber.providers.MCUBoard;
 
@@ -49,7 +49,7 @@ public class CreateAndCompileJantjesBoardsTest {
 		MCUBoard[] allBoards=Jantje.getAllBoards();
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		Jantje.installLatestLocalDebugBoards();
-		SerialManager.stopNetworkScanning();
+		Preferences.setUseBonjour(false);
 
 
 		Shared.waitForAllJobsToFinish();

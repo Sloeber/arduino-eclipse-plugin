@@ -90,7 +90,4 @@ public class SerialManager {
 		return SloeberNetworkDiscovery.getList();
 	}
 
-	public static void stopNetworkScanning() {
-		SloeberNetworkDiscovery.stop();
-	}
 }

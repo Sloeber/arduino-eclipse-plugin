@@ -23,7 +23,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
@@ -51,7 +51,7 @@ public class CreateAndCompileExamplesTest {
 	@Parameters(name = "{0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
-		SerialManager.stopNetworkScanning();
+		Preferences.setUseBonjour(false);
 
 		MCUBoard myBoards[] = { Arduino.leonardo(),
 				Arduino.uno(),
@@ -105,7 +105,7 @@ public class CreateAndCompileExamplesTest {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL };
+		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_examples) {
 			PackageManager.installAllLatestPlatforms();

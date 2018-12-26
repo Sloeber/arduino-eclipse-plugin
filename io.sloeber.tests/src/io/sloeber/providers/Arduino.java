@@ -23,6 +23,7 @@ public class Arduino extends MCUBoard {
     
     public static final String circuitplay32ID="circuitplay32u4cat";
     public static final String unoID="uno";
+    public static final String ethernetID="ethernet";
 
 	public static MCUBoard gemma() {
 		MCUBoard ret = new Arduino(providerArduino, AVRPlatformName, "gemma");
@@ -138,6 +139,10 @@ public class Arduino extends MCUBoard {
 	public static MCUBoard uno() {
 		MCUBoard uno = new Arduino(providerArduino, AVRPlatformName, unoID);
 		uno.mySlangName="uno";
+		return uno;
+	}
+	public static MCUBoard ethernet() {
+		MCUBoard uno = new Arduino(providerArduino, AVRPlatformName, ethernetID);
 		return uno;
 	}
 

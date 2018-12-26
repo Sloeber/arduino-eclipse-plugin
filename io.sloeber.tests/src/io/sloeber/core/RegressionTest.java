@@ -22,7 +22,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
@@ -39,20 +39,20 @@ public class RegressionTest {
 	@BeforeClass
 	public static void WaitForInstallerToFinish() {
 		Shared.waitForAllJobsToFinish();
-		SerialManager.stopNetworkScanning();
+		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 	}
 
 	public static void installAdditionalBoards() {
 
-		String[] packageUrlsToAdd = { ESP8266.jsonURL };
+		String[] packageUrlsToAdd = { ESP8266.packageURL };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
 			PackageManager.removeAllInstalledPlatforms();
 			PackageManager.installAllLatestPlatforms();
 		} else {
 			// make sure esp8266 boards are available
-			ESP8266.installLatestESP8266Boards();
+			ESP8266.installLatest();
 		}
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());

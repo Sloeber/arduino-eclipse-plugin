@@ -22,9 +22,9 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.core.api.SerialManager;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP32;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
@@ -52,13 +52,14 @@ public class CreateAndCompileLibraryExamplesTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
 		WaitForInstallerToFinish();
-		SerialManager.stopNetworkScanning();
+		Preferences.setUseBonjour(false);
 		Preferences.setUseArduinoToolSelection(true);
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
 				Adafruit.feather(),Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(),
 				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
 				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,
-				Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101(),Arduino.zeroProgrammingPort()};
+				Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101(),Arduino.zeroProgrammingPort(),
+				Arduino.ethernet()};
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
@@ -95,7 +96,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { Shared.ESP8266_BOARDS_URL, Shared.ADAFRUIT_BOARDS_URL };
+		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL ,ESP32.packageURL};
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
 			PackageManager.installAllLatestPlatforms();

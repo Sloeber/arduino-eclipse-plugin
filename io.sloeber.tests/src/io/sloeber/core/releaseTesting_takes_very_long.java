@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.Preferences;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
@@ -22,7 +22,7 @@ import io.sloeber.core.api.SerialManager;
 public class releaseTesting_takes_very_long {
     @BeforeClass
     public static void setUp() {
-        SerialManager.stopNetworkScanning();
+    	Preferences.setUseBonjour(false);
         Shared.deleteProjects=true;
     }
 }
