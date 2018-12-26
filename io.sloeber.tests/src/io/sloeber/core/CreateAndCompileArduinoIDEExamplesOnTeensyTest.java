@@ -2,9 +2,12 @@ package io.sloeber.core;
 /*
  * This test compiles all examples on all Teensy hardware
  * For this test to be able to run you need to specify the
- * teensy install folder of your system in MySystem.java
+ * Teensy install folder of your system in MySystem.java
+ * 
+ * Warning!! new teensy boards must be added manually!!!
  * 
  * At the time of writing no examples are excluded 
+ * At the time of writing 560 examples are compiled
  * only the private static method skipExample allows to skip examples
  */
 
