@@ -124,14 +124,25 @@ public class Activator extends AbstractUIPlugin {
 		String errorString = new String();
 		String addString = new String();
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
-		if (!installPath.toFile().getParentFile().canWrite()) {
-			errorString += addString + "The plugin Needs write access to " + installPath.toString();
-			addString = "\nand\n";
+		File installFile = installPath.toFile();
+		if (installFile.exists()) {
+			if (!installFile.canWrite()) {
+				errorString += addString + "The folder " + installPath.toString()
+						+ " exists but Sloeber does not have write access to it.";
+				addString = "\nand\n";
+			}
+		} else {
+			if (!installFile.getParentFile().canWrite()) {
+				errorString += addString + "Sloeber does not have write access to "
+						+ installFile.getParentFile().toString() + " and therefore can not create the folder "
+						+ installPath.toString();
+				addString = "\nand\n";
+			}
 		}
 
 		if (installPathToLong()) {
 			errorString += errorString + addString;
-			errorString += "Due to issues with long pathnames on Windows, the plugin installation path must be less than 40 characters. \n";
+			errorString += "Due to issues with long pathnames on Windows, the Sloeber installation path must be less than 40 characters. \n";
 			errorString += "Your current path: " + installPath.toString();
 			errorString += " is too long and the plugin will no longer function correctly for all packages.";
 			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
