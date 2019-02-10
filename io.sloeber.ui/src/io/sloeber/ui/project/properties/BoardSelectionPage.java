@@ -248,11 +248,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myControlBoardsTxtFile.addListener(SWT.Modify, myBoardFileModifyListener);
 
 		enableControls();
-		Dialog.applyDialogFont(myComposite);
-		myScrolledComposite.setContent(myComposite);
-		Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		myScrolledComposite.setMinSize(point);
-
 	}
 
 	private static String tidyUpLength(String longName) {
@@ -296,6 +291,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			curLabelCombo.setVisible(true);
 		}
+		Dialog.applyDialogFont(myComposite);
+		myScrolledComposite.setContent(myComposite);
 		Point point = myComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		myScrolledComposite.setMinSize(point);
 	}
