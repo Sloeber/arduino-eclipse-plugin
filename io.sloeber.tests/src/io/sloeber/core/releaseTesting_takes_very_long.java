@@ -16,7 +16,7 @@ import io.sloeber.core.api.Preferences;
         CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest.class,
         CreateAndCompileArduinoIDEExamplesOnTeensyTest.class,
         CreateAndCompileExamplesTest.class,
-        CreateAndCompileJantjesBoardsTest.class,
+        CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest.class,
         CreateAndCompileLibraryExamplesTest.class
         })
 public class releaseTesting_takes_very_long {

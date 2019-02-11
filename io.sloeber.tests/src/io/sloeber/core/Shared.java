@@ -262,10 +262,6 @@ public class Shared {
 		return counterName;
 	}
 
-	public static boolean increaseBuildCounter() {
-		myBuildCounter++;
-		return true;
-	}
 
 	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
 		return String.format("%05d_%s_%s", new Integer(myTestCounter++), codeDescriptor.getExampleName(),

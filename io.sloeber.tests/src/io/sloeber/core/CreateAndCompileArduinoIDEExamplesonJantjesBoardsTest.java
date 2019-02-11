@@ -27,7 +27,7 @@ import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings({"nls"})
 @RunWith(Parameterized.class)
-public class CreateAndCompileJantjesBoardsTest {
+public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 	private CodeDescriptor myCodeDescriptor;
 	private static BoardDescriptor myBoard;
     private static int myBuildCounter = 0;
@@ -35,7 +35,7 @@ public class CreateAndCompileJantjesBoardsTest {
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
 
-	public CreateAndCompileJantjesBoardsTest( String name,CodeDescriptor codeDescriptor,BoardDescriptor board) {
+	public CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest( String name,CodeDescriptor codeDescriptor,BoardDescriptor board) {
 
 		myCodeDescriptor = codeDescriptor;
 		myBoard=board;
@@ -45,14 +45,13 @@ public class CreateAndCompileJantjesBoardsTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{0}")
 	public static Collection examples() {
+		Preferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = {Jantje.jsonURL };
-		MCUBoard[] allBoards=Jantje.getAllBoards();
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		Jantje.installLatestLocalDebugBoards();
-		Preferences.setUseBonjour(false);
-
-
 		Shared.waitForAllJobsToFinish();
+		
+		MCUBoard[] allBoards=Jantje.getAllBoards();
 		LinkedList<Object[]> examples = new LinkedList<>();
 
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
@@ -101,15 +100,9 @@ public class CreateAndCompileJantjesBoardsTest {
 	}
 	@Test
 	public void testExample() {
-        // Stop after X fails because
-        // the fails stays open in eclipse and it becomes really slow
-        // There are only a number of issues you can handle
-        // best is to focus on the first ones and then rerun starting with the
-        // failures
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", (myBuildCounter++ >= mySkipAtStart)?Shared.increaseBuildCounter():false);
-        Assume.assumeTrue("To many fails. Stopping test", (myTotalFails < maxFails)?Shared.increaseBuildCounter():false);
-        //because we run all examples on all boards we need to filter incompatible combinations
-        //like serial examples on gemma
+		Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+
 
         if (!Shared.BuildAndVerify( myBoard, myCodeDescriptor)) {
             myTotalFails++;
