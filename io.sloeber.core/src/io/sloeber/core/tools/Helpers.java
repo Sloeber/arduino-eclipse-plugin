@@ -980,10 +980,7 @@ public class Helpers extends Common {
 	 * @return the string to be stored as value for the environment variable
 	 */
 	public static String MakeEnvironmentString(String inputString, String keyPrefix, boolean touppercase) {
-		// String ret = inputString.replaceAll("-o \"\\{object_file}\"",
-		// "").replaceAll("\"\\{object_file}\"",
-		// "").replaceAll("\"\\{source_file}\"", "")
-		// .replaceAll("\\{", "\\${" + ArduinoConst.ENV_KEY_START);
+		try {
 		String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + keyPrefix);
 		if (!touppercase) {
 			return ret;
@@ -996,7 +993,12 @@ public class Helpers extends Common {
 			String buf = sb.substring(matcher.start(), matcher.end()).toUpperCase();
 			sb.replace(matcher.start(), matcher.end(), buf);
 		}
-		return sb.toString();
+		return sb.toString();}
+		catch (Exception e){
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+					"Failed to parse environment var "+inputString, e));
+			return inputString;
+		}
 	}
 
 	/**
