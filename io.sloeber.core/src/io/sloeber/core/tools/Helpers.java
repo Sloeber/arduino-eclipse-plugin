@@ -876,8 +876,8 @@ public class Helpers extends Common {
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
 				if (name.startsWith("A.TOOLS.")) {
-					String skipVars[]={"A.NETWORK.PASSWORD","A.NETWORK.PORT"};
-					List<String> skipVarslist=Arrays.asList(skipVars);
+					String skipVars[]={"A.NETWORK.PASSWORD","A.NETWORK.PORT","A.UPLOAD.VERBOSE","A.NETWORK.AUTH"};
+					List<String> skipVarslist=new ArrayList<String>(Arrays.asList(skipVars));
 					String toolID = curVariable.getName().split("\\.")[2];
 					String recipe = curVariable.getValue();
 					int indexOfVar = recipe.indexOf("${A.");
@@ -889,7 +889,8 @@ public class Helpers extends Common {
 							String replaceVar = "A.TOOLS." + toolID.toUpperCase() + foundSuffix;
 							if( !skipVarslist.contains(foundVar)) {
 							if (contribEnv.getVariable(foundVar, confDesc) == null) {// $NON-NLS-1$
-								recipe = recipe.replaceAll(foundVar, replaceVar);
+								recipe = recipe.replace(foundVar, replaceVar);
+								skipVarslist.add(replaceVar);
 							}
 							}
 						}
