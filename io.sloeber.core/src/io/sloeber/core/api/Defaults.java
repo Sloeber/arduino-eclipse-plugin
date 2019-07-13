@@ -32,7 +32,7 @@ public class Defaults {
 	 */
 	public static String getPrivateLibraryPath() {
 		IPath homPath = new Path(System.getProperty("user.home"));
-		if(SystemUtils.IS_OS_MAC ) {
+		if(SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS ) {
 			homPath=homPath.append("Documents");
 		}
 		return homPath.append("Arduino").append(LIBRARY_PATH_SUFFIX).toString();
@@ -40,7 +40,7 @@ public class Defaults {
 
 	public static String getPrivateHardwarePath() {
 		IPath homPath = new Path(System.getProperty("user.home"));
-		if(SystemUtils.IS_OS_MAC ) {
+		if(SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS ) {
 			homPath=homPath.append("Documents");
 		}
 		return homPath.append("Arduino").append(Const.ARDUINO_HARDWARE_FOLDER_NAME).toString();
