@@ -205,6 +205,8 @@ public class ArduinoPlatform {
 		return Status.OK_STATUS;
 	}
 
+	//jaba added the @SuppressWarnings("nls") because I added some debugging stuff
+	@SuppressWarnings("nls")
 	public IStatus install(IProgressMonitor monitor) {
 		// Check if we're installed already
 		if (isInstalled()) {
