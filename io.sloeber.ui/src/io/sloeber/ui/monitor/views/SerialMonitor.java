@@ -2,6 +2,7 @@ package io.sloeber.ui.monitor.views;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -322,7 +323,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
                                 String activeConfigName= activeCfg.getName();
                                 IPath buildFolder=selectedProject.findMember(activeConfigName).getLocation();
                                 File dumpFile=buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
-                                FileUtils.writeStringToFile(dumpFile, selectedText);
+                                FileUtils.writeStringToFile(dumpFile, selectedText, Charset.defaultCharset());
                             } catch (Exception e1) {
                                 // ignore
                                 e1.printStackTrace();

@@ -21,6 +21,7 @@ package io.sloeber.core.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,7 +146,7 @@ public class PdePreprocessor {
 		String currentFileContent = null;
 		try {
 			currentFileContent = FileUtils
-					.readFileToString(iProject.getFile(new Path(generatedFile)).getLocation().toFile());
+					.readFileToString(iProject.getFile(new Path(generatedFile)).getLocation().toFile(), Charset.defaultCharset());
 		} catch (IOException e) {
 			// This happens when the generated file does not yet exist
 		}

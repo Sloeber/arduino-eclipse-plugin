@@ -19,7 +19,6 @@ import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
-import org.eclipse.cdt.managedbuilder.internal.core.ToolChain;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -69,7 +68,7 @@ public class ShouldHaveBeenInCDT {
 		for (ConfigurationDescriptor curConfDesc : alCfgs) {
 			IToolChain tcs = ManagedBuildManager.getExtensionToolChain(curConfDesc.ToolchainID);
 
-			Configuration cfg = new Configuration(mProj, (ToolChain) tcs,
+			Configuration cfg = new Configuration(mProj, tcs,
 					ManagedBuildManager.calculateChildId(curConfDesc.ToolchainID, null), curConfDesc.configName);
 			if (enableParallelBuild) {
 				cfg.setParallelDef(true);

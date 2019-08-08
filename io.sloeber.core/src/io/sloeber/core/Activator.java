@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -415,7 +416,7 @@ public class Activator extends AbstractUIPlugin {
 
 		try {
 			URL url = new URL(HELP_LOC + "?systemhash=" + systemhash);
-			String content= IOUtils.toString( url);
+			String content= IOUtils.toString( url, Charset.defaultCharset());
 			isPatron = new Boolean(content.length() < 1000);
 
 		} catch ( Exception e) {

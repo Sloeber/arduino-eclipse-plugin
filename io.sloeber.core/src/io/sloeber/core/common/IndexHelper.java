@@ -2,6 +2,7 @@ package io.sloeber.core.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
@@ -34,7 +35,7 @@ public class IndexHelper {
 			String codeFileName = name.getFileLocation().getFileName();
 			String rawCodeFileContent;
 			try {
-				rawCodeFileContent = FileUtils.readFileToString(new File(codeFileName));
+				rawCodeFileContent = FileUtils.readFileToString(new File(codeFileName), Charset.defaultCharset());
 			} catch (IOException e) {
 				return defaultValue;
 			}

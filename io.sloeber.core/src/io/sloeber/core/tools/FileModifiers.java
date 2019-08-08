@@ -2,6 +2,7 @@ package io.sloeber.core.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -29,8 +30,8 @@ public class FileModifiers {
 	 * @throws IOException
 	 */
 	public static void appendString(File input, String addString) throws IOException {
-		String fileString = FileUtils.readFileToString(input)  +addString;
-		FileUtils.write(input, fileString);
+		String fileString = FileUtils.readFileToString(input, Charset.defaultCharset())  +addString;
+		FileUtils.write(input, fileString, Charset.defaultCharset());
 	}
 
 	/**
@@ -95,14 +96,14 @@ public class FileModifiers {
 
 	public static void replaceInFile(File file, boolean regex, String find, String replace) {
 		try {
-			String textFromFile = FileUtils.readFileToString(file);
+			String textFromFile = FileUtils.readFileToString(file, Charset.defaultCharset());
 
 			if (regex) {
 				textFromFile = textFromFile.replaceAll(find, replace);
 			} else {
 				textFromFile = textFromFile.replace(find, replace);
 			}
-			FileUtils.write(file, textFromFile);
+			FileUtils.write(file, textFromFile, Charset.defaultCharset());
 		} catch (IOException e) {
 			Common.log(new Status(IStatus.WARNING, Activator.getId(),
 					"Failed to replace "+find+" with "+replace+" in file "+file.toString(), e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
