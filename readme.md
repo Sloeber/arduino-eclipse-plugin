@@ -29,8 +29,8 @@ Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.ap
 
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash
-git clone https://github.com/jantje/arduino-eclipse-plugin
-cd arduino-eclipse-plugin
+git clone https://github.com/jantje/arduino-eclipse-plugin sloeber
+cd sloeber
 mvn clean verify -DskipTests=true
 ```
 
@@ -52,8 +52,6 @@ You can control the maven build with the following profiles:
 
 * latest (default, builds against the latest versions)
 * 2018-09 (builds against the 2018-09 release. Eclipse stopped naming their releases)
-* photon (builds against the photon (4.8) repositories) 
-* oxygen (builds against the oxygen (4.7) repositories)
 * SDK (builds a Sloeber you can program Sloeber in. With Java.)
 * win32 (builds for 32 bit windows)
 * win64
