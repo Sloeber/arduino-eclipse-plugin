@@ -20,6 +20,14 @@ Import-Package: org.apache.commons.io;version="2.2.0",
  org.apache.commons.lang
 Bundle-Vendor: Sloeber.io
 Export-Package: io.sloeber.ui;x-internal:=true,
+ io.sloeber.ui.actions;x-internal:=true,
+ io.sloeber.ui.core.launchconfig;x-internal:=true,
+ io.sloeber.ui.helpers;x-internal:=true,
+ io.sloeber.ui.listeners;x-internal:=true,
  io.sloeber.ui.monitor;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
- io.sloeber.ui.monitor.internal;x-internal:=true
+ io.sloeber.ui.monitor.internal;x-internal:=true,
+ io.sloeber.ui.monitor.views;x-internal:=true,
+ io.sloeber.ui.preferences;x-internal:=true,
+ io.sloeber.ui.project.properties;x-internal:=true,
+ io.sloeber.ui.wizard.newsketch;x-internal:=true
 Automatic-Module-Name: io.sloeber.ui

@@ -27,7 +27,21 @@ Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.ui.workbench,
  org.junit;bundle-version="4.12.0",
  org.slf4j.api;bundle-version="1.7.2"
-Export-Package: io.sloeber.core.api,
+Export-Package: cc.arduino.packages;x-internal:=true,
+ cc.arduino.packages.discoverers;x-internal:=true,
+ cc.arduino.packages.ssh;x-internal:=true,
+ io.sloeber.core;x-internal:=true,
+ io.sloeber.core.api,
+ io.sloeber.core.builder;x-internal:=true,
  io.sloeber.core.common;x-friends:="io.sloeber.tests",
- io.sloeber.core.tools;x-friends:="io.sloeber.tests"
+ io.sloeber.core.communication;x-internal:=true,
+ io.sloeber.core.core;x-internal:=true,
+ io.sloeber.core.listeners;x-internal:=true,
+ io.sloeber.core.managers;x-internal:=true,
+ io.sloeber.core.natures;x-internal:=true,
+ io.sloeber.core.serial;x-internal:=true,
+ io.sloeber.core.templates;x-internal:=true,
+ io.sloeber.core.toolchain;x-internal:=true,
+ io.sloeber.core.tools;x-friends:="io.sloeber.tests",
+ io.sloeber.core.tools.uploaders;x-internal:=true
 Automatic-Module-Name: io.sloeber.core

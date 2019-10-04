@@ -17,3 +17,14 @@ Bundle-ActivationPolicy: lazy
 Import-Package: io.sloeber.ui,
  io.sloeber.ui.monitor
 Automatic-Module-Name: io.sloeber.tests
+Export-Package: io.sloeber.core;x-internal:=true,
+ io.sloeber.junit;x-internal:=true,
+ io.sloeber.providers;x-internal:=true,
+ templates.CreateAndCompileTest;x-internal:=true,
+ templates.are_defines_found;x-internal:=true,
+ templates.basic.ino;x-internal:=true,
+ templates.defines_and_includes;x-internal:=true,
+ templates.externc;x-internal:=true,
+ templates.fastBlink;x-internal:=true,
+ templates.issue1047_Board_Names_Can_Be_used_as_Strings;x-internal:=true,
+ templates.issue687;x-internal:=true
