@@ -380,7 +380,29 @@
 				</repository>
 			</repositories>
 		</profile>
-		
+			<profile>
+			<id>2019-09</id>
+			<properties>
+				<platform-version-name>2019-09</platform-version-name>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			
+			<repositories>
+				<repository>
+					<id>2019-09</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
+				</repository>
+
+				<repository>
+					<id>release-train_2019-09</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/2019-09</url>
+				</repository>
+			</repositories>
+		</profile>	
 		<!-- Latest must be the same as the previous one. -->	
 		<profile>
 			<id>latest</id> 
