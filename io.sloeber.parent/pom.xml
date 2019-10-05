@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
@@ -173,7 +174,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -218,7 +219,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -242,7 +243,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -267,7 +268,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<environment>
@@ -292,7 +293,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -341,7 +342,7 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
-			
+
 			<repositories>
 				<repository>
 					<id>2018-09</id>
@@ -356,7 +357,7 @@
 				</repository>
 			</repositories>
 		</profile>
-		
+
 		<profile>
 			<id>2018-12</id>
 			<properties>
@@ -365,7 +366,7 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
-			
+
 			<repositories>
 				<repository>
 					<id>2018-12</id>
@@ -380,7 +381,7 @@
 				</repository>
 			</repositories>
 		</profile>
-			<profile>
+		<profile>
 			<id>2019-09</id>
 			<properties>
 				<platform-version-name>2019-09</platform-version-name>
@@ -388,7 +389,7 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
-			
+
 			<repositories>
 				<repository>
 					<id>2019-09</id>
@@ -402,10 +403,11 @@
 					<url>http://download.eclipse.org/releases/2019-09</url>
 				</repository>
 			</repositories>
-		</profile>	
-		<!-- Latest must be the same as the previous one. -->	
+		</profile>
+		<!-- Latest must be the same as the previous one. -->
+
 		<profile>
-			<id>latest</id> 
+			<id>latest</id>
 			<properties>
 				<platform-version-name>latest</platform-version-name>
 			</properties>
@@ -417,13 +419,36 @@
 				<repository>
 					<id>platform_latest</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.12</url>
+					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
 				</repository>
 
 				<repository>
 					<id>release-train_latest</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2019-06</url>
+					<url>http://download.eclipse.org/releases/2019-09</url>
+				</repository>
+			</repositories>
+		</profile>
+				<profile>
+			<id>sloeber_release</id>
+			<properties>
+				<platform-version-name>sloeber_release</platform-version-name>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<repositories>
+				<repository>
+					<id>platform_sloeber_release</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
+				</repository>
+
+				<repository>
+					<id>release-sloeber_release</id>
+					<layout>p2</layout>
+					<url>http://download.eclipse.org/releases/2019-09</url>
 				</repository>
 			</repositories>
 		</profile>
