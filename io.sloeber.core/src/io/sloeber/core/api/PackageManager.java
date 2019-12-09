@@ -740,7 +740,7 @@ public class PackageManager {
 
 			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
 					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
-				Files.copy(new URL(conn.getHeaderField("Location")).openStream(), localFile.toPath(), REPLACE_EXISTING);
+				myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error);
 				return;
 			}
 			if (report_error) {
