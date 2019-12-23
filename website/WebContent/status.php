@@ -34,7 +34,7 @@ if (isset ( $_GET ["os"] ))
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="Roberto Lo Giacco">
-<link rel="shortcut icon" href="favicon.ico">
+<link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
 
     <?php
 				echo "<title>Should I upgrade from - $MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION.$QUALIFIER_VERSION on $OS</title>";
