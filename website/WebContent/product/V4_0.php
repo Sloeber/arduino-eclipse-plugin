@@ -41,9 +41,9 @@
 			<li>There are multiple monitors in Eclipse world. If you see nothing in the monitor make sure you have the correct monitor view (buttons left top of monitor)</li>
 		</ul>
 		<h2>other things that may interest you</h2>
-		<a href="http://www.eclipse.baeyens.it/donate.shtml" >This is all hard work by volunteers. <b>Please show your appreciation.</b></a><br>
-		<a href="http://www.eclipse.baeyens.it/faq.shtml" >A <b>FAQ</b> can be found here</a>.<br>
-		<a href="http://www.eclipse.baeyens.it/how_to.shtml" >Read here <b>how to</b> use the plugin</a><br>
+		<a href="donate.shtml" >This is all hard work by volunteers. <b>Please show your appreciation.</b></a><br>
+		<a href="faq.shtml" >A <b>FAQ</b> can be found here</a>.<br>
+		<a href="how_to.shtml" >Read here <b>how to</b> use the plugin</a><br>
 		<a href="https://www.youtube.com/watch?v=HE5iYxv-B-o&list=PLCSjf7QmP3TDPSjT_5UIp0DHXzKdhIQsF" >Watch a <b>videos</b> demonstrating all kind of functionality of Sloeber.</a>
 
 	</div>

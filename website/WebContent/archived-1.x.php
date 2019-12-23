@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
 
     <title>Arduino Eclipse IDE - Archive ver 1.x</title>
 
@@ -46,7 +46,7 @@
       <p>Install V1 of the plugin by setting the following update site within an existing Eclipse CDT installation.</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
-          <div class="well text-center">http://www.baeyens.it/eclipse/update site</div>
+          <div class="well text-center">https://sloeber.tf/update site</div>
         </div>
       </div>
       <a href="#top" scroll-to="top">Back to top</a>

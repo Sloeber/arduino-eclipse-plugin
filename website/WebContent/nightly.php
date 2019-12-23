@@ -20,7 +20,7 @@ if (isset ( $_GET ["OS"] ))
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Roberto Lo Giacco">
-    <link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
 
     <title>Arduino Eclipse IDE - Nightly Builds</title>
 
@@ -73,7 +73,7 @@ if (isset ( $_GET ["OS"] ))
          <?php echo '<a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/' . $version . '-SNAPSHOT/"  target="_blank">';?>
         This download page is the travis build. Download the tar.gz for your os.</a></p>
         <p>Note that there are multiple versions. The latest are at the bottom.</p>
-        <p>Mac users read the <a href="http://eclipse.baeyens.it/installAdvice.shtml#">mac specific info</a>.</p>
+        <p>Mac users read the <a href="installAdvice.shtml#">mac specific info</a>.</p>
 
 
 
@@ -84,7 +84,7 @@ if (isset ( $_GET ["OS"] ))
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
         			<?php
-				echo '<div class="well text-center">http://eclipse.baeyens.it/update/V'.$STABLE_VERSION_MAJOR."/nightly</div>";
+				echo '<div class="well text-center">https://sloleber.tf/update/V'.$STABLE_VERSION_MAJOR."/nightly</div>";
 				?>
         </div>
       </div>

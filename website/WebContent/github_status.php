@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="Jan Baeyens">
-<link rel="shortcut icon" href="http://eclipse.baeyens.it/favicon.ico">
+<link rel="shortcut icon" href="favicon.ico">
 
 <title>Sloeber version status page</title>
 
