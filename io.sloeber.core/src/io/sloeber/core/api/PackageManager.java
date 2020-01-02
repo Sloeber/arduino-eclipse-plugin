@@ -62,6 +62,7 @@ public class PackageManager {
 	private static final String FOLDER = Messages.FOLDER;
 	protected static List<PackageIndex> packageIndices;
 	private static boolean myHasbeenLogged=false;
+	private final static int MAX_HTTP_REDIRECTIONS = 5;
 	/**
 	 * Gets the board descriptor based on the information provided. If
 	 * jsonFileName="local" the board is assumed not to be installed by the
@@ -719,6 +720,12 @@ public class PackageManager {
 	@SuppressWarnings("nls")
 	protected
 	static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
+		myCopy(url, localFile, report_error, 0);
+	}
+	
+	@SuppressWarnings("nls")
+	private
+	static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter) throws IOException {
 		if ("file".equals(url.getProtocol())) {
 			FileUtils.copyFile(new File(url.getFile()), localFile);
 			return;
@@ -740,7 +747,11 @@ public class PackageManager {
 
 			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
 					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
-				myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error);
+				if(redirectionCounter >= MAX_HTTP_REDIRECTIONS)
+				{
+					throw new IOException("Too many redirections while downloading file.");
+				}
+				myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error, redirectionCounter + 1);
 				return;
 			}
 			if (report_error) {
@@ -757,8 +768,6 @@ public class PackageManager {
 
 		}
 	}
-
-	
 	
 	/**
 	 * copy a url locally taking into account redirections in such a way that if
