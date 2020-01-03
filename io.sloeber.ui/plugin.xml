@@ -561,6 +561,17 @@
                    value="https://baeyens.it/eclipse/github_status.php?majorVersion=${MAJOR_VERSION}&amp;minorVersion=${MINOR_VERSION}&amp;microVersion=${MICRO_VERSION}&amp;qualifierVersion=${QUALIFIER_VERSION}">
              </parameter>
           </command>
+          <command
+                commandId="io.sloeber.core.open.link"
+                id="open.known_limitations.page"
+                label="%command.know_limitations.info.label"
+                style="push"
+                tooltip="%command.known_limitations.info.description">
+             <parameter
+                   name="io.sloeber.core.link.parameter"
+                   value="https://github.com/Sloeber/arduino-eclipse-plugin/issues?q=is:issue+label:%22status:%20known%20limitation%22">
+             </parameter>
+          </command>
           <separator
                 name="io.sloeber.core.separator2"
                 visible="true">
