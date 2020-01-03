@@ -45,6 +45,7 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.MyMultiStatus;
@@ -74,13 +75,15 @@ public class InternalPackageManager extends PackageManager {
 		if (!LibraryManager.libsAreInstalled()) {
 			LibraryManager.InstallDefaultLibraries(monitor);
 		}
-		if (allBoards.isEmpty()) { // If boards are installed do nothing
+		IPath examplesPath=ConfigurationPreferences.getInstallationPathExamples();
+		if(!examplesPath.toFile().exists()) {//examples are not installed
+			// Download arduino IDE example programs
+			Common.log(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
+					examplesPath, false, monitor)); 
+		}
+		if (allBoards.isEmpty()) { // If no boards are installed
 
 			MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
-
-			// Download sample programs
-			mstatus.addErrors(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
-					ConfigurationPreferences.getInstallationPathExamples(), false, monitor));
 
 			if (mstatus.isOK()) {
 				// if successfully installed the examples: add the boards
