@@ -8,8 +8,9 @@ import io.sloeber.core.common.Const;
 
 @SuppressWarnings("nls")
 public class Defaults {
-	public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_6_7.zip";
-	public static final String EXAMPLES_URL = "https://eclipse.baeyens.it/download/" + EXAMPLE_PACKAGE;
+	public static final String EXAMPLE_PACKAGE = "examples_Arduino_1_8_10.zip";
+	public static final String EXAMPLES_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/" + EXAMPLE_PACKAGE;
+	
 	public static final String DEFAULT_INSTALL_PLATFORM_NAME = "Arduino AVR Boards";
 	public static final String[] DEFAULT_INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 			"LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
