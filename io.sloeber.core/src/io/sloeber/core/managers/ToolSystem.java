@@ -53,6 +53,8 @@ public class ToolSystem {
 	    switch (this.host) {
 	    case "i386-apple-darwin11": //$NON-NLS-1$
 	    case "x86_64-apple-darwin": //$NON-NLS-1$
+	    case "x86_64-apple-darwin12": //$NON-NLS-1$
+	    case "x86_64-apple-darwin14": //$NON-NLS-1$
 		return true;
 	    default:
 		return false;
