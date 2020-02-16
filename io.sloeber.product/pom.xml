@@ -33,9 +33,9 @@
 				</executions>
 				<configuration>
 					<formats>
-						<win32>tar.gz</win32>
-						<linux>tar.gz</linux>
-						<macosx>tar.gz</macosx>
+						<win32>zip</win32>
+						<linux>zip</linux>
+						<macosx>zip</macosx>
 					</formats>
 					<products>
 						<product>
