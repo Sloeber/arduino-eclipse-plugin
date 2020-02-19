@@ -518,6 +518,7 @@ public class Helpers extends Common {
 	/**
 	 * This method parses a file with environment variables like the platform.txt
 	 * file for values to be added to the environment variables
+	 * Ignore lines starting with #
 	 *
 	 * @param contribEnv
 	 * @param confDesc
@@ -532,10 +533,8 @@ public class Helpers extends Common {
 
 			// Read File Line By Line
 			while ((strLine = br.readLine()) != null) {
-				// Ignore everything after first #
-				String realData[] = strLine.split("#");
-				if (realData.length > 0) {
-					String var[] = realData[0].split("=", 2);
+				if (!strLine.startsWith("#")) {
+					String var[] = strLine.split("=", 2);
 					if (var.length == 2) {
 						String value = var[1].trim();
 						setBuildEnvironmentVariable(contribEnv, confDesc, MakeKeyString(prefix, var[0]),
