@@ -483,6 +483,13 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, hardwarePath.toString());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
+		//work around needed because of https://bugs.eclipse.org/bugs/show_bug.cgi?id=560330
+		//it should have been 
+		//A.BUILD.PATH={ProjDirPath}{DirectoryDelimiter}{ConfigName}
+		// in pre_processing_platform_default.txt 
+		String buildPath=confDesc.getProjectDescription().getProject().getLocation().append(confDesc.getName()).toOSString();
+		setBuildEnvironmentVariable(contribEnv, confDesc, "A.BUILD.PATH", buildPath);
+		//end of workaround
 
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
