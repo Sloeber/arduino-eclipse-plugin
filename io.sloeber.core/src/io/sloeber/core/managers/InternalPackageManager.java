@@ -150,9 +150,10 @@ public class InternalPackageManager extends PackageManager {
 
 		// always replace -DARDUINO_BOARD="{build.board}" with
 		// -DARDUINO_BOARD="\"{build.board}\""
-		FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
-				"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
-
+		if (platform.getPlatformFile().exists()) {
+			FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
+					"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
+		}
 		return mstatus;
 
 	}
