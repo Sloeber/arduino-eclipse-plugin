@@ -49,6 +49,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
             //moved their stuff but didn't bother to update arduino site
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
+            //prebuild commands are based on arduino IDE way of working and will not work out of the boxin Sloeber
+            "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
             //discontinued
             "http://rfduino.com/package_rfduino_index.json",
 			"https://redbearlab.github.io/arduino/package_redbear_index.json",
