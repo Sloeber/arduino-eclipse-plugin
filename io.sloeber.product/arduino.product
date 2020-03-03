@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Sloeber" uid="io.sloeber.product" id="io.sloeber.application.product" application="org.eclipse.ui.ide.workbench" version="4.3.3.qualifier" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/io.sloeber.application/icons/eclipse_lg.png"/>
@@ -350,9 +350,9 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
    </features>
 
    <configurations>
+      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
-      <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
