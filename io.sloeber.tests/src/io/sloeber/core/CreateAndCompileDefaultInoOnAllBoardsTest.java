@@ -51,6 +51,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
             //prebuild commands are based on arduino IDE way of working and will not work out of the boxin Sloeber
             "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
+            //web site not responding
+            "http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
             //discontinued
             "http://rfduino.com/package_rfduino_index.json",
 			"https://redbearlab.github.io/arduino/package_redbear_index.json",
