@@ -717,7 +717,6 @@ public class PackageManager {
 	 * @param localFile
 	 * @throws IOException
 	 */
-	@SuppressWarnings("nls")
 	protected
 	static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
 		myCopy(url, localFile, report_error, 0);
