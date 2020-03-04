@@ -56,7 +56,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             //discontinued
             "http://rfduino.com/package_rfduino_index.json",
 			"https://redbearlab.github.io/arduino/package_redbear_index.json",
-			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",};
+			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
+			"http://drazzy.com/package_drazzy.com_index.json",};
     private static final String[] packageUrlsToIgnoreonWindows = {
             // following packages did not work in the arduino ide on windows at last test
             "https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
