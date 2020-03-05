@@ -6,7 +6,7 @@ A.ARCHIVE_FILE_PATH={A.BUILD.PATH}/{A.ARCHIVE_FILE}
 A.ALT_SIZE_COMMAND="{A.COMPILER.PATH}{A.COMPILER.SIZE.CMD}" --format=avr --mcu={A.BUILD.MCU} "{A.BUILD.PATH}/{A.BUILD.PROJECT_NAME}.elf"
 A.archive_file_path={A.BUILD.PATH}/{A.ARCHIVE_FILE}
 A.runtime.IDE.version=10812
-A.BUILD.SYSTEM.PATH={A.RUNTIME.PLATFORM.PATH}{DirectoryDelimiter}system
+A.BUILD.SYSTEM.PATH={A.REFERENCED.CORE.PATH}{DirectoryDelimiter}system
 A.SERIAL.PORT={JANTJE.COM_PORT}
 A.BUILD.PROJECT_NAME={ProjName}
 A.PACKAGES={eclipse_home}{DirectoryDelimiter}arduinoPlugin{DirectoryDelimiter}packages
