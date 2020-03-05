@@ -12,7 +12,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,6 +57,7 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.Defaults;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -65,7 +65,6 @@ import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Library;
-import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
@@ -644,8 +643,11 @@ public class Helpers extends Common {
 
 	}
 
-	private static void addPlatformFileTools(ArduinoPlatform platform, IContributedEnvironment contribEnv,
+	public static void addPlatformFileTools(ArduinoPlatform platform, IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, boolean reportToolNotFound) {
+		if(platform==null) {
+			return;
+		}
 		if (platform.getToolsDependencies() == null) {
 			return;
 		}
@@ -680,48 +682,22 @@ public class Helpers extends Common {
 	private static void setTheEnvironmentVariablesAddThePlatformInfo(BoardDescriptor boardDescriptor,
 			IContributedEnvironment contribEnv, ICConfigurationDescription confDesc) {
 
-		String architecture = boardDescriptor.getArchitecture();
-		HashMap<String, ToolDependency> allTools = new HashMap<>();
-		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
-			addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
-			if (architecture.equals(curPlatform.getArchitecture())) {
-				Package pkg = curPlatform.getPackage();
-				if (pkg != null) {
-					if (curPlatform.getToolsDependencies() != null) {
-						for (ToolDependency curDependency : curPlatform.getToolsDependencies()) {
-							String name = curDependency.getName();
-							ToolDependency previousDependency = allTools.get(name);
-							if (previousDependency == null) {
-								allTools.put(name, curDependency);
-							} else {
-								String prevVersion = previousDependency.getVersion().toLowerCase();
-								String curVersion = curDependency.getVersion();
-								if (Version.compare(curVersion, prevVersion) == 1) {
-									allTools.put(name, curDependency);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		addDependentTools(allTools.values(), contribEnv, confDesc, false);
+		//update the gobal variables if needed
+		PackageManager.updateGlobalEnvironmentVariables();
+		File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile();
+		File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
+		ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
+		ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
 
-		// overrule the Arduino IDE way of working and use the json refereced tools
 		boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
 		if (jsonBasedPlatformManagement) {
-			File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile();
-			File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile();
-			// add the referenced platform before the real platform
-			ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
-			if (referencedPlatform != null) {
-				addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
-			}
-			// and the real platform
-			ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
-			if (referencingPlatform != null) {
-				addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);
-			}
+			// overrule the Arduino IDE way of working and use the json refereced tools
+			addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
+			addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);
+		} else {
+			//standard arduino IDE way
+			addPlatformFileTools(referencingPlatform, contribEnv, confDesc, false);
+			addPlatformFileTools(referencedPlatform, contribEnv, confDesc, true);
 		}
 	}
 
