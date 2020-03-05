@@ -51,6 +51,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
             //prebuild commands are based on arduino IDE way of working and will not work out of the boxin Sloeber
             "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
+            //arduino ide copies cores to core and platform.txt uses core/avr to point to cores/avr
+            "https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
             //web site not responding
             "http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
             //discontinued
