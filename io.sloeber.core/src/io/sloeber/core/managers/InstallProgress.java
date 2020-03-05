@@ -123,7 +123,7 @@ public class InstallProgress {
     protected static String getMessage() {
 	StringBuilder message = new StringBuilder();
 	message.append("Hi ").append(System.getProperty("user.name")).append(",\n\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	message.append("Thank you for downloading the Arduino Eclipse "); //$NON-NLS-1$
+	message.append("Thank you for downloading the Sloeber "); //$NON-NLS-1$
 	message.append("IDE. We need to install a few things to get you "); //$NON-NLS-1$
 	message.append("up and running. Depending on your internet speed "); //$NON-NLS-1$
 	message.append("it can take anywhere between 2 minutes and half an hour.").append("\n\n"); //$NON-NLS-1$ //$NON-NLS-2$
