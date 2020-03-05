@@ -64,6 +64,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             // following packages did not work in the arduino ide on windows at last test
             "https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
             "https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
+            //uses busybox so command line issues I think
+            "https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
 
     };
     private static final String[] packageUrlsToIgnoreOnLinux = {
