@@ -22,6 +22,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.IContributedEnvironment;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,6 +51,7 @@ import io.sloeber.core.managers.Board;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.PackageIndex;
+import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.TxtFile;
 
 /**
@@ -62,6 +68,7 @@ public class PackageManager {
 	private static final String FOLDER = Messages.FOLDER;
 	protected static List<PackageIndex> packageIndices;
 	private static boolean myHasbeenLogged=false;
+	private static boolean platformsDirty=true;//reset global variables at startup
 	private final static int MAX_HTTP_REDIRECTIONS = 5;
 	/**
 	 * Gets the board descriptor based on the information provided. If
@@ -144,6 +151,7 @@ public class PackageManager {
 	}
 
 	public static void installAllLatestPlatforms() {
+		platformsDirty=true;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		List<Package> allPackages = InternalPackageManager.getPackages();
 		for (Package curPackage : allPackages) {
@@ -155,7 +163,7 @@ public class PackageManager {
 	}
 
 	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
-
+		platformsDirty=true;
 		Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
 		if (curPackage != null) {
 			ArduinoPlatform curPlatform = curPackage.getLatestPlatform(platformName, false);
@@ -547,6 +555,7 @@ public class PackageManager {
 		if(!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
 		   loadJsons(true);
 		}
+		platformsDirty=true;
 		try {
 			InternalPackageManager.setReady(false);
 
@@ -842,5 +851,42 @@ public class PackageManager {
 	}
 	public static IPath getInstallationPath() {
 	    return ConfigurationPreferences.getInstallationPath();
+	}
+	
+	
+	
+	/**
+	 * If something has been installed or deinstalled update the global variables
+	 * with references to the installed stuff this to support platforms that do n,ot
+	 * explicitly define tools or platform dependencies
+	 */
+	public static void updateGlobalEnvironmentVariables() {
+		if(!platformsDirty) return;
+
+		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
+		ICConfigurationDescription confDesc=null;
+		
+		// remove all added variables
+		IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
+		for (int i = (CurVariables.length - 1); i > 0; i--) {
+			if (CurVariables[i].getName().startsWith(Const.ERASE_START)) {
+				contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
+			}
+		}
+		
+		// add all arduino installed tools
+		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
+			
+			
+				Package pkg = curPlatform.getPackage();
+				if (pkg != null) {
+					if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) { 
+						Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false );
+					}
+				}
+			}
+		
+		platformsDirty = false;
 	}
 }

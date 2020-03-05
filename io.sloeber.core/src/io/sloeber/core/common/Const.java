@@ -17,6 +17,7 @@ public class Const {
 
 	// General stuff
 	public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
+	public static final String ARDUINO = "arduino";
 
 	// Actions
 	public static final String ACTION_C_to_O = "RECIPE.C.O";
