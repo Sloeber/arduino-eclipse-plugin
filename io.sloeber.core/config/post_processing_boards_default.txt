@@ -1,7 +1,5 @@
 #add the --relax to the compilation options for mega platforms
-mega.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
-megaADK.compiler.c.elf.flags={compiler.warning_flags} -Os -Wl,--gc-sections,--relax
-
-
+mega.compiler.c.elf.flags={compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,--relax
+megaADK.compiler.c.elf.flags={compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,--relax
 
 
