@@ -35,9 +35,7 @@ A.COMPILER.WARNING_FLAGS=-w
 A.COMPILER.WARNING_FLAGS.ALL=-Wall -Wextra
 
 #for stm
+
 A.UPLOAD.ALTID=no_altID
 A.UPLOAD.USBID=no_altID
-
-#workaround for maxim to avoid double quotes
-A.BUILD.USBLIB=-Ddefined_in_pre_processing_platform_txt
 

@@ -1,5 +1,12 @@
-#add the --relax to the compilation options for mega platforms
 mega.compiler.c.elf.flags={compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,--relax
 megaADK.compiler.c.elf.flags={compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections,--relax
 
+
+
+
+#workaround for maxim to avoid double quotes
+max32620_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
+max32625_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
+max32625_mbed.build.usbLib=-Ddefined_in_post_processing_boards_txt
+max32630_fthr..build.usbLib=-Ddefined_in_post_processing_boards_txt
 
