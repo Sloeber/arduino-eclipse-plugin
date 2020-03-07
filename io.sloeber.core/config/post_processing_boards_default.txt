@@ -5,3 +5,84 @@ max32625_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
 max32625_mbed.build.usbLib=-Ddefined_in_post_processing_boards_txt
 max32630_fthr..build.usbLib=-Ddefined_in_post_processing_boards_txt
 
+#Workaround for STM32 in windows "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
+#you also need to add #include "SrcWrapper" to Arduino.h
+Nucleo_144.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Nucleo_144.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Nucleo_144.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Nucleo_144.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Nucleo_64.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Nucleo_64.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Nucleo_64.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Nucleo_64.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Nucleo_32.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Nucleo_32.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Nucleo_32.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Nucleo_32.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Disco.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Disco.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Disco.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Disco.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Eval.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Eval.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Eval.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Eval.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+STM32MP1.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+STM32MP1.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+STM32MP1.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+STM32MP1.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+GenF0.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+GenF0.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+GenF0.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+GenF0.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+GenF1.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+GenF1.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+GenF1.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+GenF1.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+GenF3.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+GenF3.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+GenF3.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+GenF3.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+GenF4.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+GenF4.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+GenF4.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+GenF4.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+GenL0.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+GenL0.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+GenL0.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+GenL0.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+ESC_board.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+ESC_board.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+ESC_board.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+ESC_board.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+LoRa.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+LoRa.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+LoRa.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+LoRa.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Genericflight.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Genericflight.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Genericflight.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Genericflight.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+3dprinter.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+3dprinter.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+3dprinter.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+3dprinter.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
+
+Midatronics.RECIPE.HOOKS.PREBUILD.1.PATTERN=
+Midatronics.RECIPE.HOOKS.PREBUILD.2.PATTERN=
+Midatronics.RECIPE.HOOKS.PREBUILD.3.PATTERN=
+Midatronics.COMPILER.EXTRA_FLAGS=-mcpu={build.mcu} {build.flags.fp} -mthumb 
