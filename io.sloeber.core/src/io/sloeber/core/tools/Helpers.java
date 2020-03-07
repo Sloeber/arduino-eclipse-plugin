@@ -944,6 +944,12 @@ public class Helpers extends Common {
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD","A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN",false);
 		
 
+		//add -relax for mega boards
+		String buildMCU =getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_MCU, new String(), false);
+		if ("atmega2560".equalsIgnoreCase(buildMCU)){
+				String c_elf_flags =getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, new String(), false);
+				setBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags +",--relax");
+			}
 	}
 
 

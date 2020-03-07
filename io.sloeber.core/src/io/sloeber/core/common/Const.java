@@ -48,20 +48,18 @@ public class Const {
 	public static final String ARDUINO_VARIANT_FOLDER_PATH =ARDUINO_CODE_FOLDER_NAME+ "/variant";
 
 	// tags to interpret the arduino txt config files
-
+	public static final String ENV_KEY_JANTJE_START = "JANTJE.";
 	public static final String ERASE_START = "A" + DOT;
 
 	public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "UPLOAD.USE_1200BPS_TOUCH";
-
 	public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
 	public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
 	public static final String ENV_KEY_NETWORK_PORT = ERASE_START + "NETWORK.PORT";
 	public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "NETWORK.AUTH";
-
-	public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
-
-	public static final String ENV_KEY_JANTJE_START = "JANTJE.";
+    public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
+	public static final String ENV_KEY_BUILD_MCU = ERASE_START + "BUILD.MCU";
+	public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = ERASE_START + "COMPILER.C.ELF.FLAGS";
 
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
-
+	
 }
