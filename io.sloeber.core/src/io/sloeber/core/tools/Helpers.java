@@ -825,6 +825,9 @@ public class Helpers extends Common {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
 			recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
+			if(! ACTION_C_COMBINE.equals(action)) {
+				recipe=recipe.replace(" -o ", " ");
+			}
 
 
 			if (ACTION_C_COMBINE.equals(action)) {
