@@ -76,8 +76,8 @@ public class NightlyBoardPatronTest {
 
     @Test
     public void testExamples() {
-
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+    	myBuildCounter++ ;
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
         
         ArrayList<IPath> paths = new ArrayList<>();
@@ -88,7 +88,7 @@ public class NightlyBoardPatronTest {
         Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
         BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
-        if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions)) {
+        if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions,myBuildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }

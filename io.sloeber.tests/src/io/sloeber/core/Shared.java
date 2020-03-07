@@ -41,7 +41,7 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings("nls")
 public class Shared {
 	public static boolean deleteProjects = true;
-	private static int myBuildCounter;
+	private static int myLocalBuildCounter;
 	private static int myTestCounter;
 	private static String myLastFailMessage=new String();
 
@@ -96,7 +96,7 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
-		return BuildAndVerify(boardDescriptor, codeDescriptor, null);
+		return BuildAndVerify(boardDescriptor, codeDescriptor, null,-1);
 	}
 
 	/**
@@ -109,15 +109,19 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,
-			CompileOptions compileOptions) {
+			CompileOptions compileOptions,int globalBuildCounter) {
 
-		String projectName = String.format("%05d_%s", new Integer(myBuildCounter ), boardDescriptor.getBoardID());
+		int projectCounter=myLocalBuildCounter;
+		if(globalBuildCounter>=0) {
+			projectCounter=globalBuildCounter;
+		}
+		String projectName = String.format("%05d_%s", new Integer(projectCounter ), boardDescriptor.getBoardID());
 		if (codeDescriptor.getExampleName() != null) {
 			if (codeDescriptor.getExamples().get(0).toOSString().toLowerCase().contains("libraries")) {
-				projectName = String.format("%05d_Library_%s_%s", new Integer(myBuildCounter ),
+				projectName = String.format("%05d_Library_%s_%s", new Integer(projectCounter ),
 						codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
 			} else {
-				projectName = String.format("%05d_%s", new Integer(myBuildCounter),
+				projectName = String.format("%05d_%s", new Integer(projectCounter),
 						codeDescriptor.getExampleName());
 			}
 		}
@@ -133,7 +137,7 @@ public class Shared {
 			CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		myBuildCounter++;
+		myLocalBuildCounter++;
 
 		try {
 			compileOptions.setEnableParallelBuild(true);
