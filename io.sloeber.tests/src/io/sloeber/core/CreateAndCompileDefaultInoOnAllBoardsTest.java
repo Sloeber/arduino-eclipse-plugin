@@ -36,21 +36,19 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;
-    private static int mySkipAtStart = 0;
+    private static int mySkipAtStart = 240;
     private BoardDescriptor mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
             "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json", 
             //Third party url implies this is outdated (it also doesn't work)
             "http://downloads.arduino.cc/packages/package_mkr1000_index.json",
-            //http 403 error
+            //http 403 download error
             "https://git.oschina.net/dfrobot/FireBeetle-ESP32/raw/master/package_esp32_index.json",
             "http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json",
             "http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
             //moved their stuff but didn't bother to update arduino site
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
-            //prebuild commands are based on arduino IDE way of working and will not work out of the boxin Sloeber
-            "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
             //arduino ide copies cores to core and platform.txt uses core/avr to point to cores/avr
             "https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
             //web site not responding
@@ -89,8 +87,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "RedBear Duo (Native USB Port)", "RedBear Duo (RBLink USB Port)",
 
 
-            // issue #660
-            "Engimusing EFM32WG840", "Engimusing EFM32WG842",
+            // issue #1152 (confirmed 2020 03 07 )
+            "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
 
             // to investigate why it fails
 
@@ -326,7 +324,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     @Test
     public void testBoard() {
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+    	myBuildCounter++;
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter >= mySkipAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
