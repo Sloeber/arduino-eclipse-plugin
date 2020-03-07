@@ -86,21 +86,23 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             // boards that need to be fixed
             "RedBear Duo (Native USB Port)", "RedBear Duo (RBLink USB Port)",
 
-
             // issue #1152 (confirmed 2020 03 07 )
             "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
 
-            // to investigate why it fails
-
-            // boards that fail consistently
             // Variant folder non existing
             "SmartEverything Bee (Native USB Port)",
             // does not work in, arduino ide on windows
-            "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", "256RFR2ZBITXPRO", "256RFR2ZBIT",
-            // does not work in, arduino ide on windows
+            "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", 
+            "256RFR2ZBITXPRO", 
+            "256RFR2ZBIT", 
+            "D-duino-32",
             "Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",
+            
             // this board does not use gcc so there is no added value in using Sloeber
             "Windows 10 IoT Core", };
+    
+    
+    
     private static final String[] boardsToIgnoreOnLinux = {
             // The installation script fail in Arduino IDE and so does
             // the verify action.
