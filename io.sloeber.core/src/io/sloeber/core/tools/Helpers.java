@@ -925,6 +925,7 @@ public class Helpers extends Common {
 						moddedValue=moddedValue.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'","\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
 						moddedValue=moddedValue.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'","\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
 						moddedValue=moddedValue.replace("-DMBEDTLS_USER_CONFIG_FILE=\"mbedtls/user_config.h\"","\"-DMBEDTLS_USER_CONFIG_FILE=\\\"mbedtls/user_config.h\\\"\"");
+						moddedValue=moddedValue.replace("-DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"","\"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/esp_config.h\\\"\"");
 						moddedValue=moddedValue.replace("'", "\"");
 						setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
 					}
