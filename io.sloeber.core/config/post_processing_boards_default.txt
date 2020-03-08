@@ -3,7 +3,7 @@
 max32620_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
 max32625_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
 max32625_mbed.build.usbLib=-Ddefined_in_post_processing_boards_txt
-max32630_fthr..build.usbLib=-Ddefined_in_post_processing_boards_txt
+max32630_fthr.build.usbLib=-Ddefined_in_post_processing_boards_txt
 
 #Workaround for STM32 in windows "https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json",
 #you also need to add #include "SrcWrapper" to Arduino.h
