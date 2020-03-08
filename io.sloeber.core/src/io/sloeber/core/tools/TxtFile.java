@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -156,11 +156,11 @@ public class TxtFile {
 	 *            the id of a board not the name
 	 * @return The IDs that are the possible selections
 	 */
-	public String[] getMenuItemIDsFromMenuID(String menuID, String boardID) {
-		HashSet<String> ret = new HashSet<>();
+	public ArrayList<String> getMenuItemIDsFromMenuID(String menuID, String boardID) {
+		ArrayList<String> ret = new ArrayList<>();
 		Map<String, String> menuInfo = this.fileContent.get(MENU);
 		if (menuInfo == null) {
-			return new String[0];
+			return ret;
 		}
 
 		Map<String, String> boardInfo = this.fileContent.get(boardID);
@@ -175,7 +175,7 @@ public class TxtFile {
 					ret.add(subKeys[2]);
 			}
 		}
-		return ret.toArray(new String[ret.size()]);
+		return ret;
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class TxtFile {
 				String key = (String) k;
 				String board = key.substring(0, key.indexOf('.'));
 				if (!this.fileContent.containsKey(board))
-					this.fileContent.put(board, new HashMap<String, String>());
+					this.fileContent.put(board, new LinkedHashMap<String, String>());
 				(this.fileContent.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
 			}
 

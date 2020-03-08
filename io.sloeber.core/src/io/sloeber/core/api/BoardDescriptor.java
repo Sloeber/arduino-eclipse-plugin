@@ -3,7 +3,6 @@ package io.sloeber.core.api;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -481,14 +480,14 @@ public class BoardDescriptor {
         TreeMap<String, String> allMenuIDs = this.myTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
-            String[] menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
-            if (providedMenuValue == null) {
-                if (menuOptions.length > 0) {
-                    this.myOptions.put(curMenuID.getKey(), menuOptions[0]);
+            ArrayList<String> menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
+            if (menuOptions.size() > 0) {
+              if (providedMenuValue == null) {
+        
+                    this.myOptions.put(curMenuID.getKey(), menuOptions.get(0));
                 }
-            } else if (!Arrays.asList(menuOptions).contains(providedMenuValue)) {
-                if (menuOptions.length > 0) {
-                    this.myOptions.put(curMenuID.getKey(), menuOptions[0]);
+            else if (!menuOptions.contains(providedMenuValue)) {
+                    this.myOptions.put(curMenuID.getKey(), menuOptions.get(0));
                 }
             }
         }
