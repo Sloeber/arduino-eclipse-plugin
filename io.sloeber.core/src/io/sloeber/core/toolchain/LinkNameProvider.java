@@ -27,13 +27,16 @@ public class LinkNameProvider implements IManagedOutputNameProviderJaba {
 	IPath[] outputNames = new IPath[primaryInputNames.length];
 	for (int curPath = 0; curPath < outputNames.length; curPath++) {
 	    if (primaryInputNames[curPath].toString().startsWith(Const.ARDUINO_CODE_FOLDER_PATH) && (bUseArchiver)) {
-		return null;
+	    	return null;
 	    }
 	    if (primaryInputNames[curPath].toString().endsWith(".ino")) { //$NON-NLS-1$
-		return null;
+	    	return null;
 	    }
 	    if (primaryInputNames[curPath].toString().endsWith(".pde")) { //$NON-NLS-1$
-		return null;
+	    	return null;
+	    }
+	    if (primaryInputNames[curPath].toString().endsWith(".cxx")) { //$NON-NLS-1$
+	    	return null;
 	    }
 	    outputNames[curPath] = Helpers.GetOutputName(primaryInputNames[curPath]).addFileExtension("o"); //$NON-NLS-1$
 	}
