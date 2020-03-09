@@ -137,7 +137,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		};
 
 		this.myGuiplatformTree = new FilteredTree(control, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION,
-				filter, true) {
+				filter, true,true) {
 
 			@Override
 			protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
