@@ -877,6 +877,7 @@ public class Helpers extends Common {
 			IEnvironmentVariable[] curVariables = contribEnv.getVariables(confDesc);
 			for (IEnvironmentVariable curVariable : curVariables) {
 				String name = curVariable.getName();
+				String value = curVariable.getValue();
 				// Arduino uses the board approach for the tools.
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
@@ -884,7 +885,7 @@ public class Helpers extends Common {
 					String skipVars[]={"A.NETWORK.PASSWORD","A.NETWORK.PORT","A.UPLOAD.VERBOSE","A.NETWORK.AUTH"};
 					List<String> skipVarslist=new ArrayList<>(Arrays.asList(skipVars));
 					String toolID = curVariable.getName().split("\\.")[2];
-					String recipe = curVariable.getValue();
+					String recipe = value;
 					int indexOfVar = recipe.indexOf("${A.");
 					while (indexOfVar != -1) {
 						int endIndexOfVar = recipe.indexOf('}', indexOfVar);
@@ -904,24 +905,20 @@ public class Helpers extends Common {
 					}
 					setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
 				}
-				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")
-						&& !curVariable.getValue().isEmpty()) {
-					objcopyCommand.add(makeEnvironmentVar(name));
 
-				}
 				//Handle spaces in defines for USB stuff in windows
 				if (Platform.getOS().equals(Platform.OS_WIN32)){
 					if("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)){
-					String moddedValue=curVariable.getValue().replace("\"","\\\"");
+					String moddedValue=value.replace("\"","\\\"");
 					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
 					}
 					else if("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)){
-					String moddedValue=curVariable.getValue().replace("\"","\\\"");
+					String moddedValue=value.replace("\"","\\\"");
 					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
 					}
 					else  {
 						//should use regular expressions or something else better here or right before execution
-						String moddedValue=curVariable.getValue().replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'","\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
+						String moddedValue=value.replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'","\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
 						moddedValue=moddedValue.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'","\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
 						moddedValue=moddedValue.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'","\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
 						moddedValue=moddedValue.replace("-DMBEDTLS_USER_CONFIG_FILE=\"mbedtls/user_config.h\"","\"-DMBEDTLS_USER_CONFIG_FILE=\\\"mbedtls/user_config.h\\\"\"");
@@ -929,6 +926,19 @@ public class Helpers extends Common {
 						moddedValue=moddedValue.replace("'", "\"");
 						setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
 					}
+				}
+				
+				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")
+						&& !value.isEmpty()) {
+					//if the command starts with "cmd /c" removed the "cmd /c "
+					if (Platform.getOS().equals(Platform.OS_WIN32)){
+					  if(value.toLowerCase().startsWith("cmd /c ")) {
+						  String correctedValue=value.substring(7).trim();
+						  setBuildEnvironmentVariable(contribEnv, confDesc, name, correctedValue);
+					  }
+					}
+					objcopyCommand.add(makeEnvironmentVar(name));
+
 				}
 
 			}
