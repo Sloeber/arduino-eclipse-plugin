@@ -9,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang.SystemUtils;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -24,10 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.Bundle;
-import org.osgi.service.prefs.Preferences;
 
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
@@ -188,46 +183,21 @@ public class Shared {
 	 * code fixes these things
 	 */
 	public static void applyKnownWorkArounds() {
+
+		
 		/*
-		 * for chipkit PONTECH UAV100 board boards.txt contains
-		 * usbono_pic32.compiler.c.extra_flags=-G1024 -Danything=1 and platform.txt
-		 * contains ... {compiler.define} "{compiler.cpp.extra_flags}"
-		 * {build.extra_flags} ... resulting in ... "-G1024 -Danything=1" ... Arduino
-		 * IDE magically makes this ... "-G1024" -Danything=1 ... But I refuse to do
-		 * this type of smart parsing because modifying text files is lots easier
-		 * therefore as a workaround I replace "{compiler.cpp.extra_flags}" in
-		 * platform.txt with {compiler.cpp.extra_flags}
+		 * for STM32 V8 #include "SrcWrapper.h" needs to be added to Arduino.h
 		 */
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
-		java.nio.file.Path platform_txt = packageRoot.resolve("chipKIT").resolve("hardware").resolve("pic32")
-				.resolve("2.0.1").resolve("platform.txt");
-		if (platform_txt.toFile().exists()) {
-			FileModifiers.replaceInFile(platform_txt.toFile(), false, "\"{compiler.cpp.extra_flags}\"",
-					"{compiler.cpp.extra_flags}");
+		java.nio.file.Path arduino_h = packageRoot.resolve("STM32").resolve("hardware").resolve("stm32")
+				.resolve("1.8.0").resolve("cores").resolve("arduino").resolve("Arduino.h");
+		if (arduino_h.toFile().exists()) {
+			FileModifiers.replaceInFile(arduino_h.toFile(), false, "#include \"pins_arduino.h\"",
+					"#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
 		}
-		/*
-		 * oak on windows does not come with all required libraries and assumes arduino
-		 * IDE has them available So I set sloeber_path_extension to the teensy root
-		 *
-		 */
-		if (SystemUtils.IS_OS_WINDOWS) {
-			java.nio.file.Path arduinoIDERoot = Paths.get(MySystem.getTeensyPlatform());
-			if (arduinoIDERoot.toFile().exists()) {
-				try {/// cater for null pointer
-					arduinoIDERoot = arduinoIDERoot.getParent().getParent();
-					IEnvironmentVariable var = new EnvironmentVariable("sloeber_path_extension",
-							arduinoIDERoot.toString());
-					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core");
-					Preferences t = myScope.node("environment").node("workspace").node(var.getName().toUpperCase());
-					t.put("delimiter", var.getDelimiter());
-					t.put("operation", "append");
-					t.put("value", var.getValue());
-					myScope.flush();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		
+		
+	
 		/*
 		 * oak on linux comes with a esptool2 in a wrong folder. As it is only 1 file I
 		 * move the file

@@ -35,8 +35,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean testPrivateHardware = true;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
-    private static int maxFails = 50;
-    private static int mySkipAtStart = 240;
+    private static int maxFails = 50;    
+    private static int mySkipAtStart = 0;
     private BoardDescriptor mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
@@ -50,7 +50,9 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             //moved their stuff but didn't bother to update arduino site
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
             //arduino ide copies cores to core and platform.txt uses core/avr to point to cores/avr
-            "https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
+          //CONFIRM_TEST             "https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
+            //uses extra windows in the tolpath and even after that fix it still fails the build
+            "https://github.com/sonydevworld/spresense-arduino-compatible/releases/download/generic/package_spresense_index.json",
             //web site not responding
             "http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
             //discontinued
@@ -60,8 +62,10 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			"http://drazzy.com/package_drazzy.com_index.json",};
     private static final String[] packageUrlsToIgnoreonWindows = {
             // following packages did not work in the arduino ide on windows at last test
-            "https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
-            "https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
+    		// confirmed 220 03 09 was version 1.0
+    		"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
+    		//confirmed 2020 03 09 version 25 12 17
+    		"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
             //uses busybox so command line issues I think
             "https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
 
@@ -83,20 +87,24 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     };
     private static final String[] boardsToIgnoreOnWindows = {
-            // boards that need to be fixed
-            "RedBear Duo (Native USB Port)", "RedBear Duo (RBLink USB Port)",
 
             // issue #1152 (confirmed 2020 03 07 )
-            "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
+             "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
 
-            // Variant folder non existing
-            "SmartEverything Bee (Native USB Port)",
+            // Variant folder non existing but using core that references variant.h
+    		//confirmed 2020 03 09 version 4.0.0
+    "SmartEverything Bee (Native USB Port)",
+            
             // does not work in, arduino ide on windows
-            "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", 
-            "256RFR2ZBITXPRO", 
-            "256RFR2ZBIT", 
-            "D-duino-32",
-            "Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",
+     "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", //(confirmed 2020 03 07 )
+    		"256RFR2ZBITXPRO", //confirmed 2020 03 09
+    		 "256RFR2ZBIT",//confirmed 2020 03 09 
+    		"D-duino-32",  //confirmed 2020 03 09
+    		"Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",//(confirmed 2020 03 07 )
+            "SparkFun Blynk Board",//(confirmed 2020 03 07 )
+            "Rock Solid XMega 128A",//(confirmed 2020 03 07 )
+            "ATXmega128A1U",//(confirmed 2020 03 07 )
+            "xmega128a1",//(confirmed 2020 03 07 )
             
             // this board does not use gcc so there is no added value in using Sloeber
             "Windows 10 IoT Core", };
@@ -331,7 +339,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        if(!Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder))) {
+        if(!Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder),null,myBuildCounter)) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }
