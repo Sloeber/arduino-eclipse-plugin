@@ -30,7 +30,6 @@ import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.providers.MCUBoard;
 
 @SuppressWarnings("nls")
@@ -184,18 +183,7 @@ public class Shared {
 	 */
 	public static void applyKnownWorkArounds() {
 
-		
-		/*
-		 * for STM32 V8 #include "SrcWrapper.h" needs to be added to Arduino.h
-		 */
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
-		java.nio.file.Path arduino_h = packageRoot.resolve("STM32").resolve("hardware").resolve("stm32")
-				.resolve("1.8.0").resolve("cores").resolve("arduino").resolve("Arduino.h");
-		if (arduino_h.toFile().exists()) {
-			FileModifiers.replaceInFile(arduino_h.toFile(), false, "#include \"pins_arduino.h\"",
-					"#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
-		}
-		
 		
 	
 		/*
