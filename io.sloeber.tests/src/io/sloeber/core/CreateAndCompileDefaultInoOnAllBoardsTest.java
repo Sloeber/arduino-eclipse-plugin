@@ -49,8 +49,6 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
             //moved their stuff but didn't bother to update arduino site
             "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
-            //arduino ide copies cores to core and platform.txt uses core/avr to point to cores/avr
-          //CONFIRM_TEST             "https://github.com/Infineon/Assets/releases/download/current/package_infineon_index.json",
             //uses extra windows in the tolpath and even after that fix it still fails the build
             "https://github.com/sonydevworld/spresense-arduino-compatible/releases/download/generic/package_spresense_index.json",
             //web site not responding
@@ -104,7 +102,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "SparkFun Blynk Board",//(confirmed 2020 03 07 )
             "Rock Solid XMega 128A",//(confirmed 2020 03 07 )
             "ATXmega128A1U",//(confirmed 2020 03 07 )
-            "xmega128a1",//(confirmed 2020 03 07 )
+            "ATXMega128A1",//(confirmed 2020 03 07 )
             
             // this board does not use gcc so there is no added value in using Sloeber
             "Windows 10 IoT Core", };
