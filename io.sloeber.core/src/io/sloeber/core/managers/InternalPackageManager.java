@@ -162,11 +162,13 @@ public class InternalPackageManager extends PackageManager {
 		File platformTXTFile = platform.getPlatformFile();
 		if (platformTXTFile.exists()) {
 			try {
+				File backupFile=new File(platformTXTFile.getAbsolutePath()+".org");
+				FileUtils.copyFile(platformTXTFile, backupFile);
 				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
 				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
 						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
 				//workaround for infineon arm v1.4.0 overwriting the default to a wrong value
-				platformTXT = platformTXT.replaceAll("build\\.core\\.path.*","");
+				platformTXT = platformTXT.replaceAll("^build\\.core\\.path.*","");
 				
 
 				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
