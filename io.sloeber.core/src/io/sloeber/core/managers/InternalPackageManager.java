@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,6 +51,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.MyMultiStatus;
+import io.sloeber.core.tools.Version;
 
 public class InternalPackageManager extends PackageManager {
 
@@ -148,13 +151,64 @@ public class InternalPackageManager extends PackageManager {
 			}
 		}
 
-		// always replace -DARDUINO_BOARD="{build.board}" with
-		// -DARDUINO_BOARD="\"{build.board}\""
-		if (platform.getPlatformFile().exists()) {
-			FileModifiers.replaceInFile(platform.getPlatformFile(), false, "-DARDUINO_BOARD=\"{build.board}\"", //$NON-NLS-1$
-					"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\""); //$NON-NLS-1$
-		}
+		applyKnownWorkArounds( platform);
 		return mstatus;
+
+	}
+
+	@SuppressWarnings("nls")
+	static private void applyKnownWorkArounds(ArduinoPlatform platform) {
+
+		File platformTXTFile = platform.getPlatformFile();
+		if (platformTXTFile.exists()) {
+			try {
+				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
+				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
+						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
+				//workaround for infineon arm v1.4.0 overwriting the default to a wrong value
+				platformTXT = platformTXT.replaceAll("build\\.core\\.path.*","");
+				
+
+				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
+			} catch (IOException e) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(),
+						"Failed to apply work arounds to " + platformTXTFile.toString(), e));
+			}
+		}
+		/*
+		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h
+		 * remove the prebuild actions
+		 * remove the build_opt 
+		 * https://github.com/Sloeber/arduino-eclipse-plugin/issues/1143
+		 */
+		if (Version.compare("1.8.0",platform.getVersion())!=1){
+			if ("stm32".equals(platform.getArchitecture())){
+				if ("STM32".equals(platform.getPackage().getName())){
+					if (Version.compare("1.8.0", platform.getVersion()) == 0) {
+						File arduino_h = platform.getInstallPath().append("cores").append("arduino").append("Arduino.h")
+								.toFile();
+						if (arduino_h.exists()) {
+							FileModifiers.replaceInFile(arduino_h, false, "#include \"pins_arduino.h\"",
+									"#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
+						}
+					}
+					if (platformTXTFile.exists()) {
+						try {
+							String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
+							platformTXT = platformTXT.replace("\"@{build.opt.path}\"","");
+							platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*","");
+
+							FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
+						} catch (IOException e) {
+							Common.log(new Status(IStatus.WARNING, Activator.getId(),
+									"Failed to apply work arounds to " + platformTXTFile.toString(), e));
+						}
+					}
+				}
+			}
+		}
+
+		
 
 	}
 
