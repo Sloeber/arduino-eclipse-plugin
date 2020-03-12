@@ -728,6 +728,7 @@ public class Helpers extends Common {
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
+
 		Programmers localProgrammers[] = Programmers.fromBoards(boardsDescriptor);
 		String boardid = boardsDescriptor.getBoardID();
 
@@ -819,23 +820,28 @@ public class Helpers extends Common {
 		CompileOptions compileOptions = new CompileOptions(confDesc);
 		// a save will overwrite the warning settings set by arduino
 		compileOptions.save(confDesc);
+		
+		//split the recipes so we can add the input and output markers as cdt needs them
 		String actions[] = { ACTION_C_to_O, ACTION_CPP_to_O, ACTION_S_to_O, ACTION_OBJCOPY_to_HEX,
 				ACTION_OBJCOPY_to_EEP, ACTION_SIZE, ACTION_AR, ACTION_C_COMBINE };
 		for (String action : actions) {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
-			recipe=recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"", "\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
-			if(! ACTION_C_COMBINE.equals(action)) {
-				recipe=recipe.replace(" -o ", " ");
-			}
 
+			// TODO move this to workaround after install tool
+			recipe = recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"",
+					"\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
 
+			// TODO move this to workaround after install tool
 			if (ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
 				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
-				setBuildEnvironmentVariable(contribEnv,confDesc, recipeKey, recipe);
 			}
-
+			
+			//Sloeber should split o, -o {output} but to be safe that needs a regex so I simply delete the -o
+			if (!ACTION_C_COMBINE.equals(action)) {
+				recipe = recipe.replace(" -o ", " ");
+			}
 			String recipeParts[] = recipe.split(
 					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE_PATH}\")",
 					3);
@@ -861,6 +867,7 @@ public class Helpers extends Common {
 			}
 		}
 
+		//report that the upload comport is not set
 		String programmer = boardsDescriptor.getProgrammer();
 		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
 			String MComPort = boardsDescriptor.getUploadPort();
@@ -877,70 +884,73 @@ public class Helpers extends Common {
 			IEnvironmentVariable[] curVariables = contribEnv.getVariables(confDesc);
 			for (IEnvironmentVariable curVariable : curVariables) {
 				String name = curVariable.getName();
-				String value = curVariable.getValue();
+				String orgValue = curVariable.getValue();
+				String value=orgValue;
 				// Arduino uses the board approach for the tools.
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
 				if (name.startsWith("A.TOOLS.")) {
-					String skipVars[]={"A.NETWORK.PASSWORD","A.NETWORK.PORT","A.UPLOAD.VERBOSE","A.NETWORK.AUTH"};
-					List<String> skipVarslist=new ArrayList<>(Arrays.asList(skipVars));
+					String skipVars[] = { "A.NETWORK.PASSWORD", "A.NETWORK.PORT", "A.UPLOAD.VERBOSE",
+							"A.NETWORK.AUTH" };
+					List<String> skipVarslist = new ArrayList<>(Arrays.asList(skipVars));
 					String toolID = curVariable.getName().split("\\.")[2];
-					String recipe = value;
-					int indexOfVar = recipe.indexOf("${A.");
+					int indexOfVar = value.indexOf("${A.");
 					while (indexOfVar != -1) {
-						int endIndexOfVar = recipe.indexOf('}', indexOfVar);
+						int endIndexOfVar = value.indexOf('}', indexOfVar);
 						if (endIndexOfVar != -1) {
-							String foundSuffix = recipe.substring(indexOfVar + 3, endIndexOfVar);
+							String foundSuffix = value.substring(indexOfVar + 3, endIndexOfVar);
 							String foundVar = "A" + foundSuffix;
 							String replaceVar = "A.TOOLS." + toolID.toUpperCase() + foundSuffix;
-							if( !skipVarslist.contains(foundVar)) {
-							if (contribEnv.getVariable(foundVar, confDesc) == null) {// $NON-NLS-1$
-								recipe = recipe.replace(foundVar, replaceVar);
-								skipVarslist.add(replaceVar);
-							}
+							if (!skipVarslist.contains(foundVar)) {
+								if (contribEnv.getVariable(foundVar, confDesc) == null) {// $NON-NLS-1$
+									value = value.replace(foundVar, replaceVar);
+									skipVarslist.add(replaceVar);
+								}
 							}
 						}
-						indexOfVar = recipe.indexOf("${A.", indexOfVar + 4);
+						indexOfVar = value.indexOf("${A.", indexOfVar + 4);
 
 					}
-					setBuildEnvironmentVariable(contribEnv, confDesc, name, recipe);
-				}
 
-				//Handle spaces in defines for USB stuff in windows
-				if (Platform.getOS().equals(Platform.OS_WIN32)){
-					if("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)){
-					String moddedValue=value.replace("\"","\\\"");
-					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
-					}
-					else if("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)){
-					String moddedValue=value.replace("\"","\\\"");
-					setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
-					}
-					else  {
-						//should use regular expressions or something else better here or right before execution
-						String moddedValue=value.replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'","\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
-						moddedValue=moddedValue.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'","\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
-						moddedValue=moddedValue.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'","\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
-						moddedValue=moddedValue.replace("-DMBEDTLS_USER_CONFIG_FILE=\"mbedtls/user_config.h\"","\"-DMBEDTLS_USER_CONFIG_FILE=\\\"mbedtls/user_config.h\\\"\"");
-						moddedValue=moddedValue.replace("-DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"","\"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/esp_config.h\\\"\"");
-						moddedValue=moddedValue.replace("'", "\"");
-						setBuildEnvironmentVariable(contribEnv, confDesc, name, moddedValue);
+				} else {
+					// Handle spaces in defines for USB stuff in windows
+					if (Platform.getOS().equals(Platform.OS_WIN32)) {
+						if ("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)) {
+							value = value.replace("\"", "\\\"");
+						} else if ("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)) {
+							value = value.replace("\"", "\\\"");
+						} else {
+							// should use regular expressions or something else better here or right before
+							// execution
+							//todo move this to workjaround after install
+							value = value.replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'",
+									"\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
+							value = value.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'",
+									"\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
+							value = value.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'",
+									"\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
+							value = value.replace("-DMBEDTLS_USER_CONFIG_FILE=\"mbedtls/user_config.h\"",
+									"\"-DMBEDTLS_USER_CONFIG_FILE=\\\"mbedtls/user_config.h\\\"\"");
+							value = value.replace("-DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
+									"\"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/esp_config.h\\\"\"");
+							value = value.replace("'", "\"");
+
+						}
 					}
 				}
-				
-				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN")
-						&& !value.isEmpty()) {
-					//if the command starts with "cmd /c" removed the "cmd /c "
-					if (Platform.getOS().equals(Platform.OS_WIN32)){
-					  if(value.toLowerCase().startsWith("cmd /c ")) {
-						  String correctedValue=value.substring(7).trim();
-						  setBuildEnvironmentVariable(contribEnv, confDesc, name, correctedValue);
-					  }
+				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN") && !value.isEmpty()) {
+					// if the command starts with "cmd /c" removed the "cmd /c "
+					if (Platform.getOS().equals(Platform.OS_WIN32)) {
+						if (value.toLowerCase().startsWith("cmd /c ")) {
+							value = value.substring(7).trim();
+						}
 					}
 					objcopyCommand.add(makeEnvironmentVar(name));
 
 				}
-
+				if (!orgValue.equals(value)) {
+					setBuildEnvironmentVariable(contribEnv, confDesc, name, value);
+				}
 			}
 
 		} catch (Exception e) {
@@ -950,20 +960,25 @@ public class Helpers extends Common {
 		Collections.sort(objcopyCommand);
 		setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", StringUtil.join(objcopyCommand, "\n\t"));
 
-		//handle the hooks
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PRE.LINK","A.RECIPE.HOOKS.LINKING.PRELINK.XX.PATTERN",false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.POST.LINK","A.RECIPE.HOOKS.LINKING.POSTLINK.XX.PATTERN",true);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PREBUILD","A.RECIPE.HOOKS.PREBUILD.XX.PATTERN",false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.PREBUILD","A.RECIPE.HOOKS.SKETCH.PREBUILD.XX.PATTERN",false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD","A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN",false);
-		
+		// handle the hooks
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PRE.LINK",
+				"A.RECIPE.HOOKS.LINKING.PRELINK.XX.PATTERN", false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.POST.LINK",
+				"A.RECIPE.HOOKS.LINKING.POSTLINK.XX.PATTERN", true);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PREBUILD", "A.RECIPE.HOOKS.PREBUILD.XX.PATTERN",
+				false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.PREBUILD",
+				"A.RECIPE.HOOKS.SKETCH.PREBUILD.XX.PATTERN", false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD",
+				"A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN", false);
 
-		//add -relax for mega boards
-		String buildMCU =getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_MCU, new String(), false);
-		if ("atmega2560".equalsIgnoreCase(buildMCU)){
-				String c_elf_flags =getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, new String(), false);
-				setBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags +",--relax");
-			}
+		// add -relax for mega boards
+		String buildMCU = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_MCU, new String(), false);
+		if ("atmega2560".equalsIgnoreCase(buildMCU)) {
+			String c_elf_flags = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS,
+					new String(), false);
+			setBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax");
+		}
 	}
 
 
@@ -986,9 +1001,9 @@ public class Helpers extends Common {
                 hookVarName = hookName.replace("XX",
                         String.format("%0" + Integer.toString(numDigits) + "d", new Integer(++counter)));
             }
-            if (!envVarString.isEmpty()) {
-                setBuildEnvironmentVariable(contribEnv, confDesc, varName, envVarString);
-            }
+        }
+        if (!envVarString.isEmpty()) {
+            setBuildEnvironmentVariable(contribEnv, confDesc, varName, envVarString);
         }
     }
     /**
