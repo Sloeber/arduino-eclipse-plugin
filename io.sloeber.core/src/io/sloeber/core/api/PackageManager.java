@@ -633,7 +633,8 @@ public class PackageManager {
 
 		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
 		for (String jsonUrl : jsonUrls) {
-			loadJson(jsonUrl, forceDownload);
+			if(!jsonUrl.trim().isEmpty()) // skip empty lines
+				loadJson(jsonUrl, forceDownload);
 		}
 	}
 	/**
