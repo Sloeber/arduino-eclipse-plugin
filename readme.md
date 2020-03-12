@@ -8,13 +8,6 @@ The Sloeber IDE bridges that gap and helps move you to a more powerful developme
 
 It works on MS Windows, Mac OSX and Linux.
 
-# Support us
-We need your support to continue developing this software. This is the truth.
-
-If you use this software professionally then we request your help. [Send some of the cash you make our way](http://eclipse.baeyens.it/donate.shtml).
-
-If you use this software as a hobbiest [then how about $5 monthly?  :kissing_heart:](http://eclipse.baeyens.it/donate.shtml) 
-
 # Downloads
 If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://sloeber.io/.
 
