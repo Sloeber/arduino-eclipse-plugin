@@ -46,11 +46,6 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 			return;
 		}
 
-		// TODO check here how this behaves when changing a config and select
-		// ok.
-		// It seems to me this is rerunning the config change which is not
-		// nessesary in this case
-		// We have a arduino project so we are safe.
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
 		ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
 		IProject activeProject = projDesc.getProject();
