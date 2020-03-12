@@ -12,8 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.core,
  org.eclipse.ui.forms,
  org.eclipse.ui.ide,
- org.eclipse.debug.ui,
- org.eclipse.nebula.widgets.oscilloscope;bundle-version="1.0.0"
+ org.eclipse.debug.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.commons.io;version="2.2.0",

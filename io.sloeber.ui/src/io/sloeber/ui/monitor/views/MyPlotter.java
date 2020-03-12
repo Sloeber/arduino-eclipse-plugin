@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
-public class MyPlotter extends org.eclipse.nebula.widgets.oscilloscope.multichannel.Plotter {
+public class MyPlotter extends Plotter {
 
 	private Color gridColor = null;
 	private boolean ShowLabels = false;
