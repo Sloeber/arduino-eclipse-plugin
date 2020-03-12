@@ -93,9 +93,9 @@ public class Package implements Comparable<Package> {
 		Map<String, ArduinoPlatform> platformMap = new HashMap<>();
 		for (ArduinoPlatform platform : this.platforms) {
 			if (platform.isInstalled()) {
-				ArduinoPlatform p = platformMap.get(platform.getName());
+				ArduinoPlatform p = platformMap.get(platform.getID());
 				if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
-					platformMap.put(platform.getName(), platform);
+					platformMap.put(platform.getID(), platform);
 				}
 			}
 		}

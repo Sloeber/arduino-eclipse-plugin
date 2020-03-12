@@ -158,34 +158,15 @@ public class InternalPackageManager extends PackageManager {
 
 	@SuppressWarnings("nls")
 	static private void applyKnownWorkArounds(ArduinoPlatform platform) {
-
-		File platformTXTFile = platform.getPlatformFile();
-		if (platformTXTFile.exists()) {
-			try {
-				File backupFile=new File(platformTXTFile.getAbsolutePath()+".org");
-				FileUtils.copyFile(platformTXTFile, backupFile);
-				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
-				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
-						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
-				//workaround for infineon arm v1.4.0 overwriting the default to a wrong value
-				platformTXT = platformTXT.replaceAll("^build\\.core\\.path.*","");
-				
-
-				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.WARNING, Activator.getId(),
-						"Failed to apply work arounds to " + platformTXTFile.toString(), e));
-			}
-		}
+		boolean applySTM32PlatformFix = false;
 		/*
-		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h
-		 * remove the prebuild actions
-		 * remove the build_opt 
+		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h remove the
+		 * prebuild actions remove the build_opt
 		 * https://github.com/Sloeber/arduino-eclipse-plugin/issues/1143
 		 */
-		if (Version.compare("1.8.0",platform.getVersion())!=1){
-			if ("stm32".equals(platform.getArchitecture())){
-				if ("STM32".equals(platform.getPackage().getName())){
+		if (Version.compare("1.8.0", platform.getVersion()) != 1) {
+			if ("stm32".equals(platform.getArchitecture())) {
+				if ("STM32".equals(platform.getPackage().getName())) {
 					if (Version.compare("1.8.0", platform.getVersion()) == 0) {
 						File arduino_h = platform.getInstallPath().append("cores").append("arduino").append("Arduino.h")
 								.toFile();
@@ -194,24 +175,34 @@ public class InternalPackageManager extends PackageManager {
 									"#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
 						}
 					}
-					if (platformTXTFile.exists()) {
-						try {
-							String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
-							platformTXT = platformTXT.replace("\"@{build.opt.path}\"","");
-							platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*","");
-
-							FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
-						} catch (IOException e) {
-							Common.log(new Status(IStatus.WARNING, Activator.getId(),
-									"Failed to apply work arounds to " + platformTXTFile.toString(), e));
-						}
-					}
+					applySTM32PlatformFix = true;
 				}
 			}
 		}
 
-		
+		File platformTXTFile = platform.getPlatformFile();
+		if (platformTXTFile.exists()) {
+			try {
+				File backupFile = new File(platformTXTFile.getAbsolutePath() + ".org");
+				FileUtils.copyFile(platformTXTFile, backupFile);
+				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
+				platformTXT=platformTXT.replace("\r\n","\n");
+				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
+						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
+				// workaround for infineon arm v1.4.0 overwriting the default to a wrong value
+				platformTXT = platformTXT.replace("\nbuild.core.path", "#line removed by Sloeber build.core.path");
 
+				if (applySTM32PlatformFix) {
+					platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
+					platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
+				}
+
+				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
+			} catch (IOException e) {
+				Common.log(new Status(IStatus.WARNING, Activator.getId(),
+						"Failed to apply work arounds to " + platformTXTFile.toString(), e));
+			}
+		}
 	}
 
 	static public List<PackageIndex> getPackageIndices() {

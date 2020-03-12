@@ -49,6 +49,7 @@ public class ArduinoPlatform {
 	private HierarchicalProperties boardsFile;
 	private Properties platformProperties;
 	private static final String PLATFORM_FILE_NAME = "platform.txt"; //$NON-NLS-1$
+	private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
 	void setOwner(Package pkg) {
 		this.pkg = pkg;
@@ -272,6 +273,20 @@ public class ArduinoPlatform {
 			ret.add(curBoar.getId());
 		}
 		return ret;
+	}
+
+	public String getID() {
+		String ID=new String();
+	
+		if (pkg==null) {
+			ID=getInstallPath().toOSString();
+		}
+		else {
+			ID=pkg.getName();
+		}
+		ID=ID+ID_SEPERATOR+name+ID_SEPERATOR+architecture;
+				
+		return ID;
 	}
 
 }
