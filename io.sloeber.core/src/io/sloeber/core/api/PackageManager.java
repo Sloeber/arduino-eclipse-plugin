@@ -150,16 +150,37 @@ public class PackageManager {
 
 	}
 
-	public static void installAllLatestPlatforms() {
-		platformsDirty=true;
+	/**
+	 * installs a subset of the latest platforms 
+	 * It skips the first  <fromIndex> platforms
+	 * And stops at <toIndex> platforms.
+	 * To install the 5 first latest platforms
+	 * installsubsetOfLatestPlatforms(0,5)
+	 * @param fromIndex the platforms at the start to skip
+	 * @param toIndex the platforms after this platform are skipped
+	 */
+	public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
+		platformsDirty = true;
+		int currPlatformIndex = 1;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		List<Package> allPackages = InternalPackageManager.getPackages();
 		for (Package curPackage : allPackages) {
 			Collection<ArduinoPlatform> latestPlatforms = curPackage.getLatestPlatforms();
 			for (ArduinoPlatform curPlatform : latestPlatforms) {
-				curPlatform.install(monitor);
+				if (currPlatformIndex > fromIndex) {
+					curPlatform.install(monitor);
+				}
+				if (currPlatformIndex++ > toIndex)
+					return;
 			}
 		}
+	}
+	/**
+	 * Install all the latest platforms
+	 * Assumes there are less than 100000 platforms
+	 */
+	public static void installAllLatestPlatforms() {
+		installsubsetOfLatestPlatforms(0,100000);
 	}
 
 	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
