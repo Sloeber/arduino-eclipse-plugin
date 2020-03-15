@@ -155,7 +155,38 @@ public class InternalPackageManager extends PackageManager {
 		return mstatus;
 
 	}
+	
+	
+	
+//	
+//	// TODO move this to workaround after install tool
 
+//
+
+	
+//	 else {
+//			// Handle spaces in defines for USB stuff in windows
+//			if (Platform.getOS().equals(Platform.OS_WIN32)) {
+//				if ("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)) {
+//					value = value.replace("\"", "\\\"");
+//				} else if ("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)) {
+//					value = value.replace("\"", "\\\"");
+//				} else {
+//					// should use regular expressions or something else better here or right before
+//					// execution
+//					//todo move this to workjaround after install
+//					value = value.replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'",
+//							"\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
+//					value = value.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'",
+//							"\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
+//					value = value.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'",
+//							"\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
+
+//					value = value.replace("'", "\"");
+//
+//				}
+//			}
+			
 	@SuppressWarnings("nls")
 	static private void applyKnownWorkArounds(ArduinoPlatform platform) {
 		boolean applySTM32PlatformFix = false;
@@ -186,9 +217,23 @@ public class InternalPackageManager extends PackageManager {
 				File backupFile = new File(platformTXTFile.getAbsolutePath() + ".org");
 				FileUtils.copyFile(platformTXTFile, backupFile);
 				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
-				platformTXT=platformTXT.replace("\r\n","\n");
-				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
-						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
+				platformTXT = platformTXT.replace("\r\n", "\n");
+				
+				//Arduino treats core differently so we need to change the location of directly 
+				//referenced files this manifestates only in the combine recipe
+				int inCombineStartIndex=platformTXT.indexOf("\nrecipe.c.combine.pattern")+1;
+				if (inCombineStartIndex > 0) {
+					int inCombineEndIndex = platformTXT.indexOf("\n", inCombineStartIndex) - 1;
+					if (inCombineEndIndex > 0) {
+						String inCombineRecipe = platformTXT.substring(inCombineStartIndex, inCombineEndIndex);
+
+						String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys",
+								"$1/core/core/sys");
+						platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
+					}
+				}
+
+
 				// workaround for infineon arm v1.4.0 overwriting the default to a wrong value
 				platformTXT = platformTXT.replace("\nbuild.core.path", "#line removed by Sloeber build.core.path");
 
@@ -196,11 +241,58 @@ public class InternalPackageManager extends PackageManager {
 					platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
 					platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
 				}
+				
+				//for adafruit nfr
+				platformTXT = platformTXT.replace("-DARDUINO_BSP_VERSION=\"{version}\"", "\"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\"");
+				
+				if (SystemUtils.IS_OS_WINDOWS) {
+					// replace FI '-DUSB_PRODUCT={build.usb_product}' with
+					// "-DUSB_PRODUCT=\"{build.usb_product}\""
+					platformTXT = platformTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
+					//Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
+					//is used fi LinKit smart
+					platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"", 
+							"\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
+					platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"", 
+							"\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
+					
 
+					
+				}
 				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
 			} catch (IOException e) {
 				Common.log(new Status(IStatus.WARNING, Activator.getId(),
 						"Failed to apply work arounds to " + platformTXTFile.toString(), e));
+			}
+		}
+		File boardsTXTFile = platform.getBoardsFile();
+		if (boardsTXTFile.exists()) {
+			try {
+				if (SystemUtils.IS_OS_WINDOWS) {
+					File backupFile = new File(boardsTXTFile.getAbsolutePath() + ".org");
+					FileUtils.copyFile(boardsTXTFile, backupFile);
+					String boardsTXT = FileUtils.readFileToString(boardsTXTFile, Charset.defaultCharset());
+					boardsTXT = boardsTXT.replace("\r\n", "\n");
+					
+					// replace FI '-DUSB_PRODUCT={build.usb_product}' with
+					// "-DUSB_PRODUCT=\"{build.usb_product}\""
+					//also needed in boards.txt for boards specific settings
+					boardsTXT = boardsTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
+
+
+					// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
+					// with circuitplay32u4cat.build.usb_manufacturer=Adafruit
+					boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
+					
+					//quoting fixes for embedutils
+					boardsTXT = boardsTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*", 	"\"$1=\\\\\"$2\\\\\"\"");
+
+
+					FileUtils.write(boardsTXTFile, boardsTXT, Charset.defaultCharset());
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
