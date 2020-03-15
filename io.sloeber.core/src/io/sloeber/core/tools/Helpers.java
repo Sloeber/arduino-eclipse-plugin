@@ -828,16 +828,6 @@ public class Helpers extends Common {
 			String recipeKey = get_ENV_KEY_RECIPE(action);
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
 
-			// TODO move this to workaround after install tool
-			recipe = recipe.replace("-DARDUINO_BSP_VERSION=\"${A.VERSION}\"",
-					"\"-DARDUINO_BSP_VERSION=\\\"${A.VERSION}\\\"\"");
-
-			// TODO move this to workaround after install tool
-			if (ACTION_C_COMBINE.equals(action)) {
-				recipe = recipe.replace("${A.BUILD.PATH}/core/sys", "${A.BUILD.PATH}/core/core/sys");
-				recipe = recipe.replace("${A.BUILD.PATH}/sys", "${A.BUILD.PATH}/core/core/sys");
-			}
-			
 			//Sloeber should split o, -o {output} but to be safe that needs a regex so I simply delete the -o
 			if (!ACTION_C_COMBINE.equals(action)) {
 				recipe = recipe.replace(" -o ", " ");
@@ -902,40 +892,13 @@ public class Helpers extends Common {
 							String foundVar = "A" + foundSuffix;
 							String replaceVar = "A.TOOLS." + toolID.toUpperCase() + foundSuffix;
 							if (!skipVarslist.contains(foundVar)) {
-								if (contribEnv.getVariable(foundVar, confDesc) == null) {// $NON-NLS-1$
+								if (contribEnv.getVariable(foundVar, confDesc) == null) {
 									value = value.replace(foundVar, replaceVar);
 									skipVarslist.add(replaceVar);
 								}
 							}
 						}
 						indexOfVar = value.indexOf("${A.", indexOfVar + 4);
-
-					}
-
-				} else {
-					// Handle spaces in defines for USB stuff in windows
-					if (Platform.getOS().equals(Platform.OS_WIN32)) {
-						if ("A.BUILD.USB_MANUFACTURER".equalsIgnoreCase(name)) {
-							value = value.replace("\"", "\\\"");
-						} else if ("A.BUILD.USB_PRODUCT".equalsIgnoreCase(name)) {
-							value = value.replace("\"", "\\\"");
-						} else {
-							// should use regular expressions or something else better here or right before
-							// execution
-							//todo move this to workjaround after install
-							value = value.replace("'-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}'",
-									"\"-DUSB_PRODUCT=${A.BUILD.USB_PRODUCT}\"");
-							value = value.replace("'-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}'",
-									"\"-DUSB_MANUFACTURER=${A.BUILD.USB_MANUFACTURER}\"");
-							value = value.replace("'-DUSB_PRODUCT=\"${A.BUILD.BOARD}\"'",
-									"\"-DUSB_PRODUCT=\\\"${A.BUILD.BOARD}\\\"\"");
-							value = value.replace("-DMBEDTLS_USER_CONFIG_FILE=\"mbedtls/user_config.h\"",
-									"\"-DMBEDTLS_USER_CONFIG_FILE=\\\"mbedtls/user_config.h\\\"\"");
-							value = value.replace("-DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
-									"\"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/esp_config.h\\\"\"");
-							value = value.replace("'", "\"");
-
-						}
 					}
 				}
 				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN") && !value.isEmpty()) {
@@ -972,7 +935,7 @@ public class Helpers extends Common {
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD",
 				"A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN", false);
 
-		// add -relax for mega boards
+		// add -relax for mega boards; the arduino ide way
 		String buildMCU = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_MCU, new String(), false);
 		if ("atmega2560".equalsIgnoreCase(buildMCU)) {
 			String c_elf_flags = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS,
@@ -1090,24 +1053,6 @@ public class Helpers extends Common {
 						Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgDescription.getName()), e));
 			}
 		}
-
-		// List<ILanguageSettingsProvider> providers;
-		// if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-		// providers = new ArrayList<>(
-		// ((ILanguageSettingsProvidersKeeper)
-		// cfgDescription).getLanguageSettingProviders());
-		// for (ILanguageSettingsProvider provider : providers) {
-		// if ((provider instanceof AbstractBuiltinSpecsDetector)) { //
-		// basically
-		// // check
-		// // for
-		// // working
-		// // copy
-		// // clear and reset isExecuted flag
-		// ((AbstractBuiltinSpecsDetector) provider).clear();
-		// }
-		// }
-		// }
 	}
 
 	/**
