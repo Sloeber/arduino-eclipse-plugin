@@ -31,12 +31,13 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     // use the boolean below to avoid downloading and installation
     private static final boolean removeAllinstallationInfoAtStartup = false;
+    private static final boolean skipPlatformInstallation = false;
     private static final boolean apply_known_work_Arounds = true;
     private static final boolean testPrivateHardware = true;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;    
-    private static int mySkipAtStart = 0;
+	private static int mySkipTestsAtStart = 0;
     private BoardDescriptor mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
@@ -321,8 +322,11 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
         }
 
-        PackageManager.installAllLatestPlatforms();
-        PackageManager.onlyKeepLatestPlatforms();
+		if (!skipPlatformInstallation) {
+			PackageManager.installAllLatestPlatforms();
+			// PackageManager.installsubsetOfLatestPlatforms(0,5);
+			// PackageManager.onlyKeepLatestPlatforms();
+		}
 
         if (apply_known_work_Arounds) {
             Shared.applyKnownWorkArounds();
@@ -333,7 +337,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     @Test
     public void testBoard() {
     	myBuildCounter++;
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter >= mySkipAtStart);
+        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
