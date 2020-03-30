@@ -15,7 +15,6 @@ If you are not a developer and don't want to build from sources, then there are 
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
 
-Contributors (people that help us build Sloeber) may join [our Slack Channel](https://sloeber.slack.com/).
 
 ## Prerequisites
 Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi).
@@ -32,7 +31,6 @@ mvn clean verify -DskipTests=true
 Windows
 
  * win32x64.cmd (if you are on 64 bits windows)
- * win32x32.cmd (if you are on 32 bits windows)
 
 Mac OSX and Linux
 
@@ -70,7 +68,7 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Checkout locally
  * Run ```mvn clean verify -PSDK,latest -DskipTests=true``` to build
 
-After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names)
+After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names on windows)
 
     Note that Sloeber itself is NOT included in the Sloeber SDK. 
 
