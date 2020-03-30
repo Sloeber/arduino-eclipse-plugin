@@ -21,7 +21,7 @@ Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.ap
 
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash
-git clone https://github.com/jantje/arduino-eclipse-plugin sloeber
+git clone https://github.com/Sloeber/arduino-eclipse-plugin sloeber
 cd sloeber
 mvn clean verify -DskipTests=true
 ```
