@@ -26,6 +26,7 @@ public class Package implements Comparable<Package> {
 	private List<ArduinoPlatform> platforms;
 	private List<Tool> tools;
 
+	@SuppressWarnings("unused")
 	void setOwner(InternalPackageManager manager) {
 		// it happened that the list contained a null so I remove null platforms
 		this.platforms.remove(null);

@@ -28,8 +28,10 @@ public class SloeberBuildVariableSupplier implements IConfigurationEnvironmentVa
 		case "A.EXTRA.TIME.DTS": //$NON-NLS-1$
 			setValues();
 			return myValues[3];
+		default:
+			return null;
 		}
-		return null;
+		
 	}
 
 	@Override

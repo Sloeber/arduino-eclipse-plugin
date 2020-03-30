@@ -64,7 +64,8 @@ public class inoToCpp extends IncrementalProjectBuilder {
 
     }
 
-    protected void fullBuild(final IProgressMonitor monitor) {
+    @SuppressWarnings("unused")
+	protected void fullBuild(final IProgressMonitor monitor) {
 	try {
 	    PdePreprocessor.processProject(false,getProject());
 	} catch (CoreException e) {
@@ -72,7 +73,8 @@ public class inoToCpp extends IncrementalProjectBuilder {
 	}
     }
 
-    protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
+    @SuppressWarnings("unused")
+	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 	// the visitor does the work.
 	delta.accept(new SampleDeltaVisitor());
 

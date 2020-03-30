@@ -211,7 +211,7 @@ public class Helpers extends Common {
 		for (int curfolder = ParentFolders.segmentCount() - 1; curfolder >= 0; curfolder--) {
 			try {
 				createNewFolder(project, ParentFolders.removeLastSegments(curfolder).toString(), null);
-			} catch (CoreException e) {// ignore this error as the parent
+			} catch (@SuppressWarnings("unused") CoreException e) {// ignore this error as the parent
 				// folders may have been created yet
 			}
 		}
@@ -619,7 +619,7 @@ public class Helpers extends Common {
 						String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
 						String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START, true);
 						contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
-					} catch (StringIndexOutOfBoundsException e) {
+					} catch (@SuppressWarnings("unused") StringIndexOutOfBoundsException e) {
 						// ignore as this is the case when the menu name is
 						// processed
 					}
@@ -995,11 +995,11 @@ public class Helpers extends Common {
         for (int numDigits = 1; numDigits <= 2; numDigits++) {
             int counter = 1;
             String hookVarName = hookName.replace("XX",
-                    String.format("%0" + Integer.toString(numDigits) + "d", new Integer(counter)));
+                    String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(counter)));
             while (!getBuildEnvironmentVariable(confDesc, hookVarName, "", true).isEmpty()) {
                 envVarString = envVarString + preSeparator + hookVarName + postSeparator;
                 hookVarName = hookName.replace("XX",
-                        String.format("%0" + Integer.toString(numDigits) + "d", new Integer(++counter)));
+                        String.format("%0" + Integer.toString(numDigits) + "d",  Integer.valueOf(++counter)));
             }
         }
         if (!envVarString.isEmpty()) {

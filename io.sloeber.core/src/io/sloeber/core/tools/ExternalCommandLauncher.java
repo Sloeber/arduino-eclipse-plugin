@@ -246,10 +246,8 @@ public class ExternalCommandLauncher {
 						process.destroy();
 						process.waitFor();
 
-						if (highStream != null) {
-							// Write an Abort Message to the console (if active)
-							highStream.println( Messages.command_aborted.replace(COMMAND, commandname)); 
-						}
+						// Write an Abort Message to the console
+						highStream.println(Messages.command_aborted.replace(COMMAND, commandname));
 						return -1;
 					}
 				}

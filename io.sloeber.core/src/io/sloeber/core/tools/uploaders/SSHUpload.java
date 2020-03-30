@@ -126,7 +126,7 @@ public class SSHUpload implements IRealUpload {
 			scp.sendFile(uploadFile, "sketch.hex"); //$NON-NLS-1$
 			scp.endFolder();
 		} catch (IOException e) {
-			myHighStream.println(Messages.Upload_failed_upload_file.replace(FILE, uploadFile.toString()));
+			myHighStream.println(Messages.Upload_failed_upload_file.replace(FILE, hexFile.toString()));
 			throw (e);
 
 		} finally {

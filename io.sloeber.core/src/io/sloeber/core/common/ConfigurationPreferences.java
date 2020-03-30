@@ -245,14 +245,14 @@ public class ConfigurationPreferences {
 				byte curmac[] = inter.getHardwareAddress();
 				StringBuilder b = new StringBuilder();
 				for (byte curbyte : curmac) {
-					b.append(String.format("%02X", new Byte(curbyte))); //$NON-NLS-1$
+					b.append(String.format("%02X",  Byte.valueOf(curbyte))); //$NON-NLS-1$
 				}
 				macs.add(b.toString());
 			}
-		} catch (SocketException e) {
+		} catch (@SuppressWarnings("unused") SocketException e) {
 			// ignore
 		}
-		Integer hascode = new Integer(macs.toString().hashCode());
+		Integer hascode =  Integer.valueOf(macs.toString().hashCode());
 		systemHash = hascode.toString();
 		return systemHash;
 	}
