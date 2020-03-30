@@ -34,6 +34,8 @@ public class PasswordDialog extends Dialog {
 			PasswordManager.ErasePassword(this.myPassWordmanager.getHost());
 			this.close();
 			return;
+		default:
+			break;
 		}
 		super.buttonPressed(buttonId);
 	}

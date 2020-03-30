@@ -436,7 +436,7 @@ public class Plotter extends Canvas {
 	 * @see #getData(boolean, String)
 	 */
 	public String getData(boolean addHeader) {
-		return getData(addHeader, ";");
+		return getData(addHeader, ";"); //$NON-NLS-1$
 	}
 
 	/**
@@ -661,13 +661,17 @@ public class Plotter extends Canvas {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	protected void widgetDisposed(Event e) {
+		// nothing to do
 	}
 
+	@SuppressWarnings("unused")
 	protected void controlMoved(Event e) {
 		// nothing to do
 	}
 
+	@SuppressWarnings("unused")
 	protected void controlResized(Event e) {
 
 		this.width = getSize().x;

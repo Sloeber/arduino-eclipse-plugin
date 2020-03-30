@@ -492,7 +492,9 @@ public class Examples {
 			return "zero";
 		case "Library/BLEPeripheral/iBeacon":
 			return "feather52";
+		default:
+			return null;
 		}
-		return null;
+		
 	}
 }

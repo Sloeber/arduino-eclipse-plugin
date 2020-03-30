@@ -35,6 +35,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
 
+	@SuppressWarnings("unused")
 	public CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest( String name,CodeDescriptor codeDescriptor,BoardDescriptor board) {
 
 		myCodeDescriptor = codeDescriptor;
@@ -95,6 +96,8 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 			return true;
 		case "example/09.USB/Keyboard/KeyboardLogout":
 			return true;
+		default:
+			break;
 		}
 		return false;
 	}

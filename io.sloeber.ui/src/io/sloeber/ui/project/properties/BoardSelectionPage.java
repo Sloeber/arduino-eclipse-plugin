@@ -200,7 +200,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myPasswordButton = new org.eclipse.swt.widgets.Button(myComposite, SWT.PUSH | SWT.CENTER);
 		myPasswordButton.setText(Messages.set_or_remove_password);
 		myPasswordButton.addListener(SWT.Selection, new Listener() {
-			@SuppressWarnings("synthetic-access")
 			@Override
 			public void handleEvent(Event e) {
 				switch (e.type) {
@@ -216,6 +215,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 						dialog.setPasswordManager(passwordManager);
 						dialog.open();
 					}
+					break;
+				default:
 					break;
 				}
 			}
@@ -349,7 +350,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 				if (value != null) {
 					try {
 						curLabelCombo.setValue(myBoardID.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
-					} catch (Exception e) {
+					} catch (@SuppressWarnings("unused") Exception e) {
 						// When this fails no default value will be set
 						// so nothing to do here
 					}

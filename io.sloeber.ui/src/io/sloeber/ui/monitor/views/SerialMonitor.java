@@ -393,7 +393,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private void makeActions() {
 		connect = new Action() {
-			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
 				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());

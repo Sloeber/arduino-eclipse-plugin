@@ -148,7 +148,7 @@ public class CompileAndUpload {
 
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
-		String projectName = String.format("%05d_%s", new Integer(mCounter++),
+		String projectName = String.format("%05d_%s",  Integer.valueOf(mCounter++),
 				this.myName);
 		try {
 

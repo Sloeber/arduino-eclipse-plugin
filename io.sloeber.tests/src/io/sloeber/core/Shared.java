@@ -109,13 +109,13 @@ public class Shared {
 		if(globalBuildCounter>=0) {
 			projectCounter=globalBuildCounter;
 		}
-		String projectName = String.format("%05d_%s", new Integer(projectCounter ), boardDescriptor.getBoardID());
+		String projectName = String.format("%05d_%s",  Integer.valueOf(projectCounter ), boardDescriptor.getBoardID());
 		if (codeDescriptor.getExampleName() != null) {
 			if (codeDescriptor.getExamples().get(0).toOSString().toLowerCase().contains("libraries")) {
-				projectName = String.format("%05d_Library_%s_%s", new Integer(projectCounter ),
+				projectName = String.format("%05d_Library_%s_%s",  Integer.valueOf(projectCounter ),
 						codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
 			} else {
-				projectName = String.format("%05d_%s", new Integer(projectCounter),
+				projectName = String.format("%05d_%s", Integer.valueOf(projectCounter),
 						codeDescriptor.getExampleName());
 			}
 		}
@@ -220,13 +220,14 @@ public class Shared {
 	}
 
 	public static String getCounterName(String name) {
-		String counterName = String.format("%05d_%s", new Integer(myTestCounter++), name);
+		String counterName = String.format("%05d_%s",  Integer.valueOf(myTestCounter++), name);
 		return counterName;
 	}
 
 
+	@SuppressWarnings("unused")
 	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
-		return String.format("%05d_%s_%s", new Integer(myTestCounter++), codeDescriptor.getExampleName(),
+		return String.format("%05d_%s_%s",  Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
 				board.getBoardDescriptor().getBoardID());
 	}
 

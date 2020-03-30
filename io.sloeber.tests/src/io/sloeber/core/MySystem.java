@@ -28,8 +28,9 @@ public class MySystem {
 			return "E:\\arduino\\arduino-1.8.12 - teensy";
 		case jantjesLinuxMachineHashKey:
 			return "/home/jan/nas/linux/arduino/arduino-1.8.8-linux64/arduino-1.8.8/hardware/teensy";
+		default:
+			return new String();
 		}
-		return new String();
 	}
 
 	public static String getTeensyBoard_txt() {
@@ -66,8 +67,9 @@ public class MySystem {
 		 
 			return boards;
 		}
+		default:
+			fail("Boards for the system with haskey " + Other.getSystemHash() + "are not found");
+			return null;
 		}
-		fail("Boards for the system with haskey " + Other.getSystemHash() + "are not found");
-		return null;
 	}
 }

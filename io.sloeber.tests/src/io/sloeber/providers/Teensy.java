@@ -77,6 +77,8 @@ public class Teensy extends MCUBoard {
 		case Teensy3_1_ID:
 			options.put("speed", "72");
 			break;
+		default:
+			break;
 		}
 
 		this.myBoardDescriptor = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "ignored",

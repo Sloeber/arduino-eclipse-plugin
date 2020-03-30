@@ -269,7 +269,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         for (BoardDescriptor curBoard : boards) {
             curBoard.setUploadPort("none");
         }
-        ;
+        
         HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
 
         if (SystemUtils.IS_OS_LINUX) {
