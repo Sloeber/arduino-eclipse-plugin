@@ -57,13 +57,14 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             "http://rfduino.com/package_rfduino_index.json",
 			"https://redbearlab.github.io/arduino/package_redbear_index.json",
 			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
-			"http://drazzy.com/package_drazzy.com_index.json",};
+			"http://drazzy.com/package_drazzy.com_index.json",
+    		//confirmed 2020 03 09 version 25 12 17
+    		"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",};
     private static final String[] packageUrlsToIgnoreonWindows = {
             // following packages did not work in the arduino ide on windows at last test
     		// confirmed 220 03 09 was version 1.0
     		"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
-    		//confirmed 2020 03 09 version 25 12 17
-    		"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",
+
             //uses busybox so command line issues I think
             "https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
 
@@ -76,36 +77,43 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             // Arduinoide says npt supported on this os
             // Sloeber misses a tool
             "http://download.labs.mediatek.com/package_mtk_linkit_index.json",
+            //command contains ( and compiler complains; works in arduino IDE
+            "https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/package_azureboard_index.json"
 
     };
     private static final String[] packageUrlsToIgnoreOnMac = {
 
     };
     private static final String[] boardsToIgnoreOnAllOses = {
+            // Variant folder non existing but using core that references variant.h
+    		//confirmed 2020 03 09 version 4.0.0
+    "SmartEverything Bee (Native USB Port)",
+    
+    // issue #1152 (confirmed 2020 03 07 )
+    "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
+    
+    "D-duino-32",  //confirmed 2020 03 09
+    "SparkFun Blynk Board",//(confirmed 2020 03 07 )
+    "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", //(confirmed 2020 03 07 )
+    "Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",//(confirmed 2020 03 07 )
+    "Rock Solid XMega 128A",//(confirmed 2020 03 07 )
+
+    "ATXmega128A1U",//(confirmed 2020 03 07 )
+    "ATXMega128A1",//(confirmed 2020 03 07 )
+    // this board does not use gcc so there is no added value in using Sloeber
+    "Windows 10 IoT Core",
+    
+	"256RFR2ZBITXPRO", //confirmed 2020 03 09
+	 "256RFR2ZBIT",//confirmed 2020 03 09 
 
     };
     private static final String[] boardsToIgnoreOnWindows = {
 
-            // issue #1152 (confirmed 2020 03 07 )
-             "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
-
-            // Variant folder non existing but using core that references variant.h
-    		//confirmed 2020 03 09 version 4.0.0
-    "SmartEverything Bee (Native USB Port)",
-            
+   
             // does not work in, arduino ide on windows
-     "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", //(confirmed 2020 03 07 )
-    		"256RFR2ZBITXPRO", //confirmed 2020 03 09
-    		 "256RFR2ZBIT",//confirmed 2020 03 09 
-    		"D-duino-32",  //confirmed 2020 03 09
-    		"Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",//(confirmed 2020 03 07 )
-            "SparkFun Blynk Board",//(confirmed 2020 03 07 )
-            "Rock Solid XMega 128A",//(confirmed 2020 03 07 )
-            "ATXmega128A1U",//(confirmed 2020 03 07 )
-            "ATXMega128A1",//(confirmed 2020 03 07 )
+
             
-            // this board does not use gcc so there is no added value in using Sloeber
-            "Windows 10 IoT Core", };
+ };
     
     
     
@@ -113,7 +121,19 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             // The installation script fail in Arduino IDE and so does
             // the verify action.
             // Sloeber does not support the install stuff and the verify fails as well
-            "IntelÂ® Galileo", "IntelÂ® Galileo Gen2", "IntelÂ® Edison" };
+            "Intel® Galileo", "Intel® Galileo Gen2", "Intel® Edison",
+            //uses cmd /c in recipes
+            "STM32 Discovery F407",
+            "Blackpill STM32F401CCU6",
+            "STM32 Discovery F411E",
+            "Generic STM32F407V series",
+            "Generic STM32F407V mini series",
+            "Seeed Arch Max 1.1",
+            
+            //folder casing problem
+            "LilyPad LilyMini",
+            
+            };
     private static final String[] packageUrlsFromThirthPartyWebPage = {
             /*
              * the list below is made as follows extract all url's containing .json from
