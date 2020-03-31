@@ -190,7 +190,7 @@ public class InternalPackageManager extends PackageManager {
 				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
 						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
 				// workaround for infineon arm v1.4.0 overwriting the default to a wrong value
-				platformTXT = platformTXT.replace("\nbuild.core.path", "#line removed by Sloeber build.core.path");
+				platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
 
 				if (applySTM32PlatformFix) {
 					platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
