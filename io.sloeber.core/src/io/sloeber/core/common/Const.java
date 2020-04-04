@@ -43,6 +43,7 @@ public class Const {
 	public static final String ARDUINO_CODE_FOLDER_PATH =ARDUINO_CODE_FOLDER_NAME+ "/core";
 
 	public static final String BOARDS_FILE_NAME = "boards.txt";
+	public static final String PLATFORM_FILE_NAME = "platform.txt";
 
 	public static final String VARIANTS_FOLDER_NAME = "variants";
 	public static final String ARDUINO_VARIANT_FOLDER_PATH =ARDUINO_CODE_FOLDER_NAME+ "/variant";
@@ -62,4 +63,5 @@ public class Const {
 
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
 	
+
 }

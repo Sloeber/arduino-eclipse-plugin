@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import com.google.gson.Gson;
@@ -233,10 +232,10 @@ public class PackageManager {
 	 * @return all the boards.txt files with full path and in a case insensitive
 	 *         order
 	 */
-	public static String[] getAllBoardsFiles() {
+	public static File[] getAllBoardsFiles() {
 		String hardwareFolders[] = getHardwarePaths();
 
-		TreeSet<String> boardFiles = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+		TreeSet<File> boardFiles = new TreeSet<>();
 		for (String CurFolder : hardwareFolders) {
 			searchFiles(new File(CurFolder), boardFiles, Const.BOARDS_FILE_NAME, 6);
 		}
@@ -245,10 +244,10 @@ public class PackageManager {
 					Messages.Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
 			return null;
 		}
-		return boardFiles.toArray(new String[boardFiles.size()]);
+		return boardFiles.toArray(new File[boardFiles.size()]);
 	}
 
-	private static void searchFiles(File folder, TreeSet<String> Hardwarelists, String Filename, int depth) {
+	private static void searchFiles(File folder, TreeSet<File> Hardwarelists, String Filename, int depth) {
 		if (depth > 0) {
 			File[] a = folder.listFiles();
 			if (a == null) {
@@ -263,7 +262,7 @@ public class PackageManager {
 				if (f.isDirectory()) {
 					searchFiles(f, Hardwarelists, Filename, depth - 1);
 				} else if (f.getName().equals(Filename)) {
-					Hardwarelists.add(new Path(f.toString()).toString());
+					Hardwarelists.add(f);
 				}
 			}
 		}
@@ -615,9 +614,9 @@ public class PackageManager {
 	 */
 	public static Set<String> getAllMenuNames() {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-		String[] boardFiles = getAllBoardsFiles();
-		for (String curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(new File(curBoardFile));
+		File[] boardFiles = getAllBoardsFiles();
+		for (File curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(curBoardFile);
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -625,9 +624,9 @@ public class PackageManager {
 
 	public static TreeMap<String, String> getAllmenus() {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		String[] boardFiles = getAllBoardsFiles();
-		for (String curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(new File(curBoardFile));
+		File[] boardFiles = getAllBoardsFiles();
+		for (File curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(curBoardFile);
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;

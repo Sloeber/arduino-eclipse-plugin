@@ -7,12 +7,10 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -47,8 +44,6 @@ public class ArduinoPlatform {
 
 	private Package pkg;
 	private HierarchicalProperties boardsFile;
-	private Properties platformProperties;
-	private static final String PLATFORM_FILE_NAME = "platform.txt"; //$NON-NLS-1$
 	private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
 	void setOwner(Package pkg) {
@@ -145,27 +140,6 @@ public class ArduinoPlatform {
 		return null;
 	}
 
-	public Properties getPlatformProperties() throws CoreException {
-		if (this.platformProperties == null) {
-			this.platformProperties = new Properties();
-			try (BufferedReader reader = new BufferedReader(new FileReader(getPlatformFile()))) {
-				// There are regex's here and need to preserve the \'s
-				StringBuilder builder = new StringBuilder();
-				for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-					builder.append(line.replace("\\", "\\\\")); //$NON-NLS-1$ //$NON-NLS-2$
-					builder.append('\n');
-				}
-				try (Reader reader1 = new StringReader(builder.toString())) {
-					this.platformProperties.load(reader1);
-				}
-			} catch (IOException e) {
-				throw new CoreException(
-						new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_platform, e));
-			}
-		}
-		return this.platformProperties;
-	}
-
 	public boolean isInstalled() {
 		return getBoardsFile().exists();
 	}
@@ -175,7 +149,7 @@ public class ArduinoPlatform {
 	}
 
 	public File getPlatformFile() {
-		return getInstallPath().append(PLATFORM_FILE_NAME).toFile();
+		return getInstallPath().append(Const.PLATFORM_FILE_NAME).toFile();
 	}
 
 	public IPath getInstallPath() {

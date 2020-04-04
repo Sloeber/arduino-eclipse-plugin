@@ -89,7 +89,6 @@ public class BoardDescriptor {
 
     // preference nodes
     private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-    private static final String PLATFORM_FILE_NAME = "platform.txt";
     private static final String LIBRARY_PATH_SUFFIX = "libraries";
     private static final String JANTJE_ACTION_UPLOAD = "JANTJE.UPLOAD"; // this is actually the programmer
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
@@ -934,7 +933,7 @@ public class BoardDescriptor {
     }
 
     public File getReferencingPlatformFile() {
-        return getreferencingPlatformPath().append(PLATFORM_FILE_NAME).toFile();
+        return getreferencingPlatformPath().append(Const.PLATFORM_FILE_NAME).toFile();
     }
 
     public Path getreferencingPlatformPath() {
@@ -949,7 +948,7 @@ public class BoardDescriptor {
         if (this.myReferencedCorePlatformPath == null) {
             return null;
         }
-        return this.myReferencedCorePlatformPath.append(PLATFORM_FILE_NAME).toFile();
+        return this.myReferencedCorePlatformPath.append(Const.PLATFORM_FILE_NAME).toFile();
     }
 
     public IPath getReferencedLibraryPath() {
