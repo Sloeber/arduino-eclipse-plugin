@@ -46,7 +46,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Board;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.PackageIndex;
@@ -115,21 +114,10 @@ public class PackageManager {
 			// package:" + this.mPackageName);
 			return null;
 		}
-		List<Board> boards = platform.getBoards();
-		if (boards == null) {
-			// fail("No boards found");
-			return null;
-		}
-		for (Board curBoard : boards) {
-			if (curBoard.getId().equals(boardID)) {
-				java.io.File boardsFile = curBoard.getPlatform().getBoardsFile();
-				BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, curBoard.getId(), options);
+		java.io.File boardsFile = platform.getBoardsFile();
+		BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, boardID, options);
 
-				return boardid;
-			}
-
-		}
-		return null;
+		return boardid;
 	}
 
 	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
@@ -221,7 +209,7 @@ public class PackageManager {
 
 
 	public static String[] getBoardNames(String boardFile) {
-		TxtFile theBoardsFile = new TxtFile(new File(boardFile));
+		TxtFile theBoardsFile = new TxtFile(new File(boardFile),true);
 		return theBoardsFile.getAllNames();
 	}
 
@@ -616,7 +604,7 @@ public class PackageManager {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile);
+			TxtFile txtFile = new TxtFile(curBoardFile,true);
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -626,7 +614,7 @@ public class PackageManager {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile);
+			TxtFile txtFile = new TxtFile(curBoardFile,true);
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;

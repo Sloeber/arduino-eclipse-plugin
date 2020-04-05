@@ -349,7 +349,7 @@ public class BoardDescriptor {
     protected BoardDescriptor(ICConfigurationDescription confdesc) {
         if (confdesc == null) {
             this.myreferencingBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, ""));
-            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile,true);
             this.myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, "");
             this.myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, "");
             this.myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
@@ -362,7 +362,7 @@ public class BoardDescriptor {
                     Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARDS_FILE, ""));
             this.myBoardID = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARD_ID, "");
             this.myProjectName = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_PROJECT_NAME, "");
-            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile,true);
             this.myOSName = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_OS, "");
             this.myWorkSpaceLocation = Common.getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION,
                     "");
@@ -386,7 +386,7 @@ public class BoardDescriptor {
      * @return a list of board descriptors
      */
     public static List<BoardDescriptor> makeBoardDescriptors(File boardFile, Map<String, String> options) {
-        TxtFile txtFile = new TxtFile(boardFile);
+        TxtFile txtFile = new TxtFile(boardFile,true);
         List<BoardDescriptor> boards = new ArrayList<>();
         for (String curboardName : txtFile.getAllNames()) {
             Map<String, String> boardSection = txtFile.getSection(txtFile.getBoardIDFromBoardName(curboardName));
@@ -413,7 +413,7 @@ public class BoardDescriptor {
         this.myBoardID = boardID;
         this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.myreferencingBoardsFile = boardsFile;
-        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile,true);
         setDefaultOptions();
         if (options != null) {
             this.myOptions.putAll(options);
@@ -774,7 +774,7 @@ public class BoardDescriptor {
         }
 
         this.myreferencingBoardsFile = boardsFile;
-        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile);
+        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile,true);
         informChangeListeners();
     }
 

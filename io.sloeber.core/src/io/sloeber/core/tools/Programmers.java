@@ -14,11 +14,11 @@ public class Programmers extends TxtFile {
 	private static final String programmersFileName2 = "externalprogrammers.txt";//$NON-NLS-1$
 
 	Programmers(String programmersFileName) {
-		super(new File(programmersFileName));
+		super(new File(programmersFileName),false);
 	}
 
 	Programmers(File programmersFile) {
-		super(programmersFile);
+		super(programmersFile,false);
 	}
 
 	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath,

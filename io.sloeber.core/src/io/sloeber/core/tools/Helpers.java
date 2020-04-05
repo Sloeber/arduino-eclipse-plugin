@@ -733,9 +733,9 @@ public class Helpers extends Common {
 		String boardid = boardsDescriptor.getBoardID();
 
 		InternalBoardDescriptor pluginPreProcessingBoardsTxt = new InternalBoardDescriptor(
-				new TxtFile(ConfigurationPreferences.getPreProcessingBoardsFile()), boardid);
+				new TxtFile(ConfigurationPreferences.getPreProcessingBoardsFile(),false), boardid);
 		InternalBoardDescriptor pluginPostProcessingBoardsTxt = new InternalBoardDescriptor(
-				new TxtFile(ConfigurationPreferences.getPostProcessingBoardsFile()), boardid);
+				new TxtFile(ConfigurationPreferences.getPostProcessingBoardsFile(),false), boardid);
 		File pluginPreProcessingPlatformTxt = ConfigurationPreferences.getPreProcessingPlatformFile();
 		File pluginPostProcessingPlatformTxt = ConfigurationPreferences.getPostProcessingPlatformFile();
 

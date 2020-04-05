@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
+import io.sloeber.core.managers.WorkAround;
 
 /**
  * TxtFile is a class that hides the Arduino *.txt file processing <br/>
@@ -40,6 +41,7 @@ import io.sloeber.core.common.Const;
  */
 public class TxtFile {
 	private File mLastLoadedTxtFile = null;
+
 	private static final String DOT = Const.DOT;
 
 	private static final String TXT_NAME_KEY_TAG = "name"; //$NON-NLS-1$
@@ -56,13 +58,36 @@ public class TxtFile {
 	// the
 	// data
 
-	public TxtFile(File boardsFileName) {
-		LoadBoardsFile(boardsFileName);
+	public TxtFile(File boardsFileName, boolean workAround) {
+
+		this.mLastLoadedTxtFile =boardsFileName;
+		File actuallyLoadedTxtFile = mLastLoadedTxtFile;
+		if(workAround) {
+			actuallyLoadedTxtFile =WorkAround.MakeBoardsSloeberTxt(boardsFileName);
+		}
+		// If the file doesn't exist ignore it.
+		if (!actuallyLoadedTxtFile.exists())
+			return ;
+
+		this.fileContent.clear();
+
+		try {
+			Map<String, String> boardPreferences = new LinkedHashMap<>();
+			load(actuallyLoadedTxtFile, boardPreferences);
+			for (Object k : boardPreferences.keySet()) {
+				String key = (String) k;
+				String board = key.substring(0, key.indexOf('.'));
+				if (!this.fileContent.containsKey(board))
+					this.fileContent.put(board, new LinkedHashMap<String, String>());
+				(this.fileContent.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
+			}
+
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+					Messages.Boards_Failed_to_read_boards.replace(FILE, actuallyLoadedTxtFile.getName()), e));
+		}
 	}
 
-	public TxtFile() {
-		// no constructor needed
-	}
 
 	/**
 	 * This method returns the full section so custom processing can be done.
@@ -224,53 +249,6 @@ public class TxtFile {
 		return sBoards;
 	}
 
-	/**
-	 * Load the board.txt file provided.
-	 *
-	 * @param BoardsFile
-	 *            the full name to the boards.txt file
-	 * @return true when the action was successful. else false.
-	 * @author jan
-	 */
-	public boolean LoadBoardsFile(File boardsFile) {
-
-		if ((this.mLastLoadedTxtFile != null) && (this.mLastLoadedTxtFile.equals(boardsFile)))
-			return true; // do nothing when value didn't change
-		this.mLastLoadedTxtFile = boardsFile;
-		return LoadBoardsFile();
-	}
-
-	/**
-	 * Load loads the board.txt file based on the arduino path.
-	 *
-	 * @param NewArduinoPath
-	 *            the full path to the file board.txt (including board.txt)
-	 * @return true when the action was successful. else false.
-	 */
-	private boolean LoadBoardsFile() {
-		// If the file doesn't exist ignore it.
-		if (!this.mLastLoadedTxtFile.exists())
-			return false;
-
-		this.fileContent.clear();
-
-		try {
-			Map<String, String> boardPreferences = new LinkedHashMap<>();
-			load(this.mLastLoadedTxtFile, boardPreferences);
-			for (Object k : boardPreferences.keySet()) {
-				String key = (String) k;
-				String board = key.substring(0, key.indexOf('.'));
-				if (!this.fileContent.containsKey(board))
-					this.fileContent.put(board, new LinkedHashMap<String, String>());
-				(this.fileContent.get(board)).put(key.substring(key.indexOf('.') + 1), boardPreferences.get(key));
-			}
-
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.Boards_Failed_to_read_boards.replace(FILE, mLastLoadedTxtFile.getName()), e));
-		}
-		return true;
-	}
 
 	/**
 	 * Given a nice name look for the ID The assumption is that the txt file
@@ -302,7 +280,7 @@ public class TxtFile {
 	 * @throws IOException
 	 *             when something goes wrong??
 	 */
-	static public void load(File inputFile, Map<String, String> table) throws IOException {
+	static private void load(File inputFile, Map<String, String> table) throws IOException {
 		try (FileInputStream input = new FileInputStream(inputFile);) {
 			String[] lines = loadStrings(input); // Reads as UTF-8
 			for (String line : lines) {
@@ -329,7 +307,7 @@ public class TxtFile {
 	 *            the input stream to load
 	 * @return the array of strings representing the inputStream
 	 */
-	static public String[] loadStrings(InputStream input) {
+	static private String[] loadStrings(InputStream input) {
 		try {
 			String lines[] = new String[100];
 			int lineCount = 0;

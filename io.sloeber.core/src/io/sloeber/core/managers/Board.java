@@ -7,32 +7,17 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import java.util.Properties;
-
 public class Board {
 
     private String name;
-
-    private String id;
-
     private ArduinoPlatform platform;
-    private HierarchicalProperties properties;
-
+ 
     public Board() {
     }
 
-    public Board(String id, HierarchicalProperties properties) {
-	this.properties = properties;
-	this.id = id;
-	this.name = this.properties.getChild("name").getValue(); //$NON-NLS-1$
-    }
 
     public String getName() {
 	return this.name;
-    }
-
-    public String getId() {
-	return this.id;
     }
 
     public ArduinoPlatform getPlatform() {
@@ -44,13 +29,6 @@ public class Board {
 	return this;
     }
 
-    public String getProperty(String key) {
-	return this.properties.getProperty(key);
-    }
-
-    public Properties getBoardProperties() {
-	return this.properties.flatten();
-    }
 
     @Override
     public int hashCode() {

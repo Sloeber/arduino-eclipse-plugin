@@ -8,14 +8,10 @@
 package io.sloeber.core.managers;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
@@ -24,8 +20,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 
@@ -43,7 +37,7 @@ public class ArduinoPlatform {
 	private List<ToolDependency> toolsDependencies;
 
 	private Package pkg;
-	private HierarchicalProperties boardsFile;
+
 	private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
 	void setOwner(Package pkg) {
@@ -95,37 +89,9 @@ public class ArduinoPlatform {
 	}
 
 	public List<Board> getBoards() {
-		if (isInstalled() && this.boardsFile == null) {
-			Properties boardProps = new Properties();
-			try (Reader reader = new FileReader(getBoardsFile())) {
-				boardProps.load(reader);
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_boards, e));
-				return this.boards;
-			}
-
-			this.boardsFile = new HierarchicalProperties(boardProps);
-
-			// Replace the boards with a real ones
-			this.boards = new ArrayList<>();
-			for (Map.Entry<String, HierarchicalProperties> entry : this.boardsFile.getChildren().entrySet()) {
-				if ((entry.getValue().getChild("name") != null) && (entry.getKey() != null)) { //$NON-NLS-1$
-					// assume things with name and id are boards
-					this.boards.add(new Board(entry.getKey(), entry.getValue()).setOwners(this));
-				}
-			}
-		}
 		return this.boards;
 	}
 
-	public Board getBoard(String boardName) {
-		for (Board board : getBoards()) {
-			if (boardName.equals(board.getName())) {
-				return board;
-			}
-		}
-		return null;
-	}
 
 	public List<ToolDependency> getToolsDependencies() {
 		return this.toolsDependencies;
@@ -236,18 +202,11 @@ public class ArduinoPlatform {
 	public List<String> getBoardNames() {
 		List<String> ret = new ArrayList<>();
 		for (Board curBoar : this.boards) {
-			ret.add(curBoar.getName());
-		}
+				ret.add(curBoar.getName());
+			}
 		return ret;
 	}
 
-	public List<String> getBoardIDs() {
-		List<String> ret = new ArrayList<>();
-		for (Board curBoar : this.boards) {
-			ret.add(curBoar.getId());
-		}
-		return ret;
-	}
 
 	public String getID() {
 		String ID=new String();
