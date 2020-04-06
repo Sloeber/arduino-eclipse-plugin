@@ -13,68 +13,69 @@ import org.eclipse.core.runtime.Platform;
 
 public class ToolSystem {
 
-    private String host;
-    private String archiveFileName;
-    private String url;
-    private String checksum;
-    private String size;
+	private String host;
+	private String archiveFileName;
+	private String url;
+	private String checksum;
+	private String size;
 
-    private transient Tool tool;
+	private transient Tool tool;
 
-    public void setOwner(Tool tool) {
-	this.tool = tool;
-    }
-
-    public String getHost() {
-	return this.host;
-    }
-
-    public String getArchiveFileName() {
-	return this.archiveFileName;
-    }
-
-    public String getUrl() {
-	return this.url;
-    }
-
-    public String getChecksum() {
-	return this.checksum;
-    }
-
-    public String getSize() {
-	return this.size;
-    }
-
-    public boolean isApplicable() {
-	switch (Platform.getOS()) {
-	case Platform.OS_WIN32:
-	    return "i686-mingw32".equals(this.host); //$NON-NLS-1$
-	case Platform.OS_MACOSX:
-	    switch (this.host) {
-	    case "i386-apple-darwin11": //$NON-NLS-1$
-	    case "x86_64-apple-darwin": //$NON-NLS-1$
-	    case "x86_64-apple-darwin12": //$NON-NLS-1$
-	    case "x86_64-apple-darwin14": //$NON-NLS-1$
-		return true;
-	    default:
-		return false;
-	    }
-	case Platform.OS_LINUX:
-	    switch (Platform.getOSArch()) {
-	    case Platform.ARCH_X86_64:
-		return "x86_64-linux-gnu".equals(this.host) || "x86_64-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
-	    case Platform.ARCH_X86:
-		return "i686-linux-gnu".equals(this.host) || "i686-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
-	    default:
-		return false;
-	    }
-	default:
-	    return false;
+	public void setOwner(Tool tool) {
+		this.tool = tool;
 	}
-    }
 
-    public IStatus install(IProgressMonitor monitor) {
-	return InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false, monitor);
-    }
+	public String getHost() {
+		return this.host;
+	}
+
+	public String getArchiveFileName() {
+		return this.archiveFileName;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public String getChecksum() {
+		return this.checksum;
+	}
+
+	public String getSize() {
+		return this.size;
+	}
+
+	public boolean isApplicable() {
+		switch (Platform.getOS()) {
+		case Platform.OS_WIN32:
+			return "i686-mingw32".equals(this.host); //$NON-NLS-1$
+		case Platform.OS_MACOSX:
+			switch (this.host) {
+			case "i386-apple-darwin11": //$NON-NLS-1$
+			case "x86_64-apple-darwin": //$NON-NLS-1$
+			case "x86_64-apple-darwin12": //$NON-NLS-1$
+			case "x86_64-apple-darwin14": //$NON-NLS-1$
+				return true;
+			default:
+				return false;
+			}
+		case Platform.OS_LINUX:
+			switch (Platform.getOSArch()) {
+			case Platform.ARCH_X86_64:
+				return "x86_64-linux-gnu".equals(this.host) || "x86_64-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
+			case Platform.ARCH_X86:
+				return "i686-linux-gnu".equals(this.host) || "i686-pc-linux-gnu".equals(this.host); //$NON-NLS-1$ //$NON-NLS-2$
+			default:
+				return false;
+			}
+		default:
+			return false;
+		}
+	}
+
+	public IStatus install(IProgressMonitor monitor) {
+		return InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(),
+				false, monitor);
+	}
 
 }
