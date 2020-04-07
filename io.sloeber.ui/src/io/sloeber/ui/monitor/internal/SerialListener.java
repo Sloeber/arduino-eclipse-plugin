@@ -113,8 +113,10 @@ public class SerialListener implements MessageConsumer {
 
 	@Override
 	public void dispose() {
-		this.isDisposed = true;
-		this.myReceivedSerialData.clear();
+		if(!isDisposed) {
+			isDisposed = true;
+			myReceivedSerialData.clear();
+		}
 	}
 
 	public class TxtUpdater implements Runnable {
