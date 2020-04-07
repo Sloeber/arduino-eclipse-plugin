@@ -51,19 +51,17 @@ public class MySystem {
 			MCUBoard[] boards = {  
 					Teensy.teensypp2("COM10"),
 				//	Teensy.Teensy3_1("COM24"), 
-					ESP8266.wemosD1("COM41"),
-					Arduino.fried2016("COM36"), 
-					Arduino.yun("COM40"), 
-					Arduino.uno("COM6"),
-					Arduino.getMega2560Board("COM11"), 
-					Arduino.zeroProgrammingPort("COM14"), 
-					//Arduino.dueprogramming("COM"),no final cable yet
-					Arduino.leonardo("COM37"), 
-					Arduino.arduino_101("COM15"),
-					Arduino.zeroNatviePort("COM38"), //boardSponsor
+					Arduino.leonardo("COM101"), 
+					Arduino.fried2016("COM102"), 
+					Arduino.zeroNatviePort("COM104"), //boardSponsor
+					Arduino.yun("COM106"), 
+					ESP8266.wemosD1("COM108"),
+					Arduino.arduino_101("COM110"),
+					Arduino.zeroProgrammingPort("COM111"), 
+					Arduino.getMega2560Board("COM112"), 
+					Arduino.dueprogramming("COM124"),
+					Arduino.uno("COM126"),
 					};
-			
-		 
 			return boards;
 		}
 		}
