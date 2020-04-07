@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -123,12 +125,23 @@ public class InternalPackageManager extends PackageManager {
 	static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 			IProgressMonitor monitor) {
 
+		
 		MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platform.getName()); //$NON-NLS-1$
 		mstatus.addErrors(downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(),
 				platform.getInstallPath(), forceDownload, monitor));
 		if (!mstatus.isOK()) {
 			// no use going on installing tools if the boards failed installing
 			return mstatus;
+		}
+		File packageFile=platform.getParent().getParent().getJsonFile();
+		File copyToFile=platform.getInstallPath().append( packageFile.getName()).toFile();
+		try {
+			Files.copy(packageFile.toPath(),
+					copyToFile.toPath(),
+			        StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		if (platform.getToolsDependencies() != null) {

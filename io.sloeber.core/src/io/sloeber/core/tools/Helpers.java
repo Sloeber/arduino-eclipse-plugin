@@ -67,6 +67,7 @@ import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
+import io.sloeber.core.managers.WorkAround;
 
 @SuppressWarnings({"nls"})
 /**
@@ -755,12 +756,14 @@ public class Helpers extends Common {
 		File referencedPlatfromFile = boardsDescriptor.getreferencedPlatformFile();
 		// process the platform file referenced by the boards.txt
 		if (referencedPlatfromFile != null && referencedPlatfromFile.exists()) {
-			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, referencedPlatfromFile);
+			File workedAroundFile=WorkAround.MakePlatformSloeberTXT(referencedPlatfromFile);
+			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, workedAroundFile);
 		}
 		File referencingPlatfromFile = boardsDescriptor.getReferencingPlatformFile();
 		// process the platform file next to the selected boards.txt
 		if (referencingPlatfromFile != null && referencingPlatfromFile.exists()) {
-			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, referencingPlatfromFile);
+			File workedAroundFile=WorkAround.MakePlatformSloeberTXT(referencingPlatfromFile);
+			setTheEnvironmentVariablesAddAFile(contribEnv, confDesc, workedAroundFile);
 		}
 		setTheEnvironmentVariablesAddThePlatformInfo(boardsDescriptor, contribEnv, confDesc);
 

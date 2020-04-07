@@ -682,7 +682,7 @@ public class PackageManager {
 	static private void loadPackage(File jsonFile) {
 		try (Reader reader = new FileReader(jsonFile)) {
 			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-			index.setOwners(null);
+			index.setOwners();
 			index.setJsonFile(jsonFile);
 			packageIndices.add(index);
 		} catch (Exception e) {
@@ -887,7 +887,7 @@ public class PackageManager {
 		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
 			
 			
-				Package pkg = curPlatform.getPackage();
+				Package pkg = curPlatform.getParent();
 				if (pkg != null) {
 					if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) { 
 						Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false );

@@ -36,24 +36,24 @@ public class ArduinoPlatform {
 	private List<Board> boards;
 	private List<ToolDependency> toolsDependencies;
 
-	private Package pkg;
+	private Package myParent;
 
 	private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
-	void setOwner(Package pkg) {
-		this.pkg = pkg;
-		for (Board board : this.boards) {
+	void setParent(Package parent) {
+		myParent = parent;
+		for (Board board : boards) {
 			board.setOwners(this);
 		}
 		if (this.toolsDependencies != null) {
-			for (ToolDependency toolDep : this.toolsDependencies) {
+			for (ToolDependency toolDep : toolsDependencies) {
 				toolDep.setOwner(this);
 			}
 		}
 	}
 
-	public Package getPackage() {
-		return this.pkg;
+	public Package getParent() {
+		return this.myParent;
 	}
 
 	public String getName() {
@@ -119,7 +119,7 @@ public class ArduinoPlatform {
 	}
 
 	public IPath getInstallPath() {
-		IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
+		IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getName())
 				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version);
 		return stPath;
 	}
@@ -167,7 +167,7 @@ public class ArduinoPlatform {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.pkg == null) ? 0 : this.pkg.hashCode());
+		result = prime * result + ((this.myParent == null) ? 0 : this.myParent.hashCode());
 		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
 		return result;
 	}
@@ -186,10 +186,10 @@ public class ArduinoPlatform {
 				return false;
 		} else if (!this.name.equals(other.name))
 			return false;
-		if (this.pkg == null) {
-			if (other.pkg != null)
+		if (this.myParent == null) {
+			if (other.myParent != null)
 				return false;
-		} else if (!this.pkg.equals(other.pkg))
+		} else if (!this.myParent.equals(other.myParent))
 			return false;
 		if (this.version == null) {
 			if (other.version != null)
@@ -211,11 +211,11 @@ public class ArduinoPlatform {
 	public String getID() {
 		String ID=new String();
 	
-		if (pkg==null) {
+		if (myParent==null) {
 			ID=getInstallPath().toOSString();
 		}
 		else {
-			ID=pkg.getName();
+			ID=myParent.getName();
 		}
 		ID=ID+ID_SEPERATOR+name+ID_SEPERATOR+architecture;
 				
