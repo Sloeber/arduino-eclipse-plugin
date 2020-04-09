@@ -93,6 +93,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static boolean skipExample(Examples example) {
 		// no need to skip examples in this test
 		return false;

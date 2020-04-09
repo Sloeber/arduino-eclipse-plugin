@@ -30,6 +30,7 @@ public class SampleSelector {
 	protected int numSelected = 0;
 	protected Label numSelectedLabel;
 
+	@SuppressWarnings("unused")
 	public SampleSelector(Composite composite, int style, String label, int ncols) {
 
 		this.myLabel = new Label(composite, SWT.NONE);

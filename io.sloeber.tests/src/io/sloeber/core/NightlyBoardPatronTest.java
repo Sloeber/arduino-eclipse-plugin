@@ -35,7 +35,8 @@ public class NightlyBoardPatronTest {
     private static int maxFails = 40;
     private static CompileOptions myCompileOptions;
 
-    public NightlyBoardPatronTest(String name, MCUBoard boardID, Examples example) {
+    @SuppressWarnings("unused")
+	public NightlyBoardPatronTest(String name, MCUBoard boardID, Examples example) {
         myBoardID = boardID;
         myExample = example;
     }

@@ -30,6 +30,7 @@ public class arduinoUploader implements IRealUpload {
 
 
 
+	@SuppressWarnings("unused")
 	arduinoUploader(IProject Project, ICConfigurationDescription confDesc,
 			String UploadTool) {
 		myProject = Project;

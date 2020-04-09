@@ -54,7 +54,7 @@ import io.sloeber.core.tools.MyMultiStatus;
 public class InternalPackageManager extends PackageManager {
 
 	private static final String  FILE = Messages.FILE;
-	private static final String FOLDER = Messages.FOLDER;;
+	private static final String FOLDER = Messages.FOLDER;
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {
@@ -164,8 +164,7 @@ public class InternalPackageManager extends PackageManager {
 		return mstatus;
 
 	}
-	
-	
+
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
 			loadJsons(false);
@@ -421,7 +420,7 @@ public class InternalPackageManager extends PackageManager {
 			boolean isSymLink = false;
 			String linkName = null;
 			Integer mode = null;
-			Long modifiedTime = new Long(entry.getLastModifiedDate().getTime());
+			Long modifiedTime = Long.valueOf(entry.getLastModifiedDate().getTime());
 
 			pMonitor.subTask("Processing " + name); //$NON-NLS-1$
 
@@ -448,7 +447,7 @@ public class InternalPackageManager extends PackageManager {
 
 			if (entry instanceof TarArchiveEntry) {
 				TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
-				mode = new Integer(tarEntry.getMode());
+				mode = Integer.valueOf(tarEntry.getMode());
 				isLink = tarEntry.isLink();
 				isSymLink = tarEntry.isSymbolicLink();
 				linkName = tarEntry.getLinkName();

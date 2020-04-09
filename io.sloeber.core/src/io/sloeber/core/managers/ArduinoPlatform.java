@@ -130,6 +130,7 @@ public class ArduinoPlatform {
 				installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
 	}
 
+	@SuppressWarnings("unused")
 	public IStatus remove(IProgressMonitor monitor) {
 		// Check if we're installed
 		if (!isInstalled()) {

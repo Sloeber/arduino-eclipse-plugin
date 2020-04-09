@@ -330,7 +330,7 @@ public boolean getBoolean(String key) {
   @SuppressWarnings("boxing")
 public boolean putBoolean(String key, boolean value) {
     String prev = put(key, value ? "true" : "false");
-    return new Boolean(prev);
+    return Boolean.valueOf(prev);
   }
 
   public String get(String key, String defaultValue) {

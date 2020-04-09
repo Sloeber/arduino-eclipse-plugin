@@ -43,6 +43,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	
 	
 
+	@SuppressWarnings("unused")
 	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
 		myBoard = boardID;
 		myExample = example;

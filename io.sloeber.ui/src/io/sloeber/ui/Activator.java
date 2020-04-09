@@ -42,7 +42,7 @@ public class Activator extends AbstractUIPlugin {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				ProjectExplorerListener.registerListener();
-				LibraryManager.registerInstallLibraryHandler(new MyLibraryInstallHandler());;
+				LibraryManager.registerInstallLibraryHandler(new MyLibraryInstallHandler());
 				return Status.OK_STATUS;
 			}
 

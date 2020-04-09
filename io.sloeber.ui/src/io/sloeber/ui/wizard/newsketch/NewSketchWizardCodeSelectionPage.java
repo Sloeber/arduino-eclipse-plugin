@@ -215,6 +215,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			ArrayList<IPath> sampleFolders = myExampleEditor.GetSampleFolders();
 			boolean link = myCheckBoxUseCurrentLinkSample.getSelection();
 			return CodeDescriptor.createExample(link, sampleFolders);
+		default:
+			break;
 		}
 		// make sure this never happens
 		return null;
@@ -230,6 +232,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			return Messages.ui_new_sketch_custom_template;
 		case sample:
 			return Messages.ui_new_sketch_sample_sketch;
+		default:
+			break;
 		}
 		return null;
 	}

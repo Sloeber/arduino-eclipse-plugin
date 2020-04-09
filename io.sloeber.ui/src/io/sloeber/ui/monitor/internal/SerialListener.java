@@ -148,7 +148,7 @@ public class SerialListener implements MessageConsumer {
 		public void run() {
 			synchronizedrun();
 		}
-	};
+	}
 
 	TxtUpdater textUpdater = new TxtUpdater();
 

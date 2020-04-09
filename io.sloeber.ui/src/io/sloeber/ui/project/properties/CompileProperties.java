@@ -84,7 +84,6 @@ public class CompileProperties extends AbstractCPropertyTab {
 		this.mySizeCommand.setText(Messages.ui_Alternative_size);
 		this.mySizeCommand.setEnabled(true);
 		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-;
 
 		createLine(this.usercomp, 2);
 		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);

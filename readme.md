@@ -8,28 +8,20 @@ The Sloeber IDE bridges that gap and helps move you to a more powerful developme
 
 It works on MS Windows, Mac OSX and Linux.
 
-# Support us
-We need your support to continue developing this software. This is the truth.
-
-If you use this software professionally then we request your help. [Send some of the cash you make our way](http://eclipse.baeyens.it/donate.shtml).
-
-If you use this software as a hobbiest [then how about $5 monthly?  :kissing_heart:](http://eclipse.baeyens.it/donate.shtml) 
-
 # Downloads
-If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://sloeber.io/.
+If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://baeyens.it/.
 
 # Build from source
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
 You only need to do one.
 
-Contributors (people that help us build Sloeber) may join [our Slack Channel](https://sloeber.slack.com/).
 
 ## Prerequisites
 Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi).
 
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash
-git clone https://github.com/jantje/arduino-eclipse-plugin sloeber
+git clone https://github.com/Sloeber/arduino-eclipse-plugin sloeber
 cd sloeber
 mvn clean verify -DskipTests=true
 ```
@@ -39,7 +31,6 @@ mvn clean verify -DskipTests=true
 Windows
 
  * win32x64.cmd (if you are on 64 bits windows)
- * win32x32.cmd (if you are on 32 bits windows)
 
 Mac OSX and Linux
 
@@ -77,7 +68,7 @@ If you want to import the latest code based plugin to another Eclipse setup you 
  * Checkout locally
  * Run ```mvn clean verify -PSDK,latest -DskipTests=true``` to build
 
-After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names)
+After the build, find the Sloeber SDK product in the io.sloeber.product.sdk target directory. Unzip it somewhere in your home directory (mind you we cannot handle very long path names on windows)
 
     Note that Sloeber itself is NOT included in the Sloeber SDK. 
 

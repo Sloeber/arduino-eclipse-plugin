@@ -179,7 +179,7 @@ public class PdePreprocessor {
 						int startLine = test.getFileLocation().getStartingLineNumber();
 						int endLine = test.getFileLocation().getEndingLineNumber();
 						for (int curline = startLine; curline <= endLine; curline++) {
-							externCLines.put(new Integer(curline), null);
+							externCLines.put( Integer.valueOf(curline), null);
 						}
 					}
 				}
@@ -223,7 +223,7 @@ public class PdePreprocessor {
 
 					int curHeaderLine = curInclude.getSourceRange().getStartLine();
 					if (curInclude.isActive()) {
-						if (externCLines.containsKey(new Integer(curHeaderLine))) {
+						if (externCLines.containsKey(Integer.valueOf(curHeaderLine))) {
 							localHeader += "extern \"C\" {" + NEWLINE;
 							localHeader += curInclude.getSource() + NEWLINE;
 							localHeader += "}" + NEWLINE;
@@ -233,6 +233,8 @@ public class PdePreprocessor {
 							localHeader += NEWLINE;
 						}
 					}
+					break;
+				default:
 					break;
 				}
 			}

@@ -27,12 +27,14 @@ public class Package implements Comparable<Package> {
 	private List<Tool> tools;
 	private PackageIndex myParent=null;
 
+
 	 public PackageIndex getParent() {
 		 return myParent;
 	 }
 
 	void setParent(PackageIndex parent) {
 		myParent=parent;
+
 		// it happened that the list contained a null so I remove null platforms
 		this.platforms.remove(null);
 		for (ArduinoPlatform platform : this.platforms) {

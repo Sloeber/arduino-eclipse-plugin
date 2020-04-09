@@ -111,7 +111,6 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		};
 
 		this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true,true) {
-			@SuppressWarnings("synthetic-access")
 			@Override
 			protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
 				CheckboxTreeViewer viewer1 = new CheckboxTreeViewer(composite);
