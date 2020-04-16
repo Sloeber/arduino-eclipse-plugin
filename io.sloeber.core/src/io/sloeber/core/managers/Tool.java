@@ -28,7 +28,7 @@ public class Tool {
 
 	private transient Package pkg;
 
-	public void setOwner(Package pkg) {
+	public void setParent(Package pkg) {
 		this.pkg = pkg;
 		for (ToolSystem system : this.systems) {
 			system.setOwner(this);

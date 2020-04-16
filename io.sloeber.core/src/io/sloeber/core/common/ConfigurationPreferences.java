@@ -43,12 +43,12 @@ public class ConfigurationPreferences {
 	private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 	private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
-	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "http://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+	private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
 	private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
-	private static final String DEFAULT_JSON_URLS = "http://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
+	private static final String DEFAULT_JSON_URLS = "https://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
-			+ "http://arduino.esp8266.com/stable/package_esp8266com_index.json\n" + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL; //$NON-NLS-1$
+			+ "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL; //$NON-NLS-1$
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$

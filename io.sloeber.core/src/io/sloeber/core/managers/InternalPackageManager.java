@@ -17,7 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +34,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,9 +49,7 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.MyMultiStatus;
-import io.sloeber.core.tools.Version;
 
 public class InternalPackageManager extends PackageManager {
 
@@ -127,12 +125,23 @@ public class InternalPackageManager extends PackageManager {
 	static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 			IProgressMonitor monitor) {
 
+		
 		MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platform.getName()); //$NON-NLS-1$
 		mstatus.addErrors(downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(),
 				platform.getInstallPath(), forceDownload, monitor));
 		if (!mstatus.isOK()) {
 			// no use going on installing tools if the boards failed installing
 			return mstatus;
+		}
+		File packageFile=platform.getParent().getParent().getJsonFile();
+		File copyToFile=platform.getInstallPath().append( packageFile.getName()).toFile();
+		try {
+			Files.copy(packageFile.toPath(),
+					copyToFile.toPath(),
+			        StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		if (platform.getToolsDependencies() != null) {
@@ -151,58 +160,9 @@ public class InternalPackageManager extends PackageManager {
 			}
 		}
 
-		applyKnownWorkArounds( platform);
+		WorkAround.applyKnownWorkArounds( platform);
 		return mstatus;
 
-	}
-
-	@SuppressWarnings("nls")
-	static private void applyKnownWorkArounds(ArduinoPlatform platform) {
-		boolean applySTM32PlatformFix = false;
-		/*
-		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h remove the
-		 * prebuild actions remove the build_opt
-		 * https://github.com/Sloeber/arduino-eclipse-plugin/issues/1143
-		 */
-		if (Version.compare("1.8.0", platform.getVersion()) != 1) {
-			if ("stm32".equals(platform.getArchitecture())) {
-				if ("STM32".equals(platform.getPackage().getName())) {
-					if (Version.compare("1.8.0", platform.getVersion()) == 0) {
-						File arduino_h = platform.getInstallPath().append("cores").append("arduino").append("Arduino.h")
-								.toFile();
-						if (arduino_h.exists()) {
-							FileModifiers.replaceInFile(arduino_h, false, "#include \"pins_arduino.h\"",
-									"#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
-						}
-					}
-					applySTM32PlatformFix = true;
-				}
-			}
-		}
-
-		File platformTXTFile = platform.getPlatformFile();
-		if (platformTXTFile.exists()) {
-			try {
-				File backupFile = new File(platformTXTFile.getAbsolutePath() + ".org");
-				FileUtils.copyFile(platformTXTFile, backupFile);
-				String platformTXT = FileUtils.readFileToString(platformTXTFile, Charset.defaultCharset());
-				platformTXT=platformTXT.replace("\r\n","\n");
-				platformTXT = platformTXT.replace("-DARDUINO_BOARD=\"{build.board}\"",
-						"-DARDUINO_BOARD=\"\\\"{build.board}\\\"\"");
-				// workaround for infineon arm v1.4.0 overwriting the default to a wrong value
-				platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
-
-				if (applySTM32PlatformFix) {
-					platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
-					platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
-				}
-
-				FileUtils.write(platformTXTFile, platformTXT, Charset.defaultCharset());
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.WARNING, Activator.getId(),
-						"Failed to apply work arounds to " + platformTXTFile.toString(), e));
-			}
-		}
 	}
 
 	static public List<PackageIndex> getPackageIndices() {
@@ -212,21 +172,6 @@ public class InternalPackageManager extends PackageManager {
 		return packageIndices;
 	}
 
-	static public Board getBoard(String boardName, String platformName, String packageName, boolean mustBeInstalled) {
-		for (PackageIndex index : getPackageIndices()) {
-			Package pkg = index.getPackage(packageName);
-			if (pkg != null) {
-				ArduinoPlatform platform = pkg.getLatestPlatform(platformName, mustBeInstalled);
-				if (platform != null) {
-					Board board = platform.getBoard(boardName);
-					if (board != null) {
-						return board;
-					}
-				}
-			}
-		}
-		return null;
-	}
 
 	static public List<Board> getBoards() {
 		List<Board> boards = new ArrayList<>();

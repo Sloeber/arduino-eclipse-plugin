@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
@@ -31,12 +30,13 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
     // use the boolean below to avoid downloading and installation
     private static final boolean removeAllinstallationInfoAtStartup = false;
+    private static final boolean skipPlatformInstallation = false;
     private static final boolean apply_known_work_Arounds = true;
     private static final boolean testPrivateHardware = true;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 50;    
-    private static int mySkipAtStart = 0;
+	private static int mySkipTestsAtStart = 0;
     private BoardDescriptor mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
             // There is a newer version
@@ -266,24 +266,24 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
         installAdditionalBoards();
 
         List<BoardDescriptor> boards = new ArrayList<>();
-        for (String curBoardFile : PackageManager.getAllBoardsFiles()) {
+        for (File curBoardFile : PackageManager.getAllBoardsFiles()) {
             // TOFIX these options should not be set here but in IBoard.getOptions
             Map<String, String> options = null;
-            if (curBoardFile.contains("Jantje")) {
-                // for jantjes boards as unit testing does not make a exe without the gdb lib
-                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-                options.put("type", "debug");
-            } else if (curBoardFile.contains("avr_boot")) {
-                // for avr_boot avr_boot_atmega328 to have variant
-                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-                options.put("pinout", "avrdevelopers");
-            } else if (curBoardFile.contains("/tiny/hardware")) {
-                // do not use ATtiny85 @ 128 KHz (watchdog oscillator; 1.8 V BOD)
-                // fails in arduino IDE as well
-                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-                options.put("cpu", "attiny25at1");
-            }
-            boards.addAll(BoardDescriptor.makeBoardDescriptors(new File(curBoardFile), options));
+//            if (curBoardFile.contains("Jantje")) {
+//                // for jantjes boards as unit testing does not make a exe without the gdb lib
+//                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+//                options.put("type", "debug");
+//            } else if (curBoardFile.contains("avr_boot")) {
+//                // for avr_boot avr_boot_atmega328 to have variant
+//                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+//                options.put("pinout", "avrdevelopers");
+//            } else if (curBoardFile.contains("/tiny/hardware")) {
+//                // do not use ATtiny85 @ 128 KHz (watchdog oscillator; 1.8 V BOD)
+//                // fails in arduino IDE as well
+//                options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+//                options.put("cpu", "attiny25at1");
+//            }
+            boards.addAll(BoardDescriptor.makeBoardDescriptors(curBoardFile, options));
         }
         // to avoid warnings set the upload port to some value
         for (BoardDescriptor curBoard : boards) {
@@ -341,8 +341,11 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
             PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
         }
 
-        PackageManager.installAllLatestPlatforms();
-        PackageManager.onlyKeepLatestPlatforms();
+		if (!skipPlatformInstallation) {
+			PackageManager.installAllLatestPlatforms();
+			// PackageManager.installsubsetOfLatestPlatforms(0,5);
+			// PackageManager.onlyKeepLatestPlatforms();
+		}
 
         if (apply_known_work_Arounds) {
             Shared.applyKnownWorkArounds();
@@ -353,7 +356,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     @Test
     public void testBoard() {
     	myBuildCounter++;
-        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter >= mySkipAtStart);
+        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");

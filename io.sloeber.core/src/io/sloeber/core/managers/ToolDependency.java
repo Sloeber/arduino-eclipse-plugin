@@ -41,7 +41,7 @@ public class ToolDependency {
 	}
 
 	public Tool getTool() {
-		Package pkg = this.platform.getPackage();
+		Package pkg = this.platform.getParent();
 		if (!pkg.getName().equals(this.packager)) {
 			pkg = InternalPackageManager.getPackage(this.packager);
 		}

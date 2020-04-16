@@ -7,28 +7,19 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
-import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 
@@ -45,26 +36,24 @@ public class ArduinoPlatform {
 	private List<Board> boards;
 	private List<ToolDependency> toolsDependencies;
 
-	private Package pkg;
-	private HierarchicalProperties boardsFile;
-	private Properties platformProperties;
-	private static final String PLATFORM_FILE_NAME = "platform.txt"; //$NON-NLS-1$
+	private Package myParent;
+
 	private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
-	void setOwner(Package pkg) {
-		this.pkg = pkg;
-		for (Board board : this.boards) {
+	void setParent(Package parent) {
+		myParent = parent;
+		for (Board board : boards) {
 			board.setOwners(this);
 		}
 		if (this.toolsDependencies != null) {
-			for (ToolDependency toolDep : this.toolsDependencies) {
+			for (ToolDependency toolDep : toolsDependencies) {
 				toolDep.setOwner(this);
 			}
 		}
 	}
 
-	public Package getPackage() {
-		return this.pkg;
+	public Package getParent() {
+		return this.myParent;
 	}
 
 	public String getName() {
@@ -100,37 +89,9 @@ public class ArduinoPlatform {
 	}
 
 	public List<Board> getBoards() {
-		if (isInstalled() && this.boardsFile == null) {
-			Properties boardProps = new Properties();
-			try (Reader reader = new FileReader(getBoardsFile())) {
-				boardProps.load(reader);
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_boards, e));
-				return this.boards;
-			}
-
-			this.boardsFile = new HierarchicalProperties(boardProps);
-
-			// Replace the boards with a real ones
-			this.boards = new ArrayList<>();
-			for (Map.Entry<String, HierarchicalProperties> entry : this.boardsFile.getChildren().entrySet()) {
-				if ((entry.getValue().getChild("name") != null) && (entry.getKey() != null)) { //$NON-NLS-1$
-					// assume things with name and id are boards
-					this.boards.add(new Board(entry.getKey(), entry.getValue()).setOwners(this));
-				}
-			}
-		}
 		return this.boards;
 	}
 
-	public Board getBoard(String boardName) {
-		for (Board board : getBoards()) {
-			if (boardName.equals(board.getName())) {
-				return board;
-			}
-		}
-		return null;
-	}
 
 	public List<ToolDependency> getToolsDependencies() {
 		return this.toolsDependencies;
@@ -145,27 +106,6 @@ public class ArduinoPlatform {
 		return null;
 	}
 
-	public Properties getPlatformProperties() throws CoreException {
-		if (this.platformProperties == null) {
-			this.platformProperties = new Properties();
-			try (BufferedReader reader = new BufferedReader(new FileReader(getPlatformFile()))) {
-				// There are regex's here and need to preserve the \'s
-				StringBuilder builder = new StringBuilder();
-				for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-					builder.append(line.replace("\\", "\\\\")); //$NON-NLS-1$ //$NON-NLS-2$
-					builder.append('\n');
-				}
-				try (Reader reader1 = new StringReader(builder.toString())) {
-					this.platformProperties.load(reader1);
-				}
-			} catch (IOException e) {
-				throw new CoreException(
-						new Status(IStatus.ERROR, Activator.getId(), Messages.Platform_loading_platform, e));
-			}
-		}
-		return this.platformProperties;
-	}
-
 	public boolean isInstalled() {
 		return getBoardsFile().exists();
 	}
@@ -175,11 +115,11 @@ public class ArduinoPlatform {
 	}
 
 	public File getPlatformFile() {
-		return getInstallPath().append(PLATFORM_FILE_NAME).toFile();
+		return getInstallPath().append(Const.PLATFORM_FILE_NAME).toFile();
 	}
 
 	public IPath getInstallPath() {
-		IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName())
+		IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getName())
 				.append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version);
 		return stPath;
 	}
@@ -228,7 +168,7 @@ public class ArduinoPlatform {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.pkg == null) ? 0 : this.pkg.hashCode());
+		result = prime * result + ((this.myParent == null) ? 0 : this.myParent.hashCode());
 		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
 		return result;
 	}
@@ -247,10 +187,10 @@ public class ArduinoPlatform {
 				return false;
 		} else if (!this.name.equals(other.name))
 			return false;
-		if (this.pkg == null) {
-			if (other.pkg != null)
+		if (this.myParent == null) {
+			if (other.myParent != null)
 				return false;
-		} else if (!this.pkg.equals(other.pkg))
+		} else if (!this.myParent.equals(other.myParent))
 			return false;
 		if (this.version == null) {
 			if (other.version != null)
@@ -263,27 +203,20 @@ public class ArduinoPlatform {
 	public List<String> getBoardNames() {
 		List<String> ret = new ArrayList<>();
 		for (Board curBoar : this.boards) {
-			ret.add(curBoar.getName());
-		}
+				ret.add(curBoar.getName());
+			}
 		return ret;
 	}
 
-	public List<String> getBoardIDs() {
-		List<String> ret = new ArrayList<>();
-		for (Board curBoar : this.boards) {
-			ret.add(curBoar.getId());
-		}
-		return ret;
-	}
 
 	public String getID() {
 		String ID=new String();
 	
-		if (pkg==null) {
+		if (myParent==null) {
 			ID=getInstallPath().toOSString();
 		}
 		else {
-			ID=pkg.getName();
+			ID=myParent.getName();
 		}
 		ID=ID+ID_SEPERATOR+name+ID_SEPERATOR+architecture;
 				

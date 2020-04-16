@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import com.google.gson.Gson;
@@ -47,7 +46,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Board;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.PackageIndex;
@@ -116,21 +114,10 @@ public class PackageManager {
 			// package:" + this.mPackageName);
 			return null;
 		}
-		List<Board> boards = platform.getBoards();
-		if (boards == null) {
-			// fail("No boards found");
-			return null;
-		}
-		for (Board curBoard : boards) {
-			if (curBoard.getId().equals(boardID)) {
-				java.io.File boardsFile = curBoard.getPlatform().getBoardsFile();
-				BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, curBoard.getId(), options);
+		java.io.File boardsFile = platform.getBoardsFile();
+		BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, boardID, options);
 
-				return boardid;
-			}
-
-		}
-		return null;
+		return boardid;
 	}
 
 	public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
@@ -150,16 +137,37 @@ public class PackageManager {
 
 	}
 
-	public static void installAllLatestPlatforms() {
-		platformsDirty=true;
+	/**
+	 * installs a subset of the latest platforms 
+	 * It skips the first  <fromIndex> platforms
+	 * And stops at <toIndex> platforms.
+	 * To install the 5 first latest platforms
+	 * installsubsetOfLatestPlatforms(0,5)
+	 * @param fromIndex the platforms at the start to skip
+	 * @param toIndex the platforms after this platform are skipped
+	 */
+	public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
+		platformsDirty = true;
+		int currPlatformIndex = 1;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		List<Package> allPackages = InternalPackageManager.getPackages();
 		for (Package curPackage : allPackages) {
 			Collection<ArduinoPlatform> latestPlatforms = curPackage.getLatestPlatforms();
 			for (ArduinoPlatform curPlatform : latestPlatforms) {
-				curPlatform.install(monitor);
+				if (currPlatformIndex > fromIndex) {
+					curPlatform.install(monitor);
+				}
+				if (currPlatformIndex++ > toIndex)
+					return;
 			}
 		}
+	}
+	/**
+	 * Install all the latest platforms
+	 * Assumes there are less than 100000 platforms
+	 */
+	public static void installAllLatestPlatforms() {
+		installsubsetOfLatestPlatforms(0,100000);
 	}
 
 	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
@@ -201,7 +209,7 @@ public class PackageManager {
 
 
 	public static String[] getBoardNames(String boardFile) {
-		TxtFile theBoardsFile = new TxtFile(new File(boardFile));
+		TxtFile theBoardsFile = new TxtFile(new File(boardFile),true);
 		return theBoardsFile.getAllNames();
 	}
 
@@ -212,10 +220,10 @@ public class PackageManager {
 	 * @return all the boards.txt files with full path and in a case insensitive
 	 *         order
 	 */
-	public static String[] getAllBoardsFiles() {
+	public static File[] getAllBoardsFiles() {
 		String hardwareFolders[] = getHardwarePaths();
 
-		TreeSet<String> boardFiles = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+		TreeSet<File> boardFiles = new TreeSet<>();
 		for (String CurFolder : hardwareFolders) {
 			searchFiles(new File(CurFolder), boardFiles, Const.BOARDS_FILE_NAME, 6);
 		}
@@ -224,10 +232,10 @@ public class PackageManager {
 					Messages.Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
 			return null;
 		}
-		return boardFiles.toArray(new String[boardFiles.size()]);
+		return boardFiles.toArray(new File[boardFiles.size()]);
 	}
 
-	private static void searchFiles(File folder, TreeSet<String> Hardwarelists, String Filename, int depth) {
+	private static void searchFiles(File folder, TreeSet<File> Hardwarelists, String Filename, int depth) {
 		if (depth > 0) {
 			File[] a = folder.listFiles();
 			if (a == null) {
@@ -242,7 +250,7 @@ public class PackageManager {
 				if (f.isDirectory()) {
 					searchFiles(f, Hardwarelists, Filename, depth - 1);
 				} else if (f.getName().equals(Filename)) {
-					Hardwarelists.add(new Path(f.toString()).toString());
+					Hardwarelists.add(f);
 				}
 			}
 		}
@@ -594,9 +602,9 @@ public class PackageManager {
 	 */
 	public static Set<String> getAllMenuNames() {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-		String[] boardFiles = getAllBoardsFiles();
-		for (String curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(new File(curBoardFile));
+		File[] boardFiles = getAllBoardsFiles();
+		for (File curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(curBoardFile,true);
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -604,9 +612,9 @@ public class PackageManager {
 
 	public static TreeMap<String, String> getAllmenus() {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		String[] boardFiles = getAllBoardsFiles();
-		for (String curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(new File(curBoardFile));
+		File[] boardFiles = getAllBoardsFiles();
+		for (File curBoardFile : boardFiles) {
+			TxtFile txtFile = new TxtFile(curBoardFile,true);
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;
@@ -675,7 +683,7 @@ public class PackageManager {
 	static private void loadPackage(File jsonFile) {
 		try (Reader reader = new FileReader(jsonFile)) {
 			PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-			index.setOwners(null);
+			index.setOwners();
 			index.setJsonFile(jsonFile);
 			packageIndices.add(index);
 		} catch (Exception e) {
@@ -880,7 +888,7 @@ public class PackageManager {
 		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
 			
 			
-				Package pkg = curPlatform.getPackage();
+				Package pkg = curPlatform.getParent();
 				if (pkg != null) {
 					if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) { 
 						Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false );

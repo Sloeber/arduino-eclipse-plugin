@@ -33,6 +33,7 @@ import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
 import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
@@ -114,6 +115,7 @@ public class CompileAndUpload {
 	}
 
 	public static void installAdditionalBoards() {
+		Preferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = {
 				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
 				"https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json"};
@@ -131,7 +133,7 @@ public class CompileAndUpload {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
 		CompileOptions compileOptions = new CompileOptions(null);
 		DateTimeFormatter df =  DateTimeFormatter
-				.ofPattern("YYYY/MM/dd/MM-HH-mm-ss");
+				.ofPattern("YYYY/MM/dd-HH-mm-ss");
 		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());
 		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval
 				+ " -DSERIAlDUMP=" + SerialDumpContent);
@@ -203,7 +205,7 @@ public class CompileAndUpload {
 	public void verifySerialOutput(String serialDumpContent) {
 		String comPort = myBoard.getBoardDescriptor().getActualUploadPort();
 		Display display = SerialConnection.getDisplay();
-		display.asyncExec(new Runnable() {
+		display.syncExec(new Runnable() {
 			@Override
 			public void run() {
 				SerialConnection.show();

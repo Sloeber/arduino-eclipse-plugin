@@ -64,7 +64,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	protected Listener myBoardSelectionChangedListener = null;
 	protected BoardDescriptor myBoardID = null;
 	private Composite myComposite;
-	private TreeMap<String, String> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private TreeMap<String, File> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private org.eclipse.swt.widgets.Button myPasswordButton;
 
 	/**
@@ -169,9 +169,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			}
 		}
 
-		String[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
-		for (String curBoardFile : allBoardsFileNames) {
-			myAllBoardsFiles.put(tidyUpLength(curBoardFile), curBoardFile);
+		File[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
+		for (File curBoardFile : allBoardsFileNames) {
+			myAllBoardsFiles.put(tidyUpLength(curBoardFile.toString()), curBoardFile);
 		}
 		if (myAllBoardsFiles.isEmpty()) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
@@ -412,11 +412,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			return null;
 		}
 		String selectedText = myControlBoardsTxtFile.getText().trim();
-		String longText = myAllBoardsFiles.get(selectedText);
-		if (longText == null) {
-			return null;// this should not happen
-		}
-		return new File(longText);
+		return  myAllBoardsFiles.get(selectedText);
 	}
 
 	public String getUpLoadPort() {
