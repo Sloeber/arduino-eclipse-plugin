@@ -5,8 +5,8 @@ package io.sloeber.ui.listeners;
  * on
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -70,7 +70,7 @@ public class ProjectExplorerListener implements ISelectionListener {
 		if (!newSelection.isEmpty()) {
 			if (newSelection instanceof IStructuredSelection) {
 
-				List<IProject> allSelectedprojects = new ArrayList<>();
+				Set<IProject> allSelectedprojects = new HashSet<>();
 				for (Object element : ((IStructuredSelection) newSelection).toList()) {
 					if (element instanceof IAdaptable) {
 						@SuppressWarnings("cast") // this is needed for the
