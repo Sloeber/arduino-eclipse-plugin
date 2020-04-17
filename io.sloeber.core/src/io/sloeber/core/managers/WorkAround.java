@@ -34,7 +34,7 @@ import io.sloeber.core.tools.Version;
 @SuppressWarnings("nls")
 public class WorkAround {
 	//Each time this class is touched consider  changing the String below to enforce updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 1";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 3";
 
 
 	/**
@@ -111,19 +111,11 @@ public class WorkAround {
 						boardsTXT += FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
 						boardsTXT = boardsTXT.replace("\r\n", "\n");
 						
-						// replace FI '-DUSB_PRODUCT={build.usb_product}' with
-						// "-DUSB_PRODUCT=\"{build.usb_product}\""
-						//also needed in boards.txt for boards specific settings
-						boardsTXT = boardsTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
-
 
 						// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
 						// with circuitplay32u4cat.build.usb_manufacturer=Adafruit
 						boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
 						
-						//quoting fixes for embedutils
-						boardsTXT = boardsTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*", 	"\"$1=\\\\\"$2\\\\\"\"");
-
 
 						FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
 					}
@@ -214,13 +206,20 @@ public class WorkAround {
 					// replace FI '-DUSB_PRODUCT={build.usb_product}' with
 					// "-DUSB_PRODUCT=\"{build.usb_product}\""
 					platformTXT = platformTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
+					
+					
+					//quoting fixes for embedutils
+					platformTXT = platformTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*", 	"\"$1=\\\\\"$2\\\\\"\"");
+					
 					//Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}" "-DUSB_PRODUCT={build.usb_product}"
 					//is used fi LinKit smart
 					platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"", 
 							"\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
 					platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"", 
 							"\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
-					
+					platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ", 
+							" \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
+			
 
 					
 				}
