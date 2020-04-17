@@ -583,8 +583,8 @@ public class Helpers extends Common {
 		Map<String, String> boardSectionMap = boardsFile.getSection(boardID);
 		if (boardSectionMap == null) {
 			if (warn) {
-				String error=Messages.Helpers_error_boards_TXT.replace(PROJECT,  confDesc.getProjectDescription().getProject().getName()).replaceAll(CONFIG, confDesc.getName())
-						.replaceAll(FILE,  boardsFile.getTxtFile().toString()).replaceAll(BOARDID, boardID);
+				String error=Messages.Helpers_error_boards_TXT.replace(PROJECT,  confDesc.getProjectDescription().getProject().getName()).replace(CONFIG, confDesc.getName())
+						.replace(FILE,  boardsFile.getTxtFile().toString()).replace(BOARDID, boardID);
 				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,error));
 			}
 			return;
