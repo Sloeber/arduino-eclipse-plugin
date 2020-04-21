@@ -62,13 +62,13 @@ if (isset ( $_GET ["OS"] ))
 		<p>The product is the only supported setup!</p>
 		<p>Sloeber needs java 8! Other java versions will not work!</p>
 		<?php	if($os=="win"){echo "<p>The product includes java.</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p>Follow following steps to install.</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p>1)download with mac browser.</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p>2)unpacked the sloeber ide zip file with the macOS native Archive Utility. Not in the download folder!!!</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p>3)in the folder where you extracted Sloeber run: sudo xattr -r -d com.apple.quarantine Sloeber.app</p>";}; ?>
-		<?php	if($os=="macos"){echo "<p></p>";}; ?>
-		<<p>Read the info on this site at: install->start here-> <?php	echo "$OS";?> comments</p>
+		<?php	if($os=="mac"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
+		<?php	if($os=="mac"){echo "<p>Follow following steps to install.</p>";}; ?>
+		<?php	if($os=="mac"){echo "<p>1)download with mac browser.</p>";}; ?>
+		<?php	if($os=="mac"){echo "<p>2)unpacked the sloeber ide zip file with the macOS native Archive Utility. Not in the download folder!!!</p>";}; ?>
+		<?php	if($os=="mac"){echo "<p>3)in the folder where you extracted Sloeber run: sudo xattr -r -d com.apple.quarantine Sloeber.app</p>";}; ?>
+		<?php	if($os=="mac"){echo "<p></p>";}; ?>
+		<p>Read the info on this site at: install->start here-> <?php	echo "$OS";?> comments</p>
 
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
