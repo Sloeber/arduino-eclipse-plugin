@@ -55,7 +55,11 @@ $files = array(
 
     "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/V4.3.2_mac64.2019-10-07_08-26-30.tar.gz",
     "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/V4.3.2_win64.2019-10-07_08-26-30.tar.gz",
-    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/V4.3.2_linux64.2019-10-07_08-26-30.tar.gz"
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/V4.3.2_linux64.2019-10-07_08-26-30.tar.gz",
+    
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_3_beta/V4.3.3_linux64.2020-04-19_06-43-35.zip",
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_3_beta/V4.3.3_mac64.2020-04-19_06-43-35.zip",
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_3_beta/V4.3.3_win64.2020-04-19_06-43-35.zip"
 );
 
 ?>

@@ -51,7 +51,7 @@ if (isset ( $_GET ["OS"] ))
         <a name="top">&nbsp;</a>
 		</div>
 		<p>This is the latest stable build of Arduino Eclipse IDE and it's
-			available as a product and a plugin: pick the one you prefer!</p>
+			available as a product and a plugin: Start with the product!</p>
 		<h3>Product bundle</h3>
 		<a name="product">&nbsp;</a>
 		<p><strong>Strongly advised when you are new to Sloeber.</strong></p>
@@ -59,8 +59,16 @@ if (isset ( $_GET ["OS"] ))
 			bundles in one single download a complete setup including a stable
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
-		<p>This is also the only supported setup!</p>
+		<p>The product is the only supported setup!</p>
+		<p>Sloeber needs java 8! Other java versions will not work!</p>
 		<?php	if($os=="win"){echo "<p>It even includes java.</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>Follow following steps to install.</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>1)download with mac browser.</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>2)unpacked the sloeber ide zip file with the macOS native Archive Utility. Not in the download folder!!!</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>3)in the folder where you extracted Sloeber run: sudo xattr -r -d com.apple.quarantine Sloeber.app</p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p></p>";}; ?>
+		<?php	if($os=="MacOS"){echo "<p>Read the info on this site at: install->start here->Mac comments</p>";}; ?>
 
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
