@@ -8,5 +8,5 @@ This counts for all os's and is a make limitation (make is the tool used to buil
 **If you get strange startup fails: check your java version**  
 run following in a command prompt   
 java -showversion  
-It should give you 1.8 or higher.  
+It should give you 1.8. (higher versions will not work)    
 The windows product has a jre (java runtime engine) included in the zip. So windows users should be fine.
