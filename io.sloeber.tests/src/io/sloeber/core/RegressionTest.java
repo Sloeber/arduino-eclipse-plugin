@@ -70,6 +70,7 @@ public class RegressionTest {
 		if (MySystem.getTeensyPlatform().isEmpty()) {
 			//skip test due to no teensy install folder provided
 			//do not fail as this will always fail on travis
+			System.err.println("skipping the test because teensy is not installed.");
 			return;
 		}
 		Map<String, String> unoOptions = new HashMap<>();
