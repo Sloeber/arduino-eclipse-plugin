@@ -62,12 +62,21 @@ public class TxtFile {
 
 		this.mLastLoadedTxtFile =boardsFileName;
 		File actuallyLoadedTxtFile = mLastLoadedTxtFile;
+		// If the file doesn't exist ignore it.
+		if (!boardsFileName.exists()) {
+			return ;
+		}
+
 		if(workAround) {
 			actuallyLoadedTxtFile =WorkAround.MakeBoardsSloeberTxt(boardsFileName);
 		}
-		// If the file doesn't exist ignore it.
-		if (!actuallyLoadedTxtFile.exists())
+		
+		if (!actuallyLoadedTxtFile.exists()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+					"TXT worked around file " +actuallyLoadedTxtFile.getName() + " does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
 			return ;
+		}
+
 
 		this.fileContent.clear();
 
