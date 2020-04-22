@@ -73,7 +73,7 @@ public class TxtFile {
 		
 		if (!actuallyLoadedTxtFile.exists()) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-					"TXT worked around file " +actuallyLoadedTxtFile.getName() + " does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
+					"Worked around file " +actuallyLoadedTxtFile.toString() + " does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
 			return ;
 		}
 
