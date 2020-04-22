@@ -44,7 +44,7 @@ public class WorkAround {
 	 * 
 	 * @param platform
 	 */
-	static public void applyKnownWorkArounds(ArduinoPlatform platform) {
+	static synchronized public void applyKnownWorkArounds(ArduinoPlatform platform) {
 
 		/*
 		 * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h remove the
@@ -79,7 +79,7 @@ public class WorkAround {
 	 * 
 	 * @return the worked around file or requestedFileToWorkAround is it does not exist or error
 	 */
-	static public File MakeBoardsSloeberTxt(File requestedFileToWorkAround) {
+	static synchronized public File MakeBoardsSloeberTxt(File requestedFileToWorkAround) {
 		if(!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
@@ -137,7 +137,7 @@ public class WorkAround {
 	 * 
 	 * @return the worked around file or requestedFileToWorkAround is it does not exist or error
 	 */
-	public static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
+	public synchronized static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
 		if(!requestedFileToWorkAround.exists()) {
 			return requestedFileToWorkAround;
 		}
