@@ -120,8 +120,9 @@ public class WorkAround {
 						FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Common.log(new Status(IStatus.WARNING, Activator.getId(),
+							"Failed to apply work arounds to " + requestedFileToWorkAround.toString(), e));
+					return requestedFileToWorkAround;
 				}
 			}
 		}
