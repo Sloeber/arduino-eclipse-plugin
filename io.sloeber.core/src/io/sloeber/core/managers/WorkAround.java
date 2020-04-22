@@ -83,7 +83,6 @@ public class WorkAround {
 		}
 		String inFile = requestedFileToWorkAround.toString();
 		String actualFileToLoad = inFile.replace(Const.BOARDS_FILE_NAME, "boards.sloeber.txt");
-		System.out.println("converting " + inFile + " to " + actualFileToLoad);
 		if (inFile.equals(actualFileToLoad)) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
 					"Boards.txt file is not recognized " + requestedFileToWorkAround.toString()));
