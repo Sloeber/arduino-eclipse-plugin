@@ -17,7 +17,7 @@ public class MySystem {
 	private static final String jantjesWindowsMachineHashKey = "1248215851";
 	//the one below is based on one mac address Fysiek adres (MAC):	C0-3F-D5-66-04-58 
 	private static final String jantjesWindowsMachineHashkeyAfterUpdate="139705674";
-	private static final String jantjesLinuxMachineHashKey = "-784776710";
+	private static final String jantjesLinuxMachineHashKey = "88937904";
 	private static final String jantjeWindowsMachineHashkeyAfterSecondUpdate="-441525448";
 
 	public static String getTeensyPlatform() {
@@ -27,7 +27,7 @@ public class MySystem {
 		case jantjeWindowsMachineHashkeyAfterSecondUpdate:
 			return "E:\\arduino\\arduino-1.8.12 - teensy\\hardware\\teensy";
 		case jantjesLinuxMachineHashKey:
-			return "/home/jan/nas/linux/arduino/arduino-1.8.8-linux64/arduino-1.8.8/hardware/teensy";
+			return "/home/jan/tensyduino/arduino-1.8.12/hardware/teensy";
 		default:
 			return new String();
 		}
@@ -39,10 +39,19 @@ public class MySystem {
 	public static MCUBoard[] getUploadBoards()  {
 		switch (Other.getSystemHash()) {
 		case jantjesLinuxMachineHashKey: {
-			MCUBoard[] boards = {   Teensy.teensypp2(),  ESP8266.wemosD1("COM21"),
-					Arduino.fried2016("COM26"), Arduino.yun("COM20"), Arduino.uno("COM6"),
-					Arduino.getMega2560Board("COM11"), Arduino.zeroProgrammingPort("COM14"), Arduino.due("COM8"),
-					Arduino.leonardo("COM31"), Arduino.arduino_101("COM15") };
+			MCUBoard[] boards = {   
+					Teensy.teensypp2("/dev/ttyACM0"),  
+					Arduino.leonardo("/dev/ttyS0"),   //werkt niet
+					Arduino.fried2016("/dev/ttyS0"), //werkt niet
+					Arduino.zeroNatviePort("/dev/ttyS0"), //werkt niet
+					Arduino.yun("COM20"), 
+					ESP8266.wemosD1("/dev/ttyUSB0"),
+					Arduino.arduino_101("COM15"),
+					Arduino.zeroProgrammingPort("COM14"), 
+					Arduino.getMega2560Board("COM11"), 
+					Arduino.dueprogramming("COM8"),
+					Arduino.uno("COM6"),
+					};
 			return boards;
 		}
 		case jantjesWindowsMachineHashKey: 
@@ -66,7 +75,7 @@ public class MySystem {
 			return boards;
 		}
 		default:
-			fail("Boards for the system with haskey " + Other.getSystemHash() + "are not found");
+			fail("Boards for the system with haskey " + Other.getSystemHash() + " are not found");
 			return null;
 		}
 	}

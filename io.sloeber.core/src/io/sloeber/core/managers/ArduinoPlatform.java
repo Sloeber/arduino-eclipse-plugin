@@ -152,6 +152,7 @@ public class ArduinoPlatform {
 	public IStatus install(IProgressMonitor monitor) {
 		// Check if we're installed already
 		if (isInstalled()) {
+			System.out.println("reusing platform "+name + " "+architecture +"("+version+")");
 			return Status.OK_STATUS;
 		}
 
