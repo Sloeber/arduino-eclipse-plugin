@@ -149,7 +149,7 @@ public class Common extends Const {
 	 *            the status information to log
 	 */
 	public static void log(IStatus status) {
-		System.err.println( status.getMessage());
+		System.out.println( status.getMessage());
 	
 		if (status.getSeverity() == IStatus.ERROR) {
 			int style = StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK;

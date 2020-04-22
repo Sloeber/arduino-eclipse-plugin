@@ -70,9 +70,10 @@ public class RegressionTest {
 		if (MySystem.getTeensyPlatform().isEmpty()) {
 			//skip test due to no teensy install folder provided
 			//do not fail as this will always fail on travis
-			System.err.println("skipping the test because teensy is not installed.");
+			System.out.println("skipping the test because teensy is not installed.");
 			return;
 		}
+		System.out.println("Teensy is installed at "+MySystem.getTeensyPlatform());
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
