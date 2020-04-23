@@ -27,7 +27,7 @@ import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls","static-method"})
 public class RegressionTest {
 	private static final boolean reinstall_boards_and_libraries = false;
 
@@ -64,14 +64,15 @@ public class RegressionTest {
 	 * make sure when switching between a board with variant file and without
 	 * the build still succeeds
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void issue555() {
 		if (MySystem.getTeensyPlatform().isEmpty()) {
 			//skip test due to no teensy install folder provided
 			//do not fail as this will always fail on travis
+			System.out.println("skipping the test because teensy is not installed.");
 			return;
 		}
+		System.out.println("Teensy is installed at "+MySystem.getTeensyPlatform());
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -121,7 +122,6 @@ public class RegressionTest {
 	 * support void loop{};
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void issue687() throws Exception {
 	    Arduino.installLatestAVRBoards();
@@ -155,7 +155,6 @@ public class RegressionTest {
 	 * support void loop{};
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
 		MCUBoard unoBoard = ESP8266.nodeMCU();
@@ -189,7 +188,6 @@ public class RegressionTest {
 	 * code checks whether these defines are set properly
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void are_jantjes_options_taken_into_account() throws Exception {
 	    Arduino.installLatestAVRBoards();
@@ -232,7 +230,6 @@ public class RegressionTest {
 	 * properly by the ino to cpp parser
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void are_defines_before_includes_taken_into_account() throws Exception {
 	    Arduino.installLatestAVRBoards();
@@ -269,7 +266,6 @@ public class RegressionTest {
 	 * be handled properly by the ino to cpp parser
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-method")
 	@Test
 	public void is_extern_C_taken_into_account() throws Exception {
 	    Arduino.installLatestAVRBoards();
