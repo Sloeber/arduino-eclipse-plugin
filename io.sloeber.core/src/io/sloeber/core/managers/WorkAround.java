@@ -33,7 +33,7 @@ import io.sloeber.core.tools.Version;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 3";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 4";
 
 	/**
 	 * workarounds done at installation time. I try to keep those at a minimum but
@@ -214,6 +214,14 @@ public class WorkAround {
 					platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
 							" \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
 
+				}
+				if(SystemUtils.IS_OS_LINUX) {
+					platformTXT = platformTXT.replace(" -DUSB_MANUFACTURER={build.usb_manufacturer} ",
+							" '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
+					platformTXT = platformTXT.replace(" -DUSB_PRODUCT={build.usb_product} ",
+							" '-DUSB_PRODUCT=\"{build.usb_product}\" '");
+					platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
+							" '-DARDUINO_BOARD=\"{build.board}\"' ");
 				}
 				FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
 			} catch (IOException e) {
