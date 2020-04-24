@@ -19,12 +19,14 @@ import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Version;
 
 /**
- * A class to apply workarounds to installed packages workaround are done after
- * installation at usage of boards.txt file at usage of platform.txt file
+ * A class to apply workarounds to installed packages.
+ * Workaround are done after installation and 
+ * at usage of boards.txt or platform.txt file
+ * currently there are noworkarounds for programmers.trx
  * 
- * The first line of the worked around files contain a key A newer version of
- * sloeber that has a different workaround shuld change the key in this way the
- * worked around files can be persisted and updated when needed
+ * The first line of the worked around files contain a key. 
+ * A newer version of sloeber that has a different workaround should change the key.
+ * This way the worked around files can be persisted and updated when needed
  * 
  * @author jan
  *
@@ -33,11 +35,11 @@ import io.sloeber.core.tools.Version;
 public class WorkAround {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 4";
+	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.00.test 11";
 
 	/**
 	 * workarounds done at installation time. I try to keep those at a minimum but
-	 * none platform.txt and boards.txt workarounds need to be doine during install
+	 * none platform.txt and boards.txt workarounds need to be done during install
 	 * time
 	 * 
 	 * @param platform
@@ -70,12 +72,15 @@ public class WorkAround {
 	}
 
 	/**
-	 * create a workedaround boards.txt and return that filz
+	 * Get the a workaround boards.txt and if needed create/update  it
+	 * This method takes a boards.txt file and returns a worked around file.
+	 * The worked around file is persisted on disk for easy debugging/ reduce code impact
+	 * and performance.
 	 * 
-	 * @param requestedFileToWorkAround
+	 * @param requestedFileToWorkAround the board.txt that you want to process
 	 * 
-	 * @return the worked around file or requestedFileToWorkAround is it does not
-	 *         exist or error
+	 * @return the worked around file or requestedFileToWorkAround if it does not
+	 *         exist or an error occurred
 	 */
 	static synchronized public File MakeBoardsSloeberTxt(File requestedFileToWorkAround) {
 		if (!requestedFileToWorkAround.exists()) {
@@ -105,13 +110,37 @@ public class WorkAround {
 			try {
 				String boardsTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n";
 				boardsTXT += FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-				boardsTXT = boardsTXT.replace("\r\n", "\n");
+ 
+				boardsTXT = boardsTXT.replace("\r\n","\n");
+				//because I search for spaces around string as delimiters I add a space at the end of the line
+				boardsTXT = boardsTXT.replace("\n", " \n");
+				
+				String correctMAN=" \"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\" ";
+				String correctPROD=" \"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\" ";
+				String correctBOARD=" \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ";
 
 				if (SystemUtils.IS_OS_WINDOWS) {
 					// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
 					// with circuitplay32u4cat.build.usb_manufacturer=Adafruit
 					boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
+					
+					// quoting fixes for embedutils  ['\"]?(-DMBEDTLS_\S+)=\\?"(mbedtls\S+?)\\?\"["']?  \"$1=\\\"$2\\\"\" 
+					boardsTXT = boardsTXT.replaceAll(" ['\\\"]?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+?)\\\\?\\\"[\"']? ",
+							" \\\"$1=\\\\\\\"$2\\\\\\\"\\\" ");
+
+				} else {
+					 correctMAN=" '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ";
+					 correctPROD=" '-DUSB_PRODUCT=\"{build.usb_product}\" '";
+					 correctBOARD=" '-DARDUINO_BOARD=\"{build.board}\"' ";
 				}
+				// some providers put -DUSB_PRODUCT={build.usb_product} in boards.txt
+				boardsTXT = boardsTXT.replace(" \"-DUSB_MANUFACTURER={build.usb_manufacturer}\" ",correctMAN);
+				boardsTXT = boardsTXT.replace(" \"-DUSB_PRODUCT={build.usb_product}\" ",correctPROD);
+				boardsTXT = boardsTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",correctBOARD	);
+				
+				boardsTXT = boardsTXT.replace(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ",correctMAN);
+				boardsTXT = boardsTXT.replace(" '-DUSB_PRODUCT={build.usb_product}' ",correctPROD);
+				boardsTXT = boardsTXT.replace(" '-DARDUINO_BOARD=\"{build.board}' ",correctBOARD	);
 				FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
 			} catch (IOException e) {
 				Common.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -123,12 +152,16 @@ public class WorkAround {
 	}
 
 	/**
-	 * create a workedaround platform.txt and return that filz
+	 * 	 * Get the a workaround platform.txt and if needed create/update  it
+	 * This method takes a platform.txt file and returns a worked around file.
+	 * The worked around file is persisted on disk for easy debugging/ reduce code impact
+	 * and performance.
 	 * 
-	 * @param requestedFileToWorkAround
 	 * 
-	 * @return the worked around file or requestedFileToWorkAround is it does not
-	 *         exist or error
+	 * @param requestedFileToWorkAround the platform.txt you want to process
+	 * 
+	 * @return the worked around file or requestedFileToWorkAround if it does not
+	 *         exist or an error occurred
 	 */
 	public synchronized static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
 		if (!requestedFileToWorkAround.exists()) {
@@ -192,8 +225,10 @@ public class WorkAround {
 				}
 
 				// for adafruit nfr
-				platformTXT = platformTXT.replace("-DARDUINO_BSP_VERSION=\"{version}\"",
-						"\"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\"");
+				platformTXT = platformTXT.replace(" -DARDUINO_BSP_VERSION=\"{version}\" ",
+						" \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
+				platformTXT = platformTXT.replace(" '-DARDUINO_BSP_VERSION=\"{version}\"' ",
+						" \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
 
 				if (SystemUtils.IS_OS_WINDOWS) {
 					// replace FI '-DUSB_PRODUCT={build.usb_product}' with
@@ -214,8 +249,7 @@ public class WorkAround {
 					platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
 							" \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
 
-				}
-				if(SystemUtils.IS_OS_LINUX) {
+				} else {
 					platformTXT = platformTXT.replace(" -DUSB_MANUFACTURER={build.usb_manufacturer} ",
 							" '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
 					platformTXT = platformTXT.replace(" -DUSB_PRODUCT={build.usb_product} ",
