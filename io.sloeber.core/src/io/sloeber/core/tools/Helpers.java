@@ -103,9 +103,9 @@ public class Helpers extends Common {
 	 * @param configurationDescription
 	 * @param IncludePath
 	 */
-	public static void addIncludeFolder( ICConfigurationDescription configurationDescription,  IPath IncludePath) 
+	public static void addIncludeFolder(ICFolderDescription folderDescription,  IPath IncludePath) 
 	{
-		   addIncludeFolder( configurationDescription,  IncludePath,true) ;
+		   addIncludeFolder( folderDescription,  IncludePath,true) ;
 	}
 	/**
 	 * This method is the internal working class that adds the provided include path
@@ -117,9 +117,9 @@ public class Helpers extends Common {
 	 *            The path to add to the include folders
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	public static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath,boolean isWorkspacePath) {
+	public static void addIncludeFolder(ICFolderDescription folderDescription, IPath IncludePath,boolean isWorkspacePath) {
 		// find all languages
-		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
+		//ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
 		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
 		int pathSetting=ICSettingEntry.VALUE_WORKSPACE_PATH;
 		if(!isWorkspacePath)
@@ -252,6 +252,7 @@ public class Helpers extends Common {
 	public static void addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
 			ICConfigurationDescription configurationDescription,boolean forceRoot) throws CoreException {
 		IFolder link = project.getFolder(LinkName);
+		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
 
 		LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
 
@@ -261,19 +262,19 @@ public class Helpers extends Common {
 		String possibleIncludeFolder = "utility";
 		File file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
-			addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+			addIncludeFolder(folderDescription, link.getFullPath().append(possibleIncludeFolder));
 		}
 
 		if (forceRoot) {
-			addIncludeFolder(configurationDescription, link.getFullPath());
+			addIncludeFolder(folderDescription, link.getFullPath());
 		} else {
 			// add src or root give priority to src
 			possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
 			file = toLinkFolder.append(possibleIncludeFolder).toFile();
 			if (file.exists()) {
-				addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder));
+				addIncludeFolder(folderDescription, link.getFullPath().append(possibleIncludeFolder));
 			} else {
-				addIncludeFolder(configurationDescription, link.getFullPath());
+				addIncludeFolder(folderDescription, link.getFullPath());
 			}
 		}
 
@@ -281,7 +282,7 @@ public class Helpers extends Common {
 		file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
 			InternalBoardDescriptor boardDescriptor = new InternalBoardDescriptor(configurationDescription);
-			addIncludeFolder(configurationDescription,
+			addIncludeFolder(folderDescription,
 					link.getFullPath().append(possibleIncludeFolder).append(boardDescriptor.getArchitecture()));
 		}
 	}

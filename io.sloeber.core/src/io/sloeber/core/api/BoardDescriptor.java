@@ -12,20 +12,41 @@ import java.util.TreeMap;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.ICDescriptor;
+import org.eclipse.cdt.core.dom.IPDOMManager;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
+import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
+import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
+import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICExclusionPatternPathEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICResourceDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.internal.core.pdom.indexer.IndexerPreferences;
+import org.eclipse.cdt.managedbuilder.core.IBuilder;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IProjectType;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
+import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
+import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -36,6 +57,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
@@ -50,7 +72,6 @@ import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.Programmers;
-import io.sloeber.core.tools.ShouldHaveBeenInCDT;
 import io.sloeber.core.tools.TxtFile;
 
 @SuppressWarnings({ "nls" })
@@ -514,45 +535,383 @@ public class BoardDescriptor {
         }
         return true;
     }
+    
+	private static void setDefaultLanguageSettingsProviders(IProject project, ConfigurationDescriptor cfgDes,
+			IConfiguration cfg, ICConfigurationDescription cfgDescription) {
+		// propagate the preference to project properties
+		boolean isPreferenceEnabled = ScannerDiscoveryLegacySupport
+				.isLanguageSettingsProvidersFunctionalityEnabled(null);
+		ScannerDiscoveryLegacySupport.setLanguageSettingsProvidersFunctionalityEnabled(project, isPreferenceEnabled);
+
+		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
+			ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper) cfgDescription;
+
+			lspk.setDefaultLanguageSettingsProvidersIds(new String[] { cfgDes.ToolchainID });
+
+			List<ILanguageSettingsProvider> providers = getDefaultLanguageSettingsProviders(cfg, cfgDescription);
+			lspk.setLanguageSettingProviders(providers);
+		}
+	}
+	private static List<ILanguageSettingsProvider> getDefaultLanguageSettingsProviders(IConfiguration cfg,
+			ICConfigurationDescription cfgDescription) {
+		List<ILanguageSettingsProvider> providers = new ArrayList<>();
+		String[] ids = cfg != null ? cfg.getDefaultLanguageSettingsProviderIds() : null;
+
+		if (ids == null) {
+			// Try with legacy providers
+			ids = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(cfgDescription);
+		}
+
+		if (ids != null) {
+			for (String id : ids) {
+				ILanguageSettingsProvider provider = null;
+				if (!LanguageSettingsManager.isPreferShared(id)) {
+					provider = LanguageSettingsManager.getExtensionProviderCopy(id, false);
+				}
+				if (provider == null) {
+					provider = LanguageSettingsManager.getWorkspaceProvider(id);
+				}
+				providers.add(provider);
+			}
+		}
+
+		return providers;
+	}
+	
+	////////////////////////////////////copied in from cdt testts
+	private final static IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
+	private static void waitForProjectRefreshToFinish() {
+		try {
+			// CDT opens the Project with BACKGROUND_REFRESH enabled which causes the
+			// refresh manager to refresh the project 200ms later.  This Job interferes
+			// with the resource change handler firing see: bug 271264
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_REFRESH, null);
+		} catch (Exception e) {
+			// Ignore
+		}
+	}
+
+
+	/**
+	 * Creates CDT project in a specific path in workspace adding specified configurations and opens it.
+	 *
+	 * @param projectName - project name.
+	 * @param pathInWorkspace - path relative to workspace root.
+	 * @param configurationIds - array of configuration IDs.
+	 * @return - new {@link IProject}.
+	 * @throws CoreException - if the project can't be created.
+	 * @throws OperationCanceledException...
+	 */
+	public static IProject createCDTProject(String projectName, String pathInWorkspace, String[] configurationIds) throws OperationCanceledException, CoreException {
+		CCorePlugin cdtCorePlugin = CCorePlugin.getDefault();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+
+		IProject project = root.getProject(projectName);
+		IndexerPreferences.set(project, IndexerPreferences.KEY_INDEXER_ID, IPDOMManager.ID_NO_INDEXER);
+
+		IProjectDescription prjDescription = workspace.newProjectDescription(projectName);
+		if(pathInWorkspace != null) {
+			IPath absoluteLocation = root.getLocation().append(pathInWorkspace);
+			prjDescription.setLocation(absoluteLocation);
+		}
+
+		if (configurationIds != null && configurationIds.length > 0) {
+			ICProjectDescriptionManager prjDescManager = cdtCorePlugin.getProjectDescriptionManager();
+
+			project.create(NULL_MONITOR);
+			project.open(NULL_MONITOR);
+
+			ICProjectDescription icPrjDescription = prjDescManager.createProjectDescription(project, false);
+			ICConfigurationDescription baseConfiguration = cdtCorePlugin.getPreferenceConfiguration("");//TestCfgDataProvider.PROVIDER_ID);
+
+			for (String cfgId : configurationIds) {
+				icPrjDescription.createConfiguration(cfgId, cfgId + " Name", baseConfiguration);
+			}
+			prjDescManager.setProjectDescription(project, icPrjDescription);
+		}
+		project = cdtCorePlugin.createCDTProject(prjDescription, project, NULL_MONITOR);
+		waitForProjectRefreshToFinish();
+
+
+		project.open(null);
+
+
+		return project;
+	}
+	public static IProject  tt(String projectName) throws Exception{
+		CoreModel coreModel = CoreModel.getDefault();
+		// Create model project and accompanied descriptions
+		IProject project = BuildSystemTestHelper_createProject(projectName,(IPath)null);
+		ICProjectDescription des = coreModel.createProjectDescription(project, false);
+		//Assert.assertNotNull("createDescription returned null!", des);
+
+		{
+			ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
+			IProjectType type = ManagedBuildManager.getProjectType("");//pluginProjectTypeId);
+			//Assert.assertNotNull("project type not found", type);
+
+			ManagedProject mProj = new ManagedProject(project, type);
+			info.setManagedProject(mProj);
+
+			IConfiguration cfgs[] = type.getConfigurations();
+			//Assert.assertNotNull("configurations not found", cfgs);
+			//Assert.assertTrue("no configurations found in the project type",cfgs.length>0);
+
+			for (IConfiguration configuration : cfgs) {
+				String id = ManagedBuildManager.calculateChildId(configuration.getId(), null);
+				Configuration config = new Configuration(mProj, (Configuration)configuration, id, false, true, false);
+				CConfigurationData data = config.getConfigurationData();
+				//Assert.assertNotNull("data is null for created configuration", data);
+				ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
+			}
+			//Assert.assertEquals(2, des.getConfigurations().length);
+		}
+
+		// Persist the project
+		coreModel.setProjectDescription(project, des);
+		//Jaba removed line ResourceHelper.joinIndexerBeforeCleanup(getName());
+		project.close(null);
+		return project;
+	}
+
+	static public IProject BuildSystemTestHelper_createProject(
+			final String name,
+			final IPath location) throws CoreException{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		final IProject newProjectHandle = root.getProject(name);
+		IProject project = null;
+
+		if (!newProjectHandle.exists()) {
+			IWorkspaceDescription workspaceDesc = workspace.getDescription();
+			workspaceDesc.setAutoBuilding(false);
+			workspace.setDescription(workspaceDesc);
+			IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
+			if(location != null)
+				description.setLocation(location);
+			//description.setLocation(root.getLocation());
+			project = CCorePlugin.getDefault().createCDTProject(description, newProjectHandle, new NullProgressMonitor());
+		} else {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				@Override
+				public void run(IProgressMonitor monitor) throws CoreException {
+					newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				}
+			};
+			NullProgressMonitor monitor = new NullProgressMonitor();
+			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+			project = newProjectHandle;
+		}
+
+		// Open the project if we have to
+		if (!project.isOpen()) {
+			project.open(new NullProgressMonitor());
+		}
+
+		return project;
+	}
+	static public IProject createNewManagedProject(IProject newProjectHandle,
+			final String name,
+			final IPath location,
+			final String projectId,
+			final String projectTypeId) throws CoreException {
+		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		final IProject project = newProjectHandle;
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				// Create the base project
+				IWorkspaceDescription workspaceDesc = workspace.getDescription();
+				workspaceDesc.setAutoBuilding(false);
+				workspace.setDescription(workspaceDesc);
+				IProjectDescription description = workspace.newProjectDescription(project.getName());
+				if (location != null) {
+					description.setLocation(location);
+				}
+				CCorePlugin.getDefault().createCProject(description, project, new NullProgressMonitor(), projectId);
+				// Add the managed build nature and builder
+				addManagedBuildNature(project);
+
+				// Find the base project type definition
+				IProjectType projType = ManagedBuildManager.getProjectType(projectTypeId);
+				//Assert.assertNotNull(projType);
+
+				// Create the managed-project (.cdtbuild) for our project that builds an executable.
+				IManagedProject newProject = null;
+				try {
+					newProject = ManagedBuildManager.createManagedProject(project, projType);
+				} catch (Exception e) {
+					//Assert.fail("Failed to create managed project for: " + project.getName());
+					return;
+				}
+//				Assert.assertEquals(newProject.getName(), projType.getName());
+//				Assert.assertFalse(newProject.equals(projType));
+				ManagedBuildManager.setNewProjectVersion(project);
+				// Copy over the configs
+				IConfiguration defaultConfig = null;
+				IConfiguration[] configs = projType.getConfigurations();
+				for (int i = 0; i < configs.length; ++i) {
+					// Make the first configuration the default
+					if (i == 0) {
+						defaultConfig = newProject.createConfiguration(configs[i], projType.getId() + "." + i);
+					} else {
+						newProject.createConfiguration(configs[i], projType.getId() + "." + i);
+					}
+				}
+				ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
+
+				IConfiguration cfgs[] = newProject.getConfigurations();
+				for(int i = 0; i < cfgs.length; i++){
+					cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
+				}
+
+				ManagedBuildManager.getBuildInfo(project).setValid(true);
+			}
+		};
+		NullProgressMonitor monitor = new NullProgressMonitor();
+		try {
+			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+		} catch (CoreException e2) {
+			//Assert.fail(e2.getLocalizedMessage());
+		}
+		// CDT opens the Project with BACKGROUND_REFRESH enabled which causes the
+		// refresh manager to refresh the project 200ms later.  This Job interferes
+		// with the resource change handler firing see: bug 271264
+		try {
+			// CDT opens the Project with BACKGROUND_REFRESH enabled which causes the
+			// refresh manager to refresh the project 200ms later.  This Job interferes
+			// with the resource change handler firing see: bug 271264
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_REFRESH, null);
+		} catch (Exception e) {
+			// Ignore
+		}
+
+		// Initialize the path entry container
+		IStatus initResult = ManagedBuildManager.initBuildInfoContainer(project);
+		if (initResult.getCode() != IStatus.OK) {
+			//Assert.fail("Initializing build information failed for: " + project.getName() + " because: " + initResult.getMessage());
+		}
+		return project;
+	}
+	static public void addManagedBuildNature (IProject project) {
+		// Create the buildinformation object for the project
+		IManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
+		//Assert.assertNotNull(info);
+//		info.setValid(true);
+
+		// Add the managed build nature
+		try {
+			ManagedCProjectNature.addManagedNature(project, new NullProgressMonitor());
+			ManagedCProjectNature.addManagedBuilder(project, new NullProgressMonitor());
+		} catch (CoreException e) {
+			//Assert.fail("Test failed on adding managed build nature or builder: " + e.getLocalizedMessage());
+		}
+
+		// Associate the project with the managed builder so the clients can get proper information
+		ICDescriptor desc = null;
+		try {
+			desc = CCorePlugin.getDefault().getCProjectDescription(project, true);
+			desc.remove(CCorePlugin.BUILD_SCANNER_INFO_UNIQ_ID);
+			desc.create(CCorePlugin.BUILD_SCANNER_INFO_UNIQ_ID, ManagedBuildManager.INTERFACE_IDENTITY);
+		} catch (CoreException e) {
+			//Assert.fail("Test failed on adding managed builder as scanner info provider: " + e.getLocalizedMessage());
+			return;
+		}
+		try {
+			desc.saveProjectData();
+		} catch (CoreException e) {
+			//Assert.fail("Test failed on saving the ICDescriptor data: " + e.getLocalizedMessage());		}
+	}
+		}
+
+
+///end of copied in from cdt tests
+	
 
     /*
      * Method to create a project based on the board
      */
     public IProject createProject(String projectName, URI projectURI,
-            ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds, CodeDescriptor codeDescription,
-            CompileOptions compileOptions, IProgressMonitor monitor) throws Exception {
-        IProject projectHandle;
-        projectHandle = ResourcesPlugin.getWorkspace().getRoot().getProject(Common.MakeNameCompileSafe(projectName));
+            CodeDescriptor codeDescription, CompileOptions compileOptions, IProgressMonitor monitor) throws Exception {
 
-        // try {
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    	CCorePlugin cCorePlugin=CCorePlugin.getDefault();
+    	IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IProject projectHandle = workspace.getRoot().getProject(Common.MakeNameCompileSafe(projectName));
+        
+//        
+//        
+//        ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+//		ICProjectDescription des = mngr.createProjectDescription(projectHandle, false, true);
+//		ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(projectHandle);
+//		ManagedProject mProj = new ManagedProject(des);
+//		info.setManagedProject(mProj);
+////		monitor.worked(20);
+//
+//		// Iterate across the configurations
+//		ArrayList<ConfigurationDescriptor> cfgNamesAndTCIds=ConfigurationDescriptor.getDefaultDescriptors();
+//		for (ConfigurationDescriptor curConfDesc : cfgNamesAndTCIds) {
+//			IToolChain tcs = ManagedBuildManager.getExtensionToolChain(curConfDesc.ToolchainID);
+//
+//			Configuration cfg = new Configuration(mProj, tcs,
+//					ManagedBuildManager.calculateChildId(curConfDesc.ToolchainID, null), curConfDesc.configName);
+//
+//				cfg.setParallelDef(compileOptions.isParallelBuildEnabled());
+//
+//			IBuilder bld = cfg.getEditableBuilder();
+//			if (bld != null) {
+//				bld.setManagedBuildOn(true);
+//				cfg.setArtifactName("${ProjName}"); //$NON-NLS-1$
+//			} else {
+//				System.out.println("Messages.StdProjectTypeHandler_3"); //$NON-NLS-1$
+//			}
+//			CConfigurationData data = cfg.getConfigurationData();
+//			ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
+//
+//			setDefaultLanguageSettingsProviders(projectHandle, curConfDesc, cfg, cfgDes);
+//		}
+//
+//		
+
+        
         final IProjectDescription desc = workspace.newProjectDescription(projectHandle.getName());
         desc.setLocationURI(projectURI);
+        
 
-        projectHandle.create(desc, monitor);
+//        projectHandle.create(desc, monitor);
+//
+//        if (monitor.isCanceled()) {
+//            throw new OperationCanceledException();
+//        }
 
-        if (monitor.isCanceled()) {
-            throw new OperationCanceledException();
-        }
+        
 
-        projectHandle.open(IResource.BACKGROUND_REFRESH, monitor);
-
-        // Creates the .cproject file with the configurations
-        ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(projectHandle, cfgNamesAndTCIds,
-                true, compileOptions.isParallelBuildEnabled(), monitor);
+// 
+//        ;
+//        ICProjectDescription prjCDesc = ShouldHaveBeenInCDT.setCProjectDescription(projectHandle, cfgNamesAndTCIds,
+//                 compileOptions.isParallelBuildEnabled(), monitor);
 
         // Add the C C++ AVR and other needed Natures to the project
         Helpers.addTheNatures(desc);
+        projectHandle=cCorePlugin.createCDTProject(desc, projectHandle, monitor);
+        ICProjectDescription prjCDesc=cCorePlugin.getProjectDescription(projectHandle);
+//    	ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor("Release", //$NON-NLS-1$
+//    			"io.sloeber.core.toolChain.release", false); //$NON-NLS-1$
+  
+        IConfiguration. .createToolChain();
+        CConfigurationData data= new CConfigurationData();
+        prjCDesc.createConfiguration("io.sloeber.core.toolChain.release", data);
+//        IBuilder arduinoBuilder = ManagedBuildManager.getExtensionBuilder("io.sloeber.core.toolChain.release");
+//        prjCDesc.createConfiguration(arduinoBuilder, data)
 
         // Add the Arduino folder
 
         Helpers.createNewFolder(projectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
 
-        for (ConfigurationDescriptor curConfig : cfgNamesAndTCIds) {
-            ICConfigurationDescription configurationDescription = prjCDesc.getConfigurationByName(curConfig.configName);
-            compileOptions.save(configurationDescription);
-            save(configurationDescription);
-
+        for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
+            compileOptions.save(curConfig);
+            save(curConfig);
         }
 
         // Set the path variables
@@ -561,11 +920,13 @@ public class BoardDescriptor {
         // Intermediately save or the adding code will fail
         // Release is the active config (as that is the "IDE" Arduino
         // type....)
-        ICConfigurationDescription defaultConfigDescription = prjCDesc
-                .getConfigurationByName(cfgNamesAndTCIds.get(0).configName);
+//        ICConfigurationDescription defaultConfigDescription = prjCDesc
+//                .getConfigurationByName(cfgNamesAndTCIds.get(0).configName);        
+//        ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(new String()), true);
+        ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+ 
 
-        ICResourceDescription cfgd = defaultConfigDescription.getResourceDescription(new Path(new String()), true);
-        ICExclusionPatternPathEntry[] entries = cfgd.getConfiguration().getSourceEntries();
+        ICExclusionPatternPathEntry[] entries = activeConfig.getSourceEntries();
         if (entries.length == 1) {
             Path exclusionPath[] = new Path[6];
             exclusionPath[0] = new Path(LIBRARY_PATH_SUFFIX + "/?*/**/?xamples/**");
@@ -581,7 +942,7 @@ public class BoardDescriptor {
             out = new ICSourceEntry[1];
             out[0] = (ICSourceEntry) newSourceEntry;
             try {
-                cfgd.getConfiguration().setSourceEntries(out);
+            	activeConfig.setSourceEntries(out);
             } catch (@SuppressWarnings("unused") CoreException e) {
                 // ignore
             }
@@ -592,14 +953,15 @@ public class BoardDescriptor {
         Set<String> librariesToInstall = codeDescription.createFiles(projectHandle, monitor);
         IPath linkedPath = codeDescription.getLinkedExamplePath();
         if (linkedPath != null) {
-            Helpers.addIncludeFolder(defaultConfigDescription, linkedPath, false);
+            Helpers.addIncludeFolder(activeConfig.getRootFolderDescription(), linkedPath, false);
         }
-        Libraries.addLibrariesToProject(projectHandle, defaultConfigDescription, librariesToInstall);
-        prjCDesc.setActiveConfiguration(defaultConfigDescription);
+        Libraries.addLibrariesToProject(projectHandle, activeConfig, librariesToInstall);
+
         prjCDesc.setCdtProjectCreated();
         CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(projectHandle, prjCDesc, true,
                 null);
-        projectHandle.setDescription(desc, new NullProgressMonitor());
+  //      projectHandle.setDescription(desc, new NullProgressMonitor());
+        projectHandle.open(IResource.BACKGROUND_REFRESH, monitor);
         projectHandle.refreshLocal(IResource.DEPTH_INFINITE, null);
         monitor.done();
         return projectHandle;

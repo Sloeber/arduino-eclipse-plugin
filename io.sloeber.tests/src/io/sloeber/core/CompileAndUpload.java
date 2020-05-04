@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
@@ -155,9 +154,7 @@ public class CompileAndUpload {
 		try {
 
 			theTestProject = this.myBoard.getBoardDescriptor().createProject(
-					projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(),
-					codeDescriptor, compileOptions, monitor);
+					projectName, null,	codeDescriptor, compileOptions, monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();

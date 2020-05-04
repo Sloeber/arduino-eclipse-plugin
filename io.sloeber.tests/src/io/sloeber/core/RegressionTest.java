@@ -20,7 +20,6 @@ import org.junit.Test;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -89,7 +88,7 @@ public class RegressionTest {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+					codeDescriptor, new CompileOptions(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,8 +134,7 @@ public class RegressionTest {
 		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
 		try {
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null),
-					new NullProgressMonitor());
+					 codeDescriptor, new CompileOptions(null),	new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			if (Shared.hasBuildErrors(theTestProject)) {
@@ -164,8 +162,7 @@ public class RegressionTest {
 		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
 		try {
 			IProject theTestProject = unoBoard.getBoardDescriptor().createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null),
-					new NullProgressMonitor());
+					codeDescriptor, new CompileOptions(null), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			if (Shared.hasBuildErrors(theTestProject)) {
@@ -207,7 +204,7 @@ public class RegressionTest {
 			compileOptions.set_C_CompileOptions("-DTEST_C");
 			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
+					 codeDescriptor, compileOptions, monitor);
 			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
@@ -246,7 +243,7 @@ public class RegressionTest {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+					codeDescriptor, new CompileOptions(null), monitor);
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -282,7 +279,7 @@ public class RegressionTest {
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, new CompileOptions(null), monitor);
+					codeDescriptor, new CompileOptions(null), monitor);
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
