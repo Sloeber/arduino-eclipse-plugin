@@ -25,8 +25,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import io.sloeber.core.api.ConfigurationDescriptor;
 
-@SuppressWarnings("restriction")
-// TOFIX Get this code in CDT so I should not have to do this
+
 public class ShouldHaveBeenInCDT {
 	/*
 	 * Copied from wizard STDWizardHandler package package
@@ -54,7 +53,7 @@ public class ShouldHaveBeenInCDT {
 	 * @throws CoreException
 	 */
 	public static ICProjectDescription setCProjectDescription(IProject project,
-			ArrayList<ConfigurationDescriptor> alCfgs, boolean isManagedBuild, boolean enableParallelBuild, IProgressMonitor monitor)
+			ArrayList<ConfigurationDescriptor> alCfgs, boolean enableParallelBuild, IProgressMonitor monitor)
 			throws CoreException {
 
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
@@ -75,7 +74,7 @@ public class ShouldHaveBeenInCDT {
 			}
 			IBuilder bld = cfg.getEditableBuilder();
 			if (bld != null) {
-				bld.setManagedBuildOn(isManagedBuild);
+				bld.setManagedBuildOn(true);
 				cfg.setArtifactName("${ProjName}"); //$NON-NLS-1$
 			} else {
 				System.out.println("Messages.StdProjectTypeHandler_3"); //$NON-NLS-1$

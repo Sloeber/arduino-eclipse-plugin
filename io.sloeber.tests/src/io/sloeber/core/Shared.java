@@ -27,7 +27,6 @@ import org.osgi.framework.Bundle;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
@@ -136,7 +135,7 @@ public class Shared {
 		try {
 			compileOptions.setEnableParallelBuild(true);
 			theTestProject = boardDescriptor.createProject(projectName, null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescriptor, compileOptions, monitor);
+					codeDescriptor, compileOptions, monitor);
 			waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
