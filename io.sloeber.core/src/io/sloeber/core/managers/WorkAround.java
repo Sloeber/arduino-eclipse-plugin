@@ -102,7 +102,7 @@ public class WorkAround {
 			} catch (Exception e) {
 				// ignore and delete the file
 			}
-			if (!FIRST_SLOEBER_WORKAROUND_LINE.equals(firstLine)) {
+			if (!FIRST_SLOEBER_WORKAROUND_LINE.equals(firstLine.trim())) {
 				boardsSloeberTXT.delete();
 			}
 		}
