@@ -866,16 +866,17 @@ public class PackageManager {
 	
 	/**
 	 * If something has been installed or deinstalled update the global variables
-	 * with references to the installed stuff this to support platforms that do n,ot
-	 * explicitly define tools or platform dependencies
+	 * with references to the installed stuff this to support platforms that do not
+	 * explicitly define tools or platform dependencies Like private hardware
 	 */
 	public static void updateGlobalEnvironmentVariables() {
-		if(!platformsDirty) return;
+		if (!platformsDirty)
+			return;
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-		ICConfigurationDescription confDesc=null;
-		
+		ICConfigurationDescription confDesc = null;
+
 		// remove all added variables
 		IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
 		for (int i = (CurVariables.length - 1); i > 0; i--) {
@@ -883,19 +884,16 @@ public class PackageManager {
 				contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
 			}
 		}
-		
-		// add all arduino installed tools
+
+		// add all installed tools so private hardware can work
 		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
-			
-			
-				Package pkg = curPlatform.getParent();
-				if (pkg != null) {
-					if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) { 
-						Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false );
-					}
-				}
+
+			Package pkg = curPlatform.getParent();
+			if (pkg != null) {
+				Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
 			}
-		
+		}
+
 		platformsDirty = false;
 	}
 }
