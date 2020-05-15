@@ -209,19 +209,23 @@ public class WorkAround {
 
 				// workaround for infineon arm v1.4.0 overwriting the default to a wrong value
 				platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
-
-				Path platformTXTPath = new Path(requestedFileToWorkAround.toString());
-				int totalSegments = platformTXTPath.segmentCount();
-				String platformVersion = platformTXTPath.segment(totalSegments - 2);
-				String platformArchitecture = platformTXTPath.segment(totalSegments - 3);
-				String platformName = platformTXTPath.segment(totalSegments - 5);
-				if (Version.compare("1.8.0", platformVersion) != 1) {
-					if ("stm32".equals(platformArchitecture)) {
-						if ("STM32".equals(platformName)) {
-							platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
-							platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
+				
+				try {  // https://github.com/Sloeber/arduino-eclipse-plugin/issues/1182#
+					Path platformTXTPath = new Path(requestedFileToWorkAround.toString());
+					int totalSegments = platformTXTPath.segmentCount();
+					String platformVersion = platformTXTPath.segment(totalSegments - 2);
+					String platformArchitecture = platformTXTPath.segment(totalSegments - 3);
+					String platformName = platformTXTPath.segment(totalSegments - 5);
+					if (Version.compare("1.8.0", platformVersion) != 1) {
+						if ("stm32".equals(platformArchitecture)) {
+							if ("STM32".equals(platformName)) {
+								platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
+								platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
+							}
 						}
 					}
+				} catch (Exception e) {
+					// ignore
 				}
 
 				// for adafruit nfr
