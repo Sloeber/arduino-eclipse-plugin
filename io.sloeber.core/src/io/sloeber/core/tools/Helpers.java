@@ -1023,14 +1023,14 @@ public class Helpers extends Common {
 		return MakeKeyString(ERASE_START, string);
 	}
 
-	private static String MakeKeyString(String prefix, String string) {
-		String osString = "\\.\\.";
+	private static String MakeKeyString(String prefix, String key) {
+		String osString = "......................";
 		if (Platform.getOS().equals(Platform.OS_LINUX)) {
-			osString = "\\.LINUX";
+			osString = ".LINUX";
 		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			osString = "\\.WINDOWS";
+			osString = ".WINDOWS";
 		}
-		return prefix + string.toUpperCase().replaceAll(osString, new String());
+		return prefix + key.toUpperCase().replace(osString, new String());
 	}
 
 	/**
