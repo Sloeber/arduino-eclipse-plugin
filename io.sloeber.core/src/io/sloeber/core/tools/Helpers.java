@@ -984,19 +984,31 @@ public class Helpers extends Common {
 	 */
 	public static String MakeEnvironmentString(String inputString, String keyPrefix, boolean touppercase) {
 		try {
-		String ret = inputString.replaceAll("\\{(?!\\{)", "\\${" + keyPrefix);
+
+		
 		if (!touppercase) {
-			return ret;
+			return inputString.replace("{", "${" + keyPrefix);
 		}
-		StringBuilder sb = new StringBuilder(ret);
-		String regex = "\\{[^}]*\\}";
+		//These 2 markers need to be uppercase to support {compiler.{recipe.c}.cmd}
+		final String beginMarker="--!!BEGINFLAG!!--";
+		final String endMarker="--!!ENDFLAG!--";
+		String regex="(\\{([^\\{]*?)\\})"; //  \{([^\{]*?)\}
+		
+		
+		StringBuilder sb = new StringBuilder(inputString);
 		Pattern p = Pattern.compile(regex); // Create the pattern.
 		Matcher matcher = p.matcher(sb); // Create the matcher.
 		while (matcher.find()) {
-			String buf = sb.substring(matcher.start(), matcher.end()).toUpperCase();
+			String buf =  beginMarker+matcher.group(2).toUpperCase()+endMarker;
 			sb.replace(matcher.start(), matcher.end(), buf);
+			 matcher = p.matcher(sb);
 		}
-		return sb.toString();}
+
+		String ret= sb.toString();
+		ret=ret.replace(beginMarker, "${"+keyPrefix);
+		ret=ret.replace(endMarker, "}");
+		return ret;
+		}
 		catch (Exception e){
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
 					"Failed to parse environment var "+inputString, e));
