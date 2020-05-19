@@ -960,8 +960,11 @@ public class Helpers extends Common {
 	 * get "acceptable environment variable values" This method does the parsing
 	 * {xx} is replaced with ${XX} if to uppercase is true {xx} is replaced with
 	 * ${xx} if to uppercase is false
+	 * This method supports {ss.ss.{ff)dd} to ${A.SS.SS.${A.FF}DD}
 	 *
 	 * @param inputString the value string as read from the file
+	 * @param keyPrefix the prefix to add to the environment variable
+	 * @param touppercase whether or not the environment variables need to be put in uppercase
 	 * @return the string to be stored as value for the environment variable
 	 */
 	public static String MakeEnvironmentString(String inputString, String keyPrefix, boolean touppercase) {
