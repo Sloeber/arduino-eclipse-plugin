@@ -217,139 +217,133 @@ public class BoardDescriptor {
 		ParseSection(boardInfo);
 
 	}
-
-	private void ParseSection(Map<String, String> boardInfo) {
-		final String COLON = ":";
-		if (boardInfo == null) {
-			return; // there is a problem with the board ID
-		}
-		String core = boardInfo.get("build.core");
-		String variant = boardInfo.get("build.variant");
-		String upload = boardInfo.get("upload.tool");
-		// also search the options
-		for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-			String keyPrefix = "menu." + curOption.getKey() + '.' + curOption.getValue();
-			String coreOption = boardInfo.get(keyPrefix + ".build.core");
-			String variantOption = boardInfo.get(keyPrefix + ".build.variant");
-			String uploadOption = boardInfo.get(keyPrefix + ".upload.tool");
-			if (coreOption != null) {
-				core = coreOption;
-			}
-			if (variantOption != null) {
-				variant = variantOption;
-			}
-			if (uploadOption != null) {
-				upload = uploadOption;
-			}
-		}
-		String architecture = getArchitecture();
-		if (core != null) {
-			String valueSplit[] = core.split(":");
-			if (valueSplit.length == 2) {
-				String refVendor = valueSplit[0];
-				String actualValue = valueSplit[1];
-				myBoardsCore = actualValue;
-				myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
-				if (this.myReferencedCorePlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, core)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else if (valueSplit.length == 4) {
-				String refVendor = valueSplit[0];
-				String refArchitecture = valueSplit[1];
-				String refVersion = valueSplit[2];
-				String actualValue = valueSplit[3];
-				myBoardsCore = actualValue;
-				myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
-						refVersion);
-				if (this.myReferencedCorePlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, core)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else {
-				this.myBoardsCore = core;
-			}
-		}
-		if (variant != null) {
-			String valueSplit[] = variant.split(COLON);
-			if (valueSplit.length == 2) {
-				String refVendor = valueSplit[0];
-				String actualValue = valueSplit[1];
-				this.myBoardsVariant = actualValue;
-				this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
-						architecture);
-				if (this.myReferencedBoardVariantPlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, variant)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else if (valueSplit.length == 4) {
-				String refVendor = valueSplit[0];
-				String refArchitecture = valueSplit[1];
-				String refVersion = valueSplit[2];
-				String actualValue = valueSplit[3];
-				this.myBoardsVariant = actualValue;
-				if ("*".equals(refVersion)) {
-					this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
-							refArchitecture);
-				} else {
-					this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
-							refArchitecture, refVersion);
-				}
-				if (this.myReferencedBoardVariantPlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, variant)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else {
-				myBoardsVariant = variant;
-			}
-		}
-		if (upload != null) {
-			String valueSplit[] = upload.split(COLON);
-			if (valueSplit.length == 2) {
-				String refVendor = valueSplit[0];
-				String actualValue = valueSplit[1];
-				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
-						architecture);
-				if (this.myReferencedUploadToolPlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, upload)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else if (valueSplit.length == 4) {
-				String refVendor = valueSplit[0];
-				String refArchitecture = valueSplit[1];
-				String refVersion = valueSplit[2];
-				String actualValue = valueSplit[3];
-				this.myUploadTool = actualValue;
-				this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
-						refArchitecture, refVersion);
-				if (this.myReferencedUploadToolPlatformPath == null) {
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-							Messages.Helpers_tool_reference_missing.replaceAll(TOOL, upload)
-									.replaceAll(FILE, getReferencingBoardsFile().toString())
-									.replaceAll(BOARD, getBoardID())));
-					return;
-				}
-			} else {
-				myUploadTool = upload;
-			}
-		}
-
+    private void ParseSection(Map<String, String> boardInfo) {
+        final String COLON = ":";
+        if (boardInfo == null) {
+            return; // there is a problem with the board ID
+        }
+        String core = boardInfo.get("build.core");
+        String variant = boardInfo.get("build.variant");
+        String upload = boardInfo.get("upload.tool");
+        // also search the options
+        for (Entry<String, String> curOption : this.myOptions.entrySet()) {
+            String keyPrefix = "menu." + curOption.getKey() + '.' + curOption.getValue();
+            String coreOption = boardInfo.get(keyPrefix + ".build.core");
+            String variantOption = boardInfo.get(keyPrefix + ".build.variant");
+            String uploadOption = boardInfo.get(keyPrefix + ".upload.tool");
+            if (coreOption != null) {
+                core = coreOption;
+            }
+            if (variantOption != null) {
+                variant = variantOption;
+            }
+            if (uploadOption != null) {
+                upload = uploadOption;
+            }
+        }
+        String architecture = getArchitecture();
+        if (core != null) {
+            String valueSplit[] = core.split(":");
+            if (valueSplit.length == 2) {
+                String refVendor = valueSplit[0];
+                String actualValue = valueSplit[1];
+                myBoardsCore = actualValue;
+                myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
+                if (this.myReferencedCorePlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, core)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else if (valueSplit.length == 4) {
+                String refVendor = valueSplit[0];
+                String refArchitecture = valueSplit[1];
+                String refVersion = valueSplit[2];
+                String actualValue = valueSplit[3];
+                myBoardsCore = actualValue;
+                myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,refArchitecture, refVersion);
+                if (this.myReferencedCorePlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, core)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else {
+                this.myBoardsCore = core;
+            }
+        }
+        if (variant != null) {
+            String valueSplit[] = variant.split(COLON);
+            if (valueSplit.length == 2) {
+                String refVendor = valueSplit[0];
+                String actualValue = valueSplit[1];
+                this.myBoardsVariant = actualValue;
+                this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
+                if (this.myReferencedBoardVariantPlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, variant)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else if (valueSplit.length == 4) {
+                String refVendor = valueSplit[0];
+                String refArchitecture = valueSplit[1];
+                String refVersion = valueSplit[2];
+                String actualValue = valueSplit[3];
+                this.myBoardsVariant = actualValue;
+                if ("*".equals(refVersion)) {
+                    this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture);
+                } else {
+                    this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
+                            refVersion);
+                }
+                if (this.myReferencedBoardVariantPlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, variant)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else {
+                myBoardsVariant = variant;
+            }
+        }
+        if (upload != null) {
+            String valueSplit[] = upload.split(COLON);
+            if (valueSplit.length == 2) {
+                String refVendor = valueSplit[0];
+                String actualValue = valueSplit[1];
+                this.myUploadTool = actualValue;
+                this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
+                if (this.myReferencedUploadToolPlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, upload)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else if (valueSplit.length == 4) {
+                String refVendor = valueSplit[0];
+                String refArchitecture = valueSplit[1];
+                String refVersion = valueSplit[2];
+                String actualValue = valueSplit[3];
+                this.myUploadTool = actualValue;
+                this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
+                        refVersion);
+                if (this.myReferencedUploadToolPlatformPath == null) {
+                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, upload)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
+                    return;
+                }
+            } else {
+                myUploadTool = upload;
+            }
+        }
 	}
 
 	protected BoardDescriptor(ICConfigurationDescription confdesc) {

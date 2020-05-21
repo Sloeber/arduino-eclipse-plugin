@@ -386,8 +386,8 @@ public class TxtFile {
 			if (curOption.getKey().equalsIgnoreCase(lookupValue))
 				return curOption.getValue();
 		}
-		return Messages.Boards_Get_menu_item_name_from_id_did_not_find.replaceAll(MENUITEMID, menuItemID)
-				.replaceAll(MENUID, menuID).replaceAll(BOARDID, boardID);
+		return Messages.Boards_Get_menu_item_name_from_id_did_not_find.replace(MENUITEMID, menuItemID)
+				.replace(MENUID, menuID).replace(BOARDID, boardID);
 	}
 
 	public String getNameFromID(String myBoardID) {
@@ -471,8 +471,8 @@ public class TxtFile {
 				}
 			}
 		}
-		return Messages.Boards_Get_menu_item_id_from_name_failed.replaceAll(MENUITEMNAME, menuItemName).replaceAll(MENUID, menuID)
-				.replaceAll(BOARDID, boardID);
+		return Messages.Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName).replace(MENUID, menuID)
+				.replace(BOARDID, boardID);
 	}
 
 }

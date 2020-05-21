@@ -54,7 +54,7 @@ public class PlotterView extends ViewPart implements ServiceListener {
 					int curFsiStatus = mySCope.getInt(FLAG_MONITOR, 0) + 1;
 					mySCope.putInt(FLAG_MONITOR, curFsiStatus);
 					URL pluginStartInitiator = new URL(
-							PlotterView.this.uri.replaceAll(" ", "") + Integer.toString(curFsiStatus)); //$NON-NLS-1$ //$NON-NLS-2$
+							PlotterView.this.uri.replace(" ", "") + Integer.toString(curFsiStatus)); //$NON-NLS-1$ //$NON-NLS-2$
 					PlotterView.this.mstatus = pluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
 				}
