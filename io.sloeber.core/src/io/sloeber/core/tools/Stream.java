@@ -53,7 +53,7 @@ public class Stream {
 
 				while ((line = reader.readLine()) != null) {
 					for (Entry<String, String> currentReplace : replacers.entrySet()) {
-						line = line.replaceAll(currentReplace.getKey(), currentReplace.getValue());
+						line = line.replace(currentReplace.getKey(), currentReplace.getValue());
 					}
 					stringBuffer.append(line);
 					stringBuffer.append(newline);

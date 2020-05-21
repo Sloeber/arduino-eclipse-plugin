@@ -55,7 +55,7 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 		compilerCommand = compilerCommand + ' ' + extraOptions;
 
-		return compilerCommand.replaceAll(" -o ", " ");
+		return compilerCommand.replace(" -o ", " ");
 	}
 
 }

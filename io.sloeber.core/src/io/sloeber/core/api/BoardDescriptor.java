@@ -250,9 +250,9 @@ public class BoardDescriptor {
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, core)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, core)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -264,9 +264,9 @@ public class BoardDescriptor {
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,refArchitecture, refVersion);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, core)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, core)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else {
@@ -282,9 +282,9 @@ public class BoardDescriptor {
                 this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedBoardVariantPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, variant)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, variant)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -301,9 +301,9 @@ public class BoardDescriptor {
                 }
                 if (this.myReferencedBoardVariantPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, variant)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, variant)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else {
@@ -319,9 +319,9 @@ public class BoardDescriptor {
                 this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, upload)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, upload)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -334,9 +334,9 @@ public class BoardDescriptor {
                         refVersion);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replaceAll(TOOL, upload)
-                                    .replaceAll(FILE, getReferencingBoardsFile().toString())
-                                    .replaceAll(BOARD, getBoardID())));
+                            Messages.Helpers_tool_reference_missing.replace(TOOL, upload)
+                                    .replace(FILE, getReferencingBoardsFile().toString())
+                                    .replace(BOARD, getBoardID())));
                     return;
                 }
             } else {

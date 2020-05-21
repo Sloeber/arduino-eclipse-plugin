@@ -786,9 +786,9 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
 							}
 							// Replace the % with the file name
 							if (primaryOutput) {
-								myCommandOutputs.add(namePattern.replaceAll("%", fileName)); //$NON-NLS-1$
+								myCommandOutputs.add(namePattern.replace("%", fileName)); //$NON-NLS-1$
 							}
-							typeEnumeratedOutputs.add(namePattern.replaceAll("%", fileName)); //$NON-NLS-1$
+							typeEnumeratedOutputs.add(namePattern.replace("%", fileName)); //$NON-NLS-1$
 							if (variable.length() > 0) {
 								List<IPath> outputs = new ArrayList<>();
 								outputs.add(Path.fromOSString(fileName));
