@@ -4,6 +4,8 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -16,6 +18,7 @@ import io.sloeber.ui.monitor.views.SerialMonitor;
 @SuppressWarnings({"unused"})
 public class SerialListener implements MessageConsumer {
 	private static boolean myPlotterFilterFlag = false;
+	static boolean showTimestamps = false;
 	SerialMonitor theMonitor;
 	boolean isDisposed = false;
 	int theColorIndex;
@@ -122,16 +125,49 @@ public class SerialListener implements MessageConsumer {
 	public class TxtUpdater implements Runnable {
 		private boolean running = false;
 		private String additionalSerialData = new String();
+		private StringBuilder lineBuffer = new StringBuilder();
+
+		private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //$NON-NLS-1$
+		private static final String arduinoEOL = "\r\n"; //$NON-NLS-1$
+		private final int eolLength = arduinoEOL.length();
 
 		public synchronized void addData(String event) {
 			if (!event.isEmpty()) {
-				this.additionalSerialData = this.additionalSerialData + event;
-				if (!this.running || this.additionalSerialData.length() > 500) {
-					Display.getDefault().asyncExec(this);
-					this.running = true;
+				if (SerialListener.showTimestamps) {
+					boolean atLeastOneLine = false;
+					String ts = LocalTime.now().format(timeFormatter) + ": "; //$NON-NLS-1$
+
+					int begin = 0;
+					while (true) {
+						int idx = event.indexOf(arduinoEOL, begin);
+						if (idx >= 0) {
+							lineBuffer.append(event.substring(begin, idx + eolLength));
+							additionalSerialData += ts;
+							additionalSerialData += lineBuffer.toString();
+
+							lineBuffer.setLength(0);
+							begin = idx + eolLength;
+							atLeastOneLine = true;
+						} else {
+							lineBuffer.append(event.substring(begin));
+							break;
+						}
+					}
+
+					if (atLeastOneLine) {
+						Display.getDefault().asyncExec(this);
+						this.running = true;
+					}
+				} else {
+					this.additionalSerialData = this.additionalSerialData + event;
+					if (!this.running || this.additionalSerialData.length() > 500) {
+						Display.getDefault().asyncExec(this);
+						this.running = true;
+					}
 				}
 			}
 		}
+
 		private synchronized void synchronizedrun() {
 			try {
 				if (!SerialListener.this.isDisposed) {
@@ -155,11 +191,13 @@ public class SerialListener implements MessageConsumer {
 	@Override
 	public void event(String event) {
 		this.textUpdater.addData(event);
-
 	}
 
 	public static void setPlotterFilter(boolean selection) {
 		myPlotterFilterFlag = selection;
+	}
 
+	public static void setShowTimestamps(boolean showTimestamps) {
+		SerialListener.showTimestamps = showTimestamps;
 	}
 }

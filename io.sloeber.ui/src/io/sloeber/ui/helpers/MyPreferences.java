@@ -15,9 +15,9 @@ import io.sloeber.ui.Messages;
 /**
  * ArduinoPreferences is a class containing only static methods that help
  * managing the preferences.
- * 
+ *
  * @author Jan Baeyens
- * 
+ *
  */
 public class MyPreferences {
 
@@ -29,22 +29,23 @@ public class MyPreferences {
 	public static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
 	public static final String KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS = "Enable parallel build for new projects"; //$NON-NLS-1$
 	public static final String KEY_AUTO_INSTALL_LIBRARIES = "Gui entry for install libraries"; //$NON-NLS-1$
-	
+
 	public static final boolean DEFAULT_OPEN_SERIAL_WITH_MONITOR = true;
 	// Serial monitor keys
 	private static final String KEY_SERIAL_RATE = "Serial monitor last selected rate"; //$NON-NLS-1$
 	private static final String KEY_SERIAL_PORT = "Serial monitor last selected Port"; //$NON-NLS-1$
 	private static final String KEY_RXTX_LAST_USED_LINE_INDES = "Serial Monitor Last Used Line Ending index"; //$NON-NLS-1$
 	private static final String KEY_RXTX_LAST_USED_AUTOSCROLL = "Serial Monitor Last Used auto scroll setting"; //$NON-NLS-1$
+	private static final String KEY_RXTX_LAST_USED_TIMESTAMPS = "Serial Monitor Last Used show timestamps setting"; //$NON-NLS-1$
 	private static final String KEY_LAST_USED_PLOTTER_FILTER_MENU_OPTION = "Board plotter filter on off"; //$NON-NLS-1$
 	private static final String KEY_HIDE_JSON_FILES = "Hide json files in preferences platform selection page"; //$NON-NLS-1$
-	
+
 
 	/***
 	 * get the stored option whether a build before the upload is wanted or not.
 	 * If nothing is stored the option is ask and this method will pop up a
 	 * dialogbox
-	 * 
+	 *
 	 * @return true if a build is wanted before upload false if no build is
 	 *         wanted before upload
 	 */
@@ -190,7 +191,7 @@ public class MyPreferences {
 	/**
 	 * This method returns the index of the last used line ending options are CR
 	 * LF CR+LF none
-	 * 
+	 *
 	 * @return the index of the last used setting
 	 */
 	public static int getLastUsedSerialLineEnd() {
@@ -200,7 +201,7 @@ public class MyPreferences {
 	/**
 	 * This method returns the index of the last used line ending options are CR
 	 * LF CR+LF none
-	 * 
+	 *
 	 * @return the index of the last used setting
 	 */
 	public static void setLastUsedSerialLineEnd(int index) {
@@ -214,6 +215,14 @@ public class MyPreferences {
 	public static void setLastUsedAutoScroll(boolean autoScroll) {
 		setGlobalValue(KEY_RXTX_LAST_USED_AUTOSCROLL, autoScroll);
 
+	}
+
+	public static boolean getLastUsedShowTimestamps() {
+		return getGlobalBoolean(KEY_RXTX_LAST_USED_TIMESTAMPS, false);
+	}
+
+	public static void setLastUsedShowTimestamps(boolean showTimestamps) {
+		setGlobalValue(KEY_RXTX_LAST_USED_TIMESTAMPS, showTimestamps);
 	}
 
 	public static void setCleanSerialMonitorAfterUpload(boolean newFilter) {
@@ -260,7 +269,7 @@ public class MyPreferences {
 	public static void setHideJson(boolean state) {
 		setGlobalValue(KEY_HIDE_JSON_FILES, state);
 	}
-	
+
 	public static boolean getAutomaticallyInstallLibrariesOption() {
 		return getGlobalBoolean(KEY_AUTO_INSTALL_LIBRARIES,Defaults.autoInstallLibraries);
 	}
