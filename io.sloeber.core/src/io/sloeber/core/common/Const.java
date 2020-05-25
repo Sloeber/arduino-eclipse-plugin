@@ -20,14 +20,14 @@ public class Const {
 	public static final String ARDUINO = "arduino";
 
 	// Actions
-	public static final String ACTION_C_to_O = "RECIPE.C.O";
-	public static final String ACTION_CPP_to_O = "RECIPE.CPP.O";
-	public static final String ACTION_S_to_O = "RECIPE.S.O";
-	public static final String ACTION_OBJCOPY_to_HEX = "RECIPE.OBJCOPY.HEX";
-	public static final String ACTION_OBJCOPY_to_EEP = "RECIPE.OBJCOPY.EEP";
-	public static final String ACTION_SIZE = "RECIPE.SIZE";
-	public static final String ACTION_AR = "RECIPE.AR";
-	public static final String ACTION_C_COMBINE = "RECIPE.C.COMBINE";
+	public static final String ACTION_C_to_O = "recipe.c.o";
+	public static final String ACTION_CPP_to_O = "recipe.cpp.o";
+	public static final String ACTION_S_to_O = "recipe.s.o";
+	public static final String ACTION_OBJCOPY_to_HEX = "recipe.objcopy.hex";
+	public static final String ACTION_OBJCOPY_to_EEP = "recipe.objcopy.eep";
+	public static final String ACTION_SIZE = "recipe.size";
+	public static final String ACTION_AR = "recipe.ar";
+	public static final String ACTION_C_COMBINE = "recipe.c.combine";
 	//public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
 	//public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
@@ -52,14 +52,14 @@ public class Const {
 	public static final String ENV_KEY_JANTJE_START = "JANTJE.";
 	public static final String ERASE_START = "A" + DOT;
 
-	public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "UPLOAD.USE_1200BPS_TOUCH";
-	public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + "UPLOAD.WAIT_FOR_UPLOAD_PORT";
-	public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + "UPLOAD.FORCE_RESET_BEFORE_UPLOAD";
-	public static final String ENV_KEY_NETWORK_PORT = ERASE_START + "NETWORK.PORT";
-	public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "NETWORK.AUTH";
-    public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "BUILD.USE_ARCHIVER";
-	public static final String ENV_KEY_BUILD_MCU = ERASE_START + "BUILD.MCU";
-	public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = ERASE_START + "COMPILER.C.ELF.FLAGS";
+	public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + "upload.use_1200bps_touch";
+	public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + "upload.wait_for_upload_port";
+	public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + "upload.force_reset_before_upload";
+	public static final String ENV_KEY_NETWORK_PORT = ERASE_START + "network.port";
+	public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + "network.auth";
+    public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + "build.use_archiver";
+	public static final String ENV_KEY_BUILD_MCU = ERASE_START + "build.mcu";
+	public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = ERASE_START + "compiler.c.elf.flags";
 
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
 	public static final String ECLIPSE_HOME = "eclipse_home";
