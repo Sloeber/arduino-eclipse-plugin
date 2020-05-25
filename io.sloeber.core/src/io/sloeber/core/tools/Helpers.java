@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -78,11 +76,12 @@ import io.sloeber.core.managers.WorkAround;
  */
 public class Helpers extends Common {
 
-	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "BUILD.ARCH";
-	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "BUILD.GENERIC.PATH";
-	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "RUNTIME.HARDWARE.PATH";
-	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "RUNTIME.PLATFORM.PATH";
-	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "COMPILER.PATH";
+	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch";
+	private static final String ENV_KEY_BUILD_PATH = ERASE_START + "build.path";
+	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path";
+	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path";
+	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path";
+	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path";
 	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
 
 	private static final String MENU_KEY = "menu.";
@@ -476,7 +475,7 @@ public class Helpers extends Common {
 		// in pre_processing_platform_default.txt
 		String buildPath = confDesc.getProjectDescription().getProject().getLocation().append(confDesc.getName())
 				.toOSString();
-		setBuildEnvironmentVariable(contribEnv, confDesc, "A.BUILD.PATH", buildPath);
+		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_PATH, buildPath);
 		// end of workaround
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -504,7 +503,7 @@ public class Helpers extends Common {
 
 	private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, File envVarFile) {
-		setTheEnvironmentVariablesAddAFile(ERASE_START, contribEnv, confDesc, envVarFile, true);
+		setTheEnvironmentVariablesAddAFile(ERASE_START, contribEnv, confDesc, envVarFile);
 	}
 
 	/**
@@ -517,7 +516,7 @@ public class Helpers extends Common {
 	 * @param envVarFile The file to parse
 	 */
 	private static void setTheEnvironmentVariablesAddAFile(String prefix, IContributedEnvironment contribEnv,
-			ICConfigurationDescription confDesc, File envVarFile, boolean touppercase) {
+			ICConfigurationDescription confDesc, File envVarFile) {
 		try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(envVarFile));
 				BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));) {
 			String strLine;
@@ -529,7 +528,7 @@ public class Helpers extends Common {
 					if (var.length == 2) {
 						String value = var[1].trim();
 						setBuildEnvironmentVariable(contribEnv, confDesc, MakeKeyString(prefix, var[0]),
-								MakeEnvironmentString(value, prefix, touppercase));
+								MakeEnvironmentString(value, prefix));
 					}
 				}
 			}
@@ -577,7 +576,7 @@ public class Helpers extends Common {
 			// if it is not a menu item add it
 			if (!currentPair.getKey().startsWith(MENU_KEY)) {
 				String keyString = MakeKeyString(currentPair.getKey());
-				String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START, true);
+				String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START);
 				if (isLocalKey(currentPair.getKey())) {
 					localVariables.add(new EnvironmentVariable(keyString, valueString));
 				} else {
@@ -596,12 +595,12 @@ public class Helpers extends Common {
 				String menuID = keySplit[1];
 				String menuItemID = keySplit[2];
 
-				if (menuItemID.equalsIgnoreCase(options.get(menuID.toUpperCase()))) {
+				if (menuItemID.equalsIgnoreCase(options.get(menuID))) {
 					// we also need to skip the name
 					String StartValue = MENU + DOT + menuID + DOT + menuItemID + DOT; // $NON-NLS-1$
 					try {
 						String keyString = MakeKeyString(currentPair.getKey().substring(StartValue.length()));
-						String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START, true);
+						String valueString = MakeEnvironmentString(currentPair.getValue(), Const.ERASE_START);
 						contribEnv.addVariable(new EnvironmentVariable(keyString, valueString), confDesc);
 					} catch (@SuppressWarnings("unused") StringIndexOutOfBoundsException e) {
 						// ignore as this is the case when the menu name is
@@ -617,11 +616,11 @@ public class Helpers extends Common {
 	private static boolean isLocalKey(String key) {
 		String osString = "";
 		if (Platform.getOS().equals(Platform.OS_LINUX)) {
-			osString = ".LINUX";
+			osString = ".linux";
 		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			osString = ".WINDOWS";
+			osString = ".windows";
 		} else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-			osString = ".MACOSX";
+			osString = ".macosx";
 		}
 		return key.toUpperCase().endsWith(osString);
 
@@ -732,7 +731,7 @@ public class Helpers extends Common {
 		setTheEnvironmentVariablesSetTheDefaults(project.getName(), contribEnv, confDesc, boardsDescriptor);
 
 		// add the stuff that comes with the plugin that are marked as pre
-		setTheEnvironmentVariablesAddAFile(new String(), contribEnv, confDesc, pluginPreProcessingPlatformTxt, false);
+		setTheEnvironmentVariablesAddAFile(new String(), contribEnv, confDesc, pluginPreProcessingPlatformTxt);
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPreProcessingBoardsTxt, false);
 
 		File referencedPlatfromFile = boardsDescriptor.getreferencedPlatformFile();
@@ -877,7 +876,7 @@ public class Helpers extends Common {
 						if (endIndexOfVar != -1) {
 							String foundSuffix = value.substring(indexOfVar + 3, endIndexOfVar);
 							String foundVar = "A" + foundSuffix;
-							String replaceVar = "A.TOOLS." + toolID.toUpperCase() + foundSuffix;
+							String replaceVar = "A.tools." + toolID + foundSuffix;
 							if (!skipVarslist.contains(foundVar)) {
 								if (contribEnv.getVariable(foundVar, confDesc) == null) {
 									value = value.replace(foundVar, replaceVar);
@@ -964,38 +963,10 @@ public class Helpers extends Common {
 	 *
 	 * @param inputString the value string as read from the file
 	 * @param keyPrefix the prefix to add to the environment variable
-	 * @param touppercase whether or not the environment variables need to be put in uppercase
 	 * @return the string to be stored as value for the environment variable
 	 */
-	public static String MakeEnvironmentString(String inputString, String keyPrefix, boolean touppercase) {
-		try {
-
-			if (!touppercase) {
-				return inputString.replace("{", "${" + keyPrefix);
-			}
-			// These 2 markers need to be uppercase to support {compiler.{recipe.c}.cmd}
-			final String beginMarker = "--!!BEGINFLAG!!--";
-			final String endMarker = "--!!ENDFLAG!--";
-			String regex = "(\\{([^\\{]*?)\\})"; // \{([^\{]*?)\}
-
-			StringBuilder sb = new StringBuilder(inputString);
-			Pattern p = Pattern.compile(regex); // Create the pattern.
-			Matcher matcher = p.matcher(sb); // Create the matcher.
-			while (matcher.find()) {
-				String buf = beginMarker + matcher.group(2).toUpperCase() + endMarker;
-				sb.replace(matcher.start(), matcher.end(), buf);
-				matcher = p.matcher(sb);
-			}
-
-			String ret = sb.toString();
-			ret = ret.replace(beginMarker, "${" + keyPrefix);
-			ret = ret.replace(endMarker, "}");
-			return ret;
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to parse environment var " + inputString,
-					e));
-			return inputString;
-		}
+	public static String MakeEnvironmentString(String inputString, String keyPrefix) {
+		return inputString.replace("{", "${" + keyPrefix);
 	}
 
 	/**
@@ -1011,19 +982,21 @@ public class Helpers extends Common {
 	 * @param inputString the key string as read from the file
 	 * @return the string to be used as key for the environment variable
 	 */
-	private static String MakeKeyString(String string) {
+	private static String MakeKeyString(String key) {
 
-		return MakeKeyString(ERASE_START, string);
+		return MakeKeyString(ERASE_START, key);
 	}
 
 	private static String MakeKeyString(String prefix, String key) {
 		String osString = "......................";
 		if (Platform.getOS().equals(Platform.OS_LINUX)) {
-			osString = ".LINUX";
+			osString = ".linux";
 		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			osString = ".WINDOWS";
+			osString = ".windows";
+		}else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+			osString = ".macosx";
 		}
-		return prefix + key.toUpperCase().replace(osString, new String());
+		return prefix + key.replace(osString, new String());
 	}
 
 	/**

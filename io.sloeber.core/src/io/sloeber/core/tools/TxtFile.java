@@ -169,10 +169,9 @@ public class TxtFile {
 		Map<String, String> boardInfo = this.fileContent.get(boardID);
 		if (boardInfo != null) {
 			String SearchKey = MENU + DOT + menuID + DOT;
-			SearchKey = SearchKey.toUpperCase();
 			for (Entry<String, String> e2 : boardInfo.entrySet()) {
 				int numsubkeys = e2.getKey().split("\\.").length; //$NON-NLS-1$
-				boolean startOk = e2.getKey().toUpperCase().startsWith(SearchKey);
+				boolean startOk = e2.getKey().startsWith(SearchKey);
 				if ((numsubkeys == 3) && (startOk))
 					ret.add(e2.getValue());
 			}
@@ -200,11 +199,10 @@ public class TxtFile {
 		Map<String, String> boardInfo = this.fileContent.get(boardID);
 		if (boardInfo != null) {
 			String SearchKey = MENU + DOT + menuID + DOT;
-			SearchKey = SearchKey.toUpperCase();
 			for (Entry<String, String> e2 : boardInfo.entrySet()) {
 				String[] subKeys = e2.getKey().split("\\.");//$NON-NLS-1$
 				int numsubkeys = subKeys.length;
-				boolean startOk = e2.getKey().toUpperCase().startsWith(SearchKey);
+				boolean startOk = e2.getKey().startsWith(SearchKey);
 				if ((numsubkeys == 3) && (startOk))
 					ret.add(subKeys[2]);
 			}
@@ -451,10 +449,9 @@ public class TxtFile {
 		// look in the pre 1.5.4 way "menu".menuid.boardid.menuitemid=name
 		Map<String, String> menuSectionMap = getSection(MENU);
 		String lookupValue = menuID + DOT + boardID + DOT;
-		lookupValue = lookupValue.toUpperCase();
 		for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
 			if (curOption.getValue().equals(menuItemName)) {
-				if (curOption.getKey().toUpperCase().startsWith(lookupValue))
+				if (curOption.getKey().startsWith(lookupValue))
 					return curOption.getKey().substring(lookupValue.length());
 			}
 		}
