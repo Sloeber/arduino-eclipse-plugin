@@ -136,10 +136,14 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private static final String MY_FLAG_MONITOR = "FmStatus"; //$NON-NLS-1$
 	static final String uri = "h tt p://ba eye ns. i t/ec li pse/d ow nlo ad/mo nito rSta rt.ht m l?m="; //$NON-NLS-1$
-	static final String NL = System.getProperty("line.separator");
 
 	private static SerialMonitor instance = null;
 
+	/**
+	 * Call this method to get the instance of SerialMonitor.
+	 *
+	 * @return the (singleton) instance of SerialMonitor.
+	 */
 	public static synchronized SerialMonitor getSerialMonitor() {
 		if (instance == null) {
 			instance = new SerialMonitor();
@@ -148,7 +152,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * The constructor.
+	 * This constructor should only be called by Eclipse or {@link #getSerialMonitor()}.
+	 *
+	 * It is only public because Eclipse needs to call it.
 	 */
 	public SerialMonitor() {
 		if (instance != null) {
@@ -539,8 +545,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				theListener.event(NL + Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
-						+ NL);
+				String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
+				theListener.event(newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
+						+ newLine);
 				serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
 
