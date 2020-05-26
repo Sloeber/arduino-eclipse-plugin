@@ -58,13 +58,15 @@ public class Common extends Const {
 	 * filenames containing spaces in Windows, see Note 1 < less than used to
 	 * redirect input, allowed in Unix filenames, see Note 1 > greater than used
 	 * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
+	 * 
+	 * # is excluded as it is seen as a special character by make
 	 *
 	 * @param name
 	 *            the string that needs to be checked
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String name) {
-		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-' };
+		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-','#' };
 
 		String ret = name.trim();
 		for (char curchar : badChars) {
