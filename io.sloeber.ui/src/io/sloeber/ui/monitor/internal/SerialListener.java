@@ -32,7 +32,7 @@ public class SerialListener implements MessageConsumer {
 		event(internalMessage(newData));
 	}
 
-	 public String internalMessage(byte[] newData) {
+	public String internalMessage(byte[] newData) {
 		String ret = new String();
 		if (myPlotterFilterFlag) {
 			// filter plotter data
@@ -161,5 +161,9 @@ public class SerialListener implements MessageConsumer {
 	public static void setPlotterFilter(boolean selection) {
 		myPlotterFilterFlag = selection;
 
+	}
+
+	public int getColorIndex() {
+		return theColorIndex;
 	}
 }

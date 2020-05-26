@@ -69,7 +69,7 @@ import io.sloeber.ui.monitor.internal.SerialListener;
  * SerialMonitor implements the view that shows the serial monitor. Serial
  * monitor get sits data from serial Listener. 1 serial listener is created per
  * serial connection.
- * 
+ *
  */
 @SuppressWarnings({"unused"})
 public class SerialMonitor extends ViewPart implements ISerialUser {
@@ -81,6 +81,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// "io.sloeber.ui.monitor.views.SerialMonitor";
 	// If you increase this number you must also assign colors in plugin.xml
 	static private final int MY_MAX_SERIAL_PORTS = 6;
+	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
 	static private final URL IMG_CLEAR;
 	static private final URL IMG_LOCK;
@@ -138,7 +139,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private static SerialMonitor instance = null;
 
-	public static SerialMonitor getSerialMonitor() {
+	/**
+	 * Call this method to get the instance of SerialMonitor.
+	 *
+	 * @return the (singleton) instance of SerialMonitor.
+	 */
+	public static synchronized SerialMonitor getSerialMonitor() {
 		if (instance == null) {
 			instance = new SerialMonitor();
 		}
@@ -146,7 +152,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * The constructor.
+	 * This constructor should only be called by Eclipse or {@link #getSerialMonitor()}.
+	 *
+	 * It is only public because Eclipse needs to call it.
 	 */
 	public SerialMonitor() {
 		if (instance != null) {
@@ -160,7 +168,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		serialColorID = new String[MY_MAX_SERIAL_PORTS];
 		for (int i = 0; i < MY_MAX_SERIAL_PORTS; i++) {
 			serialColorID[i] = "io.sloeber.serial.color." + (1 + i); //$NON-NLS-1$
-
+			serialPortAllocated[i] = false;
 		}
 		SerialManager.registerSerialUser(this);
 
@@ -171,7 +179,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 					IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(MyPreferences.NODE_ARDUINO);
 					int curFsiStatus = myScope.getInt(MY_FLAG_MONITOR, 0) + 1;
 					myScope.putInt(MY_FLAG_MONITOR, curFsiStatus);
-					URL mypluginStartInitiator = new URL(uri.replace(" ", new String()) //$NON-NLS-1$ 
+					URL mypluginStartInitiator = new URL(uri.replace(" ", new String()) //$NON-NLS-1$
 							+ Integer.toString(curFsiStatus));
 					mypluginStartInitiator.getContent();
 				} catch (Exception e) {// JABA is not going to add code
@@ -263,7 +271,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			public void widgetSelected(SelectionEvent e) {
 				int index = lineTerminator.getCombo().getSelectionIndex();
 				GetSelectedSerial().write(sendString.getText(), SerialManager.getLineEnding(index));
-				sendString.setText(new String()); 
+				sendString.setText(new String());
 				sendString.setFocus();
 			}
 
@@ -303,12 +311,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
 		monitorOutput.setText(Messages.serialMonitorNoInput);
 		monitorOutput.addMouseListener(new MouseListener() {
-            
+
             @Override
             public void mouseUp(MouseEvent e) {
              // ignore
             }
-            
+
             @Override
             public void mouseDown(MouseEvent e) {
                 // If right button get selected text save it and start external tool
@@ -317,7 +325,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
                     if(!selectedText.isEmpty()) {
                         IProject selectedProject = ProjectExplorerListener.getSelectedProject();
                         if (selectedProject!=null) {
-                            
+
                             try {
                                 ICConfigurationDescription activeCfg=CoreModel.getDefault().getProjectDescription(selectedProject).getActiveConfiguration();
                                 String activeConfigName= activeCfg.getName();
@@ -329,11 +337,11 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
                                 e1.printStackTrace();
                             }
                         }
-                        
+
                     }
                 }
             }
-            
+
             @Override
             public void mouseDoubleClick(MouseEvent e) {
                 // ignore
@@ -348,7 +356,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	/**
 	 * GetSelectedSerial is a wrapper class that returns the serial port
 	 * selected in the combobox
-	 * 
+	 *
 	 * @return the serial port selected in the combobox
 	 */
 	protected Serial GetSelectedSerial() {
@@ -357,7 +365,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**
 	 * Looks in the open com ports with a port with the name as provided.
-	 * 
+	 *
 	 * @param comName
 	 *            the name of the comport you are looking for
 	 * @return the serial port opened in the serial monitor with the name equal
@@ -463,7 +471,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**
 	 * The listener calls this method to report that serial data has arrived
-	 * 
+	 *
 	 * @param stInfo
 	 *            The serial data that has arrived
 	 * @param style
@@ -511,7 +519,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**
 	 * Connect to a serial port and sets the listener
-	 * 
+	 *
 	 * @param comPort
 	 *            the name of the com port to connect to
 	 * @param baudRate
@@ -519,17 +527,33 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	public void connectSerial(String comPort, int baudRate) {
 		if (serialConnections.size() < MY_MAX_SERIAL_PORTS) {
-			int colorindex = serialConnections.size();
+			int colorindex = -1;
+			for (int idx = 0; idx < serialPortAllocated.length; idx++) {
+				if ( ! serialPortAllocated[idx]) {
+					colorindex = idx;
+					break;
+				}
+			}
+
+			if (colorindex < 0) {
+				Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.serialMonitorNoMoreSerialPortsSupported,
+						null));
+			}
+
 			Serial newSerial = new Serial(comPort, baudRate);
 			if (newSerial.IsConnected()) {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				String newLine=System.getProperty("line.separator");//$NON-NLS-1$
-				theListener.event( newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) ) 
-						+ newLine); 
+				String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
+				theListener.event(newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
+						+ newLine);
 				serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
+
+				// Only mark the serial port as allocated now everything is done with no errors.
+				serialPortAllocated[colorindex] = true;
+
 				return;
 			}
 		} else {
@@ -543,6 +567,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		Serial newSerial = GetSerial(comPort);
 		if (newSerial != null) {
 			SerialListener theListener = serialConnections.get(newSerial);
+			serialPortAllocated[theListener.getColorIndex()] = false;
 			serialConnections.remove(newSerial);
 			newSerial.removeListener(theListener);
 			newSerial.dispose();
@@ -552,7 +577,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void ComboSerialChanged() {
 		send.setEnabled(serialPorts.toString().length() > 0);
@@ -588,7 +613,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						monitorOutput.setText(new String()); 
+						monitorOutput.setText(new String());
 					}
 				});
 
