@@ -18,7 +18,6 @@ import io.sloeber.ui.monitor.views.SerialMonitor;
 @SuppressWarnings({"unused"})
 public class SerialListener implements MessageConsumer {
 	private static boolean myPlotterFilterFlag = false;
-	static boolean showTimestamps = false;
 	SerialMonitor theMonitor;
 	boolean isDisposed = false;
 	int theColorIndex;
@@ -125,11 +124,6 @@ public class SerialListener implements MessageConsumer {
 	public class TxtUpdater implements Runnable {
 		private boolean running = false;
 		private String additionalSerialData = new String();
-		private StringBuilder lineBuffer = new StringBuilder();
-
-		private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //$NON-NLS-1$
-		private static final String arduinoEOL = "\r\n"; //$NON-NLS-1$
-		private final int eolLength = arduinoEOL.length();
 
 		public synchronized void addData(String event) {
 			this.additionalSerialData = this.additionalSerialData + event;
