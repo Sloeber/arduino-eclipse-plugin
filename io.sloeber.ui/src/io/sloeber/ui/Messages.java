@@ -15,12 +15,12 @@ public class Messages extends NLS {
     public static final String EMAIL = "{EMAIL}"; //$NON-NLS-1$
     public static final String URL = "{URL}"; //$NON-NLS-1$
 
-    
-    
+
+
     public static String Invalid_Private_Hardware_folder;
     public static String Invalid_Private_Library_folder;
-    
-    
+
+
     public static String always;
     public static String arduino_upload_project_handler_build_failed;
     public static String arduino_upload_project_handler_build_failed_so_no_upload;
@@ -86,6 +86,7 @@ public class Messages extends NLS {
     public static String serialMonitorRemoveSerialPortFromMonitor;
     public static String serialMonitorReset;
     public static String serialMonitorScrollLock;
+    public static String serialMonitorShowTimestamps;
     public static String serialMonitorSend;
     public static String serial_listener_error;
     public static String set_or_remove_password;
