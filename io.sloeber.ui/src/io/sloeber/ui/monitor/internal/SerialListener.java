@@ -34,7 +34,7 @@ public class SerialListener implements MessageConsumer {
 		event(internalMessage(newData));
 	}
 
-	 public String internalMessage(byte[] newData) {
+	public String internalMessage(byte[] newData) {
 		String ret = new String();
 		if (myPlotterFilterFlag) {
 			// filter plotter data

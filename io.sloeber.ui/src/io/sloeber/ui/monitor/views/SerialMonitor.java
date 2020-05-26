@@ -156,7 +156,12 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private static SerialMonitor instance = null;
 
-	public static SerialMonitor getSerialMonitor() {
+	/**
+	 * Call this method to get the instance of SerialMonitor.
+	 *
+	 * @return the (singleton) instance of SerialMonitor.
+	 */
+	public static synchronized SerialMonitor getSerialMonitor() {
 		if (instance == null) {
 			instance = new SerialMonitor();
 		}
@@ -164,7 +169,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	/**
-	 * The constructor.
+	 * This constructor should only be called by Eclipse or {@link #getSerialMonitor()}.
+	 *
+	 * It is only public because Eclipse needs to call it.
 	 */
 	public SerialMonitor() {
 		if (instance != null) {
@@ -604,8 +611,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				String newLine=System.getProperty("line.separator");//$NON-NLS-1$
-				theListener.event( newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
+				String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
+				theListener.event(newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
 						+ newLine);
 				serialConnections.put(newSerial, theListener);
 				SerialPortsUpdated();
@@ -627,6 +634,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		if (newSerial != null) {
 
 			SerialListener theListener = serialConnections.get(newSerial);
+			serialPortAllocated[theListener.getColorIndex()] = false;
 			serialConnections.remove(newSerial);
 			newSerial.removeListener(theListener);
 
