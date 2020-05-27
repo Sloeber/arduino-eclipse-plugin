@@ -167,4 +167,8 @@ public class SerialListener implements MessageConsumer {
 	public int getColorIndex() {
 		return theColorIndex;
 	}
+
+	public int getColorIndex() {
+		return theColorIndex;
+	}
 }

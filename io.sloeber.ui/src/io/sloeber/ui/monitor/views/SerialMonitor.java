@@ -83,6 +83,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	// "io.sloeber.ui.monitor.views.SerialMonitor";
 	// If you increase this number you must also assign colors in plugin.xml
 	static private final int MY_MAX_SERIAL_PORTS = 6;
+	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
 	// This array is used to allocate the serial port IDs, which determine the color used
 	// in the text control.
