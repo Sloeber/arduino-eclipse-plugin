@@ -4,6 +4,8 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -132,6 +134,7 @@ public class SerialListener implements MessageConsumer {
 				}
 			}
 		}
+
 		private synchronized void synchronizedrun() {
 			try {
 				if (!SerialListener.this.isDisposed) {
@@ -155,12 +158,14 @@ public class SerialListener implements MessageConsumer {
 	@Override
 	public void event(String event) {
 		this.textUpdater.addData(event);
-
 	}
 
 	public static void setPlotterFilter(boolean selection) {
 		myPlotterFilterFlag = selection;
+	}
 
+	public int getColorIndex() {
+		return theColorIndex;
 	}
 
 	public int getColorIndex() {

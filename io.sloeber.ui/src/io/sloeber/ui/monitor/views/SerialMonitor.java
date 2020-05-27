@@ -3,6 +3,8 @@ package io.sloeber.ui.monitor.views;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,14 +85,26 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final int MY_MAX_SERIAL_PORTS = 6;
 	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
+	// This array is used to allocate the serial port IDs, which determine the color used
+	// in the text control.
+	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
+
+	// These StringBuilders are used to create discrete lines of text when in timestamp
+	// mode.
+	static private final StringBuilder[] lineBuffer = new StringBuilder[MY_MAX_SERIAL_PORTS];
+
+	static private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss"); //$NON-NLS-1$
+
 	static private final URL IMG_CLEAR;
 	static private final URL IMG_LOCK;
 	static private final URL IMG_FILTER;
+	static private final URL IMG_TIMESTAMP;
 
 	static {
 		IMG_CLEAR = Activator.getDefault().getBundle().getEntry("icons/clear_console.png"); //$NON-NLS-1$
 		IMG_LOCK = Activator.getDefault().getBundle().getEntry("icons/lock_console.png"); //$NON-NLS-1$
 		IMG_FILTER = Activator.getDefault().getBundle().getEntry("icons/filter_console.png"); //$NON-NLS-1$
+		IMG_TIMESTAMP = Activator.getDefault().getBundle().getEntry("icons/timestamp_console.png"); //$NON-NLS-1$
 	}
 
 	// Connect to a serial port
@@ -104,6 +118,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	private Action plotterFilter;
 	// clear serial monitor
 	private Action clear;
+	// Toggle timestamps on serial messages.
+	private Action showTimestamps;
 
 	// The string to send to the serial port
 	protected Text sendString;
@@ -123,6 +139,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	private String[] serialColorID = null;
 	// link to color registry
 	private ColorRegistry colorRegistry = null;
+
+	private boolean timestampMode = true;
 
 	static private Composite parent;
 
@@ -169,6 +187,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		for (int i = 0; i < MY_MAX_SERIAL_PORTS; i++) {
 			serialColorID[i] = "io.sloeber.serial.color." + (1 + i); //$NON-NLS-1$
 			serialPortAllocated[i] = false;
+			lineBuffer[i] = new StringBuilder();
 		}
 		SerialManager.registerSerialUser(this);
 
@@ -309,7 +328,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		ITheme currentTheme = themeManager.getCurrentTheme();
 		FontRegistry fontRegistry = currentTheme.getFontRegistry();
 		monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
-		monitorOutput.setText(Messages.serialMonitorNoInput);
+		monitorOutput.setText(Messages.serialMonitorNoInput + System.getProperty("line.separator"));
 		monitorOutput.addMouseListener(new MouseListener() {
 
             @Override
@@ -389,6 +408,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		manager.add(clear);
 		manager.add(scrollLock);
 		manager.add(plotterFilter);
+		manager.add(showTimestamps);
 		manager.add(connect);
 		manager.add(disconnect);
 	}
@@ -458,6 +478,18 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		plotterFilter.setEnabled(true);
 		plotterFilter.setChecked(MyPreferences.getLastUsedPlotterFilter());
 		SerialListener.setPlotterFilter(MyPreferences.getLastUsedPlotterFilter());
+
+		showTimestamps = new Action(Messages.serialMonitorShowTimestamps, IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				timestampMode = isChecked();
+				MyPreferences.setLastUsedShowTimestamps(isChecked());
+			}
+		};
+		showTimestamps.setImageDescriptor(ImageDescriptor.createFromURL(IMG_TIMESTAMP));
+		showTimestamps.setEnabled(true);
+		showTimestamps.setChecked(MyPreferences.getLastUsedShowTimestamps());
+		timestampMode = MyPreferences.getLastUsedShowTimestamps();
 	}
 
 	/**
@@ -479,11 +511,46 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 *            this is the index number of the opened port
 	 */
 	public void ReportSerialActivity(String stInfo, int style) {
+		String text = stInfo;
+
+		if (timestampMode) {
+			StringBuilder sb = new StringBuilder();
+			String ts = LocalTime.now().format(timeFormatter) + ": "; //$NON-NLS-1$
+
+			// Normalize the line endings.
+			text = text.replaceAll("\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			int begin = 0;
+			while (true) {
+				int idx = text.indexOf("\n", begin); //$NON-NLS-1$
+				if (idx >= 0) {
+					// Note the first time through this loop lineBuffer[style] may contain
+					// an incomplete line from the previously received chunk of data.
+					String substring = text.substring(begin, idx + 1);
+					lineBuffer[style].append(substring);
+					sb.append(ts);
+					sb.append(lineBuffer[style]);
+
+					lineBuffer[style].setLength(0);
+					begin = idx + 1;
+				} else {
+					// Save any remaining data for the next time through this method.
+					lineBuffer[style].append(text.substring(begin));
+					break;
+				}
+			}
+
+			if (sb.length() < 1) {
+				return;
+			}
+
+			text = sb.toString();
+		}
+
 		int startPoint = monitorOutput.getCharCount();
-		monitorOutput.append(stInfo);
+		monitorOutput.append(text);
 		StyleRange styleRange = new StyleRange();
 		styleRange.start = startPoint;
-		styleRange.length = stInfo.length();
+		styleRange.length = text.length();
 		styleRange.fontStyle = SWT.NORMAL;
 		styleRange.foreground = colorRegistry.get(serialColorID[style]);
 		monitorOutput.setStyleRange(styleRange);
@@ -566,10 +633,24 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	public void disConnectSerialPort(String comPort) {
 		Serial newSerial = GetSerial(comPort);
 		if (newSerial != null) {
+
 			SerialListener theListener = serialConnections.get(newSerial);
 			serialPortAllocated[theListener.getColorIndex()] = false;
 			serialConnections.remove(newSerial);
 			newSerial.removeListener(theListener);
+
+			int idx = theListener.getColorIndex();
+			serialPortAllocated[idx] = false;
+			if (lineBuffer[idx].length() > 0) {
+				// Flush any leftover data.
+				String str = lineBuffer[idx].toString();
+				str += System.getProperty("line.separator");
+				ReportSerialActivity(str, idx);
+
+				// Clear the leftover data out.
+				lineBuffer[idx].setLength(0);
+			}
+
 			newSerial.dispose();
 			theListener.dispose();
 			SerialPortsUpdated();
