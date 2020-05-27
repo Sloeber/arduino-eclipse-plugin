@@ -126,10 +126,12 @@ public class SerialListener implements MessageConsumer {
 		private String additionalSerialData = new String();
 
 		public synchronized void addData(String event) {
-			this.additionalSerialData = this.additionalSerialData + event;
-			if (!this.running || this.additionalSerialData.length() > 500) {
-				Display.getDefault().asyncExec(this);
-				this.running = true;
+			if (!event.isEmpty()) {
+				this.additionalSerialData = this.additionalSerialData + event;
+				if (!this.running || this.additionalSerialData.length() > 500) {
+					Display.getDefault().asyncExec(this);
+					this.running = true;
+				}
 			}
 		}
 
