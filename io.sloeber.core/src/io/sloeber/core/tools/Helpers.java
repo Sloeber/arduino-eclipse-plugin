@@ -37,7 +37,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -322,25 +321,7 @@ public class Helpers extends Common {
 		addCodeFolder(project, Path, NiceName, configurationDescription,forceRoot);
 	}
 
-	/**
-	 * addTheNatures replaces all existing natures by the natures needed for a
-	 * arduino project
-	 *
-	 * @param project
-	 *            The project where the natures need to be added to
-	 * @throws CoreException
-	 */
-	public static void addTheNatures(IProjectDescription description) throws CoreException {
 
-		String[] newnatures = new String[5];
-		newnatures[0] = "org.eclipse.cdt.core.cnature";
-		newnatures[1] = "org.eclipse.cdt.core.ccnature";
-		newnatures[2] = "org.eclipse.cdt.managedbuilder.core.managedBuildNature";
-		newnatures[3] = "org.eclipse.cdt.managedbuilder.core.ScannerConfigNature";
-		newnatures[4] = Const.ARDUINO_NATURE_ID;
-		description.setNatureIds(newnatures);
-
-	}
 
 	/**
 	 * This method adds the content of a content stream to a file If the file

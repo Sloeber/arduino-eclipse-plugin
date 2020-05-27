@@ -142,7 +142,6 @@
      <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
      <!-- TODO: Consider renaming as base. -->
      <configuration
-           artifactExtension="hex"
            cleanCommand="rm -f"
            id="io.sloeber.core.configuration.release"
            languageSettingsProviders="io.sloeber.languageSettingsProvider"
@@ -400,6 +399,7 @@
                  command="${JANTJE.SIZE.SWITCH} "
                  commandLinePattern="${COMMAND}"
                  id="io.sloeber.tool.size"
+                 isAbstract="false"
                  name="%tool.printsize.name">
               <inputType
                     buildVariable="HEX"
@@ -407,15 +407,17 @@
                     id="io.sloeber.tool.size.input"
                     multipleOfType="true"
                     primaryInput="true"
-                    sourceContentType="io.sloeber.tool.objcopy.output">
+                    sourceContentType="io.sloeber.tool.objcopy.output"
+                    sources="hex">
               </inputType>
               <outputType
                     buildVariable="SIZEDUMMY"
                     id="io.sloeber.tool.size.output"
                     multipleOfType="false"
-                    outputNames="sizedummy"
-                    outputs="${project}.size"
-                    primaryOutput="true">
+                    name="size info"
+                    outputNames="${ProjName}.size"
+                    outputs="size"
+                    primaryOutput="false">
               </outputType>
            </tool>
         </toolChain>
