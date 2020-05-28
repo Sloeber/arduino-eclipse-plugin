@@ -4,8 +4,6 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -168,7 +166,5 @@ public class SerialListener implements MessageConsumer {
 		return theColorIndex;
 	}
 
-	public int getColorIndex() {
-		return theColorIndex;
-	}
+
 }

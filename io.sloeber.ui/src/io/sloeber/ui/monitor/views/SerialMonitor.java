@@ -85,9 +85,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final int MY_MAX_SERIAL_PORTS = 6;
 	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
-	// This array is used to allocate the serial port IDs, which determine the color used
-	// in the text control.
-	static private final boolean[] serialPortAllocated = new boolean[MY_MAX_SERIAL_PORTS];
 
 	// These StringBuilders are used to create discrete lines of text when in timestamp
 	// mode.
@@ -99,6 +96,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final URL IMG_LOCK;
 	static private final URL IMG_FILTER;
 	static private final URL IMG_TIMESTAMP;
+	static private final String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
 
 	static {
 		IMG_CLEAR = Activator.getDefault().getBundle().getEntry("icons/clear_console.png"); //$NON-NLS-1$
@@ -328,7 +326,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		ITheme currentTheme = themeManager.getCurrentTheme();
 		FontRegistry fontRegistry = currentTheme.getFontRegistry();
 		monitorOutput.setFont(fontRegistry.get("io.sloeber.serial.fontDefinition")); //$NON-NLS-1$
-		monitorOutput.setText(Messages.serialMonitorNoInput + System.getProperty("line.separator"));
+		monitorOutput.setText(Messages.serialMonitorNoInput + newLine);
 		monitorOutput.addMouseListener(new MouseListener() {
 
             @Override
@@ -421,6 +419,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private void makeActions() {
 		connect = new Action() {
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
 				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());
@@ -480,6 +479,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		SerialListener.setPlotterFilter(MyPreferences.getLastUsedPlotterFilter());
 
 		showTimestamps = new Action(Messages.serialMonitorShowTimestamps, IAction.AS_CHECK_BOX) {
+			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
 				timestampMode = isChecked();
@@ -612,7 +612,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				newSerial.registerService();
 				SerialListener theListener = new SerialListener(this, colorindex);
 				newSerial.addListener(theListener);
-				String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
 				theListener.event(newLine+ Messages.serialMonitorConnectedTo.replace(Messages.PORT, comPort).replace(Messages.BAUD,Integer.toString(baudRate) )
 						+ newLine);
 				serialConnections.put(newSerial, theListener);
@@ -644,7 +643,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			if (lineBuffer[idx].length() > 0) {
 				// Flush any leftover data.
 				String str = lineBuffer[idx].toString();
-				str += System.getProperty("line.separator");
+				str += newLine;
 				ReportSerialActivity(str, idx);
 
 				// Clear the leftover data out.

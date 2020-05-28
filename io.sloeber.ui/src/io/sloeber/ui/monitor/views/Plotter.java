@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Event;
 /**
  * A plotter based on the scope.
  */
+@SuppressWarnings("synthetic-access")
 public class Plotter extends Canvas {
 	private int height = DEFAULT_HEIGHT;
 	private int width = DEFAULT_WIDTH;
@@ -154,6 +155,7 @@ public class Plotter extends Canvas {
 	 * @param backgroundColor if null use default background
 	 * @param foregroundColor if null use default foreground
 	 */
+
 	public Plotter(int channels, Composite parent, int style, Color backgroundColor, Color foregroundColor) {
 		super(parent, SWT.DOUBLE_BUFFERED | style);
 		Color bg = backgroundColor;

@@ -37,7 +37,7 @@ import io.sloeber.core.api.Node;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
-
+@SuppressWarnings("synthetic-access")
 public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	private FilteredTree tree;
