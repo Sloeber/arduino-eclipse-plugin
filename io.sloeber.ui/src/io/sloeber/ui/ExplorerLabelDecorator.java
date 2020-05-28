@@ -44,7 +44,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	@Override
 	public String decorateText(String text, Object element) {
 		IProject proj = (IProject) element;
-		if (proj.isOpen()) {
+		if (proj.isOpen() && proj.getLocation().toFile().exists()) {
 			if (Sketch.isSketch(proj)) {
 				ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(proj);
 				if (prjDesc == null) {
