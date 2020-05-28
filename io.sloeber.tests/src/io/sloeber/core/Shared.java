@@ -45,7 +45,9 @@ public class Shared {
 				return true;
 			}
 		}
-		return false;
+		IPath resultPath=project.getLocation().append("release");
+		resultPath=resultPath.append(project.getName()+".hex");
+		return !resultPath.toFile().exists();
 	}
 
 	public static void waitForAllJobsToFinish() {
