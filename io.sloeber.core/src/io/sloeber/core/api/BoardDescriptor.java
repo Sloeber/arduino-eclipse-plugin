@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -21,8 +22,14 @@ import org.eclipse.cdt.core.settings.model.ICExclusionPatternPathEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IProjectType;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -31,6 +38,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -520,29 +528,80 @@ public class BoardDescriptor {
     public IProject createProject(String projectName, URI projectURI,
             CodeDescriptor codeDescription, CompileOptions compileOptions, IProgressMonitor monitor) throws Exception {
 
-    	CCorePlugin cCorePlugin =CCorePlugin.getDefault();
-    			
+    	CCorePlugin cCorePlugin =CCorePlugin.getDefault();		
     	IWorkspace workspace = ResourcesPlugin.getWorkspace();
     	IWorkspaceRoot root = workspace.getRoot();
     	String realProjectName=Common.MakeNameCompileSafe(projectName);   
-		
+
+//		IProjectDescription description = workspace.newProjectDescription(realProjectName);
+//		if (projectURI != null) {
+//			description.setLocationURI(projectURI);
+//		}	
 		final IProject newProjectHandle = root.getProject(realProjectName);
 	
+//		newProjectHandle.create(description, new NullProgressMonitor());
+//		newProjectHandle.open( new NullProgressMonitor());
+//		
+//		ICProjectDescription prjCDesc = cCorePlugin.createProjectDescription(newProjectHandle, true,true);
+//		cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,null);
+//		
+//		cCorePlugin.createCProject(description, newProjectHandle, new NullProgressMonitor(),
+//				ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+//
 
-
-//		if (!newProjectHandle.exists()) {
-		//create standard cdt managed build project using sloeber typeid
 		ShouldHaveBeenInCDT.createNewManagedProject(newProjectHandle, projectURI,  "io.sloeber.core.sketch");
-		ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription( newProjectHandle);
 
+		// Create the base project
+
+
+//
+//
+//		ManagedBuildManager.createBuildInfo(newProjectHandle);
+//
+//
+//
+//		// Find the base project type definition
+//		IProjectType projType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch");
+//		IManagedProject newManagedProject = ManagedBuildManager.createManagedProject(newProjectHandle, projType);
+//
+//		ManagedBuildManager.setNewProjectVersion(newProjectHandle);
+//		// Copy over the configurations
+//		
+//		IConfiguration[] configs = projType.getConfigurations();
+//		for (int i = 0; i < configs.length; ++i) {
+//				newManagedProject.createConfiguration(configs[i], projType.getId() + "." + i);
+//		}
+//		
+//
+//		IConfiguration cfgs[] = newManagedProject.getConfigurations();
+//		for (int i = 0; i < cfgs.length; i++) {
+//			cfgs[i].setArtifactName(newManagedProject.getDefaultArtifactName());
+//		}
+//		
+//		
+//
+//		 prjCDesc = cCorePlugin.getProjectDescription( newProjectHandle);
+//		cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,null);
+//		
+//		boolean iscreating = prjCDesc.isCdtProjectCreating();
+////		cCorePlugin.mapCProjectOwner(newProjectHandle, ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID, false);
+//
+//		// Add C Nature ... does not add duplicates
+//		CProjectNature.addCNature(newProjectHandle, new NullProgressMonitor());
+////		cCorePlugin.createCProject(description, newProjectHandle, new NullProgressMonitor(),
+////				ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+		ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription( newProjectHandle);
+	
 		//add sloeber stuff
+		ManagedCProjectNature.addManagedNature(newProjectHandle, new NullProgressMonitor());
+		ManagedCProjectNature.addManagedBuilder(newProjectHandle, new NullProgressMonitor());
 		ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", monitor);
 		ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, monitor);
 		
 		
-		Helpers.createNewFolder(newProjectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
 
 
+		IConfiguration defaultConfig = null;
 //        // Add the Arduino folder
         for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
             compileOptions.save(curConfig);
@@ -577,6 +636,8 @@ public class BoardDescriptor {
         } else {
             // this should not happen
         }
+        
+		//Helpers.createNewFolder(newProjectHandle, Const.ARDUINO_CODE_FOLDER_NAME, null);
         Set<String> librariesToInstall = codeDescription.createFiles(newProjectHandle, monitor);
         IPath linkedPath = codeDescription.getLinkedExamplePath();
         if (linkedPath != null) {
@@ -584,9 +645,11 @@ public class BoardDescriptor {
         }
         Libraries.addLibrariesToProject(newProjectHandle, activeConfig, librariesToInstall);
 
-
+       
         cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true,null);
-
+        cCorePlugin.mapCProjectOwner(newProjectHandle, ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID, false);
+        ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
+        ManagedBuildManager.getBuildInfo(newProjectHandle).setValid(true);
         newProjectHandle.open(IResource.BACKGROUND_REFRESH, monitor);
         newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, null);
         monitor.done();
