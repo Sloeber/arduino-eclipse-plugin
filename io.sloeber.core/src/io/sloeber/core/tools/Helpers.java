@@ -800,7 +800,7 @@ public class Helpers extends Common {
 				recipe = recipe.replace(" -o ", " ");
 			}
 			String recipeParts[] = recipe.split(
-					"(\"\\$\\{A.OBJECT_FILE}\")|(\\$\\{A.OBJECT_FILES})|(\"\\$\\{A.SOURCE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE}\")|(\"[^\"]*\\$\\{A.ARCHIVE_FILE_PATH}\")",
+					"(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")",
 					3);
 			switch (recipeParts.length) {
 			case 0:
@@ -846,11 +846,11 @@ public class Helpers extends Common {
 				// Arduino uses the board approach for the tools.
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
-				if (name.startsWith("A.TOOLS.")) {
+				if (name.toUpperCase().startsWith("A.TOOLS.")) {
 					String skipVars[] = { "A.NETWORK.PASSWORD", "A.NETWORK.PORT", "A.UPLOAD.VERBOSE",
 							"A.NETWORK.AUTH" };
 					List<String> skipVarslist = new ArrayList<>(Arrays.asList(skipVars));
-					String toolID = curVariable.getName().split("\\.")[2];
+					String toolID = name.split("\\.")[2];
 					int indexOfVar = value.indexOf("${A.");
 					while (indexOfVar != -1) {
 						int endIndexOfVar = value.indexOf('}', indexOfVar);
@@ -858,17 +858,17 @@ public class Helpers extends Common {
 							String foundSuffix = value.substring(indexOfVar + 3, endIndexOfVar);
 							String foundVar = "A" + foundSuffix;
 							String replaceVar = "A.tools." + toolID + foundSuffix;
-							if (!skipVarslist.contains(foundVar)) {
+							if (!skipVarslist.contains(foundVar.toUpperCase())) {
 								if (contribEnv.getVariable(foundVar, confDesc) == null) {
 									value = value.replace(foundVar, replaceVar);
-									skipVarslist.add(replaceVar);
+									skipVarslist.add(replaceVar.toUpperCase());
 								}
 							}
 						}
 						indexOfVar = value.indexOf("${A.", indexOfVar + 4);
 					}
 				}
-				if (name.startsWith("A.RECIPE.OBJCOPY.") && name.endsWith(".PATTERN") && !value.isEmpty()) {
+				if (name.startsWith("A.recipe.objcopy.") && name.endsWith(".pattern") && !value.isEmpty()) {
 					// if the command starts with "cmd /c" removed the "cmd /c "
 					if (Platform.getOS().equals(Platform.OS_WIN32)) {
 						if (value.toLowerCase().startsWith("cmd /c ")) {
