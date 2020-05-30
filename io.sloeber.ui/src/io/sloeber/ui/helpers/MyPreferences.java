@@ -27,6 +27,7 @@ public class MyPreferences {
 	public static final String NODE_ARDUINO = "io.sloeber.core.ui"; //$NON-NLS-1$
 	public static final String KEY_OPEN_SERIAL_WITH_MONITOR = "Open serial connections with the monitor"; //$NON-NLS-1$
 	public static final String KEY_CLEAN_MONITOR_AFTER_UPLOAD = "Clean Serial Monitor after upload"; //$NON-NLS-1$
+	public static final String SWITCH_TO_MONITOR_AFTER_UPLOAD = "Switch to Serial Monitor after upload"; //$NON-NLS-1$
 	public static final String KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS = "Enable parallel build for new projects"; //$NON-NLS-1$
 	public static final String KEY_AUTO_INSTALL_LIBRARIES = "Gui entry for install libraries"; //$NON-NLS-1$
 
@@ -181,6 +182,10 @@ public class MyPreferences {
 	public static boolean getCleanSerialMonitorAfterUpload() {
 		return getGlobalBoolean(KEY_CLEAN_MONITOR_AFTER_UPLOAD, false);
 
+	}
+
+	public static boolean getSwitchToSerialMonitorAfterUpload() {
+		return getGlobalBoolean(SWITCH_TO_MONITOR_AFTER_UPLOAD, false);
 	}
 
 	public static boolean getEnableParallelBuildForNewProjects() {
