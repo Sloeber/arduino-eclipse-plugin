@@ -112,6 +112,7 @@ public class Messages extends NLS {
     public static String ui_auto_install_libraries;
     public static String ui_build_before_upload;
     public static String ui_clean_serial_monitor_after_upload;
+    public static String ui_switch_to_serial_monitor_after_upload;
     public static String ui_enable_parallel_build_for_new_projects;
     public static String ui_error_select_arduino_project;
     public static String ui_import_arduino_libraries_in_project;

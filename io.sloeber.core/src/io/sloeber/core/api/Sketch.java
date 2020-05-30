@@ -37,7 +37,7 @@ import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 public class Sketch {
 	// preference nodes
 	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-	
+
 	public static IStatus isUploadableProject(IProject project) {
 		try {
 			if (project == null || !project.hasNature(Const.ARDUINO_NATURE_ID)) {
@@ -51,9 +51,9 @@ public class Sketch {
 	/**
 	 * Asynchronous upload of the sketch.
 	 * The upload status has to be followed in the GUI
-	 * 
+	 *
 	 * @param project
-	 * 
+	 *
 	 */
 	public static Job asyncUpload(IProject project) {
 		IStatus ret = isUploadableProject(project);
@@ -71,7 +71,7 @@ public class Sketch {
 
 	/**
 	 * Synchronous upload of the sketch returning the status.
-	 * 
+	 *
 	 * @param project
 	 * @return the status of the upload. Status.OK means upload is OK
 	 */
@@ -94,20 +94,22 @@ public class Sketch {
 			return  new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_failed, e);
 		}
 	}
-	
+
 	/**
 	 * Synchronous upload of the sketch with the errors shown in the gui.
-	 * 
+	 *
 	 * @param project
 	 * @return the status of the upload. Status.OK means upload is OK
 	 */
-	public static void upload(IProject project) {
+	public static boolean upload(IProject project) {
 		IStatus ret = syncUpload(project);
 		if (!ret.isOK()) {
 			Common.log(ret);
 		}
+
+		return ret.isOK();
 	}
-	
+
 	/**
 	 * Verifies a project. Builds the active configuration If the build fails
 	 * returns false else tru

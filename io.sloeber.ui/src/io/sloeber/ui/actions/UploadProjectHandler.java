@@ -12,6 +12,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import io.sloeber.core.api.PackageManager;
@@ -50,7 +52,21 @@ class UploadJobHandler extends Job {
 	    }
 	}
 	if(canUpload) {
-		Sketch.upload(UploadJobHandler.this.myBuildProject);
+		if (Sketch.upload(UploadJobHandler.this.myBuildProject)) {
+			if (MyPreferences.getSwitchToSerialMonitorAfterUpload()) {
+				Display.getDefault().asyncExec(new Runnable() {
+				    @Override
+				    public void run() {
+						try {
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+							.showView("io.sloeber.ui.monitor.views.SerialMonitor"); //$NON-NLS-1$
+						} catch (PartInitException e) {
+							e.printStackTrace();
+						}
+				    }
+				});
+			}
+		}
 	}
 	return Status.OK_STATUS;
     }
@@ -59,9 +75,9 @@ class UploadJobHandler extends Job {
 /**
  * This is a handler to connect the plugin.xml to the code for uploading code to
  * arduino teensy ..
- * 
+ *
  * @author jan
- * 
+ *
  */
 public class UploadProjectHandler extends AbstractHandler {
 

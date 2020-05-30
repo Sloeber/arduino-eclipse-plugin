@@ -61,6 +61,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	private BooleanFieldEditor useArduinoToolchainSelectionEditor;
 	private BooleanFieldEditor pragmaOnceHeaderOptionEditor;
 	private BooleanFieldEditor cleanSerialMonitorAfterUploadEditor;
+	private BooleanFieldEditor switchToSerialMonitorAfterUploadEditor;
 	private BooleanFieldEditor enableParallelBuildForNewProjects;
 	private BooleanFieldEditor enableBonjour;
 
@@ -153,7 +154,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
             }
         }
         if(filtered) {
-            return filteredList.toArray(new String[0]);  
+            return filteredList.toArray(new String[0]);
         }
 
         return null;
@@ -199,7 +200,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Dialog.applyDialogFont(parent);
 		createLine(parent, 4);
 		String[][] YesNoAskOptions = new String[][] { { Messages.ui_ask_every_upload, "ASK" }, //$NON-NLS-1$
-				{ Messages.yes, TRUE }, { Messages.no, FALSE } }; 
+				{ Messages.yes, TRUE }, { Messages.no, FALSE } };
 		this.buildBeforeUploadOptionEditor = new ComboFieldEditor(MyPreferences.KEY_BUILD_BEFORE_UPLOAD_OPTION,
 				Messages.ui_build_before_upload, YesNoAskOptions, parent);
 		addField(this.buildBeforeUploadOptionEditor);
@@ -231,15 +232,19 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 				Messages.ui_clean_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.cleanSerialMonitorAfterUploadEditor);
 
+		this.switchToSerialMonitorAfterUploadEditor = new BooleanFieldEditor(MyPreferences.SWITCH_TO_MONITOR_AFTER_UPLOAD,
+				Messages.ui_switch_to_serial_monitor_after_upload, BooleanFieldEditor.DEFAULT, parent);
+		addField(this.switchToSerialMonitorAfterUploadEditor);
+
 		this.enableParallelBuildForNewProjects = new BooleanFieldEditor(MyPreferences.KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS,
 				Messages.ui_enable_parallel_build_for_new_projects, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableParallelBuildForNewProjects);
-		
-		
+
+
 		this.enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
 				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableBonjour);
-		
+
 		createLine(parent, 4);
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText("Your HashKey: " + Other.getSystemHash()); //$NON-NLS-1$
