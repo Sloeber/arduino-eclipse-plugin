@@ -99,7 +99,7 @@ public class Sketch {
 	 * Synchronous upload of the sketch with the errors shown in the gui.
 	 *
 	 * @param project
-	 * @return the status of the upload. Status.OK means upload is OK
+	 * @return the status of the upload. true means upload is OK
 	 */
 	public static boolean upload(IProject project) {
 		IStatus ret = syncUpload(project);
