@@ -802,22 +802,46 @@ public class Helpers extends Common {
 			String recipeParts[] = recipe.split(
 					"(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")",
 					3);
+			String key=recipeKey ;
+			setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+					makeEnvironmentVar(key));
 			switch (recipeParts.length) {
 			case 0:
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1',
+				key=recipeKey + DOT + '1';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key,
 						"echo no command for \"{KEY}\".".replace(KEY, recipeKey));
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
 				break;
 			case 1:
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
+				key=recipeKey + DOT + '1';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
 				break;
 			case 2:
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
+				key=recipeKey + DOT + '1';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
+				key=recipeKey + DOT + '2';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
 				break;
 			case 3:
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '1', recipeParts[0]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '2', recipeParts[1]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, recipeKey + DOT + '3', recipeParts[2]);
+				key=recipeKey + DOT + '1';
+				setBuildEnvironmentVariable(contribEnv, confDesc,key, recipeParts[0]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
+				key=recipeKey + DOT + '2';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[1]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
+				key=recipeKey + DOT + '3';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[2]);
+				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
+						makeEnvironmentVar(key));
 				break;
 			default:
 				// this should never happen as the split is limited to 3

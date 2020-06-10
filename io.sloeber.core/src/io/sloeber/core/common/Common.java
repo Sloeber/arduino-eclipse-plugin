@@ -28,12 +28,11 @@ import io.sloeber.core.Activator;
 
 @SuppressWarnings({"nls","unused"})
 public class Common extends Const {
-	private static final String ENV_PATTERN = "PATTERN";
-	private static final String ENV_PROTOCOL = "PROTOCOL";
-	protected static final String ENV_TOOL = "TOOL";
+    private static final String ENV_PATTERN = "pattern";
+    private static final String ENV_PROTOCOL = "protocol";
+    protected static final String ENV_TOOL = "tool";
 	private static String eclipseHomeValue = null;
 	static {
-
 		try {
 			ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
 			ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
@@ -284,7 +283,7 @@ public class Common extends Const {
 	 * @return the environment variable key to find the protocol
 	 */
 	public static String get_ENV_KEY_PROTOCOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+		return ERASE_START + action + DOT + ENV_PROTOCOL;
 	}
 
 	/**
@@ -294,7 +293,7 @@ public class Common extends Const {
 	 * @return the environment variable key to find the tool
 	 */
 	public static String get_ENV_KEY_TOOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_TOOL;
+		return ERASE_START + action + DOT + ENV_TOOL;
 	}
 
 	/**
@@ -304,15 +303,15 @@ public class Common extends Const {
 	 * @return he environment variable key to find the recipe
 	 */
 	public static String get_ENV_KEY_RECIPE(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+		return ERASE_START + action + DOT + ENV_PATTERN;
 	}
 
 	public static String get_Jantje_KEY_PROTOCOL(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+		return ENV_KEY_JANTJE_START + action + DOT + ENV_PROTOCOL;
 	}
 
 	public static String get_Jantje_KEY_RECIPE(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+		return ENV_KEY_JANTJE_START + action + DOT + ENV_PATTERN;
 	}
 
 	/**
@@ -323,7 +322,7 @@ public class Common extends Const {
 	 * @return he environment variable key to find the recipe
 	 */
 	public static String get_ENV_KEY_RECIPE(String tool, String action) {
-		return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
+		return ERASE_START + "TOOLS" + DOT + tool + DOT + action + DOT + ENV_PATTERN; //$NON-NLS-1$
 	}
 	
 	/**

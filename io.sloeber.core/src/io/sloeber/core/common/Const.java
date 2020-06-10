@@ -22,7 +22,7 @@ public class Const {
 	// Actions
 	public static final String ACTION_C_to_O = "recipe.c.o";
 	public static final String ACTION_CPP_to_O = "recipe.cpp.o";
-	public static final String ACTION_S_to_O = "recipe.s.o";
+	public static final String ACTION_S_to_O = "recipe.S.o";
 	public static final String ACTION_OBJCOPY_to_HEX = "recipe.objcopy.hex";
 	public static final String ACTION_OBJCOPY_to_EEP = "recipe.objcopy.eep";
 	public static final String ACTION_SIZE = "recipe.size";
