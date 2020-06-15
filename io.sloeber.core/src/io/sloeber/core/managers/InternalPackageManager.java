@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +54,7 @@ import io.sloeber.core.tools.MyMultiStatus;
 
 public class InternalPackageManager extends PackageManager {
 
-	private static final String  FILE = Messages.FILE;
+	private static final String FILE = Messages.FILE;
 	private static final String FOLDER = Messages.FOLDER;
 	private static boolean myIsReady = false;
 
@@ -76,11 +77,11 @@ public class InternalPackageManager extends PackageManager {
 		if (!LibraryManager.libsAreInstalled()) {
 			LibraryManager.InstallDefaultLibraries(monitor);
 		}
-		IPath examplesPath=ConfigurationPreferences.getInstallationPathExamples();
-		if(!examplesPath.toFile().exists()) {//examples are not installed
+		IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
+		if (!examplesPath.toFile().exists()) {// examples are not installed
 			// Download arduino IDE example programs
-			Common.log(downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE,
-					examplesPath, false, monitor)); 
+			Common.log(
+					downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath, false, monitor));
 		}
 		if (allBoards.isEmpty()) { // If no boards are installed
 
@@ -88,19 +89,26 @@ public class InternalPackageManager extends PackageManager {
 
 			if (mstatus.isOK()) {
 				// if successfully installed the examples: add the boards
+				ArduinoPlatform platform = null;
+				Collection<ArduinoPlatform> latestsPlatforms = PackageManager.getLatestPlatforms();
+				if (!latestsPlatforms.isEmpty()) {
+					platform = latestsPlatforms.iterator().next();
+					for (ArduinoPlatform curPlatform : latestsPlatforms) {
 
-				Package pkg = getPackageIndices().get(0).getPackages().get(0);
-				if (pkg != null) {
-					ArduinoPlatform platform = pkg.getLatestPlatform(Defaults.DEFAULT_INSTALL_PLATFORM_NAME, false);
-					if (platform == null) {
-						ArduinoPlatform[] platformList = new ArduinoPlatform[pkg.getLatestPlatforms().size()];
-						pkg.getLatestPlatforms().toArray(platformList);
-						platform = platformList[0];
-					}
-					if (platform != null) {
-						mstatus.addErrors(downloadAndInstall(platform, false, monitor));
+						if (Defaults.DEFAULT_INSTALL_PLATFORM_NAME.equalsIgnoreCase(curPlatform.getName())
+								&& Defaults.DEFAULT_INSTALL_ARCHITECTURE.equalsIgnoreCase(curPlatform.getArchitecture())
+								&& Defaults.DEFAULT_INSTALL_MAINTAINER
+										.equalsIgnoreCase(curPlatform.getParent().getMaintainer())) {
+							platform = curPlatform;
+						}
 					}
 				}
+				if (platform == null) {
+					mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.No_Platform_available));
+				} else {
+					mstatus.addErrors(downloadAndInstall(platform, false, monitor));
+				}
+
 			}
 			if (!mstatus.isOK()) {
 				StatusManager stMan = StatusManager.getManager();
@@ -125,7 +133,6 @@ public class InternalPackageManager extends PackageManager {
 	static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 			IProgressMonitor monitor) {
 
-		
 		MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platform.getName()); //$NON-NLS-1$
 		mstatus.addErrors(downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(),
 				platform.getInstallPath(), forceDownload, monitor));
@@ -133,12 +140,10 @@ public class InternalPackageManager extends PackageManager {
 			// no use going on installing tools if the boards failed installing
 			return mstatus;
 		}
-		File packageFile=platform.getParent().getParent().getJsonFile();
-		File copyToFile=platform.getInstallPath().append( packageFile.getName()).toFile();
+		File packageFile = platform.getParent().getParent().getJsonFile();
+		File copyToFile = platform.getInstallPath().append(packageFile.getName()).toFile();
 		try {
-			Files.copy(packageFile.toPath(),
-					copyToFile.toPath(),
-			        StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,7 +165,7 @@ public class InternalPackageManager extends PackageManager {
 			}
 		}
 
-		WorkAround.applyKnownWorkArounds( platform);
+		WorkAround.applyKnownWorkArounds(platform);
 		return mstatus;
 
 	}
@@ -171,7 +176,6 @@ public class InternalPackageManager extends PackageManager {
 		}
 		return packageIndices;
 	}
-
 
 	static public List<Board> getBoards() {
 		List<Board> boards = new ArrayList<>();
@@ -330,10 +334,8 @@ public class InternalPackageManager extends PackageManager {
 	 * done with processArchive so only files types supported by this method will be
 	 * properly extracted
 	 *
-	 * @param pURL
-	 *            the url of the file to download
-	 * @param pArchiveFileName
-	 *            the name of the file in the download folder
+	 * @param pURL             the url of the file to download
+	 * @param pArchiveFileName the name of the file in the download folder
 	 * @param pInstallPath
 	 * @param pForceDownload
 	 * @param pMonitor
@@ -351,7 +353,8 @@ public class InternalPackageManager extends PackageManager {
 				myCopy(dl, archivePath.toFile(), true);
 			}
 		} catch (IOException e) {
-			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL), e);
+			return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
+					e);
 		}
 		return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archivePath.toString(), pMonitor);
 	}
@@ -398,7 +401,7 @@ public class InternalPackageManager extends PackageManager {
 		// (because creating a file in a folder alters the folder's timestamp)
 		Map<File, Long> foldersTimestamps = new HashMap<>();
 
-		String pathPrefix = new String(); 
+		String pathPrefix = new String();
 
 		Map<File, File> hardLinks = new HashMap<>();
 		Map<File, Integer> hardLinksMode = new HashMap<>();
@@ -471,8 +474,9 @@ public class InternalPackageManager extends PackageManager {
 
 			// Strip the common path prefix when requested
 			if (!name.startsWith(pathPrefix)) {
-				throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name).replace(FOLDER, pathPrefix));
-				
+				throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
+						.replace(FOLDER, pathPrefix));
+
 			}
 			name = name.substring(pathPrefix.length());
 			if (name.isEmpty()) {
@@ -483,7 +487,8 @@ public class InternalPackageManager extends PackageManager {
 			File outputLinkedFile = null;
 			if (isLink && linkName != null) {
 				if (!linkName.startsWith(pathPrefix)) {
-					throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name).replace(FOLDER, pathPrefix));
+					throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
+							.replace(FOLDER, pathPrefix));
 				}
 				linkName = linkName.substring(pathPrefix.length());
 				outputLinkedFile = new File(destFolder, linkName);
@@ -492,7 +497,8 @@ public class InternalPackageManager extends PackageManager {
 				// Symbolic links are referenced with relative paths
 				outputLinkedFile = new File(linkName);
 				if (outputLinkedFile.isAbsolute()) {
-					System.err.println(Messages.Manager_archive_error_symbolic_link_to_absolute_path.replace(FILE, outputFile.toString()).replace(FOLDER, outputLinkedFile.toString()));
+					System.err.println(Messages.Manager_archive_error_symbolic_link_to_absolute_path
+							.replace(FILE, outputFile.toString()).replace(FOLDER, outputLinkedFile.toString()));
 					System.err.println();
 				}
 			}
@@ -501,15 +507,14 @@ public class InternalPackageManager extends PackageManager {
 			if (isDirectory) {
 				if (outputFile.isFile() && !overwrite) {
 					throw new IOException(
-							Messages.Manager_Cant_create_folder_exists.replace(FILE, outputFile.getPath()) );
+							Messages.Manager_Cant_create_folder_exists.replace(FILE, outputFile.getPath()));
 				}
 			} else {
 				// - isLink
 				// - isSymLink
 				// - anything else
 				if (outputFile.exists() && !overwrite) {
-					throw new IOException(
-							Messages.Manager_Cant_extract_file_exist.replace(FILE, outputFile.getPath()));
+					throw new IOException(Messages.Manager_Cant_extract_file_exist.replace(FILE, outputFile.getPath()));
 				}
 			}
 
@@ -585,14 +590,15 @@ public class InternalPackageManager extends PackageManager {
 	}
 
 	/*
-	 * create a link file at the level of the os
-	 * using mklink /H on windows makes that no admin rights are needed
+	 * create a link file at the level of the os using mklink /H on windows makes
+	 * that no admin rights are needed
 	 */
 	@SuppressWarnings("nls")
 	private static void link(File actualFile, File linkName) throws IOException, InterruptedException {
-		String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() }; 
+		String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() };
 		if (SystemUtils.IS_OS_WINDOWS) {
-			command = new String[] { "cmd","/c","mklink", "/H",linkName.getAbsolutePath(), actualFile.getAbsolutePath() }; 
+			command = new String[] { "cmd", "/c", "mklink", "/H", linkName.getAbsolutePath(),
+					actualFile.getAbsolutePath() };
 		}
 		Process process = Runtime.getRuntime().exec(command, null, null);
 		process.waitFor();
@@ -637,7 +643,8 @@ public class InternalPackageManager extends PackageManager {
 			while (leftToWrite > 0) {
 				int length = in.read(buffer);
 				if (length <= 0) {
-					throw new IOException(Messages.Manager_Failed_to_extract.replace(FILE, outputFile.getAbsolutePath()));
+					throw new IOException(
+							Messages.Manager_Failed_to_extract.replace(FILE, outputFile.getAbsolutePath()));
 				}
 				fos.write(buffer, 0, length);
 				leftToWrite -= length;
@@ -657,7 +664,7 @@ public class InternalPackageManager extends PackageManager {
 
 		activeUrls.removeAll(packageUrlsToRemove);
 
-		ConfigurationPreferences.setJsonURLs(activeUrls.toArray((String[])null));
+		ConfigurationPreferences.setJsonURLs(activeUrls.toArray((String[]) null));
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {

@@ -25,6 +25,7 @@ public class Messages extends NLS {
 	public static final String VERSION =  "{VERSION}"; //$NON-NLS-1$
 	public static final String HOST =  "{HOST}"; //$NON-NLS-1$
 	
+	
 
 
 
@@ -103,6 +104,7 @@ public class Messages extends NLS {
 	public static String uploader_Failed_to_get_upload_recipe;
 	public static String uploader_no_reset_using_network;
 	public static String uploader_no_reset_using_programmer;
+	public static String No_Platform_available ;
 
 	static {
 		// initialize resource bundle
