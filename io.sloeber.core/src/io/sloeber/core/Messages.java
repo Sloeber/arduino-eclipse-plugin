@@ -21,9 +21,12 @@ public class Messages extends NLS {
 	public static final String BOARD = "{BOARD}"; //$NON-NLS-1$
 	public static final String CONFIG = "{CONFIG}"; //$NON-NLS-1$
 	public static final String KEY = "{KEY}"; //$NON-NLS-1$
-	public static final String FOLDER = "{FOLDER}"; //$NON-NLS-1$
-	public static final String VERSION = "{VERSION}"; //$NON-NLS-1$
-	public static final String HOST = "{HOST}"; //$NON-NLS-1$
+	public static final String FOLDER =  "{FOLDER}"; //$NON-NLS-1$
+	public static final String VERSION =  "{VERSION}"; //$NON-NLS-1$
+	public static final String HOST =  "{HOST}"; //$NON-NLS-1$
+	
+	
+
 
 	public static String ArduinoSerial_Comport_Appeared_and_disappeared;
 	public static String ArduinoSerial_Comport_is_not_behaving_as_expected;
@@ -99,6 +102,8 @@ public class Messages extends NLS {
 	public static String uploader_no_reset_using_network;
 	public static String uploader_no_reset_using_programmer;
 	public static String BoardsManagerIsBussy;
+	public static String No_Platform_available ;
+
 
 	static {
 		// initialize resource bundle

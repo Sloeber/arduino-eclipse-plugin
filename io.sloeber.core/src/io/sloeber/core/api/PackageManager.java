@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -173,10 +174,7 @@ public class PackageManager {
 	 * Install all the latest platforms Assumes there are less than 100000 platforms
 	 */
 	public static void installAllLatestPlatforms() {
-		if (!isReady()) {
-			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
-			return;
-		}
+
 		installsubsetOfLatestPlatforms(0, 100000);
 	}
 
@@ -185,6 +183,7 @@ public class PackageManager {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
 			return;
 		}
+
 		platformsDirty = true;
 		Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
 		if (curPackage != null) {
@@ -912,4 +911,19 @@ public class PackageManager {
 
 		platformsDirty = false;
 	}
+
+	/**
+	 * Only the latest versions of the platforms.
+	 *
+	 * @return latest platforms
+	 */
+	public static Collection<ArduinoPlatform> getLatestPlatforms() {
+		Collection<ArduinoPlatform> allLatestPlatforms = new LinkedList<ArduinoPlatform>();
+		List<Package> allPackages = InternalPackageManager.getPackages();
+		for (Package curPackage : allPackages) {
+			allLatestPlatforms.addAll(curPackage.getLatestPlatforms());
+		}
+		return allLatestPlatforms;
+	}
+
 }
