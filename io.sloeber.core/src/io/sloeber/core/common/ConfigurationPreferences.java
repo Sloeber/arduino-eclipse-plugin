@@ -3,10 +3,6 @@ package io.sloeber.core.common;
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -14,10 +10,7 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
@@ -48,13 +41,45 @@ public class ConfigurationPreferences {
 	private static final String DEFAULT_JSON_URLS = "https://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
-			+ "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL; //$NON-NLS-1$
+			+ "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
+			+ KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
-	private ConfigurationPreferences() {
+	private static Path myEclipseHome = null;
+	private static String systemHash = "no hash generated"; //$NON-NLS-1$
+	static {
+		// Get the location we will use to save sloeber files
+		myEclipseHome = new Path(Common.eclipseHomeValue);
+
+		// make a hashkey to identify the system
+		Collection<String> macs = new TreeSet<>();
+		Enumeration<NetworkInterface> inters;
+		try {
+			inters = NetworkInterface.getNetworkInterfaces();
+
+			while (inters.hasMoreElements()) {
+				NetworkInterface inter = inters.nextElement();
+				if (inter.getHardwareAddress() == null) {
+					continue;
+				}
+				if (inter.isVirtual()) {
+					continue;
+				}
+				byte curmac[] = inter.getHardwareAddress();
+				StringBuilder b = new StringBuilder();
+				for (byte curbyte : curmac) {
+					b.append(String.format("%02X", Byte.valueOf(curbyte))); //$NON-NLS-1$
+				}
+				macs.add(b.toString());
+			}
+		} catch (@SuppressWarnings("unused") SocketException e) {
+			// ignore
+		}
+		Integer hascode = Integer.valueOf(macs.toString().hashCode());
+		systemHash = hascode.toString();
 	}
 
 	private static void removeKey(String key) {
@@ -92,25 +117,8 @@ public class ConfigurationPreferences {
 		}
 	}
 
-	private static Path myEclipseHome = null;
-
 	public static Path getEclipseHome() {
-		if (myEclipseHome == null) {
-
-			try {
-				URL resolvedUrl = Platform.getInstallLocation().getURL();
-				URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
-				myEclipseHome = new Path(Paths.get(resolvedUri).toString());
-			} catch (URISyntaxException e) {
-				// this should not happen
-				// but it seems a space in the path makes it happen
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						"Eclipse fails to provide its own installation folder :-(. \nThis is known to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
-						e));
-			}
-		}
 		return myEclipseHome;
-
 	}
 
 	public static IPath getInstallationPath() {
@@ -217,8 +225,6 @@ public class ConfigurationPreferences {
 		setBoolean(KEY_UPDATE_JASONS, newFlag);
 	}
 
-	private static String systemHash = null;
-
 	/**
 	 * Make a unique hashKey based on system parameters so we can identify users To
 	 * make the key the mac addresses of the network cards are used
@@ -226,36 +232,7 @@ public class ConfigurationPreferences {
 	 * @return a unique key identifying the system
 	 */
 	public static String getSystemHash() {
-		if (systemHash != null) {
-			return systemHash;
-		}
-		Collection<String> macs = new TreeSet<>();
-		Enumeration<NetworkInterface> inters;
-		try {
-			inters = NetworkInterface.getNetworkInterfaces();
-
-			while (inters.hasMoreElements()) {
-				NetworkInterface inter = inters.nextElement();
-				if (inter.getHardwareAddress() == null) {
-					continue;
-				}
-				if (inter.isVirtual()) {
-					continue;
-				}
-				byte curmac[] = inter.getHardwareAddress();
-				StringBuilder b = new StringBuilder();
-				for (byte curbyte : curmac) {
-					b.append(String.format("%02X",  Byte.valueOf(curbyte))); //$NON-NLS-1$
-				}
-				macs.add(b.toString());
-			}
-		} catch (@SuppressWarnings("unused") SocketException e) {
-			// ignore
-		}
-		Integer hascode =  Integer.valueOf(macs.toString().hashCode());
-		systemHash = hascode.toString();
 		return systemHash;
 	}
-
 
 }

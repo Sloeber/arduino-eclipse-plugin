@@ -47,9 +47,9 @@ public class TxtFile {
 	private static final String TXT_NAME_KEY_TAG = "name"; //$NON-NLS-1$
 	private static final String MENU = Const.MENU;
 	private static final String MENUITEMID = Messages.MENUITEMID;
-	private static final String MENUID =  Messages.MENUID;
-	private static final String BOARDID =  Messages.BOARDID;
-	private static final String MENUITEMNAME =  Messages.MENUITEMNAME;
+	private static final String MENUID = Messages.MENUID;
+	private static final String BOARDID = Messages.BOARDID;
+	private static final String MENUITEMNAME = Messages.MENUITEMNAME;
 	private static final String NAME = Messages.NAME;
 	private static final String ID = Messages.ID;
 	private static final String FILE = Messages.FILE;
@@ -60,23 +60,22 @@ public class TxtFile {
 
 	public TxtFile(File boardsFileName, boolean workAround) {
 
-		this.mLastLoadedTxtFile =boardsFileName;
+		this.mLastLoadedTxtFile = boardsFileName;
 		File actuallyLoadedTxtFile = mLastLoadedTxtFile;
 		// If the file doesn't exist ignore it.
 		if (!boardsFileName.exists()) {
-			return ;
+			return;
 		}
 
-		if(workAround) {
-			actuallyLoadedTxtFile =WorkAround.MakeBoardsSloeberTxt(boardsFileName);
+		if (workAround) {
+			actuallyLoadedTxtFile = WorkAround.MakeBoardsSloeberTxt(boardsFileName);
 		}
-		
+
 		if (!actuallyLoadedTxtFile.exists()) {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-					"Worked around file " +actuallyLoadedTxtFile.toString() + " does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
-			return ;
+					"Worked around file " + actuallyLoadedTxtFile.toString() + " does not exist.")); //$NON-NLS-1$ //$NON-NLS-2$
+			return;
 		}
-
 
 		this.fileContent.clear();
 
@@ -97,12 +96,10 @@ public class TxtFile {
 		}
 	}
 
-
 	/**
 	 * This method returns the full section so custom processing can be done.
 	 *
-	 * @param SectionKey
-	 *            the first name on the line before the .
+	 * @param SectionKey the first name on the line before the .
 	 * @return all entries that match the filter
 	 */
 	public Map<String, String> getSection(String SectionKey) {
@@ -153,10 +150,8 @@ public class TxtFile {
 	 * Get all the acceptable values for a option for a board The outcome of this
 	 * method can be used to fill a
 	 *
-	 * @param menu
-	 *            the id of a menu not the name
-	 * @param boardID
-	 *            the id of a board not the name
+	 * @param menu    the id of a menu not the name
+	 * @param boardID the id of a board not the name
 	 * @return The nice names that are the possible selections
 	 */
 	public String[] getMenuItemNamesFromMenuID(String menuID, String boardID) {
@@ -183,10 +178,8 @@ public class TxtFile {
 	 * Get all the acceptable values for a option for a board The outcome of this
 	 * method can be used to fill a
 	 *
-	 * @param menu
-	 *            the id of a menu not the name
-	 * @param boardID
-	 *            the id of a board not the name
+	 * @param menu    the id of a menu not the name
+	 * @param boardID the id of a board not the name
 	 * @return The IDs that are the possible selections
 	 */
 	public ArrayList<String> getMenuItemIDsFromMenuID(String menuID, String boardID) {
@@ -256,7 +249,6 @@ public class TxtFile {
 		return sBoards;
 	}
 
-
 	/**
 	 * Given a nice name look for the ID The assumption is that the txt file
 	 * contains a line like ID.name=[nice name] Given this this method returns ID
@@ -280,12 +272,9 @@ public class TxtFile {
 	 * <p>
 	 * Taken from preferences.java in the arduino source
 	 *
-	 * @param input
-	 *            the input stream to load
-	 * @param table
-	 *            the Map to load the values to
-	 * @throws IOException
-	 *             when something goes wrong??
+	 * @param input the input stream to load
+	 * @param table the Map to load the values to
+	 * @throws IOException when something goes wrong??
 	 */
 	static private void load(File inputFile, Map<String, String> table) throws IOException {
 		try (FileInputStream input = new FileInputStream(inputFile);) {
@@ -310,8 +299,7 @@ public class TxtFile {
 	 * Loads an input stream into an array of strings representing each line of the
 	 * input stream
 	 *
-	 * @param input
-	 *            the input stream to load
+	 * @param input the input stream to load
 	 * @return the array of strings representing the inputStream
 	 */
 	static private String[] loadStrings(InputStream input) {
@@ -365,7 +353,7 @@ public class TxtFile {
 				}
 			}
 		}
-		return  Messages.Boards_menu_ID_not_found.replace(ID,menuID );
+		return Messages.Boards_menu_ID_not_found.replace(ID, menuID);
 	}
 
 	public String getMenuItemNameFromMenuItemID(String boardID, String menuID, String menuItemID) {
@@ -393,7 +381,7 @@ public class TxtFile {
 		if (boardSection == null) {
 			return new String();
 		}
-		return boardSection.get("name"); //$NON-NLS-1$
+		return boardSection.get(TXT_NAME_KEY_TAG);
 	}
 
 	/*
@@ -442,7 +430,7 @@ public class TxtFile {
 				}
 			}
 		}
-		return Messages.Boards_menu_name_not_found.replace(NAME,menuName );
+		return Messages.Boards_menu_name_not_found.replace(NAME, menuName);
 	}
 
 	public String getMenuItemIDFromMenuItemName(String boardID, String menuID, String menuItemName) {
@@ -468,8 +456,8 @@ public class TxtFile {
 				}
 			}
 		}
-		return Messages.Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName).replace(MENUID, menuID)
-				.replace(BOARDID, boardID);
+		return Messages.Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName)
+				.replace(MENUID, menuID).replace(BOARDID, boardID);
 	}
 
 }
