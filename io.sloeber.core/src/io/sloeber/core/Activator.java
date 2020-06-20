@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -32,6 +31,7 @@ import org.osgi.service.prefs.Preferences;
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
@@ -94,7 +94,7 @@ public class Activator extends AbstractUIPlugin {
 
 		// add required properties for Arduino serial port on linux, if not
 		// defined
-		if (Platform.getOS().equals(Platform.OS_LINUX) && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
+		if (Const.isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
 			System.setProperty(ENV_KEY_GNU_SERIAL_PORTS, ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
 		}
 		remind();
@@ -186,7 +186,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	private static boolean isInstallPathToLong() {
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (Const.isWindows) {
 			return installPath.toString().length() > 40;
 		}
 		return false;
@@ -393,7 +393,6 @@ public class Activator extends AbstractUIPlugin {
 					} catch (BackingStoreException e) {
 						// this should not happen
 					}
-
 					PleaseHelp.doHelp(HELP_LOC);
 				}
 				remind();

@@ -48,13 +48,45 @@ public class ConfigurationPreferences {
 	private static final String DEFAULT_JSON_URLS = "https://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
 			+ "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
-			+ "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL; //$NON-NLS-1$
+			+ "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
+			+ KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
-	private ConfigurationPreferences() {
+	private static Path myEclipseHome = null;
+	private static String systemHash = "no hash generated"; //$NON-NLS-1$
+	static {
+		// Get the location we will use to save sloeber files
+		myEclipseHome = getEclipseHome();
+
+		// make a hashkey to identify the system
+		Collection<String> macs = new TreeSet<>();
+		Enumeration<NetworkInterface> inters;
+		try {
+			inters = NetworkInterface.getNetworkInterfaces();
+
+			while (inters.hasMoreElements()) {
+				NetworkInterface inter = inters.nextElement();
+				if (inter.getHardwareAddress() == null) {
+					continue;
+				}
+				if (inter.isVirtual()) {
+					continue;
+				}
+				byte curmac[] = inter.getHardwareAddress();
+				StringBuilder b = new StringBuilder();
+				for (byte curbyte : curmac) {
+					b.append(String.format("%02X", Byte.valueOf(curbyte))); //$NON-NLS-1$
+				}
+				macs.add(b.toString());
+			}
+		} catch (@SuppressWarnings("unused") SocketException e) {
+			// ignore
+		}
+		Integer hascode = Integer.valueOf(macs.toString().hashCode());
+		systemHash = hascode.toString();
 	}
 
 	private static void removeKey(String key) {
@@ -92,8 +124,6 @@ public class ConfigurationPreferences {
 		}
 	}
 
-	private static Path myEclipseHome = null;
-
 	public static Path getEclipseHome() {
 		if (myEclipseHome == null) {
 
@@ -120,7 +150,6 @@ public class ConfigurationPreferences {
 			}
 		}
 		return myEclipseHome;
-
 	}
 
 	public static IPath getInstallationPath() {
@@ -227,8 +256,6 @@ public class ConfigurationPreferences {
 		setBoolean(KEY_UPDATE_JASONS, newFlag);
 	}
 
-	private static String systemHash = null;
-
 	/**
 	 * Make a unique hashKey based on system parameters so we can identify users To
 	 * make the key the mac addresses of the network cards are used
@@ -236,36 +263,7 @@ public class ConfigurationPreferences {
 	 * @return a unique key identifying the system
 	 */
 	public static String getSystemHash() {
-		if (systemHash != null) {
-			return systemHash;
-		}
-		Collection<String> macs = new TreeSet<>();
-		Enumeration<NetworkInterface> inters;
-		try {
-			inters = NetworkInterface.getNetworkInterfaces();
-
-			while (inters.hasMoreElements()) {
-				NetworkInterface inter = inters.nextElement();
-				if (inter.getHardwareAddress() == null) {
-					continue;
-				}
-				if (inter.isVirtual()) {
-					continue;
-				}
-				byte curmac[] = inter.getHardwareAddress();
-				StringBuilder b = new StringBuilder();
-				for (byte curbyte : curmac) {
-					b.append(String.format("%02X",  Byte.valueOf(curbyte))); //$NON-NLS-1$
-				}
-				macs.add(b.toString());
-			}
-		} catch (@SuppressWarnings("unused") SocketException e) {
-			// ignore
-		}
-		Integer hascode =  Integer.valueOf(macs.toString().hashCode());
-		systemHash = hascode.toString();
 		return systemHash;
 	}
-
 
 }

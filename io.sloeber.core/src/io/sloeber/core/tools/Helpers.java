@@ -42,7 +42,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -66,7 +65,6 @@ import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 import io.sloeber.core.managers.WorkAround;
 
-@SuppressWarnings({ "nls" })
 /**
  * ArduinoHelpers is a static class containing general purpose functions
  *
@@ -75,15 +73,15 @@ import io.sloeber.core.managers.WorkAround;
  */
 public class Helpers extends Common {
 
-	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch";
-	private static final String ENV_KEY_BUILD_PATH = ERASE_START + "build.path";
-	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path";
-	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path";
-	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path";
-	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path";
-	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "MAKE_LOCATION";
+	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch"; //$NON-NLS-1$
+	private static final String ENV_KEY_BUILD_PATH = ERASE_START + "build.path"; //$NON-NLS-1$
+	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
+	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path"; //$NON-NLS-1$
+	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path"; //$NON-NLS-1$
+	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "make_location"; //$NON-NLS-1$
 
-	private static final String MENU_KEY = "menu.";
+	private static final String MENU_KEY = "menu."; //$NON-NLS-1$
 
 	private static final String PROJECT = Messages.PROJECT;
 	private static final String CONFIG = Messages.CONFIG;
@@ -128,7 +126,7 @@ public class Helpers extends Common {
 			ICLanguageSetting lang = languageSettings[idx];
 			String LangID = lang.getLanguageId();
 			if (LangID != null) {
-				if (LangID.startsWith("org.eclipse.cdt.")) {
+				if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
 					ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 					ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length + 1];
 					System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
@@ -157,7 +155,7 @@ public class Helpers extends Common {
 			ICLanguageSetting lang = languageSettings[idx];
 			String LangID = lang.getLanguageId();
 			if (LangID != null) {
-				if (LangID.startsWith("org.eclipse.cdt.")) {
+				if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
 					ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 					ICLanguageSettingEntry[] OrgIncludeEntriesFull = lang
 							.getResolvedSettingEntries(ICSettingEntry.INCLUDE_PATH);
@@ -169,7 +167,7 @@ public class Helpers extends Common {
 							OrgIncludeEntries[copiedEntry++] = OrgIncludeEntries[curEntry];
 						} else {
 							Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-									"Removed invalid include path" + cusPath, null));
+									"Removed invalid include path" + cusPath, null)); //$NON-NLS-1$
 						}
 					}
 					if (copiedEntry != OrgIncludeEntries.length) // do not save
@@ -251,7 +249,7 @@ public class Helpers extends Common {
 		// Now the folder has been created we need to make sure the special
 		// folders are added to the path
 
-		String possibleIncludeFolder = "utility";
+		String possibleIncludeFolder = "utility"; //$NON-NLS-1$
 		File file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
 			addIncludeFolder(folderDescription, link.getFullPath().append(possibleIncludeFolder));
@@ -270,7 +268,7 @@ public class Helpers extends Common {
 			}
 		}
 
-		possibleIncludeFolder = "arch";
+		possibleIncludeFolder = "arch"; //$NON-NLS-1$
 		file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
 			InternalBoardDescriptor boardDescriptor = new InternalBoardDescriptor(configurationDescription);
@@ -313,6 +311,9 @@ public class Helpers extends Common {
 		String NiceName = Path.lastSegment();
 		addCodeFolder(project, Path, NiceName, configurationDescription, forceRoot);
 	}
+
+
+
 
 
 	/**
@@ -459,25 +460,25 @@ public class Helpers extends Common {
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_PATH, buildPath);
 		// end of workaround
 
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (Const.isWindows) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
 					ConfigurationPreferences.getMakePath().toOSString() + File.separator);
 		}
 
 		// some glue to make it work
-		String pathDelimiter = makeEnvironmentVar("PathDelimiter");
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			String systemroot = makeEnvironmentVar("SystemRoot");
-			setBuildEnvironmentVariable(contribEnv, confDesc, "PATH",
+		String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
+		if (Const.isWindows) {
+			String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
+			setBuildEnvironmentVariable(contribEnv, confDesc, "PATH", //$NON-NLS-1$
 					makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-							+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32"
-							+ pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem"
-							+ pathDelimiter + makeEnvironmentVar("sloeber_path_extension"));
+							+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32" //$NON-NLS-1$
+							+ pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
+							+ pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
 		} else {
-			setBuildEnvironmentVariable(contribEnv, confDesc, "PATH",
+			setBuildEnvironmentVariable(contribEnv, confDesc, "PATH", //$NON-NLS-1$
 					makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
 							+ makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter
-							+ makeEnvironmentVar("PATH"));
+							+ makeEnvironmentVar("PATH")); //$NON-NLS-1$
 		}
 
 	}
@@ -504,8 +505,8 @@ public class Helpers extends Common {
 
 			// Read File Line By Line
 			while ((strLine = br.readLine()) != null) {
-				if (!strLine.startsWith("#")) {
-					String var[] = strLine.split("=", 2);
+				if (!strLine.startsWith("#")) { //$NON-NLS-1$
+					String var[] = strLine.split("=", 2); //$NON-NLS-1$
 					if (var.length == 2) {
 						String value = var[1].trim();
 						setBuildEnvironmentVariable(contribEnv, confDesc, MakeKeyString(prefix, var[0]),
@@ -572,7 +573,7 @@ public class Helpers extends Common {
 			// if it is a menu item add it
 			if (currentPair.getKey().startsWith(MENU_KEY)) {
 
-				String[] keySplit = currentPair.getKey().split("\\.");
+				String[] keySplit = currentPair.getKey().split("\\."); //$NON-NLS-1$
 				String menuID = keySplit[1];
 				String menuItemID = keySplit[2];
 
@@ -594,17 +595,29 @@ public class Helpers extends Common {
 
 	}
 
-	private static boolean isLocalKey(String key) {
-		String osString = "";
-		if (Platform.getOS().equals(Platform.OS_LINUX)) {
-			osString = ".linux";
-		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			osString = ".windows";
-		} else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-			osString = ".macosx";
+	private static String getLocalKey() {
+		String osString = ""; //$NON-NLS-1$
+		switch (Const.os) {
+		case WINDOWS: {
+			osString = ".windows"; //$NON-NLS-1$
+			break;
 		}
-		return key.toUpperCase().endsWith(osString);
+		case LINUX: {
+			osString = ".linux"; //$NON-NLS-1$
+			break;
+		}
+		case MAC: {
+			osString = ".macosx"; //$NON-NLS-1$
+			break;
+		}
+		default:
+			break;
+		}
+		return osString;
+	}
 
+	private static boolean isLocalKey(String key) {
+		return key.toUpperCase().endsWith(getLocalKey());
 	}
 
 	public static void addPlatformFileTools(ArduinoPlatform platform, IContributedEnvironment contribEnv,
@@ -623,20 +636,20 @@ public class Helpers extends Common {
 			ICConfigurationDescription confDesc, boolean reportToolNotFound) {
 
 		for (ToolDependency tool : tools) {
-			String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path");
+			String keyString = MakeKeyString("runtime.tools." + tool.getName() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
 			Tool theTool = tool.getTool();
 			if (theTool == null) {
 				if (reportToolNotFound) {
 					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							"Error adding platformFileTools while processing tool " + tool.getName() + " version "
-									+ tool.getVersion() + " Installpath is null"));
+							"Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
+									+ tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
 				}
 			} else {
 				String valueString = theTool.getInstallPath().toOSString();
 				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
-				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path");
+				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
 				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
-				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path");
+				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
 				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
 			}
 		}
@@ -788,60 +801,45 @@ public class Helpers extends Common {
 
 		// split the recipes so we can add the input and output markers as cdt needs
 		// them
-		String actions[] = { ACTION_C_to_O, ACTION_CPP_to_O, ACTION_S_to_O, ACTION_OBJCOPY_to_HEX,
-				ACTION_OBJCOPY_to_EEP, ACTION_SIZE, ACTION_AR, ACTION_C_COMBINE };
-		for (String action : actions) {
-			String recipeKey = get_ENV_KEY_RECIPE(action);
+		String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_OBJCOPY_to_HEX,
+				RECIPE_OBJCOPY_to_EEP, RECIPE_SIZE, RECIPE_AR, RECIPE_C_COMBINE };
+		for (String recipeKey : recipeKeys) {
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
 
 			// Sloeber should split o, -o {output} but to be safe that needs a regex so I
 			// simply delete the -o
-			if (!ACTION_C_COMBINE.equals(action)) {
-				recipe = recipe.replace(" -o ", " ");
+			if (!RECIPE_C_COMBINE.equals(recipeKey)) {
+				recipe = recipe.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			String recipeParts[] = recipe.split(
-					"(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")",
+					"(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")", //$NON-NLS-1$
 					3);
-			String key=recipeKey ;
-			setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-					makeEnvironmentVar(key));
+			String key = recipeKey;
+
 			switch (recipeParts.length) {
 			case 0:
-				key=recipeKey + DOT + '1';
+				key = recipeKey + DOT + '1';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key,
-						"echo no command for \"{KEY}\".".replace(KEY, recipeKey));
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
+						"echo no command for \"{KEY}\".".replace(KEY, recipeKey)); //$NON-NLS-1$
 				break;
 			case 1:
-				key=recipeKey + DOT + '1';
+				key = recipeKey + DOT + '1';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[0]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
 				break;
 			case 2:
-				key=recipeKey + DOT + '1';
+				key = recipeKey + DOT + '1';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[0]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
-				key=recipeKey + DOT + '2';
+				key = recipeKey + DOT + '2';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[1]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
 				break;
 			case 3:
-				key=recipeKey + DOT + '1';
-				setBuildEnvironmentVariable(contribEnv, confDesc,key, recipeParts[0]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
-				key=recipeKey + DOT + '2';
+				key = recipeKey + DOT + '1';
+				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[0]);
+				key = recipeKey + DOT + '2';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[1]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
-				key=recipeKey + DOT + '3';
+				key = recipeKey + DOT + '3';
 				setBuildEnvironmentVariable(contribEnv, confDesc, key, recipeParts[2]);
-				setBuildEnvironmentVariable(contribEnv, confDesc, key.toUpperCase(),
-						makeEnvironmentVar(key));
+
 				break;
 			default:
 				// this should never happen as the split is limited to 3
@@ -854,7 +852,7 @@ public class Helpers extends Common {
 			String MComPort = boardsDescriptor.getUploadPort();
 			if (MComPort.isEmpty()) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-						"Upload will fail due to missing upload port"));
+						"Upload will fail due to missing upload port")); //$NON-NLS-1$
 			}
 		}
 
@@ -870,32 +868,32 @@ public class Helpers extends Common {
 				// Arduino uses the board approach for the tools.
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
-				if (name.toUpperCase().startsWith("A.TOOLS.")) {
-					String skipVars[] = { "A.NETWORK.PASSWORD", "A.NETWORK.PORT", "A.UPLOAD.VERBOSE",
-							"A.NETWORK.AUTH" };
+				if (name.toUpperCase().startsWith(Const.A_TOOLS)) {
+					String skipVars[] = { Const.ENV_KEY_NETWORK_PASSWORD, Const.ENV_KEY_NETWORK_PORT,
+							Const.ENV_KEY_NETWORK_AUTH, Const.ENV_KEY_UPLOAD_VERBOSE };
 					List<String> skipVarslist = new ArrayList<>(Arrays.asList(skipVars));
-					String toolID = name.split("\\.")[2];
-					int indexOfVar = value.indexOf("${A.");
+					String toolID = name.split("\\.")[2]; //$NON-NLS-1$
+					int indexOfVar = value.indexOf("${A."); //$NON-NLS-1$
 					while (indexOfVar != -1) {
 						int endIndexOfVar = value.indexOf('}', indexOfVar);
 						if (endIndexOfVar != -1) {
 							String foundSuffix = value.substring(indexOfVar + 3, endIndexOfVar);
-							String foundVar = "A" + foundSuffix;
-							String replaceVar = "A.tools." + toolID + foundSuffix;
-							if (!skipVarslist.contains(foundVar.toUpperCase())) {
+							String foundVar = "A" + foundSuffix; //$NON-NLS-1$
+							String replaceVar = Const.A_TOOLS + toolID + foundSuffix;
+							if (!skipVarslist.contains(foundVar)) {
 								if (contribEnv.getVariable(foundVar, confDesc) == null) {
 									value = value.replace(foundVar, replaceVar);
-									skipVarslist.add(replaceVar.toUpperCase());
+									skipVarslist.add(replaceVar);
 								}
 							}
 						}
-						indexOfVar = value.indexOf("${A.", indexOfVar + 4);
+						indexOfVar = value.indexOf("${A.", indexOfVar + 4); //$NON-NLS-1$
 					}
 				}
-				if (name.startsWith("A.recipe.objcopy.") && name.endsWith(".pattern") && !value.isEmpty()) {
+				if (name.startsWith(Const.RECIPE_OBJCOPY) && name.endsWith(".pattern") && !value.isEmpty()) { //$NON-NLS-1$
 					// if the command starts with "cmd /c" removed the "cmd /c "
-					if (Platform.getOS().equals(Platform.OS_WIN32)) {
-						if (value.toLowerCase().startsWith("cmd /c ")) {
+					if (Const.isWindows) {
+						if (value.toLowerCase().startsWith("cmd /c ")) { //$NON-NLS-1$
 							value = value.substring(7).trim();
 						}
 					}
@@ -908,50 +906,51 @@ public class Helpers extends Common {
 			}
 
 		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e));
+			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "parsing of upload recipe failed", e)); //$NON-NLS-1$
 		}
 
 		Collections.sort(objcopyCommand);
-		setBuildEnvironmentVariable(contribEnv, confDesc, "JANTJE.OBJCOPY", StringUtil.join(objcopyCommand, "\n\t"));
+		setBuildEnvironmentVariable(contribEnv, confDesc, Const.JANTJE_OBJCOPY,
+				StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
 
 		// handle the hooks
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PRE.LINK",
-				"A.RECIPE.HOOKS.LINKING.PRELINK.XX.PATTERN", false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.POST.LINK",
-				"A.RECIPE.HOOKS.LINKING.POSTLINK.XX.PATTERN", true);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.PREBUILD", "A.RECIPE.HOOKS.PREBUILD.XX.PATTERN",
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.pre.link", //$NON-NLS-1$
+				"A.recipe.hooks.linking.prelink.XX.pattern", false); //$NON-NLS-1$
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.post.link", //$NON-NLS-1$
+				"A.recipe.hooks.linking.postlink.XX.pattern", true); //$NON-NLS-1$
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.prebuild", "A.RECIPE.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
 				false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.PREBUILD",
-				"A.RECIPE.HOOKS.SKETCH.PREBUILD.XX.PATTERN", false);
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.SKETCH.POSTBUILD",
-				"A.RECIPE.HOOKS.SKETCH.POSTBUILD.XX.PATTERN", false);
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.sketch.prebuild", //$NON-NLS-1$
+				"A.recipe.hooks.sketch.prebuild.XX.pattern", false); //$NON-NLS-1$
+		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.sketch.postbuild", //$NON-NLS-1$
+				"A.recipe.hooks.sketch.postbuild.XX.pattern", false); //$NON-NLS-1$
 
 		// add -relax for mega boards; the arduino ide way
 		String buildMCU = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_MCU, new String(), false);
-		if ("atmega2560".equalsIgnoreCase(buildMCU)) {
+		if ("atmega2560".equalsIgnoreCase(buildMCU)) { //$NON-NLS-1$
 			String c_elf_flags = getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS,
 					new String(), false);
-			setBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax");
+			setBuildEnvironmentVariable(confDesc, Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax"); //$NON-NLS-1$
 		}
 	}
 
 	private static void setHookBuildEnvironmentVariable(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, String varName, String hookName, boolean post) {
 		String envVarString = new String();
-		String postSeparator = "}\n\t";
-		String preSeparator = "${";
+		String postSeparator = "}\n\t"; //$NON-NLS-1$
+		String preSeparator = "${"; //$NON-NLS-1$
 		if (post) {
-			postSeparator = "${";
-			preSeparator = "}\n\t";
+			postSeparator = "${"; //$NON-NLS-1$
+			preSeparator = "}\n\t"; //$NON-NLS-1$
 		}
 		for (int numDigits = 1; numDigits <= 2; numDigits++) {
 			int counter = 1;
-			String hookVarName = hookName.replace("XX",
-					String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(counter)));
-			while (!getBuildEnvironmentVariable(confDesc, hookVarName, "", true).isEmpty()) {
+			String hookVarName = hookName.replace("XX", //$NON-NLS-1$
+					String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(counter))); //$NON-NLS-1$ //$NON-NLS-2$
+			while (!getBuildEnvironmentVariable(confDesc, hookVarName, "", true).isEmpty()) { //$NON-NLS-1$
 				envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-				hookVarName = hookName.replace("XX",
-						String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(++counter)));
+				hookVarName = hookName.replace("XX", //$NON-NLS-1$
+						String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(++counter))); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		if (!envVarString.isEmpty()) {
@@ -963,15 +962,15 @@ public class Helpers extends Common {
 	 * When parsing boards.txt and platform.txt some processing needs to be done to
 	 * get "acceptable environment variable values" This method does the parsing
 	 * {xx} is replaced with ${XX} if to uppercase is true {xx} is replaced with
-	 * ${xx} if to uppercase is false
-	 * This method supports {ss.ss.{ff)dd} to ${A.SS.SS.${A.FF}DD}
+	 * ${xx} if to uppercase is false This method supports {ss.ss.{ff)dd} to
+	 * ${A.SS.SS.${A.FF}DD}
 	 *
 	 * @param inputString the value string as read from the file
-	 * @param keyPrefix the prefix to add to the environment variable
+	 * @param keyPrefix   the prefix to add to the environment variable
 	 * @return the string to be stored as value for the environment variable
 	 */
 	public static String MakeEnvironmentString(String inputString, String keyPrefix) {
-		return inputString.replace("{", "${" + keyPrefix);
+		return inputString.replace("{", "${" + keyPrefix); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -993,15 +992,7 @@ public class Helpers extends Common {
 	}
 
 	private static String MakeKeyString(String prefix, String key) {
-		String osString = "......................";
-		if (Platform.getOS().equals(Platform.OS_LINUX)) {
-			osString = ".linux";
-		} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			osString = ".windows";
-		}else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-			osString = ".macosx";
-		}
-		return prefix + key.replace(osString, new String());
+		return prefix + key.replace(getLocalKey(), new String());
 	}
 
 	/**
@@ -1044,7 +1035,6 @@ public class Helpers extends Common {
 	public static IPath GetOutputName(IPath Source) {
 		return Source;
 	}
-
 
 
 	/**

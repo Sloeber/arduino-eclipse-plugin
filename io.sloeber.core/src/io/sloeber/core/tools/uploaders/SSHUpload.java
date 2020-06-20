@@ -22,12 +22,14 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 public class SSHUpload implements IRealUpload {
 
 	private static final String FILE = Messages.FILE;
 	private static final String PORT =Messages.PORT;
 	private static final String HOST =Messages.HOST;
+
 
 
 	String myHost;
@@ -48,6 +50,7 @@ public class SSHUpload implements IRealUpload {
 			MessageConsoleStream highStream,
 			MessageConsoleStream outStream,
 			MessageConsoleStream errStream) {
+		final String DOT=Const.DOT;
 		boolean ret = true;
 		if (boardDescriptor.usesProgrammer()) {
 			highStream.println(Messages.Upload_error_network);
@@ -75,7 +78,7 @@ public class SSHUpload implements IRealUpload {
 				highStream.println(Messages.Upload_sketch_on_yun);
 
 				String remoteUploadCommand = Common.getBuildEnvironmentVariable(myProject,
-						"A.TOOLS." + myUpLoadTool.toUpperCase() + "_REMOTE.UPLOAD.PATTERN", //$NON-NLS-1$ //$NON-NLS-2$
+						Const.A_TOOLS + myUpLoadTool + Const.REMOTE_SUFFIX+DOT+Const.UPLOAD+DOT +Const.PATTERN,
 						"run-avrdude /tmp/sketch.hex "); //$NON-NLS-1$
 
 				highStream.println("merge-sketch-with-bootloader.lua /tmp/sketch.hex"); //$NON-NLS-1$

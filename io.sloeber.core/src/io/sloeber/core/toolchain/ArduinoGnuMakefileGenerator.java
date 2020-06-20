@@ -1077,7 +1077,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			//jaba is not going to write this code
 		}
 		// JABA use del in windows and rm on all other oses
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (Const.isWindows) {
 			cleanCommand = "-del ";
 		}
 		buffer.append(cleanCommand).append( NEWLINE);

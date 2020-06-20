@@ -112,13 +112,13 @@
         autoBuildTarget="all"
         buildfileGenerator="io.sloeber.core.toolchain.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
-        command="${JANTJE.MAKE_LOCATION}make"
+        command="${JANTJE.make_location}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
         id="io.sloeber.gnu.builder"
         ignoreErrCmd="-k"
         incrementalBuildTarget="all"
         isAbstract="true"
-        isVariableCaseSensitive="false"
+        isVariableCaseSensitive="true"
         macroInputDirRelPathValue="$(dir $&lt;)"
         macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
         macroInputFileExtValue="$(suffix $(notdir $&lt;))"
@@ -173,8 +173,8 @@
            </optionCategory>
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
-                 command="${A.RECIPE.CPP.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.CPP.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.RECIPE.CPP.O.PATTERN.2} -o ${OUTPUT} ${A.RECIPE.CPP.O.PATTERN.3} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.CPP.COMPILE} ${JANTJE.EXTRA.ALL}"
+                 command="${A.recipe.cpp.o.pattern}"
+                 commandLinePattern="${A.recipe.cpp.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${A.recipe.cpp.o.pattern.2} -o ${OUTPUT} ${A.recipe.cpp.o.pattern.3} ${JANTJE.extra.compile} ${JANTJE.extra.cpp.compile} ${JANTJE.extra.all}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.cpp"
                  name="%tool.Arduino.CPP2O.name"
@@ -220,8 +220,8 @@
            </tool>
            <tool
                  announcement="%tool.Arduino.C.announcement"
-                 command="${A.RECIPE.C.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.C.O.PATTERN.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.RECIPE.C.O.PATTERN.2} -o ${OUTPUT} ${A.RECIPE.C.O.PATTERN.3} ${JANTJE.EXTRA.COMPILE} ${JANTJE.EXTRA.C.COMPILE} ${JANTJE.EXTRA.ALL}"
+                 command="${A.recipe.c.o.pattern}"
+                 commandLinePattern="${A.recipe.c.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${A.recipe.c.o.pattern.2} -o ${OUTPUT} ${A.recipe.c.o.pattern.3} ${JANTJE.extra.compile} ${JANTJE.extra.c.compile} ${JANTJE.extra.all}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.compiler.c"
                  name="%tool.Arduino.C2O.name"
@@ -268,8 +268,8 @@
            </tool>
            <tool
                  announcement="%tool.Arduino.S.announcement"
-                 command="${A.RECIPE.S.O.PATTERN}"
-                 commandLinePattern="${A.RECIPE.S.O.PATTERN.1} ${FLAGS}  ${INPUTS} ${A.RECIPE.S.O.PATTERN.2} -o ${OUTPUT} ${A.RECIPE.S.O.PATTERN.3}  ${JANTJE.EXTRA.ASSEMBLY} ${JANTJE.EXTRA.ALL}"
+                 command="${A.recipe.S.o.pattern}"
+                 commandLinePattern="${A.recipe.S.o.pattern.1} ${FLAGS}  ${INPUTS} ${A.recipe.S.o.pattern.2} -o ${OUTPUT} ${A.recipe.S.o.pattern.3}  ${JANTJE.extra.assembly} ${JANTJE.extra.all}"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"
@@ -315,8 +315,8 @@
            </tool>
            <tool
                  announcement="%tool.Arduino.archiver.announcement"
-                 command="${A.RECIPE.AR.PATTERN}"
-                 commandLinePattern="${A.RECIPE.AR.PATTERN.1} ${FLAGS}  ${A.ARCHIVE_FILE_PATH} ${INPUTS} ${A.RECIPE.AR.PATTERN.2} ${A.RECIPE.AR.PATTERN.3} ${JANTJE.EXTRA.ARCHIVE} ${JANTJE.EXTRA.ALL}"
+                 command="${A.recipe.ar.pattern}"
+                 commandLinePattern="${A.recipe.ar.pattern.1} ${FLAGS}  ${A.archive_file_path} ${INPUTS} ${A.recipe.ar.pattern.2} ${A.recipe.ar.pattern.3} ${JANTJE.extra_archive} ${JANTJE.extra_all}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.ar"
                  name="%tool.archiver.name">
@@ -324,7 +324,7 @@
                     buildVariable="AR"
                     id="io.sloeber.tool.archiver.output"
                     name="%outputType.archiver.name"
-                    outputNames="${A.ARCHIVE_FILE_PATH}"
+                    outputNames="${A.archive_file_path}"
                     outputs="ar"
                     primaryOutput="true">
               </outputType>
@@ -340,8 +340,8 @@
            </tool>
            <tool
                  announcement="%tool.Arduino.combiner.announcement"
-                 command="${A.RECIPE.C.COMBINE.PATTERN}"
-                 commandLinePattern="${A.JANTJE.PRE.LINK}${A.RECIPE.C.COMBINE.PATTERN.1} ${FLAGS} ${INPUTS} ${A.RECIPE.C.COMBINE.PATTERN.2} ${A.ARCHIVE_FILE_PATH} ${A.RECIPE.C.COMBINE.PATTERN.3} ${JANTJE.EXTRA.ALL} ${JANTJE.EXTRA.LINK}${A.JANTJE.POST.LINK}"
+                 command="${A.recipe.c.combine.pattern}"
+                 commandLinePattern="${A.JANTJE.pre.link}${A.recipe.c.combine.pattern.1} ${FLAGS} ${INPUTS} ${A.recipe.c.combine.pattern.2} ${A.archive_file_path} ${A.recipe.c.combine.pattern.3} ${JANTJE.extra_all} ${JANTJE.extra_link}${A.JANTJE.post.link}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
                  name="%tool.combiner.name"
@@ -370,7 +370,7 @@
            <tool
                  announcement="%tool.obcopy.announcement"
                  command="all objcopy commands"
-                 commandLinePattern="${JANTJE.OBJCOPY}"
+                 commandLinePattern="${JANTJE.objcopy}"
                  id="io.sloeber.tool.objcopy.eep"
                  isAbstract="false"
                  name="%tool.objcopy.name"
@@ -396,7 +396,7 @@
            </tool>
            <tool
                  announcement="%tool.printsize.announcement"
-                 command="${JANTJE.SIZE.SWITCH} "
+                 command="${JANTJE.size.switch} "
                  commandLinePattern="${COMMAND}"
                  id="io.sloeber.tool.size"
                  isAbstract="false"

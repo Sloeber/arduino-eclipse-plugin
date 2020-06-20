@@ -24,7 +24,7 @@ public class hexNameProvider implements IManagedOutputNameProviderJaba {
 	public IPath[] getOutputNames(IProject project, IConfiguration cConf, ITool tool, IPath[] primaryInputNames) {
 		String fileExtension = "hex"; //$NON-NLS-1$
 		String command = Common.getBuildEnvironmentVariable(project, cConf.getName(),
-				Common.get_ENV_KEY_RECIPE(Const.ACTION_OBJCOPY_to_HEX), ".hex"); //$NON-NLS-1$
+				Const.RECIPE_OBJCOPY_to_HEX, ".hex"); //$NON-NLS-1$
 		if (command.indexOf(".hex") != -1) //$NON-NLS-1$
 			fileExtension = "hex"; //$NON-NLS-1$
 		else if (command.indexOf(".bin") != -1) //$NON-NLS-1$
