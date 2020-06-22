@@ -89,9 +89,9 @@ public class Const {
 	public static final String RECIPE_C_to_O = ERASE_START + RECIPE + DOT + "c.o" + DOT + PATTERN;
 	public static final String RECIPE_CPP_to_O = ERASE_START + RECIPE + DOT + "cpp.o" + DOT + PATTERN;
 	public static final String RECIPE_S_to_O = ERASE_START + RECIPE + DOT + "S.o" + DOT + PATTERN;
-	public static final String RECIPE_OBJCOPY = ERASE_START + RECIPE + DOT + "objcopy" + DOT + PATTERN;
-	public static final String RECIPE_OBJCOPY_to_HEX = RECIPE_OBJCOPY + ".hex" + DOT + PATTERN;
-	public static final String RECIPE_OBJCOPY_to_EEP = RECIPE_OBJCOPY + ".eep" + DOT + PATTERN;
+	public static final String RECIPE_OBJCOPY = ERASE_START + RECIPE + DOT + "objcopy";
+//	public static final String RECIPE_OBJCOPY_to_HEX = RECIPE_OBJCOPY + ".hex" + DOT + PATTERN;
+//	public static final String RECIPE_OBJCOPY_to_EEP = RECIPE_OBJCOPY + ".eep" + DOT + PATTERN;
 	public static final String RECIPE_SIZE = ERASE_START + RECIPE + DOT + "size" + DOT + PATTERN;
 	public static final String RECIPE_AR = ERASE_START + RECIPE + DOT + "ar" + DOT + PATTERN;
 	public static final String RECIPE_C_COMBINE = ERASE_START + RECIPE + DOT + "c.combine" + DOT + PATTERN;
