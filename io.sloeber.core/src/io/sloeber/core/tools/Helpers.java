@@ -801,8 +801,8 @@ public class Helpers extends Common {
 
 		// split the recipes so we can add the input and output markers as cdt needs
 		// them
-		String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_OBJCOPY_to_HEX,
-				RECIPE_OBJCOPY_to_EEP, RECIPE_SIZE, RECIPE_AR, RECIPE_C_COMBINE };
+		String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_SIZE, RECIPE_AR,
+				RECIPE_C_COMBINE };
 		for (String recipeKey : recipeKeys) {
 			String recipe = getBuildEnvironmentVariable(confDesc, recipeKey, new String(), false);
 
