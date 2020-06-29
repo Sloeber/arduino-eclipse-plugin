@@ -260,6 +260,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     @SuppressWarnings("rawtypes")
     @Parameters(name = "{index}: {0} ")
     public static Collection boards() {
+    	//make sure all plugin installation is done
+    	Shared.waitForAllJobsToFinish();
         // build the Arduino way
         Preferences.setUseArduinoToolSelection(true);
         Preferences.setUseBonjour(false);

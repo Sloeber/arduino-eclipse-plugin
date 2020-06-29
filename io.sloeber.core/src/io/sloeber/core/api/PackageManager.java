@@ -635,7 +635,7 @@ public class PackageManager {
 		return InstancePreferences.getPrivateHardwarePathsString();
 	}
 
-	protected static void loadJsons(boolean forceDownload) {
+	protected static synchronized void loadJsons(boolean forceDownload) {
 		packageIndices = new ArrayList<>();
 		LibraryManager.flushIndices();
 

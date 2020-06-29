@@ -29,19 +29,17 @@ import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
 
-@SuppressWarnings({"nls"})
+@SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileLibraryExamplesTest {
-	private static final boolean reinstall_boards_and_examples = false;
-	private static final  int maxFails = 100;
-	private static final  int mySkipAtStart = 0;
-	
+	private static final boolean reinstall_boards_and_examples = true;
+	private static final int maxFails = 100;
+	private static final int mySkipAtStart = 0;
+
 	private static int myBuildCounter = 0;
 	private static int myTotalFails = 0;
 	private Examples myExample;
 	private MCUBoard myBoard;
-	
-	
 
 	@SuppressWarnings("unused")
 	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
@@ -55,19 +53,18 @@ public class CreateAndCompileLibraryExamplesTest {
 		WaitForInstallerToFinish();
 		Preferences.setUseBonjour(false);
 		Preferences.setUseArduinoToolSelection(true);
-		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(),
-				Adafruit.feather(),Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(),
-				ESP8266.nodeMCU(), ESP8266.wemosD1(), ESP8266.ESPressoLite(), Teensy.Teensy3_6(),
-				Arduino.zeroProgrammingPort(), Arduino.cirquitPlaygroundExpress(),Arduino.gemma() ,
-				Adafruit.trinket8MH(),Arduino.yun(),Arduino.arduino_101(),Arduino.zeroProgrammingPort(),
-				Arduino.ethernet()};
+		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(), Adafruit.feather(),
+				Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(), ESP8266.nodeMCU(), ESP8266.wemosD1(),
+				ESP8266.ESPressoLite(), Teensy.Teensy3_6(), Arduino.zeroProgrammingPort(),
+				Arduino.cirquitPlaygroundExpress(), Arduino.gemma(), Adafruit.trinket8MH(), Arduino.yun(),
+				Arduino.arduino_101(), Arduino.zeroProgrammingPort(), Arduino.ethernet() };
 
 		LinkedList<Object[]> examples = new LinkedList<>();
 		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllExamples(null);
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn,  examplePath);
+			Examples example = new Examples(fqn, examplePath);
 
 			// with the current amount of examples only do one
 			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
@@ -97,7 +94,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	}
 
 	public static void installAdditionalBoards() {
-		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL ,ESP32.packageURL};
+		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL, ESP32.packageURL };
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
 			PackageManager.installAllLatestPlatforms();
@@ -134,10 +131,10 @@ public class CreateAndCompileLibraryExamplesTest {
 		Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
 		BoardDescriptor boardDescriptor = myBoard.getBoardDescriptor();
 		boardDescriptor.setOptions(boardOptions);
-        if (!Shared.BuildAndVerify( boardDescriptor, codeDescriptor)) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage() );
-        }
+		if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
+			myTotalFails++;
+			fail(Shared.getLastFailMessage());
+		}
 
 	}
 

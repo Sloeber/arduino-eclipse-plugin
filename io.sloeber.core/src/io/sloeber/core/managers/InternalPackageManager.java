@@ -70,7 +70,7 @@ public class InternalPackageManager extends PackageManager {
 	 *
 	 * @param monitor
 	 */
-	public static void startup_Pluging(IProgressMonitor monitor) {
+	public static synchronized void startup_Pluging(IProgressMonitor monitor) {
 		loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
 		List<Board> allBoards = getInstalledBoards();
 		if (!LibraryManager.libsAreInstalled()) {
@@ -122,7 +122,7 @@ public class InternalPackageManager extends PackageManager {
 	 * @param object
 	 * @return
 	 */
-	static public IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
+	static public synchronized IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
 			IProgressMonitor monitor) {
 
 		
