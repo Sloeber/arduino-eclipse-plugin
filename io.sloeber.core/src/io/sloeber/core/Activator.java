@@ -145,7 +145,7 @@ public class Activator extends AbstractUIPlugin {
 			errorString += errorString + addString;
 			errorString += "Due to issues with long pathnames on Windows, the Sloeber installation path must be less than 40 characters. \n";
 			errorString += "Your current path: " + installPath.toString();
-			errorString += " is too long and the plugin will no longer function correctly for all packages.";
+			errorString += " is too long and the plugin will no longer function correctly for all boards.";
 			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
 			addString = "\nand\n";
 		}
