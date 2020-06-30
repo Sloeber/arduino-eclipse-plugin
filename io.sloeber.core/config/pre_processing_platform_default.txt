@@ -9,7 +9,6 @@ A.runtime.IDE.version=10812
 A.BUILD.SYSTEM.PATH={A.REFERENCED.CORE.PATH}{DirectoryDelimiter}system
 A.SERIAL.PORT={JANTJE.COM_PORT}
 A.BUILD.PROJECT_NAME={ProjName}
-A.PACKAGES={eclipse_home}{DirectoryDelimiter}arduinoPlugin{DirectoryDelimiter}packages
 A.BUILD.SOURCE.PATH={ProjDirPath}
 
 

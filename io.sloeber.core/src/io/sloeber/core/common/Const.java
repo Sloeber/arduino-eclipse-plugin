@@ -62,6 +62,6 @@ public class Const {
 	public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = ERASE_START + "COMPILER.C.ELF.FLAGS";
 
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
-	
+	public static final String ECLIPSE_HOME = "eclipse_home";
 
 }

@@ -3,6 +3,8 @@ package io.sloeber.core.common;
 import java.io.File;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
+import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
@@ -29,7 +31,18 @@ public class Common extends Const {
 	private static final String ENV_PATTERN = "PATTERN";
 	private static final String ENV_PROTOCOL = "PROTOCOL";
 	protected static final String ENV_TOOL = "TOOL";
+	private static String eclipseHomeValue = null;
+	static {
 
+		try {
+			ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
+			ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
+			eclipseHomeValue = var.getStringValue();
+		} catch (Exception e) {
+			// nobody cares
+		}
+
+	}
 	/**
 	 * This method makes sure that a string can be used as a file or folder name
 	 * <br/>
@@ -114,33 +127,6 @@ public class Common extends Const {
 		}
 	}
 
-	/**
-	 * Sets a persistent project property
-	 *
-	 * @param project
-	 *            The project for which the property needs to be set
-	 *
-	 * @param tag
-	 *            The tag identifying the property to read
-	 * @return returns the property when found. When not found returns an empty
-	 *         string
-	 */
-	public static void setPersistentProperty(IProject project, String tag, String value) {
-		try {
-			project.setPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, tag), value);
-			project.setPersistentProperty(new QualifiedName(new String(), tag), value); // for
-			// downwards
-			// compatibility
-		} catch (CoreException e) {
-			IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to write arduino properties", e); //$NON-NLS-1$
-			Common.log(status);
-
-		}
-	}
-
-	public static void setPersistentProperty(IProject project, String tag, int value) {
-		setPersistentProperty(project, tag, Integer.toString(value));
-	}
 
 	/**
 	 * Logs the status information
@@ -264,13 +250,11 @@ public class Common extends Const {
 		return myWorkspaceRoot.getLocation().toFile();
 	}
 
-	public static String makePathEnvironmentString(String path) {
-		String actualStoredValue = path;
-		String searchString = ConfigurationPreferences.getEclipseHome().toString();
-		if (path.startsWith(searchString)) {
-			actualStoredValue = "${eclipse_home}" + path.substring(searchString.length()); //$NON-NLS-1$
+	private static String makePathEnvironmentString(String path) {
+		if (eclipseHomeValue == null) {
+			return path;
 		}
-		return actualStoredValue;
+		return path.replace(eclipseHomeValue, makeEnvironmentVar(ECLIPSE_HOME));
 	}
 
 	public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
@@ -338,5 +322,16 @@ public class Common extends Const {
 	 */
 	public static String get_ENV_KEY_RECIPE(String tool, String action) {
 		return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
+	}
+	
+	/**
+	 * Converts a name to a tagged environment variable if variableName ="this" the
+	 * output is "${this}"
+	 *
+	 * @param variableName
+	 * @return
+	 */
+	public static String makeEnvironmentVar(String variableName) {
+		return "${" + variableName + '}';
 	}
 }

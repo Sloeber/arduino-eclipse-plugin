@@ -1067,16 +1067,7 @@ public class Helpers extends Common {
 		return Source;
 	}
 
-	/**
-	 * Converts a name to a tagged environment variable if variableName ="this" the
-	 * output is "${this}"
-	 *
-	 * @param variableName
-	 * @return
-	 */
-	private static String makeEnvironmentVar(String variableName) {
-		return "${" + variableName + '}';
-	}
+
 
 	/**
 	 * creates links to the root files and folders of the source location

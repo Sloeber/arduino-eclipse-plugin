@@ -98,6 +98,16 @@ public class ConfigurationPreferences {
 		if (myEclipseHome == null) {
 
 			try {
+				String sloeber_HomeValue=System.getenv("SLOEBER_HOME");
+				if(sloeber_HomeValue!=null) {
+					if(!sloeber_HomeValue.isEmpty()) {
+						myEclipseHome = new Path(sloeber_HomeValue);
+//						Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
+//								"Sloeber home overwritten with environment variable"));
+						return myEclipseHome;
+					}
+				}
+				
 				URL resolvedUrl = Platform.getInstallLocation().getURL();
 				URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
 				myEclipseHome = new Path(Paths.get(resolvedUri).toString());
