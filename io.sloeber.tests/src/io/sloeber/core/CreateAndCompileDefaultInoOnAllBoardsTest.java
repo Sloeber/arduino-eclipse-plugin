@@ -24,7 +24,6 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 
-@SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
@@ -105,6 +104,9 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     
 	"256RFR2ZBITXPRO", //confirmed 2020 03 09
 	 "256RFR2ZBIT",//confirmed 2020 03 09 
+	 
+	 "mapleRET6",//confirmed failing in arduino IDE 2020 05 30
+	 "genericSTM32F103Z",//confirmed failing in arduino IDE 2020 05 30
 
     };
     private static final String[] boardsToIgnoreOnWindows = {
