@@ -102,8 +102,10 @@ public class Helpers extends Common {
 	 * @param configurationDescription
 	 * @param IncludePath
 	 */
-	public static void addIncludeFolder(ICFolderDescription folderDescription, IPath IncludePath) {
-		addIncludeFolder(folderDescription, IncludePath, true);
+
+	public static void addIncludeFolder(ICFolderDescription folderDescription,  IPath IncludePath) 
+	{
+		   addIncludeFolder( folderDescription,  IncludePath,true) ;
 	}
 
 	/**
@@ -115,9 +117,7 @@ public class Helpers extends Common {
 	 * @param IncludePath              The path to add to the include folders
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	public static void addIncludeFolder(ICFolderDescription folderDescription, IPath IncludePath,
-			boolean isWorkspacePath) {
-		// find all languages
+	public static void addIncludeFolder(ICFolderDescription folderDescription, IPath IncludePath,boolean isWorkspacePath) {
 		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
 		int pathSetting = ICSettingEntry.VALUE_WORKSPACE_PATH;
 		if (!isWorkspacePath) {
