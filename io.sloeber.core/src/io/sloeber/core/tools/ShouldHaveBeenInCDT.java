@@ -1,135 +1,144 @@
 package io.sloeber.core.tools;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvider;
-import org.eclipse.cdt.core.language.settings.providers.ILanguageSettingsProvidersKeeper;
-import org.eclipse.cdt.core.language.settings.providers.LanguageSettingsManager;
-import org.eclipse.cdt.core.language.settings.providers.ScannerDiscoveryLegacySupport;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
-import org.eclipse.cdt.managedbuilder.core.IBuilder;
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IToolChain;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IProjectType;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedProject;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
+import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
-import io.sloeber.core.api.ConfigurationDescriptor;
-
-
+@SuppressWarnings("nls")
 public class ShouldHaveBeenInCDT {
 	/*
-	 * Copied from wizard STDWizardHandler package package
-	 * org.eclipse.cdt.managedbuilder.ui.wizards;; This method creates the
-	 * .cProject file in your project.
-	 *
-	 * BK: modified this and made it work for multiple configs.
+	 * Copied from test scripts from CDT
 	 */
 	/**
-	 * This method creates the .cProject file in your project. it is intended to
-	 * be used with newly created projects. Using this method with project that
-	 * have existed for some time is unknown
+	 * This method creates the .cProject file in your project. it is intended to be
+	 * used with newly created projects. Using this method with project that have
+	 * existed for some time is unknown
 	 *
 	 *
-	 * @param project
-	 *            The newly created project that needs a .cproject file.
-	 * @param alCfgs
-	 *            An array-list of configuration descriptors (names, toolchain
-	 *            IDs) to be used with this project
-	 * @param isManagedBuild
-	 *            When true the project is managed build. Else the project is
-	 *            not (read you have to maintain the makefiles yourself)
-	 * @param monitor
-	 *            The monitor to follow the process
-	 * @throws CoreException
+	 * @param newProjectHandle        The newly created project that needs a .cproject file.
+	 * @param newProjectHandle        Where the project will be located
+     * @param projectTypeId 		The ID from your plugin.xml extension org.eclipse.cdt.managedbuilder.core.buildDefinitions  projectType
+	 *
 	 */
-	public static ICProjectDescription setCProjectDescription(IProject project,
-			ArrayList<ConfigurationDescriptor> alCfgs, boolean enableParallelBuild, IProgressMonitor monitor)
-			throws CoreException {
+	static public IProject createNewManagedProject(IProject newProjectHandle, final URI location,
+			final String projectTypeId) {
+		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		final IProject project = newProjectHandle;
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		ICProjectDescription des = mngr.createProjectDescription(project, false, true);
-		ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
-		ManagedProject mProj = new ManagedProject(des);
-		info.setManagedProject(mProj);
-		monitor.worked(20);
-
-		// Iterate across the configurations
-		for (ConfigurationDescriptor curConfDesc : alCfgs) {
-			IToolChain tcs = ManagedBuildManager.getExtensionToolChain(curConfDesc.ToolchainID);
-
-			Configuration cfg = new Configuration(mProj, tcs,
-					ManagedBuildManager.calculateChildId(curConfDesc.ToolchainID, null), curConfDesc.configName);
-			if (enableParallelBuild) {
-				cfg.setParallelDef(true);
-			}
-			IBuilder bld = cfg.getEditableBuilder();
-			if (bld != null) {
-				bld.setManagedBuildOn(true);
-				cfg.setArtifactName("${ProjName}"); //$NON-NLS-1$
-			} else {
-				System.out.println("Messages.StdProjectTypeHandler_3"); //$NON-NLS-1$
-			}
-			CConfigurationData data = cfg.getConfigurationData();
-			ICConfigurationDescription cfgDes = des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-
-			setDefaultLanguageSettingsProviders(project, curConfDesc, cfg, cfgDes);
-		}
-		monitor.worked(50);
-		return des;
-
-	}
-
-	private static void setDefaultLanguageSettingsProviders(IProject project, ConfigurationDescriptor cfgDes,
-			IConfiguration cfg, ICConfigurationDescription cfgDescription) {
-		// propagate the preference to project properties
-		boolean isPreferenceEnabled = ScannerDiscoveryLegacySupport
-				.isLanguageSettingsProvidersFunctionalityEnabled(null);
-		ScannerDiscoveryLegacySupport.setLanguageSettingsProvidersFunctionalityEnabled(project, isPreferenceEnabled);
-
-		if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
-			ILanguageSettingsProvidersKeeper lspk = (ILanguageSettingsProvidersKeeper) cfgDescription;
-
-			lspk.setDefaultLanguageSettingsProvidersIds(new String[] { cfgDes.ToolchainID });
-
-			List<ILanguageSettingsProvider> providers = getDefaultLanguageSettingsProviders(cfg, cfgDescription);
-			lspk.setLanguageSettingProviders(providers);
-		}
-	}
-
-	private static List<ILanguageSettingsProvider> getDefaultLanguageSettingsProviders(IConfiguration cfg,
-			ICConfigurationDescription cfgDescription) {
-		List<ILanguageSettingsProvider> providers = new ArrayList<>();
-		String[] ids = cfg != null ? cfg.getDefaultLanguageSettingsProviderIds() : null;
-
-		if (ids == null) {
-			// Try with legacy providers
-			ids = ScannerDiscoveryLegacySupport.getDefaultProviderIdsLegacy(cfgDescription);
-		}
-
-		if (ids != null) {
-			for (String id : ids) {
-				ILanguageSettingsProvider provider = null;
-				if (!LanguageSettingsManager.isPreferShared(id)) {
-					provider = LanguageSettingsManager.getExtensionProviderCopy(id, false);
+			
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				// Create the base project
+				IWorkspaceDescription workspaceDesc = workspace.getDescription();
+				workspaceDesc.setAutoBuilding(false);
+				workspace.setDescription(workspaceDesc);
+				IProjectDescription description = workspace.newProjectDescription(project.getName());
+				if (location != null) {
+					description.setLocationURI(location);
 				}
-				if (provider == null) {
-					provider = LanguageSettingsManager.getWorkspaceProvider(id);
-				}
-				providers.add(provider);
-			}
-		}
+				CCorePlugin.getDefault().createCProject(description, project, new NullProgressMonitor(), ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+				// Add the managed build nature and builder
+				addManagedBuildNature(project);
 
-		return providers;
+				// Find the base project type definition
+				IProjectType projType = ManagedBuildManager.getProjectType(projectTypeId);
+
+				// Assert.assertNotNull(projType);
+
+				// Create the managed-project (.cdtbuild) for our project that builds an
+				// executable.
+				IManagedProject newProject = null;
+				try {
+					newProject = ManagedBuildManager.createManagedProject(project, projType);
+				} catch (Exception e) {
+					// Assert.fail("Failed to create managed project for: " + project.getName());
+					return;
+				}
+//				Assert.assertEquals(newProject.getName(), projType.getName());
+//				Assert.assertFalse(newProject.equals(projType));
+				ManagedBuildManager.setNewProjectVersion(project);
+				// Copy over the configs
+				IConfiguration defaultConfig = null;
+				IConfiguration[] configs = projType.getConfigurations();
+				for (int i = 0; i < configs.length; ++i) {
+					// Make the first configuration the default
+					if (i == 0) {
+						defaultConfig = newProject.createConfiguration(configs[i], projType.getId() + "." + i);
+					} else {
+						newProject.createConfiguration(configs[i], projType.getId() + "." + i);
+					}
+				}
+				ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
+
+				IConfiguration cfgs[] = newProject.getConfigurations();
+				for (int i = 0; i < cfgs.length; i++) {
+					cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
+				}
+
+				ManagedBuildManager.getBuildInfo(project).setValid(true);
+			}
+		};
+		NullProgressMonitor monitor = new NullProgressMonitor();
+		try {
+			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+		} catch (@SuppressWarnings("unused") CoreException e2) {
+			// Assert.fail(e2.getLocalizedMessage());
+		}
+//		// CDT opens the Project with BACKGROUND_REFRESH enabled which causes the
+//		// refresh manager to refresh the project 200ms later.  This Job interferes
+//		// with the resource change handler firing see: bug 271264
+//		try {
+//			// CDT opens the Project with BACKGROUND_REFRESH enabled which causes the
+//			// refresh manager to refresh the project 200ms later.  This Job interferes
+//			// with the resource change handler firing see: bug 271264
+//			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_REFRESH, null);
+//		} catch (Exception e) {
+//			// Ignore
+//		}
+
+		// Initialize the path entry container
+		IStatus initResult = ManagedBuildManager.initBuildInfoContainer(project);
+		if (initResult.getCode() != IStatus.OK) {
+			// Assert.fail("Initializing build information failed for: " + project.getName()
+			// + " because: " + initResult.getMessage());
+		}
+		return project;
 	}
 
+	static public void addManagedBuildNature(IProject project) {
+		// Create the buildinformation object for the project
+		 ManagedBuildManager.createBuildInfo(project);
+
+
+		// Add the managed build nature
+		try {
+			ManagedCProjectNature.addManagedNature(project, new NullProgressMonitor());
+			ManagedCProjectNature.addManagedBuilder(project, new NullProgressMonitor());
+
+		} catch (@SuppressWarnings("unused") CoreException e) {
+			// Assert.fail("Test failed on adding managed build nature or builder: " +
+			// e.getLocalizedMessage());
+		}
+
+
+	}
 }
