@@ -105,13 +105,9 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	"256RFR2ZBITXPRO", //confirmed 2020 03 09
 	 "256RFR2ZBIT",//confirmed 2020 03 09 
 	 
-<<<<<<< HEAD
 	 "Maple (RET6)",//confirmed failing in arduino IDE 2020 05 30
 	 "Generic STM32F103Z series",//confirmed failing in arduino IDE 2020 05 30
-=======
-	 "mapleRET6",//confirmed failing in arduino IDE 2020 05 30
-	 "genericSTM32F103Z",//confirmed failing in arduino IDE 2020 05 30
->>>>>>> branch 'master' of https://github.com/Sloeber/arduino-eclipse-plugin.git
+
 
     };
     private static final String[] boardsToIgnoreOnWindows = {
