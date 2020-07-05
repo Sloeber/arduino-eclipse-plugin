@@ -50,9 +50,11 @@ public class CreateAndCompileLibraryExamplesTest {
 	@SuppressWarnings("rawtypes")
 	@Parameters(name = "{index}: {0}")
 	public static Collection examples() {
-		WaitForInstallerToFinish();
 		Preferences.setUseBonjour(false);
 		Preferences.setUseArduinoToolSelection(true);
+		Shared.waitForAllJobsToFinish();
+		installMyStuff();
+
 		MCUBoard myBoards[] = { Arduino.leonardo(), Arduino.uno(), Arduino.esplora(), Adafruit.feather(),
 				Adafruit.featherMO(), Arduino.adafruitnCirquitPlayground(), ESP8266.nodeMCU(), ESP8266.wemosD1(),
 				ESP8266.ESPressoLite(), Teensy.Teensy3_6(), Arduino.zeroProgrammingPort(),
@@ -87,7 +89,7 @@ public class CreateAndCompileLibraryExamplesTest {
 	 * start testing
 	 */
 
-	public static void WaitForInstallerToFinish() {
+	public static void installMyStuff() {
 
 		installAdditionalBoards();
 		Shared.waitForAllJobsToFinish();
