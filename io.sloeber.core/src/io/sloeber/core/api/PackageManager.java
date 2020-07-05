@@ -59,37 +59,31 @@ import io.sloeber.core.tools.TxtFile;
  * @author jantje
  *
  */
-@SuppressWarnings("unused")
 public class PackageManager {
 
 	private static final String FILE = Messages.FILE;
 	private static final String FOLDER = Messages.FOLDER;
 	protected static List<PackageIndex> packageIndices;
-	private static boolean myHasbeenLogged=false;
-	private static boolean platformsDirty=true;//reset global variables at startup
+	private static boolean myHasbeenLogged = false;
+	private static boolean platformsDirty = true;// reset global variables at startup
 	private final static int MAX_HTTP_REDIRECTIONS = 5;
+
 	/**
 	 * Gets the board descriptor based on the information provided. If
-	 * jsonFileName="local" the board is assumed not to be installed by the
-	 * boards manager. Otherwise the boardsmanager is queried to find the board
-	 * descriptor. In this case the latest installed board will be returned
+	 * jsonFileName="local" the board is assumed not to be installed by the boards
+	 * manager. Otherwise the boardsmanager is queried to find the board descriptor.
+	 * In this case the latest installed board will be returned
 	 *
-	 * @param jsonFileName
-	 *            equals to "local" or the name of the json file used by the
-	 *            boards manager to install the boards
-	 * @param packageName
-	 *            if jsonFileName equals "local" the filename of the boards.txt
-	 *            containing the boards. otherwise the name of the package
-	 *            containing the board
-	 * @param platformName
-	 *            ignored if jsonFileName equals "local" otherwise the name of
-	 *            the platform containing the board
-	 * @param boardID
-	 *            the id of the board in the boards.txt file
-	 * @param options
-	 *            the options to specify the board (the menu named on the
-	 *            boards.txt file)
-	 *            or null for defaults
+	 * @param jsonFileName equals to "local" or the name of the json file used by
+	 *                     the boards manager to install the boards
+	 * @param packageName  if jsonFileName equals "local" the filename of the
+	 *                     boards.txt containing the boards. otherwise the name of
+	 *                     the package containing the board
+	 * @param platformName ignored if jsonFileName equals "local" otherwise the name
+	 *                     of the platform containing the board
+	 * @param boardID      the id of the board in the boards.txt file
+	 * @param options      the options to specify the board (the menu named on the
+	 *                     boards.txt file) or null for defaults
 	 * @return The class BoardDescriptor or null
 	 */
 	static public BoardDescriptor getBoardDescriptor(String jsonFileName, String packageName, String platformName,
@@ -127,26 +121,38 @@ public class PackageManager {
 		ConfigurationPreferences.setJsonURLs(packageUrlsToAdd);
 		loadJsons(forceDownload);
 	}
+
 	public static void setPackageURLs(HashSet<String> packageUrls, boolean forceDownload) {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		ConfigurationPreferences.setJsonURLs(packageUrls);
 		loadJsons(forceDownload);
 	}
 
 	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		InternalPackageManager.removePackageURLs(packageUrlsToRemove);
 
 	}
 
 	/**
-	 * installs a subset of the latest platforms 
-	 * It skips the first  <fromIndex> platforms
-	 * And stops at <toIndex> platforms.
-	 * To install the 5 first latest platforms
-	 * installsubsetOfLatestPlatforms(0,5)
+	 * installs a subset of the latest platforms It skips the first <fromIndex>
+	 * platforms And stops at <toIndex> platforms. To install the 5 first latest
+	 * platforms installsubsetOfLatestPlatforms(0,5)
+	 * 
 	 * @param fromIndex the platforms at the start to skip
-	 * @param toIndex the platforms after this platform are skipped
+	 * @param toIndex   the platforms after this platform are skipped
 	 */
 	public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		platformsDirty = true;
 		int currPlatformIndex = 1;
 		NullProgressMonitor monitor = new NullProgressMonitor();
@@ -162,16 +168,24 @@ public class PackageManager {
 			}
 		}
 	}
+
 	/**
-	 * Install all the latest platforms
-	 * Assumes there are less than 100000 platforms
+	 * Install all the latest platforms Assumes there are less than 100000 platforms
 	 */
 	public static void installAllLatestPlatforms() {
-		installsubsetOfLatestPlatforms(0,100000);
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
+		installsubsetOfLatestPlatforms(0, 100000);
 	}
 
 	public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
-		platformsDirty=true;
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
+		platformsDirty = true;
 		Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
 		if (curPackage != null) {
 			ArduinoPlatform curPlatform = curPackage.getLatestPlatform(platformName, false);
@@ -186,7 +200,7 @@ public class PackageManager {
 	}
 
 	public static void addPrivateHardwarePath(String newHardwarePath) {
-		if(newHardwarePath==null) {
+		if (newHardwarePath == null) {
 			return;
 		}
 		String currentPaths[] = InstancePreferences.getPrivateHardwarePaths();
@@ -205,17 +219,14 @@ public class PackageManager {
 		return InternalPackageManager.isReady();
 	}
 
-
-
-
 	public static String[] getBoardNames(String boardFile) {
-		TxtFile theBoardsFile = new TxtFile(new File(boardFile),true);
+		TxtFile theBoardsFile = new TxtFile(new File(boardFile), true);
 		return theBoardsFile.getAllNames();
 	}
 
 	/**
-	 * Searches for all boards.txt files from the hardware folders and the
-	 * boards manager
+	 * Searches for all boards.txt files from the hardware folders and the boards
+	 * manager
 	 *
 	 * @return all the boards.txt files with full path and in a case insensitive
 	 *         order
@@ -239,10 +250,10 @@ public class PackageManager {
 		if (depth > 0) {
 			File[] a = folder.listFiles();
 			if (a == null) {
-				if(!myHasbeenLogged) {
-				Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-						Messages.Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()) , null));
-				myHasbeenLogged=true;
+				if (!myHasbeenLogged) {
+					Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
+							Messages.Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()), null));
+					myHasbeenLogged = true;
 				}
 				return;
 			}
@@ -265,8 +276,6 @@ public class PackageManager {
 		return (InstancePreferences.getPrivateHardwarePathsString() + File.pathSeparator
 				+ ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
 	}
-
-
 
 	public static class PlatformTree {
 		private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
@@ -409,8 +418,8 @@ public class PackageManager {
 			/**
 			 * is one ore more packages of this index file installed
 			 *
-			 * @return returns true if at least one version of one child
-			 *         platform of a child packageis installed
+			 * @return returns true if at least one version of one child platform of a child
+			 *         packageis installed
 			 */
 
 			public boolean isInstalled() {
@@ -477,8 +486,8 @@ public class PackageManager {
 			/**
 			 * is one ore more platforms of this package installed
 			 *
-			 * @return returns true if at least one version of one child
-			 *         platform is installed
+			 * @return returns true if at least one version of one child platform is
+			 *         installed
 			 */
 			public boolean isInstalled() {
 				for (Platform curplatform : this.platforms.values()) {
@@ -556,14 +565,14 @@ public class PackageManager {
 	}
 
 	public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
-		if (!InternalPackageManager.isReady()) {
-			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "BoardsManager is still busy", null)); //$NON-NLS-1$
+		if (!isReady()) {
+			status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, null));
 			return status;
 		}
-		if(!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
-		   loadJsons(true);
+		if (!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
+			loadJsons(true);
 		}
-		platformsDirty=true;
+		platformsDirty = true;
 		try {
 			InternalPackageManager.setReady(false);
 
@@ -590,13 +599,9 @@ public class PackageManager {
 		return status;
 	}
 
-
-
-
-
 	/**
-	 * returns all the menu names for all installed platforms. The return is
-	 * sorted and unique
+	 * returns all the menu names for all installed platforms. The return is sorted
+	 * and unique
 	 *
 	 * @return
 	 */
@@ -604,7 +609,7 @@ public class PackageManager {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile,true);
+			TxtFile txtFile = new TxtFile(curBoardFile, true);
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -614,7 +619,7 @@ public class PackageManager {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile,true);
+			TxtFile txtFile = new TxtFile(curBoardFile, true);
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;
@@ -624,13 +629,22 @@ public class PackageManager {
 	 * Remove all packages that have a more recent version
 	 */
 	public static void onlyKeepLatestPlatforms() {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		InternalPackageManager.onlyKeepLatestPlatforms();
 
 	}
 
 	public static void setPrivateHardwarePaths(String[] hardWarePaths) {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
 	}
+
 	public static String getPrivateHardwarePathsString() {
 		return InstancePreferences.getPrivateHardwarePathsString();
 	}
@@ -641,19 +655,18 @@ public class PackageManager {
 
 		String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
 		for (String jsonUrl : jsonUrls) {
-			if(!jsonUrl.trim().isEmpty()) // skip empty lines
+			if (!jsonUrl.trim().isEmpty()) // skip empty lines
 				loadJson(jsonUrl, forceDownload);
 		}
 	}
+
 	/**
 	 * This method takes a json boards file url and downloads it and parses it for
 	 * usage in the boards manager
 	 *
-	 * @param url
-	 *            the url of the file to download and load
-	 * @param forceDownload
-	 *            set true if you want to download the file even if it is already
-	 *            available locally
+	 * @param url           the url of the file to download and load
+	 * @param forceDownload set true if you want to download the file even if it is
+	 *                      already available locally
 	 */
 	static private void loadJson(String url, boolean forceDownload) {
 		File jsonFile = getLocalFileName(url, true);
@@ -688,18 +701,16 @@ public class PackageManager {
 			packageIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e)); 
+					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
-
 
 	/**
 	 * convert a web url to a local file name. The local file name is the cache of
 	 * the web
 	 *
-	 * @param url
-	 *            url of the file we want a local cache
+	 * @param url url of the file we want a local cache
 	 * @return the file that represents the file that is the local cache. the file
 	 *         itself may not exists. If the url is malformed return null;
 	 * @throws MalformedURLException
@@ -723,10 +734,10 @@ public class PackageManager {
 			return packagePath.toFile();
 		}
 		String localFileName = Paths.get(packageUrl.getPath()).getFileName().toString();
-		java.nio.file.Path packagePath = Paths.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
+		java.nio.file.Path packagePath = Paths
+				.get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
 		return packagePath.toFile();
 	}
-
 
 	/**
 	 * copy a url locally taking into account redirections
@@ -735,14 +746,13 @@ public class PackageManager {
 	 * @param localFile
 	 * @throws IOException
 	 */
-	protected
-	static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
+	protected static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
 		myCopy(url, localFile, report_error, 0);
 	}
-	
+
 	@SuppressWarnings("nls")
-	private
-	static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter) throws IOException {
+	private static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
+			throws IOException {
 		if ("file".equals(url.getProtocol())) {
 			FileUtils.copyFile(new File(url.getFile()), localFile);
 			return;
@@ -764,8 +774,7 @@ public class PackageManager {
 
 			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
 					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
-				if(redirectionCounter >= MAX_HTTP_REDIRECTIONS)
-				{
+				if (redirectionCounter >= MAX_HTTP_REDIRECTIONS) {
 					throw new IOException("Too many redirections while downloading file.");
 				}
 				myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error, redirectionCounter + 1);
@@ -785,7 +794,7 @@ public class PackageManager {
 
 		}
 	}
-	
+
 	/**
 	 * copy a url locally taking into account redirections in such a way that if
 	 * there is already a file it does not get lost if the download fails
@@ -809,7 +818,7 @@ public class PackageManager {
 			throw e;
 		}
 	}
-	
+
 	public static String[] getJsonURLList() {
 		return ConfigurationPreferences.getJsonURLList();
 	}
@@ -820,6 +829,10 @@ public class PackageManager {
 	 * @param newJsonUrls
 	 */
 	public static void setJsonURLs(String[] newJsonUrls) {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 
 		String curJsons[] = getJsonURLList();
 		HashSet<String> origJsons = new HashSet<>(Arrays.asList(curJsons));
@@ -833,7 +846,7 @@ public class PackageManager {
 				if (localFile.exists()) {
 					localFile.delete();
 				}
-			} catch ( Exception e) {
+			} catch (Exception e) {
 				// ignore
 			}
 		}
@@ -852,18 +865,21 @@ public class PackageManager {
 	}
 
 	public static void removeAllInstalledPlatforms() {
+		if (!isReady()) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+			return;
+		}
 		try {
 			FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathPackages().toFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public static IPath getInstallationPath() {
-	    return ConfigurationPreferences.getInstallationPath();
+		return ConfigurationPreferences.getInstallationPath();
 	}
-	
-	
-	
+
 	/**
 	 * If something has been installed or deinstalled update the global variables
 	 * with references to the installed stuff this to support platforms that do not
