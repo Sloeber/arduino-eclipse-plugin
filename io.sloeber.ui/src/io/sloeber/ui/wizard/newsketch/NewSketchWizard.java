@@ -23,7 +23,6 @@ import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.api.CodeDescriptor;
 import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.ConfigurationDescriptor;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -126,8 +125,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 			compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
 			this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
 					(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null,
-					ConfigurationDescriptor.getDefaultDescriptors(), codeDescription, compileOptions,
-					monitor);
+					 codeDescription, compileOptions,	monitor);
 
 		} catch (Exception e) {
 			this.mProject = null;
