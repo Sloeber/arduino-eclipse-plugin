@@ -2,6 +2,7 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,7 +37,16 @@ public class Shared {
 	public static boolean deleteProjects = true;
 	private static int myLocalBuildCounter;
 	private static int myTestCounter;
-	private static String myLastFailMessage=new String();
+	private static String myLastFailMessage = new String();
+	private static boolean closeFailedProjects;
+
+	public static boolean isCloseFailedProjects() {
+		return closeFailedProjects;
+	}
+
+	public static void setCloseFailedProjects(boolean closeFailedProjects) {
+		Shared.closeFailedProjects = closeFailedProjects;
+	}
 
 	public static boolean hasBuildErrors(IProject project) throws CoreException {
 		IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
@@ -45,9 +55,20 @@ public class Shared {
 				return true;
 			}
 		}
-		IPath resultPath=project.getLocation().append("release");
-		resultPath=resultPath.append(project.getName()+".hex");
-		return !resultPath.toFile().exists();
+		IPath resultPath = project.getLocation().append("release");
+		File elfFile = resultPath.append(project.getName() + ".elf").toFile();
+		if (elfFile.exists()) {
+			return false;
+		}
+		File binFile = resultPath.append(project.getName() + ".bin").toFile();
+		if (binFile.exists()) {
+			return false;
+		}
+		File hexFile = resultPath.append(project.getName() + ".hex").toFile();
+		if (hexFile.exists()) {
+			return false;
+		}
+		return true;
 	}
 
 	public static void waitForAllJobsToFinish() {
@@ -91,7 +112,7 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
-		return BuildAndVerify(boardDescriptor, codeDescriptor, null,-1);
+		return BuildAndVerify(boardDescriptor, codeDescriptor, null, -1);
 	}
 
 	/**
@@ -104,16 +125,16 @@ public class Shared {
 	 * @return true if build is successful otherwise false
 	 */
 	public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,
-			CompileOptions compileOptions,int globalBuildCounter) {
+			CompileOptions compileOptions, int globalBuildCounter) {
 
-		int projectCounter=myLocalBuildCounter;
-		if(globalBuildCounter>=0) {
-			projectCounter=globalBuildCounter;
+		int projectCounter = myLocalBuildCounter;
+		if (globalBuildCounter >= 0) {
+			projectCounter = globalBuildCounter;
 		}
-		String projectName = String.format("%05d_%s",  Integer.valueOf(projectCounter ), boardDescriptor.getBoardID());
+		String projectName = String.format("%05d_%s", Integer.valueOf(projectCounter), boardDescriptor.getBoardID());
 		if (codeDescriptor.getExampleName() != null) {
 			if (codeDescriptor.getExamples().get(0).toOSString().toLowerCase().contains("libraries")) {
-				projectName = String.format("%05d_Library_%s_%s",  Integer.valueOf(projectCounter ),
+				projectName = String.format("%05d_Library_%s_%s", Integer.valueOf(projectCounter),
 						codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
 			} else {
 				projectName = String.format("%05d_%s", Integer.valueOf(projectCounter),
@@ -136,12 +157,11 @@ public class Shared {
 
 		try {
 			compileOptions.setEnableParallelBuild(true);
-			theTestProject = boardDescriptor.createProject(projectName, null,
-					codeDescriptor, compileOptions, monitor);
+			theTestProject = boardDescriptor.createProject(projectName, null, codeDescriptor, compileOptions, monitor);
 			waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
-			myLastFailMessage= "Failed to create the project:" + projectName;
+			myLastFailMessage = "Failed to create the project:" + projectName;
 			return false;
 		}
 		try {
@@ -155,15 +175,17 @@ public class Shared {
 					Thread.sleep(2000);
 					theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 					if (hasBuildErrors(theTestProject)) {
-						myLastFailMessage= "Failed to compile the project:" + projectName + " build errors";
-						theTestProject.close(null);
+						myLastFailMessage = "Failed to compile the project:" + projectName + " build errors";
+						if (closeFailedProjects) {
+							theTestProject.close(null);
+						}
 						return false;
 					}
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			myLastFailMessage= "Failed to compile the project:" + boardDescriptor.getBoardName() + " exception";
+			myLastFailMessage = "Failed to compile the project:" + boardDescriptor.getBoardName() + " exception";
 			return false;
 		}
 		try {
@@ -185,8 +207,7 @@ public class Shared {
 	public static void applyKnownWorkArounds() {
 
 		java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
-		
-	
+
 		/*
 		 * oak on linux comes with a esptool2 in a wrong folder. As it is only 1 file I
 		 * move the file
@@ -221,14 +242,13 @@ public class Shared {
 	}
 
 	public static String getCounterName(String name) {
-		String counterName = String.format("%05d_%s",  Integer.valueOf(myTestCounter++), name);
+		String counterName = String.format("%05d_%s", Integer.valueOf(myTestCounter++), name);
 		return counterName;
 	}
 
-
 	@SuppressWarnings("unused")
 	public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
-		return String.format("%05d_%s_%s",  Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
+		return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
 				board.getBoardDescriptor().getBoardID());
 	}
 

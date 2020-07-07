@@ -24,129 +24,123 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 
+@SuppressWarnings("nls")
 @RunWith(Parameterized.class)
 public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
-    // use the boolean below to avoid downloading and installation
-    private static final boolean removeAllinstallationInfoAtStartup = false;
-    private static final boolean skipPlatformInstallation = false;
-    private static final boolean apply_known_work_Arounds = true;
-    private static final boolean testPrivateHardware = true;
-    private static int myBuildCounter = 0;
-    private static int myTotalFails = 0;
-    private static int maxFails = 50;    
+	// use the boolean below to avoid downloading and installation
+	private static final boolean removeAllinstallationInfoAtStartup = false;
+	private static final boolean skipPlatformInstallation = false;
+	private static final boolean apply_known_work_Arounds = true;
+	private static final boolean testPrivateHardware = true;
+	private static final boolean closeFailedProjects = false;
+	private static int myBuildCounter = 0;
+	private static int myTotalFails = 0;
+	private static int maxFails = 50;
 	private static int mySkipTestsAtStart = 0;
-    private BoardDescriptor mBoard;
-    private static final String[] packageUrlsToIgnoreonAllOSes = {
-            // There is a newer version
-            "https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json", 
-            //Third party url implies this is outdated (it also doesn't work)
-            "http://downloads.arduino.cc/packages/package_mkr1000_index.json",
-            //http 403 download error
-            "https://git.oschina.net/dfrobot/FireBeetle-ESP32/raw/master/package_esp32_index.json",
-            "http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json",
-            "http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
-            //moved their stuff but didn't bother to update arduino site
-            "http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
-            //uses extra windows in the tolpath and even after that fix it still fails the build
-            "https://github.com/sonydevworld/spresense-arduino-compatible/releases/download/generic/package_spresense_index.json",
-            //web site not responding
-            "http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
-            //discontinued
-            "http://rfduino.com/package_rfduino_index.json",
+	private BoardDescriptor mBoard;
+	private static final String[] packageUrlsToIgnoreonAllOSes = {
+			// There is a newer version
+			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
+			// Third party url implies this is outdated (it also doesn't work)
+			"http://downloads.arduino.cc/packages/package_mkr1000_index.json",
+			// http 403 download error
+			"https://git.oschina.net/dfrobot/FireBeetle-ESP32/raw/master/package_esp32_index.json",
+			"http://www.arducam.com/downloads/ESP8266_UNO/package_ArduCAM_index.json",
+			"http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
+			// moved their stuff but didn't bother to update arduino site
+			"http://www.dwengo.org/sites/default/files/package_dwengo.org_dwenguino_index.json",
+			// uses extra windows in the tolpath and even after that fix it still fails the
+			// build
+			"https://github.com/sonydevworld/spresense-arduino-compatible/releases/download/generic/package_spresense_index.json",
+			// web site not responding
+			"http://zoubworld.com/~zoubworld_Arduino/files/Release/package_Zoubworld_index.json",
+			// discontinued
+			"http://rfduino.com/package_rfduino_index.json",
 			"https://redbearlab.github.io/arduino/package_redbear_index.json",
 			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 			"http://drazzy.com/package_drazzy.com_index.json",
-    		//confirmed 2020 03 09 version 25 12 17
-    		"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json",};
-    private static final String[] packageUrlsToIgnoreonWindows = {
-            // following packages did not work in the arduino ide on windows at last test
-    		// confirmed 220 03 09 was version 1.0
-    		"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
+			// confirmed 2020 03 09 version 25 12 17
+			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json", };
+	private static final String[] packageUrlsToIgnoreonWindows = {
+			// following packages did not work in the arduino ide on windows at last test
+			// confirmed 220 03 09 was version 1.0
+			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
 
-            //uses busybox so command line issues I think
-            "https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
+			// uses busybox so command line issues I think
+			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
 
-    };
-    private static final String[] packageUrlsToIgnoreOnLinux = {
-            // following packages did not work in the arduino ide on windows at last test
-            "https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
-            // A ( is used in a define in the compile command and that seems to be a issue
-            "https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
-            // Arduinoide says npt supported on this os
-            // Sloeber misses a tool
-            "http://download.labs.mediatek.com/package_mtk_linkit_index.json",
-            //command contains ( and compiler complains; works in arduino IDE
-            "https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/package_azureboard_index.json"
+	};
+	private static final String[] packageUrlsToIgnoreOnLinux = {
+			// following packages did not work in the arduino ide on windows at last test
+			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
+			// A ( is used in a define in the compile command and that seems to be a issue
+			"https://raw.githubusercontent.com/NicoHood/HoodLoader2/master/package_NicoHood_HoodLoader2_index.json",
+			// Arduinoide says npt supported on this os
+			// Sloeber misses a tool
+			"http://download.labs.mediatek.com/package_mtk_linkit_index.json",
+			// command contains ( and compiler complains; works in arduino IDE
+			"https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/package_azureboard_index.json"
 
-    };
-    private static final String[] packageUrlsToIgnoreOnMac = {
+	};
+	private static final String[] packageUrlsToIgnoreOnMac = {
 
-    };
-    private static final String[] boardsToIgnoreOnAllOses = {
-            // Variant folder non existing but using core that references variant.h
-    		//confirmed 2020 03 09 version 4.0.0
-    "SmartEverything Bee (Native USB Port)",
-    
-    // issue #1152 (confirmed 2020 03 07 )
-    "Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
-    
-    "D-duino-32",  //confirmed 2020 03 09
-    "SparkFun Blynk Board",//(confirmed 2020 03 07 )
-    "ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", //(confirmed 2020 03 07 )
-    "Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)",//(confirmed 2020 03 07 )
-    "Rock Solid XMega 128A",//(confirmed 2020 03 07 )
+	};
+	private static final String[] boardsToIgnoreOnAllOses = {
+			// Variant folder non existing but using core that references variant.h
+			// confirmed 2020 03 09 version 4.0.0
+			"SmartEverything Bee (Native USB Port)",
 
-    "ATXmega128A1U",//(confirmed 2020 03 07 )
-    "ATXMega128A1",//(confirmed 2020 03 07 )
-    // this board does not use gcc so there is no added value in using Sloeber
-    "Windows 10 IoT Core",
-    
-	"256RFR2ZBITXPRO", //confirmed 2020 03 09
-	 "256RFR2ZBIT",//confirmed 2020 03 09 
-	 
-	 "Maple (RET6)",//confirmed failing in arduino IDE 2020 05 30
-	 "Generic STM32F103Z series",//confirmed failing in arduino IDE 2020 05 30
+			// issue #1152 (confirmed 2020 03 07 )
+			"Engimusing EFM32WG840", "Engimusing EFM32WG842", "Engimusing EFM32WG842F64",
 
+			"D-duino-32", // confirmed 2020 03 09
+			"SparkFun Blynk Board", // (confirmed 2020 03 07 )
+			"ATtiny167 @ 8 MHz  (internal oscillator; BOD enabled)", // (confirmed 2020 03 07 )
+			"Optiboot ATtiny167 @ 20 MHz  (external oscillator; BOD enabled)", // (confirmed 2020 03 07 )
+			"Rock Solid XMega 128A", // (confirmed 2020 03 07 )
 
-    };
-    private static final String[] boardsToIgnoreOnWindows = {
+			"ATXmega128A1U", // (confirmed 2020 03 07 )
+			"ATXMega128A1", // (confirmed 2020 03 07 )
+			// this board does not use gcc so there is no added value in using Sloeber
+			"Windows 10 IoT Core",
 
-   
-            // does not work in, arduino ide on windows
+			"256RFR2ZBITXPRO", // confirmed 2020 03 09
+			"256RFR2ZBIT", // confirmed 2020 03 09
 
-            
- };
-    
-    
-    
-    private static final String[] boardsToIgnoreOnLinux = {
-            // The installation script fail in Arduino IDE and so does
-            // the verify action.
-            // Sloeber does not support the install stuff and the verify fails as well
-            "Intel® Galileo", "Intel® Galileo Gen2", "Intel® Edison",
-            //uses cmd /c in recipes
-            "STM32 Discovery F407",
-            "Blackpill STM32F401CCU6",
-            "STM32 Discovery F411E",
-            "Generic STM32F407V series",
-            "Generic STM32F407V mini series",
-            "Seeed Arch Max 1.1",
-            
-            //folder casing problem
-            "LilyPad LilyMini",
-            
-            };
-    private static final String[] packageUrlsFromThirthPartyWebPage = {
-            /*
-             * the list below is made as follows extract all url's containing .json from
-             * https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-
-             * support-urls replace http with "http replace .json with .json",
-             *
-             * remove the error line
-             * "https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.6.x-package_index.json"
-             * ,-format-specification
-             */
+			"Maple (RET6)", // confirmed failing in arduino IDE 2020 05 30
+			"Generic STM32F103Z series",// confirmed failing in arduino IDE 2020 05 30
+
+	};
+	private static final String[] boardsToIgnoreOnWindows = {
+
+			// does not work in, arduino ide on windows
+
+	};
+
+	private static final String[] boardsToIgnoreOnLinux = {
+			// The installation script fail in Arduino IDE and so does
+			// the verify action.
+			// Sloeber does not support the install stuff and the verify fails as well
+			"Intel® Galileo", "Intel® Galileo Gen2", "Intel® Edison",
+			// uses cmd /c in recipes
+			"STM32 Discovery F407", "Blackpill STM32F401CCU6", "STM32 Discovery F411E", "Generic STM32F407V series",
+			"Generic STM32F407V mini series", "Seeed Arch Max 1.1",
+
+			// folder casing problem
+			"LilyPad LilyMini",
+
+	};
+	private static final String[] packageUrlsFromThirthPartyWebPage = {
+			/*
+			 * the list below is made as follows extract all url's containing .json from
+			 * https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-
+			 * support-urls replace http with "http replace .json with .json",
+			 *
+			 * remove the error line
+			 * "https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.6.x-package_index.json"
+			 * ,-format-specification
+			 */
 			"http://clkdiv8.com/download/package_clkdiv8_index.json",
 			"http://dan.drown.org/stm32duino/package_STM32duino_index.json",
 			"http://digistump.com/package_digistump_index.json",
@@ -164,8 +158,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			"http://hidnseek.github.io/hidnseek/package_hidnseek_boot_index.json",
 			"http://library.radino.cc/Arduino_1_8/package_radino_radino32_index.json",
 			"http://navspark.mybigcommerce.com/content/package_navspark_index.json",
-			"http://panstamp.org/arduino/package_panstamp_index.json",
-			"http://rfduino.com/package_rfduino_index.json",
+			"http://panstamp.org/arduino/package_panstamp_index.json", "http://rfduino.com/package_rfduino_index.json",
 			"http://rig.reka.com.my/package_rig_index.json",
 			"http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json",
 			"http://www.arducam.com/downloads/ESP32_UNO/package_ArduCAM_ESP32S_UNO_index.json",
@@ -254,84 +247,85 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			"https://zevero.github.io/avr_boot/package_zevero_avr_boot_index.json",
 			"http://adelino.cc/package_adelino_index.json",
 
-    };
+	};
 
-    public CreateAndCompileDefaultInoOnAllBoardsTest(BoardDescriptor board) {
-        this.mBoard = board;
-    }
+	public CreateAndCompileDefaultInoOnAllBoardsTest(BoardDescriptor board) {
+		this.mBoard = board;
+	}
 
-    @SuppressWarnings("rawtypes")
-    @Parameters(name = "{index}: {0} ")
-    public static Collection boards() {
-    	//make sure all plugin installation is done
-    	Shared.waitForAllJobsToFinish();
-        // build the Arduino way
-        Preferences.setUseArduinoToolSelection(true);
-        Preferences.setUseBonjour(false);
-        installAdditionalBoards();
+	@SuppressWarnings("rawtypes")
+	@Parameters(name = "{index}: {0} ")
+	public static Collection boards() {
+		Shared.setCloseFailedProjects(closeFailedProjects);
+		// make sure all plugin installation is done
+		Shared.waitForAllJobsToFinish();
+		// build the Arduino way
+		Preferences.setUseArduinoToolSelection(true);
+		Preferences.setUseBonjour(false);
+		installAdditionalBoards();
 
-        List<BoardDescriptor> boards = new ArrayList<>();
-        for (File curBoardFile : PackageManager.getAllBoardsFiles()) {
-            // TOFIX these options should not be set here but in IBoard.getOptions
-            Map<String, String> options = null;
-            System.out.println("Adding boards of "+curBoardFile.toString() );
-            boards.addAll(BoardDescriptor.makeBoardDescriptors(curBoardFile, options));
-        }
-        // to avoid warnings set the upload port to some value
-        for (BoardDescriptor curBoard : boards) {
-            curBoard.setUploadPort("none");
-        }
-        
-        HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
+		List<BoardDescriptor> boards = new ArrayList<>();
+		for (File curBoardFile : PackageManager.getAllBoardsFiles()) {
+			// TOFIX these options should not be set here but in IBoard.getOptions
+			Map<String, String> options = null;
+			System.out.println("Adding boards of " + curBoardFile.toString());
+			boards.addAll(BoardDescriptor.makeBoardDescriptors(curBoardFile, options));
+		}
+		// to avoid warnings set the upload port to some value
+		for (BoardDescriptor curBoard : boards) {
+			curBoard.setUploadPort("none");
+		}
 
-        if (SystemUtils.IS_OS_LINUX) {
-            boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnLinux));
-        }
-        if (SystemUtils.IS_OS_WINDOWS) {
-            boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnWindows));
-        }
-        List<BoardDescriptor> ignoreBoards = new ArrayList<>();
-        for (BoardDescriptor curBoard : boards) {
-            if (boardsToIgnoreList.contains(curBoard.getBoardName())) {
-                ignoreBoards.add(curBoard);
-            }
-        }
+		HashSet<String> boardsToIgnoreList = new HashSet<>(Arrays.asList(boardsToIgnoreOnAllOses));
 
-        boards.removeAll(ignoreBoards);
-        return boards;
-    }
+		if (SystemUtils.IS_OS_LINUX) {
+			boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnLinux));
+		}
+		if (SystemUtils.IS_OS_WINDOWS) {
+			boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnWindows));
+		}
+		List<BoardDescriptor> ignoreBoards = new ArrayList<>();
+		for (BoardDescriptor curBoard : boards) {
+			if (boardsToIgnoreList.contains(curBoard.getBoardName())) {
+				ignoreBoards.add(curBoard);
+			}
+		}
 
-    /*
-     * In new installations (of the Sloeber development environment) the installer
-     * job will trigger downloads and uncompression jobs These must have finished
-     * before we can start testing
-     *
-     * This method will take a long time "Don't panic before 60 minutes are over".
-     * You can check the [eclipseInstall]/arduinoPlugin/packages folder for progress
-     */
-    public static void installAdditionalBoards() {
-        if (removeAllinstallationInfoAtStartup) {
-            PackageManager.removeAllInstalledPlatforms();
-            LibraryManager.removeAllLibs();
-        }
+		boards.removeAll(ignoreBoards);
+		return boards;
+	}
 
-        HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
-        toAddList.addAll(Arrays.asList(PackageManager.getJsonURLList()));
-        toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonAllOSes));
-        if (SystemUtils.IS_OS_WINDOWS) {
-            toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonWindows));
-        }
-        if (SystemUtils.IS_OS_LINUX) {
-            toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnLinux));
-        }
-        if (SystemUtils.IS_OS_MAC) {
-            toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
-        }
-        PackageManager.setPackageURLs(toAddList, true);
+	/*
+	 * In new installations (of the Sloeber development environment) the installer
+	 * job will trigger downloads and uncompression jobs These must have finished
+	 * before we can start testing
+	 *
+	 * This method will take a long time "Don't panic before 60 minutes are over".
+	 * You can check the [eclipseInstall]/arduinoPlugin/packages folder for progress
+	 */
+	public static void installAdditionalBoards() {
+		if (removeAllinstallationInfoAtStartup) {
+			PackageManager.removeAllInstalledPlatforms();
+			LibraryManager.removeAllLibs();
+		}
 
-        if (testPrivateHardware) {
-            PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-        }
+		HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
+		toAddList.addAll(Arrays.asList(PackageManager.getJsonURLList()));
+		toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonAllOSes));
+		if (SystemUtils.IS_OS_WINDOWS) {
+			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonWindows));
+		}
+		if (SystemUtils.IS_OS_LINUX) {
+			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnLinux));
+		}
+		if (SystemUtils.IS_OS_MAC) {
+			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
+		}
+		PackageManager.setPackageURLs(toAddList, true);
+
+		if (testPrivateHardware) {
+			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+		}
 
 		if (!skipPlatformInstallation) {
 			PackageManager.installAllLatestPlatforms();
@@ -339,24 +333,25 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			// PackageManager.onlyKeepLatestPlatforms();
 		}
 
-        if (apply_known_work_Arounds) {
-            Shared.applyKnownWorkArounds();
-        }
-        Shared.waitForAllJobsToFinish();
-    }
+		if (apply_known_work_Arounds) {
+			Shared.applyKnownWorkArounds();
+		}
+		Shared.waitForAllJobsToFinish();
+	}
 
-    @Test
-    public void testBoard() {
-    	myBuildCounter++;
-        Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+	@Test
+	public void testBoard() {
+		myBuildCounter++;
+		Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
+		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
-        IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-        if(!Shared.BuildAndVerify( this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder),null,myBuildCounter)) {
-            myTotalFails++;
-            fail(Shared.getLastFailMessage() );
-        }
+		IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
+		if (!Shared.BuildAndVerify(this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder), null,
+				myBuildCounter)) {
+			myTotalFails++;
+			fail(Shared.getLastFailMessage());
+		}
 
-    }
+	}
 
 }
