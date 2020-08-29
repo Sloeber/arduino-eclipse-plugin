@@ -1,7 +1,7 @@
 #Build the Arduino Eclipse Plugin using Maven
 
 #To workaround travis problem see for more detail https://github.com/Sloeber/arduino-eclipse-plugin/issues/1100
-dist: trusty
+dist: focal
 
 node:
 #Make Maven builds quiet to reduce logs (Travis will kill the process if 4MB log exceeded)
