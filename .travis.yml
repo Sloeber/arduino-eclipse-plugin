@@ -53,6 +53,6 @@ env:
     #Only for development work on brodykenrick's repo
 #    - CI_GITHUB_REPOUSERNAME=brodykenrick
 jdk:
-  - oraclejdk8
+  - openjdk11
 
 
