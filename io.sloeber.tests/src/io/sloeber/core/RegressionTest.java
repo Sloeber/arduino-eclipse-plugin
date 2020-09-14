@@ -275,7 +275,7 @@ public class RegressionTest {
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
 
-		NullProgressMonitor monitor = new NullProgressMonitor();
+		NullProgressMonitor monitor = getMonitor();
 		try {
 
 			theTestProject = unoBoardid.createProject(projectName, null,
@@ -292,5 +292,30 @@ public class RegressionTest {
 			fail("Failed to create the project:" + projectName);
 			return;
 		}
+	}
+
+	private NullProgressMonitor getMonitor() {
+		return new NullProgressMonitor() {
+			@Override
+			public void beginTask(String name, int totalWork) {
+				System.out.println("beginTask: " + name + " Total Work: " + totalWork);
+				super.beginTask(name, totalWork);
+			}
+			@Override
+			public void done() {
+				System.out.println("\ndone");
+				super.done();
+			}
+			@Override
+			public void subTask(String name) {
+				System.out.println("subTask: " + name);
+				super.subTask(name);
+			}
+			@Override
+			public void worked(int work) {
+				System.out.print("x");
+				super.worked(work);
+			}
+		};
 	}
 }
