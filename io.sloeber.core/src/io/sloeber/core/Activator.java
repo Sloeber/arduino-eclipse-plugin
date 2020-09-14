@@ -194,6 +194,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	private static void registerListeners() {
+		System.out.println("Indexer starting");
 		IndexerListener myindexerListener = new IndexerListener();
 		CCorePlugin.getIndexManager().addIndexChangeListener(myindexerListener);
 		CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
