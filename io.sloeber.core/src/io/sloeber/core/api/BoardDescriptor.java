@@ -29,9 +29,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -531,9 +531,9 @@ public class BoardDescriptor {
 		final IProject newProjectHandle = root.getProject(realProjectName);
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+		ICoreRunnable runnable = new ICoreRunnable() {
 			@Override
-			public void run(IProgressMonitor monitor) throws CoreException {
+			public void run(IProgressMonitor internalMonitor) throws CoreException {
 
 				try {
 					// Create the base project
@@ -577,8 +577,8 @@ public class BoardDescriptor {
 						cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
 					}
 					codeDescription.createFiles(newProjectHandle, new NullProgressMonitor());
-					ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", monitor);
-					ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, monitor);
+					ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor);
+					ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
 
 					CCorePlugin cCorePlugin = CCorePlugin.getDefault();
 					ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
