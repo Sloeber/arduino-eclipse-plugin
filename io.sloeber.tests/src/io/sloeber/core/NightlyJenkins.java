@@ -8,7 +8,10 @@ import org.junit.runners.Suite.SuiteClasses;
 import io.sloeber.core.api.Preferences;
 
 @RunWith(Suite.class)
-@SuiteClasses({ NightlyBoardPatronTest.class, RegressionTest.class,
+// removed NightlyBoardPatronTest due to issue #1204
+//this should be reenabled after #1204 is fixed
+//@SuiteClasses({ NightlyBoardPatronTest.class, RegressionTest.class,
+@SuiteClasses({  RegressionTest.class,
         RegressionTestFailingOnTravis.class })
 public class NightlyJenkins {
     @BeforeClass
