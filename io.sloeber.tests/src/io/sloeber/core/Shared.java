@@ -60,7 +60,7 @@ public class Shared {
 				return true;
 			}
 		}
-		IPath resultPath = project.getLocation().append("release");
+		IPath resultPath = project.getLocation().append("Release");
 		File elfFile = resultPath.append(project.getName() + ".elf").toFile();
 		if (elfFile.exists()) {
 			return false;
