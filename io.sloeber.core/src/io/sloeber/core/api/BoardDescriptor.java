@@ -25,6 +25,7 @@ import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -47,6 +48,7 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
+import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
@@ -588,17 +590,24 @@ public class BoardDescriptor {
 
 					ManagedBuildManager.getBuildInfo(newProjectHandle).setValid(true);
 				} catch (Exception e) {
-
-					return;
+					Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+							"Project creation failed: " + newProjectHandle.getName(),e));
 				}
 
 			}
 		};
 
 		try {
+			// turn indexer off
+			IndexerController.doNotIndex(newProjectHandle);
 			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+			final IProgressMonitor refreshMonitor = new NullProgressMonitor();
+			newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
+		//	refreshMonitor.wait();
+			IndexerController.Index(newProjectHandle);
 		} catch (CoreException e2) {
-
+			Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+					"Project creation failed: " + newProjectHandle.getName()));
 		}
 
 		monitor.done();
@@ -744,7 +753,7 @@ public class BoardDescriptor {
 	/**
 	 * return the actual adress en,coded in the upload port example uploadport com4
 	 * returns com4 uploadport = arduino.local at 199.25.25.1 returns arduino.local
-	 * 
+	 *
 	 * @return
 	 */
 	public String getActualUploadPort() {
@@ -759,7 +768,7 @@ public class BoardDescriptor {
 	 * Set the upload port like in the gui. The upload port can be a comport or a
 	 * networkadress space and something else note that getuploadport returns the
 	 * before space part of this method
-	 * 
+	 *
 	 * @param newUploadPort
 	 */
 	public void setUploadPort(String newUploadPort) {
@@ -1055,7 +1064,7 @@ public class BoardDescriptor {
 
 	/**
 	 * true if this board needs a networkUpload else false
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isNetworkUpload() {
