@@ -48,11 +48,12 @@ public class RegressionTest {
 		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_libraries) {
 			PackageManager.removeAllInstalledPlatforms();
-			PackageManager.installAllLatestPlatforms();
-		} else {
-			// make sure esp8266 boards are available
-			ESP8266.installLatest();
 		}
+		;
+		// make sure the needed boards are available
+		ESP8266.installLatest();
+		Arduino.installLatestAVRBoards();
+
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
 			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
@@ -123,7 +124,6 @@ public class RegressionTest {
 	 */
 	@Test
 	public void issue687() throws Exception {
-	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -148,7 +148,7 @@ public class RegressionTest {
 
 	}
 
-	
+
 	/**
 	 * support void loop{};
 	 * @throws Exception
@@ -156,7 +156,7 @@ public class RegressionTest {
 	@Test
 	public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
 		MCUBoard unoBoard = ESP8266.nodeMCU();
-	
+
 		String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
@@ -176,9 +176,7 @@ public class RegressionTest {
 
 	}
 
-	
-	
-	
+
 	/**
 	 * This test will fail if the arduino compile option are not taken into
 	 * account To do sa a bunch of defines are added to the command line and the
@@ -187,7 +185,6 @@ public class RegressionTest {
 	 */
 	@Test
 	public void are_jantjes_options_taken_into_account() throws Exception {
-	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -229,7 +226,6 @@ public class RegressionTest {
 	 */
 	@Test
 	public void are_defines_before_includes_taken_into_account() throws Exception {
-	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
@@ -265,7 +261,6 @@ public class RegressionTest {
 	 */
 	@Test
 	public void is_extern_C_taken_into_account() throws Exception {
-	    Arduino.installLatestAVRBoards();
 		Map<String, String> unoOptions = new HashMap<>();
 		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
