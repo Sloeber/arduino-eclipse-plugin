@@ -84,6 +84,7 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
+		instance = this;
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
 		installPath.toFile().mkdirs();
 		IPath downloadPath = ConfigurationPreferences.getInstallationPathDownload();
@@ -93,7 +94,6 @@ public class Activator extends AbstractUIPlugin {
 		runPluginCoreStartInstantiatorJob();
 
 		runInstallJob();
-		instance = this;
 
 		// add required properties for Arduino serial port on linux, if not
 		// defined
