@@ -8,9 +8,9 @@ import org.junit.runners.Suite.SuiteClasses;
 import io.sloeber.core.api.Preferences;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
+@SuiteClasses({
         CreateAndCompileDefaultInoOnAllBoardsTest.class,
-        NightlyBoardPatronTest.class, 
+        NightlyBoardPatronTest.class,
         RegressionTest.class,
         RegressionTestFailingOnTravis.class,
         CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest.class,
@@ -23,6 +23,6 @@ public class releaseTesting_takes_very_long {
     @BeforeClass
     public static void setUp() {
     	Preferences.setUseBonjour(false);
-        Shared.deleteProjects=true;
+        Shared.setDeleteProjects(true);
     }
 }

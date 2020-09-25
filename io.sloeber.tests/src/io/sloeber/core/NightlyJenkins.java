@@ -17,6 +17,6 @@ public class NightlyJenkins {
     @BeforeClass
     public static void setUp() {
     	Preferences.setUseBonjour(false);
-        Shared.deleteProjects=true;
+        Shared.setDeleteProjects(true);
     }
 }
