@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -59,7 +57,7 @@ abstract class FamilyJob extends Job {
  * @author Jan Baeyens
  *
  */
-@SuppressWarnings({"nls","unused"})
+@SuppressWarnings({ "nls", "unused" })
 public class Activator extends AbstractUIPlugin {
 	// preference nodes
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
@@ -80,7 +78,6 @@ public class Activator extends AbstractUIPlugin {
 			'/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
 			'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 	private static final String PLUGIN_ID = "io.sloeber.core";
-	private static Boolean isPatron = null;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -153,20 +150,22 @@ public class Activator extends AbstractUIPlugin {
 			errorString += addString + "The installpath can not contain spaces " + installPath.toString();
 			addString = "\nand\n";
 		}
-		String workSpacePath =ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
+		String workSpacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 		if (workSpacePath.contains(" ")) {
 			errorString += addString + "The Workspacepath can not contain spaces " + workSpacePath;
 			addString = "\nand\n";
 		}
 		Preferences myScope = InstanceScope.INSTANCE.getNode("org.eclipse.cdt.core").node("indexer");
-		String indexAllFiles= myScope.get("indexAllFiles", new String());
-		String indexUnusedHeaders= myScope.get("indexUnusedHeadersWithDefaultLang", new String());
-		if(!"false".equalsIgnoreCase(indexAllFiles)) {
-			errorString += addString + "The indexer option \"index source files not included in the build\" must be off in windows->preferences->C/C++->indexer " ;
+		String indexAllFiles = myScope.get("indexAllFiles", new String());
+		String indexUnusedHeaders = myScope.get("indexUnusedHeadersWithDefaultLang", new String());
+		if (!"false".equalsIgnoreCase(indexAllFiles)) {
+			errorString += addString
+					+ "The indexer option \"index source files not included in the build\" must be off in windows->preferences->C/C++->indexer ";
 			addString = "\nand\n";
 		}
-		if(!"false".equalsIgnoreCase(indexUnusedHeaders)) {
-			errorString += addString + "The indexer option \"index unused headers\" must be off in windows->preferences->C/C++->indexer " ;
+		if (!"false".equalsIgnoreCase(indexUnusedHeaders)) {
+			errorString += addString
+					+ "The indexer option \"index unused headers\" must be off in windows->preferences->C/C++->indexer ";
 			addString = "\nand\n";
 		}
 		if (!errorString.isEmpty()) {
@@ -177,11 +176,8 @@ public class Activator extends AbstractUIPlugin {
 
 	}
 
-
-
 	/**
-	 * On windows the install path can not be deep
-	 * due to windows restrictions
+	 * On windows the install path can not be deep due to windows restrictions
 	 *
 	 * @return true if the install path is to deep on windows
 	 */
@@ -313,12 +309,10 @@ public class Activator extends AbstractUIPlugin {
 	 * specific version is found the default is used. Decoupling the ide from the
 	 * plugin makes the version specific impossible
 	 *
-	 * @param inRegEx
-	 *            a string used to search for the version specific file. The $ is
-	 *            replaced by the arduino version or default
-	 * @param outFile
-	 *            the name of the file that will be created in the root of the
-	 *            workspace
+	 * @param inRegEx a string used to search for the version specific file. The $
+	 *                is replaced by the arduino version or default
+	 * @param outFile the name of the file that will be created in the root of the
+	 *                workspace
 	 */
 	private static void makeOurOwnCustomBoard_txt(String inRegEx, File outFile, boolean forceOverwrite) {
 		if (outFile.exists() && !forceOverwrite) {
@@ -385,9 +379,9 @@ public class Activator extends AbstractUIPlugin {
 				int curFbStatus = myScope.getInt(BUILD_FLAG, 0);
 				int curFsiStatus = curFsStatus + curFuStatus + curFbStatus;
 				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-				final int trigger=30;
+				final int trigger = 30;
 				if ((curFsiStatus - lastFsiStatus) < 0) {
-					lastFsiStatus = curFsiStatus - (trigger+1);
+					lastFsiStatus = curFsiStatus - (trigger + 1);
 				}
 				if ((curFsiStatus - lastFsiStatus) >= trigger) {
 					myScope.putInt(LOCAL_FLAG, curFsiStatus);
@@ -396,9 +390,8 @@ public class Activator extends AbstractUIPlugin {
 					} catch (BackingStoreException e) {
 						// this should not happen
 					}
-					if (!isPatron()) {
-						PleaseHelp.doHelp(HELP_LOC);
-					}
+
+					PleaseHelp.doHelp(HELP_LOC);
 				}
 				remind();
 				return Status.OK_STATUS;
@@ -408,23 +401,4 @@ public class Activator extends AbstractUIPlugin {
 		job.schedule(60000);
 	}
 
-	static boolean isPatron() {
-		if (isPatron != null) {
-			return isPatron.booleanValue();
-		}
-		String systemhash = ConfigurationPreferences.getSystemHash();
-
-		try {
-			URL url = new URL(HELP_LOC + "?systemhash=" + systemhash);
-			String content= IOUtils.toString( url, Charset.defaultCharset());
-			isPatron = Boolean.valueOf(content.length() < 1000);
-
-		} catch ( Exception e) {
-			//Ignore the download error. This will make the code try again later
-		}
-		if (isPatron != null) {
-			return isPatron.booleanValue();
-		}
-		return false;
-	}
 }
