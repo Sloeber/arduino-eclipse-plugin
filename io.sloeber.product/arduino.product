@@ -26,7 +26,7 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.8
+      <vmArgs>-Dosgi.requiredJavaVersion=11
 -Dorg.eclipse.update.reconcile=false
 -Xms40m
 -Xmx512m
@@ -356,8 +356,8 @@ rights to a jury trial in any resulting litigation.&lt;/p&gt;
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
       <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
+      <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
    </configurations>
 
    <repositories>
