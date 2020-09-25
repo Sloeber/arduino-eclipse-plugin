@@ -314,8 +314,6 @@ public class Helpers extends Common {
 
 
 
-
-
 	/**
 	 * This method adds the content of a content stream to a file If the file
 	 * already exist the file remains untouched
@@ -1035,7 +1033,6 @@ public class Helpers extends Common {
 	public static IPath GetOutputName(IPath Source) {
 		return Source;
 	}
-
 
 	/**
 	 * creates links to the root files and folders of the source location

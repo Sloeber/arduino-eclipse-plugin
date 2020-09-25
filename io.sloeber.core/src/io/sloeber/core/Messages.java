@@ -26,8 +26,6 @@ public class Messages extends NLS {
 	public static final String HOST =  "{HOST}"; //$NON-NLS-1$
 	
 	
-
-
 	public static String ArduinoSerial_Comport_Appeared_and_disappeared;
 	public static String ArduinoSerial_Comport_is_not_behaving_as_expected;
 	public static String ArduinoSerial_comport_not_found;
@@ -103,7 +101,6 @@ public class Messages extends NLS {
 	public static String uploader_no_reset_using_programmer;
 	public static String BoardsManagerIsBussy;
 	public static String No_Platform_available ;
-
 
 	static {
 		// initialize resource bundle

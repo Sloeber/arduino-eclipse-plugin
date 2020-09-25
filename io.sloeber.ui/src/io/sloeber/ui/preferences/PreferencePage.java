@@ -243,7 +243,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
 				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableBonjour);
-
 	}
 
 	/**

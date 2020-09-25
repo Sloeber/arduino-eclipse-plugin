@@ -79,7 +79,6 @@ public class Const {
 	public static final String PROGRAM_TOOL = ERASE_START + PROGRAM + DOT + TOOL;
 	public static final String UPLOAD_TOOL = ERASE_START + UPLOAD + DOT + TOOL;
 
-
 	// link time variables
 	public static final String EXTRA_TIME_UTC = "A.extra.time.UTC";
 	public static final String EXTRA_TIME_LOCAL = "A.extra.time.local";

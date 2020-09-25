@@ -46,6 +46,7 @@ public class Common extends Const {
 	 * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) /
 	 * slash used as a path name component separator in Unix-like, Windows, and
 	 * Amiga systems. (The MS-DOS command.com shell would consume it as a switch
+<<<<<<< HEAD
 	 * character, but Windows itself always accepts it as a
 	 * separator.[6][vague]) \ backslash Also used as a path name component
 	 * separator in MS-DOS, OS/2 and Windows (where there are few differences
@@ -69,14 +70,34 @@ public class Common extends Const {
 	 * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
 	 * 
 	 * # is excluded as it is seen as a special character by make
+=======
+	 * character, but Windows itself always accepts it as a separator.[6][vague]) \
+	 * backslash Also used as a path name component separator in MS-DOS, OS/2 and
+	 * Windows (where there are few differences between slash and backslash);
+	 * allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in
+	 * Unix, Windows and AmigaOS; marks a single character. Allowed in Unix
+	 * filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single
+	 * character. asterisk or star used as a wildcard in Unix, MS-DOS, RT-11, VMS
+	 * and Windows. Marks any sequence of characters (Unix, Windows, later versions
+	 * of MS-DOS) or any sequence of characters in either the basename or extension
+	 * (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
+	 * filenames, see note 1 : colon used to determine the mount point / drive on
+	 * Windows; used to determine the virtual device or physical device such as a
+	 * drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac
+	 * OS. Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+	 * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or
+	 * pipe designates software pipelining in Unix and Windows; allowed in Unix
+	 * filenames, see Note 1 " quote used to mark beginning and end of filenames
+	 * containing spaces in Windows, see Note 1 < less than used to redirect input,
+	 * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
+	 * allowed in Unix filenames, see Note 1 . period or dot
+>>>>>>> branch '#1184_don_not_uppercase_environment_variables' of https://github.com/Sloeber/arduino-eclipse-plugin.git
 	 *
 	 * @param name the string that needs to be checked
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String name) {
 		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-','#' };
-
-
 		String ret = name.trim();
 		for (char curchar : badChars) {
 			ret = ret.replace(curchar, '_');
@@ -122,7 +143,6 @@ public class Common extends Const {
 			return defaultValue;
 		}
 	}
-
 
 	/**
 	 * Logs the status information
@@ -233,7 +253,6 @@ public class Common extends Const {
 		return myWorkspaceRoot.getLocation().toFile();
 	}
 
-
 	static {
 
 		try {
@@ -325,6 +344,7 @@ public class Common extends Const {
 	public static String get_ENV_KEY_RECIPE(String tool, String action) {
 		return ERASE_START + TOOLS + DOT + tool + DOT + action + DOT + PATTERN;
 	}
+
 
 	/**
 	 * Converts a name to a tagged environment variable if variableName ="this" the

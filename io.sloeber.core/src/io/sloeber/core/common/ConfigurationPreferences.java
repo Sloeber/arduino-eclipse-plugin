@@ -60,7 +60,6 @@ public class ConfigurationPreferences {
 	static {
 		// Get the location we will use to save sloeber files
 		myEclipseHome = getEclipseHome();
-
 		// make a hashkey to identify the system
 		Collection<String> macs = new TreeSet<>();
 		Enumeration<NetworkInterface> inters;

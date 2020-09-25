@@ -174,7 +174,6 @@ public class PackageManager {
 	 * Install all the latest platforms Assumes there are less than 100000 platforms
 	 */
 	public static void installAllLatestPlatforms() {
-
 		installsubsetOfLatestPlatforms(0, 100000);
 	}
 
@@ -183,7 +182,6 @@ public class PackageManager {
 			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
 			return;
 		}
-
 		platformsDirty = true;
 		Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
 		if (curPackage != null) {
