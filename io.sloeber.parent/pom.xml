@@ -9,8 +9,10 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>1.3.0</tycho.version>
+		<tycho.version>2.0.0</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 
 	<parent>
@@ -174,7 +176,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -199,7 +201,7 @@
 			</build>
 		</profile>
 
-		
+
 		<profile>
 			<id>win64</id>
 			<build>
@@ -210,7 +212,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -235,7 +237,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<environment>
@@ -260,7 +262,7 @@
 						<version>${tycho.version}</version>
 						<configuration>
 							<!-- configure the p2 target environments for multi-platform build -->
-							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi 
+							<!-- The strings ("linux", "gtk", "x86"...) are defined by the OSGi
 								spec -->
 							<environments>
 								<!-- Mac -->
@@ -386,17 +388,17 @@
 				<repository>
 					<id>platform_latest</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
+					<url>http://download.eclipse.org/eclipse/updates/latest</url>
 				</repository>
 
 				<repository>
 					<id>release-train_latest</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2019-09</url>
+					<url>http://download.eclipse.org/releases/latest</url>
 				</repository>
 			</repositories>
 		</profile>
-				<profile>
+		<profile>
 			<id>sloeber_release</id>
 			<properties>
 				<platform-version-name>sloeber_release</platform-version-name>
@@ -409,13 +411,13 @@
 				<repository>
 					<id>platform_sloeber_release</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
+					<url>http://download.eclipse.org/eclipse/updates/latest</url>
 				</repository>
 
 				<repository>
 					<id>release-sloeber_release</id>
 					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2019-09</url>
+					<url>http://download.eclipse.org/releases/latest</url>
 				</repository>
 			</repositories>
 		</profile>
