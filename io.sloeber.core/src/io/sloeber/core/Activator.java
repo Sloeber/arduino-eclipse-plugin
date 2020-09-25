@@ -126,7 +126,8 @@ public class Activator extends AbstractUIPlugin {
 		if (installFile.exists()) {
 			if (!installFile.canWrite()) {
 				errorString += addString + "The folder " + installPath.toString()
-						+ " exists but Sloeber does not have write access to it.";
+						+ " exists but Sloeber does not have write access to it.\n";
+				errorString += "Alternatively use the environment var SLOEBER_HOME.";
 				addString = "\nand\n";
 			}
 		} else {
@@ -134,16 +135,18 @@ public class Activator extends AbstractUIPlugin {
 				errorString += addString + "Sloeber does not have write access to "
 						+ installFile.getParentFile().toString() + " and therefore can not create the folder "
 						+ installPath.toString();
+				errorString += "\nAlternatively use the environment var SLOEBER_HOME.";
 				addString = "\nand\n";
 			}
 		}
 
-		if (installPathToLong()) {
+		if (isInstallPathToLong()) {
 			errorString += errorString + addString;
 			errorString += "Due to issues with long pathnames on Windows, the Sloeber installation path must be less than 40 characters. \n";
 			errorString += "Your current path: " + installPath.toString();
-			errorString += " is too long and the plugin will no longer function correctly for all boards.";
-			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705";
+			errorString += " is too long and the plugin will no longer function correctly for all boards.\n";
+			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705\n";
+			errorString += "Alternatively use the environment var SLOEBER_HOME.";
 			addString = "\nand\n";
 		}
 		if (installPath.toOSString().contains(" ")) {
@@ -181,7 +184,7 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return true if the install path is to deep on windows
 	 */
-	private static boolean installPathToLong() {
+	private static boolean isInstallPathToLong() {
 		IPath installPath = ConfigurationPreferences.getInstallationPath();
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			return installPath.toString().length() > 40;
