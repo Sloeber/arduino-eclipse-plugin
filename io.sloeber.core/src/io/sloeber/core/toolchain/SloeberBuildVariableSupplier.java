@@ -9,6 +9,8 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 
+import io.sloeber.core.common.Const;
+
 public class SloeberBuildVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
 	private IBuildEnvironmentVariable myValues[] = null;
 
@@ -16,16 +18,16 @@ public class SloeberBuildVariableSupplier implements IConfigurationEnvironmentVa
 	public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
 			IEnvironmentVariableProvider provider) {
 		switch (variableName) {
-		case "A.EXTRA.TIME.UTC": //$NON-NLS-1$
+		case Const.EXTRA_TIME_UTC : 
 			setValues();
 			return myValues[0];
-		case "A.EXTRA.TIME.LOCAL": //$NON-NLS-1$
+		case Const.EXTRA_TIME_LOCAL :
 			setValues();
 			return myValues[1];
-		case "A.EXTRA.TIME.ZONE": //$NON-NLS-1$
+		case Const.EXTRA_TIME_ZONE :
 			setValues();
 			return myValues[2];
-		case "A.EXTRA.TIME.DTS": //$NON-NLS-1$
+		case Const.EXTRA_TIME_DTS:
 			setValues();
 			return myValues[3];
 		default:
@@ -50,11 +52,11 @@ public class SloeberBuildVariableSupplier implements IConfigurationEnvironmentVa
 		long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
 
 		myValues = new IBuildEnvironmentVariable[4];
-		myValues[0] = (new BuildEnvironmentVariable("A.EXTRA.TIME.UTC", Long.toString(current))); //$NON-NLS-1$
-		myValues[1] = (new BuildEnvironmentVariable("A.EXTRA.TIME.LOCAL", //$NON-NLS-1$
+		myValues[0] = (new BuildEnvironmentVariable(Const.EXTRA_TIME_UTC , Long.toString(current))); 
+		myValues[1] = (new BuildEnvironmentVariable(Const.EXTRA_TIME_LOCAL,
 				Long.toString(current + timezone + daylight)));
-		myValues[2] = (new BuildEnvironmentVariable("A.EXTRA.TIME.ZONE", Long.toString(timezone))); //$NON-NLS-1$
-		myValues[3] = (new BuildEnvironmentVariable("A.EXTRA.TIME.DTS", Long.toString(daylight))); //$NON-NLS-1$
+		myValues[2] = (new BuildEnvironmentVariable(Const.EXTRA_TIME_ZONE, Long.toString(timezone))); 
+		myValues[3] = (new BuildEnvironmentVariable(Const.EXTRA_TIME_DTS, Long.toString(daylight))); 
 
 	}
 

@@ -14,7 +14,6 @@ import io.sloeber.core.tools.Helpers;
 
 public class CompileOptions {
 
-
 	private Boolean myWarningLevel = new Boolean(true);
 	private boolean myAlternativeSizeCommand = false;
 	private String my_CPP_CompileOptions = new String();
@@ -27,30 +26,28 @@ public class CompileOptions {
 
 	private boolean myEnableParallelBuild;
 
-
-	private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.COMPILER.WARNING_FLAGS"; //$NON-NLS-1$
-	private static final String ENV_KEY_WARNING_LEVEL_ON = "${A.COMPILER.WARNING_FLAGS.ALL}"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.COMPILE"; //$NON-NLS-1$
+	private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.compiler.warning_flags"; //$NON-NLS-1$
+	private static final String ENV_KEY_WARNING_LEVEL_ON = "${A.compiler.warning_flags_all}"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START
+			+ "extra.compile"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START
-			+ "EXTRA.C.COMPILE"; //$NON-NLS-1$
+			+ "extra.c.compile"; //$NON-NLS-1$
 	private static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START
-			+ "EXTRA.CPP.COMPILE"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_WARNING_LEVEL = Const.ENV_KEY_JANTJE_START + "WARNING_LEVEL"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_SIZE_COMMAND = Const.ERASE_START + "ALT_SIZE_COMMAND"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_SIZE_SWITCH = Const.ENV_KEY_JANTJE_START + "SIZE.SWITCH"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.ASSEMBLY"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.ARCHIVE"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.LINK"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "EXTRA.ALL"; //$NON-NLS-1$
+			+ "extra.cpp.compile"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_WARNING_LEVEL = Const.ENV_KEY_JANTJE_START + "warning_level"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_SIZE_COMMAND = Const.ERASE_START + "alt_size_command"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_SIZE_SWITCH = Const.ENV_KEY_JANTJE_START + "size.switch"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.assembly"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.archive"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.link"; //$NON-NLS-1$
+	private static final String ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.all"; //$NON-NLS-1$
 
 	/**
 	 * gets the compile options stored in this configuration description. if the
-	 * configuration description is null the default compile options are
-	 * returned.
+	 * configuration description is null the default compile options are returned.
 	 *
-	 * @param confDesc
-	 *            null for default or the configuration description you want the
-	 *            compile options for
+	 * @param confDesc null for default or the configuration description you want
+	 *                 the compile options for
 	 */
 	public CompileOptions(ICConfigurationDescription confDesc) {
 		if (confDesc != null) {
@@ -95,11 +92,11 @@ public class CompileOptions {
 	public void setWarningLevel(boolean myWarningLevel) {
 		this.myWarningLevel = new Boolean(myWarningLevel);
 	}
-	
+
 	public boolean isParallelBuildEnabled() {
 		return myEnableParallelBuild;
 	}
-	
+
 	public void setEnableParallelBuild(boolean parrallelBuild) {
 		this.myEnableParallelBuild = parrallelBuild;
 	}
@@ -135,6 +132,7 @@ public class CompileOptions {
 	public void set_C_andCPP_CompileOptions(String new_C_andCPP_CompileOptions) {
 		this.my_C_andCPP_CompileOptions = new_C_andCPP_CompileOptions;
 	}
+
 	public String get_Assembly_CompileOptions() {
 		return this.my_Assembly_CompileOptions;
 	}
@@ -170,12 +168,11 @@ public class CompileOptions {
 	/**
 	 * save the compilation options in this configuration description.
 	 *
-	 * @param configuration
-	 *            must be a valid configuration description
+	 * @param configuration must be a valid configuration description
 	 */
 	public void save(ICConfigurationDescription configuration) {
-		CompileOptions curOptions=new CompileOptions(configuration);
-		if(needsDirtyFlag(curOptions)) {
+		CompileOptions curOptions = new CompileOptions(configuration);
+		if (needsDirtyFlag(curOptions)) {
 			IProject project = configuration.getProjectDescription().getProject();
 			Helpers.setDirtyFlag(project, configuration);
 		}
@@ -190,63 +187,53 @@ public class CompileOptions {
 			contribEnv.addVariable(var, configuration);
 		}
 		if (this.myAlternativeSizeCommand) {
-			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-					+ ENV_KEY_JANTJE_SIZE_COMMAND + "}"); //$NON-NLS-1$
+			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH,
+					Common.makeEnvironmentVar(ENV_KEY_JANTJE_SIZE_COMMAND));
 			contribEnv.addVariable(var, configuration);
 		} else {
-			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, "${" //$NON-NLS-1$
-					+ Common.get_ENV_KEY_RECIPE(Const.ACTION_SIZE) + "}"); //$NON-NLS-1$
+			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, Common.makeEnvironmentVar(Const.RECIPE_SIZE));
 			contribEnv.addVariable(var, configuration);
 		}
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,
-				this.my_C_andCPP_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
-				this.my_CPP_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
 		contribEnv.addVariable(var, configuration);
 		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
 		contribEnv.addVariable(var, configuration);
 
-
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS,
-				this.my_Assembly_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS,
-				this.my_Archive_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS,
-				this.my_Link_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS,
-				this.my_All_CompileOptions);
+		var = new EnvironmentVariable(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
 		contribEnv.addVariable(var, configuration);
-
-
 
 	}
 
 	private boolean needsDirtyFlag(CompileOptions curOptions) {
 		// ignore myWarningLevel
-		//ignore myAlternativeSizeCommand
-		if( !this.my_CPP_CompileOptions.equals(curOptions.get_CPP_CompileOptions())){
+		// ignore myAlternativeSizeCommand
+		if (!this.my_CPP_CompileOptions.equals(curOptions.get_CPP_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_C_CompileOptions.equals(curOptions.get_C_CompileOptions())){
+		if (!this.my_C_CompileOptions.equals(curOptions.get_C_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_C_andCPP_CompileOptions.equals(curOptions.get_C_andCPP_CompileOptions())){
+		if (!this.my_C_andCPP_CompileOptions.equals(curOptions.get_C_andCPP_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_Assembly_CompileOptions.equals(curOptions.get_Assembly_CompileOptions())){
+		if (!this.my_Assembly_CompileOptions.equals(curOptions.get_Assembly_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_Archive_CompileOptions.equals(curOptions.get_Archive_CompileOptions())){
+		if (!this.my_Archive_CompileOptions.equals(curOptions.get_Archive_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_Link_CompileOptions.equals(curOptions.get_Link_CompileOptions())){
+		if (!this.my_Link_CompileOptions.equals(curOptions.get_Link_CompileOptions())) {
 			return true;
 		}
-		if( !this.my_All_CompileOptions.equals(curOptions.get_All_CompileOptions())){
+		if (!this.my_All_CompileOptions.equals(curOptions.get_All_CompileOptions())) {
 			return true;
 		}
 

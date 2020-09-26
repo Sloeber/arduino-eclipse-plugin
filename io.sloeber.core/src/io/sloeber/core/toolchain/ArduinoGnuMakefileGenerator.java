@@ -1077,7 +1077,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			//jaba is not going to write this code
 		}
 		// JABA use del in windows and rm on all other oses
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		if (Const.isWindows) {
 			cleanCommand = "-del ";
 		}
 		buffer.append(cleanCommand).append( NEWLINE);
@@ -2951,7 +2951,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// Get the input file name
 		String fileName = sourceLocation.removeFileExtension().lastSegment();
 		// Replace the % with the file name
-		String outName = outPath.toOSString().replaceAll("%", fileName);
+		String outName = outPath.toOSString().replace("%", fileName);
 		IPath result = Path.fromOSString(outName);
 		return DOT_SLASH_PATH.isPrefixOf(outPath) ? DOT_SLASH_PATH.append(result) : result;
 	}
@@ -3281,7 +3281,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 	 * @return resulting string
 	 */
 	static public String escapedEcho(String string) {
-		String escapedString = string.replaceAll("'", "'\"'\"'");
+		String escapedString = string.replace("'", "'\"'\"'");
 		return ECHO + WHITESPACE + SINGLE_QUOTE + escapedString + SINGLE_QUOTE + NEWLINE;
 	}
 

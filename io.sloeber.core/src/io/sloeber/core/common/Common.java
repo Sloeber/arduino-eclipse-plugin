@@ -26,14 +26,10 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
-@SuppressWarnings({"nls","unused"})
 public class Common extends Const {
-	private static final String ENV_PATTERN = "PATTERN";
-	private static final String ENV_PROTOCOL = "PROTOCOL";
-	protected static final String ENV_TOOL = "TOOL";
+
 	private static String eclipseHomeValue = null;
 	static {
-
 		try {
 			ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
 			ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
@@ -50,6 +46,7 @@ public class Common extends Const {
 	 * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) /
 	 * slash used as a path name component separator in Unix-like, Windows, and
 	 * Amiga systems. (The MS-DOS command.com shell would consume it as a switch
+<<<<<<< HEAD
 	 * character, but Windows itself always accepts it as a
 	 * separator.[6][vague]) \ backslash Also used as a path name component
 	 * separator in MS-DOS, OS/2 and Windows (where there are few differences
@@ -73,14 +70,34 @@ public class Common extends Const {
 	 * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
 	 * 
 	 * # is excluded as it is seen as a special character by make
+=======
+	 * character, but Windows itself always accepts it as a separator.[6][vague]) \
+	 * backslash Also used as a path name component separator in MS-DOS, OS/2 and
+	 * Windows (where there are few differences between slash and backslash);
+	 * allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in
+	 * Unix, Windows and AmigaOS; marks a single character. Allowed in Unix
+	 * filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single
+	 * character. asterisk or star used as a wildcard in Unix, MS-DOS, RT-11, VMS
+	 * and Windows. Marks any sequence of characters (Unix, Windows, later versions
+	 * of MS-DOS) or any sequence of characters in either the basename or extension
+	 * (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
+	 * filenames, see note 1 : colon used to determine the mount point / drive on
+	 * Windows; used to determine the virtual device or physical device such as a
+	 * drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac
+	 * OS. Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+	 * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or
+	 * pipe designates software pipelining in Unix and Windows; allowed in Unix
+	 * filenames, see Note 1 " quote used to mark beginning and end of filenames
+	 * containing spaces in Windows, see Note 1 < less than used to redirect input,
+	 * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
+	 * allowed in Unix filenames, see Note 1 . period or dot
+>>>>>>> branch '#1184_don_not_uppercase_environment_variables' of https://github.com/Sloeber/arduino-eclipse-plugin.git
 	 *
-	 * @param name
-	 *            the string that needs to be checked
+	 * @param name the string that needs to be checked
 	 * @return a name safe to create files or folders
 	 */
 	public static String MakeNameCompileSafe(String name) {
 		char[] badChars = { ' ', '/', '.',':', '\\', '(', ')', '*', '?', '%', '|', '<', '>', ',', '-','#' };
-
 		String ret = name.trim();
 		for (char curchar : badChars) {
 			ret = ret.replace(curchar, '_');
@@ -91,11 +108,9 @@ public class Common extends Const {
 	/**
 	 * Gets a persistent project property
 	 *
-	 * @param project
-	 *            The project for which the property is needed
+	 * @param project The project for which the property is needed
 	 *
-	 * @param tag
-	 *            The tag identifying the property to read
+	 * @param tag     The tag identifying the property to read
 	 * @return returns the property when found. When not found returns an empty
 	 *         string
 	 */
@@ -129,12 +144,10 @@ public class Common extends Const {
 		}
 	}
 
-
 	/**
 	 * Logs the status information
 	 *
-	 * @param status
-	 *            the status information to log
+	 * @param status the status information to log
 	 */
 	public static void log(IStatus status) {
 		if (status.getSeverity() == IStatus.ERROR) {
@@ -149,13 +162,11 @@ public class Common extends Const {
 	/**
 	 * ToInt converts a string to a integer in a save way
 	 *
-	 * @param number
-	 *            is a String that will be converted to an integer. Number can
-	 *            be null or empty and can contain leading and trailing white
-	 *            space
+	 * @param number is a String that will be converted to an integer. Number can be
+	 *               null or empty and can contain leading and trailing white space
 	 * @return The integer value represented in the string based on parseInt
-	 * @see parseInt. After error checking and modifications parseInt is used
-	 *      for the conversion
+	 * @see parseInt. After error checking and modifications parseInt is used for
+	 *      the conversion
 	 **/
 	public static int ToInt(String number) {
 		if (number == null)
@@ -182,14 +193,10 @@ public class Common extends Const {
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
 	 *
-	 * @param project
-	 *            the project that contains the environment variable
-	 * @param configName
-	 *            the project configuration to use
-	 * @param envName
-	 *            the key that describes the variable
-	 * @param defaultvalue
-	 *            The return value if the variable is not found.
+	 * @param project      the project that contains the environment variable
+	 * @param configName   the project configuration to use
+	 * @param envName      the key that describes the variable
+	 * @param defaultvalue The return value if the variable is not found.
 	 * @return The expanded build environment variable
 	 */
 	static public String getBuildEnvironmentVariable(IProject project, String configName, String envName,
@@ -203,13 +210,10 @@ public class Common extends Const {
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
 	 *
-	 * @param project
-	 *            the project that contains the environment variable
+	 * @param project      the project that contains the environment variable
 	 *
-	 * @param envName
-	 *            the key that describes the variable
-	 * @param defaultvalue
-	 *            The return value if the variable is not found.
+	 * @param envName      the key that describes the variable
+	 * @param defaultvalue The return value if the variable is not found.
 	 * @return The expanded build environment variable
 	 */
 	static public String getBuildEnvironmentVariable(IProject project, String envName, String defaultvalue) {
@@ -222,12 +226,9 @@ public class Common extends Const {
 	 * Provides the build environment variable based on project and string This
 	 * method does not add any knowledge.(like adding A.)
 	 *
-	 * @param project
-	 *            the project that contains the environment variable
-	 * @param envName
-	 *            the key that describes the variable
-	 * @param defaultvalue
-	 *            The return value if the variable is not found.
+	 * @param project      the project that contains the environment variable
+	 * @param envName      the key that describes the variable
+	 * @param defaultvalue The return value if the variable is not found.
 	 * @return The expanded build environment variable
 	 */
 	static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
@@ -252,6 +253,25 @@ public class Common extends Const {
 		return myWorkspaceRoot.getLocation().toFile();
 	}
 
+	static {
+
+		try {
+			ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
+			ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
+			eclipseHomeValue = var.getStringValue();
+		} catch (Exception e) {
+			// nobody cares
+		}
+
+	}
+
+	/**
+	 * Check whether the string starts with the eclipse path If it does replace with
+	 * environment variable This keeps things more compatible over environments
+	 * 
+	 * @param path string to check
+	 * @return modified string or the original
+	 */
 	private static String makePathEnvironmentString(String path) {
 		if (eclipseHomeValue == null) {
 			return path;
@@ -284,7 +304,7 @@ public class Common extends Const {
 	 * @return the environment variable key to find the protocol
 	 */
 	public static String get_ENV_KEY_PROTOCOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+		return ERASE_START + action + DOT + PROTOCOL;
 	}
 
 	/**
@@ -294,7 +314,7 @@ public class Common extends Const {
 	 * @return the environment variable key to find the tool
 	 */
 	public static String get_ENV_KEY_TOOL(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_TOOL;
+		return ERASE_START + action + DOT + TOOL;
 	}
 
 	/**
@@ -304,28 +324,28 @@ public class Common extends Const {
 	 * @return he environment variable key to find the recipe
 	 */
 	public static String get_ENV_KEY_RECIPE(String action) {
-		return ERASE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+		return ERASE_START + action + DOT + PATTERN;
 	}
 
 	public static String get_Jantje_KEY_PROTOCOL(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PROTOCOL;
+		return ENV_KEY_JANTJE_START + action + DOT + PROTOCOL;
 	}
 
 	public static String get_Jantje_KEY_RECIPE(String action) {
-		return ENV_KEY_JANTJE_START + action.toUpperCase() + DOT + ENV_PATTERN;
+		return ENV_KEY_JANTJE_START + action + DOT + PATTERN;
 	}
 
 	/**
-	 * given a action and a tool return the environment key that matches it's
-	 * recipe
+	 * given a action and a tool return the environment key that matches it's recipe
 	 *
 	 * @param action
 	 * @return he environment variable key to find the recipe
 	 */
 	public static String get_ENV_KEY_RECIPE(String tool, String action) {
-		return ERASE_START + "TOOLS" + DOT + tool.toUpperCase() + DOT + action.toUpperCase() + DOT + ENV_PATTERN; //$NON-NLS-1$
+		return ERASE_START + TOOLS + DOT + tool + DOT + action + DOT + PATTERN;
 	}
-	
+
+
 	/**
 	 * Converts a name to a tagged environment variable if variableName ="this" the
 	 * output is "${this}"
@@ -334,6 +354,7 @@ public class Common extends Const {
 	 * @return
 	 */
 	public static String makeEnvironmentVar(String variableName) {
-		return "${" + variableName + '}';
+		return "${" + variableName + '}'; //$NON-NLS-1$
 	}
+	
 }

@@ -32,10 +32,10 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 		String extraOptions = new String();
 		CompileOptions compileOptions = new CompileOptions(confDesc);
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
-			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_C_to_O);
+			recipeKey = Const.RECIPE_C_to_O;
 			extraOptions = compileOptions.get_C_CompileOptions();
 		} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
-			recipeKey = Common.get_ENV_KEY_RECIPE(Const.ACTION_CPP_to_O);
+			recipeKey = Const.RECIPE_CPP_to_O;
 			extraOptions = compileOptions.get_CPP_CompileOptions();
 		} else {
 			ManagedBuilderCorePlugin.error(
@@ -55,7 +55,7 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 		compilerCommand = compilerCommand + ' ' + extraOptions;
 
-		return compilerCommand.replaceAll(" -o ", " ");
+		return compilerCommand.replace(" -o ", " ");
 	}
 
 }

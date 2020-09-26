@@ -1,40 +1,40 @@
 #this file is processed without the adding of A to enable referencing non arduino set variables
 A.software=ARDUINO
-A.RECIPE.OBJCOPY.HEX.PATTERN={A.RECIPE.OBJCOPY.BIN.PATTERN}
-A.ARCHIVE_FILE=arduino.ar
-A.ARCHIVE_FILE_PATH={A.BUILD.PATH}/{A.ARCHIVE_FILE}
-A.ALT_SIZE_COMMAND="{A.COMPILER.PATH}{A.COMPILER.SIZE.CMD}" --format=avr --mcu={A.BUILD.MCU} "{A.BUILD.PATH}/{A.BUILD.PROJECT_NAME}.elf"
-A.archive_file_path={A.BUILD.PATH}/{A.ARCHIVE_FILE}
-A.runtime.IDE.version=10812
-A.BUILD.SYSTEM.PATH={A.REFERENCED.CORE.PATH}{DirectoryDelimiter}system
-A.SERIAL.PORT={JANTJE.COM_PORT}
-A.BUILD.PROJECT_NAME={ProjName}
-A.BUILD.SOURCE.PATH={ProjDirPath}
+A.recipe.objcopy.hex.pattern={A.recipe.objcopy.bin.pattern}
+A.archive_file=arduino.ar
+A.archive_file_path={A.build.path}/{A.archive_file}
+JANTJE.alt_size_command="{A.compiler.path}{A.compiler.size.cmd}" --format=avr --mcu={A.build.mcu} "{A.build.path}/{A.build.project_name}.elf"
+A.runtime.ide.version=10812
+A.build.system.path={A.referenced.core.path}{DirectoryDelimiter}system
+A.serial.port={JANTJE.com_port}
+A.build.project_name={ProjName}
+A.packages={eclipse_home}{DirectoryDelimiter}arduinoPlugin{DirectoryDelimiter}packages
+A.build.source.path={ProjDirPath}
 
 
 #quick fix for issue #810
-A.UPLOAD.SPEED=19200
-A.UPLOAD.PROTOCOL=stk500v1
+A.upload.speed=19200
+A.upload.protocol=stk500v1
 
 
 #for esp8266 network upload
-A.tools.esp8266OTA={A.TOOLS.ESPTOOL.NETWORK_CMD}
-A.tools.esp8266OTA.upload.pattern={A.TOOLS.ESPTOOL.UPLOAD.NETWORK_PATTERN}
+A.tools.esp8266OTA={A.tools.esptool.network_cmd}
+A.tools.esp8266OTA.upload.pattern={A.tools.esptool.upload.network_pattern}
 A.esp8266.network.upload.tool=esp8266OTA
-A.TOOLS.ESPTOOL.NETWORK.PASSWORD={A.NETWORK.AUTH}
+A.tools.esptool.network.PASSWORD={A.network.auth}
 
 #for yun shield to work
-A.TOOLS.AVRDUDE_REMOTE.UPLOAD.VERBOSE=-v
+A.tools.avrdude_remote.upload.verbose=-v
 
 #for due
-A.SERIAL.PORT.FILE={A.SERIAL.PORT}
+A.serial.port.file={A.serial.port}
 
 #to turn warnings on/off
-A.COMPILER.WARNING_FLAGS=-w
-A.COMPILER.WARNING_FLAGS.ALL=-Wall -Wextra
+A.compiler.warning_flags=-w
+A.compiler.warning_flags.all=-Wall -Wextra
 
 #for stm
 
-A.UPLOAD.ALTID=no_altID
-A.UPLOAD.USBID=no_altID
+A.upload.altID=no_altID
+A.upload.usbID=no_altID
 

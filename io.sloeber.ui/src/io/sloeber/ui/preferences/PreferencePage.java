@@ -23,7 +23,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.Other;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Activator;
@@ -244,12 +243,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		this.enableBonjour = new BooleanFieldEditor(KEY_USE_BONJOUR,
 				Messages.ui_enable_bonjour, BooleanFieldEditor.DEFAULT, parent);
 		addField(this.enableBonjour);
-
-		createLine(parent, 4);
-		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Your HashKey: " + Other.getSystemHash()); //$NON-NLS-1$
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 2));
-
 	}
 
 	/**
