@@ -602,7 +602,7 @@ public class BoardDescriptor {
                     addManagedBuildNature(newProjectHandle);
 
                     // Find the base project type definition
-                    IProjectType projType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch");
+                    IProjectType projType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
 
                     // Create the managed-project (.cdtbuild) for our project that builds an
                     // executable.
@@ -627,7 +627,7 @@ public class BoardDescriptor {
                         cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
                     }
                     codeDescription.createFiles(newProjectHandle, new NullProgressMonitor());
-                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor);
+                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
                     ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
 
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
@@ -641,7 +641,7 @@ public class BoardDescriptor {
                     ManagedBuildManager.getBuildInfo(newProjectHandle).setValid(true);
                 } catch (Exception e) {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                            "Project creation failed: " + newProjectHandle.getName(), e));
+                            "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
                 }
 
             }
@@ -657,7 +657,7 @@ public class BoardDescriptor {
             IndexerController.Index(newProjectHandle);
         } catch (CoreException e2) {
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Project creation failed: " + newProjectHandle.getName()));
+                    "Project creation failed: " + newProjectHandle.getName(),e2)); //$NON-NLS-1$
         }
 
         monitor.done();

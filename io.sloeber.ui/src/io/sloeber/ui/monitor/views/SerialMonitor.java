@@ -419,7 +419,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	private void makeActions() {
 		connect = new Action() {
-			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
 				OpenSerialDialogBox comportSelector = new OpenSerialDialogBox(parent.getShell());
@@ -479,7 +478,6 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		SerialListener.setPlotterFilter(MyPreferences.getLastUsedPlotterFilter());
 
 		showTimestamps = new Action(Messages.serialMonitorShowTimestamps, IAction.AS_CHECK_BOX) {
-			@SuppressWarnings("synthetic-access")
 			@Override
 			public void run() {
 				timestampMode = isChecked();

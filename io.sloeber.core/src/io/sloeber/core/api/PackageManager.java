@@ -5,6 +5,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -764,10 +765,12 @@ public class PackageManager {
 			// normally, 3xx is redirect
 			int status = conn.getResponseCode();
 
-			if (status == HttpURLConnection.HTTP_OK) {
-				Files.copy(url.openStream(), localFile.toPath(), REPLACE_EXISTING);
-				return;
-			}
+            if (status == HttpURLConnection.HTTP_OK) {
+                try (InputStream stream = url.openStream()) {
+                    Files.copy(stream, localFile.toPath(), REPLACE_EXISTING);
+                }
+                return;
+            }
 
 			if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
 					|| status == HttpURLConnection.HTTP_SEE_OTHER) {
@@ -916,7 +919,7 @@ public class PackageManager {
 	 * @return latest platforms
 	 */
 	public static Collection<ArduinoPlatform> getLatestPlatforms() {
-		Collection<ArduinoPlatform> allLatestPlatforms = new LinkedList<ArduinoPlatform>();
+		Collection<ArduinoPlatform> allLatestPlatforms = new LinkedList<>();
 		List<Package> allPackages = InternalPackageManager.getPackages();
 		for (Package curPackage : allPackages) {
 			allLatestPlatforms.addAll(curPackage.getLatestPlatforms());

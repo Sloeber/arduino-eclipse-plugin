@@ -50,7 +50,7 @@ public class LibraryManager {
 	private static final String PDE = "pde";//$NON-NLS-1$
 	private static final String CPP = "cpp";//$NON-NLS-1$
 	private static final String C = "c";//$NON-NLS-1$
-	private static final String LIBRARY_PATH_SUFFIX = Const.LIBRARY_PATH_SUFFIX ; //$NON-NLS-1$
+	private static final String LIBRARY_PATH_SUFFIX = Const.LIBRARY_PATH_SUFFIX ;
 	private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
 	private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
 	private static final String FILE = Messages.FILE;

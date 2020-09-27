@@ -14,7 +14,7 @@ import io.sloeber.core.tools.Helpers;
 
 public class CompileOptions {
 
-	private Boolean myWarningLevel = new Boolean(true);
+	private Boolean myWarningLevel =  Boolean.TRUE;
 	private boolean myAlternativeSizeCommand = false;
 	private String my_CPP_CompileOptions = new String();
 	private String my_C_CompileOptions = new String();
@@ -90,7 +90,7 @@ public class CompileOptions {
 	}
 
 	public void setWarningLevel(boolean myWarningLevel) {
-		this.myWarningLevel = new Boolean(myWarningLevel);
+		this.myWarningLevel =  Boolean.valueOf(myWarningLevel);
 	}
 
 	public boolean isParallelBuildEnabled() {

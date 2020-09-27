@@ -210,7 +210,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
 					} else {
 						PasswordManager passwordManager = new PasswordManager();
-						@SuppressWarnings("synthetic-access")
 						PasswordDialog dialog = new PasswordDialog(myComposite.getShell());
 						passwordManager.setHost(host);
 						dialog.setPasswordManager(passwordManager);

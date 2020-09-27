@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Event;
 /**
  * A plotter based on the scope.
  */
-@SuppressWarnings("synthetic-access")
 public class Plotter extends Canvas {
 	private int height = DEFAULT_HEIGHT;
 	private int width = DEFAULT_WIDTH;

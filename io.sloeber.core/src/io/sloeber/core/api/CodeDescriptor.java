@@ -2,6 +2,7 @@ package io.sloeber.core.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -179,9 +180,13 @@ public class CodeDescriptor {
 						if (DEFAULT_SKETCH_INO.equalsIgnoreCase(file)) {
 							renamedFile = project.getName() + ".ino";
 						}
-						Helpers.addFileToProject(project, new Path(renamedFile),
-								Stream.openContentStream( sourceFile.toString(), true,replacers),
-								monitor, false);
+						try(InputStream theFileStream=Stream.openContentStream( sourceFile.toString(), true,replacers);){
+						Helpers.addFileToProject(project, new Path(renamedFile), theFileStream,	monitor, false);
+						} catch (IOException e) {
+                            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                                    "Failed to add template file :" + sourceFile.toString(), e));
+                        }
+
 					}
 				}
 			}
