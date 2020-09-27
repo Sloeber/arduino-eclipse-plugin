@@ -49,6 +49,7 @@ public class Const {
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
 	public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
 	public static final String ECLIPSE_HOME = "eclipse_home";
+	public static final String SLOEBER_HOME = "SLOEBER_HOME";
 
 	// Folder and file Information
 	public static final String ARDUINO_HARDWARE_FOLDER_NAME = HARDWARE;
@@ -109,6 +110,7 @@ public class Const {
 	}
 
 	public static final OS os = getOS();
+    
 
 	private static OS getOS() {
 		switch (Platform.getOS()) {

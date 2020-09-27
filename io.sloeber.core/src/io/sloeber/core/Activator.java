@@ -127,7 +127,7 @@ public class Activator extends AbstractUIPlugin {
 			if (!installFile.canWrite()) {
 				errorString += addString + "The folder " + installPath.toString()
 						+ " exists but Sloeber does not have write access to it.\n";
-				errorString += "Alternatively use the environment var SLOEBER_HOME.";
+				errorString += "Alternatively use the environment var " +Const.SLOEBER_HOME +".";
 				addString = "\nand\n";
 			}
 		} else {
@@ -135,7 +135,7 @@ public class Activator extends AbstractUIPlugin {
 				errorString += addString + "Sloeber does not have write access to "
 						+ installFile.getParentFile().toString() + " and therefore can not create the folder "
 						+ installPath.toString();
-				errorString += "\nAlternatively use the environment var SLOEBER_HOME.";
+				errorString += "\nAlternatively use the environment var " +Const.SLOEBER_HOME + ".";
 				addString = "\nand\n";
 			}
 		}
@@ -146,7 +146,7 @@ public class Activator extends AbstractUIPlugin {
 			errorString += "Your current path: " + installPath.toString();
 			errorString += " is too long and the plugin will no longer function correctly for all boards.\n";
 			errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705\n";
-			errorString += "Alternatively use the environment var SLOEBER_HOME.";
+			errorString += "Alternatively use the environment var " +Const.SLOEBER_HOME + ".";
 			addString = "\nand\n";
 		}
 		if (installPath.toOSString().contains(" ")) {
@@ -235,7 +235,6 @@ public class Activator extends AbstractUIPlugin {
 	private static void runInstallJob() {
 		Job installJob = new Job("Finishing the installation ..") {
 
-			@SuppressWarnings("synthetic-access")
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 

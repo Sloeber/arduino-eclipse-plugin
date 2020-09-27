@@ -127,7 +127,7 @@ public class ConfigurationPreferences {
 		if (myEclipseHome == null) {
 
 			try {
-				String sloeber_HomeValue=System.getenv("SLOEBER_HOME");
+				String sloeber_HomeValue=System.getenv(Const.SLOEBER_HOME);
 				if(sloeber_HomeValue!=null) {
 					if(!sloeber_HomeValue.isEmpty()) {
 						myEclipseHome = new Path(sloeber_HomeValue);
