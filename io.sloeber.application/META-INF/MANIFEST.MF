@@ -6,7 +6,7 @@ Bundle-Version: 4.3.3.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ui.intro
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: Sloeber.io
 Automatic-Module-Name: io.sloeber.application
 Export-Package: io.sloeber.application;x-internal:=true
