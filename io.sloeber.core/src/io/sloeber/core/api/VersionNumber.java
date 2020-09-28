@@ -24,7 +24,7 @@ public class VersionNumber implements Comparable<Object> {
 		return this.compareParts(other, level + 1);
 	    }
 	    try {
-		return new Integer(this.parts[level]).compareTo(new Integer(Integer.parseInt(other[level])));
+		return  Integer.valueOf(this.parts[level]).compareTo( Integer.valueOf(Integer.parseInt(other[level])));
 	    } catch (Exception e) {
 		return this.parts[level].compareTo(other[level]);
 	    }
