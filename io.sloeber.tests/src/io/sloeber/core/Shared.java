@@ -61,13 +61,15 @@ public class Shared {
             }
         }
         IPath resultPath = project.getLocation().append("Release");
-        String[] validExtensions=  {".elf",".bin",".hex",".exe",".axf"};
-        for(String validExtension:validExtensions) {   
-            File validFile = resultPath.append(project.getName() + validExtension).toFile();
+        String projName=project.getName() ;
+        String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",".exe","application.axf"};
+        for(String validOutput:validOutputss) {   
+            File validFile = resultPath.append( validOutput).toFile();
             if (validFile.exists()) {
                 return false;
             }
         }
+        
         return true;
     }
 
