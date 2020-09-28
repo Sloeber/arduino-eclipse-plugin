@@ -757,7 +757,7 @@ public class Helpers extends Common {
 		setTheEnvironmentVariablesAddtheBoardsTxt(contribEnv, confDesc, pluginPostProcessingBoardsTxt, false);
 
 		// Do some coded post processing
-		setTheEnvironmentVariablesPostProcessing(contribEnv, confDesc, boardsDescriptor);
+		setTheEnvironmentVariablesPostProcessing(project, contribEnv, confDesc, boardsDescriptor);
 
 	}
 
@@ -790,7 +790,7 @@ public class Helpers extends Common {
 	 * @param confDesc
 	 * @param boardsDescriptor
 	 */
-	private static void setTheEnvironmentVariablesPostProcessing(IContributedEnvironment contribEnv,
+	private static void setTheEnvironmentVariablesPostProcessing(IProject project, IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, InternalBoardDescriptor boardsDescriptor) {
 
 		CompileOptions compileOptions = new CompileOptions(confDesc);
@@ -850,7 +850,7 @@ public class Helpers extends Common {
 			String MComPort = boardsDescriptor.getUploadPort();
 			if (MComPort.isEmpty()) {
 				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-						"Upload will fail due to missing upload port")); //$NON-NLS-1$
+						"Upload will fail due to missing upload port for project: "+project.getName())); //$NON-NLS-1$
 			}
 		}
 
