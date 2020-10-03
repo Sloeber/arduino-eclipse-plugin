@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
@@ -573,18 +579,16 @@ public class BoardDescriptor {
      * Method to create a project based on the board
      */
     public IProject createProject(String projectName, URI projectURI, CodeDescriptor codeDescription,
-            CompileOptions compileOptions, IProgressMonitor monitor) throws Exception {
+            CompileOptions compileOptions, IProgressMonitor monitor)  {
 
         String realProjectName = Common.MakeNameCompileSafe(projectName);
 
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         final IProject newProjectHandle = root.getProject(realProjectName);
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-        ICoreRunnable runnable = new ICoreRunnable() {
+        WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             @Override
-            public void run(IProgressMonitor internalMonitor) throws CoreException {
-
+            protected void execute(IProgressMonitor internalMonitor) throws CoreException {
                 try {
                     // Create the base project
                     IWorkspaceDescription workspaceDesc = workspace.getDescription();
@@ -636,32 +640,28 @@ public class BoardDescriptor {
                         compileOptions.save(curConfig);
                         save(curConfig);
                     }
+                    SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
+                    newProjectHandle.open(refreshMonitor);
+                    newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
                     cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
-
-                    ManagedBuildManager.getBuildInfo(newProjectHandle).setValid(true);
                 } catch (Exception e) {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                             "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
                 }
-
+                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"internal creation of project is done: "+newProjectHandle.getName()));
             }
         };
 
         try {
-            // turn indexer off
             IndexerController.doNotIndex(newProjectHandle);
-            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
-            final IProgressMonitor refreshMonitor = new NullProgressMonitor();
-            newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-            // refreshMonitor.wait();
-            IndexerController.Index(newProjectHandle);
-        } catch (CoreException e2) {
+            op.run(monitor);
+        } catch (InvocationTargetException | InterruptedException e) {
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Project creation failed: " + newProjectHandle.getName(),e2)); //$NON-NLS-1$
+                    "Project creation failed: " + newProjectHandle.getName(),e)); //$NON-NLS-1$
         }
 
         monitor.done();
-
+        IndexerController.Index(newProjectHandle);
         return newProjectHandle;
     }
 

@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -86,25 +87,20 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		if (this.mProject != null) {
 			return true;
 		}
-
-		WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-			@Override
-			protected void execute(IProgressMonitor monitor) throws CoreException {
-				createProjectWrapper(monitor);
-			}
-		};
-
-		try {
-			getContainer().run(false, true, op);
-		} catch (InvocationTargetException | InterruptedException e) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.ui_new_sketch_error_failed_to_create_project, e));
-			return false;
-		}
+		BoardDescriptor boardID = this.mArduinoPage.getBoardID();
+		CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
+		CompileOptions compileOptions = new CompileOptions(null);
+		compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
+		this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
+				(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null, codeDescription,
+				compileOptions, new NullProgressMonitor());
 
 		if (this.mProject == null) {
+			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+					Messages.ui_new_sketch_error_failed_to_create_project));
 			return false;
 		}
+
 
 		// so now we set Eclipse to the right perspective and switch to our just
 		// created project
@@ -114,24 +110,6 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		BasicNewResourceWizard.selectAndReveal(this.mProject, TheWindow);
 
 		return true;
-	}
-
-	protected void createProjectWrapper(IProgressMonitor monitor) {
-
-		BoardDescriptor boardID = this.mArduinoPage.getBoardID();
-		CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
-		try {
-			CompileOptions compileOptions = new CompileOptions(null);
-			compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
-			this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
-					(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null,
-					 codeDescription, compileOptions,	monitor);
-
-		} catch (Exception e) {
-			this.mProject = null;
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.ui_new_sketch_error_failed_to_create_project, e));
-		}
 	}
 
 	@Override
