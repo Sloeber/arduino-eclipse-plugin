@@ -62,7 +62,7 @@ public class Shared {
         }
         IPath resultPath = project.getLocation().append("Release");
         String projName=project.getName() ;
-        String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",".exe","application.axf"};
+        String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",projName+".exe","application.axf"};
         for(String validOutput:validOutputss) {   
             File validFile = resultPath.append( validOutput).toFile();
             if (validFile.exists()) {
