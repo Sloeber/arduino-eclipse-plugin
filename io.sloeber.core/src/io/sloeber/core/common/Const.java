@@ -1,5 +1,6 @@
 package io.sloeber.core.common;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 
 /**
@@ -10,6 +11,9 @@ import org.eclipse.core.runtime.Platform;
  */
 @SuppressWarnings("nls")
 public class Const {
+    //for debug messages
+    public static final int SLOEBER_STATUS_DEBUG=IStatus.CANCEL;
+    
 	// java stuff so I do not have to add all the time $NON-NLS-1$
 	public static final String DOT = ".";
 	public static final String SLACH = "/";
