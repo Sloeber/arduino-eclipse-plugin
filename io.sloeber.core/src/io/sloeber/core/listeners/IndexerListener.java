@@ -26,55 +26,66 @@ import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.Libraries;
 
 public class IndexerListener implements IIndexChangeListener, IIndexerStateListener {
-	protected Set<IProject> ChangedProjects = new HashSet<>();
-	Job installLibJob = null;
+    private static Set<IProject> ChangedProjects = new HashSet<>();
+    private static Job installLibJob = null;
 
-	@Override
-	public void indexChanged(IIndexChangeEvent event) {
-		IProject project = event.getAffectedProject().getProject();
-		try {
-			if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
-				this.ChangedProjects.add(project);
-			}
-		} catch (CoreException e) {
-			// ignore
-			e.printStackTrace();
-		}
+    @Override
+    public void indexChanged(IIndexChangeEvent event) {
+        IProject project = event.getAffectedProject().getProject();
+        try {
+            if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
+                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                        "Index of project changed :" + project.getName())); //$NON-NLS-1$
+                ChangedProjects.add(project);
+            }
+        } catch (CoreException e) {
+            // ignore
+            e.printStackTrace();
+        }
 
-	}
+    }
 
-	@Override
-	public void indexChanged(IIndexerStateEvent event) {
+    @Override
+    public void indexChanged(IIndexerStateEvent event) {
 
-		if (event.indexerIsIdle()) {
-			if (InstancePreferences.getAutomaticallyImportLibraries()) {
-				if ((this.installLibJob == null) || (this.installLibJob.getState() == Job.NONE)) {
-					this.installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
+        if (event.indexerIsIdle()) {
+            if (InstancePreferences.getAutomaticallyImportLibraries()) {
+                if ((installLibJob == null) || (installLibJob.getState() == Job.NONE)) {
+                    if (!ChangedProjects.isEmpty()) {
+                        installLibJob = new Job("Adding Arduino libs...") { //$NON-NLS-1$
 
-						@Override
-						protected IStatus run(IProgressMonitor monitor) {
-							try {
-								for (IProject curProject : IndexerListener.this.ChangedProjects) {
-									Libraries.checkLibraries(curProject);
-								}
-								IndexerListener.this.ChangedProjects.clear();
-							} catch (Exception e) {
-								Common.log(new Status(IStatus.WARNING, Activator.getId(),
-										Messages.Failed_To_Add_Libraries, e));
-							}
-							IndexerListener.this.installLibJob = null;
-							return Status.OK_STATUS;
-						}
+                            @Override
+                            protected IStatus run(IProgressMonitor monitor) {
+                                try {
+                                    for (IProject curProject : ChangedProjects) {
+                                        Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                                                "Looking for libraries for project :" + curProject.getName())); //$NON-NLS-1$
+                                        Libraries.checkLibraries(curProject);
+                                    }
+                                    ChangedProjects.clear();
+                                } catch (Exception e) {
+                                    Common.log(new Status(IStatus.WARNING, Activator.getId(),
+                                            Messages.Failed_To_Add_Libraries, e));
+                                }
+                                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                                        "Indexer all projects checked for libraries")); //$NON-NLS-1$
+                                installLibJob = null;
+                                return Status.OK_STATUS;
+                            }
 
-					};
+                        };
 
-					this.installLibJob.setPriority(Job.DECORATE);
-					this.installLibJob.schedule();
-				}
+                        installLibJob.setPriority(Job.DECORATE);
+                        installLibJob.schedule();
+                    }
+                } else {
+                    Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                            "Ignoring indexer idle because install job still running!!!!!")); //$NON-NLS-1$
+                }
 
-			}
+            }
 
-		}
-	}
+        }
+    }
 
 }
