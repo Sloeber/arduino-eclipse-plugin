@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.common.Common;
@@ -34,21 +35,25 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 		if (event.getEventType() != CProjectDescriptionEvent.ABOUT_TO_APPLY) {
 			return;
 		}
-		ICProjectDescription projDesc = event.getNewCProjectDescription();
-
+		
+		IProject activeProject = event.getProject();
 		// only handle arduino nature projects
 		try {
-			if (!event.getProject().hasNature(Const.ARDUINO_NATURE_ID)) {
+			if (!activeProject.hasNature(Const.ARDUINO_NATURE_ID)) {
 					return;
 			}
 		} catch (Exception e) {
 			// don't care don't update
 			return;
 		}
-
+		if(IndexerController.isPosponed(activeProject)) {
+		    Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"Ignoring configuration change during project creation "+activeProject.getName()));
+		    return;
+		}
+		ICProjectDescription projDesc = event.getNewCProjectDescription();
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
 		ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
-		IProject activeProject = projDesc.getProject();
+		
 
 		InternalBoardDescriptor oldBoardDescriptor = (InternalBoardDescriptor) BoardDescriptor
 				.makeBoardDescriptor(oldprojDesc.getActiveConfiguration());
@@ -56,7 +61,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 				.makeBoardDescriptor(activeConf);
 
 		if (oldBoardDescriptor.equals(newBoardDescriptor)) {
-			if (event.getProject().getName().equals(oldBoardDescriptor.getProjectName())) {
+			if (activeProject.getName().equals(oldBoardDescriptor.getProjectName())) {
 				if(oldprojDesc.getActiveConfiguration().getName().equals(projDesc.getActiveConfiguration().getName())) {
 				// only act when there is change
 				return;

@@ -29,6 +29,9 @@ public class IndexerController extends IndexerSetupParticipant  {
 		}
 		return ret;
 	}
+	public static boolean isPosponed(IProject project) {
+	    return fProjects.contains(project);
+	}
 	public static void doNotIndex(IProject project) {
 		Common.log(new Status(IStatus.WARNING, Activator.getId(),"Do not index "+project.getName()));
 		fProjects.add(project);
