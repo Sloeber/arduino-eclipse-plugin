@@ -32,7 +32,6 @@ import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -41,11 +40,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 import io.sloeber.core.Activator;
@@ -648,7 +644,7 @@ public class BoardDescriptor {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                             "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
                 }
-                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"internal creation of project is done: "+newProjectHandle.getName()));
+                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"internal creation of project is done: "+newProjectHandle.getName())); //$NON-NLS-1$
             }
         };
 
