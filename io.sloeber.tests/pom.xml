@@ -27,6 +27,8 @@
         <artifactId>tycho-surefire-plugin</artifactId>
         <version>${tycho.version}</version>
         <configuration>
+           <useUIHarness>true</useUIHarness>
+           <useUIThread>true</useUIThread>
            <systemProperties>
                <org.eclipse.cdt.core.console>org.eclipse.cdt.core.systemConsole</org.eclipse.cdt.core.console>
            </systemProperties>
