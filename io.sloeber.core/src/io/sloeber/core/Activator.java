@@ -15,15 +15,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.content.IContentTypeSettings;
-import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -38,19 +37,6 @@ import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.managers.InternalPackageManager;
 
-abstract class FamilyJob extends Job {
-	static final String MY_FAMILY = "myJobFamily"; //$NON-NLS-1$
-
-	public FamilyJob(String name) {
-		super(name);
-	}
-
-	@Override
-	public boolean belongsTo(Object family) {
-		return family == MY_FAMILY;
-	}
-
-}
 
 /**
  * generated code
@@ -58,8 +44,8 @@ abstract class FamilyJob extends Job {
  * @author Jan Baeyens
  *
  */
-@SuppressWarnings({ "nls", "unused" })
-public class Activator extends AbstractUIPlugin {
+@SuppressWarnings({ "nls" })
+public class Activator extends Plugin {
 	// preference nodes
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
 	// TOFIX I think the fix below for unix users is no longer needed and we no
@@ -69,10 +55,7 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static final String FLAG_START = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
-	private static final String UPLOAD_FLAG = "F" + "u" + "S" + "t" + "a" + "t" + "u" + "s";
-	private static final String BUILD_FLAG = "F" + "b" + "S" + "t" + "a" + "t" + "u" + "s";
-	private static final String LOCAL_FLAG = "l" + FLAG_START;
-	private static final String HELP_LOC = "https://www.baeyens.it/eclipse/remind.php";
+
 
 	private static Activator instance;
 	protected char[] uri = { 'h', 't', 't', 'p', 's', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't',
@@ -98,7 +81,6 @@ public class Activator extends AbstractUIPlugin {
 		if (Const.isLinux && System.getProperty(ENV_KEY_GNU_SERIAL_PORTS) == null) {
 			System.setProperty(ENV_KEY_GNU_SERIAL_PORTS, ENV_VALUE_GNU_SERIAL_PORTS_LINUX);
 		}
-		remind();
 
 	}
 
@@ -271,9 +253,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		IJobManager jobMan = Job.getJobManager();
-		jobMan.cancel(FamilyJob.MY_FAMILY);
-		jobMan.join(FamilyJob.MY_FAMILY, null);
+
 		instance = null;
 		super.stop(context);
 	}
@@ -374,37 +354,6 @@ public class Activator extends AbstractUIPlugin {
 
 	}
 
-	static void remind() {
 
-		Job job = new FamilyJob("pluginReminder") {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-
-				IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-				int curFsStatus = myScope.getInt(FLAG_START, 0);
-				int curFuStatus = myScope.getInt(UPLOAD_FLAG, 0);
-				int curFbStatus = myScope.getInt(BUILD_FLAG, 0);
-				int curFsiStatus = curFsStatus + curFuStatus + curFbStatus;
-				int lastFsiStatus = myScope.getInt(LOCAL_FLAG, 0);
-				final int trigger = 30;
-				if ((curFsiStatus - lastFsiStatus) < 0) {
-					lastFsiStatus = curFsiStatus - (trigger + 1);
-				}
-				if ((curFsiStatus - lastFsiStatus) >= trigger) {
-					myScope.putInt(LOCAL_FLAG, curFsiStatus);
-					try {
-						myScope.flush();
-					} catch (BackingStoreException e) {
-						// this should not happen
-					}
-					PleaseHelp.doHelp(HELP_LOC);
-				}
-				remind();
-				return Status.OK_STATUS;
-			}
-		};
-		job.setPriority(Job.DECORATE);
-		job.schedule(60000);
-	}
 
 }

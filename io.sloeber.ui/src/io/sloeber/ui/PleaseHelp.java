@@ -1,4 +1,4 @@
-package io.sloeber.core;
+package io.sloeber.ui;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;

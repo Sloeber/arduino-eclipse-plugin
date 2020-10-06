@@ -1,7 +1,6 @@
 package io.sloeber.core.api;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -42,8 +42,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
-
 import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.Messages;
@@ -582,9 +580,9 @@ public class BoardDescriptor {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         final IProject newProjectHandle = root.getProject(realProjectName);
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+        ICoreRunnable runnable = new ICoreRunnable() {
             @Override
-            protected void execute(IProgressMonitor internalMonitor) throws CoreException {
+            public void  run(IProgressMonitor internalMonitor) throws CoreException {
                 try {
                     // Create the base project
                     IWorkspaceDescription workspaceDesc = workspace.getDescription();
@@ -650,8 +648,8 @@ public class BoardDescriptor {
 
         try {
             IndexerController.doNotIndex(newProjectHandle);
-            op.run(monitor);
-        } catch (InvocationTargetException | InterruptedException e) {
+            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
+        } catch (Exception e) {
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                     "Project creation failed: " + newProjectHandle.getName(),e)); //$NON-NLS-1$
         }
