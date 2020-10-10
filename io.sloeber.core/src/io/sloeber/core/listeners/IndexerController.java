@@ -8,11 +8,11 @@ import org.eclipse.cdt.core.index.IndexerSetupParticipant;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
 
 public class IndexerController extends IndexerSetupParticipant  {
 	private static Set<IProject> fProjects = new HashSet<>();
@@ -22,10 +22,10 @@ public class IndexerController extends IndexerSetupParticipant  {
 		IProject project=cProject.getProject();
 		boolean ret= fProjects.contains(project);
 		if(ret) {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),"pospone index "+project.getName()));
+			Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"pospone index "+project.getName())); //$NON-NLS-1$
 		}
 		else {
-			Common.log(new Status(IStatus.WARNING, Activator.getId(),"do not pospone index "+project.getName()));
+			Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"do not pospone index "+project.getName())); //$NON-NLS-1$
 		}
 		return ret;
 	}
@@ -33,12 +33,12 @@ public class IndexerController extends IndexerSetupParticipant  {
 	    return fProjects.contains(project);
 	}
 	public static void doNotIndex(IProject project) {
-		Common.log(new Status(IStatus.WARNING, Activator.getId(),"Do not index "+project.getName()));
+		Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"Do not index "+project.getName())); //$NON-NLS-1$
 		fProjects.add(project);
 		getIndexController();
 	}
 	public static void Index(IProject project) {
-		Common.log(new Status(IStatus.WARNING, Activator.getId(),"index "+project.getName()));
+		Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"index "+project.getName())); //$NON-NLS-1$
 		fProjects.remove(project);
 		ICProject cProject = CoreModel.getDefault().getCModel().getCProject(project.getName());
 		getIndexController().notifyIndexerSetup(cProject);
