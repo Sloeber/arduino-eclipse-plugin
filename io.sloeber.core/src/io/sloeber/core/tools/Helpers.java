@@ -92,18 +92,6 @@ public class Helpers extends Common {
 
 	private static boolean myHasBeenLogged = false;
 
-	/**
-	 * conveniance method because java does not know default values as parameters
-	 * default is isWorkSpace=true
-	 * 
-	 * @param configurationDescription
-	 * @param IncludePath
-	 */
-
-	public static void addIncludeFolder(ICFolderDescription folderDescription,  IPath IncludePath) 
-	{
-		   addIncludeFolder( folderDescription,  IncludePath,true) ;
-	}
 
 	/**
 	 * This method is the internal working class that adds the provided include path
@@ -114,8 +102,10 @@ public class Helpers extends Common {
 	 * @param IncludePath              The path to add to the include folders
 	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
 	 */
-	public static void addIncludeFolder(ICFolderDescription folderDescription, IPath IncludePath,boolean isWorkspacePath) {
-		ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
+    public static void addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath,
+            boolean isWorkspacePath) {
+        ICLanguageSetting[] languageSettings = configurationDescription.getRootFolderDescription()
+                .getLanguageSettings();
 		int pathSetting = ICSettingEntry.VALUE_WORKSPACE_PATH;
 		if (!isWorkspacePath) {
 			pathSetting = 0;
@@ -241,8 +231,7 @@ public class Helpers extends Common {
 	 */
 	public static void addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
 			ICConfigurationDescription configurationDescription, boolean forceRoot) throws CoreException {
-		IFolder link = project.getFolder(LinkName);
-		ICFolderDescription folderDescription = configurationDescription.getRootFolderDescription();
+		IFolder link = project.getFolder(LinkName);		
 
 		LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
 
@@ -252,29 +241,35 @@ public class Helpers extends Common {
 		String possibleIncludeFolder = "utility"; //$NON-NLS-1$
 		File file = toLinkFolder.append(possibleIncludeFolder).toFile();
 		if (file.exists()) {
-			addIncludeFolder(folderDescription, link.getFullPath().append(possibleIncludeFolder));
+            addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder), true);
 		}
 
 		if (forceRoot) {
-			addIncludeFolder(folderDescription, link.getFullPath());
+            addIncludeFolder(configurationDescription, link.getFullPath(), true);
 		} else {
 			// add src or root give priority to src
 			possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
 			file = toLinkFolder.append(possibleIncludeFolder).toFile();
 			if (file.exists()) {
-				addIncludeFolder(folderDescription, link.getFullPath().append(possibleIncludeFolder));
+                addIncludeFolder(configurationDescription, link.getFullPath().append(possibleIncludeFolder), true);
 			} else {
-				addIncludeFolder(folderDescription, link.getFullPath());
+                addIncludeFolder(configurationDescription, link.getFullPath(), true);
 			}
 		}
+        // TOFIX removed this code as part of libraries not included in project after
+        // creation,
+        // Should run a lib test to see how this works without this code
+        // if this is needed I should create a include with a environment var so I do
+        // not need to get the boardDescriptor
 
-		possibleIncludeFolder = "arch"; //$NON-NLS-1$
-		file = toLinkFolder.append(possibleIncludeFolder).toFile();
-		if (file.exists()) {
-			InternalBoardDescriptor boardDescriptor = new InternalBoardDescriptor(configurationDescription);
-			addIncludeFolder(folderDescription,
-					link.getFullPath().append(possibleIncludeFolder).append(boardDescriptor.getArchitecture()));
-		}
+        // possibleIncludeFolder = "arch"; //$NON-NLS-1$
+        // file = toLinkFolder.append(possibleIncludeFolder).toFile();
+        // if (file.exists()) {
+        // InternalBoardDescriptor boardDescriptor = new
+        // InternalBoardDescriptor(configurationDescription);
+        // addIncludeFolder(rootFolderDescr,
+        // link.getFullPath().append(possibleIncludeFolder).append(boardDescriptor.getArchitecture()));
+        // }
 	}
 
 	public static void removeCodeFolder(IProject project, String LinkName) throws CoreException {
@@ -285,30 +280,30 @@ public class Helpers extends Common {
 	}
 
 	/**
-	 * This method creates a link folder in the project and adds the folder as a
-	 * source path to the project it also adds the path to the include folder if the
-	 * include path parameter points to a path that contains a subfolder named
-	 * "utility" this subfolder will be added to the include path as well <br/>
-	 * <br/>
-	 *
-	 * note Arduino has these subfolders in the libraries that need to be
-	 * include.<br/>
-	 * <br/>
-	 *
-	 * note that in the current eclipse version, there is no need to add the
-	 * subfolder as a code folder. This may change in the future as it looks like a
-	 * bug to me.<br/>
-	 *
-	 * @param project
-	 * @param Path
-	 * @throws CoreException
-	 *
-	 * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
-	 */
+     * This method creates a link folder in the project descriptor and adds the
+     * folder as a source path to the projectdescriptor it also adds the path to the
+     * include folder if the include path parameter points to a path that contains a
+     * subfolder named "utility" this subfolder will be added to the include path as
+     * well <br/>
+     * <br/>
+     *
+     * note Arduino has these subfolders in the libraries that need to be
+     * include.<br/>
+     * <br/>
+     *
+     * note that in the current eclipse version, there is no need to add the
+     * subfolder as a code folder. This may change in the future as it looks like a
+     * bug to me.<br/>
+     *
+     * @param project
+     * @param Path
+     * @throws CoreException
+     *
+     * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
+     */
 	public static void addCodeFolder(IProject project, Path Path, ICConfigurationDescription configurationDescription,
 			boolean forceRoot) throws CoreException {
-
-		String NiceName = Path.lastSegment();
+            String NiceName = Path.lastSegment();
 		addCodeFolder(project, Path, NiceName, configurationDescription, forceRoot);
 	}
 

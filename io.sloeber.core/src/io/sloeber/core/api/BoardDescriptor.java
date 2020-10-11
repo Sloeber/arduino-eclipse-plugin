@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+
 import io.sloeber.core.Activator;
 import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.Messages;
@@ -52,6 +53,7 @@ import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
+import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.Programmers;
 import io.sloeber.core.tools.TxtFile;
 
@@ -624,12 +626,15 @@ public class BoardDescriptor {
                     for (int i = 0; i < cfgs.length; i++) {
                         cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
                     }
-                    codeDescription.createFiles(newProjectHandle, new NullProgressMonitor());
+                    Map<String, IPath> librariesToAdd = codeDescription.createFiles(newProjectHandle,
+                            new NullProgressMonitor());
+
                     ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
                     ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
 
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
+                    Libraries.addLibrariesToProject(newProjectHandle, prjCDesc.getActiveConfiguration(), librariesToAdd);
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
                         compileOptions.save(curConfig);
                         save(curConfig);

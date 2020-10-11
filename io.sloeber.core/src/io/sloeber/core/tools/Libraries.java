@@ -45,7 +45,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.Library;
-@SuppressWarnings("unused") 
+
 public class Libraries {
 	public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
 	private static final String LIB = Messages.LIB;
@@ -241,7 +241,7 @@ public class Libraries {
 	 *            the list of libraries to add
 	 * @return true if the configuration description has changed
 	 */
-	private static void addLibrariesToProject(IProject project,
+    public static void addLibrariesToProject(IProject project,
 			ICConfigurationDescription confdesc, Map<String, IPath> libraries) {
 		List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
 		for (Entry<String, IPath> CurItem : libraries.entrySet()) {
@@ -592,5 +592,27 @@ public class Libraries {
 		map.remove("EEPROM"); //$NON-NLS-1$
 		return map;
 	}
+
+    /**
+     * based on a folder inside the library get the folder that starts the library
+     * if that path is not found will return path
+     * 
+     * @param path
+     *            path somewhere inside the library
+     * @return path to the source code
+     */
+    public static IPath getLibraryCodeFolder(IPath path) {
+        // is it a Sloeber managed Library
+        IPath libraryInstallPath = ConfigurationPreferences.getInstallationPathLibraries();
+        if (libraryInstallPath.matchingFirstSegments(path) == libraryInstallPath.segmentCount()) {
+            return path.uptoSegment(libraryInstallPath.segmentCount() + 2);
+        }
+        // is it a library of the hardware
+        IPath hardwareInstallPath = ConfigurationPreferences.getInstallationPathPackages();
+        if (hardwareInstallPath.matchingFirstSegments(path) == hardwareInstallPath.segmentCount()) {
+            return path.uptoSegment(hardwareInstallPath.segmentCount() + 6);
+        }
+        return path;
+    }
 
 }

@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +22,7 @@ import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
+import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.tools.Stream;
 
 /**
@@ -140,8 +139,8 @@ public class CodeDescriptor {
 	 * of libraries that need to be installed
 	 **/
 	@SuppressWarnings("nls")
-	public Set<String> createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
-		Set<String> libraries = new TreeSet<>();
+	public Map<String, IPath>  createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+	    Map<String, IPath>  libraries = new TreeMap<>();
 
 		save();
 		Map<String, String> replacers=new TreeMap<>();
@@ -201,7 +200,7 @@ public class CodeDescriptor {
 						FileUtils.copyDirectory(curPath.toFile(), project.getLocation().toFile());
 						FileModifiers.addPragmaOnce(curPath);
 					}
-					libraries.add(getLibraryName(curPath));
+                    libraries.put(getLibraryName(curPath), Libraries.getLibraryCodeFolder(curPath));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
