@@ -34,9 +34,11 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
         IProject project = event.getAffectedProject().getProject();
         try {
             if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
-                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-                        "Index of project changed :" + project.getName())); //$NON-NLS-1$
-                ChangedProjects.add(project);
+                if (!ChangedProjects.contains(project)) {
+                    Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                            "Index of project changed :" + project.getName())); //$NON-NLS-1$
+                    ChangedProjects.add(project);
+                }
             }
         } catch (CoreException e) {
             // ignore
