@@ -36,7 +36,6 @@ public class NightlyBoardPatronTest {
     private static CompileOptions myCompileOptions;
     private static boolean deleteProjects =true; //delete the projects after trying to build them
 
-    @SuppressWarnings("unused")
 	public NightlyBoardPatronTest(String name, MCUBoard boardID, Examples example) {
         myBoardID = boardID;
         myExample = example;
@@ -46,6 +45,8 @@ public class NightlyBoardPatronTest {
     @Parameters(name = "{0}")
     public static Collection examples() {
     	Shared.setDeleteProjects(deleteProjects );
+        Preferences.setUseBonjour(false);
+
         Shared.waitForAllJobsToFinish();
         Arduino.installLatestSamDBoards();
         LibraryManager.installLibrary("RTCZero");
