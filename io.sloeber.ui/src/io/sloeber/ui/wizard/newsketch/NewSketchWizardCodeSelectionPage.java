@@ -205,6 +205,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public CodeDescriptor getCodeDescription() {
 
 		switch (CodeTypes.values()[myCodeSourceOptionsCombo.getSelectionIndex()]) {
+		case None:
+			return CodeDescriptor.createNone();
 		case defaultIno:
 			return CodeDescriptor.createDefaultIno();
 		case defaultCPP:
@@ -224,6 +226,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	public static String getCodeTypeDescription(CodeTypes codeType) {
 		switch (codeType) {
+		case None:
+			return Messages.ui_new_sketch_none;
 		case defaultIno:
 			return Messages.ui_new_sketch_default_ino;
 		case defaultCPP:
