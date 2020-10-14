@@ -132,6 +132,11 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 */
 	protected void SetControls() {
 		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+		case None:
+			myTemplateFolderEditor.setEnabled(false, myParentComposite);
+			myExampleEditor.setEnabled(false);
+			myCheckBoxUseCurrentLinkSample.setEnabled(false);
+			break;
 		case defaultIno:
 			myTemplateFolderEditor.setEnabled(false, myParentComposite);
 			myExampleEditor.setEnabled(false);
@@ -166,9 +171,10 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			return;
 		}
 		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+		case None:
 		case defaultIno:
 		case defaultCPP:
-			setPageComplete(true);// default always works
+			setPageComplete(true);// default and no file always works
 			break;
 		case CustomTemplate:
 			IPath templateFolder = new Path(myTemplateFolderEditor.getStringValue());
