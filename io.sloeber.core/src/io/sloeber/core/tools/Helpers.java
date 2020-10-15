@@ -911,7 +911,7 @@ public class Helpers extends Common {
 				"A.recipe.hooks.linking.prelink.XX.pattern", false); //$NON-NLS-1$
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.post.link", //$NON-NLS-1$
 				"A.recipe.hooks.linking.postlink.XX.pattern", true); //$NON-NLS-1$
-		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.prebuild", "A.RECIPE.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
+        setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.prebuild", "A.recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
 				false);
 		setHookBuildEnvironmentVariable(contribEnv, confDesc, "A.JANTJE.sketch.prebuild", //$NON-NLS-1$
 				"A.recipe.hooks.sketch.prebuild.XX.pattern", false); //$NON-NLS-1$
@@ -930,6 +930,7 @@ public class Helpers extends Common {
 	private static void setHookBuildEnvironmentVariable(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, String varName, String hookName, boolean post) {
 		String envVarString = new String();
+        String searchString = "XX"; //$NON-NLS-1$
 		String postSeparator = "}\n\t"; //$NON-NLS-1$
 		String preSeparator = "${"; //$NON-NLS-1$
 		if (post) {
@@ -937,13 +938,12 @@ public class Helpers extends Common {
 			preSeparator = "}\n\t"; //$NON-NLS-1$
 		}
 		for (int numDigits = 1; numDigits <= 2; numDigits++) {
+            String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
 			int counter = 1;
-			String hookVarName = hookName.replace("XX", //$NON-NLS-1$
-					String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(counter))); //$NON-NLS-1$ //$NON-NLS-2$
+            String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
 			while (!getBuildEnvironmentVariable(confDesc, hookVarName, "", true).isEmpty()) { //$NON-NLS-1$
 				envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-				hookVarName = hookName.replace("XX", //$NON-NLS-1$
-						String.format("%0" + Integer.toString(numDigits) + "d", Integer.valueOf(++counter))); //$NON-NLS-1$ //$NON-NLS-2$
+                hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
 			}
 		}
 		if (!envVarString.isEmpty()) {
