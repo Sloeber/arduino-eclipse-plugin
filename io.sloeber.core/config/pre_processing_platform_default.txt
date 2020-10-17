@@ -9,7 +9,7 @@ A.build.system.path={A.referenced.core.path}{DirectoryDelimiter}system
 A.serial.port={JANTJE.com_port}
 A.build.project_name={ProjName}
 A.packages={eclipse_home}{DirectoryDelimiter}arduinoPlugin{DirectoryDelimiter}packages
-A.build.source.path={ProjDirPath}
+
 
 
 #quick fix for issue #810

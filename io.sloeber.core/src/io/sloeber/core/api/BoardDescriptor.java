@@ -127,8 +127,8 @@ public class BoardDescriptor {
      */
     private String myProjectName = emptyString;
     private String myOSName = Platform.getOS();
-    private String myWorkSpaceLocation = Common.getWorkspaceRoot().toString();
-    private String myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome().toString();
+    private IPath myWorkSpaceLocation = Common.getWorkspaceRoot();
+    private IPath myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome();
 
     /*
      * Stuff to make things work
@@ -428,8 +428,8 @@ public class BoardDescriptor {
             this.myProjectName = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_PROJECT_NAME);
             this.myTxtFile = new TxtFile(this.myreferencingBoardsFile, true);
             this.myOSName = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_OS);
-            this.myWorkSpaceLocation = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION);
-            this.myWorkEclipseLocation = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION);
+            this.myWorkSpaceLocation = new Path(getFromBuildEnv(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION));
+            this.myWorkEclipseLocation = new Path(getFromBuildEnv(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION));
             String optinconcat = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_MENU_SELECTION);
             this.myOptions = KeyValue.makeMap(optinconcat);
         }
@@ -705,7 +705,7 @@ public class BoardDescriptor {
 
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARDS_FILE,
-                    getReferencingBoardsFile().toString());
+                    getReferencingBoardsFile());
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
@@ -725,11 +725,11 @@ public class BoardDescriptor {
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
                     getActualUploadPort().replace("/dev/", emptyString)); //$NON-NLS-1$
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ACTUAL_CORE_PATH,
-                    getActualCoreCodePath().toOSString());
+                    getActualCoreCodePath());
             IPath variantPath = getActualVariantPath();
             if (variantPath != null) {
                 Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,
-                        variantPath.toOSString());
+                        variantPath);
             } else {// teensy does not use variants
                 Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, emptyString);
             }
@@ -738,11 +738,11 @@ public class BoardDescriptor {
             // referencing such as jantjes hardware
 
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_CORE_PLATFORM_PATH,
-                    getReferencedCorePlatformPath().toOSString());
+                    getReferencedCorePlatformPath());
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH,
-                    getReferencedVariantPlatformPath().toOSString());
+                    getReferencedVariantPlatformPath());
             Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH,
-                    getReferencedUploadPlatformPath().toOSString());
+                    getReferencedUploadPlatformPath());
 
         }
 
@@ -919,11 +919,11 @@ public class BoardDescriptor {
         return this.myOSName;
     }
 
-    private String getMyWorkSpaceLocation() {
+    private IPath getMyWorkSpaceLocation() {
         return this.myWorkSpaceLocation;
     }
 
-    private String getMyWorkEclipseLocation() {
+    private IPath getMyWorkEclipseLocation() {
         return this.myWorkEclipseLocation;
     }
 

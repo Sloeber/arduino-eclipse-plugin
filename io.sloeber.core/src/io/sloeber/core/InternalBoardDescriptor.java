@@ -24,7 +24,7 @@ public class InternalBoardDescriptor extends BoardDescriptor {
 
 	}
 
-	public InternalBoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
+    public InternalBoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
 		super(boardsFile, boardID, options);
 
 	}

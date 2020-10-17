@@ -87,7 +87,7 @@ public class FileModifiers {
 
 		Finder finder = new Finder();
 		try {
-			Files.walkFileTree(Paths.get(startingDir.toOSString()), finder);
+            Files.walkFileTree(Paths.get(startingDir.toString()), finder);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

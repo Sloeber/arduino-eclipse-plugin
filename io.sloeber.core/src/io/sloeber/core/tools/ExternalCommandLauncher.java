@@ -213,7 +213,7 @@ public class ExternalCommandLauncher {
 			monitor.beginTask(Messages.command_launching + ' ' + command, 100);
 
 			myProcessBuilder
-					.directory(Common.getWorkspaceRoot().toPath().toFile());
+                    .directory(Common.getWorkspaceRoot().toFile());
 			try {
 				process = myProcessBuilder.start();
 			} catch (IOException ioe) {

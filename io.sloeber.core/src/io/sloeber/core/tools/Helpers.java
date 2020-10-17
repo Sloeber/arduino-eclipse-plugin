@@ -75,6 +75,7 @@ public class Helpers extends Common {
 
 	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_PATH = ERASE_START + "build.path"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_SOURCE_PATH = ERASE_START + "build.source.path"; //$NON-NLS-1$
 	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
 	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path"; //$NON-NLS-1$
 	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path"; //$NON-NLS-1$
@@ -431,31 +432,33 @@ public class Helpers extends Common {
 	 *                     needed for avr and sam
 	 */
 
-	private static void setTheEnvironmentVariablesSetTheDefaults(String projectName, IContributedEnvironment contribEnv,
+    private static void setTheEnvironmentVariablesSetTheDefaults(IProject project, IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, BoardDescriptor boardDescriptor) {
 		// Set some default values because the platform.txt does not contain
 		// them
-		IPath platformPath = boardDescriptor.getreferencingPlatformPath();
-		IPath hardwarePath = boardDescriptor.getreferencedHardwarePath();
 		String architecture = boardDescriptor.getArchitecture();
 
 		boardDescriptor.saveConfiguration(confDesc, contribEnv);
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH, hardwarePath.toString());
-		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH, platformPath.toString());
+        setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_HARDWARE_PATH,
+                boardDescriptor.getreferencedHardwarePath());
+        setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_PLATFORM_PATH,
+                boardDescriptor.getreferencingPlatformPath());
+        setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_SOURCE_PATH, project.getLocation());
+        // ={ProjDirPath}
+
 		// work around needed because of
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=560330
 		// it should have been
 		// A.BUILD.PATH={ProjDirPath}{DirectoryDelimiter}{ConfigName}
 		// in pre_processing_platform_default.txt
-		String buildPath = confDesc.getProjectDescription().getProject().getLocation().append(confDesc.getName())
-				.toOSString();
+        IPath buildPath = confDesc.getProjectDescription().getProject().getLocation().append(confDesc.getName());
 		setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_PATH, buildPath);
 		// end of workaround
 
 		if (Const.isWindows) {
 			setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MAKE_LOCATION,
-					ConfigurationPreferences.getMakePath().toOSString() + File.separator);
+                    ConfigurationPreferences.getMakePath().addTrailingSeparator());
 		}
 
 		// some glue to make it work
@@ -476,7 +479,7 @@ public class Helpers extends Common {
 
 	}
 
-	private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
+    private static void setTheEnvironmentVariablesAddAFile(IContributedEnvironment contribEnv,
 			ICConfigurationDescription confDesc, File envVarFile) {
 		setTheEnvironmentVariablesAddAFile(ERASE_START, contribEnv, confDesc, envVarFile);
 	}
@@ -638,12 +641,12 @@ public class Helpers extends Common {
 									+ tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
 				}
 			} else {
-				String valueString = theTool.getInstallPath().toOSString();
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
+                IPath installPath = theTool.getInstallPath();
+                setBuildEnvironmentVariable(contribEnv, confDesc, keyString, installPath);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
+                setBuildEnvironmentVariable(contribEnv, confDesc, keyString, installPath);
 				keyString = MakeKeyString("runtime.tools." + tool.getName() + '-' + tool.getVersion() + ".path"); //$NON-NLS-1$ //$NON-NLS-2$
-				setBuildEnvironmentVariable(contribEnv, confDesc, keyString, valueString);
+                setBuildEnvironmentVariable(contribEnv, confDesc, keyString, installPath);
 			}
 		}
 
@@ -715,7 +718,7 @@ public class Helpers extends Common {
 		// first remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
 
-		setTheEnvironmentVariablesSetTheDefaults(project.getName(), contribEnv, confDesc, boardsDescriptor);
+        setTheEnvironmentVariablesSetTheDefaults(project, contribEnv, confDesc, boardsDescriptor);
 
 		// add the stuff that comes with the plugin that are marked as pre
 		setTheEnvironmentVariablesAddAFile(new String(), contribEnv, confDesc, pluginPreProcessingPlatformTxt);
