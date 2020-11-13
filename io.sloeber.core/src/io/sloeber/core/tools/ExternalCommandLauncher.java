@@ -226,9 +226,12 @@ public class ExternalCommandLauncher {
 				throw ioe;
 			}
 
-			Thread stdoutRunner = new Thread(new LogStreamRunner(
+            // the resource is closed in LogStreamRunner
+            @SuppressWarnings("resource")
+            Thread stdoutRunner = new Thread(new LogStreamRunner(
 					process.getInputStream(), stdoutStream));
-			Thread stderrRunner = new Thread(new LogStreamRunner(
+            @SuppressWarnings("resource")
+            Thread stderrRunner = new Thread(new LogStreamRunner(
 					process.getErrorStream(), stderrStream));
 
 			synchronized (myRunLock) {
