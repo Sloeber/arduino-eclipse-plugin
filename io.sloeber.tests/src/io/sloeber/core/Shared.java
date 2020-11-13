@@ -136,7 +136,7 @@ public class Shared {
         }
         String projectName = String.format("%05d_%s", Integer.valueOf(projectCounter), boardDescriptor.getBoardID());
         if (codeDescriptor.getExampleName() != null) {
-            if (codeDescriptor.getExamples().get(0).toOSString().toLowerCase().contains("libraries")) {
+            if (codeDescriptor.getExamples().get(0).toString().toLowerCase().contains("libraries")) {
                 projectName = String.format("%05d_Library_%s_%s", Integer.valueOf(projectCounter),
                         codeDescriptor.getLibraryName(), codeDescriptor.getExampleName());
             } else {
@@ -209,7 +209,7 @@ public class Shared {
      */
     public static void applyKnownWorkArounds() {
 
-        java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toOSString());
+        java.nio.file.Path packageRoot = Paths.get(ConfigurationPreferences.getInstallationPathPackages().toString());
 
         /*
          * oak on linux comes with a esptool2 in a wrong folder. As it is only 1 file I
