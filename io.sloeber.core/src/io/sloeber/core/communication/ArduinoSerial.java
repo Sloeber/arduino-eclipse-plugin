@@ -38,7 +38,6 @@ public class ArduinoSerial {
 		Serial serialPort;
 		try {
 			serialPort = new Serial(comPort, baudRate);
-			serialPort.setDTR(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
@@ -175,17 +174,7 @@ public class ArduinoSerial {
 	 * @return true is successful otherwise false
 	 */
 	public static boolean ToggleDTR(Serial serialPort, long delay) {
-		serialPort.setDTR(false);
-		serialPort.setRTS(false);
-
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {// Jaba is not going to write this
-			// code
-		}
-
-		serialPort.setDTR(true);
-		serialPort.setRTS(true);
+		serialPort.reset();
 		return true;
 	}
 

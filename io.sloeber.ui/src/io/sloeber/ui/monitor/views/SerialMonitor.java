@@ -377,7 +377,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * @return the serial port selected in the combobox
 	 */
 	protected Serial GetSelectedSerial() {
-		return GetSerial(serialPorts.getCombo().getText());
+		return getSerial(serialPorts.getCombo().getText());
 	}
 
 	/**
@@ -388,7 +388,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * @return the serial port opened in the serial monitor with the name equal
 	 *         to Comname of found. null if not found
 	 */
-	private Serial GetSerial(String comName) {
+	private Serial getSerial(String comName) {
 		for (Entry<Serial, SerialListener> entry : serialConnections.entrySet()) {
 			if (entry.getKey().toString().matches(comName))
 				return entry.getKey();
@@ -628,7 +628,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	public void disConnectSerialPort(String comPort) {
-		Serial newSerial = GetSerial(comPort);
+		Serial newSerial = getSerial(comPort);
 		if (newSerial != null) {
 
 			SerialListener theListener = serialConnections.get(newSerial);
@@ -671,10 +671,9 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	@Override
 	public boolean PauzePort(String portName) {
-		Serial theSerial = GetSerial(portName);
+		Serial theSerial = getSerial(portName);
 		if (theSerial != null) {
-			theSerial.disconnect();
-			return true;
+			return theSerial.pause();
 		}
 		return false;
 	}
@@ -684,7 +683,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	@Override
 	public void ResumePort(String portName) {
-		Serial theSerial = GetSerial(portName);
+		Serial theSerial = getSerial(portName);
 		if (theSerial != null) {
 			if (MyPreferences.getCleanSerialMonitorAfterUpload()) {
 
@@ -696,7 +695,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				});
 
 			}
-			theSerial.connect(15);
+			theSerial.resume();
 		}
 	}
 
