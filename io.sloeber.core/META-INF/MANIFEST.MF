@@ -9,8 +9,8 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
- lib/jssc-2.8.0.jar,
- lib/jmdns-3.5.3.jar
+ lib/jmdns-3.5.3.jar,
+ lib/jssc-2.9.2.jar
 Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.filesystem,
  org.eclipse.cdt.core;bundle-version="7.0.0",
