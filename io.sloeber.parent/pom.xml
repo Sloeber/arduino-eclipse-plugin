@@ -279,103 +279,6 @@
 		</profile>
 
 		<profile>
-			<id>photon</id>
-			<properties>
-				<platform-version-name>photon</platform-version-name>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>platform_photon</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.8</url>
-				</repository>
-
-				<repository>
-					<id>release-train_photon</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/photon</url>
-				</repository>
-			</repositories>
-		</profile>
-
-
-		<profile>
-			<id>2018-09</id>
-			<properties>
-				<platform-version-name>2018-09</platform-version-name>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>2018-09</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.9</url>
-				</repository>
-
-				<repository>
-					<id>release-train_2018-09</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2018-09</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>2018-12</id>
-			<properties>
-				<platform-version-name>2018-12</platform-version-name>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>2018-12</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.10</url>
-				</repository>
-
-				<repository>
-					<id>release-train_2018-12</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2018-12</url>
-				</repository>
-			</repositories>
-		</profile>
-		<profile>
-			<id>2019-09</id>
-			<properties>
-				<platform-version-name>2019-09</platform-version-name>
-			</properties>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-
-			<repositories>
-				<repository>
-					<id>2019-09</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/eclipse/updates/4.13</url>
-				</repository>
-
-				<repository>
-					<id>release-train_2019-09</id>
-					<layout>p2</layout>
-					<url>http://download.eclipse.org/releases/2019-09</url>
-				</repository>
-			</repositories>
-		</profile>
-		<!-- Latest must be the same as the previous one. -->
-
-		<profile>
 			<id>latest</id>
 			<properties>
 				<platform-version-name>latest</platform-version-name>
@@ -398,6 +301,7 @@
 				</repository>
 			</repositories>
 		</profile>
+
 		<profile>
 			<id>sloeber_release</id>
 			<properties>

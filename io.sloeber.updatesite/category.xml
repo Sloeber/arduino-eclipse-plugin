@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/io.sloeber.feature_4.3.3.qualifier.jar" id="io.sloeber.feature" version="4.3.3.qualifier">
+   <feature id="io.sloeber.feature">
       <category name="Sloeber"/>
    </feature>
-   <bundle id="io.sloeber.product" version="4.3.3.qualifier">
+   <bundle id="io.sloeber.product">
       <category name="product_ide"/>
    </bundle>
    <category-def name="Sloeber" label="Sloeber Arduino IDE">
