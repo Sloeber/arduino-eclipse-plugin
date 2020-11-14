@@ -575,7 +575,7 @@ public class BoardDescriptor {
      * Method to create a project based on the board
      */
     public IProject createProject(String projectName, URI projectURI, CodeDescriptor codeDescription,
-            CompileOptions compileOptions, IProgressMonitor monitor)  {
+            CompileOptions compileOptions, IProgressMonitor monitor) {
 
         String realProjectName = Common.MakeNameCompileSafe(projectName);
 
@@ -584,70 +584,73 @@ public class BoardDescriptor {
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         ICoreRunnable runnable = new ICoreRunnable() {
             @Override
-            public void  run(IProgressMonitor internalMonitor) throws CoreException {
+            public void run(IProgressMonitor internalMonitor) throws CoreException {
                 try {
-                    // Create the base project
                     IWorkspaceDescription workspaceDesc = workspace.getDescription();
                     workspaceDesc.setAutoBuilding(false);
                     workspace.setDescription(workspaceDesc);
+                    IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
 
+                    // create a eclipse project
                     IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
                     if (projectURI != null) {
                         description.setLocationURI(projectURI);
                     }
 
+                    // make the eclipse project a cdt project
                     CCorePlugin.getDefault().createCProject(description, newProjectHandle, new NullProgressMonitor(),
                             ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
-                    // Add the managed build nature and builder
-                    addManagedBuildNature(newProjectHandle);
 
-                    // Find the base project type definition
-                    IProjectType projType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
+                    // add the required natures
+                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
+                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
+                    ManagedCProjectNature.addManagedNature(newProjectHandle, internalMonitor);
+                    ManagedCProjectNature.addManagedBuilder(newProjectHandle, internalMonitor);
 
-                    // Create the managed-project (.cdtbuild) for our project that builds an
-                    // executable.
-                    IManagedProject newProject = null;
-                    newProject = ManagedBuildManager.createManagedProject(newProjectHandle, projType);
+
+
+                    // make the cdt project a managed build project
+                    ManagedBuildManager.createBuildInfo(newProjectHandle);
+                    IManagedProject newProject = ManagedBuildManager.createManagedProject(newProjectHandle,
+                            sloeberProjType);
                     ManagedBuildManager.setNewProjectVersion(newProjectHandle);
-                    // Copy over the configs
+                    // Copy over the Sloeber configs
                     IConfiguration defaultConfig = null;
-                    IConfiguration[] configs = projType.getConfigurations();
+                    IConfiguration[] configs = sloeberProjType.getConfigurations();
                     for (int i = 0; i < configs.length; ++i) {
+                        IConfiguration curConfig = newProject.createConfiguration(configs[i],
+                                sloeberProjType.getId() + "." + i); //$NON-NLS-1$
+                        curConfig.setArtifactName(newProject.getDefaultArtifactName());
                         // Make the first configuration the default
                         if (i == 0) {
-                            defaultConfig = newProject.createConfiguration(configs[i], projType.getId() + "." + i); //$NON-NLS-1$
-                        } else {
-                            newProject.createConfiguration(configs[i], projType.getId() + "." + i); //$NON-NLS-1$
+                            defaultConfig = curConfig;
                         }
                     }
-                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
 
-                    IConfiguration cfgs[] = newProject.getConfigurations();
-                    for (int i = 0; i < cfgs.length; i++) {
-                        cfgs[i].setArtifactName(newProject.getDefaultArtifactName());
-                    }
+                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
                     Map<String, IPath> librariesToAdd = codeDescription.createFiles(newProjectHandle,
                             new NullProgressMonitor());
 
-                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
-                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
-
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
-                    Libraries.addLibrariesToProject(newProjectHandle, prjCDesc.getActiveConfiguration(), librariesToAdd);
+
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
                         compileOptions.save(curConfig);
                         save(curConfig);
+                        Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
                     }
+
                     SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                     newProjectHandle.open(refreshMonitor);
                     newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
                     cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
+
                 } catch (Exception e) {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                             "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
                 }
-                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"internal creation of project is done: "+newProjectHandle.getName())); //$NON-NLS-1$
+                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                        "internal creation of project is done: " + newProjectHandle.getName())); //$NON-NLS-1$
             }
         };
 
@@ -656,7 +659,7 @@ public class BoardDescriptor {
             workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
         } catch (Exception e) {
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Project creation failed: " + newProjectHandle.getName(),e)); //$NON-NLS-1$
+                    "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
         }
 
         monitor.done();
@@ -728,8 +731,7 @@ public class BoardDescriptor {
                     getActualCoreCodePath());
             IPath variantPath = getActualVariantPath();
             if (variantPath != null) {
-                Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH,
-                        variantPath);
+                Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, variantPath);
             } else {// teensy does not use variants
                 Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, emptyString);
             }
@@ -1100,26 +1102,5 @@ public class BoardDescriptor {
         return getHost() != null;
     }
 
-    static private void addManagedBuildNature(IProject project) throws Exception {
-        // Create the buildinformation object for the project
-        ManagedBuildManager.createBuildInfo(project);
 
-        // Add the managed build nature
-        ManagedCProjectNature.addManagedNature(project, new NullProgressMonitor());
-        ManagedCProjectNature.addManagedBuilder(project, new NullProgressMonitor());
-
-        // Associate the project with the managed builder so the clients can get proper
-        // information
-
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription projDesc = cCorePlugin.getProjectDescription(project, true);
-
-        for (ICConfigurationDescription curConfig : projDesc.getConfigurations()) {
-            curConfig.remove(CCorePlugin.BUILD_SCANNER_INFO_UNIQ_ID);
-            curConfig.create(CCorePlugin.BUILD_SCANNER_INFO_UNIQ_ID, ManagedBuildManager.INTERFACE_IDENTITY);
-        }
-
-        cCorePlugin.setProjectDescription(project, projDesc, true, null);
-
-    }
 }
