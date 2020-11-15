@@ -864,7 +864,7 @@ public class Helpers extends Common {
 				// Arduino uses the board approach for the tools.
 				// as I'm not, therefore I mod the tools in the command to be
 				// FQN
-				if (name.toUpperCase().startsWith(Const.A_TOOLS)) {
+                if (name.startsWith(Const.A_TOOLS)) {
 					String skipVars[] = { Const.ENV_KEY_NETWORK_PASSWORD, Const.ENV_KEY_NETWORK_PORT,
 							Const.ENV_KEY_NETWORK_AUTH, Const.ENV_KEY_UPLOAD_VERBOSE };
 					List<String> skipVarslist = new ArrayList<>(Arrays.asList(skipVars));
