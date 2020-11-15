@@ -602,10 +602,10 @@ public class BoardDescriptor {
                             ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
 
                     // add the required natures
-                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
-                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
                     ManagedCProjectNature.addManagedNature(newProjectHandle, internalMonitor);
                     ManagedCProjectNature.addManagedBuilder(newProjectHandle, internalMonitor);
+                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
+                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
 
 
 
