@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,48 +125,65 @@ public class Serial {
 		this.fConsumers.remove(consumer);
 	}
 
-	public void connect() {
-		if (this.port == null) {
-			int count = 0;
-			try {
-				this.port = new SerialPort(this.portName);
-				this.port.setBaudRateValue(this.rate);
-				this.port.setParity(this.parity);
-				this.port.setStopBits(this.stopbits);
-				this.port.setByteSize(this.databits);
-				this.port.open();
-				startMonitor();
-			} catch (IOException e) {
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Error opening serial port " + this.portName, //$NON-NLS-1$
-						e));
-				this.port = null;
-			}
+	/**
+	 * Only connects if the port is not currently connected.
+	 * 
+	 * @return true if the port was not connected/open and is now connected/open.
+	 * @see #IsConnected()
+	 */
+	public boolean connect() {
+		if (IsConnected()) {
+			return false;
+		}
+		int count = 0;
+		try {
+			this.port = new SerialPort(this.portName);
+			this.port.setBaudRateValue(this.rate);
+			this.port.setParity(this.parity);
+			this.port.setStopBits(this.stopbits);
+			this.port.setByteSize(this.databits);
+			this.port.open();
+			startMonitor();
+			return true;
+		} catch (IOException e) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Error opening serial port " + this.portName, //$NON-NLS-1$
+					e));
+			this.port = null;
+			return false;
 		}
 	}
 
-	public void disconnect() {
-		if (this.port != null) {
-
-			if (this.port.isOpen()) {
-				try {
-					this.port.close();
-				} catch (Exception e) {
-					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Serial port close failed", e)); //$NON-NLS-1$
-				}
+	/**
+	 * @return true if the system was connected and is now disconnected.
+	 */
+	public boolean disconnect() {
+		if (IsConnected()) {
+			try {
+				this.port.close();
+				this.port = null;
+				return true;
+			} catch (Exception e) {
+				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "Serial port close failed", e)); //$NON-NLS-1$
+				return false;
 			}
-			this.port = null;
 		}
+		return false;
 	}
 
 	public void dispose() {
-		notifyConsumersOfEvent("Disconnect of port " + this.port.getPortName() + " executed"); //$NON-NLS-1$ //$NON-NLS-2$
-		disconnect();
-
+		if (IsConnected()) {
+			String name = this.port.getPortName();
+			disconnect();
+			notifyConsumersOfEvent(MessageFormat.format("Disconnect of port {0} executed", name)); //$NON-NLS-1$
+		}
 		if (this.fServiceRegistration != null) {
 			this.fServiceRegistration.unregister();
 		}
 	}
 
+	/**
+	 * @return true if the port is connected/open.
+	 */
 	public boolean IsConnected() {
 		return (this.port != null && this.port.isOpen());
 	}
@@ -191,13 +209,15 @@ public class Serial {
 				this, null);
 	}
 
-	public void reset() {
+	public boolean reset() {
 		try {
-			this.port.close();
-			Thread.sleep(100);
+			disconnect();
 			connect();
-		} catch (Exception e) {// JABA is not going to add code
+		} catch (Exception e) {
+			Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port reset failed", e)); //$NON-NLS-1$
+			return false;
 		}
+		return true;
 	}
 
 	private synchronized void checkForData() {
