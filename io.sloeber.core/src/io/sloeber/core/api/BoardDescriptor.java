@@ -1033,9 +1033,9 @@ public class BoardDescriptor {
         }
         String networkPrefix = empty;
         if (isNetworkUpload()) {
-            networkPrefix = Const.NETWORK_PREFIX;
+            networkPrefix = DOT + Const.NETWORK_PREFIX;
         }
-        String key = Const.A_TOOLS + upLoadTool + DOT + action + DOT + networkPrefix + DOT + Const.PATTERN;
+        String key = Const.A_TOOLS + upLoadTool + DOT + action + networkPrefix + DOT + Const.PATTERN;
         String ret = Common.getBuildEnvironmentVariable(confdesc, key, empty);
         if (ret.isEmpty()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
