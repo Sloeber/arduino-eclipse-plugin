@@ -232,7 +232,7 @@ public class ArduinoSerial {
 		 */
 		List<String> originalPorts = Serial.list();
 		if (!originalPorts.contains(comPort) && !use_1200bps_touch && !bWaitForUploadPort) {
-			console.println(Messages.ArduinoSerial_comport_not_found);
+            console.println(Messages.ArduinoSerial_comport_not_found + ' ' + comPort);
 			return comPort;
 		}
 		if (use_1200bps_touch) {
