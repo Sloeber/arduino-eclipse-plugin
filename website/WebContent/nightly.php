@@ -79,8 +79,8 @@ if (isset ( $_GET ["OS"] ))
 
       <h3>Eclipse Update Site</h3>
       <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Sloeber installation.</p>
-      <p>You can not upgrade from V3 to V4!!!!</p>
-      <p>Even worse: you can install V3 and V4 in the same eclipse installation causing all kind of wierd side effects. So don't do it</p>
+      <h2>The latest nightly needs java 10!!!!</h2>
+      <p>So if you update your product on a windows machine that holds a jre folder you will need to delete the jre folder or upgrade the content to java10</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
         			<?php
