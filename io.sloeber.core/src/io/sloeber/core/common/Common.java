@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -252,9 +253,9 @@ public class Common extends Const {
         return defaultvalue;
     }
 
-    public static File getWorkspaceRoot() {
+    public static IPath getWorkspaceRoot() {
         IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-        return myWorkspaceRoot.getLocation().toFile();
+        return myWorkspaceRoot.getLocation();
     }
 
     static {
@@ -283,6 +284,21 @@ public class Common extends Const {
         return path.replace(eclipseHomeValue, makeEnvironmentVar(ECLIPSE_HOME));
     }
 
+    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
+            ICConfigurationDescription confDesc, String envKeyBuildPath, IPath buildPath) {
+        // setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath,
+        // buildPath.toString());
+        setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath, buildPath.toOSString());
+
+    }
+
+    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
+            ICConfigurationDescription confDesc, String envKeyBuildPath, File file) {
+        // String toSave = new Path(file.toString()).toString();
+        String toSave = file.toString();
+        setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath, toSave);
+
+    }
     public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
             ICConfigurationDescription confdesc, String key, String value) {
 

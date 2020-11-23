@@ -103,7 +103,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
@@ -1134,7 +1133,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		String prebuildStep = config.getPrebuildStep();
 		//JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt prebuild command if needed
 		ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
-        String sketchPrebuild= io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.PREBUILD", new String(), false);
+        String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.prebuild",
+                new String(), false);
         if (!sketchPrebuild.isEmpty()) {
             String separator = new String();
             if (!prebuildStep.isEmpty()) {
@@ -2397,8 +2397,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			//JABA add sketch.prebuild and postbouild if needed
 			if("sloeber.ino".equals(fileName)) {
 			    ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
-			    String sketchPrebuild=io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.SKETCH.PREBUILD", new String(), true);
-			            String sketchPostBuild=io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.SKETCH.POSTBUILD", new String(), true);
+                String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+                        "A.JANTJE.sketch.prebuild", new String(), true);
+                String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+                        "A.JANTJE.sketch.postbuild", new String(), true);
 			            if(!sketchPrebuild.isEmpty()) {
 			                buffer.append(TAB).append(sketchPrebuild);
 			            }

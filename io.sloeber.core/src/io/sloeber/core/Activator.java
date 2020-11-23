@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
@@ -132,7 +133,7 @@ public class Activator extends Plugin {
 			errorString += "Alternatively use the environment var " +Const.SLOEBER_HOME + ".";
 			addString = "\nand\n";
 		}
-		if (installPath.toOSString().contains(" ")) {
+        if (installPath.toString().contains(" ")) {
 			errorString += addString + "The installpath can not contain spaces " + installPath.toString();
 			addString = "\nand\n";
 		}

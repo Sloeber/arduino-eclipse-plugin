@@ -143,7 +143,7 @@ public class UploadSketchWrapper {
 				ICConfigurationDescription cConf, IRealUpload uploader,
 				BoardDescriptor boardDescriptor) {
 			super(name);
-			myNAmeTag = name.toUpperCase();
+            myNAmeTag = name;
 			myProject = project;
 			myConfDes = cConf;
 			myUploader = uploader;

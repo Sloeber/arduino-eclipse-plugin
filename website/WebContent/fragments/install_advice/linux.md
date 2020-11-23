@@ -8,7 +8,7 @@ That is still more than 600 boards though.
 
 **However you system probably does not have all needed packages installed:**  
 Arduino IDE Linux version comes with an install script that amongst others set udev rules. I have run it on my Linux system.  
-I don't know whether running the arduino IDE install script did anything helpfull or harmfull.     
+I know that running the arduino IDE install script did helpfull stuff and is required for Sloeber as well.     
 
 If Sloeber does not find **make** install make using your package manager.
 For instance in ubuntu I had to run  
@@ -22,9 +22,9 @@ In Ubuntu run following commands  :
 sudo apt-get update  
 sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 `  
 
-I never got the Leonardo nor the yun to be recognized on my Linux system. As a result upload issues with these boards have been reported on Linux. The problem seems to be a timing issues in the reset. It seems to work for most people.  
+I never got the Leonardo nor the yun to be recognized on my Linux system. As a result upload issues with these boards have been reported on Linux (and due has upload problems on linux). The problem seems to be a timing issues in the reset. It seems to work for most people.  
 If it doesn't you are back to pressing and releasing the reset button for the Leonardo.
-For the yun use the web upload.
+For the yun yiou can use the web upload.
 
 Some boards need **pyton** to work properly   
 >on ubuntu  

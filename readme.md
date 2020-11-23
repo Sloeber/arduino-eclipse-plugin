@@ -17,7 +17,7 @@ You only need to do one.
 
 
 ## Prerequisites
-Please install [git] (http://git-scm.com/downloads) and [maven] (http://maven.apache.org/download.cgi).
+Please install [git](http://git-scm.com/downloads) and [maven](http://maven.apache.org/download.cgi).
 
 ## Build from the command line from source for your os and the default eclipse instance
 ```bash

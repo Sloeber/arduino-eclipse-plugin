@@ -60,8 +60,7 @@ public class inoToCpp extends IncrementalProjectBuilder {
 
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
-	// delete markers set and files created
-
+        PdePreprocessor.deleteSloeberInoCPPFile(getProject());
     }
 
     @SuppressWarnings("unused")

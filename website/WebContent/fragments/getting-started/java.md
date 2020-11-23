@@ -4,7 +4,7 @@ Java is a platform independent interpreted language. This means that once you ha
 
 Java runtimes have been written for Windows, Linux and Mac. As such Java is called platform independent.
 
-Older versions of the plugin were happy with Java 6. Currently Java 8 or above is needed and you're safer installing the SDK package which includes the Java Runtime. 
+Older versions of the plugin were happy with Java 6. Currently Java 8 or above is needed and you're safer installing the SDK package which includes the Java Runtime. From september 2020 the nightly and all newer releases need java 10. 
 Most people have multiple versions of the Java Runtime on their machine: don't get too concerned about this.
 
 Eclipse uses Java and so does the Arduino IDE.
@@ -13,7 +13,7 @@ To get any flavor of Java visit the [Oracle web site](http://www.oracle.com/tech
 
 Windows users
 =========
-The stable product contains a jre folder that contains a java version.  
+The stable product contains a jre folder that contains a java version. Note that when you update to a version needing a newer java using a update site you will need to delete the jre folder (or update it to a newer java version).   
 
 Mac users
 =========

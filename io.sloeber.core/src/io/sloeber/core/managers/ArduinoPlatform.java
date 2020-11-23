@@ -214,7 +214,7 @@ public class ArduinoPlatform {
 		String ID=new String();
 	
 		if (myParent==null) {
-			ID=getInstallPath().toOSString();
+            ID = getInstallPath().toString();
 		}
 		else {
 			ID=myParent.getName();

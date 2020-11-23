@@ -54,7 +54,7 @@ import org.eclipse.core.runtime.Path;
 
 @SuppressWarnings({ "nls", "restriction","unused" })
 public class PdePreprocessor {
-	private static String oldGeneratedFile = ".ino.cpp";// somethimes having the
+    private static String oldGeneratedFile = ".ino.cpp";// Sometimes having the
 														// file hidden is
 														// annoying
 	private static String generatedFile = "sloeber.ino.cpp";
@@ -62,7 +62,7 @@ public class PdePreprocessor {
 	private static final String NEWLINE = "\n";
 
 	public static void processProject(boolean canSkip,IProject iProject) throws CoreException {
-		deleteTheGeneratedFileInPreviousBersionsOfSloeber(iProject);
+		deleteTheGeneratedFileInPreviousVersionsOfSloeber(iProject);
 
 		// loop through all the files in the project to see we need to generate a file
 		//This way we can avoid hitting the indexer when we use .cpp files
@@ -79,9 +79,9 @@ public class PdePreprocessor {
 
 
 		if (inoResources.isEmpty()) {
-			// delete the generated .ino.cpp file this is to cope with
+            // delete the generated file this is to cope with
 			// renaming ino files to cpp files removing the need for
-			// .ino.cpp file
+            // the generated file
 			deleteTheGeneratedFile(iProject);
 			return;
 		}
@@ -131,14 +131,60 @@ public class PdePreprocessor {
 	}
 
 	/**
-	 * Add some operational stuff and write the file if changed
-	 *
-	 * @param iProject
-	 *            the project for which the ino files have been parsed
-	 * @param content
-	 *            the ouput of the ino file parsing
-	 * @throws CoreException
-	 */
+     * Make a dummy sloeber.ino.cpp file if there is at least 1 .ino .pde file The
+     * file is created to have the makefile process it
+     * 
+     * @param iProject
+     */
+    public static void writeDummySloeberInoCPPFile(IProject iProject) {
+        try {
+            List<IResource> allResources = new ArrayList<>();
+            List<IResource> inoResources = new ArrayList<>();
+            allResources.addAll(Arrays.asList(iProject.members(0)));
+            for (IResource curResource : allResources) {
+                String extension = curResource.getFileExtension();
+                if (extension != null && ((extension.equals("pde") || extension.equals("ino")))) {
+                    String header = "//This is a automatic generated file" + NEWLINE;
+                    header += "//Please do not modify this file" + NEWLINE;
+                    header += "//If you touch this file your change will be overwritten during the next build"
+                            + NEWLINE;
+                    header += "//This file has been generated on during project creation " + NEWLINE;
+                    writeTheGeneratedFile(iProject, header);
+                    return;
+                }
+            }
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Delete the sloeber.ino.cpp or .ino.cpp file if there is one
+     * 
+     * @param iProject
+     * @throws CoreException
+     */
+    public static void deleteSloeberInoCPPFile(IProject iProject) throws CoreException {
+        IResource sloeberInoCpp = iProject.findMember(generatedFile);
+        if (sloeberInoCpp != null) {
+            sloeberInoCpp.delete(true, null);
+        }
+        sloeberInoCpp = iProject.findMember(oldGeneratedFile);
+        if (sloeberInoCpp != null) {
+            sloeberInoCpp.delete(true, null);
+        }
+    }
+
+    /**
+     * Add some operational stuff and write the file if changed
+     *
+     * @param iProject
+     *            the project for which the ino files have been parsed
+     * @param content
+     *            the ouput of the ino file parsing
+     * @throws CoreException
+     */
 	private static void writeTheGeneratedFile(IProject iProject, String content) throws CoreException {
 
 		// Make sure the file is not processed by Arduino IDE
@@ -301,7 +347,7 @@ public class PdePreprocessor {
 
 	}
 
-	private static void deleteTheGeneratedFileInPreviousBersionsOfSloeber(IProject iProject) throws CoreException {
+	private static void deleteTheGeneratedFileInPreviousVersionsOfSloeber(IProject iProject) throws CoreException {
 		IResource inofile = iProject.findMember(oldGeneratedFile);
 		if (inofile != null) {
 			inofile.delete(true, null);
