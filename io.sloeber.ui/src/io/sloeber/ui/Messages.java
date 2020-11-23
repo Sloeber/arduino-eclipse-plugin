@@ -127,6 +127,7 @@ public class Messages extends NLS {
     public static String ui_new_sketch_arduino_information_help;
     public static String ui_new_sketch_custom_template;
     public static String ui_new_sketch_custom_template_location;
+    public static String ui_new_sketch_none;
     public static String ui_new_sketch_default_cpp;
     public static String ui_new_sketch_default_ino;
     public static String ui_new_sketch_error_failed_to_create_project;
