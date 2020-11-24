@@ -1,13 +1,8 @@
 package io.sloeber.core.common;
 
-import java.io.File;
-
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IContributedEnvironment;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -15,14 +10,9 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
@@ -38,8 +28,15 @@ public class Common extends Const {
         } catch (Exception e) {
             // nobody cares
         }
-
     }
+
+
+
+
+    public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
+    public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
+    public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
+
 
     /**
      * This method makes sure that a string can be used as a file or folder name
@@ -105,44 +102,6 @@ public class Common extends Const {
         return ret;
     }
 
-    /**
-     * Gets a persistent project property
-     *
-	 * @param project The project for which the property is needed
-     *
-	 * @param tag     The tag identifying the property to read
-     * @return returns the property when found. When not found returns an empty
-     *         string
-     */
-    public static String getPersistentProperty(IProject project, String tag) {
-        try {
-            String sret = project.getPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, tag));
-            if (sret == null) {
-                sret = project.getPersistentProperty(new QualifiedName(new String(), tag)); // for
-                // downwards
-                // compatibility
-                if (sret == null)
-                    sret = new String();
-            }
-            return sret;
-        } catch (CoreException e) {
-            log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to read persistent setting " + tag, e)); //$NON-NLS-1$
-            return new String();
-        }
-    }
-
-    public static int getPersistentPropertyInt(IProject project, String tag, int defaultValue) {
-        try {
-            String sret = project.getPersistentProperty(new QualifiedName(CORE_PLUGIN_ID, tag));
-            if (sret == null) {
-                return defaultValue;
-            }
-            return Integer.parseInt(sret);
-        } catch (CoreException e) {
-            log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Failed to read persistent setting " + tag, e)); //$NON-NLS-1$
-            return defaultValue;
-        }
-    }
 
     /**
      * Logs the status information
@@ -164,34 +123,6 @@ public class Common extends Const {
         }
     }
 
-    /**
-     * ToInt converts a string to a integer in a save way
-     *
-	 * @param number is a String that will be converted to an integer. Number can be
-     *            null or empty and can contain leading and trailing white space
-     * @return The integer value represented in the string based on parseInt
-     * @see parseInt. After error checking and modifications parseInt is used for
-     *      the conversion
-     **/
-    public static int ToInt(String number) {
-        if (number == null)
-            return 0;
-        if (number.isEmpty())
-            return 0;
-        return Integer.parseInt(number.trim());
-    }
-
-    public static IWorkbenchWindow getActiveWorkbenchWindow() {
-        return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-    }
-
-    public static IWorkbenchPage getActivePage() {
-        IWorkbenchWindow window = getActiveWorkbenchWindow();
-        if (window != null) {
-            return window.getActivePage();
-        }
-        return null;
-    }
 
     /**
      *
@@ -277,93 +208,14 @@ public class Common extends Const {
 	 * @param path string to check
      * @return modified string or the original
      */
-    private static String makePathEnvironmentString(String path) {
+    public static String makePathEnvironmentString(String path) {
         if (eclipseHomeValue == null) {
             return path;
         }
         return path.replace(eclipseHomeValue, makeEnvironmentVar(ECLIPSE_HOME));
     }
 
-    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
-            ICConfigurationDescription confDesc, String envKeyBuildPath, IPath buildPath) {
-        // setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath,
-        // buildPath.toString());
-        setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath, buildPath.toOSString());
 
-    }
-
-    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
-            ICConfigurationDescription confDesc, String envKeyBuildPath, File file) {
-        // String toSave = new Path(file.toString()).toString();
-        String toSave = file.toString();
-        setBuildEnvironmentVariable(contribEnv, confDesc, envKeyBuildPath, toSave);
-
-    }
-    public static void setBuildEnvironmentVariable(IContributedEnvironment contribEnv,
-            ICConfigurationDescription confdesc, String key, String value) {
-
-        IEnvironmentVariable var = new EnvironmentVariable(key, makePathEnvironmentString(value));
-        contribEnv.addVariable(var, confdesc);
-    }
-
-    static public void setBuildEnvironmentVariable(IProject project, String envName, String value) {
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        setBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), envName, value);
-    }
-
-    public static void setBuildEnvironmentVariable(ICConfigurationDescription confdesc, String key, String value) {
-        IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-        IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-        setBuildEnvironmentVariable(contribEnv, confdesc, key, value);
-    }
-
-    /**
-     * given a action return the environment key that matches it's protocol
-     *
-     * @param action
-     * @return the environment variable key to find the protocol
-     */
-    public static String get_ENV_KEY_PROTOCOL(String action) {
-        return ERASE_START + action + DOT + PROTOCOL;
-    }
-
-    /**
-     * given a action return the environment key that matches it's tool
-     *
-     * @param action
-     * @return the environment variable key to find the tool
-     */
-    public static String get_ENV_KEY_TOOL(String action) {
-        return ERASE_START + action + DOT + TOOL;
-    }
-
-    /**
-     * given a action return the environment key that matches it's recipe
-     *
-     * @param action
-     * @return he environment variable key to find the recipe
-     */
-    public static String get_ENV_KEY_RECIPE(String action) {
-        return ERASE_START + action + DOT + PATTERN;
-    }
-
-    public static String get_Jantje_KEY_PROTOCOL(String action) {
-        return ENV_KEY_JANTJE_START + action + DOT + PROTOCOL;
-    }
-
-    public static String get_Jantje_KEY_RECIPE(String action) {
-        return ENV_KEY_JANTJE_START + action + DOT + PATTERN;
-    }
-
-    /**
-     * given a action and a tool return the environment key that matches it's recipe
-     *
-     * @param action
-     * @return he environment variable key to find the recipe
-     */
-    public static String get_ENV_KEY_RECIPE(String tool, String action) {
-        return ERASE_START + TOOLS + DOT + tool + DOT + action + DOT + PATTERN;
-    }
 
     /**
      * Converts a name to a tagged environment variable if variableName ="this" the
@@ -375,5 +227,7 @@ public class Common extends Const {
     public static String makeEnvironmentVar(String variableName) {
         return "${" + variableName + '}'; //$NON-NLS-1$
     }
+
+
 
 }

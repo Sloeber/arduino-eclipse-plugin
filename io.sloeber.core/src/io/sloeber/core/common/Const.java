@@ -1,7 +1,6 @@
 package io.sloeber.core.common;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 
 /**
  * ArduinoConst only contains global strings used in SLOEBER.
@@ -20,6 +19,9 @@ public class Const {
 	public static final String FALSE = "FALSE";
 	public static final String TRUE = "TRUE";
 	public static final String COLON = ":";
+    public static final String EMPTY = "";
+    public static final String NEWLINE = "\n";
+    public static final String EQUAL = "=";
 
 	// arduino txt basic keys
 	public static final String VARIANT = "variant";
@@ -29,6 +31,7 @@ public class Const {
 	public static final String PROGRAM = "program";
 	public static final String TOOL = "tool";
 	public static final String TOOLS = "tools";
+    public static final String RUNTIME = "runtime";
 	public static final String MENU = "menu";
 	public static final String STEP = "step";
 	public static final String PATTERN = "pattern";
@@ -105,27 +108,7 @@ public class Const {
 	// public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
 	// public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
 
-	public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
-	public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
-	public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
 
-	public enum OS {
-		WINDOWS, LINUX, MAC, UNSUPPORTED
-	}
 
-	public static final OS os = getOS();
-    
 
-	private static OS getOS() {
-		switch (Platform.getOS()) {
-		case Platform.OS_WIN32:
-			return OS.WINDOWS;
-		case Platform.OS_MACOSX:
-			return OS.MAC;
-		case Platform.OS_LINUX:
-			return OS.LINUX;
-
-		}
-		return OS.UNSUPPORTED;
-	}
 }

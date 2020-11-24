@@ -15,16 +15,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -52,7 +55,7 @@ import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Package;
 import io.sloeber.core.managers.PackageIndex;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.core.tools.TxtFile;
+import io.sloeber.core.txt.BoardTxtFile;
 
 /**
  * This class groups both boards installed by the hardware manager and boards
@@ -218,8 +221,8 @@ public class PackageManager {
 	}
 
 	public static String[] getBoardNames(String boardFile) {
-		TxtFile theBoardsFile = new TxtFile(new File(boardFile), true);
-		return theBoardsFile.getAllNames();
+        BoardTxtFile theBoardsFile = new BoardTxtFile(new File(boardFile));
+		return theBoardsFile.getAllSectionNames();
 	}
 
 	/**
@@ -607,7 +610,7 @@ public class PackageManager {
 		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile, true);
+            BoardTxtFile txtFile = new BoardTxtFile(curBoardFile);
 			ret.addAll(txtFile.getMenuNames());
 		}
 		return ret;
@@ -617,7 +620,7 @@ public class PackageManager {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File[] boardFiles = getAllBoardsFiles();
 		for (File curBoardFile : boardFiles) {
-			TxtFile txtFile = new TxtFile(curBoardFile, true);
+            BoardTxtFile txtFile = new BoardTxtFile(curBoardFile);
 			ret.putAll(txtFile.getMenus());
 		}
 		return ret;
@@ -888,12 +891,21 @@ public class PackageManager {
 	public static void updateGlobalEnvironmentVariables() {
 		if (!platformsDirty)
 			return;
+        // get all env vars related to installed tools so private hardware can work
+        HashMap<String, String> allVars = new HashMap<>();
+        for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
+
+            Package pkg = curPlatform.getParent();
+            if (pkg != null) {
+                allVars.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
+            }
+        }
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 		ICConfigurationDescription confDesc = null;
 
-		// remove all added variables
+        // remove all previously variables
 		IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
 		for (int i = (CurVariables.length - 1); i > 0; i--) {
 			if (CurVariables[i].getName().startsWith(Const.ERASE_START)) {
@@ -901,14 +913,14 @@ public class PackageManager {
 			}
 		}
 
-		// add all installed tools so private hardware can work
-		for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
+        // add the variables
+        for (Entry<String, String> curVariable : allVars.entrySet()) {
+            String name = curVariable.getKey();
+            String value = curVariable.getValue();
+            IEnvironmentVariable var = new EnvironmentVariable(name, value);
+            contribEnv.addVariable(var, confDesc);
+        }
 
-			Package pkg = curPlatform.getParent();
-			if (pkg != null) {
-				Helpers.addPlatformFileTools(curPlatform, contribEnv, confDesc, false);
-			}
-		}
 
 		platformsDirty = false;
 	}

@@ -9,11 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.swing.event.ChangeListener;
-
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.IContributedEnvironment;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -54,26 +50,17 @@ import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.tools.Libraries;
-import io.sloeber.core.tools.Programmers;
-import io.sloeber.core.tools.TxtFile;
+import io.sloeber.core.txt.BoardTxtFile;
+import io.sloeber.core.txt.KeyValueTree;
+import io.sloeber.core.txt.PlatformTxtFile;
+import io.sloeber.core.txt.Programmers;
 
-public class BoardDescriptor {
+public class BoardDescriptor extends Common {
     // Important constants to avoid having to add the class
     private static final String TOOL_ID = Messages.TOOL;
     private static final String BOARD_ID = Messages.BOARD;
     private static final String FILE_ID = Messages.FILE;
-    private static final String emptyString = new String();
     private static final String VendorArduino = Const.ARDUINO;
-    private static final String BUILD = Const.BUILD;
-    private static final String CORE = Const.CORE;
-    private static final String VARIANT = Const.VARIANT;
-    private static final String MENU = Const.MENU;
-    private static final String DOT = Const.DOT;
-    private static final String UPLOAD = Const.UPLOAD;
-    private static final String TOOL = Const.TOOL;
-    private static final String ENV_KEY_JANTJE_START = Const.ENV_KEY_JANTJE_START;
-    private static final String ERASE_START = Const.ERASE_START;
-    private static final String PATH = Const.PATH;
 
     /*
      * Some constants
@@ -108,7 +95,6 @@ public class BoardDescriptor {
 
     // preference nodes
     private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-    private static final String LIBRARY_PATH_SUFFIX = Const.LIBRARY_PATH_SUFFIX;
     private static final String JANTJE_ACTION_UPLOAD = ENV_KEY_JANTJE_START + UPLOAD; // this is actually the programmer
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
@@ -125,7 +111,7 @@ public class BoardDescriptor {
      * so os changes, workspace changes, eclipse install changes will force a update
      * on the stored data
      */
-    private String myProjectName = emptyString;
+    private String myProjectName = EMPTY;
     private String myOSName = Platform.getOS();
     private IPath myWorkSpaceLocation = Common.getWorkspaceRoot();
     private IPath myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome();
@@ -134,8 +120,7 @@ public class BoardDescriptor {
      * Stuff to make things work
      */
     private File myreferencingBoardsFile;
-    protected TxtFile myTxtFile;
-    private ChangeListener myChangeListener = null;
+    protected BoardTxtFile myTxtFile;
 
     private String myBoardsVariant;
     private IPath myReferencedBoardVariantPlatformPath;
@@ -143,6 +128,7 @@ public class BoardDescriptor {
     private IPath myReferencedCorePlatformPath;
     private IPath myReferencedUploadToolPlatformPath;
     private String myUploadTool;
+    private boolean isDirty = true;
 
     @Override
     public String toString() {
@@ -188,13 +174,13 @@ public class BoardDescriptor {
         if (!this.getProjectName().equals(otherBoardDescriptor.getProjectName())) {
             return true;
         }
-        if (!this.getMyOSName().equals(otherBoardDescriptor.getMyOSName())) {
+        if (!this.myOSName.equals(otherBoardDescriptor.myOSName)) {
             return true;
         }
-        if (!this.getMyWorkEclipseLocation().equals(otherBoardDescriptor.getMyWorkEclipseLocation())) {
+        if (!this.myWorkEclipseLocation.equals(otherBoardDescriptor.myWorkEclipseLocation)) {
             return true;
         }
-        if (!this.getMyWorkSpaceLocation().equals(otherBoardDescriptor.getMyWorkSpaceLocation())) {
+        if (!this.myWorkSpaceLocation.equals(otherBoardDescriptor.myWorkSpaceLocation)) {
             return true;
         }
         return false;
@@ -227,32 +213,31 @@ public class BoardDescriptor {
         myUploadTool = null;
         setDefaultOptions();
         // search in the board info
-        Map<String, String> boardInfo = myTxtFile.getSection(getBoardID());
-        ParseSection(boardInfo);
+        ParseSection();
 
     }
 
-    private void ParseSection(Map<String, String> boardInfo) {
-        final String COLON = Const.COLON;
-        if (boardInfo == null) {
-            return; // there is a problem with the board ID
-        }
-        String core = boardInfo.get(BUILD + DOT + CORE);
-        String variant = boardInfo.get(BUILD + DOT + VARIANT);
-        String upload = boardInfo.get(UPLOAD + DOT + TOOL);
+    private void ParseSection() {
+        KeyValueTree rootData = myTxtFile.getData();
+        String boardID = getBoardID();
+        KeyValueTree boardData = rootData.getChild(boardID);
+
+        String core = boardData.getValue(BUILD + DOT + CORE);
+        String variant = boardData.getValue(BUILD + DOT + VARIANT);
+        String upload = boardData.getValue(UPLOAD + DOT + TOOL);
         // also search the options
         for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-            String keyPrefix = MENU + DOT + curOption.getKey() + DOT + curOption.getValue();
-            String coreOption = boardInfo.get(keyPrefix + DOT + BUILD + DOT + CORE);
-            String variantOption = boardInfo.get(keyPrefix + DOT + BUILD + DOT + VARIANT);
-            String uploadOption = boardInfo.get(keyPrefix + DOT + UPLOAD + DOT + TOOL);
-            if (coreOption != null) {
+            KeyValueTree curMenuData = boardData.getChild(MENU + DOT + curOption.getKey() + DOT + curOption.getValue());
+            String coreOption = curMenuData.getValue(BUILD + DOT + CORE);
+            String variantOption = curMenuData.getValue(BUILD + DOT + VARIANT);
+            String uploadOption = curMenuData.getValue(UPLOAD + DOT + TOOL);
+            if (!coreOption.isEmpty()) {
                 core = coreOption;
             }
-            if (variantOption != null) {
+            if (!variantOption.isEmpty()) {
                 variant = variantOption;
             }
-            if (uploadOption != null) {
+            if (!uploadOption.isEmpty()) {
                 upload = uploadOption;
             }
         }
@@ -365,75 +350,32 @@ public class BoardDescriptor {
         }
     }
 
-    /**
-     * Conveniance method
-     * 
-     * @param confdesc
-     */
-    private String getFromStorageNode(String key) {
-        return getFromStorageNode(key, emptyString);
-    }
-
-    /**
-     * Method overruler to cope with backwards compatibility As we lowercased stuff
-     * try to read all uppercase
-     * 
-     * @param confdesc
-     */
-    private String getFromStorageNode(String key, String defaultValue) {
-        String ret = myStorageNode.get(key, defaultValue);
-        if (defaultValue.equals(ret)) {
-            ret = myStorageNode.get(key.toUpperCase(), defaultValue);
-        }
-        return ret;
-    }
-
-    /**
-     * Conveniance method
-     * 
-     * @param confdesc
-     */
-    private String getFromBuildEnv(ICConfigurationDescription confdesc, String key) {
-        return getFromBuildEnv(confdesc, key, emptyString);
-    }
-
-    /**
-     * Method overruler to cope with backwards compatibility As we lowercased stuff
-     * try to read all uppercase
-     * 
-     * @param confdesc
-     */
-    private String getFromBuildEnv(ICConfigurationDescription confdesc, String key, String defaultValue) {
-        String ret = Common.getBuildEnvironmentVariable(confdesc, key, defaultValue);
-        if (defaultValue.equals(ret)) {
-            ret = Common.getBuildEnvironmentVariable(confdesc, key.toUpperCase(), defaultValue);
-        }
-        return ret;
-    }
-
     protected BoardDescriptor(ICConfigurationDescription confdesc) {
         if (confdesc == null) {
-            this.myreferencingBoardsFile = new File(getFromStorageNode(KEY_LAST_USED_BOARDS_FILE));
-            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile, true);
-            this.myBoardID = getFromStorageNode(KEY_LAST_USED_BOARD);
-            this.myUploadPort = getFromStorageNode(KEY_LAST_USED_UPLOAD_PORT);
-            this.myProgrammer = getFromStorageNode(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
-            this.myOptions = KeyValue.makeMap(getFromStorageNode(KEY_LAST_USED_BOARD_MENU_OPTIONS));
+            myreferencingBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
+            myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+            myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
+            myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
+            myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
+            myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
 
         } else {
-            this.myUploadPort = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_UPLOAD_PORT);
-            this.myProgrammer = getFromBuildEnv(confdesc, JANTJE_ACTION_UPLOAD);
-            this.myreferencingBoardsFile = new File(getFromBuildEnv(confdesc, ENV_KEY_JANTJE_BOARDS_FILE));
-            this.myBoardID = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_BOARD_ID);
-            this.myProjectName = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_PROJECT_NAME);
-            this.myTxtFile = new TxtFile(this.myreferencingBoardsFile, true);
-            this.myOSName = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_OS);
-            this.myWorkSpaceLocation = new Path(getFromBuildEnv(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION));
-            this.myWorkEclipseLocation = new Path(getFromBuildEnv(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION));
-            String optinconcat = getFromBuildEnv(confdesc, ENV_KEY_JANTJE_MENU_SELECTION);
-            this.myOptions = KeyValue.makeMap(optinconcat);
+            myUploadPort = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_UPLOAD_PORT, EMPTY);
+            myProgrammer = getBuildEnvironmentVariable(confdesc, JANTJE_ACTION_UPLOAD, EMPTY);
+            myreferencingBoardsFile = new File(
+                    getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARDS_FILE, EMPTY));
+            myBoardID = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARD_ID, EMPTY);
+            myProjectName = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_PROJECT_NAME, EMPTY);
+            myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+            myOSName = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_OS, EMPTY);
+            myWorkSpaceLocation = new Path(
+                    getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION, EMPTY));
+            myWorkEclipseLocation = new Path(
+                    getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION, EMPTY));
+            String optinconcat = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_MENU_SELECTION, EMPTY);
+            myOptions = KeyValue.makeMap(optinconcat);
         }
-        calculateDerivedFields();
+        setDirty();
     }
 
     public static BoardDescriptor makeBoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
@@ -448,13 +390,14 @@ public class BoardDescriptor {
      * @return a list of board descriptors
      */
     public static List<BoardDescriptor> makeBoardDescriptors(File boardFile, Map<String, String> options) {
-        TxtFile txtFile = new TxtFile(boardFile, true);
+        BoardTxtFile txtFile = new BoardTxtFile(boardFile);
         List<BoardDescriptor> boards = new ArrayList<>();
-        for (String curboardName : txtFile.getAllNames()) {
-            Map<String, String> boardSection = txtFile.getSection(txtFile.getBoardIDFromBoardName(curboardName));
+        String[] allSectionNames = txtFile.getAllSectionNames();
+        for (String curboardName : allSectionNames) {
+            Map<String, String> boardSection = txtFile.getSection(txtFile.getIDFromNiceName(curboardName));
             if (boardSection != null) {
                 if (!"true".equalsIgnoreCase(boardSection.get("hide"))) { //$NON-NLS-1$ //$NON-NLS-2$
-                    boards.add(makeBoardDescriptor(boardFile, txtFile.getBoardIDFromBoardName(curboardName), options));
+                    boards.add(makeBoardDescriptor(boardFile, txtFile.getIDFromNiceName(curboardName), options));
                 }
             }
         }
@@ -470,22 +413,20 @@ public class BoardDescriptor {
      *            if null default options are taken
      */
     protected BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
-        this.myUploadPort = emptyString;
+        this.myUploadPort = EMPTY;
         this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
         this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.myreferencingBoardsFile = boardsFile;
-        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile, true);
+        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
             this.myOptions.putAll(options);
         }
-        calculateDerivedFields();
-
     }
 
-    protected BoardDescriptor(TxtFile txtFile, String boardID) {
-        this.myUploadPort = emptyString;
+    protected BoardDescriptor(BoardTxtFile txtFile, String boardID) {
+        this.myUploadPort = EMPTY;
         this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
         this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -508,7 +449,6 @@ public class BoardDescriptor {
         this.myProjectName = sourceBoardDescriptor.getProjectName();
         this.myreferencingBoardsFile = sourceBoardDescriptor.getReferencingBoardsFile();
         this.myTxtFile = sourceBoardDescriptor.myTxtFile;
-        this.myChangeListener = null;
         this.myBoardsVariant = sourceBoardDescriptor.getBoardVariant();
         this.myReferencedBoardVariantPlatformPath = sourceBoardDescriptor.getReferencedVariantPlatformPath();
         this.myBoardsCore = sourceBoardDescriptor.getBoardsCore();
@@ -522,6 +462,7 @@ public class BoardDescriptor {
     }
 
     private String getBoardsCore() {
+        updateWhenDirty();
         return this.myBoardsCore;
     }
 
@@ -533,7 +474,7 @@ public class BoardDescriptor {
      * incomplete or invalid this method still returns a complete and valid set.
      */
     private void setDefaultOptions() {
-        TreeMap<String, String> allMenuIDs = this.myTxtFile.getMenus();
+        Map<String, String> allMenuIDs = this.myTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
             ArrayList<String> menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
@@ -559,9 +500,10 @@ public class BoardDescriptor {
         ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configurationDescription = prjCDesc.getActiveConfiguration();
         try {
-            save(configurationDescription);
+            save(configurationDescription, true);
             // prjCDesc.setActiveConfiguration(configurationDescription);
-            CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, prjCDesc, true, null);
+            // CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project,
+            // prjCDesc, true, null);
         } catch (Exception e) {
             e.printStackTrace();
             Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
@@ -577,10 +519,10 @@ public class BoardDescriptor {
     public IProject createProject(String projectName, URI projectURI, CodeDescriptor codeDescription,
             CompileOptions compileOptions, IProgressMonitor monitor) {
 
-        String realProjectName = Common.MakeNameCompileSafe(projectName);
+        myProjectName = Common.MakeNameCompileSafe(projectName);
 
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        final IProject newProjectHandle = root.getProject(realProjectName);
+        final IProject newProjectHandle = root.getProject(myProjectName);
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         ICoreRunnable runnable = new ICoreRunnable() {
             @Override
@@ -606,8 +548,6 @@ public class BoardDescriptor {
                     ManagedCProjectNature.addManagedBuilder(newProjectHandle, internalMonitor);
                     ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
                     ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
-
-
 
                     // make the cdt project a managed build project
                     ManagedBuildManager.createBuildInfo(newProjectHandle);
@@ -636,7 +576,7 @@ public class BoardDescriptor {
 
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
                         compileOptions.save(curConfig);
-                        save(curConfig);
+                        save(curConfig, false);
                         Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
                     }
 
@@ -667,94 +607,38 @@ public class BoardDescriptor {
         return newProjectHandle;
     }
 
-    public void save(ICConfigurationDescription confdesc) throws Exception {
-        boolean needsSettingDirty = saveConfiguration(confdesc, null);
+    public void save(ICConfigurationDescription confdesc, boolean saveConfig) throws Exception {
 
-        if (confdesc != null) {
-            IProject project = confdesc.getProjectDescription().getProject();
+        ICProjectDescription prjCDesc = confdesc.getProjectDescription();
+        IProject project = prjCDesc.getProject();
 
-            Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
+        Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
 
-            Helpers.addArduinoCodeToProject(this, project, confdesc);
+        Helpers.addArduinoCodeToProject(this, project, confdesc);
 
-            needsSettingDirty = needsSettingDirty || Helpers.removeInvalidIncludeFolders(confdesc);
-            if (needsSettingDirty) {
-                Helpers.setDirtyFlag(project, confdesc);
-            } else {
-                Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                        "Ignoring update; clean may be required: " + project.getName())); //$NON-NLS-1$
-            }
+        if (Helpers.removeInvalidIncludeFolders(confdesc)) {
+            Helpers.setDirtyFlag(project, confdesc);
+        } else {
+            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+                    "Ignoring project update; clean may be required: " + project.getName())); //$NON-NLS-1$
+        }
+        if (saveConfig) {
+            CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+            project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+            cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
         }
     }
 
-    public void saveConfiguration() {
-        saveConfiguration(null, null);
-    }
-
-    public boolean saveConfiguration(ICConfigurationDescription confDesc, IContributedEnvironment contribEnvIn) {
-        boolean needsSettingDirty = false;
-        if (confDesc != null) {
-            if (getActualCoreCodePath() == null) {
-                // don't change stuff if the setup is wonky
-                return false;
-            }
-            BoardDescriptor curBoardDesCriptor = makeBoardDescriptor(confDesc);
-            needsSettingDirty = curBoardDesCriptor.needsSettingDirty(this);
-            IContributedEnvironment contribEnv = contribEnvIn;
-            if (contribEnv == null) {
-                IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-                contribEnv = envManager.getContributedEnvironment();
-            }
-
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARDS_FILE,
-                    getReferencingBoardsFile());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_PROJECT_NAME,
-                    confDesc.getProjectDescription().getProject().getName());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_OS, this.myOSName);
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION,
-                    this.myWorkSpaceLocation);
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION,
-                    this.myWorkEclipseLocation);
-            Common.setBuildEnvironmentVariable(confDesc, JANTJE_ACTION_UPLOAD, this.myProgrammer);
-            String value = KeyValue.makeString(this.myOptions);
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_JANTJE_MENU_SELECTION, value);
-
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT, getActualUploadPort());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_SERIAL_PORT_FILE,
-                    getActualUploadPort().replace("/dev/", emptyString)); //$NON-NLS-1$
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_ACTUAL_CORE_PATH,
-                    getActualCoreCodePath());
-            IPath variantPath = getActualVariantPath();
-            if (variantPath != null) {
-                Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, variantPath);
-            } else {// teensy does not use variants
-                Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_BUILD_VARIANT_PATH, emptyString);
-            }
-
-            // the entries below are only saved for special platforms that heavily rely on
-            // referencing such as jantjes hardware
-
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_CORE_PLATFORM_PATH,
-                    getReferencedCorePlatformPath());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH,
-                    getReferencedVariantPlatformPath());
-            Common.setBuildEnvironmentVariable(contribEnv, confDesc, ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH,
-                    getReferencedUploadPlatformPath());
-
-        }
-
-        // Also save last used values
+    /**
+     * Store the selections the user made so we can reuse them when creating a new
+     * project
+     */
+    public void saveUserSelection() {
         myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getReferencingBoardsFile().toString());
         myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
         myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
-        return needsSettingDirty;
     }
 
     public String getPackage() {
@@ -770,7 +654,7 @@ public class BoardDescriptor {
     }
 
     public String getBoardName() {
-        return this.myTxtFile.getNameFromID(this.myBoardID);
+        return this.myTxtFile.getNiceNameFromID(this.myBoardID);
     }
 
     public String getUploadPort() {
@@ -810,18 +694,22 @@ public class BoardDescriptor {
     public void setBoardID(String boardID) {
         if (!boardID.equals(this.myBoardID)) {
             this.myBoardID = boardID;
-            informChangeListeners();
+            setDirty();
         }
     }
 
+    private void setDirty() {
+        isDirty = true;
+
+    }
+
     public void setBoardName(String boardName) {
-        String newBoardID = this.myTxtFile.getBoardIDFromBoardName(boardName);
+        String newBoardID = this.myTxtFile.getIDFromNiceName(boardName);
         if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
             return;
         }
-
         this.myBoardID = newBoardID;
-        informChangeListeners();
+        setDirty();
 
     }
 
@@ -834,8 +722,8 @@ public class BoardDescriptor {
         }
 
         this.myreferencingBoardsFile = boardsFile;
-        this.myTxtFile = new TxtFile(this.myreferencingBoardsFile, true);
-        informChangeListeners();
+        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        setDirty();
     }
 
     public void setOptions(Map<String, String> options) {
@@ -843,7 +731,7 @@ public class BoardDescriptor {
             return;
         }
         this.myOptions.putAll(options);
-        calculateDerivedFields();
+        setDirty();
     }
 
     /**
@@ -853,15 +741,24 @@ public class BoardDescriptor {
      * @return a map of case insensitive ordered key value pairs
      */
     public Map<String, String> getOptions() {
+        // no update is needed as this field is only modified at construction or set
         return this.myOptions;
     }
 
+    private void updateWhenDirty() {
+        if (isDirty) {
+            calculateDerivedFields();
+            isDirty = false;
+        }
+    }
+
     public String getBoardID() {
+        // no update is needed as this field is only modified at construction or set
         return this.myBoardID;
     }
 
     public String[] getCompatibleBoards() {
-        return this.myTxtFile.getAllNames();
+        return this.myTxtFile.getAllSectionNames();
     }
 
     public String[] getUploadProtocols() {
@@ -879,22 +776,8 @@ public class BoardDescriptor {
     }
 
     public TreeMap<String, IPath> getAllExamples() {
+        updateWhenDirty();
         return LibraryManager.getAllExamples(this);
-    }
-
-    public void addChangeListener(ChangeListener l) {
-        this.myChangeListener = l;
-    }
-
-    public void removeChangeListener() {
-        this.myChangeListener = null;
-    }
-
-    private void informChangeListeners() {
-        calculateDerivedFields();
-        if (this.myChangeListener != null) {
-            this.myChangeListener.stateChanged(null);
-        }
     }
 
     public String getMenuIdFromMenuName(String menuName) {
@@ -914,20 +797,10 @@ public class BoardDescriptor {
     }
 
     public static String getUploadPort(IProject project) {
-        return Common.getBuildEnvironmentVariable(project, ENV_KEY_JANTJE_UPLOAD_PORT, emptyString);
+        return Common.getBuildEnvironmentVariable(project, ENV_KEY_JANTJE_UPLOAD_PORT, EMPTY);
     }
 
-    private String getMyOSName() {
-        return this.myOSName;
-    }
 
-    private IPath getMyWorkSpaceLocation() {
-        return this.myWorkSpaceLocation;
-    }
-
-    private IPath getMyWorkEclipseLocation() {
-        return this.myWorkEclipseLocation;
-    }
 
     public String getProjectName() {
         return this.myProjectName;
@@ -940,6 +813,7 @@ public class BoardDescriptor {
      * @return the path to the variant; null if no variant is needed
      */
     public IPath getActualVariantPath() {
+        updateWhenDirty();
         if (getBoardVariant() == null) {
             return null;
         }
@@ -951,10 +825,12 @@ public class BoardDescriptor {
     }
 
     private String getBoardVariant() {
+        updateWhenDirty();
         return this.myBoardsVariant;
     }
 
     public IPath getActualCoreCodePath() {
+        updateWhenDirty();
         IPath retPath = getReferencedCorePlatformPath();
         if (retPath == null) {
             retPath = getreferencingPlatformPath();
@@ -972,6 +848,7 @@ public class BoardDescriptor {
      * @return the path to the variant
      */
     public IPath getReferencedCorePlatformPath() {
+        updateWhenDirty();
         if (myReferencedCorePlatformPath != null) {
             return myReferencedCorePlatformPath;
         }
@@ -979,6 +856,7 @@ public class BoardDescriptor {
     }
 
     public IPath getReferencedUploadPlatformPath() {
+        updateWhenDirty();
         if (myReferencedUploadToolPlatformPath != null) {
             return myReferencedUploadToolPlatformPath;
         }
@@ -986,32 +864,44 @@ public class BoardDescriptor {
     }
 
     public IPath getReferencedVariantPlatformPath() {
+        updateWhenDirty();
         if (myReferencedBoardVariantPlatformPath != null) {
             return myReferencedBoardVariantPlatformPath;
         }
         return getreferencingPlatformPath();
     }
 
-    public File getReferencingPlatformFile() {
-        return getreferencingPlatformPath().append(Const.PLATFORM_FILE_NAME).toFile();
+    public PlatformTxtFile getReferencingPlatformFile() {
+        updateWhenDirty();
+        File platformFile = getreferencingPlatformPath().append(Const.PLATFORM_FILE_NAME).toFile();
+        if (platformFile != null && platformFile.exists()) {
+            return new PlatformTxtFile(platformFile);
+        }
+        return null;
     }
 
     public Path getreferencingPlatformPath() {
         try {
             return new Path(this.myreferencingBoardsFile.getParent());
         } catch (@SuppressWarnings("unused") Exception e) {
-            return new Path(emptyString);
+            return new Path(EMPTY);
         }
     }
 
-    public File getreferencedPlatformFile() {
+    public PlatformTxtFile getreferencedPlatformFile() {
+        updateWhenDirty();
         if (this.myReferencedCorePlatformPath == null) {
             return null;
         }
-        return this.myReferencedCorePlatformPath.append(Const.PLATFORM_FILE_NAME).toFile();
+        File platformFile = myReferencedCorePlatformPath.append(Const.PLATFORM_FILE_NAME).toFile();
+        if (platformFile != null && platformFile.exists()) {
+            return new PlatformTxtFile(platformFile);
+        }
+        return null;
     }
 
     public IPath getReferencedLibraryPath() {
+        updateWhenDirty();
         if (this.myReferencedCorePlatformPath == null) {
             return null;
         }
@@ -1019,24 +909,23 @@ public class BoardDescriptor {
     }
 
     public IPath getReferencingLibraryPath() {
+        updateWhenDirty();
         return this.getreferencingPlatformPath().append(LIBRARY_PATH_SUFFIX);
     }
 
     public String getUploadCommand(ICConfigurationDescription confdesc) {
-        final String DOT = Const.DOT;
-        final String empty = emptyString;
-
+        updateWhenDirty();
         String upLoadTool = getActualUploadTool(confdesc);
         String action = Const.UPLOAD;
         if (usesProgrammer()) {
             action = Const.PROGRAM;
         }
-        String networkPrefix = empty;
+        String networkPrefix = EMPTY;
         if (isNetworkUpload()) {
             networkPrefix = DOT + Const.NETWORK_PREFIX;
         }
         String key = Const.A_TOOLS + upLoadTool + DOT + action + networkPrefix + DOT + Const.PATTERN;
-        String ret = Common.getBuildEnvironmentVariable(confdesc, key, empty);
+        String ret = Common.getBuildEnvironmentVariable(confdesc, key, EMPTY);
         if (ret.isEmpty()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
         }
@@ -1044,6 +933,7 @@ public class BoardDescriptor {
     }
 
     public String getActualUploadTool(ICConfigurationDescription confdesc) {
+        updateWhenDirty();
         if (confdesc == null) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Confdesc null is not alowed here")); //$NON-NLS-1$
             return this.myUploadTool;
@@ -1062,10 +952,12 @@ public class BoardDescriptor {
     }
 
     public boolean usesProgrammer() {
+        updateWhenDirty();
         return !this.myProgrammer.equals(Defaults.getDefaultUploadProtocol());
     }
 
     public IPath getreferencedHardwarePath() {
+        updateWhenDirty();
         IPath platformPath = getReferencedCorePlatformPath();
         return platformPath.removeLastSegments(1);
     }
@@ -1076,6 +968,7 @@ public class BoardDescriptor {
      * found.
      */
     public IPath getArduinoPlatformPath() {
+        updateWhenDirty();
         return InternalPackageManager.getPlatformInstallPath(VendorArduino, getArchitecture());
     }
 
@@ -1102,5 +995,64 @@ public class BoardDescriptor {
         return getHost() != null;
     }
 
+    public Map<String, String> getEnvVarsTxt() {
+        return myTxtFile.getAllBoardEnvironVars(getBoardID());
+    }
 
+    public Map<String, String> getEnvVarsAll() {
+        updateWhenDirty();
+        Map<String, String> allVars = myTxtFile.getAllBoardEnvironVars(getBoardID());
+
+        Map<String, String> options = getOptions();
+
+        KeyValueTree rootData = myTxtFile.getData();
+        KeyValueTree menuData = rootData.getChild(getBoardID() + DOT + MENU);
+        for (Entry<String, String> curOption : options.entrySet()) {
+            String menuID = curOption.getKey();
+            String SelectedMenuItemID = curOption.getValue();
+            KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
+            allVars.putAll(curSelectedMenuItem.toKeyValues(ERASE_START, false));
+        }
+        allVars.put(ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
+        allVars.put(ENV_KEY_JANTJE_BOARDS_FILE, getReferencingBoardsFile().toString());
+        allVars.put(ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
+        allVars.put(ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
+        allVars.put(ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
+        allVars.put(ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
+        allVars.put(ENV_KEY_JANTJE_PROJECT_NAME, myProjectName);
+        allVars.put(ENV_KEY_JANTJE_OS, this.myOSName);
+        allVars.put(ENV_KEY_JANTJE_WORKSPACE_LOCATION, this.myWorkSpaceLocation.toOSString());
+        allVars.put(ENV_KEY_JANTJE_ECLIPSE_LOCATION, this.myWorkEclipseLocation.toOSString());
+        allVars.put(JANTJE_ACTION_UPLOAD, this.myProgrammer);
+        String value = KeyValue.makeString(this.myOptions);
+        allVars.put(ENV_KEY_JANTJE_MENU_SELECTION, value);
+        allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
+        allVars.put(ENV_KEY_SERIAL_PORT_FILE, getActualUploadPort().replace("/dev/", EMPTY)); //$NON-NLS-1$
+        // if actual core path is osstring regression test issue555 willl fail teensy
+        // stuff
+        allVars.put(ENV_KEY_BUILD_ACTUAL_CORE_PATH, getActualCoreCodePath().toString());
+        IPath variantPath = getActualVariantPath();
+        if (variantPath != null) {
+            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, variantPath.toOSString());
+        } else {// teensy does not use variants
+            allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
+        }
+
+        // the entries below are only saved for special platforms that heavily rely on
+        // referencing such as jantjes hardware
+
+        allVars.put(ENV_KEY_REFERENCED_CORE_PLATFORM_PATH, getReferencedCorePlatformPath().toOSString());
+        allVars.put(ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH, getReferencedVariantPlatformPath().toOSString());
+        allVars.put(ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH, getReferencedUploadPlatformPath().toOSString());
+        return allVars;
+
+    }
+
+    public static String getBoardsFile(ICConfigurationDescription confDesc) {
+        return getBuildEnvironmentVariable(confDesc, ENV_KEY_JANTJE_BOARDS_FILE, EMPTY);
+    }
+
+    public static String getVariant(ICConfigurationDescription confDesc) {
+        return getBuildEnvironmentVariable(confDesc, ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
+    }
 }

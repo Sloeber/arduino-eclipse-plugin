@@ -17,11 +17,10 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.api.BoardDescriptor;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -47,35 +46,65 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 			return;
 		}
 		if(IndexerController.isPosponed(activeProject)) {
-		    Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"Ignoring configuration change during project creation "+activeProject.getName()));
+            Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                    "Ignoring configuration change during project creation " + activeProject.getName())); //$NON-NLS-1$
 		    return;
 		}
 		ICProjectDescription projDesc = event.getNewCProjectDescription();
+        ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
-		ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
+        ICConfigurationDescription oldActiveConf = oldprojDesc.getActiveConfiguration();
+        String boardsFile = BoardDescriptor.getBoardsFile(activeConf);
+        String oldBoardsFile = BoardDescriptor.getBoardsFile(oldActiveConf);
+        String variant = BoardDescriptor.getVariant(activeConf);
+        String oldVariant = BoardDescriptor.getVariant(oldActiveConf);
+        // only if the boardsFile or variant Changed we need to reattach libraries and
+        // cores
+        if (boardsFile.equals(oldBoardsFile) && variant.equals(oldVariant)) {
+            return;
+        }
+        BoardDescriptor newBoardDescriptor = BoardDescriptor.makeBoardDescriptor(activeConf);
+        try {
+            Helpers.setDirtyFlag(activeProject, activeConf);
+            Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (!boardsFile.equals(oldBoardsFile)) {
+            Libraries.reAttachLibrariesToProject(activeConf);
+        }
 		
 
-		InternalBoardDescriptor oldBoardDescriptor = (InternalBoardDescriptor) BoardDescriptor
-				.makeBoardDescriptor(oldprojDesc.getActiveConfiguration());
-		InternalBoardDescriptor newBoardDescriptor = (InternalBoardDescriptor) BoardDescriptor
-				.makeBoardDescriptor(activeConf);
-
-		if (oldBoardDescriptor.equals(newBoardDescriptor)) {
-			if (activeProject.getName().equals(oldBoardDescriptor.getProjectName())) {
-				if(oldprojDesc.getActiveConfiguration().getName().equals(projDesc.getActiveConfiguration().getName())) {
-				// only act when there is change
-				return;
-				}
-			}
-		}
-		Helpers.setTheEnvironmentVariables(activeProject, activeConf, newBoardDescriptor);
-		try {
-			Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
-		} catch (Exception e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add include folder", e)); //$NON-NLS-1$
-		}
-		Libraries.reAttachLibrariesToProject(activeConf);
-		projDesc.setActiveConfiguration(activeConf);
+        // InternalBoardDescriptor oldBoardDescriptor = (InternalBoardDescriptor)
+        // BoardDescriptor
+        // .makeBoardDescriptor(oldprojDesc.getActiveConfiguration());
+        // InternalBoardDescriptor newBoardDescriptor = (InternalBoardDescriptor)
+        // BoardDescriptor
+        // .makeBoardDescriptor(activeConf);
+        //
+        // if (oldBoardDescriptor.equals(newBoardDescriptor)) {
+        // if (activeProject.getName().equals(oldBoardDescriptor.getProjectName())) {
+        // if(oldprojDesc.getActiveConfiguration().getName().equals(projDesc.getActiveConfiguration().getName()))
+        // {
+        // // only act when there is change
+        // return;
+        // }
+        // }
+        // }
+        //
+        // // Helpers.setTheEnvironmentVariables(activeProject, activeConf,
+        // // newBoardDescriptor);
+        // try {
+        // // newBoardDescriptor.save(activeConf, true);
+        // // Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject,
+        // // activeConf);
+        // } catch (Exception e) {
+        // Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add
+        // include folder", e)); //$NON-NLS-1$
+        // }
+        // //Libraries.reAttachLibrariesToProject(activeConf);
+        // // projDesc.setActiveConfiguration(activeConf);
 	}
 
 }

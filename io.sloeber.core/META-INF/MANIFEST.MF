@@ -42,5 +42,6 @@ Export-Package: cc.arduino.packages;x-internal:=true,
  io.sloeber.core.templates;x-internal:=true,
  io.sloeber.core.toolchain;x-internal:=true,
  io.sloeber.core.tools;x-friends:="io.sloeber.tests",
- io.sloeber.core.tools.uploaders;x-internal:=true
+ io.sloeber.core.tools.uploaders;x-internal:=true,
+ io.sloeber.core.txt;x-friends:="io.sloeber.tests"
 Automatic-Module-Name: io.sloeber.core

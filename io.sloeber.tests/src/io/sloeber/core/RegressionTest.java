@@ -99,7 +99,7 @@ public class RegressionTest {
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " as teensy build errors");
+                fail("Failed to compile the project:" + projectName + " as uno  build errors");
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();

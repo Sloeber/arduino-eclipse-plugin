@@ -3,9 +3,6 @@ package io.sloeber.ui.wizard.newsketch;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -39,13 +36,13 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public void setBoardDescriptor(BoardDescriptor boardDescriptor) {
 		if (myBoardDescriptor == null) {
 			myBoardDescriptor = boardDescriptor;
-			boardDescriptor.addChangeListener(new ChangeListener() {
-
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					handleBoarDescriptorChange();
-				}
-			});
+//			boardDescriptor.addChangeListener(new ChangeListener() {
+//
+//				@Override
+//				public void stateChanged(ChangeEvent e) {
+//					handleBoarDescriptorChange();
+//				}
+//			});
 		}
 		handleBoarDescriptorChange();
 	}

@@ -49,8 +49,8 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.MyMultiStatus;
+import io.sloeber.core.txt.WorkAround;
 
 public class InternalPackageManager extends PackageManager {
 
@@ -575,7 +575,7 @@ public class InternalPackageManager extends PackageManager {
 	}
 
 	private static void symlink(String from, File to) throws IOException, InterruptedException {
-		if (Const.isWindows) {
+        if (Common.isWindows) {
 			// needs special rights only one board seems to fail due to this
 			// Process process = Runtime.getRuntime().exec(new String[] {
 			// "mklink", from, to.getAbsolutePath() }, //$NON-NLS-1$
@@ -606,7 +606,7 @@ public class InternalPackageManager extends PackageManager {
 
 	private static void chmod(File file, int mode) throws IOException, InterruptedException {
 		String octal = Integer.toOctalString(mode);
-		if (Const.isWindows) {
+        if (Common.isWindows) {
 			boolean ownerExecute = (((mode / (8 * 8)) & 1) == 1);
 			boolean ownerRead = (((mode / (8 * 8)) & 4) == 4);
 			boolean ownerWrite = (((mode / (8 * 8)) & 2) == 2);

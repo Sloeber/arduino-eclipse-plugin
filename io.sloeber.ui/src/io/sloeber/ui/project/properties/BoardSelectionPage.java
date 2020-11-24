@@ -311,7 +311,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
-		myBoardID.saveConfiguration();
+		myBoardID.saveUserSelection();
 		myBoardID = BoardDescriptor.makeBoardDescriptor(cfg.getConfiguration());
 		setValues();
 	}
@@ -379,7 +379,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		ICConfigurationDescription confdesc = getConfdesc();
 
 		try {
-			myBoardID.save(confdesc);
+			myBoardID.save(confdesc, true);
 
 		} catch (Exception e) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));

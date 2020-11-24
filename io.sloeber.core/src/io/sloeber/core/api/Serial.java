@@ -125,7 +125,7 @@ public class Serial implements SerialPortEventListener {
     public static List<String> list() {
 	try {
 	    String[] portNames;
-	    if (Const.isMac) {
+        if (Common.isMac) {
 		portNames = SerialPortList.getPortNames("/dev/", Pattern.compile("^cu\\..*(UART|serial|usb).*")); //$NON-NLS-1$ //$NON-NLS-2$
 	    } else {
 		portNames = SerialPortList.getPortNames();
