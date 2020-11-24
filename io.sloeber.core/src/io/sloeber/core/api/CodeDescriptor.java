@@ -34,7 +34,7 @@ import io.sloeber.core.tools.Stream;
 
 public class CodeDescriptor {
 	public enum CodeTypes {
-		defaultIno, defaultCPP, CustomTemplate, sample
+		None, defaultIno, defaultCPP, CustomTemplate, sample
 	}
 
 	static public final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
@@ -76,6 +76,10 @@ public class CodeDescriptor {
 
 	private CodeDescriptor(CodeTypes codeType) {
 		myCodeType = codeType;
+	}
+	
+	public static CodeDescriptor createNone() {
+		return new CodeDescriptor(CodeTypes.None);
 	}
 
 	public static CodeDescriptor createDefaultIno() {
@@ -152,6 +156,8 @@ public class CodeDescriptor {
 
 
 		switch (myCodeType) {
+		case None:
+			break;
 		case defaultIno:
 			Helpers.addFileToProject(project, new Path(project.getName() + ".ino"),
 					Stream.openContentStream("/io/sloeber/core/templates/" + DEFAULT_SKETCH_INO, false,replacers),

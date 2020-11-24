@@ -129,6 +129,11 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	 */
 	protected void SetControls() {
 		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+		case None:
+			myTemplateFolderEditor.setEnabled(false, myParentComposite);
+			myExampleEditor.setEnabled(false);
+			myCheckBoxUseCurrentLinkSample.setEnabled(false);
+			break;
 		case defaultIno:
 			myTemplateFolderEditor.setEnabled(false, myParentComposite);
 			myExampleEditor.setEnabled(false);
@@ -163,9 +168,10 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			return;
 		}
 		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+		case None:
 		case defaultIno:
 		case defaultCPP:
-			setPageComplete(true);// default always works
+			setPageComplete(true);// default and no file always works
 			break;
 		case CustomTemplate:
 			IPath templateFolder = new Path(myTemplateFolderEditor.getStringValue());
@@ -202,6 +208,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	public CodeDescriptor getCodeDescription() {
 
 		switch (CodeTypes.values()[myCodeSourceOptionsCombo.getSelectionIndex()]) {
+		case None:
+			return CodeDescriptor.createNone();
 		case defaultIno:
 			return CodeDescriptor.createDefaultIno();
 		case defaultCPP:
@@ -221,6 +229,8 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	public static String getCodeTypeDescription(CodeTypes codeType) {
 		switch (codeType) {
+		case None:
+			return Messages.ui_new_sketch_none;
 		case defaultIno:
 			return Messages.ui_new_sketch_default_ino;
 		case defaultCPP:
