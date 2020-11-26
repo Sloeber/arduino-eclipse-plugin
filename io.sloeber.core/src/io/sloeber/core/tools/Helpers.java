@@ -533,6 +533,7 @@ public class Helpers extends Common {
 
     }
 
+
     /**
      * This method creates environment variables based on the platform.txt and
      * boards.txt. platform.txt is processed first and then boards.txt. This way
@@ -553,12 +554,15 @@ public class Helpers extends Common {
      *            the info of the selected board to set the variables for
      */
 
-    public static void setTheEnvironmentVariables(IProject project, ICConfigurationDescription confDesc,
+    public static void setTheEnvironmentVariables(IProject project, CompileOptions compileOptions,
+            ICConfigurationDescription confDesc,
             InternalBoardDescriptor boardsDescriptor) {
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
         Map<String, String> allVars = getEnvVarsAll(project, boardsDescriptor);
+
+        allVars.putAll(compileOptions.getEnvVars(confDesc));
 
 		// remove all Arduino Variables so there is no memory effect
 		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
@@ -579,10 +583,6 @@ public class Helpers extends Common {
                             + makeEnvironmentVar("PATH")); //$NON-NLS-1$
         }
 
-        // a save will overwrite the warning settings set by arduino
-        // should find a better way though
-        CompileOptions compileOptions = new CompileOptions(confDesc);
-        compileOptions.save(confDesc);
         
         for (Entry<String, String> curVariable : allVars.entrySet()) {
             String name = curVariable.getKey();

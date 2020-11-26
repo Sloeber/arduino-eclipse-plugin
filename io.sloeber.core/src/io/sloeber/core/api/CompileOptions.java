@@ -1,7 +1,9 @@
 package io.sloeber.core.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
@@ -170,46 +172,33 @@ public class CompileOptions {
 	 *
 	 * @param configuration must be a valid configuration description
 	 */
-	public void save(ICConfigurationDescription configuration) {
+    public Map<String, String> getEnvVars(ICConfigurationDescription configuration) {
+        Map<String, String> ret = new HashMap<>();
+
 		CompileOptions curOptions = new CompileOptions(configuration);
 		if (needsDirtyFlag(curOptions)) {
 			IProject project = configuration.getProjectDescription().getProject();
 			Helpers.setDirtyFlag(project, configuration);
 		}
-		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-		IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-		IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_JANTJE_WARNING_LEVEL,
-				this.myWarningLevel.toString());
-		contribEnv.addVariable(var, configuration);
+
+        ret.put(ENV_KEY_JANTJE_WARNING_LEVEL, this.myWarningLevel.toString());
 
 		if (this.isWarningLevel()) {
-			var = new EnvironmentVariable(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
-			contribEnv.addVariable(var, configuration);
+            ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
 		}
 		if (this.myAlternativeSizeCommand) {
-			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH,
-					Common.makeEnvironmentVar(ENV_KEY_JANTJE_SIZE_COMMAND));
-			contribEnv.addVariable(var, configuration);
+            ret.put(ENV_KEY_JANTJE_SIZE_SWITCH, Common.makeEnvironmentVar(ENV_KEY_JANTJE_SIZE_COMMAND));
 		} else {
-			var = new EnvironmentVariable(ENV_KEY_JANTJE_SIZE_SWITCH, Common.makeEnvironmentVar(Const.RECIPE_SIZE));
-			contribEnv.addVariable(var, configuration);
+            ret.put(ENV_KEY_JANTJE_SIZE_SWITCH, Common.makeEnvironmentVar(Const.RECIPE_SIZE));
 		}
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-		var = new EnvironmentVariable(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-		contribEnv.addVariable(var, configuration);
-
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        return ret;
 	}
 
 	private boolean needsDirtyFlag(CompileOptions curOptions) {

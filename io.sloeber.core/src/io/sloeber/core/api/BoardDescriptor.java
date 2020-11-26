@@ -78,12 +78,12 @@ public class BoardDescriptor extends Common {
     private static final String ENV_KEY_JANTJE_OS = ENV_KEY_JANTJE_START + "os_name"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_WORKSPACE_LOCATION = ENV_KEY_JANTJE_START + "workspace_location"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_ECLIPSE_LOCATION = ENV_KEY_JANTJE_START + "eclipse_location"; //$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "boards_file"; //$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "package_ID"; //$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "architecture_ID"; //$NON-NLS-1$
-    public static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "board_ID"; //$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT = ERASE_START + "serial_port"; //$NON-NLS-1$
-    public static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "serial.port.file"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "boards_file"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "package_ID"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "architecture_ID"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "board_ID"; //$NON-NLS-1$
+    private static final String ENV_KEY_SERIAL_PORT = ERASE_START + "serial_port"; //$NON-NLS-1$
+    private static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "serial.port.file"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_VARIANT_PATH = ERASE_START + BUILD + DOT + VARIANT + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = ERASE_START + BUILD + DOT + CORE + DOT + PATH;
     private static final String ENV_KEY_REFERENCED_CORE_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + CORE + DOT
@@ -436,10 +436,6 @@ public class BoardDescriptor extends Common {
         calculateDerivedFields();
     }
 
-    public static BoardDescriptor makeBoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
-        return new InternalBoardDescriptor(sourceBoardDescriptor);
-    }
-
     protected BoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
 
         this.myUploadPort = sourceBoardDescriptor.getUploadPort();
@@ -561,6 +557,7 @@ public class BoardDescriptor extends Common {
                         IConfiguration curConfig = newProject.createConfiguration(configs[i],
                                 sloeberProjType.getId() + "." + i); //$NON-NLS-1$
                         curConfig.setArtifactName(newProject.getDefaultArtifactName());
+                        curConfig.getEditableBuilder().setParallelBuildOn(compileOptions.isParallelBuildEnabled());
                         // Make the first configuration the default
                         if (i == 0) {
                             defaultConfig = curConfig;
@@ -575,8 +572,7 @@ public class BoardDescriptor extends Common {
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
 
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
-                        compileOptions.save(curConfig);
-                        save(curConfig, false);
+                        save(curConfig, compileOptions, false);
                         Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
                     }
 
@@ -607,12 +603,25 @@ public class BoardDescriptor extends Common {
         return newProjectHandle;
     }
 
+    /**
+     * save the boardsDescriptor keeping the compile options
+     * 
+     * @param confdesc
+     * @param saveConfig
+     * @throws Exception
+     */
     public void save(ICConfigurationDescription confdesc, boolean saveConfig) throws Exception {
+        CompileOptions compileOptions = new CompileOptions(confdesc);
+        save(confdesc, compileOptions, saveConfig);
+    }
+
+    public void save(ICConfigurationDescription confdesc, CompileOptions compileOptions, boolean saveConfig)
+            throws Exception {
 
         ICProjectDescription prjCDesc = confdesc.getProjectDescription();
         IProject project = prjCDesc.getProject();
 
-        Helpers.setTheEnvironmentVariables(project, confdesc, (InternalBoardDescriptor) this);
+        Helpers.setTheEnvironmentVariables(project, compileOptions, confdesc, (InternalBoardDescriptor) this);
 
         Helpers.addArduinoCodeToProject(this, project, confdesc);
 
@@ -780,9 +789,9 @@ public class BoardDescriptor extends Common {
         return LibraryManager.getAllExamples(this);
     }
 
-    public String getMenuIdFromMenuName(String menuName) {
-        return this.myTxtFile.getMenuIDFromMenuName(menuName);
-    }
+    // public String getMenuIdFromMenuName(String menuName) {
+    // return this.myTxtFile.getMenuIDFromMenuName(menuName);
+    // }
 
     public String getMenuNameFromMenuID(String id) {
         return this.myTxtFile.getMenuNameFromID(id);

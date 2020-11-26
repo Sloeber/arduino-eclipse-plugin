@@ -22,7 +22,9 @@ public class CompileProperties extends AbstractCPropertyTab {
 
 		updateStorageData();
 		if (getConfdesc() != null) {
-			CompileProperties.this.myCompileOptions.save(getConfdesc());
+		    //TOFIX there is no save here.
+		    // does just changing compile properties and clcik ok work?
+			CompileProperties.this.myCompileOptions.getEnvVars(getConfdesc());
 		}
 		super.performOK();
 	}
@@ -148,7 +150,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
 		updateStorageData();
 		if (dst.getConfiguration() != null) {
-			CompileProperties.this.myCompileOptions.save(dst.getConfiguration());
+			CompileProperties.this.myCompileOptions.getEnvVars(dst.getConfiguration());
 		}
 	}
 
