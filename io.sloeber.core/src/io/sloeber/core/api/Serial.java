@@ -57,22 +57,21 @@ public class Serial implements SerialPortEventListener {
     // for the classloading problem.. because if code ran again,
     // the static class would have an object that could be closed
 
-    SerialPort port = null;
-    int rate;
-    int parity;
-    int databits;
+    private SerialPort port = null;
+    private int rate;
+    private int parity;
+    private int databits;
 
     // read buffer and streams
 
-    int stopbits;
-    boolean monitor = false;
+    private int stopbits;
 
     // initial state of RTS&DTR line(ON/OFF)
     // This is needed as Some boards reset when the serial port is opened with
     // RTS and DTR low.
-    boolean dtr = true;
+    private boolean dtr = true;
 
-    String portName;
+    private String portName;
 
     private ServiceRegistration<Serial> fServiceRegistration;
 
@@ -82,9 +81,6 @@ public class Serial implements SerialPortEventListener {
 	this(iname, irate, 'N', 8, 1.0f, true);
     }
 
-    public Serial(String iname, int irate, boolean dtr) {
-	this(iname, irate, 'N', 8, 1.0f, dtr);
-    }
 
     public Serial(String iname, int irate, char iparity, int idatabits, float istopbits, boolean dtr) {
 	this.portName = iname;
@@ -305,8 +301,9 @@ public class Serial implements SerialPortEventListener {
 	}
     }
 
-    public void setup() {// JABA is not going to add code
-    }
+    // TODO Remove unused code found by UCDetector
+    // public void setup() {// JABA is not going to add code
+    // }
 
     // needed to fill viewers in jfases
     @Override

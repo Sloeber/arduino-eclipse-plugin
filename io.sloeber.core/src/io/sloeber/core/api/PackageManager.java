@@ -600,21 +600,6 @@ public class PackageManager {
 		return status;
 	}
 
-	/**
-	 * returns all the menu names for all installed platforms. The return is sorted
-	 * and unique
-	 *
-	 * @return
-	 */
-	public static Set<String> getAllMenuNames() {
-		Set<String> ret = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-		File[] boardFiles = getAllBoardsFiles();
-		for (File curBoardFile : boardFiles) {
-            BoardTxtFile txtFile = new BoardTxtFile(curBoardFile);
-			ret.addAll(txtFile.getMenuNames());
-		}
-		return ret;
-	}
 
 	public static TreeMap<String, String> getAllmenus() {
 		TreeMap<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

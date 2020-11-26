@@ -266,23 +266,6 @@ public class LibraryManager {
 
 	}
 
-	/**
-	 * get all the categories for all libraries (installed or not)
-	 *
-	 * @return a list of all the categories that exist in any library json file
-	 *         known by sloeber
-	 */
-	public static Set<String> getAllCategories() {
-
-		Set<String> ret = new TreeSet<>();
-
-		for (LibraryIndex libraryIndex : getLibraryIndices()) {
-			for (String categoryName : libraryIndex.getCategories()) {
-				ret.add(categoryName);
-			}
-		}
-		return ret;
-	}
 
 	public static void InstallDefaultLibraries(IProgressMonitor monitor) {
 		LibraryIndex libindex = getLibraryIndex(Defaults.DEFAULT);
@@ -388,21 +371,6 @@ public class LibraryManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Searches for all libraries that can be installed but are not yet installed. A
-	 * library is considered installed when 1 version of the library is installed.
-	 *
-	 * @return a map of all instalable libraries
-	 */
-	public static Map<String, LibraryDescriptor> getAllInstallableLibraries() {
-		Map<String, LibraryDescriptor> ret = new HashMap<>();
-		for (LibraryIndex libraryIndex : libraryIndices) {
-			ret.putAll(libraryIndex.getLatestInstallableLibraries());
-		}
-
-		return ret;
 	}
 
 	public static Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libnames) {

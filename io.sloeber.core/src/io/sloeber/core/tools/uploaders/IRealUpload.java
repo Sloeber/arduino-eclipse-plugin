@@ -6,7 +6,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.api.BoardDescriptor;
 
-public abstract interface IRealUpload {
+abstract interface IRealUpload {
 	abstract public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor,
 			IProgressMonitor monitor, 
 			MessageConsoleStream myHighStream,

@@ -37,15 +37,15 @@ public class CodeDescriptor {
 		None, defaultIno, defaultCPP, CustomTemplate, sample
 	}
 
-	static public final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
-	static public final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
-	static public final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
-	static public final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
+    static private final String DEFAULT_SKETCH_BASE = "sketch"; //$NON-NLS-1$
+    public static final String DEFAULT_SKETCH_INO = DEFAULT_SKETCH_BASE + ".ino"; //$NON-NLS-1$
+    public static final String DEFAULT_SKETCH_CPP = DEFAULT_SKETCH_BASE + ".cpp"; //$NON-NLS-1$
+    public static final String DEFAULT_SKETCH_H = DEFAULT_SKETCH_BASE + ".h"; //$NON-NLS-1$
 	//
 	// template Sketch information
 
-	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = Const.ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
-	public static final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
+    static private final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = Const.ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
+    static private final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
 			+ "TEMPLATE_USE_DEFAULT"; //$NON-NLS-1$
 
 	private CodeTypes myCodeType;
@@ -129,7 +129,7 @@ public class CodeDescriptor {
 	/**
 	 * Save the setting in the last used
 	 */
-	public void save() {
+    private void save() {
 		if (myTemPlateFoldername != null) {
 			InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
 					myTemPlateFoldername.toString());
@@ -142,8 +142,8 @@ public class CodeDescriptor {
 	 * given the source descriptor, add the sources to the project returns a set
 	 * of libraries that need to be installed
 	 **/
-	@SuppressWarnings("nls")
-	public Map<String, IPath>  createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
+    @SuppressWarnings("nls")
+    Map<String, IPath> createFiles(IProject project, IProgressMonitor monitor) throws CoreException {
 	    Map<String, IPath>  libraries = new TreeMap<>();
 
 		save();
@@ -283,7 +283,7 @@ public class CodeDescriptor {
 	}
 
 	@SuppressWarnings("nls")
-	public static String getLibraryName(IPath examplePath) {
+    private static String getLibraryName(IPath examplePath) {
 		if ("libraries".equalsIgnoreCase(examplePath.removeLastSegments(4).lastSegment())) {
 			return examplePath.removeLastSegments(3).lastSegment();
 		}

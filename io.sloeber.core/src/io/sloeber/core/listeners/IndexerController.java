@@ -29,7 +29,8 @@ public class IndexerController extends IndexerSetupParticipant  {
 		}
 		return ret;
 	}
-	public static boolean isPosponed(IProject project) {
+
+    static boolean isPosponed(IProject project) {
 	    return fProjects.contains(project);
 	}
 	public static void doNotIndex(IProject project) {

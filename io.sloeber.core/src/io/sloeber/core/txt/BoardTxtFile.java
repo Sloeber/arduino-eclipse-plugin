@@ -13,9 +13,9 @@ import io.sloeber.core.Messages;
 public class BoardTxtFile extends TxtFile {
 
     private static final String MENUITEMNAME = Messages.MENUITEMNAME;
-    public static final String MENUITEMID = Messages.MENUITEMID;
-    public static final String MENUID = Messages.MENUID;
-    public static final String BOARDID = Messages.BOARDID;
+    private static final String MENUITEMID = Messages.MENUITEMID;
+    private static final String MENUID = Messages.MENUID;
+    private static final String BOARDID = Messages.BOARDID;
     private File providedTxtFile = null;
 
     public BoardTxtFile(File boardsFile) {
@@ -30,17 +30,6 @@ public class BoardTxtFile extends TxtFile {
         return boardsFile;
     }
 
-    public String getMenuIDFromMenuName(String menuName) {
-        Map<String, String> menuSectionMap = getSection(MENU);
-        if (menuSectionMap != null) {
-            for (Entry<String, String> curOption : menuSectionMap.entrySet()) {
-                if (curOption.getValue().equals(menuName)) {
-                    return curOption.getKey();
-                }
-            }
-        }
-        return Messages.Boards_menu_name_not_found.replace(Messages.NAME, menuName);
-    }
 
     public String getMenuItemIDFromMenuItemName(String boardID, String menuID, String menuItemName) {
 
@@ -190,7 +179,7 @@ public class BoardTxtFile extends TxtFile {
      * @author Trump
      *
      */
-    public String[] getAllSectionNames(String[] toaddNames) {
+    String[] getAllSectionNames(String[] toaddNames) {
 
         HashSet<String> allNames = new HashSet<>();
         for (String curName : toaddNames) {

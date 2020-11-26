@@ -7,7 +7,7 @@
  *******************************************************************************/
 package io.sloeber.core.managers;
 
-public class Board {
+class Board {
 
     private String name;
     private ArduinoPlatform platform;

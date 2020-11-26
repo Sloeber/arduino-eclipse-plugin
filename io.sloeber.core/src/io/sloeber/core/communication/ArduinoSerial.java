@@ -174,7 +174,7 @@ public class ArduinoSerial {
 	 *            the time to wait between the 2 toggle commands
 	 * @return true is successful otherwise false
 	 */
-	public static boolean ToggleDTR(Serial serialPort, long delay) {
+    private static boolean ToggleDTR(Serial serialPort, long delay) {
 		serialPort.setDTR(false);
 		serialPort.setRTS(false);
 

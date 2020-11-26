@@ -62,23 +62,8 @@ public class KeyValueTree extends Const {
         return getKey() + EQUAL + getValue();
     }
 
-    public String toStringLine() {
-        if (null == getValue()) {
-            // leaves without a value should not be logged
-            return EMPTY;
-        }
-        String seperator = EMPTY;
-        String ret = EQUAL + getValue();
-        KeyValueTree current = this;
-        while (current.getParent() != null) {
-            ret = current.getKey() + seperator + ret;
-            current = current.getParent();
-            seperator = DOT;
-        }
-        return ret + NEWLINE;
-    }
 
-    public String toStringLine(KeyValueTree theRoot) {
+    private String toStringLine(KeyValueTree theRoot) {
         if ((null == getValue()) || (this == theRoot)) {
             // leaves without a value should not be logged
             return EMPTY;
@@ -94,7 +79,7 @@ public class KeyValueTree extends Const {
         return ret + NEWLINE;
     }
 
-    public Map<String, String> toKeyValues(boolean addParents) {
+    Map<String, String> toKeyValues(boolean addParents) {
         KeyValueTree theRoot = this;
         if (addParents) {
             theRoot = null;

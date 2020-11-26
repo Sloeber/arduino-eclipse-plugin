@@ -14,7 +14,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 
-public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands {
+class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCalculator2Commands {
 
 	private IProject myproject;
 
@@ -37,7 +37,7 @@ public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCal
 		return super.getDependencyCommandOptions();
 	}
 
-	public ArduinoDependencyCalculatorCommands(IPath source, IBuildObject buildContext, ITool tool,
+    ArduinoDependencyCalculatorCommands(IPath source, IBuildObject buildContext, ITool tool,
 			IPath topBuildDirectory) {
 		super(source, buildContext, tool, topBuildDirectory);
 		// Compute the project
@@ -50,7 +50,7 @@ public class ArduinoDependencyCalculatorCommands extends DefaultGCCDependencyCal
 		}
 	}
 
-	public ArduinoDependencyCalculatorCommands(IPath source, IResource resource, IBuildObject buildContext, ITool tool,
+    ArduinoDependencyCalculatorCommands(IPath source, IResource resource, IBuildObject buildContext, ITool tool,
 			IPath topBuildDirectory) {
 		super(source, resource, buildContext, tool, topBuildDirectory);
 		// Compute the project

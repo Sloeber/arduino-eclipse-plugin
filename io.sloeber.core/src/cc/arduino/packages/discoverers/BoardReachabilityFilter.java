@@ -37,15 +37,15 @@ import java.util.TimerTask;
 
 import cc.arduino.packages.BoardPort;
 
-public class BoardReachabilityFilter extends TimerTask {
+class BoardReachabilityFilter extends TimerTask {
 
 	private final NetworkDiscovery networkDiscovery;
 
-	public BoardReachabilityFilter(NetworkDiscovery networkDiscovery) {
+    BoardReachabilityFilter(NetworkDiscovery networkDiscovery) {
 		this.networkDiscovery = networkDiscovery;
 	}
 
-	public void start(Timer timer) {
+    void start(Timer timer) {
 		timer.schedule(this, 0, 5000);
 	}
 

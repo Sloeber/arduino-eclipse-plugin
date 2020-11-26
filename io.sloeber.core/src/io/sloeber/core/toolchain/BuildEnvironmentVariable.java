@@ -3,13 +3,13 @@ package io.sloeber.core.toolchain;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 
-public class BuildEnvironmentVariable implements IBuildEnvironmentVariable {
-	protected String fName;
-	protected String fValue;
-	final protected String fDelimiter= getDefaultDelimiter();
+class BuildEnvironmentVariable implements IBuildEnvironmentVariable {
+    private String fName;
+    private String fValue;
+    final private String fDelimiter = getDefaultDelimiter();
 	private static final String DELIMITER_WIN32 = ";";  //$NON-NLS-1$
 	private static final String DELIMITER_UNIX = ":";  //$NON-NLS-1$
-	protected int fOperation;
+    private int fOperation;
 
 	private static boolean isWin32() {
 		String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
@@ -19,33 +19,21 @@ public class BuildEnvironmentVariable implements IBuildEnvironmentVariable {
 	}
 
 
-	public static String getDefaultDelimiter() {
+    private static String getDefaultDelimiter() {
 		return isWin32() ? DELIMITER_WIN32 : DELIMITER_UNIX;
 	}
 
-	public BuildEnvironmentVariable(String name, String value, int op) {
+    private BuildEnvironmentVariable(String name, String value, int op) {
 		fName = name;
 		fOperation = op;
 		fValue =value;
 
 	}
 
-
-	public BuildEnvironmentVariable(String name){
-		this(name,null,ENVVAR_REPLACE);
-	}
-
-	public BuildEnvironmentVariable(String name, String value){
+    BuildEnvironmentVariable(String name, String value) {
 		this(name,value,ENVVAR_REPLACE);
 	}
 
-	public BuildEnvironmentVariable(String name, String value, String delimiter){
-		this(name,value,ENVVAR_REPLACE);
-	}
-
-	public BuildEnvironmentVariable(IEnvironmentVariable var){
-		this(var.getName(),var.getValue(),var.getOperation());
-	}
 
 	@Override
 	public String getName(){

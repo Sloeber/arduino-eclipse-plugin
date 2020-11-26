@@ -30,11 +30,11 @@ import io.sloeber.core.tools.Helpers;
 
 public class UploadSketchWrapper {
 	// preference nodes
-	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-	public static final String UPLOAD_TOOL_TEENSY = "teensy_reboot"; //$NON-NLS-1$
-	public static final String UPLOAD_SSH = "ssh upload"; //$NON-NLS-1$
+    private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
+    private static final String UPLOAD_TOOL_TEENSY = "teensy_reboot"; //$NON-NLS-1$
 
-	static UploadSketchWrapper myThis = null;
+
+    private static UploadSketchWrapper myThis = null;
 
 	private UploadSketchWrapper() {
 		// no constructor needed
@@ -52,7 +52,7 @@ public class UploadSketchWrapper {
 		return getUploadSketchWrapper().internalUpload(Project, confDesc);
 	}
 
-	public Job internalUpload(IProject project,
+    private Job internalUpload(IProject project,
 			ICConfigurationDescription confDesc) {
 		BoardDescriptor boardDescriptor = BoardDescriptor
 				.makeBoardDescriptor(confDesc);

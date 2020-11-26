@@ -51,15 +51,15 @@ public class Activator extends Plugin {
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
 	// TOFIX I think the fix below for unix users is no longer needed and we no
 	// longer use the rxtx dll
-	public static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
-	public static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
+    private static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
+    private static final String ENV_VALUE_GNU_SERIAL_PORTS_LINUX = "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4";
 
 	// The shared instance
 	private static final String FLAG_START = "F" + "s" + "S" + "t" + "a" + "t" + "u" + "s";
 
 
 	private static Activator instance;
-	protected char[] uri = { 'h', 't', 't', 'p', 's', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't',
+    private char[] uri = { 'h', 't', 't', 'p', 's', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't',
 			'/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
 			'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 	private static final String PLUGIN_ID = "io.sloeber.core";

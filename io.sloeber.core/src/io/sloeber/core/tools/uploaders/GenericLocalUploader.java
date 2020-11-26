@@ -12,7 +12,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.ExternalCommandLauncher;
 
-public class GenericLocalUploader implements IRealUpload {
+class GenericLocalUploader implements IRealUpload {
 
 	private String myNAmeTag;
 	private ICConfigurationDescription myConDesc;

@@ -91,10 +91,6 @@ public class BoardPort {
     return this.online;
   }
 
-  public void setVIDPID(String vid, String pid) {
-    this.vid = vid;
-    this.pid = pid;
-  }
 
   public String getVID() {
     return this.vid;

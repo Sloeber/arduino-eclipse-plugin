@@ -14,11 +14,8 @@ public class Programmers extends BoardTxtFile {
 	private static final String programmersFileName1 = "programmers.txt";//$NON-NLS-1$
 	private static final String programmersFileName2 = "externalprogrammers.txt";//$NON-NLS-1$
 
-	Programmers(String programmersFileName) {
-        super(new File(programmersFileName));
-	}
 
-	Programmers(File programmersFile) {
+    private Programmers(File programmersFile) {
         super(programmersFile);
 	}
 

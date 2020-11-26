@@ -97,14 +97,6 @@ public class ArduinoPlatform {
 		return this.toolsDependencies;
 	}
 
-	public Tool getTool(String toolName) {
-		for (ToolDependency toolDep : this.toolsDependencies) {
-			if (toolDep.getName().equals(toolName)) {
-				return toolDep.getTool();
-			}
-		}
-		return null;
-	}
 
 	public boolean isInstalled() {
 		return getBoardsFile().exists();
