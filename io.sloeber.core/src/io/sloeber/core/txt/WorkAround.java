@@ -38,8 +38,8 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 1 "
-            + String.valueOf(System.currentTimeMillis());
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 1 ";
+    // + String.valueOf(System.currentTimeMillis());
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -87,7 +87,7 @@ public class WorkAround extends Const {
      * @return the worked around file or requestedFileToWorkAround if it does not
      *         exist or an error occurred
      */
-    static public File MakeBoardsSloeberTxt(File requestedFileToWorkAround) {
+    static File MakeBoardsSloeberTxt(File requestedFileToWorkAround) {
         if (!requestedFileToWorkAround.exists()) {
             return requestedFileToWorkAround;
         }
@@ -107,7 +107,7 @@ public class WorkAround extends Const {
             } catch (Exception e) {
                 // ignore and delete the file
             }
-            if (!FIRST_SLOEBER_WORKAROUND_LINE.equals(firstLine.trim())) {
+            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine.trim())) {
                 boardsSloeberTXT.delete();
             }
         }
@@ -173,7 +173,7 @@ public class WorkAround extends Const {
      * @return the worked around file or requestedFileToWorkAround if it does not
      *         exist or an error occurred
      */
-    public static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
+    static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
 
         // zoek voor
         // recipe.objcopy.*.pattern=cmd /c *
@@ -198,7 +198,7 @@ public class WorkAround extends Const {
             } catch (Exception e) {
                 // ignore and delete the file
             }
-            if (!FIRST_SLOEBER_WORKAROUND_LINE.equals(firstLine.trim())) {
+            if (!FIRST_SLOEBER_WORKAROUND_LINE.trim().equals(firstLine.trim())) {
                 platformSloeberTXT.delete();
             }
         }
@@ -232,6 +232,14 @@ public class WorkAround extends Const {
                             platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
                             cmdPathLine = findLineContaining(platformTXT, searchString);
                         }
+                    } else if (cmdPathLine.charAt(0) == '#') {
+                        platformTXT = platformTXT.replace(cmdPathLine, EMPTY);
+                        cmdPathLine = findLineContaining(platformTXT, searchString);
+                    }
+                    else {
+                        // TODO find a better way to handle this situation
+                        // but it is better to continue than hang
+                        cmdPathLine = null;
                     }
                 }
 
@@ -341,9 +349,9 @@ public class WorkAround extends Const {
 
 
     private static String solveOSStuff(String inpuText) {
-        String WINDOWSKEY = ".windows"; //$NON-NLS-1$
-        String LINUXKEY = ".linux"; //$NON-NLS-1$
-        String MACKEY = ".macosx"; //$NON-NLS-1$
+        String WINDOWSKEY = ".windows="; //$NON-NLS-1$
+        String LINUXKEY = ".linux="; //$NON-NLS-1$
+        String MACKEY = ".macosx="; //$NON-NLS-1$
         LinkedList<String> Otherosses = new LinkedList<>();
 
         String thisOSKey = null;
@@ -370,32 +378,34 @@ public class WorkAround extends Const {
             Common.log(new Status(IStatus.ERROR, Activator.getId(), "Failed to recognize the os you are using"));
             return inpuText;
         }
-        ;
 
         String ret = inpuText;
-        String searchKey = null;
         // remove the os keys
-        for (String curos : Otherosses) {
-            searchKey = DOT + curos + EQUAL;
+        for (String searchKey : Otherosses) {
             String notNeededosLine = findLineContaining(ret, searchKey);
-            while (!notNeededosLine.isEmpty()) {
+            while (null != notNeededosLine) {
                 ret = ret.replace(notNeededosLine, EMPTY);
                 notNeededosLine = findLineContaining(ret, searchKey);
             }
         }
-        searchKey = DOT + thisOSKey + EQUAL;
-        String neededOSLine = findLineContaining(ret, searchKey);
+        String neededOSLine = findLineContaining(ret, thisOSKey);
         while (null != neededOSLine) {
-            int keyIndex = neededOSLine.indexOf(searchKey);
+            int keyIndex = neededOSLine.indexOf(thisOSKey);
+            if (keyIndex < 0) {
+                Common.log(new Status(IStatus.ERROR, Activator.getId(), "Error processing txt file: " + neededOSLine));
+                neededOSLine = null;
+            } else {
             String genericKey = neededOSLine.substring(0, keyIndex) + EQUAL;
+            String foundKey = neededOSLine.substring(0, keyIndex + thisOSKey.length());
             String matchingGenericLine = findLineContaining(ret, genericKey);
             if (null != matchingGenericLine) {
                 ret = ret.replace(matchingGenericLine, EMPTY);
             }
-            ret = ret.replace(neededOSLine, EMPTY);
-            neededOSLine = findLineContaining(ret, searchKey);
+            ret = ret.replace(foundKey, genericKey);
+            neededOSLine = findLineContaining(ret, thisOSKey);
         }
-        ret = ret.replace(searchKey, EQUAL);
+        }
+
         return ret;
     }
 }
