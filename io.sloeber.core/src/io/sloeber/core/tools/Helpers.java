@@ -3,18 +3,9 @@ package io.sloeber.core.tools;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.envvar.EnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IContributedEnvironment;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
-import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
-import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
@@ -41,25 +32,14 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
-import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CompileOptions;
-import io.sloeber.core.api.Defaults;
-import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.common.Common;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
-import io.sloeber.core.txt.BoardTxtFile;
-import io.sloeber.core.txt.PlatformTxtFile;
-import io.sloeber.core.txt.Programmers;
-import io.sloeber.core.txt.TxtFile;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -69,17 +49,9 @@ import io.sloeber.core.txt.TxtFile;
  */
 public class Helpers extends Common {
 
-	private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_SOURCE_PATH = ERASE_START + "build.source.path"; //$NON-NLS-1$
-	private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
-	private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path"; //$NON-NLS-1$
-	private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path"; //$NON-NLS-1$
-	private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
-	private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "make_location"; //$NON-NLS-1$
 
 
     private static final String FILE = Messages.FILE;
-	private static final String KEY = Messages.KEY;
 	private static final String FOLDER = Messages.FOLDER;
 
 	private static boolean myHasBeenLogged = false;
@@ -348,7 +320,7 @@ public class Helpers extends Common {
 	 *                                 contain the change
 	 * @throws CoreException
 	 */
-	public static void addArduinoCodeToProject(BoardDescriptor boardDescriptor, IProject project,
+	public static void addArduinoCodeToProject(BoardDescription boardDescriptor, IProject project,
 			ICConfigurationDescription configurationDescription) throws CoreException {
 
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
@@ -392,350 +364,12 @@ public class Helpers extends Common {
 
 	}
 
-	/**
-	 * Remove all the arduino environment variables.
-	 *
-	 * @param contribEnv
-	 * @param confDesc
-	 */
-	private static void removeAllEraseEnvironmentVariables(IContributedEnvironment contribEnv,
-			ICConfigurationDescription confDesc) {
-
-		IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
-		for (int i = (CurVariables.length - 1); i > 0; i--) {
-			if (CurVariables[i].getName().startsWith(Const.ERASE_START)) {
-				contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
-			}
-		}
-	}
-
-	/**
-	 * Sets the default values. Basically some settings are not set in the
-	 * platform.txt file. Here I set these values. This method should be called as
-	 * first. This way the values in platform.txt and boards.txt will take
-	 * precedence of the default values declared here
-	 *
-	 * @param projectName
-	 *
-	 * @param contribEnv
-	 * @param confDesc
-	 * @param platformFile Used to define the hardware as different settings are
-	 *                     needed for avr and sam
-	 */
-
-    private static Map<String,String> getEnvVarsDefault(IProject project, BoardDescriptor boardDescriptor) {
-		// Set some default values because the platform.txt does not contain
-		// them
-		String architecture = boardDescriptor.getArchitecture();
-		HashMap<String,String> vars=new HashMap<>();
-		vars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        vars.put(ENV_KEY_HARDWARE_PATH,  boardDescriptor.getreferencedHardwarePath().toOSString());
-        vars.put(ENV_KEY_PLATFORM_PATH,  boardDescriptor.getreferencingPlatformPath().toOSString());
-
-        vars.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
-
-        if (Common.isWindows) {
-            vars.put(ENV_KEY_JANTJE_MAKE_LOCATION, ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
-		}
-
-
-        return vars;
-
-	}
 
 
 
 
-    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatform platform, boolean reportToolNotFound) {
-        HashMap<String, String> emptyHashMap = new HashMap<>();
-		if (platform == null) {
-            return emptyHashMap;
-		}
-		if (platform.getToolsDependencies() == null) {
-            return emptyHashMap;
-		}
-        return addDependentTools(platform.getToolsDependencies(), reportToolNotFound);
-
-	}
-
-    private static Map<String, String> addDependentTools(Iterable<ToolDependency> tools, boolean reportToolNotFound) {
-        HashMap<String, String> vars = new HashMap<>();
-        String RUNTIME_TOOLS = ERASE_START + RUNTIME + DOT + TOOLS + DOT;
-        String DOT_PATH = DOT + PATH;
-		for (ToolDependency tool : tools) {
-            String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-			Tool theTool = tool.getTool();
-			if (theTool == null) {
-				if (reportToolNotFound) {
-					Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-							"Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
-									+ tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
-				}
-			} else {
-                IPath installPath = theTool.getInstallPath();
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-			}
-		}
-        return vars;
-	}
-
-    private static Map<String, String> getEnvVarsAll(IProject project, InternalBoardDescriptor boardsDescriptor) {
-        // first get all the data we need
-        Programmers localProgrammers[] = Programmers.fromBoards(boardsDescriptor);
-        String boardid = boardsDescriptor.getBoardID();
-
-        InternalBoardDescriptor pluginPreProcessingBoardsTxt = new InternalBoardDescriptor(
-                new BoardTxtFile(ConfigurationPreferences.getPreProcessingBoardsFile()), boardid);
-        InternalBoardDescriptor pluginPostProcessingBoardsTxt = new InternalBoardDescriptor(
-                new BoardTxtFile(ConfigurationPreferences.getPostProcessingBoardsFile()), boardid);
-        TxtFile pluginPreProcessingPlatformTxt = new TxtFile(ConfigurationPreferences.getPreProcessingPlatformFile());
-        TxtFile pluginPostProcessingPlatformTxt = new TxtFile(ConfigurationPreferences.getPostProcessingPlatformFile());
-
-        //get all the environment variables
-        Map<String, String> allVars= getEnvVarsDefault(project, boardsDescriptor);
-        allVars.putAll( pluginPreProcessingPlatformTxt.getAllEnvironVars(EMPTY));
-        allVars.putAll(pluginPreProcessingBoardsTxt.getEnvVarsTxt());
-        PlatformTxtFile referencedPlatfromFile = boardsDescriptor.getreferencedPlatformFile();
-        // process the platform file referenced by the boards.txt
-        if (referencedPlatfromFile != null) {
-            allVars.putAll( referencedPlatfromFile.getAllEnvironVars());
-        }
-        PlatformTxtFile referencingPlatfromFile = boardsDescriptor.getReferencingPlatformFile();
-        // process the platform file next to the selected boards.txt
-        if (referencingPlatfromFile != null) {
-            allVars.putAll(referencingPlatfromFile.getAllEnvironVars());
-        }
-        allVars.putAll(getEnVarPlatformInfo(boardsDescriptor));
-
-        // add the boards file
-        allVars.putAll(boardsDescriptor.getEnvVarsAll());
-
-        String programmer = boardsDescriptor.getProgrammer();
-        for (Programmers curProgrammer : localProgrammers) {
-            String programmerID = curProgrammer.getIDFromNiceName(programmer);
-            if (programmerID != null) {
-                allVars.putAll(curProgrammer.getAllEnvironVars( programmerID));
-            }
-        }
-
-        // add the stuff that comes with the plugin that is marked as post
-        allVars.putAll(pluginPostProcessingPlatformTxt.getAllEnvironVars(EMPTY));
-        allVars.putAll(pluginPostProcessingBoardsTxt.getEnvVarsTxt());
 
 
-        // Do some coded post processing
-        allVars.putAll(getEnvVarsPostProcessing(project, allVars, boardsDescriptor));
-        return allVars;
-
-    }
-
-
-    /**
-     * This method creates environment variables based on the platform.txt and
-     * boards.txt. platform.txt is processed first and then boards.txt. This way
-     * boards.txt settings can overwrite common settings in platform.txt The
-     * environment variables are only valid for the project given as parameter The
-     * project properties are used to identify the boards.txt and platform.txt as
-     * well as the board id to select the settings in the board.txt file At the end
-     * also the path variable is set
-     *
-     *
-     * To be able to quickly fix boards.txt and platform.txt problems I also added a
-     * pre and post platform and boards files that are processed before and after
-     * the arduino delivered boards.txt file.
-     *
-     * @param project
-     *            the project for which the environment variables are set
-     * @param arduinoProperties
-     *            the info of the selected board to set the variables for
-     */
-
-    public static void setTheEnvironmentVariables(IProject project, CompileOptions compileOptions,
-            ICConfigurationDescription confDesc,
-            InternalBoardDescriptor boardsDescriptor) {
-        IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
-        IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-
-        Map<String, String> allVars = getEnvVarsAll(project, boardsDescriptor);
-
-        allVars.putAll(compileOptions.getEnvVars(confDesc));
-
-		// remove all Arduino Variables so there is no memory effect
-		removeAllEraseEnvironmentVariables(contribEnv, confDesc);
-		
-		//set the paths
-        String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
-        if (Common.isWindows) {
-            String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
-            allVars.put("PATH", //$NON-NLS-1$
-                    makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32" //$NON-NLS-1$
-                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
-                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
-        } else {
-            allVars.put("PATH", //$NON-NLS-1$
-                    makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter
-                            + makeEnvironmentVar("PATH")); //$NON-NLS-1$
-        }
-
-        
-        for (Entry<String, String> curVariable : allVars.entrySet()) {
-            String name = curVariable.getKey();
-            String value = curVariable.getValue();
-            IEnvironmentVariable var = new EnvironmentVariable(name, makePathEnvironmentString(value));
-            contribEnv.addVariable(var, confDesc);
-        }
-
- 
-	}
-
-	/**
-	 * Following post processing is done
-	 *
-	 * CDT uses different keys to identify the input and output files then the
-	 * arduino recipes. Therefore I split the arduino recipes into parts (based on
-	 * the arduino keys) and connect them again in the plugin.xml using the CDT
-	 * keys. This code assumes that the command is in following order ${first part}
-	 * ${files} ${second part} [${ARCHIVE_FILE} ${third part}] with [optional]
-	 *
-	 * Secondly The handling of the upload variables is done differently in arduino
-	 * than here. This is taken care of here. for example the output of this input
-	 * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose}
-	 * is changed as if it were the output of this input
-	 * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
-	 * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
-	 *
-	 * thirdly if a programmer is selected different from default some extra actions
-	 * are done here so no special code is needed to handle programmers
-	 *
-	 * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
-	 * where it is {BUILD.PATH}/core/ in arduino world and used to be {BUILD.PATH}/
-	 * This only gives problems in the link command as sometimes there are hardcoded
-	 * links to some sys files so ${A.BUILD.PATH}/core/sys* ${A.BUILD.PATH}/sys* is
-	 * replaced with ${A.BUILD.PATH}/core/core/sys*
-	 *
-	 * @param contribEnv
-	 * @param confDesc
-	 * @param boardsDescriptor
-	 */
-    private static Map<String, String> getEnvVarsPostProcessing(IProject project, Map<String, String> vars,
-            InternalBoardDescriptor boardsDescriptor) {
-        Map<String, String> extraVars=new HashMap<>();
-
-		// split the recipes so we can add the input and output markers as cdt needs
-		// them
-		String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_SIZE, RECIPE_AR,
-				RECIPE_C_COMBINE };
-		for (String recipeKey : recipeKeys) {
-            String recipe = vars.get(recipeKey);
-            if (null == recipe) {
-                continue;
-            }
-
-			// Sloeber should split o, -o {output} but to be safe that needs a regex so I
-			// simply delete the -o
-			if (!RECIPE_C_COMBINE.equals(recipeKey)) {
-				recipe = recipe.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			String recipeParts[] = recipe.split(
-					"(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")", //$NON-NLS-1$
-					3);
-
-			switch (recipeParts.length) {
-			case 0:
-			    extraVars.put(recipeKey + DOT + '1', "echo no command for \"{KEY}\".".replace(KEY, recipeKey)); //$NON-NLS-1$
-				break;
-			case 1:
-			    extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-				break;
-			case 2:
-			    extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-			    extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
-				break;
-			case 3:
-			    extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-			    extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
-			    extraVars.put(recipeKey + DOT + '3', recipeParts[2]);
-
-				break;
-			default:
-				// this should never happen as the split is limited to 3
-			}
-		}
-
-		// report that the upload comport is not set
-		String programmer = boardsDescriptor.getProgrammer();
-		if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
-			String MComPort = boardsDescriptor.getUploadPort();
-			if (MComPort.isEmpty()) {
-				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-						"Upload will fail due to missing upload port for project: "+project.getName())); //$NON-NLS-1$
-			}
-		}
-
-		ArrayList<String> objcopyCommand = new ArrayList<>();
-			for (Entry<String, String> curVariable : vars.entrySet()) {
-			    String name=curVariable.getKey();
-			    String value=curVariable.getValue();
-				if (name.startsWith(Const.RECIPE_OBJCOPY) && name.endsWith(".pattern") && !value.isEmpty()) { //$NON-NLS-1$
-					objcopyCommand.add(makeEnvironmentVar(name));
-				}
-			}
-		Collections.sort(objcopyCommand);
-		extraVars.put(Const.JANTJE_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
-
-		// handle the hooks
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.pre.link", //$NON-NLS-1$
-				"A.recipe.hooks.linking.prelink.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.post.link", //$NON-NLS-1$
-				"A.recipe.hooks.linking.postlink.XX.pattern", true)); //$NON-NLS-1$
-        extraVars
-                .putAll(getEnvVarsHookBuild(vars, "A.JANTJE.prebuild", "A.recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
-                        false));
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.prebuild", //$NON-NLS-1$
-				"A.recipe.hooks.sketch.prebuild.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.postbuild", //$NON-NLS-1$
-				"A.recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
-
-		// add -relax for mega boards; the arduino ide way
-        String buildMCU = vars.get(Const.ENV_KEY_BUILD_MCU);
-		if ("atmega2560".equalsIgnoreCase(buildMCU)) { //$NON-NLS-1$
-            String c_elf_flags = vars.get(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS);
-            extraVars.put(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax"); //$NON-NLS-1$
-		}
-        return extraVars;
-	}
-
-    private static Map<String, String> getEnvVarsHookBuild(Map<String, String> vars, String varName,
-            String hookName, boolean post) {
-        Map<String, String> extraVars = new HashMap<>();
-		String envVarString = new String();
-        String searchString = "XX"; //$NON-NLS-1$
-		String postSeparator = "}\n\t"; //$NON-NLS-1$
-		String preSeparator = "${"; //$NON-NLS-1$
-		if (post) {
-			postSeparator = "${"; //$NON-NLS-1$
-			preSeparator = "}\n\t"; //$NON-NLS-1$
-		}
-		for (int numDigits = 1; numDigits <= 2; numDigits++) {
-            String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
-			int counter = 1;
-            String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
-            while (null != vars.get(hookVarName)) { // $NON-NLS-1$
-				envVarString = envVarString + preSeparator + hookVarName + postSeparator;
-                hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
-			}
-		}
-		if (!envVarString.isEmpty()) {
-            extraVars.put(varName, envVarString);
-		}
-        return extraVars;
-	}
 
 
 	/**
@@ -812,26 +446,35 @@ public class Helpers extends Common {
 
 	}
 
-    private static Map<String, String> getEnVarPlatformInfo(BoardDescriptor boardDescriptor) {
-
-        // update the gobal variables if needed
-        PackageManager.updateGlobalEnvironmentVariables();
-        File referencingPlatformFile = boardDescriptor.getReferencingPlatformFile().getTxtFile();
-        File referencedPlatformFile = boardDescriptor.getreferencedPlatformFile().getTxtFile();
-        ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
-        ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
-
-        boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
-        if (jsonBasedPlatformManagement) {
-            // overrule the Arduino IDE way of working and use the json refereced tools
-            Map<String, String> ret = getEnvVarPlatformFileTools(referencedPlatform, true);
-            ret.putAll(getEnvVarPlatformFileTools(referencingPlatform, false));
-            return ret;
+    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatform platform, boolean reportToolNotFound) {
+        HashMap<String, String> vars = new HashMap<>();
+        if (platform == null) {
+            return vars;
         }
-            // standard arduino IDE way
-        Map<String, String> ret = getEnvVarPlatformFileTools(referencingPlatform, false);
-        ret.putAll(getEnvVarPlatformFileTools(referencedPlatform, true));
-        return ret;
-
+        if (platform.getToolsDependencies() == null) {
+            return vars;
+        }
+        Iterable<ToolDependency> tools = platform.getToolsDependencies();
+        String RUNTIME_TOOLS = ERASE_START + RUNTIME + DOT + TOOLS + DOT;
+        String DOT_PATH = DOT + PATH;
+        for (ToolDependency tool : tools) {
+            String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
+            Tool theTool = tool.getTool();
+            if (theTool == null) {
+                if (reportToolNotFound) {
+                    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                            "Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
+                                    + tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
+                }
+            } else {
+                IPath installPath = theTool.getInstallPath();
+                vars.put(keyString, installPath.toOSString());
+                keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
+                vars.put(keyString, installPath.toOSString());
+                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
+                vars.put(keyString, installPath.toOSString());
+            }
+        }
+        return vars;
     }
 }

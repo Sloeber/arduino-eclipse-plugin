@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
@@ -54,16 +54,16 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
         ICConfigurationDescription activeConf = projDesc.getActiveConfiguration();
 		ICProjectDescription oldprojDesc = event.getOldCProjectDescription();
         ICConfigurationDescription oldActiveConf = oldprojDesc.getActiveConfiguration();
-        String boardsFile = BoardDescriptor.getBoardsFile(activeConf);
-        String oldBoardsFile = BoardDescriptor.getBoardsFile(oldActiveConf);
-        String variant = BoardDescriptor.getVariant(activeConf);
-        String oldVariant = BoardDescriptor.getVariant(oldActiveConf);
+        String boardsFile = BoardDescription.getBoardsFile(activeConf);
+        String oldBoardsFile = BoardDescription.getBoardsFile(oldActiveConf);
+        String variant = BoardDescription.getVariant(activeConf);
+        String oldVariant = BoardDescription.getVariant(oldActiveConf);
         // only if the boardsFile or variant Changed we need to reattach libraries and
         // cores
         if (boardsFile.equals(oldBoardsFile) && variant.equals(oldVariant)) {
             return;
         }
-        BoardDescriptor newBoardDescriptor = BoardDescriptor.makeBoardDescriptor(activeConf);
+        BoardDescription newBoardDescriptor = new BoardDescription(activeConf);
         try {
             Helpers.setDirtyFlag(activeProject, activeConf);
             Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
@@ -75,36 +75,6 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
             Libraries.reAttachLibrariesToProject(activeConf);
         }
 		
-
-        // InternalBoardDescriptor oldBoardDescriptor = (InternalBoardDescriptor)
-        // BoardDescriptor
-        // .makeBoardDescriptor(oldprojDesc.getActiveConfiguration());
-        // InternalBoardDescriptor newBoardDescriptor = (InternalBoardDescriptor)
-        // BoardDescriptor
-        // .makeBoardDescriptor(activeConf);
-        //
-        // if (oldBoardDescriptor.equals(newBoardDescriptor)) {
-        // if (activeProject.getName().equals(oldBoardDescriptor.getProjectName())) {
-        // if(oldprojDesc.getActiveConfiguration().getName().equals(projDesc.getActiveConfiguration().getName()))
-        // {
-        // // only act when there is change
-        // return;
-        // }
-        // }
-        // }
-        //
-        // // Helpers.setTheEnvironmentVariables(activeProject, activeConf,
-        // // newBoardDescriptor);
-        // try {
-        // // newBoardDescriptor.save(activeConf, true);
-        // // Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject,
-        // // activeConf);
-        // } catch (Exception e) {
-        // Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, "failed to add
-        // include folder", e)); //$NON-NLS-1$
-        // }
-        // //Libraries.reAttachLibrariesToProject(activeConf);
-        // // projDesc.setActiveConfiguration(activeConf);
 	}
 
 }

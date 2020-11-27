@@ -25,9 +25,10 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
@@ -113,7 +114,7 @@ public class Shared {
      * @param codeDescriptor
      * @return true if build is successful otherwise false
      */
-    public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
+    public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor) {
         return BuildAndVerify(boardDescriptor, codeDescriptor, null, -1);
     }
 
@@ -127,8 +128,8 @@ public class Shared {
      *            can be null
      * @return true if build is successful otherwise false
      */
-    public static boolean BuildAndVerify(BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor,
-            CompileOptions compileOptions, int globalBuildCounter) {
+    public static boolean BuildAndVerify(BoardDescription boardDescriptor, CodeDescription codeDescriptor,
+            CompileDescription compileOptions, int globalBuildCounter) {
 
         int projectCounter = myLocalBuildCounter;
         if (globalBuildCounter >= 0) {
@@ -145,22 +146,23 @@ public class Shared {
             }
         }
 
-        CompileOptions localCompileOptions = compileOptions;
+        CompileDescription localCompileOptions = compileOptions;
         if (compileOptions == null) {
-            localCompileOptions = new CompileOptions(null);
+            localCompileOptions = new CompileDescription(null);
         }
         return BuildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
     }
 
-    public static boolean BuildAndVerify(String projectName, BoardDescriptor boardDescriptor,
-            CodeDescriptor codeDescriptor, CompileOptions compileOptions) {
+    public static boolean BuildAndVerify(String projectName, BoardDescription boardDescriptor,
+            CodeDescription codeDescriptor, CompileDescription compileOptions) {
         IProject theTestProject = null;
         NullProgressMonitor monitor = new NullProgressMonitor();
         myLocalBuildCounter++;
 
         try {
             compileOptions.setEnableParallelBuild(true);
-            theTestProject = boardDescriptor.createProject(projectName, null, codeDescriptor, compileOptions, monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, boardDescriptor,
+                    codeDescriptor, compileOptions, monitor);
             waitForAllJobsToFinish(); // for the indexer
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,7 +252,7 @@ public class Shared {
     }
 
     @SuppressWarnings("unused")
-    public static String getProjectName(CodeDescriptor codeDescriptor, Examples example, MCUBoard board) {
+    public static String getProjectName(CodeDescription codeDescriptor, Examples example, MCUBoard board) {
         return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
                 board.getBoardDescriptor().getBoardID());
     }

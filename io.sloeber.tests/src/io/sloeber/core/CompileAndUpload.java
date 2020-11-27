@@ -29,8 +29,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
@@ -130,13 +131,13 @@ public class CompileAndUpload {
 	@Test
 	public void testExamples() {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
-		CompileOptions compileOptions = new CompileOptions(null);
+		CompileDescription compileOptions = new CompileDescription(null);
 		DateTimeFormatter df =  DateTimeFormatter
 				.ofPattern("YYYY/MM/dd-HH-mm-ss");
 		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());
 		compileOptions.set_C_andCPP_CompileOptions("-DINTERVAL=" + interval
 				+ " -DSERIAlDUMP=" + SerialDumpContent);
-		CodeDescriptor codeDescriptor=CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor=CodeDescription.createCustomTemplate(templateFolder);
 		Map<String, String> replacers=new TreeMap<>();
 		replacers.put("\\{SerialMonitorSerial\\}", myBoard.mySerialPort);
 		codeDescriptor.setReplacers(replacers);
@@ -144,17 +145,16 @@ public class CompileAndUpload {
 
 	}
 
-	public void Build_Verify_upload(CodeDescriptor codeDescriptor,
-			CompileOptions compileOptions, String SerialDumpContent) {
+	public void Build_Verify_upload(CodeDescription codeDescriptor,
+			CompileDescription compileOptions, String SerialDumpContent) {
 
 		IProject theTestProject = null;
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		String projectName = String.format("%05d_%s",  Integer.valueOf(mCounter++),
 				this.myName);
 		try {
-
-			theTestProject = this.myBoard.getBoardDescriptor().createProject(
-					projectName, null,	codeDescriptor, compileOptions, monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null,
+                    myBoard.getBoardDescriptor(), codeDescriptor, compileOptions, monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();

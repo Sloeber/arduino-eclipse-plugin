@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.AbstractPage;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -28,7 +29,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
@@ -62,7 +64,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	protected LabelCombo myControlUploadPort;
 	protected LabelCombo[] myBoardOptionCombos = null;
 	protected Listener myBoardSelectionChangedListener = null;
-	protected BoardDescriptor myBoardID = null;
+	protected BoardDescription myBoardID = null;
 	private Composite myComposite;
 	private TreeMap<String, File> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private org.eclipse.swt.widgets.Button myPasswordButton;
@@ -161,7 +163,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		myComposite = new Composite(myScrolledComposite, SWT.NONE);
 		if (myBoardID == null) {
-			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+			myBoardID = new BoardDescription(getConfdesc());
 			if (myBoardID.getActualCoreCodePath() == null) {
 				Activator.log(
 						new Status(IStatus.ERROR, Activator.getId(), Messages.BoardSelectionPage_failed_to_find_platform
@@ -312,7 +314,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
 		myBoardID.saveUserSelection();
-		myBoardID = BoardDescriptor.makeBoardDescriptor(cfg.getConfiguration());
+		myBoardID = new BoardDescription(cfg.getConfiguration());
 		setValues();
 	}
 
@@ -379,12 +381,15 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		ICConfigurationDescription confdesc = getConfdesc();
 
 		try {
-			myBoardID.save(confdesc, true);
+			IProject project = confdesc.getProjectDescription().getProject();
+			ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			arduinoProject.setBoardDescriptor(confdesc, myBoardID);
 
 		} catch (Exception e) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
 		}
 	}
+
 
 	private class ArduinoSelectionPageListener implements Listener {
 		private AbstractPage myPage;
@@ -450,9 +455,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return options;
 	}
 
-	public BoardDescriptor getBoardID() {
+	public BoardDescription getBoardID() {
 		if (myBoardID == null) {
-			myBoardID = BoardDescriptor.makeBoardDescriptor(getConfdesc());
+			myBoardID = new BoardDescription(getConfdesc());
 		}
 		if (myBoardOptionCombos != null) {// only update the values if the
 			// page has been drawn

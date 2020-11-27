@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
@@ -17,9 +18,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -74,22 +76,21 @@ public class RegressionTest {
 		}
 		System.out.println("Teensy is installed at "+MySystem.getTeensyPlatform());
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 		Map<String, String> teensyOptions = new HashMap<>();
 		teensyOptions.put("usb", "serial");
 		teensyOptions.put("speed", "96");
 		teensyOptions.put("keys", "en-us");
-		BoardDescriptor teensyBoardid = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
+		BoardDescription teensyBoardid = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
 				teensyOptions);
 		IProject theTestProject = null;
-		CodeDescriptor codeDescriptor = CodeDescriptor.createDefaultIno();
+		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
 		String projectName = "issue555";
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-
-			theTestProject = unoBoardid.createProject(projectName, null,
-					codeDescriptor, new CompileOptions(null), monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+                    codeDescriptor, new CompileDescription(null), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -105,7 +106,10 @@ public class RegressionTest {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
 		}
-		teensyBoardid.configureProject(theTestProject, monitor);
+        ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(theTestProject);
+        ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
+        arduinoProject.setBoardDescriptor(cProjectDescription.getActiveConfiguration(), teensyBoardid);
+
 		Shared.waitForAllJobsToFinish();
 		try {
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -125,16 +129,16 @@ public class RegressionTest {
 	@Test
 	public void issue687() throws Exception {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
 		String projectName = "issue687";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
-			theTestProject = unoBoardid.createProject(projectName, null,
-					 codeDescriptor, new CompileOptions(null),	new NullProgressMonitor());
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			if (Shared.hasBuildErrors(theTestProject)) {
@@ -159,10 +163,11 @@ public class RegressionTest {
 
 		String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
-			IProject theTestProject = unoBoard.getBoardDescriptor().createProject(projectName, null,
-					codeDescriptor, new CompileOptions(null), new NullProgressMonitor());
+            IProject theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null,
+                    unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(null),
+                    new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			if (Shared.hasBuildErrors(theTestProject)) {
@@ -186,22 +191,22 @@ public class RegressionTest {
 	@Test
 	public void are_jantjes_options_taken_into_account() throws Exception {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
 		String projectName = "are_defines_found";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-			CompileOptions compileOptions = new CompileOptions(null);
+			CompileDescription compileOptions = new CompileDescription(null);
 			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
 			compileOptions.set_C_CompileOptions("-DTEST_C");
 			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
-			theTestProject = unoBoardid.createProject(projectName, null,
-					 codeDescriptor, compileOptions, monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+                    codeDescriptor, compileOptions, new NullProgressMonitor());
 			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
 			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
@@ -227,19 +232,18 @@ public class RegressionTest {
 	@Test
 	public void are_defines_before_includes_taken_into_account() throws Exception {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
 		String projectName = "externc";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-
-			theTestProject = unoBoardid.createProject(projectName, null,
-					codeDescriptor, new CompileOptions(null), monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -262,19 +266,18 @@ public class RegressionTest {
 	@Test
 	public void is_extern_C_taken_into_account() throws Exception {
 		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescriptor unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
+		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
 				"uno", unoOptions);
 
 		IProject theTestProject = null;
 		String projectName = "defines_and_includes";
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescriptor codeDescriptor = CodeDescriptor.createCustomTemplate(templateFolder);
+		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-
-			theTestProject = unoBoardid.createProject(projectName, null,
-					codeDescriptor, new CompileOptions(null), monitor);
+            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);

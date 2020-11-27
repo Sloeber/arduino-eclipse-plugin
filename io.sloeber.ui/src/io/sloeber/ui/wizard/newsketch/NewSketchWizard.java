@@ -1,12 +1,11 @@
 package io.sloeber.ui.wizard.newsketch;
 
-import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -16,14 +15,14 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -78,7 +77,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		addPage(this.mWizardPage);
 		addPage(this.mArduinoPage);
 		addPage(this.mNewArduinoSketchWizardCodeSelectionPage);
-		BoardDescriptor boardID = this.mArduinoPage.getBoardID();
+		BoardDescription boardID = this.mArduinoPage.getBoardDescriptor();
 		this.mNewArduinoSketchWizardCodeSelectionPage.setBoardDescriptor(boardID);
 	}
 
@@ -87,13 +86,13 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		if (this.mProject != null) {
 			return true;
 		}
-		BoardDescriptor boardID = this.mArduinoPage.getBoardID();
-		CodeDescriptor codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
-		CompileOptions compileOptions = new CompileOptions(null);
-		compileOptions.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
-		this.mProject = boardID.createProject(this.mWizardPage.getProjectName(),
-				(!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null, codeDescription,
-				compileOptions, new NullProgressMonitor());
+		BoardDescription boardDescription = this.mArduinoPage.getBoardDescriptor();
+		CodeDescription codeDescription = this.mNewArduinoSketchWizardCodeSelectionPage.getCodeDescription();
+		CompileDescription compileDescription = new CompileDescription(null);
+		URI locationURI = (!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null;
+		compileDescription.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
+		this.mProject = ArduinoProjectDescription.createArduinoProject(this.mWizardPage.getProjectName(),
+				locationURI, boardDescription, codeDescription, compileDescription, new NullProgressMonitor());
 
 		if (this.mProject == null) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
