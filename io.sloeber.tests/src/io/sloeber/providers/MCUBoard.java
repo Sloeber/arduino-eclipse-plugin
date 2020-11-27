@@ -5,18 +5,18 @@ import java.util.TreeMap;
 
 import io.sloeber.core.BoardAttributes;
 import io.sloeber.core.Examples;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 
 @SuppressWarnings("nls")
 public  class MCUBoard {
 
-	protected BoardDescriptor myBoardDescriptor = null;
+	protected BoardDescription myBoardDescriptor = null;
 	public BoardAttributes myAttributes=new BoardAttributes();
 	public String mySlangName;
 	public String mySerialPort="Serial";
 
 
-	public BoardDescriptor getBoardDescriptor() {
+	public BoardDescription getBoardDescriptor() {
 		return myBoardDescriptor;
 	}
 

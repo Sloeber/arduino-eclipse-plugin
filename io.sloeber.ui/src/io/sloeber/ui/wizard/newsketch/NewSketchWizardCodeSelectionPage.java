@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CodeDescriptor.CodeTypes;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CodeDescription.CodeTypes;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
@@ -30,10 +30,10 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	protected DirectoryFieldEditor myTemplateFolderEditor;
 	protected SampleSelector myExampleEditor = null;
 	protected Button myCheckBoxUseCurrentLinkSample;
-	private BoardDescriptor myBoardDescriptor = null;
-	private CodeDescriptor myCodedescriptor = CodeDescriptor.createLastUsed();
+	private BoardDescription myBoardDescriptor = null;
+	private CodeDescription myCodedescriptor = CodeDescription.createLastUsed();
 
-	public void setBoardDescriptor(BoardDescriptor boardDescriptor) {
+	public void setBoardDescriptor(BoardDescription boardDescriptor) {
 		if (myBoardDescriptor == null) {
 			myBoardDescriptor = boardDescriptor;
 //			boardDescriptor.addChangeListener(new ChangeListener() {
@@ -175,9 +175,9 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			break;
 		case CustomTemplate:
 			IPath templateFolder = new Path(myTemplateFolderEditor.getStringValue());
-			File cppFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_CPP).toFile();
-			File headerFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_H).toFile();
-			File inoFile = templateFolder.append(CodeDescriptor.DEFAULT_SKETCH_INO).toFile();
+			File cppFile = templateFolder.append(CodeDescription.DEFAULT_SKETCH_CPP).toFile();
+			File headerFile = templateFolder.append(CodeDescription.DEFAULT_SKETCH_H).toFile();
+			File inoFile = templateFolder.append(CodeDescription.DEFAULT_SKETCH_INO).toFile();
 			boolean existFile = inoFile.isFile() || (cppFile.isFile() && headerFile.isFile());
 			setPageComplete(existFile);
 			break;
@@ -205,21 +205,21 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		myCodeSourceOptionsCombo.select(myCodedescriptor.getCodeType().ordinal());
 	}
 
-	public CodeDescriptor getCodeDescription() {
+	public CodeDescription getCodeDescription() {
 
 		switch (CodeTypes.values()[myCodeSourceOptionsCombo.getSelectionIndex()]) {
 		case None:
-			return CodeDescriptor.createNone();
+			return CodeDescription.createNone();
 		case defaultIno:
-			return CodeDescriptor.createDefaultIno();
+			return CodeDescription.createDefaultIno();
 		case defaultCPP:
-			return CodeDescriptor.createDefaultCPP();
+			return CodeDescription.createDefaultCPP();
 		case CustomTemplate:
-			return CodeDescriptor.createCustomTemplate(new Path(myTemplateFolderEditor.getStringValue()));
+			return CodeDescription.createCustomTemplate(new Path(myTemplateFolderEditor.getStringValue()));
 		case sample:
 			ArrayList<IPath> sampleFolders = myExampleEditor.GetSampleFolders();
 			boolean link = myCheckBoxUseCurrentLinkSample.getSelection();
-			return CodeDescriptor.createExample(link, sampleFolders);
+			return CodeDescription.createExample(link, sampleFolders);
 		default:
 			break;
 		}

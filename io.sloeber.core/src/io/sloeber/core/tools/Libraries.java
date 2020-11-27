@@ -34,9 +34,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
@@ -114,7 +113,7 @@ public class Libraries {
 	private static Map<String, IPath> findAllHarwareLibraries(
 			ICConfigurationDescription confdesc) {
 		Map<String, IPath> ret = new HashMap<>();
-		BoardDescriptor boardDescriptor = new InternalBoardDescriptor(confdesc);
+        BoardDescription boardDescriptor = new BoardDescription(confdesc);
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedLibraryPath();
 		if (libPath != null) {

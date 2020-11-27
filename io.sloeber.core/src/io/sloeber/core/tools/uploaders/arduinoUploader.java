@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
@@ -39,7 +39,7 @@ public class arduinoUploader implements IRealUpload {
 
 	@Override
 	public boolean uploadUsingPreferences(IFile hexFile,
-			BoardDescriptor boardDescr, IProgressMonitor monitor, 
+			BoardDescription boardDescr, IProgressMonitor monitor, 
 			MessageConsoleStream highStream,
 			MessageConsoleStream outStream,
 			MessageConsoleStream errStream) {

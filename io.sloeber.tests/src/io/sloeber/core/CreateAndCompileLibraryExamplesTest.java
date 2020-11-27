@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -128,10 +128,10 @@ public class CreateAndCompileLibraryExamplesTest {
 		ArrayList<IPath> paths = new ArrayList<>();
 
 		paths.add(myExample.getPath());
-		CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+		CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
 		Map<String, String> boardOptions = myBoard.getBoardOptions(myExample);
-		BoardDescriptor boardDescriptor = myBoard.getBoardDescriptor();
+		BoardDescription boardDescriptor = myBoard.getBoardDescriptor();
 		boardDescriptor.setOptions(boardOptions);
 		if (!Shared.BuildAndVerify(boardDescriptor, codeDescriptor)) {
 			myTotalFails++;

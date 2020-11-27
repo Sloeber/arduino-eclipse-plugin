@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.ui.Messages;
 
 public class CompileProperties extends AbstractCPropertyTab {
@@ -41,7 +41,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 
 
 
-	protected CompileOptions myCompileOptions;
+	protected CompileDescription myCompileOptions;
 
 	private static void createLine(Composite parent, int ncol) {
 		Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
@@ -68,7 +68,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
-		this.myCompileOptions = new CompileOptions(getConfdesc());
+		this.myCompileOptions = new CompileDescription(getConfdesc());
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
@@ -131,7 +131,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	}
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
-		this.myCompileOptions = new CompileOptions(getConfdesc());
+		this.myCompileOptions = new CompileDescription(getConfdesc());
 		updateScreenData();
 	}
 
@@ -156,7 +156,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 
 	@Override
 	protected void performDefaults() {
-		this.myCompileOptions = new CompileOptions(null);
+		this.myCompileOptions = new CompileDescription(null);
 		updateScreenData();
 	}
 

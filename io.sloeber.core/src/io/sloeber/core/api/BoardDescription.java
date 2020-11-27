@@ -1,61 +1,42 @@
 package io.sloeber.core.api;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-import org.eclipse.cdt.managedbuilder.core.IProjectType;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.InternalBoardDescriptor;
 import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.listeners.IndexerController;
+import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
-import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.PlatformTxtFile;
 import io.sloeber.core.txt.Programmers;
+import io.sloeber.core.txt.TxtFile;
 
-public class BoardDescriptor extends Common {
+public class BoardDescription extends Common {
     // Important constants to avoid having to add the class
     private static final String TOOL_ID = Messages.TOOL;
     private static final String BOARD_ID = Messages.BOARD;
@@ -86,6 +67,9 @@ public class BoardDescriptor extends Common {
     private static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "serial.port.file"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_VARIANT_PATH = ERASE_START + BUILD + DOT + VARIANT + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = ERASE_START + BUILD + DOT + CORE + DOT + PATH;
+    private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch"; //$NON-NLS-1$
+    private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path"; //$NON-NLS-1$
+    private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path"; //$NON-NLS-1$
     private static final String ENV_KEY_REFERENCED_CORE_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + CORE + DOT
             + PATH;
     private static final String ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + VARIANT
@@ -97,6 +81,10 @@ public class BoardDescriptor extends Common {
     private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
     private static final String JANTJE_ACTION_UPLOAD = ENV_KEY_JANTJE_START + UPLOAD; // this is actually the programmer
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
+    private static final TxtFile pluginPreProcessingPlatformTxt = new TxtFile(
+            ConfigurationPreferences.getPreProcessingPlatformFile());
+    private static final TxtFile pluginPostProcessingPlatformTxt = new TxtFile(
+            ConfigurationPreferences.getPostProcessingPlatformFile());
 
     /*
      * This is the basic info contained in the descriptor
@@ -129,6 +117,9 @@ public class BoardDescriptor extends Common {
     private IPath myReferencedUploadToolPlatformPath;
     private String myUploadTool;
     private boolean isDirty = true;
+    private final String ENV_KEY_JANTJE_JSON_URL = "SLOEBER.JSON.URL"; //$NON-NLS-1$
+    private final String ENV_KEY_JANTJE_PRODUCT_NAME = "SLOEBER.PRODUCT.NAME"; //$NON-NLS-1$
+    private final String ENV_KEY_JANTJE_PRODUCT_VERSION = "SLOEBER.PRODUCT.VERSION"; //$NON-NLS-1$
 
     @Override
     public String toString() {
@@ -143,7 +134,7 @@ public class BoardDescriptor extends Common {
      * @param obj
      * @return true if equal otherwise false
      */
-    public boolean equals(BoardDescriptor otherBoardDescriptor) {
+    public boolean equals(BoardDescription otherBoardDescriptor) {
         if (!this.getUploadPort().equals(otherBoardDescriptor.getUploadPort())) {
             return false;
         }
@@ -160,7 +151,7 @@ public class BoardDescriptor extends Common {
      * @param otherBoardDescriptor
      * @return
      */
-    public boolean needsSettingDirty(BoardDescriptor otherBoardDescriptor) {
+    public boolean needsSettingDirty(BoardDescription otherBoardDescriptor) {
 
         if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
             return true;
@@ -186,18 +177,6 @@ public class BoardDescriptor extends Common {
         return false;
     }
 
-    /*
-     * Create a sketchProject. This class does not really create a sketch object.
-     * Nor does it look for existing (mapping) sketch projects This class represents
-     * the data passed between the UI and the core This class does contain a create
-     * to create the project When confdesc is null the data will be taken from the
-     * "last used " otherwise the data is taken from the project the confdesc
-     * belongs to
-     *
-     */
-    public static BoardDescriptor makeBoardDescriptor(ICConfigurationDescription confdesc) {
-        return new InternalBoardDescriptor(confdesc);
-    }
 
     /**
      * after construction data needs to be derived from other data. This method
@@ -350,7 +329,16 @@ public class BoardDescriptor extends Common {
         }
     }
 
-    protected BoardDescriptor(ICConfigurationDescription confdesc) {
+    /*
+     * Create a sketchProject. This class does not really create a sketch object.
+     * Nor does it look for existing (mapping) sketch projects This class represents
+     * the data passed between the UI and the core This class does contain a create
+     * to create the project When confdesc is null the data will be taken from the
+     * "last used " otherwise the data is taken from the project the confdesc
+     * belongs to
+     *
+     */
+    public BoardDescription(ICConfigurationDescription confdesc) {
         if (confdesc == null) {
             myreferencingBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
             myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
@@ -378,9 +366,6 @@ public class BoardDescriptor extends Common {
         setDirty();
     }
 
-    public static BoardDescriptor makeBoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
-        return new InternalBoardDescriptor(boardsFile, boardID, options);
-    }
 
     /**
      * make a board descriptor for each board in the board.txt file with the default
@@ -389,15 +374,15 @@ public class BoardDescriptor extends Common {
      * @param boardFile
      * @return a list of board descriptors
      */
-    public static List<BoardDescriptor> makeBoardDescriptors(File boardFile, Map<String, String> options) {
+    public static List<BoardDescription> makeBoardDescriptors(File boardFile, Map<String, String> options) {
         BoardTxtFile txtFile = new BoardTxtFile(boardFile);
-        List<BoardDescriptor> boards = new ArrayList<>();
+        List<BoardDescription> boards = new ArrayList<>();
         String[] allSectionNames = txtFile.getAllSectionNames();
         for (String curboardName : allSectionNames) {
             Map<String, String> boardSection = txtFile.getSection(txtFile.getIDFromNiceName(curboardName));
             if (boardSection != null) {
                 if (!"true".equalsIgnoreCase(boardSection.get("hide"))) { //$NON-NLS-1$ //$NON-NLS-2$
-                    boards.add(makeBoardDescriptor(boardFile, txtFile.getIDFromNiceName(curboardName), options));
+                    boards.add(new BoardDescription(boardFile, txtFile.getIDFromNiceName(curboardName), options));
                 }
             }
         }
@@ -412,7 +397,7 @@ public class BoardDescriptor extends Common {
      * @param options
      *            if null default options are taken
      */
-    protected BoardDescriptor(File boardsFile, String boardID, Map<String, String> options) {
+    BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
         this.myUploadPort = EMPTY;
         this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
@@ -425,7 +410,7 @@ public class BoardDescriptor extends Common {
         }
     }
 
-    protected BoardDescriptor(BoardTxtFile txtFile, String boardID) {
+    protected BoardDescription(BoardTxtFile txtFile, String boardID) {
         this.myUploadPort = EMPTY;
         this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
@@ -436,7 +421,7 @@ public class BoardDescriptor extends Common {
         calculateDerivedFields();
     }
 
-    protected BoardDescriptor(BoardDescriptor sourceBoardDescriptor) {
+    protected BoardDescription(BoardDescription sourceBoardDescriptor) {
 
         this.myUploadPort = sourceBoardDescriptor.getUploadPort();
         this.myProgrammer = sourceBoardDescriptor.getProgrammer();
@@ -485,158 +470,8 @@ public class BoardDescriptor extends Common {
         }
     }
 
-    /**
-     * tries to set the project to the boarddescriptor
-     *
-     * @param project
-     * @param monitor
-     * @return true if success false if failed
-     */
-    public boolean configureProject(IProject project, IProgressMonitor monitor) {
-        ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription configurationDescription = prjCDesc.getActiveConfiguration();
-        try {
-            save(configurationDescription, true);
-            // prjCDesc.setActiveConfiguration(configurationDescription);
-            // CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project,
-            // prjCDesc, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
-                    e));
-            return false;
-        }
-        return true;
-    }
 
-    /*
-     * Method to create a project based on the board
-     */
-    public IProject createProject(String projectName, URI projectURI, CodeDescriptor codeDescription,
-            CompileOptions compileOptions, IProgressMonitor monitor) {
 
-        myProjectName = Common.MakeNameCompileSafe(projectName);
-
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        final IProject newProjectHandle = root.getProject(myProjectName);
-        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        ICoreRunnable runnable = new ICoreRunnable() {
-            @Override
-            public void run(IProgressMonitor internalMonitor) throws CoreException {
-                try {
-                    IWorkspaceDescription workspaceDesc = workspace.getDescription();
-                    workspaceDesc.setAutoBuilding(false);
-                    workspace.setDescription(workspaceDesc);
-                    IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
-
-                    // create a eclipse project
-                    IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
-                    if (projectURI != null) {
-                        description.setLocationURI(projectURI);
-                    }
-
-                    // make the eclipse project a cdt project
-                    CCorePlugin.getDefault().createCProject(description, newProjectHandle, new NullProgressMonitor(),
-                            ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
-
-                    // add the required natures
-                    ManagedCProjectNature.addManagedNature(newProjectHandle, internalMonitor);
-                    ManagedCProjectNature.addManagedBuilder(newProjectHandle, internalMonitor);
-                    ManagedCProjectNature.addNature(newProjectHandle, "org.eclipse.cdt.core.ccnature", internalMonitor); //$NON-NLS-1$
-                    ManagedCProjectNature.addNature(newProjectHandle, Const.ARDUINO_NATURE_ID, internalMonitor);
-
-                    // make the cdt project a managed build project
-                    ManagedBuildManager.createBuildInfo(newProjectHandle);
-                    IManagedProject newProject = ManagedBuildManager.createManagedProject(newProjectHandle,
-                            sloeberProjType);
-                    ManagedBuildManager.setNewProjectVersion(newProjectHandle);
-                    // Copy over the Sloeber configs
-                    IConfiguration defaultConfig = null;
-                    IConfiguration[] configs = sloeberProjType.getConfigurations();
-                    for (int i = 0; i < configs.length; ++i) {
-                        IConfiguration curConfig = newProject.createConfiguration(configs[i],
-                                sloeberProjType.getId() + "." + i); //$NON-NLS-1$
-                        curConfig.setArtifactName(newProject.getDefaultArtifactName());
-                        curConfig.getEditableBuilder().setParallelBuildOn(compileOptions.isParallelBuildEnabled());
-                        // Make the first configuration the default
-                        if (i == 0) {
-                            defaultConfig = curConfig;
-                        }
-                    }
-
-                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
-                    Map<String, IPath> librariesToAdd = codeDescription.createFiles(newProjectHandle,
-                            new NullProgressMonitor());
-
-                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
-
-                    for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
-                        save(curConfig, compileOptions, false);
-                        Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
-                    }
-
-                    SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
-                    newProjectHandle.open(refreshMonitor);
-                    newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
-                    cCorePlugin.setProjectDescription(newProjectHandle, prjCDesc, true, null);
-
-                } catch (Exception e) {
-                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                            "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
-                }
-                Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-                        "internal creation of project is done: " + newProjectHandle.getName())); //$NON-NLS-1$
-            }
-        };
-
-        try {
-            IndexerController.doNotIndex(newProjectHandle);
-            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
-        } catch (Exception e) {
-            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Project creation failed: " + newProjectHandle.getName(), e)); //$NON-NLS-1$
-        }
-
-        monitor.done();
-        IndexerController.Index(newProjectHandle);
-        return newProjectHandle;
-    }
-
-    /**
-     * save the boardsDescriptor keeping the compile options
-     * 
-     * @param confdesc
-     * @param saveConfig
-     * @throws Exception
-     */
-    public void save(ICConfigurationDescription confdesc, boolean saveConfig) throws Exception {
-        CompileOptions compileOptions = new CompileOptions(confdesc);
-        save(confdesc, compileOptions, saveConfig);
-    }
-
-    public void save(ICConfigurationDescription confdesc, CompileOptions compileOptions, boolean saveConfig)
-            throws Exception {
-
-        ICProjectDescription prjCDesc = confdesc.getProjectDescription();
-        IProject project = prjCDesc.getProject();
-
-        Helpers.setTheEnvironmentVariables(project, compileOptions, confdesc, (InternalBoardDescriptor) this);
-
-        Helpers.addArduinoCodeToProject(this, project, confdesc);
-
-        if (Helpers.removeInvalidIncludeFolders(confdesc)) {
-            Helpers.setDirtyFlag(project, confdesc);
-        } else {
-            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Ignoring project update; clean may be required: " + project.getName())); //$NON-NLS-1$
-        }
-        if (saveConfig) {
-            CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-            project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-            cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
-        }
-    }
 
     /**
      * Store the selections the user made so we can reuse them when creating a new
@@ -789,9 +624,6 @@ public class BoardDescriptor extends Common {
         return LibraryManager.getAllExamples(this);
     }
 
-    // public String getMenuIdFromMenuName(String menuName) {
-    // return this.myTxtFile.getMenuIDFromMenuName(menuName);
-    // }
 
     public String getMenuNameFromMenuID(String id) {
         return this.myTxtFile.getMenuNameFromID(id);
@@ -1004,13 +836,40 @@ public class BoardDescriptor extends Common {
         return getHost() != null;
     }
 
-    public Map<String, String> getEnvVarsTxt() {
+    private Map<String, String> getEnvVarsTxt() {
         return myTxtFile.getAllBoardEnvironVars(getBoardID());
     }
 
-    public Map<String, String> getEnvVarsAll() {
+    public Map<String, String> getEnvVarsConfig() {
+        Map<String, String> allVars = new TreeMap<>();
+        allVars.put(ENV_KEY_JANTJE_JSON_URL, EMPTY);
+        allVars.put(ENV_KEY_JANTJE_PRODUCT_NAME, EMPTY);
+        allVars.put(ENV_KEY_JANTJE_PRODUCT_VERSION, EMPTY);
+        allVars.put(ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
+        for (Entry<String, String> curOption : this.myOptions.entrySet()) {
+            allVars.put(ENV_KEY_JANTJE_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+        }
+        return allVars;
+    }
+
+    public Map<String, String> getEnvVars() {
         updateWhenDirty();
-        Map<String, String> allVars = myTxtFile.getAllBoardEnvironVars(getBoardID());
+
+        BoardDescription pluginPreProcessingBoardsTxt = new BoardDescription(
+                new BoardTxtFile(ConfigurationPreferences.getPreProcessingBoardsFile()), getBoardID());
+        BoardDescription pluginPostProcessingBoardsTxt = new BoardDescription(
+                new BoardTxtFile(ConfigurationPreferences.getPostProcessingBoardsFile()), getBoardID());
+
+        Map<String, String> allVars = pluginPreProcessingPlatformTxt.getAllEnvironVars(EMPTY);
+        allVars.putAll(pluginPreProcessingBoardsTxt.getEnvVarsTxt());
+
+
+        String architecture = getArchitecture();
+        allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
+        allVars.put(ENV_KEY_HARDWARE_PATH, getreferencedHardwarePath().toOSString());
+        allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
+
+
 
         Map<String, String> options = getOptions();
 
@@ -1022,9 +881,9 @@ public class BoardDescriptor extends Common {
             KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
             allVars.putAll(curSelectedMenuItem.toKeyValues(ERASE_START, false));
         }
+        allVars.putAll(getEnvVarsConfig());
         allVars.put(ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
         allVars.put(ENV_KEY_JANTJE_BOARDS_FILE, getReferencingBoardsFile().toString());
-        allVars.put(ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
         allVars.put(ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
         allVars.put(ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
         allVars.put(ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
@@ -1033,8 +892,7 @@ public class BoardDescriptor extends Common {
         allVars.put(ENV_KEY_JANTJE_WORKSPACE_LOCATION, this.myWorkSpaceLocation.toOSString());
         allVars.put(ENV_KEY_JANTJE_ECLIPSE_LOCATION, this.myWorkEclipseLocation.toOSString());
         allVars.put(JANTJE_ACTION_UPLOAD, this.myProgrammer);
-        String value = KeyValue.makeString(this.myOptions);
-        allVars.put(ENV_KEY_JANTJE_MENU_SELECTION, value);
+
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
         allVars.put(ENV_KEY_SERIAL_PORT_FILE, getActualUploadPort().replace("/dev/", EMPTY)); //$NON-NLS-1$
         // if actual core path is osstring regression test issue555 willl fail teensy
@@ -1053,6 +911,37 @@ public class BoardDescriptor extends Common {
         allVars.put(ENV_KEY_REFERENCED_CORE_PLATFORM_PATH, getReferencedCorePlatformPath().toOSString());
         allVars.put(ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH, getReferencedVariantPlatformPath().toOSString());
         allVars.put(ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH, getReferencedUploadPlatformPath().toOSString());
+
+        PlatformTxtFile referencedPlatfromFile = getreferencedPlatformFile();
+        // process the platform file referenced by the boards.txt
+        if (referencedPlatfromFile != null) {
+            allVars.putAll(referencedPlatfromFile.getAllEnvironVars());
+        }
+        PlatformTxtFile referencingPlatfromFile = getReferencingPlatformFile();
+        // process the platform file next to the selected boards.txt
+        if (referencingPlatfromFile != null) {
+            allVars.putAll(referencingPlatfromFile.getAllEnvironVars());
+        }
+
+        allVars.putAll(getEnVarPlatformInfo());
+
+        Programmers localProgrammers[] = Programmers.fromBoards(this);
+        String programmer = getProgrammer();
+        for (Programmers curProgrammer : localProgrammers) {
+            String programmerID = curProgrammer.getIDFromNiceName(programmer);
+            if (programmerID != null) {
+                allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));
+            }
+        }
+
+        allVars.putAll(myTxtFile.getAllBoardEnvironVars(getBoardID()));
+
+        // add the stuff that comes with the plugin that is marked as post
+        allVars.putAll(pluginPostProcessingPlatformTxt.getAllEnvironVars(EMPTY));
+        allVars.putAll(pluginPostProcessingBoardsTxt.getEnvVarsTxt());
+
+        // Do some coded post processing
+        allVars.putAll(getEnvVarsPostProcessing(allVars));
         return allVars;
 
     }
@@ -1064,4 +953,191 @@ public class BoardDescriptor extends Common {
     public static String getVariant(ICConfigurationDescription confDesc) {
         return getBuildEnvironmentVariable(confDesc, ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
     }
+
+    private Map<String, String> getEnVarPlatformInfo() {
+
+        // update the gobal variables if needed
+        PackageManager.updateGlobalEnvironmentVariables();
+        File referencingPlatformFile = getReferencingPlatformFile().getTxtFile();
+        File referencedPlatformFile = getreferencedPlatformFile().getTxtFile();
+        ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
+        ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
+
+        boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
+        if (jsonBasedPlatformManagement) {
+            // overrule the Arduino IDE way of working and use the json refereced tools
+            Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(referencedPlatform, true);
+            ret.putAll(Helpers.getEnvVarPlatformFileTools(referencingPlatform, false));
+            return ret;
+        }
+        // standard arduino IDE way
+        Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(referencingPlatform, false);
+        ret.putAll(Helpers.getEnvVarPlatformFileTools(referencedPlatform, true));
+        return ret;
+
+    }
+
+    /**
+     * Following post processing is done
+     *
+     * CDT uses different keys to identify the input and output files then the
+     * arduino recipes. Therefore I split the arduino recipes into parts (based on
+     * the arduino keys) and connect them again in the plugin.xml using the CDT
+     * keys. This code assumes that the command is in following order ${first part}
+     * ${files} ${second part} [${ARCHIVE_FILE} ${third part}] with [optional]
+     *
+     * Secondly The handling of the upload variables is done differently in arduino
+     * than here. This is taken care of here. for example the output of this input
+     * tools.avrdude.upload.pattern="{cmd.path}" "-C{config.path}" {upload.verbose}
+     * is changed as if it were the output of this input
+     * tools.avrdude.upload.pattern="{tools.avrdude.cmd.path}"
+     * "-C{tools.avrdude.config.path}" {tools.avrdude.upload.verbose}
+     *
+     * thirdly if a programmer is selected different from default some extra actions
+     * are done here so no special code is needed to handle programmers
+     *
+     * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
+     * where it is {BUILD.PATH}/core/ in arduino world and used to be {BUILD.PATH}/
+     * This only gives problems in the link command as sometimes there are hardcoded
+     * links to some sys files so ${A.BUILD.PATH}/core/sys* ${A.BUILD.PATH}/sys* is
+     * replaced with ${A.BUILD.PATH}/core/core/sys*
+     *
+     * @param contribEnv
+     * @param confDesc
+     * @param boardsDescriptor
+     */
+    private Map<String, String> getEnvVarsPostProcessing(Map<String, String> vars) {
+
+        Map<String, String> extraVars = new HashMap<>();
+
+        // split the recipes so we can add the input and output markers as cdt needs
+        // them
+        String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_SIZE, RECIPE_AR,
+                RECIPE_C_COMBINE };
+        for (String recipeKey : recipeKeys) {
+            String recipe = vars.get(recipeKey);
+            if (null == recipe) {
+                continue;
+            }
+
+            // Sloeber should split o, -o {output} but to be safe that needs a regex so I
+            // simply delete the -o
+            if (!RECIPE_C_COMBINE.equals(recipeKey)) {
+                recipe = recipe.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            String recipeParts[] = recipe.split(
+                    "(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")", //$NON-NLS-1$
+                    3);
+
+            switch (recipeParts.length) {
+            case 0:
+                extraVars.put(recipeKey + DOT + '1', "echo no command for \"{KEY}\".".replace(Messages.KEY, recipeKey)); //$NON-NLS-1$
+                break;
+            case 1:
+                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
+                break;
+            case 2:
+                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
+                extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
+                break;
+            case 3:
+                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
+                extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
+                extraVars.put(recipeKey + DOT + '3', recipeParts[2]);
+
+                break;
+            default:
+                // this should never happen as the split is limited to 3
+            }
+        }
+
+        // report that the upload comport is not set if default upload is used
+        String programmer = getProgrammer();
+        if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
+            String MComPort = getUploadPort();
+            if (MComPort.isEmpty()) {
+                Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                        "Upload will fail due to missing upload port for project: " + myProjectName)); //$NON-NLS-1$
+            }
+        }
+
+        ArrayList<String> objcopyCommand = new ArrayList<>();
+        for (Entry<String, String> curVariable : vars.entrySet()) {
+            String name = curVariable.getKey();
+            String value = curVariable.getValue();
+            if (name.startsWith(Const.RECIPE_OBJCOPY) && name.endsWith(".pattern") && !value.isEmpty()) { //$NON-NLS-1$
+                objcopyCommand.add(makeEnvironmentVar(name));
+            }
+        }
+        Collections.sort(objcopyCommand);
+        extraVars.put(Const.JANTJE_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
+
+        // handle the hooks
+        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.pre.link", //$NON-NLS-1$
+                "A.recipe.hooks.linking.prelink.XX.pattern", false)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.post.link", //$NON-NLS-1$
+                "A.recipe.hooks.linking.postlink.XX.pattern", true)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.prebuild", "A.recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
+                false));
+        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.prebuild", //$NON-NLS-1$
+                "A.recipe.hooks.sketch.prebuild.XX.pattern", false)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.postbuild", //$NON-NLS-1$
+                "A.recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
+
+        // add -relax for mega boards; the arduino ide way
+        String buildMCU = vars.get(Const.ENV_KEY_BUILD_MCU);
+        if ("atmega2560".equalsIgnoreCase(buildMCU)) { //$NON-NLS-1$
+            String c_elf_flags = vars.get(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS);
+            extraVars.put(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax"); //$NON-NLS-1$
+        }
+        return extraVars;
+    }
+
+    /**
+     * This method creates environment variables based on the platform.txt and
+     * boards.txt. platform.txt is processed first and then boards.txt. This way
+     * boards.txt settings can overwrite common settings in platform.txt The
+     * environment variables are only valid for the project given as parameter The
+     * project properties are used to identify the boards.txt and platform.txt as
+     * well as the board id to select the settings in the board.txt file At the end
+     * also the path variable is set
+     *
+     *
+     * To be able to quickly fix boards.txt and platform.txt problems I also added a
+     * pre and post platform and boards files that are processed before and after
+     * the arduino delivered boards.txt file.
+     *
+     * @param project
+     *            the project for which the environment variables are set
+     * @param arduinoProperties
+     *            the info of the selected board to set the variables for
+     */
+
+    private static Map<String, String> getEnvVarsHookBuild(Map<String, String> vars, String varName, String hookName,
+            boolean post) {
+        Map<String, String> extraVars = new HashMap<>();
+        String envVarString = new String();
+        String searchString = "XX"; //$NON-NLS-1$
+        String postSeparator = "}\n\t"; //$NON-NLS-1$
+        String preSeparator = "${"; //$NON-NLS-1$
+        if (post) {
+            postSeparator = "${"; //$NON-NLS-1$
+            preSeparator = "}\n\t"; //$NON-NLS-1$
+        }
+        for (int numDigits = 1; numDigits <= 2; numDigits++) {
+            String formatter = "%0" + Integer.toString(numDigits) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
+            int counter = 1;
+            String hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(counter)));
+            while (null != vars.get(hookVarName)) { // $NON-NLS-1$
+                envVarString = envVarString + preSeparator + hookVarName + postSeparator;
+                hookVarName = hookName.replace(searchString, String.format(formatter, Integer.valueOf(++counter)));
+            }
+        }
+        if (!envVarString.isEmpty()) {
+            extraVars.put(varName, envVarString);
+        }
+        return extraVars;
+    }
+
+
 }

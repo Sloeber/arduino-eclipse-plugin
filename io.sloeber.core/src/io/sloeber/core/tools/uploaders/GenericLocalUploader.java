@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.ExternalCommandLauncher;
@@ -23,7 +23,7 @@ class GenericLocalUploader implements IRealUpload {
 	}
 
 	@Override
-	public boolean uploadUsingPreferences(IFile hexFile, BoardDescriptor boardDescriptor, IProgressMonitor monitor,
+	public boolean uploadUsingPreferences(IFile hexFile, BoardDescription boardDescriptor, IProgressMonitor monitor,
 			MessageConsoleStream highStream, MessageConsoleStream outStream, MessageConsoleStream errStream) {
 		final String STEP = Const.STEP;
 		final String DOT = Const.DOT;

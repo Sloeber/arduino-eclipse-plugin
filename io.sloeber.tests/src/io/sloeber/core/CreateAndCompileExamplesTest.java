@@ -18,9 +18,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -33,15 +33,15 @@ import io.sloeber.providers.MCUBoard;
 @RunWith(Parameterized.class)
 public class CreateAndCompileExamplesTest {
 	private static final boolean reinstall_boards_and_examples = false;
-	private CodeDescriptor myCodeDescriptor;
-	private BoardDescriptor myBoardDescriptor;
+	private CodeDescription myCodeDescriptor;
+	private BoardDescription myBoardDescriptor;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
 	private String myName;
 
-	public CreateAndCompileExamplesTest(String name, BoardDescriptor boardDescriptor, CodeDescriptor codeDescriptor) {
+	public CreateAndCompileExamplesTest(String name, BoardDescription boardDescriptor, CodeDescription codeDescriptor) {
 		this.myBoardDescriptor = boardDescriptor;
 		this.myCodeDescriptor = codeDescriptor;
 		this.myName = name;
@@ -72,14 +72,14 @@ public class CreateAndCompileExamplesTest {
 			ArrayList<IPath> paths = new ArrayList<>();
 
 			paths.add(new Path(curexample.getValue().toString()));
-			CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+			CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
 			String fqn=curexample.getKey();
 			Examples example=new Examples(fqn,curexample.getValue());
             // with the current amount of examples only do one
             MCUBoard board = Examples.pickBestBoard(example, myBoards);
             if (board != null) {
-                BoardDescriptor curBoard = board.getBoardDescriptor();
+                BoardDescription curBoard = board.getBoardDescriptor();
                 if (curBoard != null) {
                     Object[] theData = new Object[] { Shared.getCounterName(fqn.trim()), curBoard, codeDescriptor };
                     examples.add(theData);
@@ -128,7 +128,7 @@ public class CreateAndCompileExamplesTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
        
         myBuildCounter++;
-        if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
+        if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileDescription(null))) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }

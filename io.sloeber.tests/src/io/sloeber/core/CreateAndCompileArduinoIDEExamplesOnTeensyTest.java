@@ -27,9 +27,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -39,17 +39,17 @@ import io.sloeber.providers.Teensy;
 @SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
-	private CodeDescriptor myCodeDescriptor;
+	private CodeDescription myCodeDescriptor;
 
 	private String myTestName;
-	private BoardDescriptor myBoardDescriptor;
+	private BoardDescription myBoardDescriptor;
 	private static int myBuildCounter = 0;
 	private static int myTotalFails = 0;
 	private static int maxFails = 50;
 	private static int mySkipAtStart = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String testName, CodeDescriptor codeDescriptor,
-			BoardDescriptor board) {
+	public CreateAndCompileArduinoIDEExamplesOnTeensyTest(String testName, CodeDescription codeDescriptor,
+			BoardDescription board) {
 
 		myCodeDescriptor = codeDescriptor;
 		myTestName = testName;
@@ -74,13 +74,13 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 			if (!skipExample(example)) {
 				ArrayList<IPath> paths = new ArrayList<>();
 				paths.add(examplePath);
-				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+				CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
 				for (MCUBoard curBoard : allBoards) {
 					if (curBoard.isExampleSupported(example)) {
 						String projectName = Shared.getProjectName(codeDescriptor, example, curBoard);
 						Map<String, String> boardOptions = curBoard.getBoardOptions(example);
-						BoardDescriptor boardDescriptor = curBoard.getBoardDescriptor();
+						BoardDescription boardDescriptor = curBoard.getBoardDescriptor();
 						boardDescriptor.setOptions(boardOptions);
 						Object[] theData = new Object[] { projectName, codeDescriptor, boardDescriptor };
 						examples.add(theData);
@@ -112,7 +112,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	public void testArduinoIDEExamplesOnTeensy() {
 		Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
-		if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileOptions(null))) {
+		if (!Shared.BuildAndVerify(myTestName, myBoardDescriptor, myCodeDescriptor, new CompileDescription(null))) {
 			myTotalFails++;
 			fail(Shared.getLastFailMessage());
 		}

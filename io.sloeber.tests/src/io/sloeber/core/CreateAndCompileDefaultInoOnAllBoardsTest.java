@@ -18,8 +18,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -38,7 +38,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	private static int myTotalFails = 0;
 	private static int maxFails = 50;
 	private static int mySkipTestsAtStart = 0;
-	private BoardDescriptor mBoard;
+	private BoardDescription mBoard;
 	private static final String[] packageUrlsToIgnoreonAllOSes = {
 			// There is a newer version
 			"https://raw.githubusercontent.com/ElektorLabs/arduino/master/package_elektor-labs.com_ide-1.6.5_index.json",
@@ -249,7 +249,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 	};
 
-	public CreateAndCompileDefaultInoOnAllBoardsTest(BoardDescriptor board) {
+	public CreateAndCompileDefaultInoOnAllBoardsTest(BoardDescription board) {
 		this.mBoard = board;
 	}
 
@@ -264,15 +264,15 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		Preferences.setUseBonjour(false);
 		installAdditionalBoards();
 
-		List<BoardDescriptor> boards = new ArrayList<>();
+		List<BoardDescription> boards = new ArrayList<>();
 		for (File curBoardFile : PackageManager.getAllBoardsFiles()) {
 			// TOFIX these options should not be set here but in IBoard.getOptions
 			Map<String, String> options = null;
 			System.out.println("Adding boards of " + curBoardFile.toString());
-			boards.addAll(BoardDescriptor.makeBoardDescriptors(curBoardFile, options));
+			boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile, options));
 		}
 		// to avoid warnings set the upload port to some value
-		for (BoardDescriptor curBoard : boards) {
+		for (BoardDescription curBoard : boards) {
 			curBoard.setUploadPort("none");
 		}
 
@@ -284,8 +284,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		if (SystemUtils.IS_OS_WINDOWS) {
 			boardsToIgnoreList.addAll(Arrays.asList(boardsToIgnoreOnWindows));
 		}
-		List<BoardDescriptor> ignoreBoards = new ArrayList<>();
-		for (BoardDescriptor curBoard : boards) {
+		List<BoardDescription> ignoreBoards = new ArrayList<>();
+		for (BoardDescription curBoard : boards) {
 			if (boardsToIgnoreList.contains(curBoard.getBoardName())) {
 				ignoreBoards.add(curBoard);
 			}
@@ -346,7 +346,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
 		IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
-		if (!Shared.BuildAndVerify(this.mBoard, CodeDescriptor.createCustomTemplate(templateFolder), null,
+		if (!Shared.BuildAndVerify(this.mBoard, CodeDescription.createCustomTemplate(templateFolder), null,
 				myBuildCounter)) {
 			myTotalFails++;
 			fail(Shared.getLastFailMessage());

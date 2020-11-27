@@ -511,7 +511,7 @@ public class LibraryManager {
 	 * Get the examples of the libraries from the selected hardware These may be
 	 * referenced libraries
 	 */
-	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescriptor boardDescriptor) {
+	private static TreeMap<String, IPath> getAllHardwareLibraryExamples(BoardDescription boardDescriptor) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		if (boardDescriptor != null) {
 			IPath platformPath = boardDescriptor.getreferencingPlatformPath();
@@ -548,7 +548,7 @@ public class LibraryManager {
 	 * @param boardDescriptor
 	 * @return
 	 */
-	public static TreeMap<String, IPath> getAllExamples(BoardDescriptor boardDescriptor) {
+	public static TreeMap<String, IPath> getAllExamples(BoardDescription boardDescriptor) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		// Get the examples of the library manager installed libraries
 

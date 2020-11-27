@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -203,7 +203,7 @@ public class ArduinoSerial {
 	 * @return The com port to upload to
 	 */
 	public static String makeArduinoUploadready(MessageConsoleStream console, IProject project,ICConfigurationDescription confDesc,
-			BoardDescriptor boardDescriptor) {
+			BoardDescription boardDescriptor) {
 		boolean use_1200bps_touch = Common
 				.getBuildEnvironmentVariable( confDesc, Const.ENV_KEY_UPLOAD_USE_1200BPS_TOUCH, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);

@@ -22,7 +22,7 @@ import org.eclipse.ui.themes.IThemeManager;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
@@ -54,8 +54,7 @@ public class UploadSketchWrapper {
 
     private Job internalUpload(IProject project,
 			ICConfigurationDescription confDesc) {
-		BoardDescriptor boardDescriptor = BoardDescriptor
-				.makeBoardDescriptor(confDesc);
+        BoardDescription boardDescriptor = new BoardDescription(confDesc);
 		String UpLoadTool = boardDescriptor.getActualUploadTool(confDesc);
 		// String uploadClass = Common.getBuildEnvironmentVariable(confDesc,
 		// Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
@@ -137,11 +136,11 @@ public class UploadSketchWrapper {
 		ICConfigurationDescription myConfDes;
 		String myNAmeTag;
 		IRealUpload myUploader;
-		BoardDescriptor myBoardDescriptor;
+		BoardDescription myBoardDescriptor;
 
 		public UploadJobWrapper(String name, IProject project,
 				ICConfigurationDescription cConf, IRealUpload uploader,
-				BoardDescriptor boardDescriptor) {
+				BoardDescription boardDescriptor) {
 			super(name);
             myNAmeTag = name;
 			myProject = project;

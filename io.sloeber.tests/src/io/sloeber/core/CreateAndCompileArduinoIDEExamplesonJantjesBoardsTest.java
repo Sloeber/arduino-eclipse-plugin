@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -28,15 +28,15 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({"nls"})
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
-	private CodeDescriptor myCodeDescriptor;
-	private static BoardDescriptor myBoard;
+	private CodeDescription myCodeDescriptor;
+	private static BoardDescription myBoard;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 200;
     private static int mySkipAtStart = 0;
 
 	@SuppressWarnings("unused")
-	public CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest( String name,CodeDescriptor codeDescriptor,BoardDescriptor board) {
+	public CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest( String name,CodeDescription codeDescriptor,BoardDescription board) {
 
 		myCodeDescriptor = codeDescriptor;
 		myBoard=board;
@@ -64,7 +64,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 				ArrayList<IPath> paths = new ArrayList<>();
 
 				paths.add(examplePath);
-				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+				CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 				for (MCUBoard curboard : allBoards) {
 			        if (curboard.isExampleSupported(example)) {
 						Object[] theData = new Object[] {Shared.getCounterName(codeDescriptor.getExampleName()), codeDescriptor ,curboard.getBoardDescriptor()};

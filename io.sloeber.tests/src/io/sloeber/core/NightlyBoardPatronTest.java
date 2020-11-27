@@ -15,9 +15,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -33,7 +33,7 @@ public class NightlyBoardPatronTest {
     private static int mySkipAtStart = 0;
     private static int myTotalFails = 0;
     private static int maxFails = 40;
-    private static CompileOptions myCompileOptions;
+    private static CompileDescription myCompileOptions;
     private static boolean deleteProjects =true; //delete the projects after trying to build them
 
 	public NightlyBoardPatronTest(String name, MCUBoard boardID, Examples example) {
@@ -52,7 +52,7 @@ public class NightlyBoardPatronTest {
         LibraryManager.installLibrary("RTCZero");
         Shared.waitForAllJobsToFinish();
         Preferences.setUseArduinoToolSelection(true);
-        myCompileOptions = new CompileOptions(null);
+        myCompileOptions = new CompileDescription(null);
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
         LinkedList<Object[]> examples = new LinkedList<>();
@@ -87,10 +87,10 @@ public class NightlyBoardPatronTest {
         ArrayList<IPath> paths = new ArrayList<>();
 
         paths.add(myExample.getPath());
-        CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+        CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
         Map<String, String> boardOptions = myBoardID.getBoardOptions(myExample);
-        BoardDescriptor boardDescriptor = myBoardID.getBoardDescriptor();
+        BoardDescription boardDescriptor = myBoardID.getBoardDescriptor();
         boardDescriptor.setOptions(boardOptions);
         if(!Shared.BuildAndVerify(myBoardID.getBoardDescriptor(), codeDescriptor, myCompileOptions,myBuildCounter)) {
             myTotalFails++;

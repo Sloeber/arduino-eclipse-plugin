@@ -14,7 +14,7 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 
-public class CompileOptions {
+public class CompileDescription {
 
 	private Boolean myWarningLevel =  Boolean.TRUE;
 	private boolean myAlternativeSizeCommand = false;
@@ -51,7 +51,7 @@ public class CompileOptions {
 	 * @param confDesc null for default or the configuration description you want
 	 *                 the compile options for
 	 */
-	public CompileOptions(ICConfigurationDescription confDesc) {
+	public CompileDescription(ICConfigurationDescription confDesc) {
 		if (confDesc != null) {
 
 			IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
@@ -175,7 +175,7 @@ public class CompileOptions {
     public Map<String, String> getEnvVars(ICConfigurationDescription configuration) {
         Map<String, String> ret = new HashMap<>();
 
-		CompileOptions curOptions = new CompileOptions(configuration);
+		CompileDescription curOptions = new CompileDescription(configuration);
 		if (needsDirtyFlag(curOptions)) {
 			IProject project = configuration.getProjectDescription().getProject();
 			Helpers.setDirtyFlag(project, configuration);
@@ -201,7 +201,7 @@ public class CompileOptions {
         return ret;
 	}
 
-	private boolean needsDirtyFlag(CompileOptions curOptions) {
+	private boolean needsDirtyFlag(CompileDescription curOptions) {
 		// ignore myWarningLevel
 		// ignore myAlternativeSizeCommand
 		if (!this.my_CPP_CompileOptions.equals(curOptions.get_CPP_CompileOptions())) {

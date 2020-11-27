@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Sketch;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
@@ -51,7 +51,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 					return new String();
 				}
 				ICConfigurationDescription configurationDescription = prjDesc.getActiveConfiguration();
-				BoardDescriptor boardDescriptor = BoardDescriptor.makeBoardDescriptor(configurationDescription);
+				BoardDescription boardDescriptor = new BoardDescription(configurationDescription);
 				String boardName = boardDescriptor.getBoardName();
 				String portName = boardDescriptor.getActualUploadPort();
 				if (portName.isEmpty()) {

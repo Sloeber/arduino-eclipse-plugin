@@ -91,15 +91,15 @@ public class PackageManager {
 	 *                     boards.txt file) or null for defaults
 	 * @return The class BoardDescriptor or null
 	 */
-	static public BoardDescriptor getBoardDescriptor(String jsonFileName, String packageName, String platformName,
+	static public BoardDescription getBoardDescriptor(String jsonFileName, String packageName, String platformName,
 			String boardID, Map<String, String> options) {
 		if (jsonFileName.equals("local")) { //$NON-NLS-1$
-			return BoardDescriptor.makeBoardDescriptor(new File(packageName), boardID, options);
+            return new BoardDescription(new File(packageName), boardID, options);
 		}
 		return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, platformName, boardID, options);
 	}
 
-	static private BoardDescriptor getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
+	static private BoardDescription getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
 			String platformName, String boardID, Map<String, String> options) {
 
 		Package thePackage = InternalPackageManager.getPackage(jsonFileName, packageName);
@@ -114,7 +114,7 @@ public class PackageManager {
 			return null;
 		}
 		java.io.File boardsFile = platform.getBoardsFile();
-		BoardDescriptor boardid = BoardDescriptor.makeBoardDescriptor(boardsFile, boardID, options);
+        BoardDescription boardid = new BoardDescription(boardsFile, boardID, options);
 
 		return boardid;
 	}

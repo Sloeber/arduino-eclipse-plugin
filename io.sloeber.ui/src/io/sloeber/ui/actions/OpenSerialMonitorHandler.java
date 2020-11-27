@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
@@ -40,7 +40,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 				for (IProject curproject : SelectedProjects) {
 					int baud = Sketch.getCodeBaudRate(curproject);
 					if (baud > 0) {
-						String comPort = BoardDescriptor.getUploadPort(curproject);
+						String comPort = BoardDescription.getUploadPort(curproject);
 						if (!comPort.isEmpty()) {
 							io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);
 						}

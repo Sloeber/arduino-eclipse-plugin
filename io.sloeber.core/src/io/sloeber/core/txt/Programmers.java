@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Defaults;
 
 public class Programmers extends BoardTxtFile {
@@ -49,7 +49,7 @@ public class Programmers extends BoardTxtFile {
 
 	}
 
-	public static String[] getUploadProtocols(BoardDescriptor boardsDescriptor) {
+	public static String[] getUploadProtocols(BoardDescription boardsDescriptor) {
 		String[] ret = new String[1];
 		ret[0] = Defaults.getDefaultUploadProtocol();
 		Programmers allProgrammers[] = fromBoards(boardsDescriptor);
@@ -60,7 +60,7 @@ public class Programmers extends BoardTxtFile {
 
 	}
 
-	public static Programmers[] fromBoards(BoardDescriptor boardsDescriptor) {
+	public static Programmers[] fromBoards(BoardDescription boardsDescriptor) {
 		return fromBoards(boardsDescriptor.getreferencingPlatformPath(),
 				boardsDescriptor.getReferencedUploadPlatformPath(), boardsDescriptor.getArduinoPlatformPath());
 	}

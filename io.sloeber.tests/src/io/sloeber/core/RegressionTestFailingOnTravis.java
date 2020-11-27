@@ -10,9 +10,9 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.sloeber.core.api.BoardDescriptor;
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -52,13 +52,13 @@ public class RegressionTestFailingOnTravis {
 		PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
-		BoardDescriptor boardid = PackageManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
+		BoardDescription boardid = PackageManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
 				"Talk2 AVR Boards", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");
 			return;
 		}
-		if(!Shared.BuildAndVerify("redirect_json",boardid,CodeDescriptor.createDefaultIno(),new CompileOptions(null))) {
+		if(!Shared.BuildAndVerify("redirect_json",boardid,CodeDescription.createDefaultIno(),new CompileDescription(null))) {
             fail(Shared.getLastFailMessage() );
 		}
 	}

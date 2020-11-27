@@ -32,7 +32,7 @@ import io.sloeber.core.tools.Stream;
  *
  */
 
-public class CodeDescriptor {
+public class CodeDescription {
 	public enum CodeTypes {
 		None, defaultIno, defaultCPP, CustomTemplate, sample
 	}
@@ -74,41 +74,41 @@ public class CodeDescriptor {
 		this.myReplacers = myReplacers;
 	}
 
-	private CodeDescriptor(CodeTypes codeType) {
+	private CodeDescription(CodeTypes codeType) {
 		myCodeType = codeType;
 	}
 	
-	public static CodeDescriptor createNone() {
-		return new CodeDescriptor(CodeTypes.None);
+	public static CodeDescription createNone() {
+		return new CodeDescription(CodeTypes.None);
 	}
 
-	public static CodeDescriptor createDefaultIno() {
-		return new CodeDescriptor(CodeTypes.defaultIno);
+	public static CodeDescription createDefaultIno() {
+		return new CodeDescription(CodeTypes.defaultIno);
 	}
 
-	public static CodeDescriptor createDefaultCPP() {
-		return new CodeDescriptor(CodeTypes.defaultCPP);
+	public static CodeDescription createDefaultCPP() {
+		return new CodeDescription(CodeTypes.defaultCPP);
 	}
 
-	public static CodeDescriptor createExample(boolean link, ArrayList<IPath> sampleFolders) {
-		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.sample);
+	public static CodeDescription createExample(boolean link, ArrayList<IPath> sampleFolders) {
+		CodeDescription codeDescriptor = new CodeDescription(CodeTypes.sample);
 		codeDescriptor.myMakeLinks = link;
 		codeDescriptor.myExamples = sampleFolders;
 		return codeDescriptor;
 	}
 
-	public static CodeDescriptor createCustomTemplate(IPath temPlateFoldername) {
-		CodeDescriptor codeDescriptor = new CodeDescriptor(CodeTypes.CustomTemplate);
+	public static CodeDescription createCustomTemplate(IPath temPlateFoldername) {
+		CodeDescription codeDescriptor = new CodeDescription(CodeTypes.CustomTemplate);
 		codeDescriptor.myTemPlateFoldername = temPlateFoldername;
 		return codeDescriptor;
 	}
 
-	public static CodeDescriptor createLastUsed() {
+	public static CodeDescription createLastUsed() {
 
 		String typeDescriptor = InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
 				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
-		CodeDescriptor ret = new CodeDescriptor(codeType);
+		CodeDescription ret = new CodeDescription(codeType);
 		ret.myTemPlateFoldername = new Path(
 				InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();

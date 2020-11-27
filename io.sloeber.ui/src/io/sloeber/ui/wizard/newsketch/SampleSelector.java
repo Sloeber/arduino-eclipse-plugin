@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import io.sloeber.core.api.BoardDescriptor;
+import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.ui.Messages;
 
@@ -118,7 +118,7 @@ public class SampleSelector {
 	 * @param mPlatformPathPath
 	 */
 
-	public void AddAllExamples(BoardDescriptor platformPath, ArrayList<IPath> arrayList) {
+	public void AddAllExamples(BoardDescription platformPath, ArrayList<IPath> arrayList) {
 		this.numSelected = 0;
 		this.examples = LibraryManager.getAllExamples(platformPath);
 

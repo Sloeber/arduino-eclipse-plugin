@@ -8,7 +8,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector;
 
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -30,7 +30,7 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 		String recipeKey = new String();
 		String extraOptions = new String();
-		CompileOptions compileOptions = new CompileOptions(confDesc);
+		CompileDescription compileOptions = new CompileDescription(confDesc);
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
 			recipeKey = Const.RECIPE_C_to_O;
 			extraOptions = compileOptions.get_C_CompileOptions();

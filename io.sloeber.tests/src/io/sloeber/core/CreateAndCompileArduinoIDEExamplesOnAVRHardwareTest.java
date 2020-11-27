@@ -24,8 +24,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.CodeDescriptor;
-import io.sloeber.core.api.CompileOptions;
+import io.sloeber.core.api.CodeDescription;
+import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
@@ -34,7 +34,7 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
-	private CodeDescriptor myCodeDescriptor;
+	private CodeDescription myCodeDescriptor;
 	private MCUBoard myBoard;
 	private String myProjectName;
 	private static int myBuildCounter = 0;
@@ -42,7 +42,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 	private static int maxFails = 50;
 	private static int mySkipAtStart = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String projectName, CodeDescriptor codeDescriptor,
+	public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String projectName, CodeDescription codeDescriptor,
 			MCUBoard board) {
 
 		myCodeDescriptor = codeDescriptor;
@@ -67,7 +67,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 				ArrayList<IPath> paths = new ArrayList<>();
 
 				paths.add(examplePath);
-				CodeDescriptor codeDescriptor = CodeDescriptor.createExample(false, paths);
+				CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 				for (MCUBoard curboard : allBoards) {
 					if (curboard.isExampleSupported(example)) {
 						String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
@@ -96,7 +96,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
 		if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,
-				new CompileOptions(null))) {
+				new CompileDescription(null))) {
 			myTotalFails++;
 			fail(Shared.getLastFailMessage());
 		}
