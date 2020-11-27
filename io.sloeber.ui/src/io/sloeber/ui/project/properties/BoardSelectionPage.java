@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.PackageManager;
@@ -381,7 +381,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 		try {
 			IProject project = confdesc.getProjectDescription().getProject();
-			ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			SloeberProjectDescription arduinoProject = SloeberProjectDescription.getArduinoProjectDescription(project);
 			arduinoProject.setBoardDescription(confdesc, myBoardID);
 
 		} catch (Exception e) {
@@ -459,7 +459,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			// myBoardID = new BoardDescription(getConfdesc());
 			ICProjectDescription confDesc = getConfdesc().getProjectDescription();
 			IProject project = confDesc.getProject();
-			ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			SloeberProjectDescription arduinoProject = SloeberProjectDescription.getArduinoProjectDescription(project);
 			myBoardID = arduinoProject.getBoardDescription(confDesc.getActiveConfiguration());
 			if (myBoardID == null) {
 				myBoardID = new BoardDescription();

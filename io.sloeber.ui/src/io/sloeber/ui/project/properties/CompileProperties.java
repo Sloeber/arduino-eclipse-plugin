@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.ui.Messages;
 
@@ -26,7 +26,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		ICConfigurationDescription confDesc = getConfdesc();
 		if (confDesc != null) {
 			IProject project = confDesc.getProjectDescription().getProject();
-			ArduinoProjectDescription sloeberProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			SloeberProjectDescription sloeberProject = SloeberProjectDescription.getArduinoProjectDescription(project);
 			sloeberProject.setCompileDescription(confDesc, myCompileOptions);
 		}
 		super.performOK();
@@ -73,7 +73,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		super.createControls(parent, provider);
 		ICConfigurationDescription confDesc = getConfdesc();
 		IProject project = confDesc.getProjectDescription().getProject();
-		ArduinoProjectDescription sloeberProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+		SloeberProjectDescription sloeberProject = SloeberProjectDescription.getArduinoProjectDescription(project);
 		myCompileOptions = sloeberProject.getCompileDescription(confDesc);
 		if (myCompileOptions == null) {
 			myCompileOptions = new CompileDescription();

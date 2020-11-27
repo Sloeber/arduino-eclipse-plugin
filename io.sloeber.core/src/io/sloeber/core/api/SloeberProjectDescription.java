@@ -46,8 +46,8 @@ import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.txt.TxtFile;
 
-public class ArduinoProjectDescription extends Common {
-    static private Map<String, ArduinoProjectDescription> ArduinoProjectList = new HashMap<>();
+public class SloeberProjectDescription extends Common {
+    static private Map<String, SloeberProjectDescription> ArduinoProjectList = new HashMap<>();
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
     private IProject myProject = null;
@@ -58,7 +58,7 @@ public class ArduinoProjectDescription extends Common {
     private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "make_location"; //$NON-NLS-1$
 
-    private ArduinoProjectDescription(IProject project) {
+    private SloeberProjectDescription(IProject project) {
         myProject = project;
         ICProjectDescription projDesc = CCorePlugin.getDefault().getProjectDescription(myProject);
         for (ICConfigurationDescription confDesc : projDesc.getConfigurations()) {
@@ -129,7 +129,7 @@ public class ArduinoProjectDescription extends Common {
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
 
-                    ArduinoProjectDescription arduinoProjectDescriptor = getArduinoProjectDescription(newProjectHandle);
+                    SloeberProjectDescription arduinoProjectDescriptor = getArduinoProjectDescription(newProjectHandle);
 
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
                         // Even though we use the same boardDescriptor for all configurations during
@@ -339,12 +339,12 @@ public class ArduinoProjectDescription extends Common {
      * @param project
      * @return
      */
-    public static ArduinoProjectDescription getArduinoProjectDescription(IProject project) {
+    public static SloeberProjectDescription getArduinoProjectDescription(IProject project) {
         if (project.isOpen() && project.getLocation().toFile().exists()) {
             if (Sketch.isSketch(project)) {
-                ArduinoProjectDescription ret = ArduinoProjectList.get(project.getName());
+                SloeberProjectDescription ret = ArduinoProjectList.get(project.getName());
                 if (null == ret) {
-                    ret = new ArduinoProjectDescription(project);
+                    ret = new SloeberProjectDescription(project);
                 }
                 ArduinoProjectList.put(project.getName(), ret);
                 return ret;

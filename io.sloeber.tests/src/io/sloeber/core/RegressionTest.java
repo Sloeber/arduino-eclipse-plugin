@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.sloeber.core.api.ArduinoProjectDescription;
+import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
@@ -89,7 +89,7 @@ public class RegressionTest {
 		String projectName = "issue555";
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ public class RegressionTest {
 			e.printStackTrace();
 			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
 		}
-        ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(theTestProject);
+        SloeberProjectDescription arduinoProject = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
         arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid);
 
@@ -137,7 +137,7 @@ public class RegressionTest {
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
-            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
@@ -165,7 +165,7 @@ public class RegressionTest {
 		IPath templateFolder = Shared.getTemplateFolder(projectName);
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
-            IProject theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null,
+            IProject theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null,
                     unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(),
                     new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
@@ -205,7 +205,7 @@ public class RegressionTest {
 			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
 			compileOptions.set_C_CompileOptions("-DTEST_C");
 			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
-            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, compileOptions, new NullProgressMonitor());
 			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
@@ -242,7 +242,7 @@ public class RegressionTest {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
@@ -276,7 +276,7 @@ public class RegressionTest {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-            theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
+            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
