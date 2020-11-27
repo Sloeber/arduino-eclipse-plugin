@@ -320,9 +320,10 @@ public class Helpers extends Common {
 	 *                                 contain the change
 	 * @throws CoreException
 	 */
-	public static void addArduinoCodeToProject(BoardDescription boardDescriptor, IProject project,
+    public static void addArduinoCodeToProject(BoardDescription boardDescriptor,
 			ICConfigurationDescription configurationDescription) throws CoreException {
 
+        IProject project = configurationDescription.getProjectDescription().getProject();
 		IPath corePath = boardDescriptor.getActualCoreCodePath();
 		if (corePath != null) {
 			addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH, configurationDescription, true);

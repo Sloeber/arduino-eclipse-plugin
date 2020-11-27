@@ -117,8 +117,8 @@ public class BoardDescription extends Common {
     private IPath myReferencedUploadToolPlatformPath;
     private String myUploadTool;
     private boolean isDirty = true;
-    private final String ENV_KEY_JANTJE_JSON_URL = "SLOEBER.JSON.URL"; //$NON-NLS-1$
-    private final String ENV_KEY_JANTJE_PRODUCT_NAME = "SLOEBER.PRODUCT.NAME"; //$NON-NLS-1$
+    private final String ENV_KEY_JANTJE_PROGRAMMER = "SLOEBER.PROGRAMMER.NAME"; //$NON-NLS-1$
+    private final String ENV_KEY_JANTJE_BOARD_TXT = "SLOEBER.PRODUCT.NAME"; //$NON-NLS-1$
     private final String ENV_KEY_JANTJE_PRODUCT_VERSION = "SLOEBER.PRODUCT.VERSION"; //$NON-NLS-1$
 
     @Override
@@ -141,7 +141,7 @@ public class BoardDescription extends Common {
         if (!this.getProgrammer().equals(otherBoardDescriptor.getProgrammer())) {
             return false;
         }
-        return !needsSettingDirty(otherBoardDescriptor);
+        return !needsRebuild(otherBoardDescriptor);
     }
 
     /**
@@ -151,7 +151,7 @@ public class BoardDescription extends Common {
      * @param otherBoardDescriptor
      * @return
      */
-    public boolean needsSettingDirty(BoardDescription otherBoardDescriptor) {
+    public boolean needsRebuild(BoardDescription otherBoardDescriptor) {
 
         if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
             return true;
@@ -840,16 +840,38 @@ public class BoardDescription extends Common {
         return myTxtFile.getAllBoardEnvironVars(getBoardID());
     }
 
+    BoardDescription(TxtFile configFile) {
+        KeyValueTree tree = configFile.getData();
+        this.myUploadPort = EMPTY;
+        this.myProgrammer = tree.getValue(ENV_KEY_JANTJE_PROGRAMMER);
+        this.myBoardID = tree.getValue(ENV_KEY_JANTJE_BOARD_ID);
+        myreferencingBoardsFile = new File(tree.getValue(ENV_KEY_JANTJE_BOARD_TXT));
+        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+
+        KeyValueTree optionsTree = tree.getChild(ENV_KEY_JANTJE_MENU_SELECTION);
+        Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
+        this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        setDefaultOptions();
+        if (options != null) {
+            this.myOptions.putAll(options);
+        }
+    }
     public Map<String, String> getEnvVarsConfig() {
         Map<String, String> allVars = new TreeMap<>();
-        allVars.put(ENV_KEY_JANTJE_JSON_URL, EMPTY);
-        allVars.put(ENV_KEY_JANTJE_PRODUCT_NAME, EMPTY);
-        allVars.put(ENV_KEY_JANTJE_PRODUCT_VERSION, EMPTY);
+        allVars.put(ENV_KEY_JANTJE_PROGRAMMER, this.myProgrammer);
         allVars.put(ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
+        allVars.put(ENV_KEY_JANTJE_BOARD_TXT, myreferencingBoardsFile.toString());
+        // allVars.put(ENV_KEY_JANTJE_PRODUCT_VERSION, EMPTY);
+
         for (Entry<String, String> curOption : this.myOptions.entrySet()) {
             allVars.put(ENV_KEY_JANTJE_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
         }
         return allVars;
+    }
+
+    public BoardDescription() {
+        // TODO Auto-generated constructor stub
     }
 
     public Map<String, String> getEnvVars() {
@@ -958,9 +980,14 @@ public class BoardDescription extends Common {
 
         // update the gobal variables if needed
         PackageManager.updateGlobalEnvironmentVariables();
+        if ((getReferencingPlatformFile() == null) || (getreferencedPlatformFile() == null)) {
+            // something is seriously wrong -->shoot
+            return new HashMap<>();
+        }
         File referencingPlatformFile = getReferencingPlatformFile().getTxtFile();
-        File referencedPlatformFile = getreferencedPlatformFile().getTxtFile();
         ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
+        File referencedPlatformFile = getreferencedPlatformFile().getTxtFile();
+
         ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();

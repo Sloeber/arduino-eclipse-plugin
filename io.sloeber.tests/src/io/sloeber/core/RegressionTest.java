@@ -90,7 +90,7 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
             theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(null), monitor);
+                    codeDescriptor, new CompileDescription(), monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -108,7 +108,7 @@ public class RegressionTest {
 		}
         ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
-        arduinoProject.setBoardDescriptor(cProjectDescription.getActiveConfiguration(), teensyBoardid);
+        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid);
 
 		Shared.waitForAllJobsToFinish();
 		try {
@@ -138,7 +138,7 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
             theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
+                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 			if (Shared.hasBuildErrors(theTestProject)) {
@@ -166,7 +166,7 @@ public class RegressionTest {
 		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 		try {
             IProject theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null,
-                    unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(null),
+                    unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(),
                     new NullProgressMonitor());
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
@@ -201,7 +201,7 @@ public class RegressionTest {
 
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
-			CompileDescription compileOptions = new CompileDescription(null);
+            CompileDescription compileOptions = new CompileDescription();
 			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
 			compileOptions.set_C_CompileOptions("-DTEST_C");
 			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
@@ -243,7 +243,7 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
             theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
+                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -277,7 +277,7 @@ public class RegressionTest {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		try {
             theTestProject = ArduinoProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(null), new NullProgressMonitor());
+                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
 			Shared.waitForAllJobsToFinish(); // for the indexer
 			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);

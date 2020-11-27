@@ -131,7 +131,7 @@ public class CompileAndUpload {
 	@Test
 	public void testExamples() {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
-		CompileDescription compileOptions = new CompileDescription(null);
+        CompileDescription compileOptions = new CompileDescription();
 		DateTimeFormatter df =  DateTimeFormatter
 				.ofPattern("YYYY/MM/dd-HH-mm-ss");
 		String SerialDumpContent = myName+'-'+ df.format(LocalDateTime.now());

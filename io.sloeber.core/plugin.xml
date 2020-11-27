@@ -136,7 +136,8 @@
   </builder>
   <projectType
         id="io.sloeber.core.sketch"
-        name="%projectType.name">
+        name="%projectType.name"
+        projectEnvironmentSupplier="io.sloeber.core.toolchain.SloeberProjectVariableSupplier">
      
      <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
      <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
@@ -148,7 +149,7 @@
            name="%configuration.name">
         <toolChain
               archList="all"
-              configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberBuildVariableSupplier"
+              configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
               languageSettingsProviders="io.sloeber.languageSettingsProvider"

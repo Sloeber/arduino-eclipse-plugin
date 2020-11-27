@@ -52,7 +52,7 @@ public class NightlyBoardPatronTest {
         LibraryManager.installLibrary("RTCZero");
         Shared.waitForAllJobsToFinish();
         Preferences.setUseArduinoToolSelection(true);
-        myCompileOptions = new CompileDescription(null);
+        myCompileOptions = new CompileDescription();
         MCUBoard zeroBoard = Arduino.zeroProgrammingPort();
 
         LinkedList<Object[]> examples = new LinkedList<>();

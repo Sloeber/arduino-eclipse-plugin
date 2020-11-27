@@ -96,7 +96,7 @@ public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
 		if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,
-				new CompileDescription(null))) {
+                new CompileDescription())) {
 			myTotalFails++;
 			fail(Shared.getLastFailMessage());
 		}

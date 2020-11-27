@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.AbstractPage;
@@ -40,7 +41,7 @@ import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
 /**
- * The ArduinoSelectionPage class is used in the new wizard and the project
+ * The BoardSelectionPage class is used in the new wizard and the project
  * properties. This class controls the gui and the data underneath the gui. This
  * class allows to select the arduino board and the port name
  *
@@ -162,13 +163,11 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myScrolledComposite.setExpandHorizontal(true);
 
 		myComposite = new Composite(myScrolledComposite, SWT.NONE);
-		if (myBoardID == null) {
-			myBoardID = new BoardDescription(getConfdesc());
+		myBoardID = getBoardID();
 			if (myBoardID.getActualCoreCodePath() == null) {
 				Activator.log(
 						new Status(IStatus.ERROR, Activator.getId(), Messages.BoardSelectionPage_failed_to_find_platform
 								.replace(Messages.PLATFORM, myBoardID.getReferencingPlatformFile().toString())));
-			}
 		}
 
 		File[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
@@ -313,9 +312,9 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
-		myBoardID.saveUserSelection();
-		myBoardID = new BoardDescription(cfg.getConfiguration());
-		setValues();
+//		myBoardID.saveUserSelection();
+//		myBoardID = new BoardDescription(cfg.getConfiguration());
+//		setValues();
 	}
 
 	@Override
@@ -383,7 +382,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		try {
 			IProject project = confdesc.getProjectDescription().getProject();
 			ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
-			arduinoProject.setBoardDescriptor(confdesc, myBoardID);
+			arduinoProject.setBoardDescription(confdesc, myBoardID);
 
 		} catch (Exception e) {
 			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
@@ -457,7 +456,14 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 
 	public BoardDescription getBoardID() {
 		if (myBoardID == null) {
-			myBoardID = new BoardDescription(getConfdesc());
+			// myBoardID = new BoardDescription(getConfdesc());
+			ICProjectDescription confDesc = getConfdesc().getProjectDescription();
+			IProject project = confDesc.getProject();
+			ArduinoProjectDescription arduinoProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			myBoardID = arduinoProject.getBoardDescription(confDesc.getActiveConfiguration());
+			if (myBoardID == null) {
+				myBoardID = new BoardDescription();
+			}
 		}
 		if (myBoardOptionCombos != null) {// only update the values if the
 			// page has been drawn

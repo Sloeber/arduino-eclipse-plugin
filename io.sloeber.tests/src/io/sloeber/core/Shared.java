@@ -148,7 +148,7 @@ public class Shared {
 
         CompileDescription localCompileOptions = compileOptions;
         if (compileOptions == null) {
-            localCompileOptions = new CompileDescription(null);
+            localCompileOptions = new CompileDescription();
         }
         return BuildAndVerify(projectName, boardDescriptor, codeDescriptor, localCompileOptions);
     }

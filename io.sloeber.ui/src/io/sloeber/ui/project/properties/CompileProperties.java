@@ -4,6 +4,7 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import io.sloeber.core.api.ArduinoProjectDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.ui.Messages;
 
@@ -21,10 +23,11 @@ public class CompileProperties extends AbstractCPropertyTab {
 	protected void performOK() {
 
 		updateStorageData();
-		if (getConfdesc() != null) {
-		    //TOFIX there is no save here.
-		    // does just changing compile properties and clcik ok work?
-			CompileProperties.this.myCompileOptions.getEnvVars(getConfdesc());
+		ICConfigurationDescription confDesc = getConfdesc();
+		if (confDesc != null) {
+			IProject project = confDesc.getProjectDescription().getProject();
+			ArduinoProjectDescription sloeberProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+			sloeberProject.setCompileDescription(confDesc, myCompileOptions);
 		}
 		super.performOK();
 	}
@@ -68,7 +71,13 @@ public class CompileProperties extends AbstractCPropertyTab {
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
-		this.myCompileOptions = new CompileDescription(getConfdesc());
+		ICConfigurationDescription confDesc = getConfdesc();
+		IProject project = confDesc.getProjectDescription().getProject();
+		ArduinoProjectDescription sloeberProject = ArduinoProjectDescription.getArduinoProjectDescription(project);
+		myCompileOptions = sloeberProject.getCompileDescription(confDesc);
+		if (myCompileOptions == null) {
+			myCompileOptions = new CompileDescription();
+		}
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
@@ -131,8 +140,8 @@ public class CompileProperties extends AbstractCPropertyTab {
 	}
 	@Override
 	protected void updateData(ICResourceDescription cfg) {
-		this.myCompileOptions = new CompileDescription(getConfdesc());
-		updateScreenData();
+//		this.myCompileOptions = new CompileDescription(getConfdesc());
+//		updateScreenData();
 	}
 
 	@Override
@@ -150,13 +159,13 @@ public class CompileProperties extends AbstractCPropertyTab {
 	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
 		updateStorageData();
 		if (dst.getConfiguration() != null) {
-			CompileProperties.this.myCompileOptions.getEnvVars(dst.getConfiguration());
+			myCompileOptions.getEnvVars();
 		}
 	}
 
 	@Override
 	protected void performDefaults() {
-		this.myCompileOptions = new CompileDescription(null);
+		this.myCompileOptions = new CompileDescription();
 		updateScreenData();
 	}
 

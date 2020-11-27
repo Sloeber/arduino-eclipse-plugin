@@ -101,6 +101,8 @@ public class Messages extends NLS {
 	public static String uploader_no_reset_using_programmer;
 	public static String BoardsManagerIsBussy;
 	public static String No_Platform_available ;
+    public static String decorator_no_platform;
+    public static String decorator_no_port;
 
 	static {
 		// initialize resource bundle

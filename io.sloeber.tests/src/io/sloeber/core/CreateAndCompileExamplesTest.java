@@ -128,7 +128,7 @@ public class CreateAndCompileExamplesTest {
         Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
        
         myBuildCounter++;
-        if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileDescription(null))) {
+        if (!Shared.BuildAndVerify(myName, myBoardDescriptor, myCodeDescriptor, new CompileDescription())) {
             myTotalFails++;
             fail(Shared.getLastFailMessage() );
         }

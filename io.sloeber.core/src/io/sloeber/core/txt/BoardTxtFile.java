@@ -24,6 +24,9 @@ public class BoardTxtFile extends TxtFile {
     }
 
     private static File getActualTxtFile(File boardsFile) {
+        if (boardsFile == null) {
+            return null;
+        }
         if (BOARDS_FILE_NAME.equals(boardsFile.getName())) {
             return WorkAround.MakeBoardsSloeberTxt(boardsFile);
         }

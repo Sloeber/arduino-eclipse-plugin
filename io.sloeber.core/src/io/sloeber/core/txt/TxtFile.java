@@ -43,7 +43,6 @@ public class TxtFile extends Const {
     public TxtFile(File boardsFileName) {
 
         this.mLoadedTxtFile = boardsFileName;
-        // If the file doesn't exist ignore it.
         if (!boardsFileName.exists()) {
             return;
         }

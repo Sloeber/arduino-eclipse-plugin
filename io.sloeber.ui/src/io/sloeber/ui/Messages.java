@@ -40,8 +40,7 @@ public class Messages extends NLS {
 
     public static String buildHandler_build_code_of_project;
     public static String build_before_upload;
-    public static String decorator_no_platform;
-    public static String decorator_no_port;
+
     public static String do_you_want_to_build_before_upload;
     public static String error_adding_arduino_code;
     public static String error_failed_to_import_library_in_project;

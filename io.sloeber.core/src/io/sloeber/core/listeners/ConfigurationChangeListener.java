@@ -66,7 +66,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
         BoardDescription newBoardDescriptor = new BoardDescription(activeConf);
         try {
             Helpers.setDirtyFlag(activeProject, activeConf);
-            Helpers.addArduinoCodeToProject(newBoardDescriptor, activeProject, activeConf);
+            Helpers.addArduinoCodeToProject(newBoardDescriptor, activeConf);
         } catch (CoreException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
