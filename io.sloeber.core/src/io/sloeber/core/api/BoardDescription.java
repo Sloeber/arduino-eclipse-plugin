@@ -119,7 +119,7 @@ public class BoardDescription extends Common {
     private boolean isDirty = true;
     private final String ENV_KEY_JANTJE_PROGRAMMER = "SLOEBER.PROGRAMMER.NAME"; //$NON-NLS-1$
     private final String ENV_KEY_JANTJE_BOARD_TXT = "SLOEBER.PRODUCT.NAME"; //$NON-NLS-1$
-    private final String ENV_KEY_JANTJE_PRODUCT_VERSION = "SLOEBER.PRODUCT.VERSION"; //$NON-NLS-1$
+
 
     @Override
     public String toString() {
