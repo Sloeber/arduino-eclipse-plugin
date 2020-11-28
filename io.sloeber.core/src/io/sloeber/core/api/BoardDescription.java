@@ -893,16 +893,7 @@ public class BoardDescription extends Common {
 
 
 
-        Map<String, String> options = getOptions();
 
-        KeyValueTree rootData = myTxtFile.getData();
-        KeyValueTree menuData = rootData.getChild(getBoardID() + DOT + MENU);
-        for (Entry<String, String> curOption : options.entrySet()) {
-            String menuID = curOption.getKey();
-            String SelectedMenuItemID = curOption.getValue();
-            KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
-            allVars.putAll(curSelectedMenuItem.toKeyValues(ERASE_START, false));
-        }
         allVars.putAll(getEnvVarsConfig());
         allVars.put(ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
         allVars.put(ENV_KEY_JANTJE_BOARDS_FILE, getReferencingBoardsFile().toString());
@@ -956,7 +947,19 @@ public class BoardDescription extends Common {
             }
         }
 
+        // boards setiings not comming from menu selections
         allVars.putAll(myTxtFile.getAllBoardEnvironVars(getBoardID()));
+
+        // board settings from menu selections
+        Map<String, String> options = getOptions();
+        KeyValueTree rootData = myTxtFile.getData();
+        KeyValueTree menuData = rootData.getChild(getBoardID() + DOT + MENU);
+        for (Entry<String, String> curOption : options.entrySet()) {
+            String menuID = curOption.getKey();
+            String SelectedMenuItemID = curOption.getValue();
+            KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
+            allVars.putAll(curSelectedMenuItem.toKeyValues(ERASE_START, false));
+        }
 
         // add the stuff that comes with the plugin that is marked as post
         allVars.putAll(pluginPostProcessingPlatformTxt.getAllEnvironVars(EMPTY));
