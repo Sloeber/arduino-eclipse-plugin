@@ -2,293 +2,534 @@ package io.sloeber.core;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.QualifiedName;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
+import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
+import io.sloeber.providers.Teensy;
 
-@SuppressWarnings({"nls","static-method"})
+@SuppressWarnings({ "nls", "static-method" })
 public class RegressionTest {
-	private static final boolean reinstall_boards_and_libraries = false;
+    private static final boolean reinstall_boards_and_libraries = false;
 
-	/*
-	 * In new new installations (of the Sloeber development environment) the
-	 * installer job will trigger downloads These mmust have finished before we
-	 * can start testing
-	 */
-	@BeforeClass
-	public static void WaitForInstallerToFinish() {
-		Shared.waitForAllJobsToFinish();
-		Preferences.setUseBonjour(false);
-		installAdditionalBoards();
-	}
+    /*
+     * In new new installations (of the Sloeber development environment) the
+     * installer job will trigger downloads These mmust have finished before we can
+     * start testing
+     */
+    @BeforeClass
+    public static void WaitForInstallerToFinish() {
+        Shared.waitForAllJobsToFinish();
+        Preferences.setUseBonjour(false);
+        installAdditionalBoards();
+    }
 
-	public static void installAdditionalBoards() {
+    public static void installAdditionalBoards() {
 
-		String[] packageUrlsToAdd = { ESP8266.packageURL };
-		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		if (reinstall_boards_and_libraries) {
-			PackageManager.removeAllInstalledPlatforms();
-		}
-		;
-		// make sure the needed boards are available
-		ESP8266.installLatest();
-		Arduino.installLatestAVRBoards();
+        String[] packageUrlsToAdd = { ESP8266.packageURL };
+        PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+        if (reinstall_boards_and_libraries) {
+            PackageManager.removeAllInstalledPlatforms();
+        }
+        ;
+        // make sure the needed boards are available
+        ESP8266.installLatest();
+        Arduino.installLatestAVRBoards();
 
-		if (!MySystem.getTeensyPlatform().isEmpty()) {
-			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
-		}
-	}
+        if (!MySystem.getTeensyPlatform().isEmpty()) {
+            PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+        }
+    }
 
+    /**
+     * make sure when switching between a board with variant file and without the
+     * build still succeeds
+     */
+    @Test
+    public void issue555() {
+        if (MySystem.getTeensyPlatform().isEmpty()) {
+            // skip test due to no teensy install folder provided
+            // do not fail as this will always fail on travis
+            System.out.println("skipping the test because teensy is not installed.");
+            return;
+        }
+        System.out.println("Teensy is installed at " + MySystem.getTeensyPlatform());
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+        BoardDescription teensyBoardid = Teensy.Teensy3_1("").getBoardDescriptor();
 
-	/**
-	 * make sure when switching between a board with variant file and without
-	 * the build still succeeds
-	 */
-	@Test
-	public void issue555() {
-		if (MySystem.getTeensyPlatform().isEmpty()) {
-			//skip test due to no teensy install folder provided
-			//do not fail as this will always fail on travis
-			System.out.println("skipping the test because teensy is not installed.");
-			return;
-		}
-		System.out.println("Teensy is installed at "+MySystem.getTeensyPlatform());
-		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", unoOptions);
-		Map<String, String> teensyOptions = new HashMap<>();
-		teensyOptions.put("usb", "serial");
-		teensyOptions.put("speed", "96");
-		teensyOptions.put("keys", "en-us");
-		BoardDescription teensyBoardid = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "", "teensy31",
-				teensyOptions);
-		IProject theTestProject = null;
-		CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
-		String projectName = "issue555";
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
+        IProject theTestProject = null;
+        CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
+        String projectName = "issue555";
+        NullProgressMonitor monitor = new NullProgressMonitor();
+        try {
             theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), monitor);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
+            Shared.waitForAllJobsToFinish(); // for the indexer
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+        try {
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            if (Shared.hasBuildErrors(theTestProject)) {
                 fail("Failed to compile the project:" + projectName + " as uno  build errors");
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
-		}
-        SloeberProjectDescription arduinoProject = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
+            }
+        } catch (CoreException e) {
+            e.printStackTrace();
+            fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
+        }
+        SloeberProjectDescription arduinoProject = SloeberProjectDescription
+                .getArduinoProjectDescription(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
         arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid);
 
-		Shared.waitForAllJobsToFinish();
-		try {
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " as teensy");
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as teensy exception");
-		}
-	}
+        Shared.waitForAllJobsToFinish();
+        try {
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName + " as teensy");
+            }
+        } catch (CoreException e) {
+            e.printStackTrace();
+            fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as teensy exception");
+        }
+    }
 
-	/**
-	 * support void loop{};
-	 * @throws Exception
-	 */
-	@Test
-	public void issue687() throws Exception {
-		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", unoOptions);
+    /**
+     * support void loop{};
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void issue687() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
-		IProject theTestProject = null;
-		String projectName = "issue687";
-		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-		try {
+        IProject theTestProject = null;
+        String projectName = "issue687";
+        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        try {
             theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName + " issue687 is not fixed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
 
-	}
+    }
 
+    /**
+     * support void loop{};
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
+        MCUBoard unoBoard = ESP8266.nodeMCU();
 
-	/**
-	 * support void loop{};
-	 * @throws Exception
-	 */
-	@Test
-	public void issue1047_Board_Names_Can_Be_used_as_Strings() throws Exception {
-		MCUBoard unoBoard = ESP8266.nodeMCU();
-
-		String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
-		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-		try {
+        String projectName = "issue1047_Board_Names_Can_Be_used_as_Strings";
+        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        try {
             IProject theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null,
-                    unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(),
-                    new NullProgressMonitor());
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName + " issue1047 is not fixed");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
+                    unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(), new NullProgressMonitor());
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName + " issue1047 is not fixed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
 
-	}
+    }
 
+    /**
+     * This test will fail if the arduino compile option are not taken into account
+     * To do sa a bunch of defines are added to the command line and the code checks
+     * whether these defines are set properly
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void are_jantjes_options_taken_into_account() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
-	/**
-	 * This test will fail if the arduino compile option are not taken into
-	 * account To do sa a bunch of defines are added to the command line and the
-	 * code checks whether these defines are set properly
-	 * @throws Exception
-	 */
-	@Test
-	public void are_jantjes_options_taken_into_account() throws Exception {
-		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", unoOptions);
+        IProject theTestProject = null;
+        String projectName = "are_defines_found";
+        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
-		IProject theTestProject = null;
-		String projectName = "are_defines_found";
-		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
-
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
+        NullProgressMonitor monitor = new NullProgressMonitor();
+        try {
             CompileDescription compileOptions = new CompileDescription();
-			compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
-			compileOptions.set_C_CompileOptions("-DTEST_C");
-			compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
+            compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
+            compileOptions.set_C_CompileOptions("-DTEST_C");
+            compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
             theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, compileOptions, new NullProgressMonitor());
-			ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
+            ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
-			CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
-					null);
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName
-						+ " The defines have not been taken into account properly");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-	}
+            CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
+                    null);
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName
+                        + " The defines have not been taken into account properly");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+    }
 
-	/**
-	 * If a .ino file is including a include using extern C is this handled
-	 * properly by the ino to cpp parser
-	 * @throws Exception
-	 */
-	@Test
-	public void are_defines_before_includes_taken_into_account() throws Exception {
-		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", unoOptions);
+    /**
+     * If a .ino file is including a include using extern C is this handled properly
+     * by the ino to cpp parser
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void are_defines_before_includes_taken_into_account() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
-		IProject theTestProject = null;
-		String projectName = "externc";
-		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        IProject theTestProject = null;
+        String projectName = "externc";
+        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
+        NullProgressMonitor monitor = new NullProgressMonitor();
+        try {
             theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName
-						+ " extern \"C\" has not been taken into account properly.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-	}
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName
+                        + " extern \"C\" has not been taken into account properly.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+    }
 
-	/**
-	 * If a .ino file is defining defines before including a include this should
-	 * be handled properly by the ino to cpp parser
-	 * @throws Exception
-	 */
-	@Test
-	public void is_extern_C_taken_into_account() throws Exception {
-		Map<String, String> unoOptions = new HashMap<>();
-		BoardDescription unoBoardid = PackageManager.getBoardDescriptor("package_index.json", "arduino", "Arduino AVR Boards",
-				"uno", unoOptions);
+    /**
+     * If a .ino file is defining defines before including a include this should be
+     * handled properly by the ino to cpp parser
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void is_extern_C_taken_into_account() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
-		IProject theTestProject = null;
-		String projectName = "defines_and_includes";
-		IPath templateFolder = Shared.getTemplateFolder(projectName);
-		CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
+        IProject theTestProject = null;
+        String projectName = "defines_and_includes";
+        IPath templateFolder = Shared.getTemplateFolder(projectName);
+        CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
-		NullProgressMonitor monitor = new NullProgressMonitor();
-		try {
+        NullProgressMonitor monitor = new NullProgressMonitor();
+        try {
             theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
                     codeDescriptor, new CompileDescription(), new NullProgressMonitor());
 
-			Shared.waitForAllJobsToFinish(); // for the indexer
-			theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-			if (Shared.hasBuildErrors(theTestProject)) {
-				fail("Failed to compile the project:" + projectName
-						+ " defines have not been taken into account properly.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Failed to create the project:" + projectName);
-			return;
-		}
-	}
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName
+                        + " defines have not been taken into account properly.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+    }
+
+    /**
+     * open and close a project should keep the compileDescription and
+     * BoardDescriotion
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void openAndClosePreservesSettings() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+        IProject theTestProject = null;
+        String projectName = "openAndClose";
+        CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+        CompileDescription inCompileDescription = getBunkersCompileDescription();
+
+        theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                inCompileDescription, new NullProgressMonitor());
+
+        // Read the data we want to test
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        SloeberProjectDescription sloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
+        ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
+        ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
+        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc);
+        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc);
+
+        // close and reopen the project
+        theTestProject.close(null);
+        // just wait a while
+        Thread.sleep(1000);
+        Shared.waitForAllJobsToFinish();
+        theTestProject.open(null);
+        Shared.waitForAllJobsToFinish();
+
+        // read the data we want to test
+        sloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
+        projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
+        confDesc = projDesc.getActiveConfiguration();
+        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc);
+        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc);
+
+        // check the data is equal
+        boolean createBoardsDiff = !unoBoardid.equals(createdBoardDesc);
+        boolean createCompileDiff = !inCompileDescription.equals(createdCompileDesc);
+        boolean openBoardsDiff = !reopenedBoardDesc.equals(createdBoardDesc);
+        boolean openCompileDiff = !reopenedCompileDesc.equals(createdCompileDesc);
+
+        if (createBoardsDiff || createCompileDiff) {
+            fail("Created project does not match creation parameters.");
+        }
+        if (openBoardsDiff || openCompileDiff) {
+            fail("Opened project does not match closed project parameters.");
+        }
+
+    }
+
+    @Test
+    public void closeProjectRemovesPropertiesSloeber() throws Exception {
+        String DummyData = "a object";
+        String projectName = "closeProjectRemovesPropertiesSloeber";
+        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
+
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+        CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+        CompileDescription inCompileDescription = getBunkersCompileDescription();
+
+        IProject project = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                inCompileDescription, new NullProgressMonitor());
+
+        // Read the data we want to test
+        Shared.waitForAllJobsToFinish(); // for the indexer
+
+        // project.open(null);
+        project.setSessionProperty(qualifiedName, DummyData);
+        project.close(null);
+        project.open(null);
+        Object projData = project.getSessionProperty(qualifiedName);
+        if (projData != null) {
+            fail("non persistent projectdescription properties behave persistent during project close open in Sloeber");
+        }
+    }
+
+    @Test
+    public void closeProjectRemovesProperties() throws Exception {
+        String DummyData = "a object";
+        String projectName = "closeProjectRemovesProperties";
+        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+        final IProject project = root.getProject("closeProjectRemovesProperties");
+        project.create(null);
+        project.open(null);
+        project.setSessionProperty(qualifiedName, DummyData);
+        project.close(null);
+        project.open(null);
+        Object projData = project.getSessionProperty(qualifiedName);
+        if (projData != null) {
+            fail("non persistent projectdescription properties behave persistent during project close open");
+        }
+    }
+
+    @Test
+    public void closeCDTProjectRemovesProperties() throws Exception {
+        String DummyData = "a object";
+        String projectName = "closeCDTProjectRemovesProperties";
+        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
+
+        // disable autobuild
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceDescription workspaceDesc = workspace.getDescription();
+        workspaceDesc.setAutoBuilding(false);
+        workspace.setDescription(workspaceDesc);
+
+        IWorkspaceRoot root = workspace.getRoot();
+        final IProject project = root.getProject(projectName);
+
+        // create a eclipse project
+        IProjectDescription description = workspace.newProjectDescription(projectName);
+
+        // make the eclipse project a cdt project
+        CCorePlugin.getDefault().createCProject(description, project, new NullProgressMonitor(),
+                ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
+
+
+        project.open(null);
+        project.setSessionProperty(qualifiedName, DummyData);
+        project.close(null);
+        project.open(null);
+        Object projData = project.getSessionProperty(qualifiedName);
+        if (projData != null) {
+            fail("non persistent projectdescription properties behave persistent during project close open");
+        }
+    }
+
+
+    /**
+     * open and close a project should keep the compileDescription and
+     * BoardDescriotion
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void openAndCloseUsesSavedSettings() throws Exception {
+        CodeDescription codeDesc = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
+
+        String proj1Name = "openModAndClose1";
+        BoardDescription proj1BoardDesc = Arduino.uno().getBoardDescriptor();
+        CompileDescription proj1CompileDesc = getBunkersCompileDescription();
+        IProject proj1 = SloeberProjectDescription.createArduinoProject(proj1Name, null, proj1BoardDesc, codeDesc,
+                proj1CompileDesc, new NullProgressMonitor());
+
+        String proj2Name = "openModAndClose2";
+        BoardDescription proj2BoardDesc = Arduino.getMega2560Board().getBoardDescriptor();
+        CompileDescription proj2CompileDesc = new CompileDescription();
+        IProject proj2 = SloeberProjectDescription.createArduinoProject(proj2Name, null, proj2BoardDesc, codeDesc,
+                proj2CompileDesc, new NullProgressMonitor());
+
+
+        // Read the data we want to test
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        SloeberProjectDescription proj1SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj1);
+        ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
+        ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
+        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc);
+        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc);
+
+        SloeberProjectDescription proj2SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj2);
+        ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
+        ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
+        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
+        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc);
+
+        // get the filenames to copy
+        String confDescName = proj1ConfDesc.getName();
+        IFile file = proj1.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        File proj1SloeberFile = file.getLocation().toFile();
+
+        confDescName = proj2ConfDesc.getName();
+        file = proj2.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        File proj2SloeberFile = file.getLocation().toFile();
+
+        // close and reopen the project
+        proj2.close(null);
+        // just wait a while
+        Thread.sleep(1000);
+        Shared.waitForAllJobsToFinish();
+
+        // copy from proj1 to proj2
+        FileUtils.copyFile(proj1SloeberFile, proj2SloeberFile);
+
+        // reopen the project
+        proj2.open(null);
+        Thread.sleep(1000);
+        Shared.waitForAllJobsToFinish();
+
+        // reread project 2
+        proj2SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj2);
+        proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
+        proj2ConfDesc = proj2Desc.getActiveConfiguration();
+        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
+        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc);
+
+        // check the setup was done correctly
+        if (!proj1BoardDesc.equals(proj1CreatedBoardDesc)) {
+            fail("Project 1 not created properly.");
+        }
+        if (!proj2BoardDesc.equals(proj2CreatedBoardDesc)) {
+            fail("Project 2 not created properly.");
+        }
+        if (!proj1CompileDesc.equals(proj1CreatedCompileDesc)) {
+            fail("Project 1 not created properly.");
+        }
+        if (!proj2CompileDesc.equals(proj2CreatedCompileDesc)) {
+            fail("Project 2 not created properly.");
+        }
+        
+        //check wether the file modification was taken into account
+        if (!proj2OpenedBoardDesc.equals(proj1BoardDesc)) {
+            fail("Project 2 not created properly.");
+        }
+        if (!proj2OpenedCompileDesc.equals(proj1CompileDesc)) {
+            fail("Project 2 not created properly.");
+        }
+
+    }
+
+    static CompileDescription getBunkersCompileDescription() {
+        CompileDescription inCompileDescription = new CompileDescription();
+
+        inCompileDescription.set_All_CompileOptions("Deen=1");
+        inCompileDescription.set_Archive_CompileOptions("Dtwee=2");
+        inCompileDescription.set_Assembly_CompileOptions("Drie=3");
+        inCompileDescription.set_C_andCPP_CompileOptions("Dvier=4");
+        inCompileDescription.set_C_CompileOptions("Dvijf=5");
+        inCompileDescription.set_Link_CompileOptions("Dzes=6");
+        inCompileDescription.set_CPP_CompileOptions("Dzeven=7");
+        inCompileDescription.setAlternativeSizeCommand(true);
+        inCompileDescription.setEnableParallelBuild(true);
+        inCompileDescription.setWarningLevel(false);
+        return inCompileDescription;
+    }
 }
