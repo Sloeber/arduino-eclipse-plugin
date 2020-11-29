@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -95,16 +94,6 @@ public class BoardDescription extends Common {
     private Map<String, String> myOptions;
 
     /*
-     * the following data is stored to detect changes that will make the equal fail
-     * so os changes, workspace changes, eclipse install changes will force a update
-     * on the stored data
-     */
-    private String myProjectName = EMPTY;
-    private String myOSName = Platform.getOS();
-    private IPath myWorkSpaceLocation = Common.getWorkspaceRoot();
-    private IPath myWorkEclipseLocation = ConfigurationPreferences.getEclipseHome();
-
-    /*
      * Stuff to make things work
      */
     private File myreferencingBoardsFile;
@@ -160,18 +149,6 @@ public class BoardDescription extends Common {
             return true;
         }
         if (!this.getOptions().equals(otherBoardDescriptor.getOptions())) {
-            return true;
-        }
-        if (!this.getProjectName().equals(otherBoardDescriptor.getProjectName())) {
-            return true;
-        }
-        if (!this.myOSName.equals(otherBoardDescriptor.myOSName)) {
-            return true;
-        }
-        if (!this.myWorkEclipseLocation.equals(otherBoardDescriptor.myWorkEclipseLocation)) {
-            return true;
-        }
-        if (!this.myWorkSpaceLocation.equals(otherBoardDescriptor.myWorkSpaceLocation)) {
             return true;
         }
         return false;
@@ -353,13 +330,7 @@ public class BoardDescription extends Common {
             myreferencingBoardsFile = new File(
                     getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARDS_FILE, EMPTY));
             myBoardID = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_BOARD_ID, EMPTY);
-            myProjectName = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_PROJECT_NAME, EMPTY);
             myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
-            myOSName = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_OS, EMPTY);
-            myWorkSpaceLocation = new Path(
-                    getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_WORKSPACE_LOCATION, EMPTY));
-            myWorkEclipseLocation = new Path(
-                    getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_ECLIPSE_LOCATION, EMPTY));
             String optinconcat = getBuildEnvironmentVariable(confdesc, ENV_KEY_JANTJE_MENU_SELECTION, EMPTY);
             myOptions = KeyValue.makeMap(optinconcat);
         }
@@ -427,7 +398,6 @@ public class BoardDescription extends Common {
         this.myProgrammer = sourceBoardDescriptor.getProgrammer();
         this.myBoardID = sourceBoardDescriptor.getBoardID();
         this.myOptions = sourceBoardDescriptor.getOptions();
-        this.myProjectName = sourceBoardDescriptor.getProjectName();
         this.myreferencingBoardsFile = sourceBoardDescriptor.getReferencingBoardsFile();
         this.myTxtFile = sourceBoardDescriptor.myTxtFile;
         this.myBoardsVariant = sourceBoardDescriptor.getBoardVariant();
@@ -641,11 +611,6 @@ public class BoardDescription extends Common {
         return Common.getBuildEnvironmentVariable(project, ENV_KEY_JANTJE_UPLOAD_PORT, EMPTY);
     }
 
-
-
-    public String getProjectName() {
-        return this.myProjectName;
-    }
 
     /**
      * provide the actual path to the variant. Use this method if you want to know
@@ -900,10 +865,6 @@ public class BoardDescription extends Common {
         allVars.put(ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
         allVars.put(ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
         allVars.put(ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-        allVars.put(ENV_KEY_JANTJE_PROJECT_NAME, myProjectName);
-        allVars.put(ENV_KEY_JANTJE_OS, this.myOSName);
-        allVars.put(ENV_KEY_JANTJE_WORKSPACE_LOCATION, this.myWorkSpaceLocation.toOSString());
-        allVars.put(ENV_KEY_JANTJE_ECLIPSE_LOCATION, this.myWorkEclipseLocation.toOSString());
         allVars.put(JANTJE_ACTION_UPLOAD, this.myProgrammer);
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
@@ -1078,16 +1039,6 @@ public class BoardDescription extends Common {
                 break;
             default:
                 // this should never happen as the split is limited to 3
-            }
-        }
-
-        // report that the upload comport is not set if default upload is used
-        String programmer = getProgrammer();
-        if (programmer.equalsIgnoreCase(Defaults.getDefaultUploadProtocol())) {
-            String MComPort = getUploadPort();
-            if (MComPort.isEmpty()) {
-                Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                        "Upload will fail due to missing upload port for project: " + myProjectName)); //$NON-NLS-1$
             }
         }
 
