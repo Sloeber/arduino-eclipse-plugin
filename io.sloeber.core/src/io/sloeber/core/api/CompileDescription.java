@@ -10,8 +10,9 @@ import io.sloeber.core.txt.TxtFile;
 
 public class CompileDescription {
 
-	private Boolean myWarningLevel =  Boolean.TRUE;
+    private boolean myWarningLevel = true;
 	private boolean myAlternativeSizeCommand = false;
+    private boolean myEnableParallelBuild = false;
 	private String my_CPP_CompileOptions = new String();
 	private String my_C_CompileOptions = new String();
 	private String my_C_andCPP_CompileOptions = new String();
@@ -20,7 +21,7 @@ public class CompileDescription {
 	private String my_Link_CompileOptions = new String();
 	private String my_All_CompileOptions = new String();
 
-    private boolean myEnableParallelBuild = false;
+
 
 	private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.compiler.warning_flags"; //$NON-NLS-1$
 	private static final String ENV_KEY_WARNING_LEVEL_ON = "${A.compiler.warning_flags_all}"; //$NON-NLS-1$
@@ -90,11 +91,11 @@ public class CompileDescription {
     // }
 
     public boolean isWarningLevel() {
-		return this.myWarningLevel.booleanValue();
+        return this.myWarningLevel;
 	}
 
 	public void setWarningLevel(boolean myWarningLevel) {
-		this.myWarningLevel =  Boolean.valueOf(myWarningLevel);
+        this.myWarningLevel = myWarningLevel;
 	}
 
 	public boolean isParallelBuildEnabled() {
@@ -177,7 +178,7 @@ public class CompileDescription {
     public Map<String, String> getEnvVars() {
         Map<String, String> ret = getEnvVarsConfig();
 
-        ret.put(ENV_KEY_JANTJE_WARNING_LEVEL, this.myWarningLevel.toString());
+        ret.put(ENV_KEY_JANTJE_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
 
 		if (this.isWarningLevel()) {
             ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
@@ -254,8 +255,19 @@ public class CompileDescription {
     public CompileDescription() {
         // no need to do anything
         // this will create default compile options
-        // not that the Parallel build option is implemented at the ui level
+        // note that the Parallel build option is implemented at the ui level
         // therefore this is not set here but in the ui before project creation
     }
 
+    public boolean isEqual(CompileDescription other) {
+        return (myWarningLevel == other.myWarningLevel) && (myAlternativeSizeCommand == other.myAlternativeSizeCommand)
+                && (my_CPP_CompileOptions.equals(other.my_CPP_CompileOptions))
+                && (my_C_CompileOptions.equals(other.my_C_CompileOptions))
+                && (my_C_andCPP_CompileOptions.equals(other.my_C_andCPP_CompileOptions))
+                && (my_Assembly_CompileOptions.equals(other.my_Assembly_CompileOptions))
+                && (my_Archive_CompileOptions.equals(other.my_Archive_CompileOptions))
+                && (my_Link_CompileOptions.equals(other.my_Link_CompileOptions))
+                && (my_All_CompileOptions.equals(other.my_All_CompileOptions));
+
+    }
 }

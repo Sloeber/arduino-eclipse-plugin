@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
@@ -47,19 +48,27 @@ import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.txt.TxtFile;
 
 public class SloeberProjectDescription extends Common {
-    static private Map<String, SloeberProjectDescription> ArduinoProjectList = new HashMap<>();
+    private static QualifiedName sloeberQualifiedName = new QualifiedName(Activator.NODE_ARDUINO,
+            "Sloeber_Project_Description"); //$NON-NLS-1$
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
-    private IProject myProject = null;
-
+ 
     private static final String ENV_KEY_BUILD_SOURCE_PATH = ERASE_START + "build.source.path"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
     private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "make_location"; //$NON-NLS-1$
 
-    private SloeberProjectDescription(IProject project) {
-        myProject = project;
-        ICProjectDescription projDesc = CCorePlugin.getDefault().getProjectDescription(myProject);
+    private SloeberProjectDescription(IProject project, boolean skipChildren) {
+        try {
+            project.setSessionProperty(sloeberQualifiedName, this);
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (skipChildren) {
+            return;
+        }
+        ICProjectDescription projDesc = CCorePlugin.getDefault().getProjectDescription(project);
         for (ICConfigurationDescription confDesc : projDesc.getConfigurations()) {
             readSloeberConfigFile(confDesc);
             setEnvVars(confDesc, getEnvVars(confDesc), true);
@@ -128,17 +137,17 @@ public class SloeberProjectDescription extends Common {
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
 
-                    SloeberProjectDescription arduinoProjectDescriptor = getArduinoProjectDescription(newProjectHandle);
-
+                    SloeberProjectDescription arduinoProjDesc = new SloeberProjectDescription(newProjectHandle, true);
                     for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
                         // Even though we use the same boardDescriptor for all configurations during
                         // project creation
                         // we need to add them config per config because of the include linking
                         Helpers.addArduinoCodeToProject(boardDescriptor, curConfig);
 
-                        arduinoProjectDescriptor.setCompileDescription(curConfig, compileDescriptor);
-                        arduinoProjectDescriptor.setBoardDescription(curConfig, boardDescriptor);
-
+                        arduinoProjDesc.putCompileDescription(curConfig, compileDescriptor);
+                        arduinoProjDesc.putBoardDescription(curConfig, boardDescriptor);
+                        arduinoProjDesc.saveConfig(curConfig);
+                        setEnvVars(curConfig, arduinoProjDesc.getEnvVars(curConfig), true);
                         Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
                     }
 
@@ -177,13 +186,14 @@ public class SloeberProjectDescription extends Common {
     }
 
     private HashMap<String, String> getEnvVars(ICConfigurationDescription confDesc) {
+        IProject project = confDesc.getProjectDescription().getProject();
 
-        BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getName());
-        CompileDescription compileOptions = myCompileDescriptions.get(confDesc.getName());
+        BoardDescription boardDescription = getBoardDescription(confDesc);
+        CompileDescription compileOptions = getCompileDescription(confDesc);
 
         HashMap<String, String> allVars = new HashMap<>();
 
-        allVars.put(ENV_KEY_BUILD_SOURCE_PATH, myProject.getLocation().toOSString());
+        allVars.put(ENV_KEY_BUILD_SOURCE_PATH, project.getLocation().toOSString());
 
         if (boardDescription != null) {
             allVars.putAll(boardDescription.getEnvVars());
@@ -214,20 +224,27 @@ public class SloeberProjectDescription extends Common {
 
     private void readSloeberConfigFile(ICConfigurationDescription confDesc) {
         String confDescName = confDesc.getName();
-        IFile file = myProject.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        IProject project = confDesc.getProjectDescription().getProject();
+        IFile file = project.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
         if (file.exists()) {
             TxtFile configFile = new TxtFile(file.getLocation().toFile());
             BoardDescription boardDescription = new BoardDescription(configFile);
             CompileDescription compileDescription = new CompileDescription(configFile);
-            myBoardDescriptions.put(confDescName, boardDescription);
-            myCompileDescriptions.put(confDescName, compileDescription);
+            putBoardDescription(confDesc, boardDescription);
+            putCompileDescription(confDesc, compileDescription);
+        } else {
+            if (!IndexerController.isPosponed(project)) {
+                Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
+                        "failed to read file: " + file.getName()));
+            }
         }
 
     }
 
     private void createSloeberConfigFile(ICConfigurationDescription confDesc) {
-        BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getName());
-        CompileDescription compileDescription = myCompileDescriptions.get(confDesc.getName());
+        IProject project = confDesc.getProjectDescription().getProject();
+        BoardDescription boardDescription = getBoardDescription(confDesc);
+        CompileDescription compileDescription = getCompileDescription(confDesc);
         Map<String, String> configVars = new HashMap<>();
         if (boardDescription != null) {
             configVars = boardDescription.getEnvVarsConfig();
@@ -240,7 +257,7 @@ public class SloeberProjectDescription extends Common {
         for (Entry<String, String> curLine : configVars.entrySet()) {
             newFileContent += curLine.getKey() + '=' + curLine.getValue() + '\n';
         }
-        IFile file = myProject.getFile("sloeber." + confDesc.getName() + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        IFile file = project.getFile("sloeber." + confDesc.getName() + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
         try {
             file.refreshLocal(IResource.DEPTH_INFINITE, null);
             if (file.exists()) {
@@ -286,21 +303,22 @@ public class SloeberProjectDescription extends Common {
      */
     public void setBoardDescription(ICConfigurationDescription confDesc, BoardDescription boardDescription) {
         try {
+            IProject project = confDesc.getProjectDescription().getProject();
             boolean isRebuildNeeded = true;
-            BoardDescription oldBoardDescription = myBoardDescriptions.get(confDesc.getName());
+            BoardDescription oldBoardDescription = getBoardDescription(confDesc);
             if (oldBoardDescription != null) {
                 isRebuildNeeded = oldBoardDescription.needsRebuild(boardDescription);
             }
             Helpers.addArduinoCodeToProject(boardDescription, confDesc);
 
             isRebuildNeeded = isRebuildNeeded || Helpers.removeInvalidIncludeFolders(confDesc);
-            myBoardDescriptions.put(confDesc.getName(), boardDescription);
+            putBoardDescription(confDesc, boardDescription);
             saveConfig(confDesc);
             if (isRebuildNeeded) {
-                Helpers.setDirtyFlag(myProject, confDesc);
+                Helpers.setDirtyFlag(project, confDesc);
             } else {
                 Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                        "Ignoring project update; clean may be required: " + myProject.getName())); //$NON-NLS-1$
+                        "Ignoring project update; clean may be required: " + project.getName())); //$NON-NLS-1$
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -338,14 +356,23 @@ public class SloeberProjectDescription extends Common {
      * @param project
      * @return
      */
-    public static SloeberProjectDescription getArduinoProjectDescription(IProject project) {
+    public static synchronized SloeberProjectDescription getArduinoProjectDescription(IProject project) {
+
         if (project.isOpen() && project.getLocation().toFile().exists()) {
             if (Sketch.isSketch(project)) {
-                SloeberProjectDescription ret = ArduinoProjectList.get(project.getName());
-                if (null == ret) {
-                    ret = new SloeberProjectDescription(project);
+                Object sessionProperty = null;
+                try {
+                    sessionProperty = project.getSessionProperty(sloeberQualifiedName);
+                    if (null != sessionProperty) {
+                        SloeberProjectDescription ret = (SloeberProjectDescription) sessionProperty;
+                        return ret;
+                    }
+                } catch (CoreException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-                ArduinoProjectList.put(project.getName(), ret);
+
+                SloeberProjectDescription ret = new SloeberProjectDescription(project, false);
                 return ret;
             }
         }
@@ -354,19 +381,20 @@ public class SloeberProjectDescription extends Common {
 
     public void setCompileDescription(ICConfigurationDescription confDesc, CompileDescription compileDescription) {
         try {
+            IProject project = confDesc.getProjectDescription().getProject();
             boolean isRebuildNeeded = true;
-            CompileDescription oldCompileDescription = myCompileDescriptions.get(confDesc.getName());
+            CompileDescription oldCompileDescription = getCompileDescription(confDesc);
             if (oldCompileDescription != null) {
                 isRebuildNeeded = oldCompileDescription.needsRebuild(compileDescription);
             }
 
-            myCompileDescriptions.put(confDesc.getName(), compileDescription);
+            putCompileDescription(confDesc, compileDescription);
             saveConfig(confDesc);
             if (isRebuildNeeded) {
-                Helpers.setDirtyFlag(myProject, confDesc);
+                Helpers.setDirtyFlag(project, confDesc);
             } else {
                 Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                        "Ignoring project update; clean may be required: " + myProject.getName())); //$NON-NLS-1$
+                        "Ignoring project update; clean may be required: " + project.getName())); //$NON-NLS-1$
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -376,17 +404,33 @@ public class SloeberProjectDescription extends Common {
     }
 
     public BoardDescription getBoardDescription(ICConfigurationDescription confDesc) {
-        return myBoardDescriptions.get(confDesc.getName());
+        BoardDescription ret = myBoardDescriptions.get(confDesc.getId());
+        if (ret == null) {
+            readSloeberConfigFile(confDesc);
+            ret = myBoardDescriptions.get(confDesc.getId());
+        }
+        return ret;
+    }
+
+    private void putBoardDescription(ICConfigurationDescription confDesc, BoardDescription boardDesc) {
+        myBoardDescriptions.put(confDesc.getId(), boardDesc);
+    }
+
+    private void putCompileDescription(ICConfigurationDescription confDesc, CompileDescription compDesc) {
+        myCompileDescriptions.put(confDesc.getId(), compDesc);
     }
 
     public CompileDescription getCompileDescription(ICConfigurationDescription confDesc) {
-        return myCompileDescriptions.get(confDesc.getName());
+        CompileDescription ret = myCompileDescriptions.get(confDesc.getId());
+        if (ret == null) {
+            readSloeberConfigFile(confDesc);
+            ret = myCompileDescriptions.get(confDesc.getId());
+        }
+        return ret;
     }
 
-    public String getDecoratedText(String text) {
-        ICProjectDescription projDesc = CCorePlugin.getDefault().getProjectDescription(myProject);
-        ICConfigurationDescription configurationDescription = projDesc.getActiveConfiguration();
-        BoardDescription boardDescriptor = getBoardDescription(configurationDescription);
+    public String getDecoratedText(ICConfigurationDescription confDesc, String text) {
+        BoardDescription boardDescriptor = getBoardDescription(confDesc);
         if (boardDescriptor == null) {
             return text + " Project needs to be configured";
         }

@@ -74,7 +74,7 @@ public class CodeDescription {
 		this.myReplacers = myReplacers;
 	}
 
-	private CodeDescription(CodeTypes codeType) {
+    public CodeDescription(CodeTypes codeType) {
 		myCodeType = codeType;
 	}
 	
