@@ -178,8 +178,6 @@ public class CompileDescription {
     public Map<String, String> getEnvVars() {
         Map<String, String> ret = getEnvVarsConfig();
 
-        ret.put(ENV_KEY_JANTJE_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
-
 		if (this.isWarningLevel()) {
             ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
 		}
@@ -237,6 +235,9 @@ public class CompileDescription {
         ret.put(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
         ret.put(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
+        ret.put(ENV_KEY_JANTJE_SIZE_SWITCH, Boolean.valueOf(myAlternativeSizeCommand).toString());
+
         return ret;
     }
 
@@ -249,6 +250,8 @@ public class CompileDescription {
         my_Archive_CompileOptions = tree.getValue(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS);
         my_Link_CompileOptions = tree.getValue(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS);
         my_All_CompileOptions = tree.getValue(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS);
+        myWarningLevel = Const.TRUE.equalsIgnoreCase(tree.getValue(ENV_KEY_JANTJE_WARNING_LEVEL));
+        myAlternativeSizeCommand = Const.TRUE.equalsIgnoreCase(tree.getValue(ENV_KEY_JANTJE_SIZE_SWITCH));
 
     }
 
@@ -259,7 +262,14 @@ public class CompileDescription {
         // therefore this is not set here but in the ui before project creation
     }
 
-    public boolean isEqual(CompileDescription other) {
+    /**
+     * Compares 2 compile descriptors parallel build is ignored as this is a project
+     * creation only setting
+     * 
+     * @param other
+     * @return
+     */
+    public boolean equals(CompileDescription other) {
         return (myWarningLevel == other.myWarningLevel) && (myAlternativeSizeCommand == other.myAlternativeSizeCommand)
                 && (my_CPP_CompileOptions.equals(other.my_CPP_CompileOptions))
                 && (my_C_CompileOptions.equals(other.my_C_CompileOptions))
@@ -269,5 +279,10 @@ public class CompileDescription {
                 && (my_Link_CompileOptions.equals(other.my_Link_CompileOptions))
                 && (my_All_CompileOptions.equals(other.my_All_CompileOptions));
 
+    }
+
+    public static CompileDescription getFromCDTEnvVars() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

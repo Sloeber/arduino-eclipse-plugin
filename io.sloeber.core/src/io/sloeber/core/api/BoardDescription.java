@@ -54,10 +54,6 @@ public class BoardDescription extends Common {
     private static final String ENV_KEY_JANTJE_MENU_SELECTION = ENV_KEY_JANTJE_START + Const.MENU;
     private static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + Const.COM_PORT;
     private static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "board_name"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_PROJECT_NAME = ENV_KEY_JANTJE_START + "project_name"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_OS = ENV_KEY_JANTJE_START + "os_name"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_WORKSPACE_LOCATION = ENV_KEY_JANTJE_START + "workspace_location"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ECLIPSE_LOCATION = ENV_KEY_JANTJE_START + "eclipse_location"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "boards_file"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "package_ID"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "architecture_ID"; //$NON-NLS-1$
@@ -88,10 +84,10 @@ public class BoardDescription extends Common {
     /*
      * This is the basic info contained in the descriptor
      */
-    private String myUploadPort;
-    private String myProgrammer;
-    private String myBoardID;
-    private Map<String, String> myOptions;
+    private String myUploadPort = EMPTY;
+    private String myProgrammer = Defaults.getDefaultUploadProtocol();
+    private String myBoardID = EMPTY;
+    private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     /*
      * Stuff to make things work
@@ -106,8 +102,12 @@ public class BoardDescription extends Common {
     private IPath myReferencedUploadToolPlatformPath;
     private String myUploadTool;
     private boolean isDirty = true;
-    private final String ENV_KEY_JANTJE_PROGRAMMER = "SLOEBER.PROGRAMMER.NAME"; //$NON-NLS-1$
-    private final String ENV_KEY_JANTJE_BOARD_TXT = "SLOEBER.PRODUCT.NAME"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_PROGRAMMER = "SLOEBER.PROGRAMMER.NAME"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_BOARD_TXT = "SLOEBER.BOARD.TXT"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_BOARD_ID = "SLOEBER.BOARD.ID"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_UPLOAD_PORT = "SLOEBER.UPLOAD.PORT"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_UPLOAD_TOOL = "SLOEBER.UPLOAD.TOOL"; //$NON-NLS-1$
+    private final String ENV_KEY_SLOEBER_MENU_SELECTION = "SLOEBER.MENU"; //$NON-NLS-1$
 
 
     @Override
@@ -369,10 +369,7 @@ public class BoardDescription extends Common {
      *            if null default options are taken
      */
     BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
-        this.myUploadPort = EMPTY;
-        this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
-        this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.myreferencingBoardsFile = boardsFile;
         this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
@@ -382,10 +379,7 @@ public class BoardDescription extends Common {
     }
 
     protected BoardDescription(BoardTxtFile txtFile, String boardID) {
-        this.myUploadPort = EMPTY;
-        this.myProgrammer = Defaults.getDefaultUploadProtocol();
         this.myBoardID = boardID;
-        this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.myreferencingBoardsFile = txtFile.getTxtFile();
         this.myTxtFile = txtFile;
         setDefaultOptions();
@@ -806,31 +800,39 @@ public class BoardDescription extends Common {
     }
 
     BoardDescription(TxtFile configFile) {
+
         KeyValueTree tree = configFile.getData();
-        this.myUploadPort = EMPTY;
-        this.myProgrammer = tree.getValue(ENV_KEY_JANTJE_PROGRAMMER);
-        this.myBoardID = tree.getValue(ENV_KEY_JANTJE_BOARD_ID);
-        myreferencingBoardsFile = new File(tree.getValue(ENV_KEY_JANTJE_BOARD_TXT));
-        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
 
-        KeyValueTree optionsTree = tree.getChild(ENV_KEY_JANTJE_MENU_SELECTION);
+        this.myProgrammer = tree.getValue(ENV_KEY_SLOEBER_PROGRAMMER);
+        this.myBoardID = tree.getValue(ENV_KEY_SLOEBER_BOARD_ID);
+        String board_txt = tree.getValue(ENV_KEY_SLOEBER_BOARD_TXT);
+        this.myUploadPort = tree.getValue(ENV_KEY_SLOEBER_UPLOAD_PORT);
+        this.myUploadTool = tree.getValue(ENV_KEY_SLOEBER_UPLOAD_TOOL);
+        KeyValueTree optionsTree = tree.getChild(ENV_KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
-        this.myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
+        myreferencingBoardsFile = new File(board_txt);
+        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
             this.myOptions.putAll(options);
         }
+
+        // this.myOptions =
+
     }
     public Map<String, String> getEnvVarsConfig() {
         Map<String, String> allVars = new TreeMap<>();
-        allVars.put(ENV_KEY_JANTJE_PROGRAMMER, this.myProgrammer);
-        allVars.put(ENV_KEY_JANTJE_BOARD_ID, this.myBoardID);
-        allVars.put(ENV_KEY_JANTJE_BOARD_TXT, myreferencingBoardsFile.toString());
-        // allVars.put(ENV_KEY_JANTJE_PRODUCT_VERSION, EMPTY);
+        String board_txt = myreferencingBoardsFile.toString();
+
+        allVars.put(ENV_KEY_SLOEBER_PROGRAMMER, this.myProgrammer);
+        allVars.put(ENV_KEY_SLOEBER_BOARD_ID, this.myBoardID);
+        allVars.put(ENV_KEY_SLOEBER_BOARD_TXT, board_txt);
+        allVars.put(ENV_KEY_SLOEBER_UPLOAD_PORT, this.myUploadPort);
+        allVars.put(ENV_KEY_SLOEBER_UPLOAD_TOOL, this.myUploadTool);
 
         for (Entry<String, String> curOption : this.myOptions.entrySet()) {
-            allVars.put(ENV_KEY_JANTJE_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+            allVars.put(ENV_KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
         }
         return allVars;
     }
@@ -1120,5 +1122,9 @@ public class BoardDescription extends Common {
         return extraVars;
     }
 
+    public static BoardDescription getFromCDTEnvVars() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

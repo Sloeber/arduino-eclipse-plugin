@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
@@ -52,7 +53,7 @@ public class SloeberProjectDescription extends Common {
             "Sloeber_Project_Description"); //$NON-NLS-1$
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
- 
+
     private static final String ENV_KEY_BUILD_SOURCE_PATH = ERASE_START + "build.source.path"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
     private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
@@ -180,7 +181,7 @@ public class SloeberProjectDescription extends Common {
 
     private void saveConfig(ICConfigurationDescription confDesc) {
 
-        createSloeberConfigFile(confDesc);
+        createSloeberConfigFiles(confDesc);
         setEnvVars(confDesc, getEnvVars(confDesc), true);
 
     }
@@ -241,33 +242,63 @@ public class SloeberProjectDescription extends Common {
 
     }
 
-    private void createSloeberConfigFile(ICConfigurationDescription confDesc) {
+    private static IFile getConfigLocalFile(ICConfigurationDescription confDesc) {
+        IProject project = confDesc.getProjectDescription().getProject();
+        return project.getFile(".sloeber." + confDesc.getName() + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static IFile getConfigVersionFile(ICConfigurationDescription confDesc) {
+        IProject project = confDesc.getProjectDescription().getProject();
+        return project.getFile("sloeber." + confDesc.getName() + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * This methods creates/updates 2 files in the workspace. Together these files
+     * contain the Sloeber project configuration info The info is split into 2 files
+     * because you probably do not want to add all the info to a version control
+     * tool.
+     * 
+     * sloeber.[config name].txt is the file you can add to a version control
+     * .sloeber.[config name].txt is the file with settings you do not want to add
+     * to version control
+     * 
+     * @param confDesc
+     */
+    private void createSloeberConfigFiles(ICConfigurationDescription confDesc) {
         IProject project = confDesc.getProjectDescription().getProject();
         BoardDescription boardDescription = getBoardDescription(confDesc);
         CompileDescription compileDescription = getCompileDescription(confDesc);
-        Map<String, String> configVars = new HashMap<>();
-        if (boardDescription != null) {
-            configVars = boardDescription.getEnvVarsConfig();
-        }
-        if (compileDescription == null) {
-            compileDescription = new CompileDescription();
-        }
+        Map<String, String> configVars = new TreeMap<>();
+        configVars.putAll(boardDescription.getEnvVarsConfig());
         configVars.putAll(compileDescription.getEnvVarsConfig());
-        String newFileContent = EMPTY;
+
+        String versionFileContent = EMPTY;
+        String localFileContent = EMPTY;
         for (Entry<String, String> curLine : configVars.entrySet()) {
-            newFileContent += curLine.getKey() + '=' + curLine.getValue() + '\n';
+            // TODO add filter to seperate local file info from
+            // version file info
+            versionFileContent += curLine.getKey() + '=' + curLine.getValue() + '\n';
         }
-        IFile file = project.getFile("sloeber." + confDesc.getName() + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        IFile versionFile = getConfigVersionFile(confDesc);
+        IFile localFile = getConfigLocalFile(confDesc);
         try {
-            file.refreshLocal(IResource.DEPTH_INFINITE, null);
-            if (file.exists()) {
-                file.delete(true, null);
-                file.refreshLocal(IResource.DEPTH_INFINITE, null);
+            project.refreshLocal(IResource.DEPTH_INFINITE, null);
+            if (versionFile.exists()) {
+                versionFile.delete(true, null);
             }
 
-            if (!file.exists() && (!newFileContent.isBlank())) {
-                ByteArrayInputStream stream = new ByteArrayInputStream(newFileContent.getBytes());
-                file.create(stream, true, null);
+            if (!versionFile.exists() && (!versionFileContent.isBlank())) {
+                ByteArrayInputStream stream = new ByteArrayInputStream(versionFileContent.getBytes());
+                versionFile.create(stream, true, null);
+            }
+
+            if (localFile.exists()) {
+                localFile.delete(true, null);
+            }
+
+            if (!localFile.exists() && (!localFileContent.isBlank())) {
+                ByteArrayInputStream stream = new ByteArrayInputStream(localFileContent.getBytes());
+                localFile.create(stream, true, null);
             }
         } catch (CoreException e) {
             // TODO Auto-generated catch block
@@ -403,11 +434,26 @@ public class SloeberProjectDescription extends Common {
         }
     }
 
+    /**
+     * Method that tries to give you the boardDescription settings for this
+     * project/configuration This method tries folowing things 1)memory (after 2 or
+     * 3) 2)configuration files in the project (at project creation) 3)CDT
+     * environment variables (to update projects created by previous versions of
+     * Sloeber)
+     * 
+     * @param confDesc
+     * @return
+     */
     public BoardDescription getBoardDescription(ICConfigurationDescription confDesc) {
         BoardDescription ret = myBoardDescriptions.get(confDesc.getId());
         if (ret == null) {
-            readSloeberConfigFile(confDesc);
-            ret = myBoardDescriptions.get(confDesc.getId());
+            IFile file = getConfigVersionFile(confDesc);
+            if (file.exists()) {
+                readSloeberConfigFile(confDesc);
+                ret = myBoardDescriptions.get(confDesc.getId());
+            } else {
+                ret = BoardDescription.getFromCDTEnvVars();
+            }
         }
         return ret;
     }
@@ -423,8 +469,13 @@ public class SloeberProjectDescription extends Common {
     public CompileDescription getCompileDescription(ICConfigurationDescription confDesc) {
         CompileDescription ret = myCompileDescriptions.get(confDesc.getId());
         if (ret == null) {
-            readSloeberConfigFile(confDesc);
-            ret = myCompileDescriptions.get(confDesc.getId());
+            IFile file = getConfigVersionFile(confDesc);
+            if (file.exists()) {
+                readSloeberConfigFile(confDesc);
+                ret = myCompileDescriptions.get(confDesc.getId());
+            } else {
+                ret = CompileDescription.getFromCDTEnvVars();
+            }
         }
         return ret;
     }
@@ -432,7 +483,7 @@ public class SloeberProjectDescription extends Common {
     public String getDecoratedText(ICConfigurationDescription confDesc, String text) {
         BoardDescription boardDescriptor = getBoardDescription(confDesc);
         if (boardDescriptor == null) {
-            return text + " Project needs to be configured";
+            return text + " Project not configured"; //$NON-NLS-1$
         }
         String boardName = boardDescriptor.getBoardName();
         String portName = boardDescriptor.getActualUploadPort();

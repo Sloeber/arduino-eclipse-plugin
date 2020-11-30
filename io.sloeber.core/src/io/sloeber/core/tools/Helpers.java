@@ -328,7 +328,7 @@ public class Helpers extends Common {
 		if (corePath != null) {
 			addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH, configurationDescription, true);
 			IPath variantPath = boardDescriptor.getActualVariantPath();
-			if (variantPath == null) {
+            if ((variantPath == null) || (!variantPath.toFile().exists())) {
 				// remove the existing link
 				Helpers.removeCodeFolder(project, ARDUINO_VARIANT_FOLDER_PATH);
 			} else {
