@@ -228,6 +228,19 @@ public class Common extends Const {
         return "${" + variableName + '}'; //$NON-NLS-1$
     }
 
+    /**
+     * read a environment variable in the way it was stored in older Sloeber
+     * versions That is as a environment variable both with upper case and lowercase
+     * key
+     * 
+     * @param confDesc
+     * @param envName
+     * @return
+     */
+    static public String getOldWayEnvVar(ICConfigurationDescription confDesc, String envName) {
+        return getBuildEnvironmentVariable(confDesc, envName,
+                getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, false), false);
+    }
 
 
 }
