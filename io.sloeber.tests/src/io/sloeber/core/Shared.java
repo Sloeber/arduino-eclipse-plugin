@@ -25,11 +25,11 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 
-import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
 
@@ -161,7 +161,7 @@ public class Shared {
 
         try {
             compileOptions.setEnableParallelBuild(true);
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, boardDescriptor,
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, boardDescriptor,
                     codeDescriptor, compileOptions, monitor);
             waitForAllJobsToFinish(); // for the indexer
         } catch (Exception e) {

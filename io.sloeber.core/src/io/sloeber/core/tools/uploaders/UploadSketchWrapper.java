@@ -24,6 +24,7 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.SerialManager;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
@@ -54,8 +55,11 @@ public class UploadSketchWrapper {
 
     private Job internalUpload(IProject project,
 			ICConfigurationDescription confDesc) {
-        BoardDescription boardDescriptor = new BoardDescription(confDesc);
-		String UpLoadTool = boardDescriptor.getActualUploadTool(confDesc);
+
+        SloeberProject sProject = SloeberProject.getSloeberProject(project);
+        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc);
+
+        String UpLoadTool = boardDescriptor.getActualUploadTool();
 		// String uploadClass = Common.getBuildEnvironmentVariable(confDesc,
 		// Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 		// new String());/** @jniclass flags=no_gen */

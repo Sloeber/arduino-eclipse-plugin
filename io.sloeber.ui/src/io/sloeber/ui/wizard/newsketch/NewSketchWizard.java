@@ -19,7 +19,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import io.sloeber.core.api.SloeberProjectDescription;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
@@ -91,7 +91,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		CompileDescription compileDescription = new CompileDescription();
 		URI locationURI = (!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null;
 		compileDescription.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
-		this.mProject = SloeberProjectDescription.createArduinoProject(this.mWizardPage.getProjectName(),
+		this.mProject = SloeberProject.createArduinoProject(this.mWizardPage.getProjectName(),
 				locationURI, boardDescription, codeDescription, compileDescription, new NullProgressMonitor());
 
 		if (this.mProject == null) {

@@ -8,8 +8,8 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector;
 
-import io.sloeber.core.api.SloeberProjectDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Const;
 
 @SuppressWarnings({"nls","unused"})
@@ -27,9 +27,8 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-        SloeberProjectDescription SloeberProject = SloeberProjectDescription
-                .getArduinoProjectDescription(currentProject);
-        CompileDescription compileOptions = SloeberProject.getCompileDescription(confDesc);
+        SloeberProject sloeberProject = SloeberProject.getSloeberProject(currentProject);
+        CompileDescription compileOptions = sloeberProject.getCompileDescription(confDesc);
         if (compileOptions == null) {
             compileOptions = new CompileDescription();
         }

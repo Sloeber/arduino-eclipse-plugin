@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.SloeberProjectDescription;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
@@ -153,7 +153,7 @@ public class CompileAndUpload {
 		String projectName = String.format("%05d_%s",  Integer.valueOf(mCounter++),
 				this.myName);
 		try {
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null,
+            theTestProject = SloeberProject.createArduinoProject(projectName, null,
                     myBoard.getBoardDescriptor(), codeDescriptor, compileOptions, monitor);
 			Shared.waitForAllJobsToFinish(); // for the indexer
 		} catch (Exception e) {

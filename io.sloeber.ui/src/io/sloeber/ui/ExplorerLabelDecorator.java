@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import io.sloeber.core.api.SloeberProjectDescription;
+import io.sloeber.core.api.SloeberProject;
 
 public class ExplorerLabelDecorator implements ILabelDecorator {
 
@@ -48,8 +48,8 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 			if (prjDesc != null) {
 				ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
 				if (confDesc != null) {
-					SloeberProjectDescription arduinoProject = SloeberProjectDescription
-							.getArduinoProjectDescription(proj);
+					SloeberProject arduinoProject = SloeberProject
+							.getSloeberProject(proj);
 					if (arduinoProject != null) {
 						return arduinoProject.getDecoratedText(confDesc, text);
 					}
