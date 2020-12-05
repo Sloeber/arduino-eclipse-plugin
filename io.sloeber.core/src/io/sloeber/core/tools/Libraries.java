@@ -39,6 +39,7 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -111,9 +112,11 @@ public class Libraries {
 	 * @return all the library folder names. May contain empty values.
 	 */
 	private static Map<String, IPath> findAllHarwareLibraries(
-			ICConfigurationDescription confdesc) {
+            ICConfigurationDescription confDesc) {
 		Map<String, IPath> ret = new HashMap<>();
-        BoardDescription boardDescriptor = new BoardDescription(confdesc);
+        IProject project = confDesc.getProjectDescription().getProject();
+        SloeberProject sProject = SloeberProject.getSloeberProject(project);
+        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc);
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedLibraryPath();
 		if (libPath != null) {
