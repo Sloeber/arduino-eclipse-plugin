@@ -43,12 +43,22 @@ public class TxtFile extends Const {
     public TxtFile(File boardsFileName) {
 
         this.mLoadedTxtFile = boardsFileName;
+        mergeFile(boardsFileName);
+
+    }
+
+    /**
+     * given a TXT file add the data from another txt file
+     * 
+     * @param boardsFileName
+     * @return
+     */
+    public void mergeFile(File boardsFileName) {
         if (!boardsFileName.exists()) {
             return;
         }
 
         try {
-
             String[] lines = readLines(boardsFileName.getPath());
             for (String line : lines) {
                 if ((line.length() == 0) || (line.charAt(0) == '#'))
@@ -61,7 +71,6 @@ public class TxtFile extends Const {
                     myData.addValue(key, value);
                 }
             }
-
         } catch (Exception e) {
             Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
                     Messages.Boards_Failed_to_read_boards.replace(FILE, boardsFileName.getName()), e));
