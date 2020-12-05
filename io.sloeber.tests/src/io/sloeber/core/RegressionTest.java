@@ -32,7 +32,7 @@ import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.core.api.SloeberProjectDescription;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
@@ -92,8 +92,8 @@ public class RegressionTest {
         String projectName = "issue555";
         NullProgressMonitor monitor = new NullProgressMonitor();
         try {
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(), monitor);
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    new CompileDescription(), monitor);
             Shared.waitForAllJobsToFinish(); // for the indexer
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,8 +109,7 @@ public class RegressionTest {
             e.printStackTrace();
             fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
         }
-        SloeberProjectDescription arduinoProject = SloeberProjectDescription
-                .getArduinoProjectDescription(theTestProject);
+        SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
         arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid);
 
@@ -140,8 +139,8 @@ public class RegressionTest {
         IPath templateFolder = Shared.getTemplateFolder(projectName);
         CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
         try {
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    new CompileDescription(), new NullProgressMonitor());
             Shared.waitForAllJobsToFinish(); // for the indexer
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
             if (Shared.hasBuildErrors(theTestProject)) {
@@ -168,7 +167,7 @@ public class RegressionTest {
         IPath templateFolder = Shared.getTemplateFolder(projectName);
         CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
         try {
-            IProject theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null,
+            IProject theTestProject = SloeberProject.createArduinoProject(projectName, null,
                     unoBoard.getBoardDescriptor(), codeDescriptor, new CompileDescription(), new NullProgressMonitor());
             Shared.waitForAllJobsToFinish(); // for the indexer
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
@@ -205,8 +204,8 @@ public class RegressionTest {
             compileOptions.set_C_andCPP_CompileOptions("-DTEST_C_CPP");
             compileOptions.set_C_CompileOptions("-DTEST_C");
             compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, compileOptions, new NullProgressMonitor());
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    compileOptions, new NullProgressMonitor());
             ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
             CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
@@ -231,7 +230,7 @@ public class RegressionTest {
      * @throws Exception
      */
     @Test
-    public void are_defines_before_includes_taken_into_account() throws Exception {
+    public void is_extern_C_taken_into_account() throws Exception {
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
         IProject theTestProject = null;
@@ -241,8 +240,8 @@ public class RegressionTest {
 
         NullProgressMonitor monitor = new NullProgressMonitor();
         try {
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    new CompileDescription(), new NullProgressMonitor());
 
             Shared.waitForAllJobsToFinish(); // for the indexer
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -264,7 +263,7 @@ public class RegressionTest {
      * @throws Exception
      */
     @Test
-    public void is_extern_C_taken_into_account() throws Exception {
+    public void are_defines_before_includes_taken_into_account() throws Exception {
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
         IProject theTestProject = null;
@@ -273,21 +272,16 @@ public class RegressionTest {
         CodeDescription codeDescriptor = CodeDescription.createCustomTemplate(templateFolder);
 
         NullProgressMonitor monitor = new NullProgressMonitor();
-        try {
-            theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid,
-                    codeDescriptor, new CompileDescription(), new NullProgressMonitor());
+        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                new CompileDescription(), new NullProgressMonitor());
 
-            Shared.waitForAllJobsToFinish(); // for the indexer
-            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-            if (Shared.hasBuildErrors(theTestProject)) {
-                fail("Failed to compile the project:" + projectName
-                        + " defines have not been taken into account properly.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Failed to create the project:" + projectName);
-            return;
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+        if (Shared.hasBuildErrors(theTestProject)) {
+            fail("Failed to compile the project:" + projectName
+                    + " defines have not been taken into account properly.");
         }
+
     }
 
     /**
@@ -305,12 +299,12 @@ public class RegressionTest {
         CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
         CompileDescription inCompileDescription = getBunkersCompileDescription();
 
-        theTestProject = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
                 inCompileDescription, new NullProgressMonitor());
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProjectDescription sloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
+        SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
         BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc);
@@ -325,7 +319,7 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // read the data we want to test
-        sloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(theTestProject);
+        sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         confDesc = projDesc.getActiveConfiguration();
         BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc);
@@ -357,7 +351,7 @@ public class RegressionTest {
         CodeDescription codeDescriptor = new CodeDescription(CodeDescription.CodeTypes.defaultCPP);
         CompileDescription inCompileDescription = getBunkersCompileDescription();
 
-        IProject project = SloeberProjectDescription.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+        IProject project = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
                 inCompileDescription, new NullProgressMonitor());
 
         // Read the data we want to test
@@ -414,7 +408,6 @@ public class RegressionTest {
         CCorePlugin.getDefault().createCProject(description, project, new NullProgressMonitor(),
                 ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
 
-
         project.open(null);
         project.setSessionProperty(qualifiedName, DummyData);
         project.close(null);
@@ -424,7 +417,6 @@ public class RegressionTest {
             fail("non persistent projectdescription properties behave persistent during project close open");
         }
     }
-
 
     /**
      * open and close a project should keep the compileDescription and
@@ -438,38 +430,36 @@ public class RegressionTest {
 
         String proj1Name = "openModAndClose1";
         BoardDescription proj1BoardDesc = Arduino.uno().getBoardDescriptor();
+        proj1BoardDesc.setVersionControlled(true);
         CompileDescription proj1CompileDesc = getBunkersCompileDescription();
-        IProject proj1 = SloeberProjectDescription.createArduinoProject(proj1Name, null, proj1BoardDesc, codeDesc,
+        IProject proj1 = SloeberProject.createArduinoProject(proj1Name, null, proj1BoardDesc, codeDesc,
                 proj1CompileDesc, new NullProgressMonitor());
 
         String proj2Name = "openModAndClose2";
         BoardDescription proj2BoardDesc = Arduino.getMega2560Board().getBoardDescriptor();
         CompileDescription proj2CompileDesc = new CompileDescription();
-        IProject proj2 = SloeberProjectDescription.createArduinoProject(proj2Name, null, proj2BoardDesc, codeDesc,
+        IProject proj2 = SloeberProject.createArduinoProject(proj2Name, null, proj2BoardDesc, codeDesc,
                 proj2CompileDesc, new NullProgressMonitor());
-
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProjectDescription proj1SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj1);
+        SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1);
         ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
         ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
         BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc);
         CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc);
 
-        SloeberProjectDescription proj2SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj2);
+        SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
         BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
         CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc);
 
         // get the filenames to copy
-        String confDescName = proj1ConfDesc.getName();
-        IFile file = proj1.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        IFile file = proj1.getFile("sloeber.cfg"); //$NON-NLS-1$
         File proj1SloeberFile = file.getLocation().toFile();
 
-        confDescName = proj2ConfDesc.getName();
-        file = proj2.getFile("sloeber." + confDescName + ".txt"); //$NON-NLS-1$ //$NON-NLS-2$
+        file = proj2.getFile("sloeber.cfg"); //$NON-NLS-1$
         File proj2SloeberFile = file.getLocation().toFile();
 
         // close and reopen the project
@@ -487,7 +477,7 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // reread project 2
-        proj2SloeberDesc = SloeberProjectDescription.getArduinoProjectDescription(proj2);
+        proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         proj2ConfDesc = proj2Desc.getActiveConfiguration();
         BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
@@ -506,12 +496,12 @@ public class RegressionTest {
         if (!proj2CompileDesc.equals(proj2CreatedCompileDesc)) {
             fail("Project 2 not created properly.");
         }
-        
-        //check wether the file modification was taken into account
-        if (!proj2OpenedBoardDesc.equals(proj1BoardDesc)) {
+
+        // check wether the file modification was taken into account
+        if (!proj1BoardDesc.equals(proj2OpenedBoardDesc)) {
             fail("Project 2 not created properly.");
         }
-        if (!proj2OpenedCompileDesc.equals(proj1CompileDesc)) {
+        if (!proj1CompileDesc.equals(proj2OpenedCompileDesc)) {
             fail("Project 2 not created properly.");
         }
 
