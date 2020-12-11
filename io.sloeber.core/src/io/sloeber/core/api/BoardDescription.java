@@ -87,7 +87,7 @@ public class BoardDescription extends Common {
     private String myProgrammer = Defaults.getDefaultUploadProtocol();
     private String myBoardID = EMPTY;
     private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private boolean myIsVersionControlled = false;
+
 
     /*
      * Stuff to make things work
@@ -108,7 +108,7 @@ public class BoardDescription extends Common {
     private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
     private final String KEY_SLOEBER_UPLOAD_TOOL = "UPLOAD.TOOL"; //$NON-NLS-1$
     private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_IS_VERSION_CONTROLLED = "IS_VERSION_CONTROLLED"; //$NON-NLS-1$
+
 
     @Override
     public String toString() {
@@ -449,9 +449,8 @@ public class BoardDescription extends Common {
         this.myUploadPort = newUploadPort;
     }
 
-    public void setUploadProtocol(String newUploadProtocol) {
+    public void setProgrammer(String newUploadProtocol) {
         this.myProgrammer = newUploadProtocol;
-
     }
 
     public void setBoardID(String boardID) {
@@ -759,7 +758,6 @@ public class BoardDescription extends Common {
         this.myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
         this.myUploadTool = section.getValue(KEY_SLOEBER_UPLOAD_TOOL);
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
-        myIsVersionControlled = Const.TRUE.equalsIgnoreCase(section.getValue(KEY_SLOEBER_IS_VERSION_CONTROLLED));
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
         myreferencingBoardsFile = new File(board_txt);
@@ -804,7 +802,6 @@ public class BoardDescription extends Common {
         allVars.put(prefix + KEY_SLOEBER_BOARD_TXT, board_txt);
         allVars.put(prefix + KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
         allVars.put(prefix + KEY_SLOEBER_UPLOAD_TOOL, myUploadTool);
-        allVars.put(prefix + KEY_SLOEBER_IS_VERSION_CONTROLLED, Boolean.valueOf(myIsVersionControlled).toString());
 
         for (Entry<String, String> curOption : myOptions.entrySet()) {
             allVars.put(prefix + KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
@@ -1093,17 +1090,9 @@ public class BoardDescription extends Common {
         ret.myreferencingBoardsFile = new File(getOldWayEnvVar(confDesc, "JANTJE.boards_file"));
         ret.myBoardID = getOldWayEnvVar(confDesc, "JANTJE.board_ID");
         ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
-        ret.myIsVersionControlled = false;
         String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
         ret.myOptions = KeyValue.makeMap(optinconcat);
         return null;
     }
 
-    public boolean IsVersionControlled() {
-        return myIsVersionControlled;
-    }
-
-    public void setVersionControlled(boolean myIsVersionControlled) {
-        this.myIsVersionControlled = myIsVersionControlled;
-    }
 }

@@ -623,14 +623,20 @@
            icon="platform:/plugin/io.sloeber.application/icons/logo_16.png"
            name="%tab.board.selection.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
-           weight="050">
+           weight="010">
      </tab>
      <tab
            class="io.sloeber.ui.project.properties.CompileProperties"
            icon="icons/preferences.png"
            name="%tab.compile.options.name"
            parent="io.sloeber.ui.project.properties.PropertyPage"
-           weight="050">
+           weight="020">
+     </tab>
+     <tab
+           class="io.sloeber.ui.project.properties.OtherProperties"
+           name="other options"
+           parent="io.sloeber.ui.project.properties.PropertyPage"
+           weight="030">
      </tab>
   </extension>
       <extension
