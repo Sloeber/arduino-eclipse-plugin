@@ -30,6 +30,7 @@ import org.junit.Test;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SloeberProject;
@@ -430,10 +431,11 @@ public class RegressionTest {
 
         String proj1Name = "openModAndClose1";
         BoardDescription proj1BoardDesc = Arduino.uno().getBoardDescriptor();
-        proj1BoardDesc.setVersionControlled(true);
+        OtherDescription otherDesc = new OtherDescription();
+        otherDesc.setVersionControlled(true);
         CompileDescription proj1CompileDesc = getBunkersCompileDescription();
         IProject proj1 = SloeberProject.createArduinoProject(proj1Name, null, proj1BoardDesc, codeDesc,
-                proj1CompileDesc, new NullProgressMonitor());
+                proj1CompileDesc, otherDesc, new NullProgressMonitor());
 
         String proj2Name = "openModAndClose2";
         BoardDescription proj2BoardDesc = Arduino.getMega2560Board().getBoardDescriptor();

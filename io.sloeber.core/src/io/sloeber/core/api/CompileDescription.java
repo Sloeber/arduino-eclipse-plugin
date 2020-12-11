@@ -279,7 +279,7 @@ public class CompileDescription {
                 && (my_All_CompileOptions.equals(other.my_All_CompileOptions));
     }
 
-    public static CompileDescription getFromCDTEnvVars(ICConfigurationDescription confDesc) {
+    public static CompileDescription getFromCDT(ICConfigurationDescription confDesc) {
         // TODO Auto-generated method stub
         return null;
     }
