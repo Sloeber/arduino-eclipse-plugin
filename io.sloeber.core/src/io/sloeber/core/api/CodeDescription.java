@@ -148,8 +148,8 @@ public class CodeDescription {
 
 		save();
 		Map<String, String> replacers=new TreeMap<>();
-		replacers.put("\\{Include\\}", "Arduino.h");
-		replacers.put("\\{title\\}",project.getName());
+        replacers.put("{Include}", "Arduino.h");
+        replacers.put("{title}", project.getName());
 		if(myReplacers!=null) {
 		  replacers.putAll(myReplacers);
 		}
