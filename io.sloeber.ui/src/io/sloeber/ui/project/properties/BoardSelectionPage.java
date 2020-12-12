@@ -394,14 +394,22 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		getValues();
 		ICConfigurationDescription confdesc = getConfdesc();
 		ICProjectDescription projDesc = confdesc.getProjectDescription();
-		try {
+		SloeberProject sProject = getSloeberProject();
+
 			for (Entry<String, BoardDescription> curEntry : myBoardDescs.entrySet()) {
 				ICConfigurationDescription curConfDesc = projDesc.getConfigurationById(curEntry.getKey());
-				getSloeberProject().setBoardDescription(curConfDesc, curEntry.getValue());
+				BoardDescription boardDesc = curEntry.getValue();
+				try {
+					if ((curConfDesc != null) && (boardDesc != null)) {
+						sProject.setBoardDescription(curConfDesc, boardDesc);
+					} else {
+						Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code));
+					}
+				} catch (Exception e) {
+					Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
+				}
+
 			}
-		} catch (Exception e) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
-		}
 	}
 
 	private SloeberProject getSloeberProject() {
@@ -489,7 +497,15 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 			} else {
 				ICProjectDescription projDesc = getConfdesc().getProjectDescription();
 				for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
-					myBoardDescs.put(curConfDesc.getId(), getSloeberProject().getBoardDescription(curConfDesc));
+					BoardDescription boardDesc = getSloeberProject().getBoardDescription(curConfDesc);
+					if (boardDesc == null) {
+						// TOFIX new configuration is normally copy of but
+						// I don't know what has been used to copy from
+						// so make default for now
+						boardDesc = new BoardDescription();
+					}
+					myBoardDescs.put(curConfDesc.getId(), boardDesc);
+
 				}
 				myActiveBoardDesc = myBoardDescs.get(activeConfDesc.getId());
 				if (myActiveBoardDesc == null) {
