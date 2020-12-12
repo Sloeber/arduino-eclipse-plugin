@@ -155,6 +155,54 @@ public class RegressionTest {
 
     }
 
+    @Test
+    public void createCPPProject() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+        IProject theTestProject = null;
+        String projectName = "createCPPProject";
+
+        CodeDescription codeDescriptor = CodeDescription.createDefaultCPP();
+        try {
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    new CompileDescription(), new NullProgressMonitor());
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName + " CPP project no longer work");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+
+    }
+
+    @Test
+    public void createDefaultInoProject() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+        IProject theTestProject = null;
+        String projectName = "createDefaultInoProject";
+
+        CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
+        try {
+            theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                    new CompileDescription(), new NullProgressMonitor());
+            Shared.waitForAllJobsToFinish(); // for the indexer
+            theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+            if (Shared.hasBuildErrors(theTestProject)) {
+                fail("Failed to compile the project:" + projectName + " INO project no longer work");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Failed to create the project:" + projectName);
+            return;
+        }
+
+    }
+
     /**
      * support void loop{};
      * 
