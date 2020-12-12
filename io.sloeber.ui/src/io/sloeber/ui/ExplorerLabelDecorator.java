@@ -49,7 +49,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 				ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
 				if (confDesc != null) {
 					SloeberProject arduinoProject = SloeberProject
-							.getSloeberProject(proj);
+							.getSloeberProject(proj, true);
 					if (arduinoProject != null) {
 						return arduinoProject.getDecoratedText(confDesc, text);
 					}

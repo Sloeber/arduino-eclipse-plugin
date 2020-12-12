@@ -18,46 +18,64 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
 
     @Override
     public void handleEvent(CProjectDescriptionEvent event) {
-        if (event.getEventType() != CProjectDescriptionEvent.ABOUT_TO_APPLY) {
-            return;
-        }
 
         IProject activeProject = event.getProject();
-        // only handle arduino nature projects
-        try {
-            if (!activeProject.hasNature(Const.ARDUINO_NATURE_ID)) {
-                return;
-            }
-        } catch (Exception e) {
-            // don't care don't update
+        SloeberProject sloebberProject = SloeberProject.getSloeberProject(activeProject, true);
+        if (sloebberProject == null) {
+            // this is not a sloeber project so ignore
             return;
         }
+        // don't do stuff during project creation
         if (IndexerController.isPosponed(activeProject)) {
             Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
                     "Ignoring configuration change during project creation " + activeProject.getName())); //$NON-NLS-1$
             return;
         }
-        ICDescriptionDelta projectDelta = event.getProjectDelta();
-        if (projectDelta != null) {
-            int projectChangeFlags = projectDelta.getChangeFlags();
-            int projectDeltaKind = projectDelta.getDeltaKind();
-        }
-        ICDescriptionDelta cfgDelta = event.getActiveCfgDelta();
-        if (cfgDelta != null) {
-            int cfgChangeFlags = cfgDelta.getChangeFlags();
-            int cfgDeltaKind = cfgDelta.getDeltaKind();
-        }
-        ICDescriptionDelta defaultDelta = event.getDefaultSettingCfgDelta();
-        if (defaultDelta != null) {
-            int changeFlags = defaultDelta.getChangeFlags();
-            int deltaKind = defaultDelta.getDeltaKind();
-        }
-        SloeberProject sloebberProject = SloeberProject.getSloeberProject(activeProject);
 
-        ICProjectDescription newProjDesc = event.getNewCProjectDescription();
-        ICConfigurationDescription newConf = newProjDesc.getActiveConfiguration();
-        BoardDescription newBoardDescriptor = sloebberProject.getBoardDescription(newConf);
-        sloebberProject.setBoardDescription(newConf, newBoardDescriptor);
+        switch (event.getEventType()) {
+        case CProjectDescriptionEvent.ABOUT_TO_APPLY: {
+            ICProjectDescription newProjDesc = event.getNewCProjectDescription();
+            ICConfigurationDescription newConf = newProjDesc.getActiveConfiguration();
+            BoardDescription newBoardDescriptor = sloebberProject.getBoardDescription(newConf);
+            sloebberProject.setBoardDescription(newConf, newBoardDescriptor);
+            break;
+        }
+        case CProjectDescriptionEvent.COPY_CREATED: {
+            ICDescriptionDelta projectDelta = event.getProjectDelta();
+            if (projectDelta != null) {
+                int projectChangeFlags = projectDelta.getChangeFlags();
+                int projectDeltaKind = projectDelta.getDeltaKind();
+            }
+            ICDescriptionDelta cfgDelta = event.getActiveCfgDelta();
+            if (cfgDelta != null) {
+                int cfgChangeFlags = cfgDelta.getChangeFlags();
+                int cfgDeltaKind = cfgDelta.getDeltaKind();
+            }
+            ICDescriptionDelta defaultDelta = event.getDefaultSettingCfgDelta();
+            if (defaultDelta != null) {
+                int changeFlags = defaultDelta.getChangeFlags();
+                int deltaKind = defaultDelta.getDeltaKind();
+            }
+            break;
+        }
+        default: {
+            ICDescriptionDelta projectDelta = event.getProjectDelta();
+            if (projectDelta != null) {
+                int projectChangeFlags = projectDelta.getChangeFlags();
+                int projectDeltaKind = projectDelta.getDeltaKind();
+            }
+            ICDescriptionDelta cfgDelta = event.getActiveCfgDelta();
+            if (cfgDelta != null) {
+                int cfgChangeFlags = cfgDelta.getChangeFlags();
+                int cfgDeltaKind = cfgDelta.getDeltaKind();
+            }
+            ICDescriptionDelta defaultDelta = event.getDefaultSettingCfgDelta();
+            if (defaultDelta != null) {
+                int changeFlags = defaultDelta.getChangeFlags();
+                int deltaKind = defaultDelta.getDeltaKind();
+            }
+        }
+        }
     }
 
 }

@@ -452,11 +452,23 @@ public class SloeberProject extends Common {
 
     /**
      * get the Arduino project description based on a project description
+     * Convenience method for getSloeberProject(project, false);
      * 
      * @param project
      * @return
      */
     public static synchronized SloeberProject getSloeberProject(IProject project) {
+        return getSloeberProject(project, false);
+    }
+
+    /**
+     * get the Arduino project description based on a project description
+     * 
+     * @param project
+     * @param allowNull set true if a null response is ok
+     * @return
+     */
+    public static synchronized SloeberProject getSloeberProject(IProject project,boolean allowNull) {
 
         if (project.isOpen() && project.getLocation().toFile().exists()) {
             if (Sketch.isSketch(project)) {
@@ -471,9 +483,10 @@ public class SloeberProject extends Common {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-
+                if(!allowNull) {
                 SloeberProject ret = new SloeberProject(project, false);
                 return ret;
+                }
             }
         }
         return null;
@@ -554,7 +567,9 @@ public class SloeberProject extends Common {
     }
 
     public String getDecoratedText(ICConfigurationDescription confDesc, String text) {
-        BoardDescription boardDescriptor = getBoardDescription(confDesc);
+        // do not use getBoardDescriptor below as this will cause a infinite loop at
+        // project creation
+        BoardDescription boardDescriptor = myBoardDescriptions.get(confDesc.getId());
         if (boardDescriptor == null) {
             return text + " Project not configured"; //$NON-NLS-1$
         }

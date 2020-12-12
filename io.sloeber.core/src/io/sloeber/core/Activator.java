@@ -182,7 +182,7 @@ public class Activator extends Plugin {
 		CCorePlugin.getIndexManager().addIndexerStateListener(myindexerListener);
 		CoreModel singCoreModel = CoreModel.getDefault();
 		singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
-				CProjectDescriptionEvent.ABOUT_TO_APPLY);
+                CProjectDescriptionEvent.ALL);
 	}
 
 	private static void initializeImportantVariables() {
