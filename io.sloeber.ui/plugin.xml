@@ -599,23 +599,6 @@
        </newWizardShortcut>
     </perspectiveExtension>
  </extension>
-  <extension
-       point="org.eclipse.ui.navigator.navigatorContent">
-    <commonWizard
-          type="new"
-          wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
-       <enablement>
-          <or>
-             <adapt
-                   type="org.eclipse.core.resources.IProject">
-             </adapt>
-             <adapt
-                   type="org.eclipse.core.resources.IWorkspaceRoot">
-             </adapt>
-          </or>
-       </enablement>
-    </commonWizard>
- </extension>
    <extension
         point="org.eclipse.cdt.ui.cPropertyTab">
      <tab
@@ -695,11 +678,6 @@
            <commonWizard
                  type="new"
                  wizardId="io.sloeber.eclipse.NewArduinoSketchWizard">
-              <enablement>
-                 <count
-                       value="*">
-                 </count>
-              </enablement>
            </commonWizard>
         </extension>
 </plugin>
