@@ -37,7 +37,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
             ICProjectDescription newProjDesc = event.getNewCProjectDescription();
             ICConfigurationDescription newConf = newProjDesc.getActiveConfiguration();
             BoardDescription newBoardDescriptor = sloebberProject.getBoardDescription(newConf);
-            sloebberProject.setBoardDescription(newConf, newBoardDescriptor);
+            sloebberProject.setBoardDescription(newConf, newBoardDescriptor, false);
             break;
         }
         case CProjectDescriptionEvent.COPY_CREATED: {

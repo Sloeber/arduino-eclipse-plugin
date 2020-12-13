@@ -400,7 +400,14 @@ public class SloeberProject extends Common {
      * @param confDesc
      * @param boardDescription
      */
-    public void setBoardDescription(ICConfigurationDescription confDesc, BoardDescription boardDescription) {
+    public void setBoardDescription(ICConfigurationDescription confDesc, BoardDescription boardDescription,
+            boolean force) {
+        if (!force) {
+            BoardDescription curBoardDesc = myBoardDescriptions.get(confDesc.getId());
+            if (boardDescription.equals(curBoardDesc)) {
+                return;
+            }
+        }
         try {
             IProject project = confDesc.getProjectDescription().getProject();
             boolean isRebuildNeeded = true;

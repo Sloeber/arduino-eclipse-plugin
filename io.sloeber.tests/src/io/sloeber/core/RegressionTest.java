@@ -112,7 +112,7 @@ public class RegressionTest {
         }
         SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
-        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid);
+        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid, true);
 
         Shared.waitForAllJobsToFinish();
         try {

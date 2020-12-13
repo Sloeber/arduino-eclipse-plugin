@@ -401,7 +401,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 				BoardDescription boardDesc = curEntry.getValue();
 				try {
 					if ((curConfDesc != null) && (boardDesc != null)) {
-						sProject.setBoardDescription(curConfDesc, boardDesc);
+						sProject.setBoardDescription(curConfDesc, boardDesc, true);
 					} else {
 						Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code));
 					}
