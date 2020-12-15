@@ -66,21 +66,11 @@ if (isset ( $_GET ["OS"] ))
 		<P>In contrast to the stable the nightly product downloads do not contain a java run time.</P>
 
 
-        <h2>Some recent changes:</h2>
-        <p>Due to a DDos attack I needed to move files around. As a consequence I no longer offer a list of latest nightlies.</p>
-        <p>
-        $version
-         <?php echo '<a href="https://oss.sonatype.org/content/repositories/snapshots/com/github/brodykenrick/arduino-eclipse-plugin/io.sloeber.product/' . $version . '-SNAPSHOT/"  target="_blank">';?>
-        This download page is the travis build. Download the tar.gz for your os.</a></p>
-        <p>Note that there are multiple versions. The latest are at the bottom.</p>
-        <p>Mac users read the <a href="http://eclipse.baeyens.it/installAdvice.shtml#">mac specific info</a>.</p>
-
-
 
       <h3>Eclipse Update Site</h3>
       <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Sloeber installation.</p>
-      <h2>The latest nightly needs java 10!!!!</h2>
-      <p>So if you update your product on a windows machine that holds a jre folder you will need to delete the jre folder or upgrade the content to java10</p>
+      <h2>The latest nightly needs java 11!!!!</h2>
+      <p>So if you update your product on a windows machine that holds a jre folder you will need to delete the jre folder or upgrade the content to java11</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
         			<?php
