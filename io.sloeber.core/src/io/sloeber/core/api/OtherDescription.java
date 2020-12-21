@@ -25,6 +25,10 @@ public class OtherDescription {
         // nothing needs to be done
     }
 
+    public OtherDescription(OtherDescription srcObject) {
+        myIsVersionControlled = srcObject.myIsVersionControlled;
+    }
+
     public Map<String, String> getEnvVars() {
         return getEnvVarsConfig(Const.EMPTY);
     }

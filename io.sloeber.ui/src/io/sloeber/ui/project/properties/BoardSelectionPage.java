@@ -3,17 +3,12 @@ package io.sloeber.ui.project.properties;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICResourceDescription;
-import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.AbstractPage;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -36,7 +31,6 @@ import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
@@ -51,7 +45,7 @@ import io.sloeber.ui.Messages;
  *
  */
 
-public class BoardSelectionPage extends AbstractCPropertyTab {
+public class BoardSelectionPage extends SloeberCpropertyTab {
 	private static final String TRUE = "TRUE"; //$NON-NLS-1$
 
 	private static final String FALSE = "FALSE"; //$NON-NLS-1$
@@ -65,51 +59,42 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 	private LabelCombo myControlUploadProtocol;
 	private LabelCombo myControlUploadPort;
 	private LabelCombo[] myBoardOptionCombos = null;
-	private Listener myBoardSelectionChangedListener = null;
-	private Map<String, BoardDescription> myBoardDescs = new HashMap<>();
-	private BoardDescription myActiveBoardDesc = null;
 	private Composite myComposite;
-	private TreeMap<String, File> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private org.eclipse.swt.widgets.Button myPasswordButton;
+	private ScrolledComposite myScrolledComposite;
 
-	/**
-	 * Get the configuration we are currently working in. The configuration is null
-	 * if we are in the create sketch wizard.
-	 *
-	 * @return the configuration to save info into
-	 */
-	public ICConfigurationDescription getConfdesc() {
-		if (page != null) {
-			return getResDesc().getConfiguration();
-		}
-		return null;
-	}
+	private Listener myBoardSelectionChangedListener = null;
+	private TreeMap<String, File> myAllBoardsFiles = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private BoardDescription myBoardDescDuringCreation = new BoardDescription();
+
+
+
 
 	private Listener myBoardFileModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 
-			getBoardDescription();
+			BoardDescription boardDesc = getBoardDescription(getConfdesc());
 			File boardFile = getSelectedBoardsFile();
-			String curBoard = myActiveBoardDesc.getBoardName();
-			String curProgrammer = myActiveBoardDesc.getProgrammer();
-			myActiveBoardDesc.setreferencingBoardsFile(boardFile);
+			String curBoard = boardDesc.getBoardName();
+			String curProgrammer = boardDesc.getProgrammer();
+			boardDesc.setreferencingBoardsFile(boardFile);
 
 			/*
 			 * Change the list of available boards
 			 */
 
-			mycontrolBoardName.setItems(myActiveBoardDesc.getCompatibleBoards());
+			mycontrolBoardName.setItems(boardDesc.getCompatibleBoards());
 			mycontrolBoardName.setText(curBoard);
 
 			/*
 			 * Change the list of available upload protocols
 			 */
-			myControlUploadProtocol.setItems(myActiveBoardDesc.getUploadProtocols());
+			myControlUploadProtocol.setItems(boardDesc.getUploadProtocols());
 			myControlUploadProtocol.setText(curProgrammer);
 
 			if (myControlUploadProtocol.getText().isEmpty()) {
-				myActiveBoardDesc.setProgrammer(Defaults.getDefaultUploadProtocol());
+				boardDesc.setProgrammer(Defaults.getDefaultUploadProtocol());
 				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
 
@@ -122,12 +107,12 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		@Override
 		public void handleEvent(Event e) {
 
-			getBoardDescription();
-			myActiveBoardDesc.setBoardName(getBoardName());
+			BoardDescription boardDesc = getBoardDescription(getConfdesc());
+			boardDesc.setBoardName(getBoardName());
 
 			for (LabelCombo curLabelCombo : myBoardOptionCombos) {
-				curLabelCombo.setItems(myActiveBoardDesc.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
-				curLabelCombo.setLabel(myActiveBoardDesc.getMenuNameFromMenuID(curLabelCombo.getID()));
+				curLabelCombo.setItems(boardDesc.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
+				curLabelCombo.setLabel(boardDesc.getMenuNameFromMenuID(curLabelCombo.getID()));
 			}
 
 			isPageComplete();
@@ -141,9 +126,6 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		}
 	};
 
-	private ScrolledComposite myScrolledComposite;
-
-	private SloeberProject myArduinoProject = null;
 
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
@@ -170,12 +152,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myScrolledComposite.setExpandHorizontal(true);
 
 		myComposite = new Composite(myScrolledComposite, SWT.NONE);
-		getBoardDescription();
-		if (myActiveBoardDesc.getActualCoreCodePath() == null) {
-			Activator.log(
-					new Status(IStatus.ERROR, Activator.getId(), Messages.BoardSelectionPage_failed_to_find_platform
-							.replace(Messages.PLATFORM, myActiveBoardDesc.getReferencingPlatformFile().toString())));
-		}
+
 
 		File[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
 		for (File curBoardFile : allBoardsFileNames) {
@@ -251,7 +228,8 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		myFeedbackControl.setLayoutData(theGriddata);
 		// End of special controls
 
-		setValues();
+		BoardDescription boardDesc = getBoardDescription(getConfdesc());
+		updateScreen(boardDesc);
 
 		mycontrolBoardName.addListener(SWT.Modify, myBoardModifyListener);
 		myControlBoardsTxtFile.addListener(SWT.Modify, myBoardFileModifyListener);
@@ -311,116 +289,7 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return true;
 	}
 
-	@Override
-	protected void performDefaults() {
-		// nothing to do here
 
-	}
-
-	@Override
-	protected void updateData(ICResourceDescription cfg) {
-		getValues();
-		myActiveBoardDesc = myBoardDescs.get(cfg.getConfiguration().getId());
-		setValues();
-	}
-
-	@Override
-	protected void updateButtons() {
-		// nothing to do here
-
-	}
-
-	private void setValues() {
-		getBoardDescription();
-		myControlBoardsTxtFile.setText(tidyUpLength(myActiveBoardDesc.getReferencingBoardsFile().toString()));
-		mycontrolBoardName.setItems(myActiveBoardDesc.getCompatibleBoards());
-		mycontrolBoardName.setText(myActiveBoardDesc.getBoardName());
-
-		String CurrentUploadProtocol = getUpLoadProtocol();
-		myControlUploadProtocol.setItems(myActiveBoardDesc.getUploadProtocols());
-		myControlUploadProtocol.setText(CurrentUploadProtocol);
-		if (getUpLoadProtocol().isEmpty()) {
-			myControlUploadProtocol.setText(myActiveBoardDesc.getProgrammer());
-			if (myControlUploadProtocol.getText().isEmpty()) {
-				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
-			}
-		}
-
-		myControlUploadPort.setValue(myActiveBoardDesc.getUploadPort());
-
-		// set the options in the combo boxes before setting the value
-		Map<String, String> options = myActiveBoardDesc.getOptions();
-
-		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
-			curLabelCombo.setItems(myActiveBoardDesc.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
-			if (options != null) {
-				String value = options.get(curLabelCombo.getID());
-				if (value != null) {
-					try {
-						curLabelCombo
-								.setValue(
-										myActiveBoardDesc.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
-					} catch (@SuppressWarnings("unused") Exception e) {
-						// When this fails no default value will be set
-						// so nothing to do here
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	protected void performOK() {
-		doOK();
-		super.performOK();
-	}
-
-	@Override
-	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
-		doOK();
-	}
-
-	private void getValues() {
-		myActiveBoardDesc.setreferencingBoardsFile(getSelectedBoardsFile());
-		myActiveBoardDesc.setUploadPort(getUpLoadPort());
-		myActiveBoardDesc.setProgrammer(getUpLoadProtocol());
-		myActiveBoardDesc.setBoardName(getBoardName());
-		myActiveBoardDesc.setOptions(getOptions());
-
-	}
-
-	private void doOK() {
-		myActiveBoardDesc.saveUserSelection();
-		getValues();
-		ICConfigurationDescription confdesc = getConfdesc();
-		ICProjectDescription projDesc = confdesc.getProjectDescription();
-		SloeberProject sProject = getSloeberProject();
-
-			for (Entry<String, BoardDescription> curEntry : myBoardDescs.entrySet()) {
-				ICConfigurationDescription curConfDesc = projDesc.getConfigurationById(curEntry.getKey());
-				BoardDescription boardDesc = curEntry.getValue();
-				try {
-					if ((curConfDesc != null) && (boardDesc != null)) {
-						sProject.setBoardDescription(curConfDesc, boardDesc, true);
-					} else {
-						Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code));
-					}
-				} catch (Exception e) {
-					Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_adding_arduino_code, e));
-				}
-
-			}
-	}
-
-	private SloeberProject getSloeberProject() {
-		if (myArduinoProject == null) {
-			ICConfigurationDescription confdesc = getConfdesc();
-			IProject project = confdesc.getProjectDescription().getProject();
-			myArduinoProject = SloeberProject.getSloeberProject(project);
-		}
-		return myArduinoProject;
-
-	}
 
 	private class ArduinoSelectionPageListener implements Listener {
 		private AbstractPage myPage;
@@ -472,49 +341,106 @@ public class BoardSelectionPage extends AbstractCPropertyTab {
 		return myControlUploadProtocol.getText().trim();
 	}
 
-	private Map<String, String> getOptions() {
+	private Map<String, String> getOptions(BoardDescription boardDesc) {
 		if (myBoardOptionCombos == null) {
 			return null;
 		}
-		getBoardDescription();
 		Map<String, String> options = new HashMap<>();
 		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
 			if (curLabelCombo.isVisible()) {
 				options.put(curLabelCombo.getID(),
-						myActiveBoardDesc.getMenuItemIDFromMenuItemName(curLabelCombo.getValue(),
+						boardDesc.getMenuItemIDFromMenuItemName(curLabelCombo.getValue(),
 								curLabelCombo.getID()));
 			}
 		}
 		return options;
 	}
 
-	public BoardDescription getBoardDescription() {
-		if (myActiveBoardDesc == null) {
-			// myBoardID = new BoardDescription(getConfdesc());
-			ICConfigurationDescription activeConfDesc = getConfdesc();
-			if (activeConfDesc == null) {
-				myActiveBoardDesc = new BoardDescription();
-			} else {
-				ICProjectDescription projDesc = getConfdesc().getProjectDescription();
-				for (ICConfigurationDescription curConfDesc : projDesc.getConfigurations()) {
-					BoardDescription boardDesc = getSloeberProject().getBoardDescription(curConfDesc);
-					if (boardDesc == null) {
-						// TOFIX new configuration is normally copy of but
-						// I don't know what has been used to copy from
-						// so make default for now
-						boardDesc = new BoardDescription();
-					}
-					myBoardDescs.put(curConfDesc.getId(), boardDesc);
 
-				}
-				myActiveBoardDesc = myBoardDescs.get(activeConfDesc.getId());
-				if (myActiveBoardDesc == null) {
-					myActiveBoardDesc = new BoardDescription();
+	@Override
+	protected void updateScreen(Object object) {
+		BoardDescription boardDesc = (BoardDescription) object;
+		myControlBoardsTxtFile.setText(tidyUpLength(boardDesc.getReferencingBoardsFile().toString()));
+		mycontrolBoardName.setItems(boardDesc.getCompatibleBoards());
+		mycontrolBoardName.setText(boardDesc.getBoardName());
+
+		String CurrentUploadProtocol = getUpLoadProtocol();
+		myControlUploadProtocol.setItems(boardDesc.getUploadProtocols());
+		myControlUploadProtocol.setText(CurrentUploadProtocol);
+		if (getUpLoadProtocol().isEmpty()) {
+			myControlUploadProtocol.setText(boardDesc.getProgrammer());
+			if (myControlUploadProtocol.getText().isEmpty()) {
+				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
+			}
+		}
+
+		myControlUploadPort.setValue(boardDesc.getUploadPort());
+
+		// set the options in the combo boxes before setting the value
+		Map<String, String> options = boardDesc.getOptions();
+		for (LabelCombo curLabelCombo : myBoardOptionCombos) {
+			curLabelCombo.setItems(boardDesc.getMenuItemNamesFromMenuID(curLabelCombo.getID()));
+			if (options != null) {
+				String value = options.get(curLabelCombo.getID());
+				if (value != null) {
+					try {
+						curLabelCombo.setValue(boardDesc.getMenuItemNamedFromMenuItemID(value, curLabelCombo.getID()));
+					} catch (@SuppressWarnings("unused") Exception e) {
+						// When this fails no default value will be set
+						// so nothing to do here
+					}
 				}
 			}
 		}
 
-		return myActiveBoardDesc;
+	}
+
+	@Override
+	protected Object getFromScreen() {
+		BoardDescription boardDesc = new BoardDescription();
+		boardDesc.setreferencingBoardsFile(getSelectedBoardsFile());
+		boardDesc.setUploadPort(getUpLoadPort());
+		boardDesc.setProgrammer(getUpLoadProtocol());
+		boardDesc.setBoardName(getBoardName());
+		boardDesc.setOptions(getOptions(boardDesc));
+		return boardDesc;
+	}
+
+
+	@Override
+	protected String getQualifierString() {
+		return "SloeberBoardDescription"; //$NON-NLS-1$
+	}
+
+
+	@Override
+	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
+		return mySloeberProject.getBoardDescription(confDesc, true);
+
+	}
+
+	@Override
+	protected Object makeCopy(Object srcObject) {
+		return new BoardDescription((BoardDescription) srcObject);
+	}
+
+	@Override
+	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
+		mySloeberProject.setBoardDescription(confDesc, (BoardDescription) theObjectToStore, false);
+
+	}
+
+	@Override
+	protected Object getnewDefaultObject() {
+		return new BoardDescription();
+	}
+
+	public BoardDescription getBoardDescription(ICConfigurationDescription confDesc) {
+		if (confDesc == null) {
+			return myBoardDescDuringCreation;
+		}
+		return (BoardDescription) getDescription(confDesc);
 	}
 
 }
+

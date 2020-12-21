@@ -116,7 +116,7 @@ public class Libraries {
 		Map<String, IPath> ret = new HashMap<>();
         IProject project = confDesc.getProjectDescription().getProject();
         SloeberProject sProject = SloeberProject.getSloeberProject(project);
-        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc);
+        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc, false);
 		// first add the referenced
 		IPath libPath = boardDescriptor.getReferencedLibraryPath();
 		if (libPath != null) {

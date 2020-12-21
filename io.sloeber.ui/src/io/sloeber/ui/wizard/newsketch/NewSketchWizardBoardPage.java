@@ -55,7 +55,7 @@ public class NewSketchWizardBoardPage extends WizardPage {
     }
 
     public BoardDescription getBoardDescriptor() {
-	return this.mPageLayout.getBoardDescription();
+		return this.mPageLayout.getBoardDescription(null);
     }
 
 }

@@ -360,8 +360,8 @@ public class RegressionTest {
         SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
-        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc);
-        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc);
+        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc, false);
+        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc, false);
 
         // close and reopen the project
         theTestProject.close(null);
@@ -375,8 +375,8 @@ public class RegressionTest {
         sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         confDesc = projDesc.getActiveConfiguration();
-        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc);
-        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc);
+        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc, false);
+        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc, false);
 
         // check the data is equal
         boolean createBoardsDiff = !unoBoardid.equals(createdBoardDesc);
@@ -500,14 +500,14 @@ public class RegressionTest {
         SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1);
         ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
         ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
-        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc);
-        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc);
+        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc, false);
+        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc, false);
 
         SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
-        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc);
+        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc, false);
+        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc, false);
 
         // get the filenames to copy
         IFile file = proj1.getFile("sloeber.cfg"); //$NON-NLS-1$
@@ -534,8 +534,8 @@ public class RegressionTest {
         proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc);
-        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc);
+        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc, false);
+        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc, false);
 
         // check the setup was done correctly
         if (!proj1BoardDesc.equals(proj1CreatedBoardDesc)) {

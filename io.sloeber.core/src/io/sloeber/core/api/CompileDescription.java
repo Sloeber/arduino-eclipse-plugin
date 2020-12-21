@@ -39,56 +39,7 @@ public class CompileDescription {
     private static final String ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.link"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS = Const.ENV_KEY_JANTJE_START + "extra.all"; //$NON-NLS-1$
 
-    // /**
-    // * gets the compile options stored in this configuration description. if the
-    // * configuration description is null the default compile options are returned.
-    // *
-    // * @param confDesc null for default or the configuration description you want
-    // * the compile options for
-    // */
-    // public CompileDescription(ICConfigurationDescription confDesc) {
-    // if (confDesc != null) {
-    //
-    // IEnvironmentVariableManager envManager =
-    // CCorePlugin.getDefault().getBuildEnvironmentManager();
-    // IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
-    // IEnvironmentVariable var =
-    // contribEnv.getVariable(ENV_KEY_JANTJE_WARNING_LEVEL, confDesc);
-    // if (var != null)
-    // this.myWarningLevel = Boolean.valueOf(var.getValue());
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_SIZE_SWITCH, confDesc);
-    // if (var != null)
-    // this.myAlternativeSizeCommand =
-    // var.getValue().contains(ENV_KEY_JANTJE_SIZE_COMMAND);
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS,
-    // confDesc);
-    // if (var != null)
-    // this.my_C_andCPP_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS,
-    // confDesc);
-    // if (var != null)
-    // this.my_C_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS,
-    // confDesc);
-    // if (var != null)
-    // this.my_CPP_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS,
-    // confDesc);
-    // if (var != null)
-    // this.my_Assembly_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS,
-    // confDesc);
-    // if (var != null)
-    // this.my_Archive_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, confDesc);
-    // if (var != null)
-    // this.my_Link_CompileOptions = var.getValue();
-    // var = contribEnv.getVariable(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, confDesc);
-    // if (var != null)
-    // this.my_All_CompileOptions = var.getValue();
-    //
-    // }
-    // }
+
 
     public boolean isWarningLevel() {
         return this.myWarningLevel;
@@ -202,7 +153,10 @@ public class CompileDescription {
     public boolean needsRebuild(CompileDescription curOptions) {
         // ignore myWarningLevel
         // ignore myAlternativeSizeCommand
-        return equalCompileOptions(curOptions);
+        if (curOptions == null) {
+            return true;
+        }
+        return !equalCompileOptions(curOptions);
     }
 
     /**
@@ -250,6 +204,19 @@ public class CompileDescription {
         // this will create default compile options
         // note that the Parallel build option is implemented at the ui level
         // therefore this is not set here but in the ui before project creation
+    }
+
+    public CompileDescription(CompileDescription compileDescription) {
+        myWarningLevel = compileDescription.myWarningLevel;
+        myAlternativeSizeCommand = compileDescription.myAlternativeSizeCommand;
+        myEnableParallelBuild = compileDescription.myEnableParallelBuild;
+        my_CPP_CompileOptions = compileDescription.my_CPP_CompileOptions;
+        my_C_CompileOptions = compileDescription.my_C_CompileOptions;
+        my_C_andCPP_CompileOptions = compileDescription.my_C_andCPP_CompileOptions;
+        my_Assembly_CompileOptions = compileDescription.my_Assembly_CompileOptions;
+        my_Archive_CompileOptions = compileDescription.my_Archive_CompileOptions;
+        my_Link_CompileOptions = compileDescription.my_Link_CompileOptions;
+        my_All_CompileOptions = compileDescription.my_All_CompileOptions;
     }
 
     /**

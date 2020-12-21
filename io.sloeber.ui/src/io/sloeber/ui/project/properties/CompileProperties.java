@@ -1,10 +1,7 @@
 package io.sloeber.ui.project.properties;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICResourceDescription;
-import org.eclipse.cdt.ui.newui.AbstractCPropertyTab;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,25 +10,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.ui.Messages;
 
-public class CompileProperties extends AbstractCPropertyTab {
-
-	@Override
-	protected void performOK() {
-
-		updateStorageData();
-		ICConfigurationDescription confDesc = getConfdesc();
-		if (confDesc != null) {
-			IProject project = confDesc.getProjectDescription().getProject();
-			SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
-			sloeberProject.setCompileDescription(confDesc, myCompileOptions);
-		}
-		super.performOK();
-	}
-
+public class CompileProperties extends SloeberCpropertyTab {
 	private Button myWarningLevel;
 	private Button mySizeCommand;
 	private Text myCAndCppCommand;
@@ -42,10 +24,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 	private Text myAssemblyCommand;
 	private Text myLinkCommand;
 
-
-
-	protected CompileDescription myCompileOptions;
-
+	
 	private static void createLine(Composite parent, int ncol) {
 		Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -53,7 +32,7 @@ public class CompileProperties extends AbstractCPropertyTab {
 		line.setLayoutData(gridData);
 	}
 
-	private Text makeOptionField( String labelText,String toolTipText) {
+	private Text makeOptionField(String labelText, String toolTipText) {
 		// edit field add to C & C++ command line
 		Label label = new Label(this.usercomp, SWT.LEFT);
 		label.setText(labelText);
@@ -71,13 +50,8 @@ public class CompileProperties extends AbstractCPropertyTab {
 	@Override
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
-		ICConfigurationDescription confDesc = getConfdesc();
-		IProject project = confDesc.getProjectDescription().getProject();
-		SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
-		myCompileOptions = sloeberProject.getCompileDescription(confDesc);
-		if (myCompileOptions == null) {
-			myCompileOptions = new CompileDescription();
-		}
+
+
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
@@ -88,7 +62,6 @@ public class CompileProperties extends AbstractCPropertyTab {
 		this.myWarningLevel.setText(Messages.ui_show_all_warnings);
 		this.myWarningLevel.setEnabled(true);
 		this.myWarningLevel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
-
 
 		// checkbox show alternative size
 		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
@@ -108,78 +81,72 @@ public class CompileProperties extends AbstractCPropertyTab {
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
-		updateScreenData();
+
+		updateScreen(getDescription(getConfdesc()));
 		setVisible(true);
 	}
 
-	private void updateScreenData() {
 
-		this.myWarningLevel.setSelection(this.myCompileOptions.isWarningLevel());
-		this.mySizeCommand.setSelection(this.myCompileOptions.isAlternativeSizeCommand());
-		this.myCAndCppCommand.setText(this.myCompileOptions.get_C_andCPP_CompileOptions());
-		this.myCCommand.setText(this.myCompileOptions.get_C_CompileOptions());
-		this.myCppCommand.setText(this.myCompileOptions.get_CPP_CompileOptions());
 
-		this.myAllCommand.setText(this.myCompileOptions.get_All_CompileOptions());
-		this.myArchiveCommand.setText(this.myCompileOptions.get_Archive_CompileOptions());
-		this.myAssemblyCommand.setText(this.myCompileOptions.get_Assembly_CompileOptions());
-		this.myLinkCommand.setText(this.myCompileOptions.get_Link_CompileOptions());
-	}
-	private void updateStorageData() {
 
-		this.myCompileOptions.setWarningLevel(this.myWarningLevel.getSelection());
-		this.myCompileOptions.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
-		this.myCompileOptions.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
-		this.myCompileOptions.set_C_CompileOptions(this.myCCommand.getText());
-		this.myCompileOptions.set_CPP_CompileOptions(this.myCppCommand.getText());
 
-		this.myCompileOptions.set_All_CompileOptions(this.myAllCommand.getText());
-		this.myCompileOptions.set_Archive_CompileOptions(this.myArchiveCommand.getText());
-		this.myCompileOptions.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
-		this.myCompileOptions.set_Link_CompileOptions(this.myLinkCommand.getText());
-	}
+
 	@Override
-	protected void updateData(ICResourceDescription cfg) {
-//		this.myCompileOptions = new CompileDescription(getConfdesc());
-//		updateScreenData();
+	protected String getQualifierString() {
+		return "SloeberCompileProperties"; //$NON-NLS-1$
 	}
 
 	@Override
-	public boolean canBeVisible() {
-		return true;
+	protected void updateScreen(Object object) {
+		CompileDescription compDesc = (CompileDescription) object;
+		this.myWarningLevel.setSelection(compDesc.isWarningLevel());
+		this.mySizeCommand.setSelection(compDesc.isAlternativeSizeCommand());
+		this.myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
+		this.myCCommand.setText(compDesc.get_C_CompileOptions());
+		this.myCppCommand.setText(compDesc.get_CPP_CompileOptions());
+		this.myAllCommand.setText(compDesc.get_All_CompileOptions());
+		this.myArchiveCommand.setText(compDesc.get_Archive_CompileOptions());
+		this.myAssemblyCommand.setText(compDesc.get_Assembly_CompileOptions());
+		this.myLinkCommand.setText(compDesc.get_Link_CompileOptions());
+		
 	}
 
 	@Override
-	protected void updateButtons() {
-		// nothing to do here
+	protected Object getFromScreen() {
+		CompileDescription compDesc = new CompileDescription();
+		compDesc.setWarningLevel(this.myWarningLevel.getSelection());
+		compDesc.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
+		compDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
+		compDesc.set_C_CompileOptions(this.myCCommand.getText());
+		compDesc.set_CPP_CompileOptions(this.myCppCommand.getText());
+		compDesc.set_All_CompileOptions(this.myAllCommand.getText());
+		compDesc.set_Archive_CompileOptions(this.myArchiveCommand.getText());
+		compDesc.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
+		compDesc.set_Link_CompileOptions(this.myLinkCommand.getText());
+	
+		return compDesc;
+	}
+
+	@Override
+	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
+		return mySloeberProject.getCompileDescription(confDesc, true);
+		
+	}
+
+	@Override
+	protected Object makeCopy(Object srcObject) {
+		return new CompileDescription((CompileDescription) srcObject);
+	}
+
+	@Override
+	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
+		mySloeberProject.setCompileDescription(confDesc, (CompileDescription) theObjectToStore);
 
 	}
 
 	@Override
-	protected void performApply(ICResourceDescription src, ICResourceDescription dst) {
-		updateStorageData();
-		if (dst.getConfiguration() != null) {
-			myCompileOptions.getEnvVars();
-		}
-	}
-
-	@Override
-	protected void performDefaults() {
-		this.myCompileOptions = new CompileDescription();
-		updateScreenData();
-	}
-
-	/**
-	 * Get the configuration we are currently working in. The configuration is
-	 * null if we are in the create sketch wizard.
-	 *
-	 * @return the configuration to save info into
-	 */
-	protected ICConfigurationDescription getConfdesc() {
-		if (this.page != null) {
-			return getResDesc().getConfiguration();
-		}
-		return null;
+	protected Object getnewDefaultObject() {
+		return new CompileDescription();
 	}
 
 }

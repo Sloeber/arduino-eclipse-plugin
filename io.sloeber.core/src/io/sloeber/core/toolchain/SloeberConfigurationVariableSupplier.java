@@ -42,12 +42,13 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         return curConfigVars.values().toArray(new BuildEnvironmentVariable[curConfigVars.size()]);
     }
 
-    public static void setEnvVars(IConfiguration configuration, Map<String, String> values, boolean replace) {
+
+    public static void setEnvVars(IConfiguration configuration, Map<String, String> values) {
         Map<String, BuildEnvironmentVariable> curConfigVars = myValues.get(configuration.getName());
         if (null == curConfigVars) {
             curConfigVars = new HashMap<>();
         }
-        if (replace) {
+        else {
             curConfigVars.clear();
         }
         for (Entry<String, String> curVar : values.entrySet()) {

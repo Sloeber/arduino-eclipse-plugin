@@ -33,19 +33,14 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	private BoardDescription myBoardDescriptor = null;
 	private CodeDescription myCodedescriptor = CodeDescription.createLastUsed();
 
-	public void setBoardDescriptor(BoardDescription boardDescriptor) {
-		if (myBoardDescriptor == null) {
-			myBoardDescriptor = boardDescriptor;
-//			boardDescriptor.addChangeListener(new ChangeListener() {
-//
-//				@Override
-//				public void stateChanged(ChangeEvent e) {
-//					handleBoarDescriptorChange();
-//				}
-//			});
-		}
-		handleBoarDescriptorChange();
-	}
+	// TOFIX disabled the push boarddescriptor
+
+//	public void setBoardDescriptor(BoardDescription boardDescriptor) {
+//		if (myBoardDescriptor == null) {
+//			myBoardDescriptor = boardDescriptor;
+//		}
+//		handleBoarDescriptorChange();
+//	}
 
 	public void handleBoarDescriptorChange() {
 

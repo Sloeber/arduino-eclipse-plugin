@@ -144,7 +144,9 @@ public class BoardDescription extends Common {
      * @return
      */
     public boolean needsRebuild(BoardDescription otherBoardDescriptor) {
-
+        if (otherBoardDescriptor == null) {
+            return true;
+        }
         if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
             return true;
         }
@@ -355,6 +357,15 @@ public class BoardDescription extends Common {
         myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
         myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
         myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
+    }
+
+    public BoardDescription(BoardDescription srcObject) {
+        myreferencingBoardsFile = srcObject.myreferencingBoardsFile;
+        myTxtFile = srcObject.myTxtFile;
+        myBoardID = srcObject.myBoardID;
+        myUploadPort = srcObject.myUploadPort;
+        myProgrammer = srcObject.myProgrammer;
+        myOptions = srcObject.myOptions;
     }
 
     protected BoardDescription(BoardTxtFile txtFile, String boardID) {
@@ -768,6 +779,7 @@ public class BoardDescription extends Common {
             myOptions.putAll(onlyKeepValidOptions(options));
         }
     }
+
 
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
         Map<String, String> ret = new HashMap<>();

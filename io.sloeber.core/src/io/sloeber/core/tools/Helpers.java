@@ -381,7 +381,7 @@ public class Helpers extends Common {
 	 *
 	 * @param project
 	 */
-	public static void setDirtyFlag(IProject project, ICConfigurationDescription cfgDescription) {
+	public static void deleteBuildFolder(IProject project, ICConfigurationDescription cfgDescription) {
 		IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
 		if (buildInfo == null) {
 			return; // Project is not a managed build project

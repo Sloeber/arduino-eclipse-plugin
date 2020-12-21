@@ -19,10 +19,10 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -77,8 +77,8 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		addPage(this.mWizardPage);
 		addPage(this.mArduinoPage);
 		addPage(this.mNewArduinoSketchWizardCodeSelectionPage);
-		BoardDescription boardID = this.mArduinoPage.getBoardDescriptor();
-		this.mNewArduinoSketchWizardCodeSelectionPage.setBoardDescriptor(boardID);
+//		BoardDescription boardID = this.mArduinoPage.getBoardDescriptor();
+//		this.mNewArduinoSketchWizardCodeSelectionPage.setBoardDescriptor(boardID);
 	}
 
 	@Override

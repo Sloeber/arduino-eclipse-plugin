@@ -28,7 +28,7 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
 		ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
         SloeberProject sloeberProject = SloeberProject.getSloeberProject(currentProject);
-        CompileDescription compileOptions = sloeberProject.getCompileDescription(confDesc);
+        CompileDescription compileOptions = sloeberProject.getCompileDescription(confDesc, false);
         if (compileOptions == null) {
             compileOptions = new CompileDescription();
         }
