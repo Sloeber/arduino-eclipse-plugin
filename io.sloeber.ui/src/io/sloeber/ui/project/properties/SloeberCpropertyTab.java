@@ -10,13 +10,12 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.ui.Activator;
 
 public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 
-	private QualifiedName sloeberQualifiedName = new QualifiedName(Activator.NODE_ARDUINO, getQualifierString());
+	private final QualifiedName sloeberQualifiedName = new QualifiedName(Activator.NODE_ARDUINO, getQualifierString());
 	protected SloeberProject mySloeberProject = null;
 	private ICConfigurationDescription prefConDescUser = null;
 	private ICConfigurationDescription prefConDescSystem = null;
@@ -53,7 +52,7 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 		for (ICConfigurationDescription curConfig : projDesc.getConfigurations()) {
 			Object description = getFromSloeber(curConfig);
 			if (description == null) {
-				description = new CompileDescription();
+				description = getnewDefaultObject();
 			} else {
 				description = makeCopy(description);
 			}
