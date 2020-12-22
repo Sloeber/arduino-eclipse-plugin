@@ -340,7 +340,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	}
 
 	@Test
-	public void testBoard() {
+    public void testBoard() throws Exception {
 		myBuildCounter++;
 		Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
 		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);

@@ -29,12 +29,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
+import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.ui.monitor.SerialConnection;
@@ -129,7 +129,7 @@ public class CompileAndUpload {
 	}
 
 	@Test
-	public void testExamples() {
+    public void testExamples() throws Exception {
 		IPath templateFolder = Shared.getTemplateFolder("fastBlink");
         CompileDescription compileOptions = new CompileDescription();
 		DateTimeFormatter df =  DateTimeFormatter
