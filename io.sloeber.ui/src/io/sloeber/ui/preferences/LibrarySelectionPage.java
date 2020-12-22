@@ -3,7 +3,10 @@ package io.sloeber.ui.preferences;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -80,15 +83,27 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	public boolean performOk() {
 		if (this.isJobRunning == false) {
 			this.isJobRunning = true;
-			new Job(Messages.ui_Adopting_arduino_libraries) {
+			Job job = new Job(Messages.ui_Adopting_arduino_libraries) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
 							null);
 					return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
 				}
-			}.schedule();
+			};
+			job.addJobChangeListener(new JobChangeAdapter() {
+
+				@Override
+				public void done(IJobChangeEvent event) {
+					LibrarySelectionPage.this.isJobRunning = false;
+				}
+				
+			});
+			job.setUser(true);
+			job.schedule();
 			return true;
+		} else {
+			MessageDialog.openInformation(getShell(), "Library Manager", "Library Manager is busy. Please wait some time...");
 		}
 		return false;
 	}
