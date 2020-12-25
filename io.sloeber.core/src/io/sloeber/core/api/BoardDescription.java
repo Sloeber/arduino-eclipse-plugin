@@ -1104,7 +1104,7 @@ public class BoardDescription extends Common {
         ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
         String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
         ret.myOptions = KeyValue.makeMap(optinconcat);
-        return null;
+        return ret;
     }
 
 }
