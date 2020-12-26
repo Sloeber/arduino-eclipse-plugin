@@ -11,15 +11,9 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -160,7 +154,7 @@ public class RegressionTest {
     }
 
     @Test
-    public void createCPPProject() throws Exception {
+    public void create_CPP_based_Sloeber_Project() throws Exception {
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
 
         IProject theTestProject = null;
@@ -420,56 +414,8 @@ public class RegressionTest {
         }
     }
 
-    @Test
-    public void closeProjectRemovesProperties() throws Exception {
-        String DummyData = "a object";
-        String projectName = "closeProjectRemovesProperties";
-        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        final IProject project = root.getProject("closeProjectRemovesProperties");
-        project.create(null);
-        project.open(null);
-        project.setSessionProperty(qualifiedName, DummyData);
-        project.close(null);
-        project.open(null);
-        Object projData = project.getSessionProperty(qualifiedName);
-        if (projData != null) {
-            fail("non persistent projectdescription properties behave persistent during project close open");
-        }
-    }
 
-    @Test
-    public void closeCDTProjectRemovesProperties() throws Exception {
-        String DummyData = "a object";
-        String projectName = "closeCDTProjectRemovesProperties";
-        QualifiedName qualifiedName = new QualifiedName("io.sloebertest", projectName);
 
-        // disable autobuild
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceDescription workspaceDesc = workspace.getDescription();
-        workspaceDesc.setAutoBuilding(false);
-        workspace.setDescription(workspaceDesc);
-
-        IWorkspaceRoot root = workspace.getRoot();
-        final IProject project = root.getProject(projectName);
-
-        // create a eclipse project
-        IProjectDescription description = workspace.newProjectDescription(projectName);
-
-        // make the eclipse project a cdt project
-        CCorePlugin.getDefault().createCProject(description, project, new NullProgressMonitor(),
-                ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID);
-
-        project.open(null);
-        project.setSessionProperty(qualifiedName, DummyData);
-        project.close(null);
-        project.open(null);
-        Object projData = project.getSessionProperty(qualifiedName);
-        if (projData != null) {
-            fail("non persistent projectdescription properties behave persistent during project close open");
-        }
-    }
 
     /**
      * open and close a project should keep the compileDescription and
