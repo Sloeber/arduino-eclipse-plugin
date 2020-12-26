@@ -459,7 +459,9 @@ public class SloeberProject extends Common {
     private static void setEnvVars(ICConfigurationDescription confDesc, Map<String, String> envVars) {
         IConfiguration configuration = ManagedBuildManager.getConfigurationForDescription(confDesc);
         if (configuration != null) {
-            SloeberConfigurationVariableSupplier.setEnvVars(configuration, envVars);
+            SloeberConfigurationVariableSupplier varSup = (SloeberConfigurationVariableSupplier) configuration
+                    .getEnvironmentVariableSupplier();
+            varSup.setEnvVars(configuration, envVars);
         }
     }
 

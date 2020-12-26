@@ -930,8 +930,6 @@ public class BoardDescription extends Common {
     }
 
     private Map<String, String> getEnVarPlatformInfo() {
-        // update the global variables if needed
-        PackageManager.updateGlobalEnvironmentVariables();
         if ((getReferencingPlatformFile() == null) || (getreferencedPlatformFile() == null)) {
             // something is seriously wrong -->shoot
             return new HashMap<>();

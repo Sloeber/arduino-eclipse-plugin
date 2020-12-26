@@ -29,7 +29,6 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -223,8 +222,6 @@ public class Activator extends Plugin {
 			protected IStatus run(IProgressMonitor monitor) {
 
 				monitor.beginTask("Sit back, relax and watch us work for a little while ..", IProgressMonitor.UNKNOWN);
-                // Set the gobal variables 
-                PackageManager.updateGlobalEnvironmentVariables();
 				addFileAssociations();
 				makeOurOwnCustomBoards_txt();
 				
