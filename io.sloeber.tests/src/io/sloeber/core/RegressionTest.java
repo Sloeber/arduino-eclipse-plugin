@@ -253,10 +253,7 @@ public class RegressionTest {
             compileOptions.set_CPP_CompileOptions("-DTEST_CPP");
             theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
                     compileOptions, new NullProgressMonitor());
-            ICProjectDescription prjCDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
 
-            CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(theTestProject, prjCDesc, true,
-                    null);
             Shared.waitForAllJobsToFinish(); // for the indexer
             theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
             if (Shared.hasBuildErrors(theTestProject)) {

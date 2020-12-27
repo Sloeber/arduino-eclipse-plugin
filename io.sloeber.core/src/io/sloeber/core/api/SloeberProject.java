@@ -163,18 +163,18 @@ public class SloeberProject extends Common {
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
 
                     SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle, true);
-                    for (ICConfigurationDescription curConfig : prjCDesc.getConfigurations()) {
+                    for (ICConfigurationDescription curConfigDesc : prjCDesc.getConfigurations()) {
                         // Even though we use the same boardDescriptor for all configurations during
                         // project creation
                         // we need to add them config per config because of the include linking
-                        Helpers.addArduinoCodeToProject(boardDescriptor, curConfig);
+                        Helpers.addArduinoCodeToProject(boardDescriptor, curConfigDesc);
 
-                        arduinoProjDesc.myCompileDescriptions.put(curConfig.getId(), compileDescriptor);
-                        arduinoProjDesc.myBoardDescriptions.put(curConfig.getId(), boardDescriptor);
-                        arduinoProjDesc.myOtherDescriptions.put(curConfig.getId(), otherDesc);
+                        arduinoProjDesc.myCompileDescriptions.put(curConfigDesc.getId(), compileDescriptor);
+                        arduinoProjDesc.myBoardDescriptions.put(curConfigDesc.getId(), boardDescriptor);
+                        arduinoProjDesc.myOtherDescriptions.put(curConfigDesc.getId(), otherDesc);
 
-                        setEnvVars(curConfig, arduinoProjDesc.getEnvVars(curConfig));
-                        Libraries.addLibrariesToProject(newProjectHandle, curConfig, librariesToAdd);
+                        setEnvVars(curConfigDesc, arduinoProjDesc.getEnvVars(curConfigDesc));
+                        Libraries.addLibrariesToProject(newProjectHandle, curConfigDesc, librariesToAdd);
                     }
 
                     arduinoProjDesc.createSloeberConfigFiles(prjCDesc);
@@ -349,23 +349,22 @@ public class SloeberProject extends Common {
         return needToCreateConfigFiles;
     }
 
-    private void setActiveConfig(ICConfigurationDescription confDesc) {
+    private boolean setActiveConfig(ICConfigurationDescription confDesc) {
         try {
             BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getId());
-
-            Helpers.addArduinoCodeToProject(boardDescription, confDesc);
-
+            boolean projDescMustBeSaved = Helpers.addArduinoCodeToProject(boardDescription, confDesc);
             boolean isRebuildNeeded = Helpers.removeInvalidIncludeFolders(confDesc);
-
             if (isRebuildNeeded) {
                 Helpers.deleteBuildFolder(myProject, confDesc);
             }
+            return projDescMustBeSaved || isRebuildNeeded;
 
         } catch (Exception e) {
             e.printStackTrace();
             Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
                     e));
         }
+        return false;
     }
 
     /**
@@ -608,8 +607,10 @@ public class SloeberProject extends Common {
     public void configChangeAboutToApply(ICProjectDescription newProjDesc, ICProjectDescription oldProjDesc) {
         ICConfigurationDescription newActiveConfig = newProjDesc.getActiveConfiguration();
         ICConfigurationDescription oldActiveConfig = oldProjDesc.getActiveConfiguration();
+        boolean needsConfigSet = myNeedsClean || isDirty
+                || !newActiveConfig.getName().equals(oldActiveConfig.getName());
         configureProject(newProjDesc, true);
-        if (!newActiveConfig.getName().equals(oldActiveConfig.getName())) {
+        if (needsConfigSet) {
             setActiveConfig(newActiveConfig);
         }
 
