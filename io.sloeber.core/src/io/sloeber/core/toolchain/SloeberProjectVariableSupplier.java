@@ -1,5 +1,7 @@
 package io.sloeber.core.toolchain;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -11,8 +13,6 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
 
-import io.sloeber.core.common.Const;
-
 //SloeberConfigurationVariableSupplier
 public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariableSupplier {
     private Map<String, BuildEnvironmentVariable> myValues = new HashMap<>();
@@ -21,7 +21,7 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
     private static BuildEnvironmentVariable get_EXTRA_TIME_UTC() {
         Date d = new Date();
         long current = d.getTime() / 1000;
-        return new BuildEnvironmentVariable(Const.EXTRA_TIME_UTC, Long.toString(current));
+        return new BuildEnvironmentVariable(EXTRA_TIME_UTC, Long.toString(current));
     }
 
     private static BuildEnvironmentVariable get_EXTRA_TIME_LOCAL() {
@@ -30,19 +30,19 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
         GregorianCalendar cal = new GregorianCalendar();
         long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
         long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
-        return new BuildEnvironmentVariable(Const.EXTRA_TIME_LOCAL, Long.toString(current + timezone + daylight));
+        return new BuildEnvironmentVariable(EXTRA_TIME_LOCAL, Long.toString(current + timezone + daylight));
     }
 
     private static BuildEnvironmentVariable get_EXTRA_TIME_ZONE() {
         GregorianCalendar cal = new GregorianCalendar();
         long timezone = cal.get(Calendar.ZONE_OFFSET) / 1000;
-        return new BuildEnvironmentVariable(Const.EXTRA_TIME_ZONE, Long.toString(timezone));
+        return new BuildEnvironmentVariable(EXTRA_TIME_ZONE, Long.toString(timezone));
     }
 
     private static BuildEnvironmentVariable get_EXTRA_TIME_DTS() {
         GregorianCalendar cal = new GregorianCalendar();
         long daylight = cal.get(Calendar.DST_OFFSET) / 1000;
-        return new BuildEnvironmentVariable(Const.EXTRA_TIME_DTS, Long.toString(daylight));
+        return new BuildEnvironmentVariable(EXTRA_TIME_DTS, Long.toString(daylight));
     }
 
 
@@ -50,13 +50,13 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
     public IBuildEnvironmentVariable getVariable(String variableName, IManagedProject project,
             IEnvironmentVariableProvider provider) {
         switch (variableName) {
-        case Const.EXTRA_TIME_UTC:
+        case EXTRA_TIME_UTC:
             return get_EXTRA_TIME_UTC();
-        case Const.EXTRA_TIME_LOCAL:
+        case EXTRA_TIME_LOCAL:
             return get_EXTRA_TIME_LOCAL();
-        case Const.EXTRA_TIME_ZONE:
+        case EXTRA_TIME_ZONE:
             return get_EXTRA_TIME_ZONE();
-        case Const.EXTRA_TIME_DTS:
+        case EXTRA_TIME_DTS:
             return get_EXTRA_TIME_DTS();
         default:
             return myValues.get(variableName);
@@ -65,10 +65,10 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
 
     @Override
     public IBuildEnvironmentVariable[] getVariables(IManagedProject project, IEnvironmentVariableProvider provider) {
-        myValues.put(Const.EXTRA_TIME_UTC, get_EXTRA_TIME_UTC());
-        myValues.put(Const.EXTRA_TIME_LOCAL, get_EXTRA_TIME_LOCAL());
-        myValues.put(Const.EXTRA_TIME_ZONE, get_EXTRA_TIME_ZONE());
-        myValues.put(Const.EXTRA_TIME_DTS, get_EXTRA_TIME_DTS());
+        myValues.put(EXTRA_TIME_UTC, get_EXTRA_TIME_UTC());
+        myValues.put(EXTRA_TIME_LOCAL, get_EXTRA_TIME_LOCAL());
+        myValues.put(EXTRA_TIME_ZONE, get_EXTRA_TIME_ZONE());
+        myValues.put(EXTRA_TIME_DTS, get_EXTRA_TIME_DTS());
         return myValues.values().toArray(new BuildEnvironmentVariable[myValues.size()]);
     }
 
