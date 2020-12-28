@@ -1,5 +1,8 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +26,6 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
@@ -34,12 +36,12 @@ import io.sloeber.core.txt.PlatformTxtFile;
 import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
-public class BoardDescription extends Common {
+public class BoardDescription {
     // Important constants to avoid having to add the class
     private static final String TOOL_ID = Messages.TOOL;
     private static final String BOARD_ID = Messages.BOARD;
     private static final String FILE_ID = Messages.FILE;
-    private static final String VendorArduino = Const.ARDUINO;
+    private static final String VendorArduino = ARDUINO;
 
     /*
      * Some constants
@@ -50,8 +52,8 @@ public class BoardDescription extends Common {
     private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_MENU_SELECTION = ENV_KEY_JANTJE_START + Const.MENU;
-    private static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + Const.COM_PORT;
+    private static final String ENV_KEY_JANTJE_MENU_SELECTION = ENV_KEY_JANTJE_START + MENU;
+    private static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + COM_PORT;
     private static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "board_name"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "boards_file"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "package_ID"; //$NON-NLS-1$
@@ -210,7 +212,7 @@ public class BoardDescription extends Common {
                 myBoardsCore = actualValue;
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedCorePlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, core)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -225,7 +227,7 @@ public class BoardDescription extends Common {
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
                         refVersion);
                 if (this.myReferencedCorePlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, core)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -244,7 +246,7 @@ public class BoardDescription extends Common {
                 this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
                         architecture);
                 if (this.myReferencedBoardVariantPlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, variant)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -264,7 +266,7 @@ public class BoardDescription extends Common {
                             refArchitecture, refVersion);
                 }
                 if (this.myReferencedBoardVariantPlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, variant)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -283,7 +285,7 @@ public class BoardDescription extends Common {
                 this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
                         architecture);
                 if (this.myReferencedUploadToolPlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, upload)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -298,7 +300,7 @@ public class BoardDescription extends Common {
                 this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
                         refArchitecture, refVersion);
                 if (this.myReferencedUploadToolPlatformPath == null) {
-                    Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Messages.Helpers_tool_reference_missing.replace(TOOL_ID, upload)
                                     .replace(FILE_ID, getReferencingBoardsFile().toString())
                                     .replace(BOARD_ID, getBoardID())));
@@ -408,7 +410,7 @@ public class BoardDescription extends Common {
      * project
      */
     public void saveUserSelection() {
-        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getReferencingBoardsFile().toString());
+        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, makePathEnvironmentString(getReferencingBoardsFile().toString()));
         myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
@@ -580,7 +582,7 @@ public class BoardDescription extends Common {
         if (retPath == null) {
             retPath = getreferencingPlatformPath();
         }
-        return retPath.append(Const.VARIANTS_FOLDER_NAME).append(getBoardVariant());
+        return retPath.append(VARIANTS_FOLDER_NAME).append(getBoardVariant());
     }
 
     private String getBoardVariant() {
@@ -597,7 +599,7 @@ public class BoardDescription extends Common {
         if (this.myBoardsCore == null) {
             return null;
         }
-        return retPath.append(Const.CORES).append(this.myBoardsCore);
+        return retPath.append(CORES).append(this.myBoardsCore);
     }
 
     /**
@@ -632,7 +634,7 @@ public class BoardDescription extends Common {
 
     public PlatformTxtFile getReferencingPlatformFile() {
         updateWhenDirty();
-        File platformFile = getreferencingPlatformPath().append(Const.PLATFORM_FILE_NAME).toFile();
+        File platformFile = getreferencingPlatformPath().append(PLATFORM_FILE_NAME).toFile();
         if (platformFile != null && platformFile.exists()) {
             return new PlatformTxtFile(platformFile);
         }
@@ -652,7 +654,7 @@ public class BoardDescription extends Common {
         if (this.myReferencedCorePlatformPath == null) {
             return null;
         }
-        File platformFile = myReferencedCorePlatformPath.append(Const.PLATFORM_FILE_NAME).toFile();
+        File platformFile = myReferencedCorePlatformPath.append(PLATFORM_FILE_NAME).toFile();
         if (platformFile != null && platformFile.exists()) {
             return new PlatformTxtFile(platformFile);
         }
@@ -675,18 +677,18 @@ public class BoardDescription extends Common {
     public String getUploadCommand(ICConfigurationDescription confdesc) {
         updateWhenDirty();
         String upLoadTool = getActualUploadTool();
-        String action = Const.UPLOAD;
+        String action = UPLOAD;
         if (usesProgrammer()) {
-            action = Const.PROGRAM;
+            action = PROGRAM;
         }
         String networkPrefix = EMPTY;
         if (isNetworkUpload()) {
-            networkPrefix = DOT + Const.NETWORK_PREFIX;
+            networkPrefix = DOT + NETWORK_PREFIX;
         }
-        String key = Const.A_TOOLS + upLoadTool + DOT + action + networkPrefix + DOT + Const.PATTERN;
+        String key = A_TOOLS + upLoadTool + DOT + action + networkPrefix + DOT + PATTERN;
         String ret = Common.getBuildEnvironmentVariable(confdesc, key, EMPTY);
         if (ret.isEmpty()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
         }
         return ret;
     }
@@ -694,17 +696,17 @@ public class BoardDescription extends Common {
     public String getActualUploadTool() {
         updateWhenDirty();
         // if (confdesc == null) {
-        // Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Confdesc null is
+        // Common.log(new Status(IStatus.ERROR, .CORE_PLUGIN_ID, "Confdesc null is
         // not alowed here")); //$NON-NLS-1$
         // return this.myUploadTool;
         // }
         // if (usesProgrammer()) {
-        // return Common.getBuildEnvironmentVariable(confdesc, Const.PROGRAM_TOOL,
+        // return Common.getBuildEnvironmentVariable(confdesc, PROGRAM_TOOL,
         // "Program tool not properly configured"); //$NON-NLS-1$
         // }
         //
         // if (this.myUploadTool == null) {
-        // return Common.getBuildEnvironmentVariable(confdesc, Const.UPLOAD_TOOL,
+        // return Common.getBuildEnvironmentVariable(confdesc, UPLOAD_TOOL,
         // "upload tool not properly configured"); //$NON-NLS-1$
         // }
         return myUploadTool;
@@ -1032,12 +1034,12 @@ public class BoardDescription extends Common {
         for (Entry<String, String> curVariable : vars.entrySet()) {
             String name = curVariable.getKey();
             String value = curVariable.getValue();
-            if (name.startsWith(Const.RECIPE_OBJCOPY) && name.endsWith(".pattern") && !value.isEmpty()) { //$NON-NLS-1$
+            if (name.startsWith(RECIPE_OBJCOPY) && name.endsWith(".pattern") && !value.isEmpty()) { //$NON-NLS-1$
                 objcopyCommand.add(makeEnvironmentVar(name));
             }
         }
         Collections.sort(objcopyCommand);
-        extraVars.put(Const.JANTJE_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
+        extraVars.put(JANTJE_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
 
         // handle the hooks
         extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.pre.link", //$NON-NLS-1$
@@ -1052,10 +1054,10 @@ public class BoardDescription extends Common {
                 "A.recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
 
         // add -relax for mega boards; the arduino ide way
-        String buildMCU = vars.get(Const.ENV_KEY_BUILD_MCU);
+        String buildMCU = vars.get(ENV_KEY_BUILD_MCU);
         if ("atmega2560".equalsIgnoreCase(buildMCU)) { //$NON-NLS-1$
-            String c_elf_flags = vars.get(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS);
-            extraVars.put(Const.ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax"); //$NON-NLS-1$
+            String c_elf_flags = vars.get(ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS);
+            extraVars.put(ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS, c_elf_flags + ",--relax"); //$NON-NLS-1$
         }
         return extraVars;
     }
@@ -1097,11 +1099,21 @@ public class BoardDescription extends Common {
         BoardDescription ret = new BoardDescription();
         ret.myUploadPort = getOldWayEnvVar(confDesc, "JANTJE.com_port");
         ret.myProgrammer = getOldWayEnvVar(confDesc, "JANTJE.upload");
-        ret.myreferencingBoardsFile = new File(getOldWayEnvVar(confDesc, "JANTJE.boards_file"));
         ret.myBoardID = getOldWayEnvVar(confDesc, "JANTJE.board_ID");
-        ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
         String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
         ret.myOptions = KeyValue.makeMap(optinconcat);
+        
+        String referencingBoardsFile = getOldWayEnvVar(confDesc, "JANTJE.boards_file");
+        int packagesIndex=referencingBoardsFile.indexOf( "\\arduinoPlugin\\packages\\");
+        if(packagesIndex==-1) {
+            packagesIndex=referencingBoardsFile.indexOf( "/arduinoPlugin/packages/");
+        }
+        if(packagesIndex!=-1) {
+            referencingBoardsFile = eclipseHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
+        }
+        ret.myreferencingBoardsFile = new File(referencingBoardsFile);
+        ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
+        
         return ret;
     }
 

@@ -1,8 +1,11 @@
 package io.sloeber.core.common;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+
 import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
-import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -12,24 +15,40 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
 public class Common extends Const {
 
-    private static String eclipseHomeValue = null;
-    static {
-        try {
-            ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
-            ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
-            eclipseHomeValue = var.getStringValue();
-        } catch (Exception e) {
-            // nobody cares
-        }
-    }
+    public final static String eclipseHome = getEclipseHome();
+    public final static IPath eclipseHomePath = new Path(eclipseHome);
 
+    private static String getEclipseHome() {
+
+        try {
+            String sloeber_HomeValue = System.getenv(Const.SLOEBER_HOME);
+            if (sloeber_HomeValue != null) {
+                if (!sloeber_HomeValue.isEmpty()) {
+                    return sloeber_HomeValue;
+                }
+            }
+
+            URL resolvedUrl = Platform.getInstallLocation().getURL();
+            URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
+            return Paths.get(resolvedUri).toString();
+        } catch (URISyntaxException e) {
+            // this should not happen
+            // but it seems a space in the path makes it happen
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+                    "Eclipse fails to provide its own installation folder :-(. \nThis is known to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
+                    e));
+        }
+        return null;
+        }
 
 
 
@@ -189,17 +208,7 @@ public class Common extends Const {
         return myWorkspaceRoot.getLocation();
     }
 
-    static {
 
-        try {
-            ICdtVariableManager manager = CCorePlugin.getDefault().getCdtVariableManager();
-            ICdtVariable var = manager.getVariable(ECLIPSE_HOME, null);
-            eclipseHomeValue = var.getStringValue();
-        } catch (Exception e) {
-            // nobody cares
-        }
-
-    }
 
     /**
      * Check whether the string starts with the eclipse path If it does replace with
@@ -209,10 +218,7 @@ public class Common extends Const {
      * @return modified string or the original
      */
     public static String makePathEnvironmentString(String path) {
-        if (eclipseHomeValue == null) {
-            return path;
-        }
-        return path.replace(eclipseHomeValue, makeEnvironmentVar(ECLIPSE_HOME));
+        return path.replace(eclipseHome, makeEnvironmentVar(ECLIPSE_HOME));
     }
 
 

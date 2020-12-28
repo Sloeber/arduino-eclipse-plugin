@@ -3,10 +3,6 @@ package io.sloeber.core.common;
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -14,10 +10,7 @@ import java.util.TreeSet;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
@@ -55,11 +48,8 @@ public class ConfigurationPreferences {
 	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
-	private static Path myEclipseHome = null;
 	private static String systemHash = "no hash generated"; //$NON-NLS-1$
 	static {
-		// Get the location we will use to save sloeber files
-		myEclipseHome = getEclipseHome();
 		// make a hashkey to identify the system
 		Collection<String> macs = new TreeSet<>();
 		Enumeration<NetworkInterface> inters;
@@ -123,36 +113,10 @@ public class ConfigurationPreferences {
 		}
 	}
 
-	public static Path getEclipseHome() {
-		if (myEclipseHome == null) {
 
-			try {
-				String sloeber_HomeValue=System.getenv(Const.SLOEBER_HOME);
-				if(sloeber_HomeValue!=null) {
-					if(!sloeber_HomeValue.isEmpty()) {
-						myEclipseHome = new Path(sloeber_HomeValue);
-//						Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-//								"Sloeber home overwritten with environment variable"));
-						return myEclipseHome;
-					}
-				}
-				
-				URL resolvedUrl = Platform.getInstallLocation().getURL();
-				URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
-				myEclipseHome = new Path(Paths.get(resolvedUri).toString());
-			} catch (URISyntaxException e) {
-				// this should not happen
-				// but it seems a space in the path makes it happen
-				Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						"Eclipse fails to provide its own installation folder :-(. \nThis is known to happen when you have a space ! # or other wierd characters in your eclipse installation path", //$NON-NLS-1$
-						e));
-			}
-		}
-		return myEclipseHome;
-	}
 
 	public static IPath getInstallationPath() {
-		return getEclipseHome().append("arduinoPlugin"); //$NON-NLS-1$
+        return Common.eclipseHomePath.append("arduinoPlugin"); //$NON-NLS-1$
 	}
 
 	public static IPath getInstallationPathLibraries() {
