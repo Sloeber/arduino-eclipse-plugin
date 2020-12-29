@@ -1,6 +1,6 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -382,6 +382,14 @@ public class RegressionTest {
             fail("Opened project does not match closed project parameters.");
         }
 
+        // also do a build
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+        if (Shared.hasBuildErrors(theTestProject)) {
+            fail("Failed to compile the project:" + projectName);
+        }
+
+
     }
 
     @Test
@@ -507,13 +515,13 @@ public class RegressionTest {
     static CompileDescription getBunkersCompileDescription() {
         CompileDescription inCompileDescription = new CompileDescription();
 
-        inCompileDescription.set_All_CompileOptions("Deen=1");
-        inCompileDescription.set_Archive_CompileOptions("Dtwee=2");
-        inCompileDescription.set_Assembly_CompileOptions("Drie=3");
-        inCompileDescription.set_C_andCPP_CompileOptions("Dvier=4");
-        inCompileDescription.set_C_CompileOptions("Dvijf=5");
-        inCompileDescription.set_Link_CompileOptions("Dzes=6");
-        inCompileDescription.set_CPP_CompileOptions("Dzeven=7");
+        inCompileDescription.set_All_CompileOptions("-Deen=1");
+        inCompileDescription.set_Archive_CompileOptions("-Dtwee=2");
+        inCompileDescription.set_Assembly_CompileOptions("-Drie=3");
+        inCompileDescription.set_C_andCPP_CompileOptions("-Dvier=4");
+        inCompileDescription.set_C_CompileOptions("-Dvijf=5");
+        inCompileDescription.set_Link_CompileOptions("-Dzes=6");
+        inCompileDescription.set_CPP_CompileOptions("-Dzeven=7");
         inCompileDescription.setAlternativeSizeCommand(true);
         inCompileDescription.setEnableParallelBuild(true);
         inCompileDescription.setWarningLevel(false);
