@@ -13,9 +13,11 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
 
+import io.sloeber.core.common.Common;
+
 //SloeberConfigurationVariableSupplier
 public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariableSupplier {
-    private Map<String, BuildEnvironmentVariable> myValues = new HashMap<>();
+
 
 
     private static BuildEnvironmentVariable get_EXTRA_TIME_UTC() {
@@ -45,6 +47,10 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
         return new BuildEnvironmentVariable(EXTRA_TIME_DTS, Long.toString(daylight));
     }
 
+    private static BuildEnvironmentVariable get_SLOEBER_HOME() {
+        return new BuildEnvironmentVariable(SLOEBER_HOME, Common.sloeberHome);
+    }
+
 
     @Override
     public IBuildEnvironmentVariable getVariable(String variableName, IManagedProject project,
@@ -58,18 +64,21 @@ public class SloeberProjectVariableSupplier implements IProjectEnvironmentVariab
             return get_EXTRA_TIME_ZONE();
         case EXTRA_TIME_DTS:
             return get_EXTRA_TIME_DTS();
-        default:
-            return myValues.get(variableName);
+        case SLOEBER_HOME:
+            return get_SLOEBER_HOME();
         }
+        return null;
     }
 
     @Override
     public IBuildEnvironmentVariable[] getVariables(IManagedProject project, IEnvironmentVariableProvider provider) {
-        myValues.put(EXTRA_TIME_UTC, get_EXTRA_TIME_UTC());
-        myValues.put(EXTRA_TIME_LOCAL, get_EXTRA_TIME_LOCAL());
-        myValues.put(EXTRA_TIME_ZONE, get_EXTRA_TIME_ZONE());
-        myValues.put(EXTRA_TIME_DTS, get_EXTRA_TIME_DTS());
-        return myValues.values().toArray(new BuildEnvironmentVariable[myValues.size()]);
+        Map<String, BuildEnvironmentVariable> retValues = new HashMap<>();
+        retValues.put(EXTRA_TIME_UTC, get_EXTRA_TIME_UTC());
+        retValues.put(EXTRA_TIME_LOCAL, get_EXTRA_TIME_LOCAL());
+        retValues.put(EXTRA_TIME_ZONE, get_EXTRA_TIME_ZONE());
+        retValues.put(EXTRA_TIME_DTS, get_EXTRA_TIME_DTS());
+        retValues.put(SLOEBER_HOME, get_SLOEBER_HOME());
+        return retValues.values().toArray(new BuildEnvironmentVariable[retValues.size()]);
     }
 
 }

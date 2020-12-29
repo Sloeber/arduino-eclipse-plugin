@@ -1,5 +1,6 @@
 package io.sloeber.core.common;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,10 +25,11 @@ import io.sloeber.core.Activator;
 
 public class Common extends Const {
 
-    public final static String eclipseHome = getEclipseHome();
-    public final static IPath eclipseHomePath = new Path(eclipseHome);
+    public final static String sloeberHome = getSloeberHome();
+    public final static IPath sloeberHomePath = new Path(sloeberHome);
+    public final static String sloeberHomePathToOSString = sloeberHomePath.toOSString();
 
-    private static String getEclipseHome() {
+    private static String getSloeberHome() {
 
         try {
             String sloeber_HomeValue = System.getenv(Const.SLOEBER_HOME);
@@ -36,7 +38,8 @@ public class Common extends Const {
                     return sloeber_HomeValue;
                 }
             }
-
+            // no sloeber home provided
+            // use eclipse home as sloeber home
             URL resolvedUrl = Platform.getInstallLocation().getURL();
             URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
             return Paths.get(resolvedUri).toString();
@@ -208,19 +211,28 @@ public class Common extends Const {
         return myWorkspaceRoot.getLocation();
     }
 
-
+    private final static String SLOEBER_HOME_VAR = makeEnvironmentVar(SLOEBER_HOME);
 
     /**
-     * Check whether the string starts with the eclipse path If it does replace with
-     * environment variable This keeps things more compatible over environments
+     * Check whether the string starts with the SLOEBER_HOME path If it does replace
+     * with environment variable This keeps things more compatible over environments
      * 
-	 * @param path string to check
+     * @param path
+     *            string to check
      * @return modified string or the original
      */
-    public static String makePathEnvironmentString(String path) {
-        return path.replace(eclipseHome, makeEnvironmentVar(ECLIPSE_HOME));
+    public static String makePathEnvironmentString(IPath path) {
+        return path.toOSString().replace(sloeberHomePathToOSString, SLOEBER_HOME_VAR);
     }
 
+    public static String makePathEnvironmentString(File file) {
+        return file.getPath().replace(sloeberHomePathToOSString, SLOEBER_HOME_VAR);
+    }
+
+    public static File resolvePathEnvironmentString(File file) {
+        String retString = file.getPath().replace(SLOEBER_HOME_VAR, sloeberHomePathToOSString);
+        return new File(retString);
+    }
 
 
     /**

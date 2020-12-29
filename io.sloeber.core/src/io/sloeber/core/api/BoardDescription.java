@@ -152,7 +152,10 @@ public class BoardDescription {
         if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
             return true;
         }
-        if (!this.getReferencingBoardsFile().equals(otherBoardDescriptor.getReferencingBoardsFile())) {
+        String moddedReferencingBoardsFile = makePathEnvironmentString(getReferencingBoardsFile());
+        String moddedOtherReferencingBoardsFile = makePathEnvironmentString(
+                otherBoardDescriptor.getReferencingBoardsFile());
+        if (!moddedReferencingBoardsFile.equals(moddedOtherReferencingBoardsFile)) {
             return true;
         }
         if (!this.getOptions().equals(otherBoardDescriptor.getOptions())) {
@@ -320,7 +323,7 @@ public class BoardDescription {
      * @return a list of board descriptors
      */
     public static List<BoardDescription> makeBoardDescriptors(File boardFile, Map<String, String> options) {
-        BoardTxtFile txtFile = new BoardTxtFile(boardFile);
+        BoardTxtFile txtFile = new BoardTxtFile(resolvePathEnvironmentString(boardFile));
         List<BoardDescription> boards = new ArrayList<>();
         String[] allSectionNames = txtFile.getAllSectionNames();
         for (String curboardName : allSectionNames) {
@@ -344,7 +347,7 @@ public class BoardDescription {
      */
     BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
         this.myBoardID = boardID;
-        this.myreferencingBoardsFile = boardsFile;
+        this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
         this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
@@ -353,7 +356,8 @@ public class BoardDescription {
     }
 
     public BoardDescription() {
-        myreferencingBoardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
+        myreferencingBoardsFile = resolvePathEnvironmentString(
+                new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY)));
         myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
         myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
@@ -410,7 +414,7 @@ public class BoardDescription {
      * project
      */
     public void saveUserSelection() {
-        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, makePathEnvironmentString(getReferencingBoardsFile().toString()));
+        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, makePathEnvironmentString(getReferencingBoardsFile()));
         myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
@@ -492,11 +496,11 @@ public class BoardDescription {
         if (boardsFile == null) {
             return;// ignore
         }
-        if (this.myreferencingBoardsFile.equals(boardsFile)) {
+        if (this.myreferencingBoardsFile.equals(resolvePathEnvironmentString(boardsFile))) {
             return;
         }
 
-        this.myreferencingBoardsFile = boardsFile;
+        this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
         this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDirty();
     }
@@ -773,7 +777,7 @@ public class BoardDescription {
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
-        myreferencingBoardsFile = new File(board_txt);
+        myreferencingBoardsFile = resolvePathEnvironmentString(new File(board_txt));
         this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
@@ -809,7 +813,7 @@ public class BoardDescription {
      */
     public Map<String, String> getEnvVarsConfig(String prefix) {
         Map<String, String> allVars = new TreeMap<>();
-        String board_txt = myreferencingBoardsFile.toString();
+        String board_txt = makePathEnvironmentString(getReferencingBoardsFile());
 
         allVars.put(prefix + KEY_SLOEBER_PROGRAMMER, myProgrammer);
         allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);
@@ -1109,9 +1113,9 @@ public class BoardDescription {
             packagesIndex=referencingBoardsFile.indexOf( "/arduinoPlugin/packages/");
         }
         if(packagesIndex!=-1) {
-            referencingBoardsFile = eclipseHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
+            referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
         }
-        ret.myreferencingBoardsFile = new File(referencingBoardsFile);
+        ret.myreferencingBoardsFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
         ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
         
         return ret;

@@ -256,6 +256,7 @@ public class SloeberProject extends Common {
         if (isConfigured) {
             if (isDirty) {
                 createSloeberConfigFiles(prjCDesc);
+                setEnvironmentVariables(prjCDesc);
             }
             if (prjDescWritable && myNeedsClean) {
                 cleanOldData(prjCDesc);
@@ -272,6 +273,7 @@ public class SloeberProject extends Common {
                 cleanOldData(prjCDesc);
             }
         }
+        setEnvironmentVariables(prjCDesc);
         isConfigured = true;
     }
 
@@ -287,10 +289,10 @@ public class SloeberProject extends Common {
         for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
             IEnvironmentVariable[] CurVariables = contribEnv.getVariables(confDesc);
             for (int i = (CurVariables.length - 1); i > 0; i--) {
-                if (CurVariables[i].getName().startsWith("A.")) {
+                if (CurVariables[i].getName().startsWith("A.")) { //$NON-NLS-1$
                     contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
                 }
-                if (CurVariables[i].getName().startsWith("JANTJE.")) {
+                if (CurVariables[i].getName().startsWith("JANTJE.")) { //$NON-NLS-1$
                     contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
                 }
             }
@@ -367,6 +369,12 @@ public class SloeberProject extends Common {
         return false;
     }
 
+    private void setEnvironmentVariables(final ICProjectDescription prjCDesc) {
+        for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
+            setEnvVars(confDesc, getEnvVars(confDesc));
+        }
+    }
+
     /**
      * This methods creates/updates 2 files in the workspace. Together these files
      * contain the Sloeber project configuration info The info is split into 2 files
@@ -401,7 +409,6 @@ public class SloeberProject extends Common {
                 versionVars.putAll(compileDescription.getEnvVarsConfig(compPrefix));
                 versionVars.putAll(otherDescription.getEnvVarsConfig(otherPrefix));
             }
-            setEnvVars(confDesc, getEnvVars(confDesc));
         }
 
         try {

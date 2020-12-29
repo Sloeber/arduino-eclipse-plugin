@@ -116,7 +116,7 @@ public class ConfigurationPreferences {
 
 
 	public static IPath getInstallationPath() {
-        return Common.eclipseHomePath.append("arduinoPlugin"); //$NON-NLS-1$
+        return Common.sloeberHomePath.append("arduinoPlugin"); //$NON-NLS-1$
 	}
 
 	public static IPath getInstallationPathLibraries() {
