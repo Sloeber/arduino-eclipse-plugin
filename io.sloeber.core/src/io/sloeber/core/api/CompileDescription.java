@@ -1,12 +1,7 @@
 package io.sloeber.core.api;
 
-import static io.sloeber.core.common.Common.getOldWayEnvVar;
-import static io.sloeber.core.common.Common.makeEnvironmentVar;
-import static io.sloeber.core.common.Const.EMPTY;
-import static io.sloeber.core.common.Const.ENV_KEY_JANTJE_START;
-import static io.sloeber.core.common.Const.ERASE_START;
-import static io.sloeber.core.common.Const.RECIPE_SIZE;
-import static io.sloeber.core.common.Const.TRUE;
+import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.common.Const.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +33,7 @@ public class CompileDescription {
     private static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
             + "extra.cpp.compile"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "warning_level"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_SIZE_COMMAND = ERASE_START + "alt_size_command"; //$NON-NLS-1$
+    private static final String ENV_KEY_JANTJE_SIZE_COMMAND = "SLOEBER.alt_size_command"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "size.switch"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.assembly"; //$NON-NLS-1$
     private static final String ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.archive"; //$NON-NLS-1$

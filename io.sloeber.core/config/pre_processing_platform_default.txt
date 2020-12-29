@@ -3,7 +3,7 @@ A.software=ARDUINO
 A.recipe.objcopy.hex.pattern=${A.recipe.objcopy.bin.pattern}
 A.archive_file=arduino.ar
 A.archive_file_path=${A.build.path}/${A.archive_file}
-JANTJE.alt_size_command="${A.compiler.path}${A.compiler.size.cmd}" --format=avr --mcu=${A.build.mcu} "${A.build.path}/${A.build.project_name}.elf"
+SLOEBER.alt_size_command="${A.compiler.path}${A.compiler.size.cmd}" --format=avr --mcu=${A.build.mcu} "${A.build.path}/${A.build.project_name}.elf"
 A.runtime.ide.version=10812
 A.build.system.path=${A.referenced.core.path}${DirectoryDelimiter}system
 A.serial.port=${JANTJE.com_port}
