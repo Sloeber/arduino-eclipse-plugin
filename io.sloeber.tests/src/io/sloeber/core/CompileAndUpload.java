@@ -1,6 +1,6 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -139,7 +139,7 @@ public class CompileAndUpload {
 				+ " -DSERIAlDUMP=" + SerialDumpContent);
 		CodeDescription codeDescriptor=CodeDescription.createCustomTemplate(templateFolder);
 		Map<String, String> replacers=new TreeMap<>();
-		replacers.put("\\{SerialMonitorSerial\\}", myBoard.mySerialPort);
+        replacers.put("{SerialMonitorSerial}", myBoard.mySerialPort);
 		codeDescriptor.setReplacers(replacers);
 		Build_Verify_upload(codeDescriptor,	compileOptions, SerialDumpContent);
 
