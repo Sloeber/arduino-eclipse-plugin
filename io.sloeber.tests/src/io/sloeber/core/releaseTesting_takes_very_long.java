@@ -9,15 +9,16 @@ import io.sloeber.core.api.Preferences;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        CreateAndCompileDefaultInoOnAllBoardsTest.class,
+
         NightlyBoardPatronTest.class,
         RegressionTest.class,
         RegressionTestFailingOnTravis.class,
+        UpgradeTest.class, CompileAndUpload.class,
         CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest.class,
         CreateAndCompileArduinoIDEExamplesOnTeensyTest.class,
         CreateAndCompileExamplesTest.class,
         CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest.class,
-        CreateAndCompileLibraryExamplesTest.class
+        CreateAndCompileLibraryExamplesTest.class, CreateAndCompileDefaultInoOnAllBoardsTest.class,
         })
 public class releaseTesting_takes_very_long {
     @BeforeClass
