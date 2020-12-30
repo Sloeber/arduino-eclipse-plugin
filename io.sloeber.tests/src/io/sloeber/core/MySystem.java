@@ -1,6 +1,6 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import io.sloeber.core.api.Other;
 import io.sloeber.providers.Arduino;
@@ -59,7 +59,7 @@ public class MySystem {
 		case jantjesWindowsMachineHashkeyAfterUpdate:{
 			//due native upload gives to mutch trouble even in arduino IDE
 			MCUBoard[] boards = {  
-					Teensy.teensypp2("COM10"),
+                    Teensy.teensypp2("COM103"),
 				//	Teensy.Teensy3_1("COM24"), 
 					Arduino.leonardo("COM101"), 
 					Arduino.fried2016("COM102"), 

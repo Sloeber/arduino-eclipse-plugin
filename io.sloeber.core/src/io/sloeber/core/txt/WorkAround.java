@@ -38,7 +38,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 1 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 10 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -202,6 +202,8 @@ public class WorkAround extends Const {
                 platformSloeberTXT.delete();
             }
         }
+        // if the worked around file still exists it means it all workarounds have been
+        // applied
         if (!platformSloeberTXT.exists()) {
             try {
                 String platformTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n";
@@ -218,46 +220,75 @@ public class WorkAround extends Const {
                             "$1/core/core/sys");
                     platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
                 }
-
+                // replace tools.x.y* {path}
+                // by
+                // tools.x.y* {tools.x.path}
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
+                // Need to do this 2 times because of arduino samd boards
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
                 // change {cmd.path} to fqn {cmd.path}
-                String searchString = "{cmd.path}";
-                String cmdPathLine = findLineContaining(platformTXT, searchString);
-                while (null != cmdPathLine) {
-                    if (cmdPathLine.startsWith(TOOLS)) {
-                        int patternIndex = cmdPathLine.indexOf(PATTERN);
-                        if (patternIndex > 0) {
-                            int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
-                            String replaceString = "{" + cmdPathLine.substring(0, endIndex) + "cmd.path}";
-                            String replaceLine = cmdPathLine.replace(searchString, replaceString);
-                            platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
-                            cmdPathLine = findLineContaining(platformTXT, searchString);
-                        }
-                    } else if (cmdPathLine.charAt(0) == '#') {
-                        platformTXT = platformTXT.replace(cmdPathLine, EMPTY);
-                        cmdPathLine = findLineContaining(platformTXT, searchString);
-                    }
-                    else {
-                        // TODO find a better way to handle this situation
-                        // but it is better to continue than hang
-                        cmdPathLine = null;
-                    }
-                }
-
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})",
+                        "$1{$2.cmd.path}");
+                // needed a second time for teensy
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})",
+                        "$1{$2.cmd.path}");
+                // change {cmd} to fqn {cmd}
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd})", "$1{$2.cmd}");
                 // change {config.path} to fqn {config.path}
-                searchString = "{config.path}";
-                cmdPathLine = findLineContaining(platformTXT, searchString);
-                while (null != cmdPathLine) {
-                    if (cmdPathLine.startsWith(TOOLS)) {
-                        int patternIndex = cmdPathLine.indexOf(PATTERN);
-                        if (patternIndex > 0) {
-                            int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
-                            String replaceString = "{" + cmdPathLine.substring(0, endIndex) + "config.path}";
-                            String replaceLine = cmdPathLine.replace(searchString, replaceString);
-                            platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
-                            cmdPathLine = findLineContaining(platformTXT, searchString);
-                        }
-                    }
-                }
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{config.path})",
+                        "$1{$2.config.path}");
+                // for arduino 101
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.string})",
+                        "$1{$2.ble.fw.string}");
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.position})",
+                        "$1{$2.ble.fw.position}");
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.string})",
+                        "$1{$2.rtos.fw.string}");
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.position})",
+                        "$1{$2.rtos.fw.position}");
+                platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{version})",
+                        "$1{$2.version}");
+
+                // String searchString = "{cmd.path}";
+                // String cmdPathLine = findLineContaining(platformTXT, searchString);
+                // while (null != cmdPathLine) {
+                // if (cmdPathLine.startsWith(TOOLS)) {
+                // int patternIndex = cmdPathLine.indexOf(PATTERN);
+                // if (patternIndex > 0) {
+                // int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
+                // String replaceString = "{" + cmdPathLine.substring(0, endIndex) +
+                // ".cmd.path}";
+                // String replaceLine = cmdPathLine.replace(searchString, replaceString);
+                // platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
+                // cmdPathLine = findLineContaining(platformTXT, searchString);
+                // }
+                // } else if (cmdPathLine.charAt(0) == '#') {
+                // platformTXT = platformTXT.replace(cmdPathLine, EMPTY);
+                // cmdPathLine = findLineContaining(platformTXT, searchString);
+                // }
+                // else {
+                // // TODO find a better way to handle this situation
+                // // but it is better to continue than hang
+                // cmdPathLine = null;
+                // }
+                // }
+                //
+                // // change {config.path} to fqn {config.path}
+                // searchString = "{config.path}";
+                // cmdPathLine = findLineContaining(platformTXT, searchString);
+                // while (null != cmdPathLine) {
+                // if (cmdPathLine.startsWith(TOOLS)) {
+                // int patternIndex = cmdPathLine.indexOf(PATTERN);
+                // if (patternIndex > 0) {
+                // int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
+                // String replaceString = "{" + cmdPathLine.substring(0, endIndex) +
+                // ".config.path}";
+                // String replaceLine = cmdPathLine.replace(searchString, replaceString);
+                // platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
+                // cmdPathLine = findLineContaining(platformTXT, searchString);
+                // }
+                // }
+                // }
 
                 // workaround for infineon arm v1.4.0 overwriting the default to a wrong value
                 platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
@@ -314,6 +345,9 @@ public class WorkAround extends Const {
                             " '-DARDUINO_BOARD=\"{build.board}\"' ");
                 }
                 platformTXT = platformTXT.replace("{", "${" + ERASE_START);
+                // Arduino zero openocd script uses { as parameter delimiter for program
+                platformTXT = platformTXT.replace("program ${A.${", "program {${");
+
                 FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
             } catch (IOException e) {
                 Common.log(new Status(IStatus.WARNING, Activator.getId(),
