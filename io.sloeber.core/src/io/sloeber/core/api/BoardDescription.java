@@ -52,14 +52,8 @@ public class BoardDescription {
     private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_MENU_SELECTION = ENV_KEY_JANTJE_START + MENU;
-    private static final String ENV_KEY_JANTJE_UPLOAD_PORT = ENV_KEY_JANTJE_START + COM_PORT;
-    private static final String ENV_KEY_JANTJE_BOARD_NAME = ENV_KEY_JANTJE_START + "board_name"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_BOARDS_FILE = ENV_KEY_JANTJE_START + "boards_file"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_PACKAGE_ID = ENV_KEY_JANTJE_START + "package_ID"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ARCITECTURE_ID = ENV_KEY_JANTJE_START + "architecture_ID"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_BOARD_ID = ENV_KEY_JANTJE_START + "board_ID"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT = ERASE_START + "serial_port"; //$NON-NLS-1$
+    private static final String ENV_KEY_SERIAL_DOT_PORT = ERASE_START + "serial.port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "serial.port.file"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_VARIANT_PATH = ERASE_START + BUILD + DOT + VARIANT + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = ERASE_START + BUILD + DOT + CORE + DOT + PATH;
@@ -862,15 +856,10 @@ public class BoardDescription {
         allVars.put(ENV_KEY_HARDWARE_PATH, getreferencedHardwarePath().toOSString());
         allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
 
-        allVars.putAll(getEnvVarsConfig(EMPTY));
-        allVars.put(ENV_KEY_JANTJE_BOARD_NAME, getBoardName());
-        allVars.put(ENV_KEY_JANTJE_BOARDS_FILE, getReferencingBoardsFile().toString());
-        allVars.put(ENV_KEY_JANTJE_ARCITECTURE_ID, getArchitecture());
-        allVars.put(ENV_KEY_JANTJE_PACKAGE_ID, getPackage());
-        allVars.put(ENV_KEY_JANTJE_UPLOAD_PORT, this.myUploadPort);
-        allVars.put(JANTJE_ACTION_UPLOAD, this.myProgrammer);
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
+        allVars.put(ENV_KEY_SERIAL_DOT_PORT, getActualUploadPort());
+
         allVars.put(ENV_KEY_SERIAL_PORT_FILE, getActualUploadPort().replace("/dev/", EMPTY)); //$NON-NLS-1$
         // if actual core path is osstring regression test issue555 willl fail teensy
         // stuff
@@ -911,7 +900,7 @@ public class BoardDescription {
             }
         }
 
-        // boards setiings not comming from menu selections
+        // boards settings not coming from menu selections
         allVars.putAll(myTxtFile.getAllBoardEnvironVars(getBoardID()));
 
         // board settings from menu selections

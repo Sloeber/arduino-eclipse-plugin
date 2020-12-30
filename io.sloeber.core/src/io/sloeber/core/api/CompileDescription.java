@@ -127,7 +127,14 @@ public class CompileDescription {
      *            must be a valid configuration description
      */
     public Map<String, String> getEnvVars() {
-        Map<String, String> ret = getEnvVarsConfig(EMPTY);
+        Map<String, String> ret = new HashMap<>();
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
 
         if (this.isWarningLevel()) {
             ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
