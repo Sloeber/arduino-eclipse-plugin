@@ -1133,7 +1133,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		String prebuildStep = config.getPrebuildStep();
 		//JABA issue927 adding recipe.hooks.sketch.prebuild.NUMBER.pattern as cdt prebuild command if needed
 		ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
-        String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "A.JANTJE.prebuild",
+        String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc, "sloeber.prebuild",
                 new String(), false);
         if (!sketchPrebuild.isEmpty()) {
             String separator = new String();
@@ -2398,9 +2398,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			if("sloeber.ino".equals(fileName)) {
 			    ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
                 String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-                        "A.JANTJE.sketch.prebuild", new String(), true);
+                        "sloeber.sketch.prebuild", new String(), true);
                 String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
-                        "A.JANTJE.sketch.postbuild", new String(), true);
+                        "sloeber.sketch.postbuild", new String(), true);
 			            if(!sketchPrebuild.isEmpty()) {
 			                buffer.append(TAB).append(sketchPrebuild);
 			            }

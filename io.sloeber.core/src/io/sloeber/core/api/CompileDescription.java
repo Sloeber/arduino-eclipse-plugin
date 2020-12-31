@@ -24,21 +24,21 @@ public class CompileDescription {
     private String my_Link_CompileOptions = new String();
     private String my_All_CompileOptions = new String();
 
-    private static final String ENV_KEY_WARNING_LEVEL_OFF = "A.compiler.warning_flags"; //$NON-NLS-1$
-    private static final String ENV_KEY_WARNING_LEVEL_ON = "${A.compiler.warning_flags_all}"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+    private static final String ENV_KEY_WARNING_LEVEL_OFF = "compiler.warning_flags"; //$NON-NLS-1$
+    private static final String ENV_KEY_WARNING_LEVEL_ON = "${compiler.warning_flags_all}"; //$NON-NLS-1$
+    private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.compile"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+    private static final String SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.c.compile"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_JANTJE_START
+    private static final String SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.cpp.compile"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_WARNING_LEVEL = ENV_KEY_JANTJE_START + "warning_level"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_SIZE_COMMAND = "SLOEBER.alt_size_command"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_SIZE_SWITCH = ENV_KEY_JANTJE_START + "size.switch"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.assembly"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.archive"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.link"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS = ENV_KEY_JANTJE_START + "extra.all"; //$NON-NLS-1$
+    private static final String SLOEBER_WARNING_LEVEL = ENV_KEY_SLOEBER_START + "warning_level"; //$NON-NLS-1$
+    private static final String SLOEBER_SIZE_COMMAND = ENV_KEY_SLOEBER_START + "alt_size_command"; //$NON-NLS-1$
+    private static final String SLOEBER_SIZE_SWITCH = ENV_KEY_SLOEBER_START + "size.switch"; //$NON-NLS-1$
+    private static final String SLOEBER_ASSEMBLY_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.assembly"; //$NON-NLS-1$
+    private static final String SLOEBER_ARCHIVE_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.archive"; //$NON-NLS-1$
+    private static final String SLOEBER_LINK_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.link"; //$NON-NLS-1$
+    private static final String SLOEBER_ALL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.all"; //$NON-NLS-1$
 
     public boolean isWarningLevel() {
         return this.myWarningLevel;
@@ -128,21 +128,21 @@ public class CompileDescription {
      */
     public Map<String, String> getEnvVars() {
         Map<String, String> ret = new HashMap<>();
-        ret.put(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
-        ret.put(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
 
         if (this.isWarningLevel()) {
             ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
         }
         if (this.myAlternativeSizeCommand) {
-            ret.put(ENV_KEY_JANTJE_SIZE_SWITCH, makeEnvironmentVar(ENV_KEY_JANTJE_SIZE_COMMAND));
+            ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(SLOEBER_SIZE_COMMAND));
         } else {
-            ret.put(ENV_KEY_JANTJE_SIZE_SWITCH, makeEnvironmentVar(RECIPE_SIZE));
+            ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(RECIPE_SIZE));
         }
 
         return ret;
@@ -175,15 +175,15 @@ public class CompileDescription {
      */
     public Map<String, String> getEnvVarsConfig(String prefix) {
         Map<String, String> ret = new HashMap<>();
-        ret.put(prefix + ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-        ret.put(prefix + ENV_KEY_JANTJE_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
-        ret.put(prefix + ENV_KEY_JANTJE_SIZE_SWITCH, Boolean.valueOf(myAlternativeSizeCommand).toString());
+        ret.put(prefix + SLOEBER_ADDITIONAL_COMPILE_OPTIONS, this.my_C_andCPP_CompileOptions);
+        ret.put(prefix + SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS, this.my_CPP_CompileOptions);
+        ret.put(prefix + SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS, this.my_C_CompileOptions);
+        ret.put(prefix + SLOEBER_ASSEMBLY_COMPILE_OPTIONS, this.my_Assembly_CompileOptions);
+        ret.put(prefix + SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
+        ret.put(prefix + SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
+        ret.put(prefix + SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
+        ret.put(prefix + SLOEBER_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
+        ret.put(prefix + SLOEBER_SIZE_SWITCH, Boolean.valueOf(myAlternativeSizeCommand).toString());
 
         return ret;
     }
@@ -193,15 +193,15 @@ public class CompileDescription {
         KeyValueTree tree = configFile.getData();
         KeyValueTree section = tree.getChild(prefix);
 
-        my_C_andCPP_CompileOptions = section.getValue(ENV_KEY_JANTJE_ADDITIONAL_COMPILE_OPTIONS);
-        my_CPP_CompileOptions = section.getValue(ENV_KEY_JANTJE_ADDITIONAL_CPP_COMPILE_OPTIONS);
-        my_C_CompileOptions = section.getValue(ENV_KEY_JANTJE_ADDITIONAL_C_COMPILE_OPTIONS);
-        my_Assembly_CompileOptions = section.getValue(ENV_KEY_JANTJE_ASSEMBLY_COMPILE_OPTIONS);
-        my_Archive_CompileOptions = section.getValue(ENV_KEY_JANTJE_ARCHIVE_COMPILE_OPTIONS);
-        my_Link_CompileOptions = section.getValue(ENV_KEY_JANTJE_LINK_COMPILE_OPTIONS);
-        my_All_CompileOptions = section.getValue(ENV_KEY_JANTJE_ALL_COMPILE_OPTIONS);
-        myWarningLevel = TRUE.equalsIgnoreCase(section.getValue(ENV_KEY_JANTJE_WARNING_LEVEL));
-        myAlternativeSizeCommand = TRUE.equalsIgnoreCase(section.getValue(ENV_KEY_JANTJE_SIZE_SWITCH));
+        my_C_andCPP_CompileOptions = section.getValue(SLOEBER_ADDITIONAL_COMPILE_OPTIONS);
+        my_CPP_CompileOptions = section.getValue(SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS);
+        my_C_CompileOptions = section.getValue(SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS);
+        my_Assembly_CompileOptions = section.getValue(SLOEBER_ASSEMBLY_COMPILE_OPTIONS);
+        my_Archive_CompileOptions = section.getValue(SLOEBER_ARCHIVE_COMPILE_OPTIONS);
+        my_Link_CompileOptions = section.getValue(SLOEBER_LINK_COMPILE_OPTIONS);
+        my_All_CompileOptions = section.getValue(SLOEBER_ALL_COMPILE_OPTIONS);
+        myWarningLevel = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_WARNING_LEVEL));
+        myAlternativeSizeCommand = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_SIZE_SWITCH));
 
     }
 

@@ -1,5 +1,8 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +20,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Helpers;
@@ -44,8 +45,8 @@ public class CodeDescription {
 	//
 	// template Sketch information
 
-    static private final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER = Const.ENV_KEY_JANTJE_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
-    static private final String ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT = Const.ENV_KEY_JANTJE_START
+    static private final String SLOEBER_SKETCH_TEMPLATE_FOLDER = ENV_KEY_SLOEBER_START + "TEMPLATE_FOLDER"; //$NON-NLS-1$
+    static private final String SLOEBER_SKETCH_TEMPLATE_USE_DEFAULT = ENV_KEY_SLOEBER_START
 			+ "TEMPLATE_USE_DEFAULT"; //$NON-NLS-1$
 
 	private CodeTypes myCodeType;
@@ -105,12 +106,12 @@ public class CodeDescription {
 
 	public static CodeDescription createLastUsed() {
 
-		String typeDescriptor = InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT,
+        String typeDescriptor = InstancePreferences.getString(SLOEBER_SKETCH_TEMPLATE_USE_DEFAULT,
 				new String());
 		CodeTypes codeType = codeTypeFromDescription(typeDescriptor);
 		CodeDescription ret = new CodeDescription(codeType);
 		ret.myTemPlateFoldername = new Path(
-				InstancePreferences.getString(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER, new String()));
+                InstancePreferences.getString(SLOEBER_SKETCH_TEMPLATE_FOLDER, new String()));
 		ret.loadLastUsedExamples();
 		return ret;
 	}
@@ -131,10 +132,10 @@ public class CodeDescription {
 	 */
     private void save() {
 		if (myTemPlateFoldername != null) {
-			InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_FOLDER,
+            InstancePreferences.setGlobalValue(SLOEBER_SKETCH_TEMPLATE_FOLDER,
 					myTemPlateFoldername.toString());
 		}
-		InstancePreferences.setGlobalValue(ENV_KEY_JANTJE_SKETCH_TEMPLATE_USE_DEFAULT, myCodeType.toString());
+        InstancePreferences.setGlobalValue(SLOEBER_SKETCH_TEMPLATE_USE_DEFAULT, myCodeType.toString());
 		saveLastUsedExamples();
 	}
 
@@ -175,7 +176,7 @@ public class CodeDescription {
 			IPath folderName = myTemPlateFoldername;
 			String files[] = folderName.toFile().list();
 			if (files == null) {
-				Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 						"No files found in template folder :" + folderName, null));
 			} else {
 				for (String file : files) {
@@ -188,7 +189,7 @@ public class CodeDescription {
 						try(InputStream theFileStream=Stream.openContentStream( sourceFile.toString(), true,replacers);){
 						Helpers.addFileToProject(project, new Path(renamedFile), theFileStream,	monitor, false);
 						} catch (IOException e) {
-                            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                            log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     "Failed to add template file :" + sourceFile.toString(), e));
                         }
 
@@ -219,7 +220,7 @@ public class CodeDescription {
 	@SuppressWarnings("nls")
 	private void loadLastUsedExamples() {
 		String examplePathNames[] = InstancePreferences
-				.getString(Const.KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
+                .getString(KEY_LAST_USED_EXAMPLES, Defaults.getPrivateLibraryPath()).split("\n");
 
 		for (String curpath : examplePathNames) {
 			myExamples.add(new Path(curpath));
@@ -233,9 +234,9 @@ public class CodeDescription {
 	private void saveLastUsedExamples() {
 		if (myExamples != null) {
 			String toStore = StringUtils.join(myExamples, "\n"); //$NON-NLS-1$
-			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, toStore);
+            InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, toStore);
 		} else {
-			InstancePreferences.setGlobalValue(Const.KEY_LAST_USED_EXAMPLES, new String());
+            InstancePreferences.setGlobalValue(KEY_LAST_USED_EXAMPLES, new String());
 		}
 
 	}

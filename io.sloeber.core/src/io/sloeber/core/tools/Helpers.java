@@ -459,7 +459,7 @@ public class Helpers extends Common {
             return vars;
         }
         Iterable<ToolDependency> tools = platform.getToolsDependencies();
-        String RUNTIME_TOOLS = ERASE_START + RUNTIME + DOT + TOOLS + DOT;
+        String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
         String DOT_PATH = DOT + PATH;
         for (ToolDependency tool : tools) {
             String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;

@@ -25,6 +25,6 @@ public class PlatformTxtFile extends TxtFile {
 
 
     public Map<String, String> getAllEnvironVars() {
-        return getAllEnvironVars(ERASE_START);
+        return getAllEnvironVars(EMPTY);
     }
 }

@@ -3,7 +3,7 @@ package io.sloeber.core.common;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * ArduinoConst only contains global strings used in SLOEBER.
+ * ArduinoConst only contains global strings used in sloeber.
  *
  * @author Jan Baeyens
  *
@@ -37,6 +37,11 @@ public class Const {
 	public static final String PATTERN = "pattern";
 	public static final String NAME = "name";
 	public static final String HARDWARE = "hardware";
+    public static final String PLATFORM = "platform";
+    public static final String TXT = "txt";
+    public static final String SOURCE = "source";
+    public static final String COMPILER = "compiler";
+
 	public static final String NETWORK = "network";
 	public static final String PORT = "port";
 	public static final String AUTH = "auth";
@@ -60,52 +65,46 @@ public class Const {
 	// Folder and file Information
 	public static final String ARDUINO_HARDWARE_FOLDER_NAME = HARDWARE;
 	public static final String ARDUINO_CODE_FOLDER_NAME = CORE;
-	public static final String BOARDS_FILE_NAME = "boards.txt";
-	public static final String PLATFORM_FILE_NAME = "platform.txt";
+    public static final String BOARDS_FILE_NAME = "boards" + DOT + TXT;
+    public static final String PLATFORM_FILE_NAME = PLATFORM + DOT + TXT;
 	public static final String VARIANTS_FOLDER_NAME = "variants";
 	public static final String LIBRARY_PATH_SUFFIX = "libraries";
 	public static final String ARDUINO_VARIANT_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + VARIANT;
 	public static final String ARDUINO_CODE_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + CORE;
 
 	// Environment variable stuff
-	public static final String ENV_KEY_JANTJE_START = "JANTJE" + DOT;
-	public static final String ERASE_START = "A" + DOT;
-	public static final String A_TOOLS = ERASE_START + TOOLS + DOT;
+    public static final String ENV_KEY_SLOEBER_START = "sloeber" + DOT;
 
-	public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = ERASE_START + UPLOAD + DOT + "use_1200bps_touch";
-	public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = ERASE_START + UPLOAD + DOT + "wait_for_upload_port";
-	public static final String ENV_KEY_RESET_BEFORE_UPLOAD = ERASE_START + UPLOAD + DOT + "force_reset_before_upload";
-	public static final String ENV_KEY_NETWORK_PORT = ERASE_START + NETWORK + DOT + PORT;
-	public static final String ENV_KEY_NETWORK_AUTH = ERASE_START + NETWORK + DOT + AUTH;
-	public static final String ENV_KEY_NETWORK_PASSWORD = ERASE_START + NETWORK + DOT + "password";
-	public static final String ENV_KEY_UPLOAD_VERBOSE = ERASE_START + UPLOAD + DOT + "verbose";
+    public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = UPLOAD + DOT + "use_1200bps_touch";
+    public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = UPLOAD + DOT + "wait_for_upload_port";
+    public static final String ENV_KEY_RESET_BEFORE_UPLOAD = UPLOAD + DOT + "force_reset_before_upload";
+    public static final String ENV_KEY_NETWORK_PORT = NETWORK + DOT + PORT;
+    public static final String ENV_KEY_NETWORK_AUTH = NETWORK + DOT + AUTH;
+    public static final String ENV_KEY_NETWORK_PASSWORD = NETWORK + DOT + "password";
+    public static final String ENV_KEY_UPLOAD_VERBOSE = UPLOAD + DOT + "verbose";
 
-	public static final String ENV_KEY_USE_ARCHIVER = ERASE_START + BUILD + DOT + "use_archiver";
-	public static final String ENV_KEY_BUILD_MCU = ERASE_START + "build.mcu";
-	public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = ERASE_START + "compiler.c.elf.flags";
-	public static final String PROGRAM_TOOL = ERASE_START + PROGRAM + DOT + TOOL;
-	public static final String UPLOAD_TOOL = ERASE_START + UPLOAD + DOT + TOOL;
+    public static final String ENV_KEY_USE_ARCHIVER = BUILD + DOT + "use_archiver";
+    public static final String ENV_KEY_BUILD_MCU = BUILD + DOT + "mcu";
+    public static final String ENV_KEY_BUILD_COMPILER_C_ELF_FLAGS = COMPILER + ".c.elf.flags";
+    public static final String PROGRAM_TOOL = PROGRAM + DOT + TOOL;
+    public static final String UPLOAD_TOOL = UPLOAD + DOT + TOOL;
 
 	// link time variables
-	public static final String EXTRA_TIME_UTC = "A.extra.time.UTC";
-	public static final String EXTRA_TIME_LOCAL = "A.extra.time.local";
-	public static final String EXTRA_TIME_ZONE = "A.extra.time.zone";
-	public static final String EXTRA_TIME_DTS = "A.extra.time.DTS";
+    public static final String EXTRA_TIME_UTC = "extra.time.UTC";
+    public static final String EXTRA_TIME_LOCAL = "extra.time.local";
+    public static final String EXTRA_TIME_ZONE = "extra.time.zone";
+    public static final String EXTRA_TIME_DTS = "extra.time.DTS";
 
 	// Actions
-	public static final String RECIPE_C_to_O = ERASE_START + RECIPE + DOT + "c.o" + DOT + PATTERN;
-	public static final String RECIPE_CPP_to_O = ERASE_START + RECIPE + DOT + "cpp.o" + DOT + PATTERN;
-	public static final String RECIPE_S_to_O = ERASE_START + RECIPE + DOT + "S.o" + DOT + PATTERN;
-	public static final String RECIPE_OBJCOPY = ERASE_START + RECIPE + DOT + "objcopy";
-//	public static final String RECIPE_OBJCOPY_to_HEX = RECIPE_OBJCOPY + ".hex" + DOT + PATTERN;
-//	public static final String RECIPE_OBJCOPY_to_EEP = RECIPE_OBJCOPY + ".eep" + DOT + PATTERN;
-	public static final String RECIPE_SIZE = ERASE_START + RECIPE + DOT + "size" + DOT + PATTERN;
-	public static final String RECIPE_AR = ERASE_START + RECIPE + DOT + "ar" + DOT + PATTERN;
-	public static final String RECIPE_C_COMBINE = ERASE_START + RECIPE + DOT + "c.combine" + DOT + PATTERN;
+    public static final String RECIPE_C_to_O = RECIPE + DOT + "c.o" + DOT + PATTERN;
+    public static final String RECIPE_CPP_to_O = RECIPE + DOT + "cpp.o" + DOT + PATTERN;
+    public static final String RECIPE_S_to_O = RECIPE + DOT + "S.o" + DOT + PATTERN;
+    public static final String RECIPE_OBJCOPY = RECIPE + DOT + "objcopy";
+    public static final String RECIPE_SIZE = RECIPE + DOT + "size" + DOT + PATTERN;
+    public static final String RECIPE_AR = RECIPE + DOT + "ar" + DOT + PATTERN;
+    public static final String RECIPE_C_COMBINE = RECIPE + DOT + "c.combine" + DOT + PATTERN;
 
-	public static final String JANTJE_OBJCOPY = ENV_KEY_JANTJE_START + "objcopy";
-	// public static final String UPLOAD_CLASS = "UPLOAD_CLASS";
-	// public static final String UPLOAD_CLASS_DEFAULT = "arduinoUploader";
+	public static final String SLOEBER_OBJCOPY = ENV_KEY_SLOEBER_START + "objcopy";
 
 
 

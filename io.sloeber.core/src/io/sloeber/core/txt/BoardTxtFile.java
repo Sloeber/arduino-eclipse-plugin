@@ -209,6 +209,6 @@ public class BoardTxtFile extends TxtFile {
      * prefix something to add at the beginning of each key name
      */
     public Map<String, String> getAllBoardEnvironVars(String boardID) {
-        return myData.getChild(boardID).toKeyValues(ERASE_START, false);
+        return myData.getChild(boardID).toKeyValues(EMPTY, false);
     }
 }

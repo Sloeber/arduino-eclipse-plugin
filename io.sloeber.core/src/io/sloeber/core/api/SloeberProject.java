@@ -60,10 +60,10 @@ public class SloeberProject extends Common {
     private boolean isDirty = false; // if anything has changed
     private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
 
-    private static final String ENV_KEY_BUILD_SOURCE_PATH = ERASE_START + "build.source.path"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_GENERIC_PATH = ERASE_START + "build.generic.path"; //$NON-NLS-1$
-    private static final String ENV_KEY_COMPILER_PATH = ERASE_START + "compiler.path"; //$NON-NLS-1$
-    private static final String ENV_KEY_JANTJE_MAKE_LOCATION = ENV_KEY_JANTJE_START + "make_location"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
+    private static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH; //$NON-NLS-1$
+    private static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
+    private static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location"; //$NON-NLS-1$
     private static final String CONFIG_DOT = "Config.";//$NON-NLS-1$
 
     private SloeberProject(IProject project, boolean isProjectCreating) {
@@ -227,7 +227,7 @@ public class SloeberProject extends Common {
         // set the paths
         String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
         if (Common.isWindows) {
-            allVars.put(ENV_KEY_JANTJE_MAKE_LOCATION,
+            allVars.put(SLOEBER_MAKE_LOCATION,
                     ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
             String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
             allVars.put("PATH", //$NON-NLS-1$

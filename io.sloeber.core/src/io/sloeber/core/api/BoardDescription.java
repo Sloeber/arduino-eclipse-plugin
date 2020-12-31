@@ -52,24 +52,20 @@ public class BoardDescription {
     private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARDS_FILE = "Last used Boards file"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARD_MENU_OPTIONS = "last used Board custom option selections"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_PORT = ERASE_START + "serial_port"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_DOT_PORT = ERASE_START + "serial.port"; //$NON-NLS-1$
-    private static final String ENV_KEY_SERIAL_PORT_FILE = ERASE_START + "serial.port.file"; //$NON-NLS-1$
-    private static final String ENV_KEY_BUILD_VARIANT_PATH = ERASE_START + BUILD + DOT + VARIANT + DOT + PATH;
-    private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = ERASE_START + BUILD + DOT + CORE + DOT + PATH;
-    private static final String ENV_KEY_BUILD_ARCH = ERASE_START + "build.arch"; //$NON-NLS-1$
-    private static final String ENV_KEY_HARDWARE_PATH = ERASE_START + "runtime.hardware.path"; //$NON-NLS-1$
-    private static final String ENV_KEY_PLATFORM_PATH = ERASE_START + "runtime.platform.path"; //$NON-NLS-1$
-    private static final String ENV_KEY_REFERENCED_CORE_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + CORE + DOT
-            + PATH;
-    private static final String ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + VARIANT
-            + DOT + PATH;
-    private static final String ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH = ERASE_START + REFERENCED + DOT + UPLOAD
-            + PATH;
+    private static final String ENV_KEY_SERIAL_PORT = "serial_port"; //$NON-NLS-1$
+    private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
+    private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
+    private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
+    private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
+    private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
+    private static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
+    private static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
+    private static final String ENV_KEY_REFERENCED_CORE_PLATFORM_PATH = REFERENCED + DOT + CORE + DOT + PATH;
+    private static final String ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH = REFERENCED + DOT + VARIANT + DOT + PATH;
+    private static final String ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH = REFERENCED + DOT + UPLOAD + PATH;
 
     // preference nodes
     private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-    private static final String JANTJE_ACTION_UPLOAD = ENV_KEY_JANTJE_START + UPLOAD; // this is actually the programmer
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
     private static final TxtFile pluginPreProcessingPlatformTxt = new TxtFile(
             ConfigurationPreferences.getPreProcessingPlatformFile());
@@ -683,7 +679,7 @@ public class BoardDescription {
         if (isNetworkUpload()) {
             networkPrefix = DOT + NETWORK_PREFIX;
         }
-        String key = A_TOOLS + upLoadTool + DOT + action + networkPrefix + DOT + PATTERN;
+        String key = TOOLS + DOT + upLoadTool + DOT + action + networkPrefix + DOT + PATTERN;
         String ret = Common.getBuildEnvironmentVariable(confdesc, key, EMPTY);
         if (ret.isEmpty()) {
             Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
@@ -911,7 +907,7 @@ public class BoardDescription {
             String menuID = curOption.getKey();
             String SelectedMenuItemID = curOption.getValue();
             KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
-            allVars.putAll(curSelectedMenuItem.toKeyValues(ERASE_START, false));
+            allVars.putAll(curSelectedMenuItem.toKeyValues(EMPTY, false));
         }
 
         // add the stuff that comes with the plugin that is marked as post
@@ -956,7 +952,7 @@ public class BoardDescription {
      * arduino recipes. Therefore I split the arduino recipes into parts (based on
      * the arduino keys) and connect them again in the plugin.xml using the CDT
      * keys. This code assumes that the command is in following order ${first part}
-     * ${files} ${second part} [${ARCHIVE_FILE} ${third part}] with [optional]
+     * ${files} ${second part} [${archive_file} ${third part}] with [optional]
      *
      * Secondly The handling of the upload variables is done differently in arduino
      * than here. This is taken care of here. for example the output of this input
@@ -969,10 +965,10 @@ public class BoardDescription {
      * are done here so no special code is needed to handle programmers
      *
      * Fourthly The build path for the core is {BUILD.PATH}/core/core in sloeber
-     * where it is {BUILD.PATH}/core/ in arduino world and used to be {BUILD.PATH}/
+     * where it is {build.path}/core/ in arduino world and used to be {build.path}/
      * This only gives problems in the link command as sometimes there are hardcoded
-     * links to some sys files so ${A.BUILD.PATH}/core/sys* ${A.BUILD.PATH}/sys* is
-     * replaced with ${A.BUILD.PATH}/core/core/sys*
+     * links to some sys files so ${build.path}/core/sys* ${build.path}/sys* is
+     * replaced with ${build.path}/core/core/sys*
      *
      * @param contribEnv
      * @param confDesc
@@ -998,7 +994,7 @@ public class BoardDescription {
                 recipe = recipe.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
             }
             String recipeParts[] = recipe.split(
-                    "(\"\\$\\{A.object_file}\")|(\\$\\{A.object_files})|(\"\\$\\{A.source_file}\")|(\"[^\"]*\\$\\{A.archive_file}\")|(\"[^\"]*\\$\\{A.archive_file_path}\")", //$NON-NLS-1$
+                    "(\"\\$\\{object_file}\")|(\\$\\{object_files})|(\"\\$\\{source_file}\")|(\"[^\"]*\\$\\{archive_file}\")|(\"[^\"]*\\$\\{archive_file_path}\")", //$NON-NLS-1$
                     3);
 
             switch (recipeParts.length) {
@@ -1032,19 +1028,19 @@ public class BoardDescription {
             }
         }
         Collections.sort(objcopyCommand);
-        extraVars.put(JANTJE_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
+        extraVars.put(SLOEBER_OBJCOPY, StringUtil.join(objcopyCommand, "\n\t")); //$NON-NLS-1$
 
         // handle the hooks
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.pre.link", //$NON-NLS-1$
-                "A.recipe.hooks.linking.prelink.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.post.link", //$NON-NLS-1$
-                "A.recipe.hooks.linking.postlink.XX.pattern", true)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.prebuild", "A.recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.pre.link", //$NON-NLS-1$
+                "recipe.hooks.linking.prelink.XX.pattern", false)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.post.link", //$NON-NLS-1$
+                "recipe.hooks.linking.postlink.XX.pattern", true)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.prebuild", "recipe.hooks.prebuild.XX.pattern", //$NON-NLS-1$ //$NON-NLS-2$
                 false));
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.prebuild", //$NON-NLS-1$
-                "A.recipe.hooks.sketch.prebuild.XX.pattern", false)); //$NON-NLS-1$
-        extraVars.putAll(getEnvVarsHookBuild(vars, "A.JANTJE.sketch.postbuild", //$NON-NLS-1$
-                "A.recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.sketch.prebuild", //$NON-NLS-1$
+                "recipe.hooks.sketch.prebuild.XX.pattern", false)); //$NON-NLS-1$
+        extraVars.putAll(getEnvVarsHookBuild(vars, "sloeber.sketch.postbuild", //$NON-NLS-1$
+                "recipe.hooks.sketch.postbuild.XX.pattern", false)); //$NON-NLS-1$
 
         // add -relax for mega boards; the arduino ide way
         String buildMCU = vars.get(ENV_KEY_BUILD_MCU);

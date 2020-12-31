@@ -38,7 +38,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 10 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 11 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -149,7 +149,7 @@ public class WorkAround extends Const {
                 boardsTXT = boardsTXT.replace(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ", correctMAN);
                 boardsTXT = boardsTXT.replace(" '-DUSB_PRODUCT={build.usb_product}' ", correctPROD);
                 boardsTXT = boardsTXT.replace(" '-DARDUINO_BOARD=\"{build.board}' ", correctBOARD);
-                boardsTXT = boardsTXT.replace("{", "${" + ERASE_START);
+                boardsTXT = boardsTXT.replace("{", "${");
                 FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
             } catch (IOException e) {
                 Common.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -344,9 +344,9 @@ public class WorkAround extends Const {
                     platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
                             " '-DARDUINO_BOARD=\"{build.board}\"' ");
                 }
-                platformTXT = platformTXT.replace("{", "${" + ERASE_START);
+                platformTXT = platformTXT.replace("{", "${");
                 // Arduino zero openocd script uses { as parameter delimiter for program
-                platformTXT = platformTXT.replace("program ${A.${", "program {${");
+                platformTXT = platformTXT.replace("program ${${", "program {${");
 
                 FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
             } catch (IOException e) {

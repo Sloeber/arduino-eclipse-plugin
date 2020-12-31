@@ -30,7 +30,9 @@ public class OtherDescription {
     }
 
     public Map<String, String> getEnvVars() {
-        return getEnvVarsConfig(Const.EMPTY);
+        Map<String, String> allVars = new TreeMap<>();
+        // Nothing needs to be put in the environment variables
+        return allVars;
     }
 
     public Map<String, String> getEnvVarsConfig(String prefix) {
