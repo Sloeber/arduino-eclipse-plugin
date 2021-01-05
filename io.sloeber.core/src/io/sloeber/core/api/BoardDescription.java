@@ -890,6 +890,7 @@ public class BoardDescription {
         allVars.put(ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH, getReferencedVariantPlatformPath().toOSString());
         allVars.put(ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH, getReferencedUploadPlatformPath().toOSString());
 
+
         PlatformTxtFile referencedPlatfromFile = getreferencedPlatformFile();
         // process the platform file referenced by the boards.txt
         if (referencedPlatfromFile != null) {
@@ -901,7 +902,10 @@ public class BoardDescription {
             allVars.putAll(referencingPlatfromFile.getAllEnvironVars());
         }
 
+        // put in the installed tools info
         allVars.putAll(getEnVarPlatformInfo());
+
+
 
         Programmers localProgrammers[] = Programmers.fromBoards(this);
         String programmer = getProgrammer();
@@ -937,15 +941,16 @@ public class BoardDescription {
     }
 
     private Map<String, String> getEnVarPlatformInfo() {
-        if ((getReferencingPlatformFile() == null) || (getreferencedPlatformFile() == null)) {
+        IPath referencingPlatformPath = getreferencingPlatformPath();
+        IPath referencedPlatformPath = getReferencedCorePlatformPath();
+
+        if ((referencingPlatformPath == null) || (referencedPlatformPath == null)) {
             // something is seriously wrong -->shoot
             return new HashMap<>();
         }
-        File referencingPlatformFile = getReferencingPlatformFile().getTxtFile();
-        ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformFile);
-        File referencedPlatformFile = getreferencedPlatformFile().getTxtFile();
 
-        ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformFile);
+        ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformPath);
+        ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformPath);
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
         if (jsonBasedPlatformManagement) {

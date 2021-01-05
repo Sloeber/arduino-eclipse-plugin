@@ -237,11 +237,11 @@ public class InternalPackageManager extends PackageManager {
 	 * @param platformTxt
 	 * @return the found platform otherwise null
 	 */
-	public static ArduinoPlatform getPlatform(File platformTxt) {
+    public static ArduinoPlatform getPlatform(IPath platformPath) {
 		for (PackageIndex index : getPackageIndices()) {
 			for (Package pkg : index.getPackages()) {
 				for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
-					if (curPlatform.getPlatformFile().equals(platformTxt)) {
+                    if (curPlatform.getInstallPath().equals(platformPath)) {
 						return curPlatform;
 					}
 				}
