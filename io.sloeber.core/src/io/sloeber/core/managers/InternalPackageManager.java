@@ -170,6 +170,7 @@ public class InternalPackageManager extends PackageManager {
 
 	}
 
+    synchronized
 	static public List<PackageIndex> getPackageIndices() {
 		if (packageIndices == null) {
 			loadJsons(false);
