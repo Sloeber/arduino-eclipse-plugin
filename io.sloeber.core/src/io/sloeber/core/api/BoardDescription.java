@@ -803,7 +803,7 @@ public class BoardDescription {
      */
     public Map<String, String> getEnvVarsConfig(String prefix) {
         Map<String, String> allVars = new TreeMap<>();
-        String board_txt = makePathEnvironmentString(getReferencingBoardsFile());
+        String board_txt = makePathVersionString(getReferencingBoardsFile());
 
         allVars.put(prefix + KEY_SLOEBER_PROGRAMMER, myProgrammer);
         allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);

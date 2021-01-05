@@ -28,6 +28,7 @@ public class Common extends Const {
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new Path(sloeberHome);
     public final static String sloeberHomePathToOSString = sloeberHomePath.toOSString();
+    public final static String sloeberHomePathToString = sloeberHomePath.toString();
 
     private static String getSloeberHome() {
 
@@ -227,6 +228,12 @@ public class Common extends Const {
 
     public static String makePathEnvironmentString(File file) {
         return file.getPath().replace(sloeberHomePathToOSString, SLOEBER_HOME_VAR);
+    }
+
+    public static String makePathVersionString(File file) {
+        String osPathString = file.getPath();
+        IPath path = new Path(osPathString);
+        return path.toString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
     }
 
     public static File resolvePathEnvironmentString(File file) {
