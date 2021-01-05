@@ -43,6 +43,10 @@ public class OtherDescription {
         return allVars;
     }
 
+    public Map<String, String> getEnvVarsVersion(String prefix) {
+        return getEnvVarsConfig(prefix);
+    }
+
     public static OtherDescription getFromCDT(ICConfigurationDescription confDesc) {
         OtherDescription ret = new OtherDescription();
         ret.myIsVersionControlled = false;

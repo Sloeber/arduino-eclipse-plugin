@@ -815,6 +815,25 @@ public class BoardDescription {
     }
 
     /**
+     * get the environment variables that need to be stored in version control
+     * 
+     * @return the minimum list of environment variables to recreate the project
+     *         from version control
+     */
+    public Map<String, String> getEnvVarsVersion(String prefix) {
+        Map<String, String> allVars = new TreeMap<>();
+        String board_txt = makePathVersionString(getReferencingBoardsFile());
+
+        allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);
+        allVars.put(prefix + KEY_SLOEBER_BOARD_TXT, board_txt);
+
+        for (Entry<String, String> curOption : myOptions.entrySet()) {
+            allVars.put(prefix + KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
+        }
+        return allVars;
+    }
+
+    /**
      * This method creates environment variables based on the platform.txt and
      * boards.txt. platform.txt is processed first and then boards.txt. This way
      * boards.txt settings can overwrite common settings in platform.txt The

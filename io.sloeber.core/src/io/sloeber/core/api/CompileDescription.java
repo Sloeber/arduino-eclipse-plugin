@@ -188,6 +188,10 @@ public class CompileDescription {
         return ret;
     }
 
+    public Map<String, String> getEnvVarsVersion(String prefix) {
+        return getEnvVarsConfig(prefix);
+    }
+
     public CompileDescription(TxtFile configFile, String prefix) {
 
         KeyValueTree tree = configFile.getData();

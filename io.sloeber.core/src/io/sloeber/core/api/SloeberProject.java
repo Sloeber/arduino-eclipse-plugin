@@ -308,7 +308,6 @@ public class SloeberProject extends Common {
      * @param confDesc
      *            returns true if the config needs saving otherwise false
      */
-    @SuppressWarnings("nls")
     private boolean readSloeberConfig(final ICProjectDescription prjCDesc) {
         boolean needToCreateConfigFiles = false;
         IFile file = getConfigLocalFile();
@@ -405,9 +404,9 @@ public class SloeberProject extends Common {
             configVars.putAll(otherDescription.getEnvVarsConfig(otherPrefix));
 
             if (otherDescription.IsVersionControlled()) {
-                versionVars.putAll(boardDescription.getEnvVarsConfig(boardPrefix));
-                versionVars.putAll(compileDescription.getEnvVarsConfig(compPrefix));
-                versionVars.putAll(otherDescription.getEnvVarsConfig(otherPrefix));
+                versionVars.putAll(boardDescription.getEnvVarsVersion(boardPrefix));
+                versionVars.putAll(compileDescription.getEnvVarsVersion(compPrefix));
+                versionVars.putAll(otherDescription.getEnvVarsVersion(otherPrefix));
             }
         }
 
