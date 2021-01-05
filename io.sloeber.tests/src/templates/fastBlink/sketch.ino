@@ -33,7 +33,7 @@ const long interval = INTERVAL;           // interval at which to blink (millise
 
 void setup() {
 	pinMode(ledPin, OUTPUT);
-	Serial.begin(115200);
+	Serial.begin(9600);
 	Serial.println(STR(SERIAlDUMP));
 }
 

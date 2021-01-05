@@ -208,7 +208,7 @@ public class CompileAndUpload {
 			public void run() {
 				SerialConnection.show();
 				SerialConnection.clearMonitor();
-				SerialConnection.add(comPort, 115200);
+                SerialConnection.add(comPort, 9600);
 			}
 		});
 
