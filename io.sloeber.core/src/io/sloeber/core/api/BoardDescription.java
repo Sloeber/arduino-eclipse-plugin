@@ -98,7 +98,6 @@ public class BoardDescription {
     private final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
     private final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
     private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_UPLOAD_TOOL = "UPLOAD.TOOL"; //$NON-NLS-1$
     private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
 
 
@@ -763,7 +762,6 @@ public class BoardDescription {
         this.myBoardID = section.getValue(KEY_SLOEBER_BOARD_ID);
         String board_txt = section.getValue(KEY_SLOEBER_BOARD_TXT);
         this.myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
-        this.myUploadTool = section.getValue(KEY_SLOEBER_UPLOAD_TOOL);
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
@@ -809,7 +807,6 @@ public class BoardDescription {
         allVars.put(prefix + KEY_SLOEBER_BOARD_ID, myBoardID);
         allVars.put(prefix + KEY_SLOEBER_BOARD_TXT, board_txt);
         allVars.put(prefix + KEY_SLOEBER_UPLOAD_PORT, myUploadPort);
-        allVars.put(prefix + KEY_SLOEBER_UPLOAD_TOOL, myUploadTool);
 
         for (Entry<String, String> curOption : myOptions.entrySet()) {
             allVars.put(prefix + KEY_SLOEBER_MENU_SELECTION + DOT + curOption.getKey(), curOption.getValue());
