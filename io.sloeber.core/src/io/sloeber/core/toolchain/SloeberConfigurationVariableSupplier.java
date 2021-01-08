@@ -4,12 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
+import org.eclipse.core.resources.IProject;
 
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.SloeberProject;
 
 public class SloeberConfigurationVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
     // variables per configuration
@@ -18,19 +23,13 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
     @Override
     public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
             IEnvironmentVariableProvider provider) {
+        initializeIfNotYetDone(configuration);
         Map<String, String> curConfigVars = myConfigValues.get(configuration.getName());
         if (null == curConfigVars) {
             return null;
-            // maybe the project is not yet loaded by Sloeber.
-            // try to load and retry
-            // ICConfigurationDescription confDesc =
-            // ManagedBuildManager.getDescriptionForConfiguration(configuration);
-            // IProject project = confDesc.getProjectDescription().getProject();
-            // ArduinoProjectDescription.getArduinoProjectDescription(project);
-            // curConfigVars = myValues.get(configuration.getName());
-            // if (null == curConfigVars) {
-            // return null;
-            // }
+            // This should only happen if a config is existing Sloeber does not know about
+            // because we configured the sloeber project above
+            // So this should not happen
         }
         String ret = curConfigVars.get(variableName);
         if (ret == null) {
@@ -46,6 +45,7 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
     @Override
     public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration,
             IEnvironmentVariableProvider provider) {
+        initializeIfNotYetDone(configuration);
         Map<String, String> retVars = new HashMap<>();
         Map<String, String> workbenchVars = PackageManager.getEnvironmentVariables();
         if (workbenchVars != null) {
@@ -67,5 +67,16 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
 
     public void setEnvVars(IConfiguration configuration, Map<String, String> values) {
         myConfigValues.put(configuration.getName(), values);
+    }
+
+    private void initializeIfNotYetDone(IConfiguration configuration) {
+        if (!myConfigValues.isEmpty()) {
+            // we have some data; asume it is correct
+            return;
+        }
+        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
+        ICProjectDescription projDesc = confDesc.getProjectDescription();
+        IProject project = projDesc.getProject();
+        SloeberProject.getSloeberProject(project, false);
     }
 }

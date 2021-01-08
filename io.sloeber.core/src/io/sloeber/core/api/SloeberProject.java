@@ -204,6 +204,7 @@ public class SloeberProject extends Common {
     }
 
 
+    @SuppressWarnings("nls")
     private HashMap<String, String> getEnvVars(ICConfigurationDescription confDesc) {
         IProject project = confDesc.getProjectDescription().getProject();
 
@@ -225,22 +226,28 @@ public class SloeberProject extends Common {
             allVars.putAll(otherOptions.getEnvVars());
         }
         // set the paths
-        String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
+        String pathDelimiter = makeEnvironmentVar("PathDelimiter");
         if (Common.isWindows) {
             allVars.put(SLOEBER_MAKE_LOCATION,
                     ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
-            String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
-            allVars.put("PATH", //$NON-NLS-1$
+            String systemroot = makeEnvironmentVar("SystemRoot");
+            allVars.put("PATH",
                     makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32" //$NON-NLS-1$
-                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
-                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
+                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32"
+                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem"
+                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension"));
         } else {
-            allVars.put("PATH", //$NON-NLS-1$
+            allVars.put("PATH",
                     makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
                             + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter
-                            + makeEnvironmentVar("PATH")); //$NON-NLS-1$
+                            + makeEnvironmentVar("PATH"));
         }
+
+        // Set the codeAnalyzer compile commands
+        allVars.put(CODAN_C_to_O,
+                "${recipe.c.o.pattern.1} -D__IN_ECLIPSE__=1 ${recipe.c.o.pattern.2} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}");
+        allVars.put(CODAN_CPP_to_O,
+                "${recipe.cpp.o.pattern.1} -D__IN_ECLIPSE__=1 -x c++  ${recipe.cpp.o.pattern.2} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}");
 
         return allVars;
     }

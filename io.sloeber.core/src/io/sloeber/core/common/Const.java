@@ -104,6 +104,10 @@ public class Const {
     public static final String RECIPE_AR = RECIPE + DOT + "ar" + DOT + PATTERN;
     public static final String RECIPE_C_COMBINE = RECIPE + DOT + "c.combine" + DOT + PATTERN;
 
+    public static final String CODAN = "CODAN";
+    public static final String CODAN_C_to_O = RECIPE + DOT + "c.o" + DOT + CODAN;
+    public static final String CODAN_CPP_to_O = RECIPE + DOT + "cpp.o" + DOT + CODAN;
+
 	public static final String SLOEBER_OBJCOPY = ENV_KEY_SLOEBER_START + "objcopy";
 
 

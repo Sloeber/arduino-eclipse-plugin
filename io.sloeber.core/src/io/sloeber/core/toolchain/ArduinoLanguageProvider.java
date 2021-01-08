@@ -8,8 +8,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector;
 
-import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Const;
 
 @SuppressWarnings({"nls","unused"})
@@ -19,48 +17,32 @@ public class ArduinoLanguageProvider extends GCCBuiltinSpecsDetector{
 
 	@Override
 	protected String getCompilerCommand(String languageId) {
-		String compilerCommand = new String();
+        String ret = new String();
 
 		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(currentProject);
 		if (prjDesc == null)
-			return compilerCommand;
-
-		IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+            return ret;
 		ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-        SloeberProject sloeberProject = SloeberProject.getSloeberProject(currentProject);
-        CompileDescription compileOptions = sloeberProject.getCompileDescription(confDesc, false);
-        if (compileOptions == null) {
-            compileOptions = new CompileDescription();
-        }
 
-		String recipeKey = new String();
-		String extraOptions = new String();
-
+        String codanVarName = new String();
 		if (languageId.equals("org.eclipse.cdt.core.gcc")) {
-			recipeKey = Const.RECIPE_C_to_O;
-			extraOptions = compileOptions.get_C_CompileOptions();
+            codanVarName = Const.CODAN_C_to_O;
 		} else if (languageId.equals("org.eclipse.cdt.core.g++")) {
-			recipeKey = Const.RECIPE_CPP_to_O;
-			extraOptions = compileOptions.get_CPP_CompileOptions();
+            codanVarName = Const.CODAN_CPP_to_O;
 		} else {
 			ManagedBuilderCorePlugin.error(
 					"Unable to find compiler command for language " + languageId + " in toolchain=" + getToolchainId());
 		}
-		extraOptions = extraOptions + " " + compileOptions.get_C_andCPP_CompileOptions() + " "
-				+ compileOptions.get_All_CompileOptions();
+
 		try {
-			compilerCommand = envManager.getVariable(recipeKey + Const.DOT + "1", confDesc, false).getValue();
-			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "2", confDesc, false).getValue();
-			compilerCommand = compilerCommand
-					+ envManager.getVariable(recipeKey + Const.DOT + "3", confDesc, false).getValue();
+            IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
+            ret = envManager.getVariable(codanVarName, confDesc, false).getValue();
 		} catch (Exception e) {
-			compilerCommand = new String();
+            ret = new String();
 		}
 
-		compilerCommand = compilerCommand + ' ' + extraOptions;
 
-		return compilerCommand.replace(" -o ", " ");
+        return ret;
 	}
 
 }
