@@ -43,13 +43,15 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 				for (IProject curproject : SelectedProjects) {
 					int baud = Sketch.getCodeBaudRate(curproject);
 					if (baud > 0) {
-						SloeberProject sProject=SloeberProject.getSloeberProject(curproject);
-						ICConfigurationDescription activeConf = CoreModel.getDefault().getProjectDescription(curproject)
-								.getActiveConfiguration();
-						BoardDescription boardDescription = sProject.getBoardDescription(activeConf, false);
-						String comPort = boardDescription.getUploadPort();
-						if (!comPort.isEmpty()) {
-							io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);
+						SloeberProject sProject = SloeberProject.getSloeberProject(curproject, true);
+						if (sProject != null) {
+							ICConfigurationDescription activeConf = CoreModel.getDefault()
+									.getProjectDescription(curproject).getActiveConfiguration();
+							BoardDescription boardDescription = sProject.getBoardDescription(activeConf, false);
+							String comPort = boardDescription.getUploadPort();
+							if (!comPort.isEmpty()) {
+								io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);
+							}
 						}
 					}
 				}

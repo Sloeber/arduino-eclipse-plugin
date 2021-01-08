@@ -477,16 +477,6 @@ public class SloeberProject extends Common {
         }
     }
 
-    /**
-     * get the Arduino project description based on a project description
-     * Convenience method for getSloeberProject(project, false);
-     * 
-     * @param project
-     * @return
-     */
-    public static synchronized SloeberProject getSloeberProject(IProject project) {
-        return getSloeberProject(project, false);
-    }
 
     /**
      * get the Arduino project description based on a project description

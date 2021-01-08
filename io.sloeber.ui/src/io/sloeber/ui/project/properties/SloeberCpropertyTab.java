@@ -48,7 +48,7 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 		// This is needed so that when a copy is made
 		// the root compile description is known
 		ICProjectDescription projDesc = getConfdesc().getProjectDescription();
-		mySloeberProject = SloeberProject.getSloeberProject(projDesc.getProject());
+		mySloeberProject = SloeberProject.getSloeberProject(projDesc.getProject(), false);
 		for (ICConfigurationDescription curConfig : projDesc.getConfigurations()) {
 			Object description = getFromSloeber(curConfig);
 			if (description == null) {

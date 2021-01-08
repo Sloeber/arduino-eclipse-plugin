@@ -56,7 +56,7 @@ public class UploadSketchWrapper {
     private Job internalUpload(IProject project,
 			ICConfigurationDescription confDesc) {
 
-        SloeberProject sProject = SloeberProject.getSloeberProject(project);
+        SloeberProject sProject = SloeberProject.getSloeberProject(project, false);
         BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc, false);
 
         String UpLoadTool = boardDescriptor.getActualUploadTool();
