@@ -1,8 +1,5 @@
 package io.sloeber.ui;
 
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -44,16 +41,9 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	public String decorateText(String text, Object element) {
 		IProject proj = (IProject) element;
 		if (proj != null) {
-			ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(proj);
-			if (prjDesc != null) {
-				ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
-				if (confDesc != null) {
-					SloeberProject arduinoProject = SloeberProject
-							.getSloeberProject(proj, true);
-					if (arduinoProject != null) {
-						return arduinoProject.getDecoratedText(confDesc, text);
-					}
-				}
+			SloeberProject arduinoProject = SloeberProject.getSloeberProject(proj, true);
+			if (arduinoProject != null) {
+				return arduinoProject.getDecoratedText(text);
 			}
 		}
 		return text;

@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.IContributedEnvironment;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -203,7 +204,6 @@ public class SloeberProject extends Common {
         return root.getProject(realProjectName);
     }
 
-
     @SuppressWarnings("nls")
     private HashMap<String, String> getEnvVars(ICConfigurationDescription confDesc) {
         IProject project = confDesc.getProjectDescription().getProject();
@@ -237,10 +237,8 @@ public class SloeberProject extends Common {
                             + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem"
                             + pathDelimiter + makeEnvironmentVar("sloeber_path_extension"));
         } else {
-            allVars.put("PATH",
-                    makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter
-                            + makeEnvironmentVar("PATH"));
+            allVars.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
+                    + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH"));
         }
 
         // Set the codeAnalyzer compile commands
@@ -477,7 +475,6 @@ public class SloeberProject extends Common {
         }
     }
 
-
     /**
      * get the Arduino project description based on a project description
      * 
@@ -548,43 +545,55 @@ public class SloeberProject extends Common {
      */
     public BoardDescription getBoardDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-        configureProject();
+            configureProject();
         }
         return myBoardDescriptions.get(confDesc.getId());
     }
 
     public CompileDescription getCompileDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-        configureProject();
+            configureProject();
         }
         return myCompileDescriptions.get(confDesc.getId());
     }
 
-
     public OtherDescription getOtherDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-        configureProject();
+            configureProject();
         }
         return myOtherDescriptions.get(confDesc.getId());
     }
 
-    public String getDecoratedText(ICConfigurationDescription confDesc, String text) {
-        // do not use getBoardDescriptor below as this will cause a infinite loop at
-        // project creation
-        BoardDescription boardDescriptor = myBoardDescriptions.get(confDesc.getId());
-        if (boardDescriptor == null) {
-            return text + " Project not configured"; //$NON-NLS-1$
-        }
-        String boardName = boardDescriptor.getBoardName();
-        String portName = boardDescriptor.getActualUploadPort();
-        if (portName.isEmpty()) {
-            portName = Messages.decorator_no_port;
-        }
-        if (boardName.isEmpty()) {
-            boardName = Messages.decorator_no_platform;
-        }
-        return text + ' ' + boardName + ' ' + ':' + portName;
+    /**
+     * get the text for the decorator
+     * 
+     * @param text
+     * @return
+     */
+    public String getDecoratedText(String text) {
+        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
+        if (prjDesc != null) {
+            ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
+            if (confDesc != null) {
+                // do not use getBoardDescriptor below as this will cause a infinite loop at
+                // project creation
+                BoardDescription boardDescriptor = myBoardDescriptions.get(confDesc.getId());
+                if (boardDescriptor == null) {
+                    return text + " Project not configured"; //$NON-NLS-1$
+                }
+                String boardName = boardDescriptor.getBoardName();
+                String portName = boardDescriptor.getActualUploadPort();
+                if (portName.isEmpty()) {
+                    portName = Messages.decorator_no_port;
+                }
+                if (boardName.isEmpty()) {
+                    boardName = Messages.decorator_no_platform;
+                }
 
+                return text + ' ' + boardName + ' ' + ':' + portName;
+            }
+        }
+        return text;
     }
 
     private static String getBoardPrefix(ICConfigurationDescription confDesc) {
