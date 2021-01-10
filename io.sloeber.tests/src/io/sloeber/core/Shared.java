@@ -1,6 +1,6 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -48,7 +48,7 @@ public class Shared {
     private static int myLocalBuildCounter;
     private static int myTestCounter;
     private static String myLastFailMessage = new String();
-    private static boolean closeFailedProjects;
+    private static boolean closeFailedProjects = false;
 
     public static boolean isCloseFailedProjects() {
         return closeFailedProjects;
