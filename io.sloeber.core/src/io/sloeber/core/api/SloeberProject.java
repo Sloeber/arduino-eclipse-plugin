@@ -3,6 +3,7 @@ package io.sloeber.core.api;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -14,6 +15,7 @@ import org.eclipse.cdt.core.envvar.IEnvironmentVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
@@ -48,6 +50,7 @@ import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
+import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class SloeberProject extends Common {
@@ -57,28 +60,26 @@ public class SloeberProject extends Common {
     private Map<String, OtherDescription> myOtherDescriptions = new HashMap<>();
     private TxtFile myCfgFile = null;
     private IProject myProject = null;
-    private boolean isConfigured = false;
+    private boolean isInMemory = false;
     private boolean isDirty = false; // if anything has changed
+    private boolean myNeedToPersist = false; // Do we need to write data to disk
     private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
+    private boolean myNeedsSyncWithCDT = false; // Knows CDT all configs Sloeber Knows
 
     private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
     private static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH; //$NON-NLS-1$
     private static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
     private static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location"; //$NON-NLS-1$
-    private static final String CONFIG_DOT = "Config.";//$NON-NLS-1$
+    private static final String CONFIG = "Config";//$NON-NLS-1$
+    private static final String CONFIG_DOT = CONFIG + DOT;
 
-    private SloeberProject(IProject project, boolean isProjectCreating) {
+    private SloeberProject(IProject project) {
         myProject = project;
         try {
             project.setSessionProperty(sloeberQualifiedName, this);
         } catch (CoreException e) {
             e.printStackTrace();
         }
-        if (isProjectCreating) {
-            return;
-        }
-        configureProject();
-
     }
 
     /**
@@ -163,7 +164,7 @@ public class SloeberProject extends Common {
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProjectHandle);
 
-                    SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle, true);
+                    SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
                     for (ICConfigurationDescription curConfigDesc : prjCDesc.getConfigurations()) {
                         // Even though we use the same boardDescriptor for all configurations during
                         // project creation
@@ -250,36 +251,60 @@ public class SloeberProject extends Common {
         return allVars;
     }
 
-    private void configureProject() {
+    private void configure() {
 
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject);
-        configureProject(prjCDesc, false);
+        configure(prjCDesc, false);
     }
 
-    private void configureProject(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        if (isConfigured) {
+    private void configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        if (isInMemory) {
             if (isDirty) {
                 createSloeberConfigFiles(prjCDesc);
                 setEnvironmentVariables(prjCDesc);
+                isDirty = false;
             }
-            if (prjDescWritable && myNeedsClean) {
-                cleanOldData(prjCDesc);
+            if (myNeedToPersist) {
+                createSloeberConfigFiles(prjCDesc);
+            }
+            if (prjDescWritable) {
+                if (myNeedsSyncWithCDT) {
+                    syncWithCDT(prjCDesc, prjDescWritable);
+                }
+                if (myNeedsClean) {
+                    cleanOldData(prjCDesc);
+                }
             }
             return;
         }
-        // first configuration of the sloeber project
-        if (readSloeberConfig(prjCDesc)) {
-            // we migrated from a previous sloeber configuration
-            myNeedsClean = true;
+        // first read the sloeber files in memory
+        readSloeberConfig(prjCDesc, prjDescWritable);
+        if (myNeedToPersist || isDirty) {
             createSloeberConfigFiles(prjCDesc);
-            // we need a writable project description to clean the old sloeber data
-            if (prjDescWritable) {
+            isDirty = false;
+        }
+        if (prjDescWritable) {
+            if (myNeedsClean) {
+                // we migrated from a previous sloeber configuration
+                // and we can safely delete the old data
                 cleanOldData(prjCDesc);
+            }
+            if (myNeedsSyncWithCDT) {
+                syncWithCDT(prjCDesc, prjDescWritable);
             }
         }
         setEnvironmentVariables(prjCDesc);
-        isConfigured = true;
+        isInMemory = true;
+    }
+
+    /**
+     * sync the Sloeber configuration info with CDT Currently only Sloeber known
+     * confighgurations will be created by Sloeber inside CDT
+     */
+    private void syncWithCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        readSloeberConfig(prjCDesc, prjDescWritable);
+        myNeedsSyncWithCDT = false;
     }
 
     /**
@@ -313,8 +338,7 @@ public class SloeberProject extends Common {
      * @param confDesc
      *            returns true if the config needs saving otherwise false
      */
-    private boolean readSloeberConfig(final ICProjectDescription prjCDesc) {
-        boolean needToCreateConfigFiles = false;
+    private void readSloeberConfig(ICProjectDescription prjCDesc, boolean prjDescWritable) {
         IFile file = getConfigLocalFile();
         if (file.exists()) {
             myCfgFile = new TxtFile(file.getLocation().toFile());
@@ -322,13 +346,36 @@ public class SloeberProject extends Common {
             if (versionFile.exists()) {
                 myCfgFile.mergeFile(versionFile.getLocation().toFile());
             }
-            for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
-                BoardDescription boardDesc = new BoardDescription(myCfgFile, getBoardPrefix(confDesc));
-                CompileDescription compileDescription = new CompileDescription(myCfgFile, getCompilePrefix(confDesc));
-                OtherDescription otherDesc = new OtherDescription(myCfgFile, getOtherPrefix(confDesc));
-                myBoardDescriptions.put(confDesc.getId(), boardDesc);
-                myCompileDescriptions.put(confDesc.getId(), compileDescription);
-                myOtherDescriptions.put(confDesc.getId(), otherDesc);
+            KeyValueTree allFileConfigs = myCfgFile.getData().getChild(CONFIG);
+            for (Entry<String, KeyValueTree> curChild : allFileConfigs.getChildren().entrySet()) {
+                String curConfName = curChild.getKey();
+                BoardDescription boardDesc = new BoardDescription(myCfgFile, getBoardPrefix(curConfName));
+                CompileDescription compileDescription = new CompileDescription(myCfgFile,
+                        getCompilePrefix(curConfName));
+                OtherDescription otherDesc = new OtherDescription(myCfgFile, getOtherPrefix(curConfName));
+                ICConfigurationDescription curConfDesc = prjCDesc.getConfigurationByName(curConfName);
+                if (curConfDesc == null) {
+                    myNeedsSyncWithCDT = true;
+                    // I set persist because most likely this new config comes from sloeber.cfg
+                    // and it must be copied to .sproject
+                    myNeedToPersist = true;
+                    if (prjDescWritable) {
+                        String id = CDataUtil.genId(null);
+                        try {
+                            curConfDesc = prjCDesc.createConfiguration(id, curConfName,
+                                    prjCDesc.getActiveConfiguration());
+                        } catch (Exception e) {
+                            // ignore as we will try again later
+                        }
+                    }
+                }
+                if (curConfDesc != null) {
+                    String curConfID = curConfDesc.getId();
+                    myBoardDescriptions.put(curConfID, boardDesc);
+                    myCompileDescriptions.put(curConfID, compileDescription);
+                    myOtherDescriptions.put(curConfID, otherDesc);
+                    myNeedsSyncWithCDT = false;
+                }
             }
 
         } else {
@@ -339,7 +386,8 @@ public class SloeberProject extends Common {
             } else {
                 // Maybe this is a old Sloeber project with the data in the eclipse build
                 // environment variables
-                needToCreateConfigFiles = true;
+                myNeedToPersist = true;
+                myNeedsClean = true;
                 for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
 
                     BoardDescription boardDesc = BoardDescription.getFromCDT(confDesc);
@@ -352,7 +400,6 @@ public class SloeberProject extends Common {
 
             }
         }
-        return needToCreateConfigFiles;
     }
 
     private boolean setActiveConfig(ICConfigurationDescription confDesc) {
@@ -397,12 +444,32 @@ public class SloeberProject extends Common {
         Map<String, String> versionVars = new TreeMap<>();
 
         for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
-            BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getId());
-            CompileDescription compileDescription = myCompileDescriptions.get(confDesc.getId());
-            OtherDescription otherDescription = myOtherDescriptions.get(confDesc.getId());
-            String boardPrefix = getBoardPrefix(confDesc);
-            String compPrefix = getCompilePrefix(confDesc);
-            String otherPrefix = getOtherPrefix(confDesc);
+            String confID = confDesc.getId();
+            String confName = confDesc.getName();
+            BoardDescription boardDescription = myBoardDescriptions.get(confID);
+            CompileDescription compileDescription = myCompileDescriptions.get(confID);
+            OtherDescription otherDescription = myOtherDescriptions.get(confID);
+            // when a new configuration has been created not in project properties
+            // the descriptions can be null
+            // first get a config to copy from
+            Iterator<Entry<String, BoardDescription>> iterator = myBoardDescriptions.entrySet().iterator();
+            Entry<String, BoardDescription> actualValue = iterator.next();
+            String copyConfID = actualValue.getKey();
+            if (null == boardDescription) {
+                boardDescription = new BoardDescription(myBoardDescriptions.get(copyConfID));
+                myBoardDescriptions.put(confID, boardDescription);
+            }
+            if (null == compileDescription) {
+                compileDescription = new CompileDescription(myCompileDescriptions.get(copyConfID));
+                myCompileDescriptions.put(confID, compileDescription);
+            }
+            if (null == otherDescription) {
+                otherDescription = new OtherDescription(myOtherDescriptions.get(copyConfID));
+                myOtherDescriptions.put(confID, otherDescription);
+            }
+            String boardPrefix = getBoardPrefix(confName);
+            String compPrefix = getCompilePrefix(confName);
+            String otherPrefix = getOtherPrefix(confName);
 
             configVars.putAll(boardDescription.getEnvVarsConfig(boardPrefix));
             configVars.putAll(compileDescription.getEnvVarsConfig(compPrefix));
@@ -418,11 +485,11 @@ public class SloeberProject extends Common {
         try {
             storeConfigurationFile(getConfigVersionFile(), versionVars);
             storeConfigurationFile(getConfigLocalFile(), configVars);
-            isDirty = false;
         } catch (CoreException e) {
             Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
                     "failed to save the sloeber config files", e)); //$NON-NLS-1$
         }
+        myNeedToPersist = false;
 
     }
 
@@ -499,7 +566,7 @@ public class SloeberProject extends Common {
                     e.printStackTrace();
                 }
                 if (!allowNull) {
-                    SloeberProject ret = new SloeberProject(project, false);
+                    SloeberProject ret = new SloeberProject(project);
                     return ret;
                 }
             }
@@ -545,21 +612,21 @@ public class SloeberProject extends Common {
      */
     public BoardDescription getBoardDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-            configureProject();
+            configure();
         }
         return myBoardDescriptions.get(confDesc.getId());
     }
 
     public CompileDescription getCompileDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-            configureProject();
+            configure();
         }
         return myCompileDescriptions.get(confDesc.getId());
     }
 
     public OtherDescription getOtherDescription(ICConfigurationDescription confDesc, boolean allowNull) {
         if (!allowNull) {
-            configureProject();
+            configure();
         }
         return myOtherDescriptions.get(confDesc.getId());
     }
@@ -596,16 +663,16 @@ public class SloeberProject extends Common {
         return text;
     }
 
-    private static String getBoardPrefix(ICConfigurationDescription confDesc) {
-        return CONFIG_DOT + confDesc.getName() + DOT + "board."; //$NON-NLS-1$
+    private static String getBoardPrefix(String confDescName) {
+        return CONFIG_DOT + confDescName + DOT + "board."; //$NON-NLS-1$
     }
 
-    private static String getCompilePrefix(ICConfigurationDescription confDesc) {
-        return CONFIG_DOT + confDesc.getName() + DOT + "compile."; //$NON-NLS-1$
+    private static String getCompilePrefix(String confDescName) {
+        return CONFIG_DOT + confDescName + DOT + "compile."; //$NON-NLS-1$
     }
 
-    private static String getOtherPrefix(ICConfigurationDescription confDesc) {
-        return CONFIG_DOT + confDesc.getName() + DOT + "other."; //$NON-NLS-1$
+    private static String getOtherPrefix(String confDescName) {
+        return CONFIG_DOT + confDescName + DOT + "other."; //$NON-NLS-1$
     }
 
     private IFile getConfigVersionFile() {
@@ -619,9 +686,28 @@ public class SloeberProject extends Common {
     public void configChangeAboutToApply(ICProjectDescription newProjDesc, ICProjectDescription oldProjDesc) {
         ICConfigurationDescription newActiveConfig = newProjDesc.getActiveConfiguration();
         ICConfigurationDescription oldActiveConfig = oldProjDesc.getActiveConfiguration();
+
+        // make sure the dirty flag is set when needed
+        if (!isDirty) {
+            // set dirty when the number of configurations changed
+            int newNumberOfConfigs = newProjDesc.getConfigurations().length;
+            int oldNumberOfConfigs = oldProjDesc.getConfigurations().length;
+            if (newNumberOfConfigs != oldNumberOfConfigs) {
+                isDirty = true;
+            } else {
+                // set dirty if a configname changed
+                for (ICConfigurationDescription curConfig : newProjDesc.getConfigurations()) {
+                    if (oldProjDesc.getConfigurationByName(curConfig.getName()) == null) {
+                        isDirty = true;
+                    }
+                }
+            }
+        }
+        // in many cases we also need to set the active config
         boolean needsConfigSet = myNeedsClean || isDirty
                 || !newActiveConfig.getName().equals(oldActiveConfig.getName());
-        configureProject(newProjDesc, true);
+
+        configure(newProjDesc, true);
         if (needsConfigSet) {
             setActiveConfig(newActiveConfig);
         }
