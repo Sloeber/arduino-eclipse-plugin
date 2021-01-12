@@ -214,7 +214,7 @@ public class Helpers extends Common {
      * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
      */
     public static boolean addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
-            ICConfigurationDescription configurationDescription, boolean forceRoot) throws CoreException {
+            ICConfigurationDescription configurationDescription, boolean forceRoot) {
         boolean descMustBeSet = false;
         IFolder link = project.getFolder(LinkName);
 
@@ -264,10 +264,15 @@ public class Helpers extends Common {
         return descMustBeSet;
     }
 
-    public static void removeCodeFolder(IProject project, String LinkName) throws CoreException {
+    public static void removeCodeFolder(IProject project, String LinkName) {
         IFolder link = project.getFolder(LinkName);
         if (link.exists()) {
-            link.delete(true, null);
+            try {
+                link.delete(true, null);
+            } catch (CoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -324,7 +329,7 @@ public class Helpers extends Common {
      * @throws CoreException
      */
     public static boolean addArduinoCodeToProject(BoardDescription boardDescriptor,
-            ICConfigurationDescription configurationDescription) throws CoreException {
+            ICConfigurationDescription configurationDescription) {
         boolean descMustBeSet = false;
         IProject project = configurationDescription.getProjectDescription().getProject();
         IPath corePath = boardDescriptor.getActualCoreCodePath();

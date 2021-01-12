@@ -249,14 +249,9 @@ public class Libraries {
         boolean descNeedsSet = false;
         List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
-            try {
-                boolean curDescNeedsSet = Helpers.addCodeFolder(project, CurItem.getValue(),
-                        WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc, false);
-                descNeedsSet = descNeedsSet || curDescNeedsSet;
-            } catch (CoreException e) {
-                Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                        Messages.import_lib_failed.replace(LIB, CurItem.getKey()), e));
-            }
+            boolean curDescNeedsSet = Helpers.addCodeFolder(project, CurItem.getValue(),
+                    WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc, false);
+            descNeedsSet = descNeedsSet || curDescNeedsSet;
             // Check the libraries to see if there are "unwanted subfolders"
             File subFolders[] = CurItem.getValue().toFile().listFiles();
             for (File file : subFolders) {

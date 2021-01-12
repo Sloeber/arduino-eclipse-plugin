@@ -10,6 +10,7 @@ import java.net.URL;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -35,6 +36,7 @@ import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
+import io.sloeber.core.listeners.resourceChangeListener;
 import io.sloeber.core.managers.InternalPackageManager;
 
 
@@ -62,6 +64,8 @@ public class Activator extends Plugin {
 			'/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
 			'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
 	private static final String PLUGIN_ID = "io.sloeber.core";
+
+    private static IResourceChangeListener myResourceChangelistener = new resourceChangeListener();
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -182,6 +186,9 @@ public class Activator extends Plugin {
 		CoreModel singCoreModel = CoreModel.getDefault();
 		singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
                 CProjectDescriptionEvent.ABOUT_TO_APPLY);
+
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener);
+
 	}
 
 	private static void initializeImportantVariables() {
@@ -251,7 +258,7 @@ public class Activator extends Plugin {
 	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
-
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(myResourceChangelistener);
 		instance = null;
 		super.stop(context);
 	}

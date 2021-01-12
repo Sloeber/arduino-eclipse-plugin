@@ -1,7 +1,10 @@
 package io.sloeber.core.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -227,26 +230,26 @@ public class SloeberProject extends Common {
             allVars.putAll(otherOptions.getEnvVars());
         }
         // set the paths
-        String pathDelimiter = makeEnvironmentVar("PathDelimiter");
+        String pathDelimiter = makeEnvironmentVar("PathDelimiter"); //$NON-NLS-1$
         if (Common.isWindows) {
             allVars.put(SLOEBER_MAKE_LOCATION,
                     ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
-            String systemroot = makeEnvironmentVar("SystemRoot");
-            allVars.put("PATH",
+            String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
+            allVars.put("PATH", //$NON-NLS-1$
                     makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32"
-                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem"
-                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension"));
+                            + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + systemroot + "\\system32" //$NON-NLS-1$
+                            + pathDelimiter + systemroot + pathDelimiter + systemroot + "\\system32\\Wbem" //$NON-NLS-1$
+                            + pathDelimiter + makeEnvironmentVar("sloeber_path_extension")); //$NON-NLS-1$
         } else {
-            allVars.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
-                    + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH"));
+            allVars.put("PATH", makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter //$NON-NLS-1$
+                    + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
         }
 
         // Set the codeAnalyzer compile commands
         allVars.put(CODAN_C_to_O,
-                "${recipe.c.o.pattern.1} -D__IN_ECLIPSE__=1 ${recipe.c.o.pattern.2} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}");
+                "${recipe.c.o.pattern.1} -D__IN_ECLIPSE__=1 ${recipe.c.o.pattern.2} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}"); //$NON-NLS-1$
         allVars.put(CODAN_CPP_to_O,
-                "${recipe.cpp.o.pattern.1} -D__IN_ECLIPSE__=1 -x c++  ${recipe.cpp.o.pattern.2} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}");
+                "${recipe.cpp.o.pattern.1} -D__IN_ECLIPSE__=1 -x c++  ${recipe.cpp.o.pattern.2} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}"); //$NON-NLS-1$
 
         return allVars;
     }
@@ -258,7 +261,15 @@ public class SloeberProject extends Common {
         configure(prjCDesc, false);
     }
 
-    private void configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+    /**
+     * 
+     * @param prjCDesc
+     * @param prjDescWritable
+     * @return true if the projectDesc needs to be saved
+     */
+
+    private boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        boolean saveProjDesc = false;
         if (isInMemory) {
             if (isDirty) {
                 createSloeberConfigFiles(prjCDesc);
@@ -270,16 +281,16 @@ public class SloeberProject extends Common {
             }
             if (prjDescWritable) {
                 if (myNeedsSyncWithCDT) {
-                    syncWithCDT(prjCDesc, prjDescWritable);
+                    saveProjDesc = syncWithCDT(prjCDesc, prjDescWritable);
                 }
                 if (myNeedsClean) {
                     cleanOldData(prjCDesc);
                 }
             }
-            return;
+            return saveProjDesc;
         }
         // first read the sloeber files in memory
-        readSloeberConfig(prjCDesc, prjDescWritable);
+        saveProjDesc = readSloeberConfig(prjCDesc, prjDescWritable);
         if (myNeedToPersist || isDirty) {
             createSloeberConfigFiles(prjCDesc);
             isDirty = false;
@@ -291,20 +302,22 @@ public class SloeberProject extends Common {
                 cleanOldData(prjCDesc);
             }
             if (myNeedsSyncWithCDT) {
-                syncWithCDT(prjCDesc, prjDescWritable);
+                saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
             }
         }
         setEnvironmentVariables(prjCDesc);
         isInMemory = true;
+        return saveProjDesc;
     }
 
     /**
      * sync the Sloeber configuration info with CDT Currently only Sloeber known
-     * confighgurations will be created by Sloeber inside CDT
+     * configurations will be created by Sloeber inside CDT
      */
-    private void syncWithCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        readSloeberConfig(prjCDesc, prjDescWritable);
+    private boolean syncWithCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        boolean ret = readSloeberConfig(prjCDesc, prjDescWritable);
         myNeedsSyncWithCDT = false;
+        return ret;
     }
 
     /**
@@ -338,7 +351,8 @@ public class SloeberProject extends Common {
      * @param confDesc
      *            returns true if the config needs saving otherwise false
      */
-    private void readSloeberConfig(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+    private boolean readSloeberConfig(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        boolean projDescNeedsWriting = false;
         IFile file = getConfigLocalFile();
         if (file.exists()) {
             myCfgFile = new TxtFile(file.getLocation().toFile());
@@ -362,6 +376,7 @@ public class SloeberProject extends Common {
                     if (prjDescWritable) {
                         String id = CDataUtil.genId(null);
                         try {
+                            projDescNeedsWriting = true;
                             curConfDesc = prjCDesc.createConfiguration(id, curConfName,
                                     prjCDesc.getActiveConfiguration());
                         } catch (Exception e) {
@@ -400,25 +415,68 @@ public class SloeberProject extends Common {
 
             }
         }
+        return projDescNeedsWriting;
     }
 
+    /**
+     * This method set the active configuration This means the core and library
+     * folders of the project are updated. To avoid many update notifications this
+     * is done in a runnable with AVOID_UPDATE
+     * 
+     * @param confDesc
+     *            a writable configuration setting to be made active
+     * 
+     * @return true if the configuration setting has been changed and needs tioo be
+     *         saved
+     */
     private boolean setActiveConfig(ICConfigurationDescription confDesc) {
-        try {
-            BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getId());
-            boolean projDescMustBeSaved = Helpers.addArduinoCodeToProject(boardDescription, confDesc);
-            boolean isRebuildNeeded = Helpers.removeInvalidIncludeFolders(confDesc);
-            if (isRebuildNeeded) {
-                Helpers.deleteBuildFolder(myProject, confDesc);
-            }
-            return projDescMustBeSaved || isRebuildNeeded;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
-                    e));
+        BoardDescription boardDescription = myBoardDescriptions.get(confDesc.getId());
+        boolean projConfMustBeSaved = Helpers.addArduinoCodeToProject(boardDescription, confDesc);
+        boolean isRebuildNeeded = Helpers.removeInvalidIncludeFolders(confDesc);
+        if (isRebuildNeeded) {
+            Helpers.deleteBuildFolder(myProject, confDesc);
         }
-        return false;
+        return projConfMustBeSaved || isRebuildNeeded;
     }
+
+    /**
+     * This method set the active configuration This means the core and library
+     * folders of the project are updated. To avoid many update notifications this
+     * is done in a runnable with AVOID_UPDATE
+     * 
+     * @param confDesc
+     *            a writable configuration setting to be made active
+     * 
+     * @return true if the configuration setting has been changed and needs tioo be
+     *         saved
+     */
+    private boolean setActiveConfigInRunnable(ICConfigurationDescription confDesc) {
+
+        class MyRunnable implements ICoreRunnable {
+            public boolean projConfMustBeSaved = false;
+
+            @Override
+            public void run(IProgressMonitor internalMonitor) throws CoreException {
+                projConfMustBeSaved = setActiveConfig(confDesc);
+            }
+        }
+
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+        MyRunnable runnable = new MyRunnable();
+        try {
+            workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, null);
+        } catch (Exception e) {
+            ICProjectDescription projDesc = confDesc.getProjectDescription();
+            String confDescName = confDesc.getName();
+            String projName = projDesc.getProject().getName();
+            Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+                    "Setting config " + confDescName + " for project " + projName + " failed", e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        return runnable.projConfMustBeSaved;
+    }
+
 
     private void setEnvironmentVariables(final ICProjectDescription prjCDesc) {
         for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
@@ -500,6 +558,17 @@ public class SloeberProject extends Common {
         }
 
         if (file.exists()) {
+            // if the filecontent hasn't changed=>do nothing
+            try {
+                Path filePath = Path.of(file.getLocation().toOSString());
+                String fileContent = Files.readString(filePath);
+                if (content.equals(fileContent)) {
+                    return;
+                }
+            } catch (IOException e) {
+                // Don't care as a optimization didn't work
+                e.printStackTrace();
+            }
             file.delete(true, null);
         }
 
@@ -709,7 +778,26 @@ public class SloeberProject extends Common {
 
         configure(newProjDesc, true);
         if (needsConfigSet) {
-            setActiveConfig(newActiveConfig);
+            setActiveConfigInRunnable(newActiveConfig);
+        }
+
+    }
+
+    public void sloeberCfgChanged() {
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject);
+        ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
+        isInMemory = false;
+        boolean projDescNeedsSaving = configure(projDesc, true);
+        Helpers.deleteBuildFolder(myProject, activeConfig);
+        projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
+        if (projDescNeedsSaving) {
+            try {
+                cCorePlugin.setProjectDescription(myProject, projDesc);
+            } catch (CoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
     }
