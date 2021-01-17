@@ -38,7 +38,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 11 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 13 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -175,10 +175,6 @@ public class WorkAround extends Const {
      */
     static File MakePlatformSloeberTXT(File requestedFileToWorkAround) {
 
-        // zoek voor
-        // recipe.objcopy.*.pattern=cmd /c *
-        // verwijder cmd /c
-
         if (!requestedFileToWorkAround.exists()) {
             return requestedFileToWorkAround;
         }
@@ -249,49 +245,11 @@ public class WorkAround extends Const {
                 platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{version})",
                         "$1{$2.version}");
 
-                // String searchString = "{cmd.path}";
-                // String cmdPathLine = findLineContaining(platformTXT, searchString);
-                // while (null != cmdPathLine) {
-                // if (cmdPathLine.startsWith(TOOLS)) {
-                // int patternIndex = cmdPathLine.indexOf(PATTERN);
-                // if (patternIndex > 0) {
-                // int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
-                // String replaceString = "{" + cmdPathLine.substring(0, endIndex) +
-                // ".cmd.path}";
-                // String replaceLine = cmdPathLine.replace(searchString, replaceString);
-                // platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
-                // cmdPathLine = findLineContaining(platformTXT, searchString);
-                // }
-                // } else if (cmdPathLine.charAt(0) == '#') {
-                // platformTXT = platformTXT.replace(cmdPathLine, EMPTY);
-                // cmdPathLine = findLineContaining(platformTXT, searchString);
-                // }
-                // else {
-                // // TODO find a better way to handle this situation
-                // // but it is better to continue than hang
-                // cmdPathLine = null;
-                // }
-                // }
-                //
-                // // change {config.path} to fqn {config.path}
-                // searchString = "{config.path}";
-                // cmdPathLine = findLineContaining(platformTXT, searchString);
-                // while (null != cmdPathLine) {
-                // if (cmdPathLine.startsWith(TOOLS)) {
-                // int patternIndex = cmdPathLine.indexOf(PATTERN);
-                // if (patternIndex > 0) {
-                // int endIndex = cmdPathLine.lastIndexOf(DOT, patternIndex - 2);
-                // String replaceString = "{" + cmdPathLine.substring(0, endIndex) +
-                // ".config.path}";
-                // String replaceLine = cmdPathLine.replace(searchString, replaceString);
-                // platformTXT = platformTXT.replace(cmdPathLine, replaceLine);
-                // cmdPathLine = findLineContaining(platformTXT, searchString);
-                // }
-                // }
-                // }
-
                 // workaround for infineon arm v1.4.0 overwriting the default to a wrong value
                 platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
+
+                // workaround for jantje PC
+                platformTXT = platformTXT.replace("{runtime.tools.mingw.path}/bin/", "{runtime.tools.MinGW.path}/bin/");
 
                 try { // https://github.com/Sloeber/arduino-eclipse-plugin/issues/1182#
                     Path platformTXTPath = new Path(requestedFileToWorkAround.toString());
