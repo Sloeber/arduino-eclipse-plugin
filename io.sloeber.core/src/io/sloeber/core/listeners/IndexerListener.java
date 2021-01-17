@@ -29,6 +29,10 @@ public class IndexerListener implements IIndexChangeListener, IIndexerStateListe
     @Override
     public void indexChanged(IIndexChangeEvent event) {
         IProject project = event.getAffectedProject().getProject();
+        if (IndexerController.isPosponed(project)) {
+            // Do not update libraries if project is in creation
+            return;
+        }
         try {
             if (project.hasNature(Const.ARDUINO_NATURE_ID)) {
                 if (!newChangedProjects.contains(project)) {
