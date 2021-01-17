@@ -1,5 +1,8 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,10 +30,8 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.managers.InternalPackageManager;
@@ -50,10 +51,8 @@ public class LibraryManager {
 	private static final String PDE = "pde";//$NON-NLS-1$
 	private static final String CPP = "cpp";//$NON-NLS-1$
 	private static final String C = "c";//$NON-NLS-1$
-	private static final String LIBRARY_PATH_SUFFIX = Const.LIBRARY_PATH_SUFFIX ;
 	private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
 	private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
-	private static final String FILE = Messages.FILE;
 
 	static private List<LibraryIndex> libraryIndices;
 	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
@@ -188,10 +187,9 @@ public class LibraryManager {
 					for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
 						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 						if (lib == null) {
-							StringBuilder builder = new StringBuilder("Architectures:") //$NON-NLS-1$
-									.append(library.getArchitectures().toString()).append("\n\n") //$NON-NLS-1$
-									.append(library.getSentence());
-							lib = new Library(category, library.getName(), libraryIndex.getName(), builder.toString());
+                            String builder = "Architectures:" + library.getArchitectures().toString() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
+                                    + library.getSentence();
+                            lib = new Library(category, library.getName(), libraryIndex.getName(), builder);
 							category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib); //$NON-NLS-1$//$NON-NLS-2$
 						}
 						lib.versions.add(new VersionNumber(library.getVersion()));
@@ -297,7 +295,7 @@ public class LibraryManager {
 			libraryIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-					Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e)); 
+                    Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}
