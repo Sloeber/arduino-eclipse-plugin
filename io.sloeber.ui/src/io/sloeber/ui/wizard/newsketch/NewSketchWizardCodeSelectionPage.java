@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
@@ -24,32 +23,22 @@ import io.sloeber.ui.Messages;
 
 public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
-	final Shell shell = new Shell();
+//	final Shell shell = new Shell();
 	private Composite myParentComposite = null;
-	protected LabelCombo myCodeSourceOptionsCombo; 
+	protected LabelCombo myCodeSourceOptionsCombo;
 	protected DirectoryFieldEditor myTemplateFolderEditor;
 	protected SampleSelector myExampleEditor = null;
 	protected Button myCheckBoxUseCurrentLinkSample;
-	private BoardDescription myBoardDescriptor = null;
+	private BoardDescription myCurrentBoardDesc = null;
 	private CodeDescription myCodedescriptor = CodeDescription.createLastUsed();
+	private NewSketchWizardBoardPage myArduinoPage;
 
-	// TOFIX disabled the push boarddescriptor
-
-//	public void setBoardDescriptor(BoardDescription boardDescriptor) {
-//		if (myBoardDescriptor == null) {
-//			myBoardDescriptor = boardDescriptor;
-//		}
-//		handleBoarDescriptorChange();
-//	}
-
-	public void handleBoarDescriptorChange() {
-
-		if (myExampleEditor != null) {
-			myExampleEditor.AddAllExamples(myBoardDescriptor, myCodedescriptor.getExamples());
-		}
-
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
 		validatePage();
 	}
+
 
 	public NewSketchWizardCodeSelectionPage(String pageName) {
 		super(pageName);
@@ -112,18 +101,16 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 		SetControls();// set the controls according to the setting
 
 		validatePage();// validate the page
-		handleBoarDescriptorChange();
-
 		setControl(composite);
 
 	}
 
 	/**
-	 * @name SetControls() Enables or disables the controls based on the
-	 *       Checkbox settings
+	 * @name SetControls() Enables or disables the controls based on the Checkbox
+	 *       settings
 	 */
 	protected void SetControls() {
-		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+		switch (getCodeType()) {
 		case None:
 			myTemplateFolderEditor.setEnabled(false, myParentComposite);
 			myExampleEditor.setEnabled(false);
@@ -155,14 +142,12 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 	}
 
 	/**
-	 * @name validatePage() Check if the user has provided all the info to
-	 *       create the project. If so enable the finish button.
+	 * @name validatePage() Check if the user has provided all the info to create
+	 *       the project. If so enable the finish button.
 	 */
 	protected void validatePage() {
-		if (myCodeSourceOptionsCombo == null) {
-			return;
-		}
-		switch (CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())]) {
+
+		switch (getCodeType()) {
 		case None:
 		case defaultIno:
 		case defaultCPP:
@@ -177,6 +162,12 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			setPageComplete(existFile);
 			break;
 		case sample:
+			BoardDescription mySelectedBoardDesc = myArduinoPage.getBoardDescriptor();
+			if (!mySelectedBoardDesc.equals(myCurrentBoardDesc)) {
+				myCurrentBoardDesc = new BoardDescription(mySelectedBoardDesc);
+				myExampleEditor.AddAllExamples(myCurrentBoardDesc, myCodedescriptor.getExamples());
+
+			}
 			setPageComplete(myExampleEditor.isSampleSelected());
 			break;
 		default:
@@ -202,7 +193,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 	public CodeDescription getCodeDescription() {
 
-		switch (CodeTypes.values()[myCodeSourceOptionsCombo.getSelectionIndex()]) {
+		switch (getCodeType()) {
 		case None:
 			return CodeDescription.createNone();
 		case defaultIno:
@@ -246,6 +237,18 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 			ret[codeType.ordinal()] = getCodeTypeDescription(codeType);
 		}
 		return ret;
+	}
+
+	private CodeTypes getCodeType() {
+		if (myCodeSourceOptionsCombo == null) {
+			return CodeTypes.None;
+		}
+		return CodeTypes.values()[Math.max(0, myCodeSourceOptionsCombo.getSelectionIndex())];
+	}
+
+	public void setSketchWizardPage(NewSketchWizardBoardPage arduinoPage) {
+		myArduinoPage = arduinoPage;
+
 	}
 
 }

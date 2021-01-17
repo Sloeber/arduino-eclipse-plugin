@@ -67,10 +67,10 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		//
 		// settings for template file location
 		//
-		this.mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
-		this.mNewArduinoSketchWizardCodeSelectionPage
+		mNewArduinoSketchWizardCodeSelectionPage.setTitle(Messages.ui_new_sketch_sketch_template_folder);
+		mNewArduinoSketchWizardCodeSelectionPage
 				.setDescription(Messages.ui_new_sketch_error_folder_must_contain_sketch_cpp);
-
+		mNewArduinoSketchWizardCodeSelectionPage.setSketchWizardPage(mArduinoPage);
 		//
 		// actually add the pages to the wizard
 		//
