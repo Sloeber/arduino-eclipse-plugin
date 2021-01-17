@@ -91,6 +91,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 		CompileDescription compileDescription = new CompileDescription();
 		URI locationURI = (!this.mWizardPage.useDefaults()) ? this.mWizardPage.getLocationURI() : null;
 		compileDescription.setEnableParallelBuild(MyPreferences.getEnableParallelBuildForNewProjects());
+		boardDescription.saveUserSelection();
 		this.mProject = SloeberProject.createArduinoProject(this.mWizardPage.getProjectName(),
 				locationURI, boardDescription, codeDescription, compileDescription, new NullProgressMonitor());
 
