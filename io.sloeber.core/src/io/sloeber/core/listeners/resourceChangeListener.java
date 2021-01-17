@@ -52,7 +52,13 @@ public class resourceChangeListener implements IResourceChangeListener {
                     public void run(IProgressMonitor monitor) throws CoreException {
                         for (IProject curProject : changedSloeberCfgFiles) {
                             SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject, false);
-                            curSloeberProject.sloeberCfgChanged();
+                            if (curSloeberProject == null) {
+                                // this is not a sloeber project;
+                                //make it one?
+                            }
+                            else{
+                                curSloeberProject.sloeberCfgChanged();
+                            }
                         }
                     }
                 };
