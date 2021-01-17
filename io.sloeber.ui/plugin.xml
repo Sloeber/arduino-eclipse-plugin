@@ -396,6 +396,23 @@
        </commandParameter>
     </command>
  </extension>
+ 
+ <!-- Definition to know if the active perspective is Arduino -->
+<extension point="org.eclipse.core.expressions.definitions">
+  <definition id="io.sloeber.definition.isArduinoPerspective">
+    <with variable="activeWorkbenchWindow.activePerspective">
+       <or>
+          <equals
+                value="io.sloeber.application.perspective">
+          </equals>
+          <equals
+                value="org.eclipse.cdt.ui.CPerspective">
+          </equals></or>
+    </with>
+  </definition>
+</extension>
+ 
+ 
   <extension
        point="org.eclipse.ui.menus">
     <menuContribution
