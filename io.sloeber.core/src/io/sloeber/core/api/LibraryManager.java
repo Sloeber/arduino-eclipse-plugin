@@ -455,9 +455,9 @@ public class LibraryManager {
 			File Lib_examples = LibRoot.toPath().resolve(curLib).resolve("examples").toFile();//$NON-NLS-1$
 			File Lib_Examples = LibRoot.toPath().resolve(curLib).resolve("Examples").toFile();//$NON-NLS-1$
 			if (Lib_examples.isDirectory()) {
-				examples.putAll(getExamplesFromFolder(libID, Lib_examples));
+                examples.putAll(getExamplesFromFolder(libID, Lib_examples, 2));
 			} else if (Lib_Examples.isDirectory()) {
-				examples.putAll(getExamplesFromFolder(libID, Lib_Examples));
+                examples.putAll(getExamplesFromFolder(libID, Lib_Examples, 2));
 			} else // nothing found directly so maybe this is a version
 					// based lib
 			{
@@ -470,9 +470,9 @@ public class LibraryManager {
 						Lib_Examples = LibRoot.toPath().resolve(curLib).resolve(versions[0]).resolve("Examples") //$NON-NLS-1$
 								.toFile();
 						if (Lib_examples.isDirectory()) {
-							examples.putAll(getExamplesFromFolder(libID, Lib_examples));
+                            examples.putAll(getExamplesFromFolder(libID, Lib_examples, 2));
 						} else if (Lib_Examples.isDirectory()) {
-							examples.putAll(getExamplesFromFolder(libID, Lib_Examples));
+                            examples.putAll(getExamplesFromFolder(libID, Lib_Examples, 2));
 						}
 					}
 				}
@@ -488,19 +488,20 @@ public class LibraryManager {
 	 *
 	 * @param File
 	 */
-	private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, File location) {
+    private static TreeMap<String, IPath> getExamplesFromFolder(String prefix, File location, int maxDepth) {
 		TreeMap<String, IPath> examples = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		File[] children = location.listFiles();
-		if (children == null) {
+        if ((children == null) || (maxDepth <= 0)) {
 			// Either dir does not exist or is not a directory
 			return examples;
 		}
+        int newmaxDepth = maxDepth - 1;
 		for (File exampleFolder : children) {
-			String extension = FilenameUtils.getExtension(exampleFolder.toString());
+            String extension = FilenameUtils.getExtension(exampleFolder.toString()).toLowerCase();
 			if (exampleFolder.isDirectory()) {
-				examples.putAll(getExamplesFromFolder(prefix + '/' + exampleFolder.getName(), exampleFolder));
-			} else if (INO.equalsIgnoreCase(extension) || PDE.equalsIgnoreCase(extension)
-					|| CPP.equalsIgnoreCase(extension) || C.equalsIgnoreCase(extension)) {
+                examples.putAll(
+                        getExamplesFromFolder(prefix + '/' + exampleFolder.getName(), exampleFolder, newmaxDepth));
+            } else if (INO.equals(extension) || PDE.equals(extension) || CPP.equals(extension) || C.equals(extension)) {
 				examples.put(prefix, new Path(location.toString()));
 			}
 		}
@@ -532,7 +533,7 @@ public class LibraryManager {
 		File exampleLocation = ConfigurationPreferences.getInstallationPathExamples().toFile();
 
 		if (exampleLocation.exists()) {
-			examples.putAll(getExamplesFromFolder(EXAMPLE_DESCRIPTOR_PREFIX , exampleLocation));
+            examples.putAll(getExamplesFromFolder(EXAMPLE_DESCRIPTOR_PREFIX, exampleLocation, 100));
 		}
 		return examples;
 	}
