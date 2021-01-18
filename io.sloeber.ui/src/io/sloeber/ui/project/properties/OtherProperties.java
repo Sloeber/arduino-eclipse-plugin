@@ -8,7 +8,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.ui.Messages;
 
@@ -75,7 +74,7 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected Object getnewDefaultObject() {
-		return new CompileDescription();
+		return new OtherDescription();
 	}
 
 
