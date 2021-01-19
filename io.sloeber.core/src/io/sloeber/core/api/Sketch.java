@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -220,8 +221,9 @@ public class Sketch {
 
     public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confDesc,
             Set<String> libraries) {
-        return Libraries.addLibrariesToProject(project, confDesc, libraries);
-
+        Map<String, List<IPath>> foldersToChange = Libraries.addLibrariesToProject(project, confDesc,
+                libraries);
+        return Libraries.adjustProjectDescription(confDesc, foldersToChange);
     }
 
     public static Map<String, IPath> getAllAvailableLibraries(IProject project) {
@@ -238,18 +240,32 @@ public class Sketch {
         return Libraries.getAllLibrariesFromProject(project);
     }
 
-    public static boolean addCodeFolder(IProject project, Path path) throws CoreException {
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription configurationDescriptions[] = projectDescription.getConfigurations();
+    /**
+     * Adds a folder to the project and adds the folder to the linked folders if
+     * needed Stores the projectDescription if it has changed
+     * 
+     * @param project
+     *            the project to add the folder to
+     * @param path
+     *            the path that needs adding to the project
+     * 
+     * @throws CoreException
+     */
+    public static void addCodeFolder(IProject project, Path path) throws CoreException {
+        boolean projDescNeedsSaving = false;
+        CoreModel coreModel = CoreModel.getDefault();
+        ICProjectDescription projectDescription = coreModel.getProjectDescription(project);
 
-        for (ICConfigurationDescription curConfigurationDescription : configurationDescriptions) {
-            String NiceName = path.lastSegment();
-            if (Helpers.addCodeFolder(project, path, NiceName, curConfigurationDescription, false)) {
-                CoreModel.getDefault().getProjectDescriptionManager().setProjectDescription(project, projectDescription,
-                        true, null);
+        List<IPath> includeFolders = Helpers.addCodeFolder(project, path, path.lastSegment(), false);
+        for (ICConfigurationDescription curConfig : projectDescription.getConfigurations()) {
+            if (Helpers.addIncludeFolder(curConfig, includeFolders, true)) {
+                projDescNeedsSaving = true;
             }
         }
-        return true;
+        if (projDescNeedsSaving) {
+            coreModel.getProjectDescriptionManager().setProjectDescription(project, projectDescription,
+                    true, null);
+        }
     }
 
 }

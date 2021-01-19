@@ -1,9 +1,15 @@
 package io.sloeber.core.tools;
 
+import static io.sloeber.core.common.Common.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
@@ -34,8 +40,6 @@ import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
@@ -47,7 +51,7 @@ import io.sloeber.core.managers.ToolDependency;
  * @author Jan Baeyens
  *
  */
-public class Helpers extends Common {
+public class Helpers {
 
     private static final String FILE = Messages.FILE;
     private static final String FOLDER = Messages.FOLDER;
@@ -55,8 +59,8 @@ public class Helpers extends Common {
     private static boolean myHasBeenLogged = false;
 
     /**
-     * This method is the internal working class that adds the provided include path
-     * to all configurations and languages.
+     * This method is the internal working class that adds the provided include
+     * paths to the configuration for all languages.
      *
      * @param configurationDescription
      *            The configuration description of the project to add it to
@@ -68,8 +72,8 @@ public class Helpers extends Common {
      * @return true if the configuration description has changed
      *         (setprojectdescription is needed to make the changes effective)
      */
-    public static boolean addIncludeFolder(ICConfigurationDescription configurationDescription, IPath IncludePath,
-            boolean isWorkspacePath) {
+    public static boolean addIncludeFolder(ICConfigurationDescription configurationDescription,
+            List<IPath> IncludePaths, boolean isWorkspacePath) {
 
         boolean confDesckMustBeSet = false;
         ICLanguageSetting[] languageSettings = configurationDescription.getRootFolderDescription()
@@ -86,19 +90,20 @@ public class Helpers extends Common {
             if (LangID != null) {
                 if (LangID.startsWith("org.eclipse.cdt.")) { //$NON-NLS-1$
                     ICLanguageSettingEntry[] OrgIncludeEntries = lang.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-                    boolean needsToBeAdded = true;
+                    HashSet<IPath> toAddPaths = new HashSet<>(IncludePaths);
                     for (ICLanguageSettingEntry curLangSetting : OrgIncludeEntries) {
                         CIncludePathEntry curIncludePathEntry = (CIncludePathEntry) curLangSetting;
-                        if (curIncludePathEntry.getFullPath().equals(IncludePath)) {
-                            needsToBeAdded = false;
-                        }
+                        toAddPaths.remove(curIncludePathEntry.getFullPath());
                     }
-                    if (needsToBeAdded) {
+                    if (!toAddPaths.isEmpty()) {
                         confDesckMustBeSet = true;
                         ICLanguageSettingEntry[] IncludeEntries = new ICLanguageSettingEntry[OrgIncludeEntries.length
-                                + 1];
+                                + toAddPaths.size()];
                         System.arraycopy(OrgIncludeEntries, 0, IncludeEntries, 0, OrgIncludeEntries.length);
-                        IncludeEntries[OrgIncludeEntries.length] = new CIncludePathEntry(IncludePath, pathSetting);
+                        int startPointer = OrgIncludeEntries.length;
+                        for (IPath curPath : toAddPaths) {
+                            IncludeEntries[startPointer++] = new CIncludePathEntry(curPath, pathSetting);
+                        }
                         lang.setSettingEntries(ICSettingEntry.INCLUDE_PATH, IncludeEntries);
                     }
                 }
@@ -137,8 +142,8 @@ public class Helpers extends Common {
                                 || (((CIncludePathEntry) OrgIncludeEntries[curEntry]).isBuiltIn())) {
                             OrgIncludeEntries[copiedEntry++] = OrgIncludeEntries[curEntry];
                         } else {
-                            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                                    "Removed invalid include path" + cusPath, null)); //$NON-NLS-1$
+                            log(new Status(IStatus.WARNING, CORE_PLUGIN_ID, "Removed invalid include path" + cusPath, //$NON-NLS-1$
+                                    null));
                         }
                     }
                     if (copiedEntry != OrgIncludeEntries.length) // do not save
@@ -185,27 +190,16 @@ public class Helpers extends Common {
         try {
             createNewFolder(project, target.toString(), source);
         } catch (CoreException e) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
+            log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                     Messages.Helpers_Create_folder_failed.replace(FOLDER, target.toString()), e));
         }
     }
 
     /**
      * This method creates a link folder in the project and add the folder as a
-     * source path to the project it also adds the path to the include folder if the
-     * include path parameter points to a path that contains a subfolder named
-     * "utility" this subfolder will be added to the include path as well <br/>
-     * Forget about this. Arduino made this all so complicated I don't know anymore
-     * what needs to be added to what<br/>
-     * <br/>
-     *
-     * note Arduino has these subfolders in the libraries that need to be
-     * include.<br/>
-     * <br/>
-     *
-     * note that in the current eclipse version, there is no need to add the
-     * subfolder as a code folder. This may change in the future as it looks like a
-     * bug to me.<br/>
+     * source path to the project.
+     * 
+     * It returns a list of paths that need to be added to the link paths
      *
      * @param project
      * @param Path
@@ -213,9 +207,8 @@ public class Helpers extends Common {
      *
      * @see addLibraryDependency {@link #addLibraryDependency(IProject, IProject)}
      */
-    public static boolean addCodeFolder(IProject project, IPath toLinkFolder, String LinkName,
-            ICConfigurationDescription configurationDescription, boolean forceRoot) {
-        boolean descMustBeSet = false;
+    public static List<IPath> addCodeFolder(IProject project, IPath toLinkFolder, String LinkName, boolean forceRoot) {
+        List<IPath> addToIncludePath = new ArrayList<>();
         IFolder link = project.getFolder(LinkName);
 
         LinkFolderToFolder(project, toLinkFolder, new Path(LinkName));
@@ -226,25 +219,19 @@ public class Helpers extends Common {
         String possibleIncludeFolder = "utility"; //$NON-NLS-1$
         File file = toLinkFolder.append(possibleIncludeFolder).toFile();
         if (file.exists()) {
-            boolean curDescNeedsSet = addIncludeFolder(configurationDescription,
-                    link.getFullPath().append(possibleIncludeFolder), true);
-            descMustBeSet = descMustBeSet || curDescNeedsSet;
+            addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));
         }
 
         if (forceRoot) {
-            boolean curDescNeedsSet = addIncludeFolder(configurationDescription, link.getFullPath(), true);
-            descMustBeSet = descMustBeSet || curDescNeedsSet;
+            addToIncludePath.add(link.getFullPath());
         } else {
             // add src or root give priority to src
             possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
             file = toLinkFolder.append(possibleIncludeFolder).toFile();
             if (file.exists()) {
-                boolean curDescNeedsSet = addIncludeFolder(configurationDescription,
-                        link.getFullPath().append(possibleIncludeFolder), true);
-                descMustBeSet = descMustBeSet || curDescNeedsSet;
+                addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));
             } else {
-                boolean curDescNeedsSet = addIncludeFolder(configurationDescription, link.getFullPath(), true);
-                descMustBeSet = descMustBeSet || curDescNeedsSet;
+                addToIncludePath.add(link.getFullPath());
             }
         }
         // TOFIX removed this code as part of libraries not included in project after
@@ -261,7 +248,7 @@ public class Helpers extends Common {
         // addIncludeFolder(rootFolderDescr,
         // link.getFullPath().append(possibleIncludeFolder).append(boardDescriptor.getArchitecture()));
         // }
-        return descMustBeSet;
+        return addToIncludePath;
     }
 
     public static void removeCodeFolder(IProject project, String LinkName) {
@@ -324,30 +311,27 @@ public class Helpers extends Common {
      *
      * @param project
      *            The project to add the arduino code to
-     * @param configurationDescription
-     *            The configuration description that will contain the change
-     * @throws CoreException
+     * @param boardDescriptor
+     *            The board that is used
+     * 
+     * @return returns a list of paths that need to be added to the link folders
      */
-    public static boolean addArduinoCodeToProject(BoardDescription boardDescriptor,
-            ICConfigurationDescription configurationDescription) {
-        boolean descMustBeSet = false;
-        IProject project = configurationDescription.getProjectDescription().getProject();
+    public static List<IPath> addArduinoCodeToProject(IProject project, BoardDescription boardDescriptor) {
+        List<IPath> addToIncludePath = new ArrayList<>();
         IPath corePath = boardDescriptor.getActualCoreCodePath();
         if (corePath != null) {
-            descMustBeSet = addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH, configurationDescription, true);
+            addToIncludePath.addAll(addCodeFolder(project, corePath, ARDUINO_CODE_FOLDER_PATH, true));
             IPath variantPath = boardDescriptor.getActualVariantPath();
             if ((variantPath == null) || (!variantPath.toFile().exists())) {
                 // remove the existing link
                 Helpers.removeCodeFolder(project, ARDUINO_VARIANT_FOLDER_PATH);
             } else {
                 IPath redirectVariantPath = boardDescriptor.getActualVariantPath();
-                boolean curDescNeedsSet = addCodeFolder(project, redirectVariantPath,
-                        ARDUINO_VARIANT_FOLDER_PATH, configurationDescription, false);
-                descMustBeSet = descMustBeSet || curDescNeedsSet;
-
+                addToIncludePath
+                        .addAll(addCodeFolder(project, redirectVariantPath, ARDUINO_VARIANT_FOLDER_PATH, false));
             }
         }
-        return descMustBeSet;
+        return addToIncludePath;
     }
 
     /**
@@ -381,24 +365,23 @@ public class Helpers extends Common {
     /**
      * Set the project to force a rebuild. This method is called after the arduino
      * settings have been updated. Note the only way I found I could get this to
-     * work is by deleting the build folder Still then the "indexer needs to recheck
-     * his includes from the language provider which still is not working
+     * work is by deleting the build folder
      *
      * @param project
      */
-    public static void deleteBuildFolder(IProject project, ICConfigurationDescription cfgDescription) {
+    public static void deleteBuildFolder(IProject project, String cfgName) {
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
         if (buildInfo == null) {
             return; // Project is not a managed build project
         }
 
-        IFolder buildFolder = project.getFolder(cfgDescription.getName());
+        IFolder buildFolder = project.getFolder(cfgName);
         if (buildFolder.exists()) {
             try {
                 buildFolder.delete(true, null);
             } catch (CoreException e) {
-                Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                        Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgDescription.getName()), e));
+                log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                        Messages.Helpers_delete_folder_failed.replace(FOLDER, cfgName), e));
             }
         }
     }
@@ -433,7 +416,7 @@ public class Helpers extends Common {
         File[] a = source.toFile().listFiles();
         if (a == null) {
             if (!myHasBeenLogged) {
-                Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
+                log(new Status(IStatus.INFO, CORE_PLUGIN_ID,
                         Messages.Helpers_error_link_folder_is_empty.replace(FILE, source.toOSString()), null));
                 myHasBeenLogged = true;
             }
@@ -471,7 +454,7 @@ public class Helpers extends Common {
             Tool theTool = tool.getTool();
             if (theTool == null) {
                 if (reportToolNotFound) {
-                    Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                    log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                             "Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
                                     + tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
                 }

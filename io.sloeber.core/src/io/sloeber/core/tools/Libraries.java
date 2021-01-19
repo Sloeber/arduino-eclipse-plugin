@@ -1,5 +1,7 @@
 package io.sloeber.core.tools;
 
+import static io.sloeber.core.Messages.*;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.HashMap;
@@ -34,7 +36,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
@@ -48,7 +49,8 @@ import io.sloeber.core.managers.Library;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
-    private static final String LIB = Messages.LIB;
+    public static String INCLUDE = "INCLUDE"; //$NON-NLS-1$
+    public static String REMOVE = "REMOVE"; //$NON-NLS-1$
 
     /**
      * for a given folder return all subfolders
@@ -156,7 +158,7 @@ public class Libraries {
                         switch (versions.length) {
                         case 0:// A empty lib folder is hanging around
                             Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                                    Messages.EmptyLibFolder.replace(LIB, curLib)));
+                                    EmptyLibFolder.replace(LIB, curLib)));
                             Lib_root.toFile().delete();
                             break;
                         case 1:// There should only be 1
@@ -169,7 +171,7 @@ public class Libraries {
                             int highestVersion = Version.getHighestVersion(versions);
                             ret.put(curLib, Lib_root.append(versions[highestVersion]));
                             Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                                    Messages.MultipleVersionsOfLib.replace(LIB, curLib)));
+                                    MultipleVersionsOfLib.replace(LIB, curLib)));
 
                         }
                     }
@@ -197,8 +199,8 @@ public class Libraries {
                 final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
                 folderHandle.delete(true, null);
             } catch (CoreException e) {
-                Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                        Messages.failed_to_remove_lib.replace(LIB, CurItem), e));
+                Common.log(
+                        new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB, CurItem), e));
             }
         }
         return Helpers.removeInvalidIncludeFolders(confdesc);
@@ -223,14 +225,14 @@ public class Libraries {
      *            the libraries to add
      * @return return true if the projdesc needs to be set
      */
-    public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
+    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
             Set<String> librariesToAdd) {
         Map<String, IPath> libraries = getAllInstalledLibraries(confdesc);
         libraries.keySet().retainAll(librariesToAdd);
         if (libraries.isEmpty()) {
-            return false;
+            return new HashMap<>();
         }
-        return addLibrariesToProject(project, confdesc, libraries);
+        return addLibrariesToProject(project, libraries);
     }
 
     /**
@@ -244,14 +246,13 @@ public class Libraries {
      *            the list of libraries to add
      * @return true if the configuration description has changed
      */
-    public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confdesc,
-            Map<String, IPath> libraries) {
-        boolean descNeedsSet = false;
+    public static Map<String, List<IPath>> addLibrariesToProject(IProject project, Map<String, IPath> libraries) {
+
         List<IPath> foldersToRemoveFromBuildPath = new LinkedList<>();
+        List<IPath> foldersToAddToIncludes = new LinkedList<>();
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
-            boolean curDescNeedsSet = Helpers.addCodeFolder(project, CurItem.getValue(),
-                    WORKSPACE_LIB_FOLDER + CurItem.getKey(), confdesc, false);
-            descNeedsSet = descNeedsSet || curDescNeedsSet;
+            foldersToAddToIncludes.addAll(
+                    Helpers.addCodeFolder(project, CurItem.getValue(), WORKSPACE_LIB_FOLDER + CurItem.getKey(), false));
             // Check the libraries to see if there are "unwanted subfolders"
             File subFolders[] = CurItem.getValue().toFile().listFiles();
             for (File file : subFolders) {
@@ -265,27 +266,11 @@ public class Libraries {
                 }
             }
         }
-        if (!foldersToRemoveFromBuildPath.isEmpty()) {
-            descNeedsSet = true;
-            ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
-            ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
-            for (IPath curFile : foldersToRemoveFromBuildPath) {
-                try {
+        Map<String, List<IPath>> codePathChanges = new HashMap<>();
+        codePathChanges.put(INCLUDE, foldersToAddToIncludes);
+        codePathChanges.put(REMOVE, foldersToRemoveFromBuildPath);
+        return codePathChanges;
 
-                    sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
-
-                } catch (CoreException e1) {
-                    // ignore
-                }
-            }
-            try {
-                cfgd.getConfiguration().setSourceEntries(sourceEntries);
-            } catch (Exception e) {
-                // ignore
-            }
-
-        }
-        return descNeedsSet;
     }
 
     // public static void removeLibrariesFromProject(Set<String> libraries) {
@@ -315,9 +300,10 @@ public class Libraries {
         ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
         ICProjectDescription projDesc = mngr.getProjectDescription(project, true);
         ICConfigurationDescription configurationDescriptions[] = projDesc.getConfigurations();
-        for (ICConfigurationDescription CurItem : configurationDescriptions) {
-            boolean curDescNeedsSet = addLibrariesToProject(project, CurItem, AllLibrariesOriginallyUsed);
-            descNeedsSet = descNeedsSet || curDescNeedsSet;
+        for (ICConfigurationDescription curconfDesc : configurationDescriptions) {
+            Map<String, List<IPath>> foldersToChange = addLibrariesToProject(project, curconfDesc,
+                    AllLibrariesOriginallyUsed);
+            descNeedsSet = descNeedsSet || adjustProjectDescription(curconfDesc, foldersToChange);
         }
         if (descNeedsSet) {
             try {
@@ -386,8 +372,8 @@ public class Libraries {
         if (mngr != null) {
             ICProjectDescription projectDescription = mngr.getProjectDescription(affectedProject, true);
             if (projectDescription != null) {
-                ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
-                if (configurationDescription != null) {
+                ICConfigurationDescription confDesc = projectDescription.getActiveConfiguration();
+                if (confDesc != null) {
 
                     Set<String> UnresolvedIncludedHeaders = getUnresolvedProjectIncludes(affectedProject);
                     Set<String> alreadyAddedLibs = getAllLibrariesFromProject(affectedProject);
@@ -409,7 +395,7 @@ public class Libraries {
                     if (installHandler.autoInstall()) {
                         // Check if there are libraries that are not found in
                         // the installed libraries
-                        Map<String, IPath> installedLibs = getAllInstalledLibraries(configurationDescription);
+                        Map<String, IPath> installedLibs = getAllInstalledLibraries(confDesc);
                         Set<String> uninstalledIncludedHeaders = new TreeSet<>(UnresolvedIncludedHeaders);
                         uninstalledIncludedHeaders.removeAll(installedLibs.keySet());
                         if (!uninstalledIncludedHeaders.isEmpty()) {
@@ -431,14 +417,17 @@ public class Libraries {
                         }
                     }
 
-                    Map<String, IPath> installedLibs = getAllInstalledLibraries(configurationDescription);
+                    Map<String, IPath> installedLibs = getAllInstalledLibraries(confDesc);
                     installedLibs.keySet().retainAll(UnresolvedIncludedHeaders);
                     if (!installedLibs.isEmpty()) {
                         // there are possible libraries to add
                         Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
                                 + affectedProject.getName() + ": " //$NON-NLS-1$
                                 + installedLibs.keySet().toString()));
-                        if (addLibrariesToProject(affectedProject, configurationDescription, installedLibs)) {
+                        Map<String, List<IPath>> foldersToChange = addLibrariesToProject(affectedProject,
+                                installedLibs);
+
+                        if (adjustProjectDescription(confDesc, foldersToChange)) {
                             try {
                                 mngr.setProjectDescription(affectedProject, projectDescription, true, null);
 
@@ -453,6 +442,35 @@ public class Libraries {
                 }
             }
         }
+    }
+
+    public static boolean adjustProjectDescription(ICConfigurationDescription confdesc,
+            Map<String, List<IPath>> foldersToInclude) {
+        List<IPath> foldersToAddToInclude = foldersToInclude.get(INCLUDE);
+        boolean descriptionMustBeSet = Helpers.addIncludeFolder(confdesc, foldersToAddToInclude, true);
+        List<IPath> foldersToRemoveFromBuildPath = foldersToInclude.get(REMOVE);
+        if (!foldersToRemoveFromBuildPath.isEmpty()) {
+            ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
+            ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
+            for (IPath curFile : foldersToRemoveFromBuildPath) {
+                try {
+                    if (!CDataUtil.isExcluded(curFile, sourceEntries)) {
+                        sourceEntries = CDataUtil.setExcluded(curFile, true, true, sourceEntries);
+                        descriptionMustBeSet = true;
+                    }
+
+                } catch (CoreException e1) {
+                    // ignore
+                }
+            }
+            try {
+                cfgd.getConfiguration().setSourceEntries(sourceEntries);
+            } catch (Exception e) {
+                // ignore
+            }
+
+        }
+        return descriptionMustBeSet;
     }
 
     private static Map<String, String> myIncludeHeaderReplacement;

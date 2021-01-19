@@ -162,7 +162,8 @@ public class Import_Source_Folder implements IImportWizard {
 	public boolean performFinish() {
 		IProject project = this.mFolderSelectionPage.getProject();
 		try {
-			return Sketch.addCodeFolder(project, new Path(this.mFolderSelectionPage.GetLibraryFolder()));
+			Sketch.addCodeFolder(project, new Path(this.mFolderSelectionPage.GetLibraryFolder()));
+			return true;
 		} catch (CoreException e) {
 			e.printStackTrace();
 			IStatus status = new Status(IStatus.ERROR, Activator.getId(),
