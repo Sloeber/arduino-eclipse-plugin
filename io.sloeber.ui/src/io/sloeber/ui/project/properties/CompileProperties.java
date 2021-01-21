@@ -129,8 +129,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
-		return mySloeberProject.getCompileDescription(confDesc, true);
-		
+		return mySloeberProject.getCompileDescription(confDesc.getName(), true);
 	}
 
 	@Override
@@ -140,8 +139,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
-		mySloeberProject.setCompileDescription(confDesc, (CompileDescription) theObjectToStore);
-
+		mySloeberProject.setCompileDescription(confDesc.getName(), (CompileDescription) theObjectToStore);
 	}
 
 	@Override

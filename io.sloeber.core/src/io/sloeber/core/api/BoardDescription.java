@@ -1127,4 +1127,9 @@ public class BoardDescription {
         return ret;
     }
 
+    public boolean isValid() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

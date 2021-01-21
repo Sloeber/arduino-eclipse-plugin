@@ -57,7 +57,7 @@ public class UploadSketchWrapper {
 			ICConfigurationDescription confDesc) {
 
         SloeberProject sProject = SloeberProject.getSloeberProject(project, false);
-        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc, false);
+        BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
 
         String UpLoadTool = boardDescriptor.getActualUploadTool();
 		// String uploadClass = Common.getBuildEnvironmentVariable(confDesc,

@@ -57,7 +57,7 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected Object getFromSloeber(ICConfigurationDescription confDesc) {
-		return mySloeberProject.getOtherDescription(confDesc, true);
+		return mySloeberProject.getOtherDescription(confDesc.getName(), true);
 
 	}
 
@@ -68,7 +68,7 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
-		mySloeberProject.setOtherDescription(confDesc, (OtherDescription) theObjectToStore);
+		mySloeberProject.setOtherDescription(confDesc.getName(), (OtherDescription) theObjectToStore);
 
 	}
 

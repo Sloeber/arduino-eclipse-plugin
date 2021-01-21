@@ -47,7 +47,8 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 						if (sProject != null) {
 							ICConfigurationDescription activeConf = CoreModel.getDefault()
 									.getProjectDescription(curproject).getActiveConfiguration();
-							BoardDescription boardDescription = sProject.getBoardDescription(activeConf, false);
+							BoardDescription boardDescription = sProject.getBoardDescription(activeConf.getName(),
+									false);
 							String comPort = boardDescription.getUploadPort();
 							if (!comPort.isEmpty()) {
 								io.sloeber.ui.monitor.SerialConnection.add(comPort, baud);

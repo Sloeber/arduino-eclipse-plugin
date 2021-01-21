@@ -210,6 +210,20 @@
     <primaryWizard
           id="io.sloeber.eclipse.NewArduinoSketchWizard">
     </primaryWizard>
+    <wizard
+          canFinishEarly="true"
+          category="io.sloeber.eclipse.newWizards"
+          class="io.sloeber.ui.wizard.ConvertToSloeber"
+          finalPerspective="io.sloeber.application.perspective"
+          hasPages="true"
+          icon="icons/convertToSloeber.png"
+          id="io.sloeber.convert.wizard"
+          name="convert to Sloeber propject"
+          project="false">
+       <selection
+             class="org.eclipse.core.resources.IProject">
+       </selection>
+    </wizard>
  </extension>
  <extension
        point="org.eclipse.ui.propertyPages">

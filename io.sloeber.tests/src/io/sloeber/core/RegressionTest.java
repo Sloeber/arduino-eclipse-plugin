@@ -106,7 +106,7 @@ public class RegressionTest {
         }
         SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject, false);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
-        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration(), teensyBoardid, true);
+        arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration().getName(), teensyBoardid, true);
 
         Shared.waitForAllJobsToFinish();
         try {
@@ -329,6 +329,42 @@ public class RegressionTest {
     }
 
     /**
+     * Does Sloeber still compile after a configuration renamen
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void rename_Configuration() throws Exception {
+        BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
+
+        IProject theTestProject = null;
+        String projectName = "rename_Configuration";
+
+        CodeDescription codeDescriptor = CodeDescription.createDefaultIno();
+
+        NullProgressMonitor monitor = new NullProgressMonitor();
+        theTestProject = SloeberProject.createArduinoProject(projectName, null, unoBoardid, codeDescriptor,
+                new CompileDescription(), new NullProgressMonitor());
+
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+        if (Shared.hasBuildErrors(theTestProject)) {
+            fail("Failed to compile the project before config rename");
+        }
+
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(theTestProject);
+        ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+        activeConfig.setName("renamedConfig");
+        cCorePlugin.setProjectDescription(theTestProject, prjCDesc);
+
+        Shared.waitForAllJobsToFinish(); // for the indexer
+        theTestProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+        if (Shared.hasBuildErrors(theTestProject)) {
+            fail("Failed to compile the project after config rename");
+        }
+    }
+    /**
      * open and close a project should keep the compileDescription and
      * BoardDescriotion
      * 
@@ -351,8 +387,8 @@ public class RegressionTest {
         SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject, false);
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
-        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc, false);
-        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc, false);
+        BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
+        CompileDescription createdCompileDesc = sloeberDesc.getCompileDescription(confDesc.getName(), false);
 
         // close and reopen the project
         theTestProject.close(null);
@@ -366,8 +402,8 @@ public class RegressionTest {
         sloeberDesc = SloeberProject.getSloeberProject(theTestProject, false);
         projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         confDesc = projDesc.getActiveConfiguration();
-        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc, false);
-        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc, false);
+        BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
+        CompileDescription reopenedCompileDesc = sloeberDesc.getCompileDescription(confDesc.getName(), false);
 
         // check the data is equal
         boolean createBoardsDiff = !unoBoardid.equals(createdBoardDesc);
@@ -451,14 +487,16 @@ public class RegressionTest {
         SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1, false);
         ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
         ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
-        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc, false);
-        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc, false);
+        BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc.getName(), false);
+        CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc.getName(),
+                false);
 
         SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2, false);
         ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc, false);
-        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc, false);
+        BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);
+        CompileDescription proj2CreatedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc.getName(),
+                false);
 
         // get the filenames to copy
         IFile file = proj1.getFile("sloeber.cfg"); //$NON-NLS-1$
@@ -485,8 +523,9 @@ public class RegressionTest {
         proj2SloeberDesc = SloeberProject.getSloeberProject(proj2, false);
         proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         proj2ConfDesc = proj2Desc.getActiveConfiguration();
-        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc, false);
-        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc, false);
+        BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);
+        CompileDescription proj2OpenedCompileDesc = proj2SloeberDesc.getCompileDescription(proj2ConfDesc.getName(),
+                false);
 
         // check the setup was done correctly
         if (!proj1BoardDesc.equals(proj1CreatedBoardDesc)) {

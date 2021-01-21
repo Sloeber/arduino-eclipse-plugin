@@ -14,7 +14,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.SystemUtils;
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -65,7 +68,11 @@ public class Shared {
                 return true;
             }
         }
-        IPath resultPath = project.getLocation().append("Release");
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
+        ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
+
+        IPath resultPath = project.getLocation().append(activeConfig.getName());
         String projName=project.getName() ;
         String[] validOutputss=  {projName+".elf",projName+".bin",projName+".hex",projName+".exe","application.axf"};
         for(String validOutput:validOutputss) {   
