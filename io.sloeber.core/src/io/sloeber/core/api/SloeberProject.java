@@ -113,19 +113,21 @@ public class SloeberProject extends Common {
                     workspaceDesc.setAutoBuilding(false);
                     workspace.setDescription(workspaceDesc);
 
-                    String RELEASE = "Release";
-
                     // create a sloeber project
                     SloeberProject sloeberProject = new SloeberProject(project);
                     if (!sloeberProject.readConfigFromFiles()) {
+                        String RELEASE = "Release";
                         sloeberProject.setBoardDescription(RELEASE, new BoardDescription(), false);
                         sloeberProject.setCompileDescription(RELEASE, new CompileDescription());
                         sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
+                        // we failed to read from disk so we set opourselfves some values
+                        // faking the stuf is in memory
+                        sloeberProject.isInMemory = true;
                     }
-
-                    BoardDescription boardDescriptor = sloeberProject.getBoardDescription(RELEASE, true);
-                    CompileDescription compileDescriptor = sloeberProject.getCompileDescription(RELEASE, true);
-                    OtherDescription otherDesc = sloeberProject.getOtherDescription(RELEASE, true);
+                    String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
+                    BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
+                    CompileDescription compileDescriptor = sloeberProject.getCompileDescription(configName, true);
+                    OtherDescription otherDesc = sloeberProject.getOtherDescription(configName, true);
 
                     // Add the arduino code folders
                     List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(project, boardDescriptor);
@@ -393,7 +395,7 @@ public class SloeberProject extends Common {
      * @return true if the projectDesc needs to be saved
      */
 
-    private boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+    public boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
         Map<String, String> configs = getConfigs(prjCDesc);
         boolean saveProjDesc = false;
         if (isInMemory) {
@@ -432,7 +434,6 @@ public class SloeberProject extends Common {
             }
         }
         setEnvironmentVariables(getCfgKeys(configs));
-        isInMemory = true;
         return saveProjDesc;
     }
 
@@ -587,6 +588,7 @@ public class SloeberProject extends Common {
 
             }
         }
+        isInMemory = true;
         return projDescNeedsWriting;
     }
 
@@ -995,7 +997,7 @@ public class SloeberProject extends Common {
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject);
         ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
-        isInMemory = false;
+        isDirty = true;
         boolean projDescNeedsSaving = configure(projDesc, true);
         Helpers.deleteBuildFolder(myProject, activeConfig.getName());
         projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);

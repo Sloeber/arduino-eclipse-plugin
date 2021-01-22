@@ -78,6 +78,6 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         ICProjectDescription projDesc = confDesc.getProjectDescription();
         IProject project = projDesc.getProject();
         SloeberProject sloeberProject = SloeberProject.getSloeberProject(project, false);
-        sloeberProject.configure();
+        sloeberProject.configure(projDesc, false);
     }
 }
