@@ -166,18 +166,19 @@ public class SloeberProject extends Common {
 
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
+                    ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
-                    for (ICConfigurationDescription curConfigDesc : prjCDesc.getConfigurations()) {
-
-                        sloeberProject.myCompileDescriptions.put(getConfigKey(curConfigDesc), compileDescriptor);
-                        sloeberProject.myBoardDescriptions.put(getConfigKey(curConfigDesc), boardDescriptor);
-                        sloeberProject.myOtherDescriptions.put(getConfigKey(curConfigDesc), otherDesc);
-
+                    for (String curConfigName : sloeberProject.myBoardDescriptions.keySet()) {
+                        ICConfigurationDescription curConfigDesc = prjCDesc.getConfigurationByName(curConfigName);
+                        if (curConfigDesc == null) {
+                            String id = CDataUtil.genId(null);
+                            curConfigDesc = prjCDesc.createConfiguration(id, curConfigName, activeConfig);
+                        }
                         Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
 
                         String curConfigKey = getConfigKey(curConfigDesc);
                         sloeberProject.setEnvVars(curConfigKey, sloeberProject.getEnvVars(curConfigKey));
-                        configs2.put(curConfigDesc.getName(), curConfigDesc.getId());
+                        configs2.put(curConfigName, curConfigDesc.getId());
 
                     }
 
