@@ -1128,8 +1128,10 @@ public class BoardDescription {
     }
 
     public boolean isValid() {
-        // TODO Auto-generated method stub
-        return false;
+        if (myreferencingBoardsFile == null) {
+            return false;
+        }
+        return myreferencingBoardsFile.exists();
     }
 
 }
