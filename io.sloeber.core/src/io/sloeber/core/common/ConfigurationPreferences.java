@@ -162,7 +162,7 @@ public class ConfigurationPreferences {
 	}
 
 	public static String getJsonURLs() {
-		// TODO I added some code here to get easier from V3 to V4
+        // I added some code here to get easier from V3 to V4
 		// the library json url is now managed as the boards url's so it also
 		// needs to be added to the json url's
 		// this is doen in the default but people who have installed other

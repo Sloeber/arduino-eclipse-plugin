@@ -22,10 +22,6 @@
 package cc.arduino.packages;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -38,41 +34,13 @@ public class PreferencesMap extends LinkedHashMap<String, String> {
     super(table);
   }
 
-  /**
-   * Create a PreferencesMap and load the content of the file passed as
-   * argument.
-   *
-   * Is equivalent to:
-   *
-   * <pre>
-   * PreferencesMap map = new PreferencesMap();
-   * map.load(file);
-   * </pre>
-   *
-   * @param file
-   * @throws IOException
-   */
-  public PreferencesMap(File file) throws IOException {
-    super();
-    load(file);
-  }
+
 
   public PreferencesMap() {
     super();
   }
 
-  /**
-   * Parse a property list file and put kev/value pairs into the Map
-   *
-   * @param file
-   * @throws FileNotFoundException
-   * @throws IOException
-   */
-  public void load(File file) throws IOException {
-    try(FileInputStream fileInputStream = new FileInputStream(file);) {
-      load(fileInputStream);
-    }
-  }
+
 
   @SuppressWarnings("static-method")
 protected String processPlatformSuffix(String key, String suffix, boolean isCurrentPlatform) {
@@ -88,33 +56,7 @@ protected String processPlatformSuffix(String key, String suffix, boolean isCurr
     return key.substring(0, key.length() - suffix.length());
   }
 
-  /**
-   * Parse a property list stream and put key/value pairs into the Map
-   *
-   * @param input
-   * @throws IOException
-   */
-  public void load(InputStream input) throws IOException {
-	  //TOFIX see wether this code is used and if so what to do with it
-//    String[] lines = PApplet.loadStrings(input);
-//    for (String line : lines) {
-//      if (line.length() == 0 || line.charAt(0) == '#')
-//        continue;
-//
-//      int equals = line.indexOf('=');
-//      if (equals != -1) {
-//        String key = line.substring(0, equals).trim();
-//        String value = line.substring(equals + 1).trim();
-//
-//        key = processPlatformSuffix(key, ".linux", OSUtils.isLinux());
-//        key = processPlatformSuffix(key, ".windows", OSUtils.isWindows());
-//        key = processPlatformSuffix(key, ".macosx", OSUtils.isMacOS());
-//
-//        if (key != null)
-//          put(key, value);
-//      }
-//    }
-  }
+
 
   /**
    * Create a new PreferenceMap that contains all the top level pairs of the

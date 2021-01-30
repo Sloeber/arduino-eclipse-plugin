@@ -269,7 +269,6 @@ public class Shared {
     }
 
     public static String getLastFailMessage() {
-        // TODO Auto-generated method stub
         return myLastFailMessage;
     }
 

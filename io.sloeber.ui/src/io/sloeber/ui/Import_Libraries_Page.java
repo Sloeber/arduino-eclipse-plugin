@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardResourceImportPage;
 
 import io.sloeber.core.api.Sketch;
+import io.sloeber.core.common.Const;
 
 public class Import_Libraries_Page extends WizardResourceImportPage {
 
@@ -112,12 +113,12 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		return null;
 	}
 
+	@SuppressWarnings("restriction")
 	public boolean PerformFinish() {
 		// check if there is a incompatibility in the library folder name
 		// windows only
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			// TODO libraries should not be hardcoded here
-			IFolder folder = this.myProject.getFolder("libraries"); //$NON-NLS-1$
+			IFolder folder = this.myProject.getFolder(Const.LIBRARY_PATH_SUFFIX);
 			if (!folder.exists()) {
 				try {
 					folder.create(false, true, null);

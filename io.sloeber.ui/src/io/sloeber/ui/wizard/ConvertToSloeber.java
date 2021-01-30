@@ -12,17 +12,13 @@ public class ConvertToSloeber extends Wizard implements INewWizard {
 	private IProject myProject = null;
 
 	public ConvertToSloeber() {
-		// TODO Auto-generated constructor stub
-		System.out.println("ConvertToSloeber"); //$NON-NLS-1$
+		// nothing to do here
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// TODO Auto-generated method stub
 		Object firstElement = selection.getFirstElement();
 		myProject = (IProject) firstElement;
-		System.out.println("init"); //$NON-NLS-1$
-
 	}
 
 	@Override

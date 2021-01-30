@@ -71,7 +71,7 @@ public class arduinoUploader implements IRealUpload {
             return false;
         }
 
-        // TODO see whether this is still needed
+        // due needs a restart after upload
         if (boardDescr.getBoardName().startsWith("Arduino Due ")) { //$NON-NLS-1$
             ArduinoSerial.reset_Arduino_by_baud_rate(boardDescr.getUploadPort(), 115200, 100);
         }

@@ -145,7 +145,6 @@ public class InternalPackageManager extends PackageManager {
 		try {
 			Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

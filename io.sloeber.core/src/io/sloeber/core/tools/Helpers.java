@@ -257,7 +257,6 @@ public class Helpers {
             try {
                 link.delete(true, null);
             } catch (CoreException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

@@ -812,7 +812,6 @@ public class SloeberProject extends Common {
                         return ret;
                     }
                 } catch (CoreException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 if (!allowNull) {
