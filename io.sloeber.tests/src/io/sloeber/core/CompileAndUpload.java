@@ -36,6 +36,8 @@ import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP32;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.ui.monitor.SerialConnection;
@@ -118,13 +120,21 @@ public class CompileAndUpload {
 	public static void installAdditionalBoards() {
 		Preferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = {
-				"http://arduino.esp8266.com/stable/package_esp8266com_index.json",
+                ESP32.packageURL,
                 ESP8266.packageURL };
 		PackageManager.addPackageURLs(
 				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
-		if (reinstall_boards_and_libraries) {
-			PackageManager.installAllLatestPlatforms();
-		}
+        if (reinstall_boards_and_libraries) {
+            PackageManager.removeAllInstalledPlatforms();
+        }
+
+        // make sure the needed boards are available
+        ESP8266.installLatest();
+        Arduino.installLatestAVRBoards();
+        Arduino.installLatestSamDBoards();
+        Arduino.installLatestIntellCurieBoards();
+        Arduino.installLatestSamBoards();
+
 		PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 
 	}

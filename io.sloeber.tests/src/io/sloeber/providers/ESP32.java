@@ -10,7 +10,7 @@ import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class ESP32 extends MCUBoard {
 	private static final String provider = "esp32";
-	private static final String platformName = "esp23";
+	private static final String architectureName = "esp23";
     private static final String jsonFileName ="package_esp32_index.json";
     public static final String packageURL ="https://dl.espressif.com/dl/package_esp32_index.json";
     public static final String esp32ID ="esp32";
@@ -29,7 +29,7 @@ public class ESP32 extends MCUBoard {
 
 
 	public ESP32(String boardName, Map<String, String> options) {
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, provider, platformName,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, provider, architectureName,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -38,7 +38,7 @@ public class ESP32 extends MCUBoard {
 	}
 	
 	public static void installLatest() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, platformName);
+	    PackageManager.installLatestPlatform(jsonFileName,provider, architectureName);
 	}
 
 }

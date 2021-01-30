@@ -1,6 +1,6 @@
 package io.sloeber.core.api;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -80,9 +80,10 @@ public class PackageManager {
      *            if jsonFileName equals "local" the filename of the boards.txt
      *            containing the boards. otherwise the name of the package
      *            containing the board
-     * @param platformName
-     *            ignored if jsonFileName equals "local" otherwise the name of the
-     *            platform containing the board
+     * @param architectureName
+     *            ignored if jsonFileName equals "local" otherwise the architecture
+     *            name of the platform containing the board (this assumes the
+     *            architecture is the unique id for the platform)
      * @param boardID
      *            the id of the board in the boards.txt file
      * @param options
@@ -90,23 +91,23 @@ public class PackageManager {
      *            file) or null for defaults
      * @return The class BoardDescriptor or null
      */
-    static public BoardDescription getBoardDescriptor(String jsonFileName, String packageName, String platformName,
+    static public BoardDescription getBoardDescriptor(String jsonFileName, String packageName, String architectureName,
             String boardID, Map<String, String> options) {
         if (jsonFileName.equals("local")) { //$NON-NLS-1$
             return new BoardDescription(new File(packageName), boardID, options);
         }
-        return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, platformName, boardID, options);
+        return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, architectureName, boardID, options);
     }
 
     static private BoardDescription getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
-            String platformName, String boardID, Map<String, String> options) {
+            String architectureName, String boardID, Map<String, String> options) {
 
         Package thePackage = InternalPackageManager.getPackage(jsonFileName, packageName);
         if (thePackage == null) {
             // fail("failed to find package:" + this.mPackageName);
             return null;
         }
-        ArduinoPlatform platform = thePackage.getLatestPlatform(platformName, true);
+        ArduinoPlatform platform = thePackage.getLatestPlatform(architectureName, true);
         if (platform == null) {
             // fail("failed to find platform " + this.mPlatform + " in
             // package:" + this.mPackageName);
@@ -182,7 +183,7 @@ public class PackageManager {
         installsubsetOfLatestPlatforms(0, 100000);
     }
 
-    public static void installLatestPlatform(String JasonName, String packageName, String platformName) {
+    public static void installLatestPlatform(String JasonName, String packageName, String architectureName) {
         if (!isReady()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
             return;
@@ -190,7 +191,7 @@ public class PackageManager {
         platformsDirty = true;
         Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
         if (curPackage != null) {
-            ArduinoPlatform curPlatform = curPackage.getLatestPlatform(platformName, false);
+            ArduinoPlatform curPlatform = curPackage.getLatestPlatform(architectureName, false);
             if (curPlatform != null) {
                 NullProgressMonitor monitor = new NullProgressMonitor();
                 curPlatform.install(monitor);
@@ -198,7 +199,7 @@ public class PackageManager {
             }
         }
         Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                "failed to find " + JasonName + " " + packageName + " " + platformName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public static void addPrivateHardwarePath(String newHardwarePath) {

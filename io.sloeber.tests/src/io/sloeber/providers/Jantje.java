@@ -1,6 +1,6 @@
 package io.sloeber.providers;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -14,8 +14,9 @@ public class Jantje extends MCUBoard {
 
 	private static final String provider = "Jantje";
 	private static final String packageName = "Jantje";
-	private static final String localDebugPlatformName = "Arduino avr Boards (local debug)";
+    private static final String localDebugArchitectureName = "pc";
     private static final String jsonFileName ="package_jantje_index.json";
+    // TODO check the line below as it seems wrong
     public static final String jsonURL ="http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
 
@@ -23,7 +24,7 @@ public class Jantje extends MCUBoard {
 	public Jantje(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName,packageName,localDebugPlatformName ,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName,packageName,localDebugArchitectureName ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -52,7 +53,7 @@ public class Jantje extends MCUBoard {
     }
 
     public static MCUBoard[] getAllBoards() {
-    	//hardcode this stuff now because I want to release 4.3.1
+        // TOFIX hardcode this stuff now because I want to release 4.3.1
     	//shoulds be something like 
         //return PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName() , options);
     	MCUBoard[] boards = {  new Jantje("yun"),new Jantje("uno"),new Jantje("diecimila"),new Jantje("nano"),new Jantje("mega"),new Jantje("megaADK"),new Jantje("leonardo"),new Jantje("micro"),
@@ -62,7 +63,7 @@ public class Jantje extends MCUBoard {
     }
     
 	public static void installLatestLocalDebugBoards() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, localDebugPlatformName);
+	    PackageManager.installLatestPlatform(jsonFileName,provider, localDebugArchitectureName);
 	}
 
 

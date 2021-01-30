@@ -10,7 +10,7 @@ import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class ESP8266 extends MCUBoard {
 	private static final String provider = "esp8266";
-	private static final String platformName = "esp8266";
+	private static final String architectureName = "esp8266";
     private static final String jsonFileName ="package_esp8266com_index.json";
     public static final String packageURL ="http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
@@ -49,7 +49,7 @@ public class ESP8266 extends MCUBoard {
 
 
 	public ESP8266(String boardName, Map<String, String> options) {
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, provider, platformName,
+		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, provider, architectureName,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -58,7 +58,7 @@ public class ESP8266 extends MCUBoard {
 	}
 	
 	public static void installLatest() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, platformName);
+	    PackageManager.installLatestPlatform(jsonFileName,provider, architectureName);
 	}
 
 }

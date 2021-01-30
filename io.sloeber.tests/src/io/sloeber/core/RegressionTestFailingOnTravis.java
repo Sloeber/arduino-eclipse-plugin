@@ -1,6 +1,6 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,11 +49,11 @@ public class RegressionTestFailingOnTravis {
 	public void redirectedJson() {
 		//this board references to arduino avr so install that one to
 	    Arduino.installLatestAVRBoards();
-		PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2","Talk2 AVR Boards");
+        PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
 		BoardDescription boardid = PackageManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
-				"Talk2 AVR Boards", "whispernode", options);
+                "avr", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");
 			return;
