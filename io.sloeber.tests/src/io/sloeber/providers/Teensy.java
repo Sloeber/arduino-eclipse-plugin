@@ -1,6 +1,6 @@
 package io.sloeber.providers;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -81,7 +81,8 @@ public class Teensy extends MCUBoard {
 			break;
 		}
 
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor("local", MySystem.getTeensyBoard_txt(), "ignored",
+        this.myBoardDescriptor = PackageManager.getBoardDescription(PackageManager.LOCAL, MySystem.getTeensyBoard_txt(),
+                "ignored",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -137,7 +138,7 @@ public class Teensy extends MCUBoard {
 	}
 	
 	public static MCUBoard[] getAllBoards() {
-		// hardcode this stuff now because I want to release 4.3.1
+        // TOFIX hardcode this stuff now because I want to release 4.3.1
 		// shoulds be something like
 		// return
 		// PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName()

@@ -24,7 +24,7 @@ public class Jantje extends MCUBoard {
 	public Jantje(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName,packageName,localDebugArchitectureName ,
+		this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName,packageName,localDebugArchitectureName ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

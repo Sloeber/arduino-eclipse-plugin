@@ -52,7 +52,7 @@ public class RegressionTestFailingOnTravis {
         PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
-		BoardDescription boardid = PackageManager.getBoardDescriptor("package_talk2.wisen.com_index.json", "Talk2",
+		BoardDescription boardid = PackageManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
                 "avr", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");

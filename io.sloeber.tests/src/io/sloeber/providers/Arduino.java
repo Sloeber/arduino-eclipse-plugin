@@ -166,7 +166,7 @@ public class Arduino extends MCUBoard {
 
 
 	private Arduino(String providerName, String architectureName, String boardName) {
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, providerName, architectureName,
+        this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName, providerName, architectureName,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

@@ -1,5 +1,6 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.Messages.*;
 import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
@@ -35,7 +36,6 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
 import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
@@ -59,8 +59,7 @@ import io.sloeber.core.txt.BoardTxtFile;
  */
 public class PackageManager {
 
-    private static final String FILE = Messages.FILE;
-    private static final String FOLDER = Messages.FOLDER;
+    public static final String LOCAL = "local"; //$NON-NLS-1$
     protected static List<PackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
     private static boolean platformsDirty = true;// reset global variables at startup
@@ -68,7 +67,7 @@ public class PackageManager {
     private static HashMap<String, String> myWorkbenchEnvironmentVariables = new HashMap<>();
 
     /**
-     * Gets the board descriptor based on the information provided. If
+     * Gets the board description based on the information provided. If
      * jsonFileName="local" the board is assumed not to be installed by the boards
      * manager. Otherwise the boardsmanager is queried to find the board descriptor.
      * In this case the latest installed board will be returned
@@ -91,9 +90,9 @@ public class PackageManager {
      *            file) or null for defaults
      * @return The class BoardDescriptor or null
      */
-    static public BoardDescription getBoardDescriptor(String jsonFileName, String packageName, String architectureName,
+    static public BoardDescription getBoardDescription(String jsonFileName, String packageName, String architectureName,
             String boardID, Map<String, String> options) {
-        if (jsonFileName.equals("local")) { //$NON-NLS-1$
+        if (LOCAL.equals(jsonFileName)) {
             return new BoardDescription(new File(packageName), boardID, options);
         }
         return getNewestBoardIDFromBoardsManager(jsonFileName, packageName, architectureName, boardID, options);
@@ -129,7 +128,7 @@ public class PackageManager {
 
     public static void setPackageURLs(HashSet<String> packageUrls, boolean forceDownload) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         ConfigurationPreferences.setJsonURLs(packageUrls);
@@ -138,7 +137,7 @@ public class PackageManager {
 
     public static void removePackageURLs(Set<String> packageUrlsToRemove) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         InternalPackageManager.removePackageURLs(packageUrlsToRemove);
@@ -157,7 +156,7 @@ public class PackageManager {
      */
     public static void installsubsetOfLatestPlatforms(int fromIndex, int toIndex) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         platformsDirty = true;
@@ -185,7 +184,7 @@ public class PackageManager {
 
     public static void installLatestPlatform(String JasonName, String packageName, String architectureName) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         platformsDirty = true;
@@ -243,7 +242,7 @@ public class PackageManager {
         }
         if (boardFiles.size() == 0) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                    Messages.Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
+                    Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
             return null;
         }
         return boardFiles.toArray(new File[boardFiles.size()]);
@@ -255,7 +254,7 @@ public class PackageManager {
             if (a == null) {
                 if (!myHasbeenLogged) {
                     Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-                            Messages.Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()), null));
+                            Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()), null));
                     myHasbeenLogged = true;
                 }
                 return;
@@ -569,7 +568,7 @@ public class PackageManager {
 
     public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
         if (!isReady()) {
-            status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, null));
+            status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
             return status;
         }
         if (!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
@@ -617,7 +616,7 @@ public class PackageManager {
      */
     public static void onlyKeepLatestPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         InternalPackageManager.onlyKeepLatestPlatforms();
@@ -626,7 +625,7 @@ public class PackageManager {
 
     public static void setPrivateHardwarePaths(String[] hardWarePaths) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         InstancePreferences.setPrivateHardwarePaths(hardWarePaths);
@@ -690,7 +689,7 @@ public class PackageManager {
             packageIndices.add(index);
         } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, Activator.getId(),
-                    Messages.Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
+                    Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
             jsonFile.delete();// Delete the file so it stops damaging
         }
     }
@@ -822,7 +821,7 @@ public class PackageManager {
      */
     public static void setJsonURLs(String[] newJsonUrls) {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
 
@@ -858,7 +857,7 @@ public class PackageManager {
 
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.BoardsManagerIsBussy, new Exception()));
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
         try {

@@ -49,7 +49,7 @@ public class ESP8266 extends MCUBoard {
 
 
 	public ESP8266(String boardName, Map<String, String> options) {
-		this.myBoardDescriptor = PackageManager.getBoardDescriptor(jsonFileName, provider, architectureName,
+		this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName, provider, architectureName,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
