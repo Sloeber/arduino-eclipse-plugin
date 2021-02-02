@@ -301,9 +301,6 @@ public class Serial implements SerialPortEventListener {
 	}
     }
 
-    // TODO Remove unused code found by UCDetector
-    // public void setup() {// JABA is not going to add code
-    // }
 
     // needed to fill viewers in jfases
     @Override

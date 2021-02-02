@@ -151,15 +151,7 @@ public class ExternalCommandLauncher {
 		this.myRunLock = this;
 		String[] commandParts = command
 				.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
-		//TODO do we really want to remove the quotes?
-        // for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
-        // if (commandParts[curCommand].startsWith("\"") //$NON-NLS-1$
-        // && commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$
-        // commandParts[curCommand] = commandParts[curCommand].substring(1,
-        // commandParts[curCommand].length() - 1);
-        // }
-        //
-        // }
+
 		myProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
 		myProcessBuilder.redirectErrorStream(true);
 	}
