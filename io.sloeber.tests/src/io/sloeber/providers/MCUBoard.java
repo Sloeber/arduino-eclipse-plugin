@@ -69,14 +69,11 @@ public  class MCUBoard {
 			return getID();
 		}
 
-	@SuppressWarnings({ "static-method", "unused" })
+        @SuppressWarnings({ "static-method" })
 	public Map<String, String> getBoardOptions(Examples example) {
 		Map<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		return ret;
 	}
-
-
-
 
 
 }
