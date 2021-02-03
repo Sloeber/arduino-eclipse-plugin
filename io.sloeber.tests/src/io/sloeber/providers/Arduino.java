@@ -177,6 +177,7 @@ public class Arduino extends MCUBoard {
 		myAttributes.serial1 = supportSerial1List().contains(boardName);
 		myAttributes.keyboard = supportKeyboardList().contains(boardName);
 		myAttributes.wire1 = supportWire1List().contains(boardName);
+        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardName);
 
 	}
 
@@ -185,6 +186,13 @@ public class Arduino extends MCUBoard {
 		ret.add("zero");
 		return ret;
 	}
+
+    static List<String> doesNotSupportbuildInLed() {
+        List<String> ret = new LinkedList<>();
+        ret.add("robotControl");
+        ret.add("robotMotor");
+        return ret;
+    }
 
 	static List<String> supportSerial1List() {
 		List<String> ret = new LinkedList<>();

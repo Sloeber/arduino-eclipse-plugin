@@ -10,6 +10,7 @@ public class BoardAttributes {
     public boolean mouse = false;
     public boolean wire1 = false;
     public boolean rawHID = false;
+    public boolean buildInLed = true;
     /*
      * Only a very rara selection of boards supports input_pulldown as pin mode
      */
@@ -42,6 +43,7 @@ public class BoardAttributes {
         ret = ret && matches(example.inputPullDown, inputPullDown);
         ret = ret && matches(example.mo_mcu, mo_mcu);
         ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
+        ret = ret && matches(example.buildInLed, buildInLed);
         if (example.boardName != null) {
             ret = ret && example.boardName.equals(boardName);
         }
@@ -64,6 +66,7 @@ public class BoardAttributes {
         BoardAttributes ret = new BoardAttributes();
         // fields that need a binary and
         ret.worksOutOfTheBox = worksOutOfTheBox && or.worksOutOfTheBox;
+        ret.buildInLed = buildInLed && or.buildInLed;
         // fields that can do with or
         ret.serial = serial || or.serial;
         ret.rawHID = rawHID || or.rawHID;
@@ -78,6 +81,7 @@ public class BoardAttributes {
         ret.teensy = teensy || or.teensy;
         ret.mo_mcu = mo_mcu || or.mo_mcu;
         ret.esp8266_mcu = esp8266_mcu || or.esp8266_mcu;
+
         // other special fields
         if (boardName == null) {
             ret.boardName = or.boardName;

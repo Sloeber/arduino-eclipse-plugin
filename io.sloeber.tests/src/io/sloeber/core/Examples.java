@@ -38,6 +38,7 @@ public class Examples {
 		myRequiredBoardAttributes.boardName = getRequiredBoardID(myFQN);
 		myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
 		myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
+        myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
 		myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibName()));
 	}
 
