@@ -61,14 +61,17 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 			"https://redbearlab.github.io/arduino/package_redbearlab_index.json",
 			"http://drazzy.com/package_drazzy.com_index.json",
 			// confirmed 2020 03 09 version 25 12 17
-			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json", };
+			"https://raw.githubusercontent.com/avandalen/SAM15x15/master/package_avdweb_nl_index.json", 
+			
+			// uses busybox on windows so command line issues and on Linux the all in one archive build fails
+			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
+			};
 	private static final String[] packageUrlsToIgnoreonWindows = {
 			// following packages did not work in the arduino ide on windows at last test
 			// confirmed 220 03 09 was version 1.0
 			"https://ardhat.github.io/ardhat-board-support/arduino/package_ardhat_index.json",
 
-			// uses busybox so command line issues I think
-			"https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json",
+
 
 	};
 	private static final String[] packageUrlsToIgnoreOnLinux = {
@@ -129,6 +132,9 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
 			// folder casing problem
 			"LilyPad LilyMini",
+			
+			//linkerscript file name casing problem; github code is old
+			"DFRduino M0 MainBoard",
 
 	};
 	private static final String[] packageUrlsFromThirthPartyWebPage = {
