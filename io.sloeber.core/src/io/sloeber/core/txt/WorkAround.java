@@ -38,7 +38,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 13 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 15 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -126,7 +126,7 @@ public class WorkAround extends Const {
                 String correctPROD = " \"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\" ";
                 String correctBOARD = " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ";
 
-                if (SystemUtils.IS_OS_WINDOWS) {
+ //               if (SystemUtils.IS_OS_WINDOWS) {
                     // replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
                     // with circuitplay32u4cat.build.usb_manufacturer=Adafruit
                     boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
@@ -136,11 +136,11 @@ public class WorkAround extends Const {
                     boardsTXT = boardsTXT.replaceAll(" ['\\\"]?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+?)\\\\?\\\"[\"']? ",
                             " \\\"$1=\\\\\\\"$2\\\\\\\"\\\" ");
 
-                } else {
-                    correctMAN = " '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ";
-                    correctPROD = " '-DUSB_PRODUCT=\"{build.usb_product}\" '";
-                    correctBOARD = " '-DARDUINO_BOARD=\"{build.board}\"' ";
-                }
+//                } else {
+//                    correctMAN = " '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ";
+//                    correctPROD = " '-DUSB_PRODUCT=\"{build.usb_product}\" '";
+//                    correctBOARD = " '-DARDUINO_BOARD=\"{build.board}\"' ";
+//                }
                 // some providers put -DUSB_PRODUCT={build.usb_product} in boards.txt
                 boardsTXT = boardsTXT.replace(" \"-DUSB_MANUFACTURER={build.usb_manufacturer}\" ", correctMAN);
                 boardsTXT = boardsTXT.replace(" \"-DUSB_PRODUCT={build.usb_product}\" ", correctPROD);
@@ -284,24 +284,36 @@ public class WorkAround extends Const {
                     platformTXT = platformTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*",
                             "\"$1=\\\\\"$2\\\\\"\"");
 
-                    // Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}"
-                    // "-DUSB_PRODUCT={build.usb_product}"
-                    // is used fi LinKit smart
-                    platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"",
-                            "\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
-                    platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"",
-                            "\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
-                    platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
-                            " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
-
-                } else {
-                    platformTXT = platformTXT.replace(" -DUSB_MANUFACTURER={build.usb_manufacturer} ",
-                            " '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
-                    platformTXT = platformTXT.replace(" -DUSB_PRODUCT={build.usb_product} ",
-                            " '-DUSB_PRODUCT=\"{build.usb_product}\" '");
-                    platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
-                            " '-DARDUINO_BOARD=\"{build.board}\"' ");
+//                    // Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}"
+//                    // "-DUSB_PRODUCT={build.usb_product}"
+//                    // is used fi LinKit smart
+//                    platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"",
+//                            "\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
+//                    platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"",
+//                            "\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
+//                    platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
+//                            " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
+//
+//                } else {
+//                    platformTXT = platformTXT.replace(" -DUSB_MANUFACTURER={build.usb_manufacturer} ",
+//                            " '-DUSB_MANUFACTURER=\"{build.usb_manufacturer}\"' ");
+//                    platformTXT = platformTXT.replace(" -DUSB_PRODUCT={build.usb_product} ",
+//                            " '-DUSB_PRODUCT=\"{build.usb_product}\" '");
+//                    platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
+//                            " '-DARDUINO_BOARD=\"{build.board}\"' ");
                 }
+                
+                // Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}"
+                // "-DUSB_PRODUCT={build.usb_product}"
+                // is used fi LinKit smart
+                platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"",
+                        "\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
+                platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"",
+                        "\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
+                platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
+                        " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
+                
+                
                 platformTXT = platformTXT.replace("{", "${");
                 // Arduino zero openocd script uses { as parameter delimiter for program
                 platformTXT = platformTXT.replace("program ${${", "program {${");
