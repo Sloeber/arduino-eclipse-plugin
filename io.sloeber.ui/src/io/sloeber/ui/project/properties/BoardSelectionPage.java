@@ -426,7 +426,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
-		mySloeberProject.setBoardDescription(confDesc.getName(), (BoardDescription) theObjectToStore, false);
+		mySloeberProject.setBoardDescription(confDesc.getName(), (BoardDescription) theObjectToStore, true);
 
 	}
 
