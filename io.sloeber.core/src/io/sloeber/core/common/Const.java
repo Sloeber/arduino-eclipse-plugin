@@ -110,6 +110,10 @@ public class Const {
 
 	public static final String SLOEBER_OBJCOPY = ENV_KEY_SLOEBER_START + "objcopy";
 
+	public static final String AVR = "avr";
+	public static final String SAM = "sam";
+	public static final String SAMD = "samd";
+
 
 
 

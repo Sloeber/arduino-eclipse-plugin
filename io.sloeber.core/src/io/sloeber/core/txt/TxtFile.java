@@ -156,7 +156,7 @@ public class TxtFile extends Const {
         IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
         String architecture = platformFile.removeLastSegments(1).lastSegment();
         if (architecture == null) {// for error conditions
-            architecture = "avr"; //$NON-NLS-1$
+            architecture = Const.AVR; 
         }
         if (architecture.contains(Const.DOT)) { // This is a version number so
             // package

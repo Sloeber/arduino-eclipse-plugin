@@ -881,11 +881,37 @@ public class PackageManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
+        ArduinoPlatform latestAvrPlatform=null;
+        ArduinoPlatform latestSamdPlatform=null;
+        ArduinoPlatform latestSamPlatform=null;
         for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
             Package pkg = curPlatform.getParent();
             if (pkg != null) {
                 myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
+                if(Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())){
+                switch (curPlatform.getArchitecture()) {
+                case Const.AVR:
+                	latestAvrPlatform=curPlatform;
+                	break;
+                case Const.SAM:
+                	latestSamPlatform=curPlatform;
+                	break;
+                case Const.SAMD:
+                	latestSamdPlatform=curPlatform;
+                	break;
+                }            	
+                }
             }
+        }
+
+        if( latestSamdPlatform!=null) {
+        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
+        }
+        if( latestSamPlatform!=null) {
+        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamPlatform, false));
+        }
+        if( latestAvrPlatform!=null) {
+        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
         }
         platformsDirty = false;
         return myWorkbenchEnvironmentVariables;
