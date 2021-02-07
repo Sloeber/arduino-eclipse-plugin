@@ -38,7 +38,7 @@ public class IndexerController extends IndexerSetupParticipant  {
 		fProjects.add(project);
 		getIndexController();
 	}
-	public static void Index(IProject project) {
+	public static void index(IProject project) {
 		Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),"index "+project.getName())); //$NON-NLS-1$
 		fProjects.remove(project);
 		ICProject cProject = CoreModel.getDefault().getCModel().getCProject(project.getName());

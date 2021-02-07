@@ -191,7 +191,7 @@ public class SloeberProject extends Common {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                             "Project conversion failed: ", e)); //$NON-NLS-1$
                 }
-                IndexerController.Index(project);
+                IndexerController.index(project);
             }
 
         };
@@ -325,7 +325,7 @@ public class SloeberProject extends Common {
                 }
                 Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
                         "internal creation of project is done: " + realProjectName)); //$NON-NLS-1$
-                IndexerController.Index(newProjectHandle);
+                IndexerController.index(newProjectHandle);
             }
         };
 
@@ -575,18 +575,11 @@ public class SloeberProject extends Common {
 
         } else {
 
-            // no config files exist. try to save the day
-            if (IndexerController.isPosponed(myProject)) {
-                Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
-                        "Trying to get the configuration during project creation? This should not happen!!")); //$NON-NLS-1$
-            } else {
-                // Maybe this is a old Sloeber project with the data in the eclipse build
-                // environment variables
-                readConfigFromCDT(prjCDesc, prjDescWritable);
-
+            // Maybe this is a old Sloeber project with the data in the eclipse build
+            // environment variables
+            if (readConfigFromCDT(prjCDesc, prjDescWritable)) {
                 myNeedToPersist = true;
                 myNeedsClean = true;
-
             }
         }
         isInMemory = true;

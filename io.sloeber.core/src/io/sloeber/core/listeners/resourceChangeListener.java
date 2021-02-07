@@ -31,10 +31,29 @@ public class resourceChangeListener implements IResourceChangeListener {
         IResourceDelta rootDelta = event.getDelta();
         for (IResourceDelta projectDelta : rootDelta.getAffectedChildren()) {
             IResourceDelta sloeberCfgDelta = projectDelta.findMember(new Path("sloeber.cfg"));
-            if (sloeberCfgDelta != null)
+            if (sloeberCfgDelta != null) {
                 if (sloeberCfgDelta.getKind() != IResourceDelta.REMOVED) {
-                    changedSloeberCfgFiles.add(sloeberCfgDelta.getResource().getProject());
+                    IProject iProject = sloeberCfgDelta.getResource().getProject();
+                    // stop the indexer
+                    IndexerController.doNotIndex(iProject);
+                    // log to process later
+                    changedSloeberCfgFiles.add(iProject);
                 }
+            } else {
+                // it is not a new type sloeber project check wether it is an old type sloeber
+                // project
+                IResourceDelta cProjectDelta = projectDelta.findMember(new Path(".cproject"));
+                if (cProjectDelta != null)
+                    if (projectDelta.getFlags() == IResourceDelta.OPEN) {
+                        // as it is a open of a cdt project assume it is a sloeber project.
+                        // We will find out later if not
+                        IProject iProject = cProjectDelta.getResource().getProject();
+                        // stop the indexer
+                        IndexerController.doNotIndex(iProject);
+                        // log to process later
+                        changedSloeberCfgFiles.add(iProject);
+                    }
+            }
         }
 
         // no sloeber.cfg files have been modified
@@ -51,14 +70,16 @@ public class resourceChangeListener implements IResourceChangeListener {
                     @Override
                     public void run(IProgressMonitor monitor) throws CoreException {
                         for (IProject curProject : changedSloeberCfgFiles) {
-                            SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject, false);
-                            if (curSloeberProject == null) {
-                                // this is not a sloeber project;
-                                //make it one?
+                            if (curProject.isOpen()) {
+                                SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject, false);
+                                if (curSloeberProject == null) {
+                                    // this is not a sloeber project;
+                                    // make it one?
+                                } else {
+                                    curSloeberProject.sloeberCfgChanged();
+                                }
                             }
-                            else{
-                                curSloeberProject.sloeberCfgChanged();
-                            }
+                            IndexerController.index(curProject);
                         }
                     }
                 };

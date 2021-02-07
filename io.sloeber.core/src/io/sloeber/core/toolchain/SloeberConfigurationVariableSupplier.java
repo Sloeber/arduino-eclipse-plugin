@@ -19,6 +19,7 @@ import io.sloeber.core.api.SloeberProject;
 public class SloeberConfigurationVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
     // variables per configuration
     private Map<String, Map<String, String>> myConfigValues = new HashMap<>();
+    private boolean myIsConfigurationBussy = false;
 
     @Override
     public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
@@ -74,10 +75,16 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
             // we have some data; asume it is correct
             return;
         }
+        if (myIsConfigurationBussy) {
+            // We are already configurating. Don't go in an endless loop
+            return;
+        }
+        myIsConfigurationBussy = true;
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
         ICProjectDescription projDesc = confDesc.getProjectDescription();
         IProject project = projDesc.getProject();
         SloeberProject sloeberProject = SloeberProject.getSloeberProject(project, false);
         sloeberProject.configure(projDesc, false);
+        myIsConfigurationBussy = false;
     }
 }
