@@ -1,13 +1,17 @@
 package io.sloeber.core;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.junit.Before;
 import org.junit.Test;
+
+import io.sloeber.core.api.Preferences;
+import io.sloeber.providers.Arduino;
 
 /**
  * this test assumes it is stared in a clean workspace and not in the UI thread
@@ -26,6 +30,16 @@ public class UpgradeTest {
      * 
      * @throws Exception
      */
+    @Before
+    public void setup() {
+        // stop bonjour as it clutters the console log
+        Preferences.setUseBonjour(false);
+        Shared.waitForAllJobsToFinish();
+        // TOFIX: this will have to change into a specific version
+        // or we will have to add the install based on stored data
+        Arduino.installLatestAVRBoards();
+        Shared.waitForAllJobsToFinish();
+    }
 
     @Test
     public void upgradeSingleConfigProjectFromVersion4_3_3() throws Exception {
