@@ -521,10 +521,8 @@ public class SloeberProject extends Common {
      */
     private boolean readConfigFromCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
         boolean foundAValidConfig = false;
-        // Maybe this is a old Sloeber project with the data in the eclipse build
+        // Check if this is a old Sloeber project with the data in the eclipse build
         // environment variables
-        myNeedToPersist = true;
-        myNeedsClean = true;
         for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
 
             BoardDescription boardDesc = BoardDescription.getFromCDT(confDesc);
