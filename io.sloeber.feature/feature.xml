@@ -2,7 +2,7 @@
 <feature
       id="io.sloeber.feature"
       label="%featureName"
-      version="4.3.3.qualifier"
+      version="4.3.4.qualifier"
       provider-name="%provider">
 
    <description url="http://sloeber.io">

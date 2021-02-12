@@ -4,7 +4,7 @@
 	<parent>
         <groupId>com.github.brodykenrick.arduino-eclipse-plugin</groupId>
 		<artifactId>io.sloeber.parent</artifactId>
-		<version>4.3.3-SNAPSHOT</version>
+		<version>4.3.4-SNAPSHOT</version>
         <relativePath>../io.sloeber.parent</relativePath>
 	</parent>
 
