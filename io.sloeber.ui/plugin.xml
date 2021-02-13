@@ -218,7 +218,7 @@
           hasPages="true"
           icon="icons/convertToSloeber.png"
           id="io.sloeber.convert.wizard"
-          name="convert to Sloeber propject"
+          name="Convert to Sloeber project"
           project="false">
        <selection
              class="org.eclipse.core.resources.IProject">
