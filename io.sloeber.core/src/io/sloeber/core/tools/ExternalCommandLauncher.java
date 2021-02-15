@@ -151,6 +151,19 @@ public class ExternalCommandLauncher {
 		this.myRunLock = this;
 		String[] commandParts = command
 				.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+		// Remove quotes for Unix systems
+		String os = System.getProperty("os.name").toLowerCase();
+		if(os.indexOf("nix") >= 0 || 
+				os.indexOf("nux") >= 0 || 
+				os.indexOf("aix") > 0) {
+			for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
+				if (commandParts[curCommand].startsWith("\"") //$NON-NLS-1$
+						&& commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$
+					commandParts[curCommand] = commandParts[curCommand].substring(1,
+							commandParts[curCommand].length() - 1);
+				}
+			}
+		}
 
 		myProcessBuilder = new ProcessBuilder(Arrays.asList(commandParts));
 		myProcessBuilder.redirectErrorStream(true);
