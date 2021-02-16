@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -418,6 +419,7 @@ public class SloeberProject extends Common {
             }
             return saveProjDesc;
         }
+
         // first read the sloeber files in memory
         saveProjDesc = readConfig(prjCDesc, prjDescWritable);
         if (myNeedToPersist || isDirty) {
@@ -528,7 +530,7 @@ public class SloeberProject extends Common {
             BoardDescription boardDesc = BoardDescription.getFromCDT(confDesc);
             CompileDescription compileDescription = CompileDescription.getFromCDT(confDesc);
             OtherDescription otherDesc = OtherDescription.getFromCDT(confDesc);
-            if (boardDesc.isValid()) {
+            if (boardDesc.getReferencingBoardsFile() != null) {
                 foundAValidConfig = true;
                 myBoardDescriptions.put(getConfigKey(confDesc), boardDesc);
                 myCompileDescriptions.put(getConfigKey(confDesc), compileDescription);
@@ -663,7 +665,7 @@ public class SloeberProject extends Common {
      * @param project
      *            the project to store the data for
      */
-    private void createSloeberConfigFiles(Map<String, String> configs) {
+    private synchronized void createSloeberConfigFiles(Map<String, String> configs) {
 
         Map<String, String> configVars = new TreeMap<>();
         Map<String, String> versionVars = new TreeMap<>();
@@ -912,7 +914,7 @@ public class SloeberProject extends Common {
     }
 
     private IFile getConfigVersionFile() {
-        return myProject.getFile("sloeber.cfg"); //$NON-NLS-1$
+        return myProject.getFile(SLOEBER_CFG);
     }
 
     private IFile getConfigLocalFile() {
