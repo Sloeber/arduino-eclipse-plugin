@@ -71,6 +71,7 @@ public class Const {
 	public static final String LIBRARY_PATH_SUFFIX = "libraries";
 	public static final String ARDUINO_VARIANT_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + VARIANT;
 	public static final String ARDUINO_CODE_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + CORE;
+    public static final String SLOEBER_CFG = "sloeber.cfg";
 
 	// Environment variable stuff
     public static final String ENV_KEY_SLOEBER_START = "sloeber" + DOT;

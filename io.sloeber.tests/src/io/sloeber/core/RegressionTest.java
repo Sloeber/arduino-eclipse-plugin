@@ -1,5 +1,6 @@
 package io.sloeber.core;
 
+import static io.sloeber.core.common.Const.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -499,10 +500,10 @@ public class RegressionTest {
                 false);
 
         // get the filenames to copy
-        IFile file = proj1.getFile("sloeber.cfg"); //$NON-NLS-1$
+        IFile file = proj1.getFile(SLOEBER_CFG);
         File proj1SloeberFile = file.getLocation().toFile();
 
-        file = proj2.getFile("sloeber.cfg"); //$NON-NLS-1$
+        file = proj2.getFile(SLOEBER_CFG);
         File proj2SloeberFile = file.getLocation().toFile();
 
         // close and reopen the project
