@@ -10,6 +10,7 @@ import java.net.URL;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -187,7 +188,8 @@ public class Activator extends Plugin {
 		singCoreModel.addCProjectDescriptionListener(new ConfigurationChangeListener(),
                 CProjectDescriptionEvent.ABOUT_TO_APPLY);
 
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(myResourceChangelistener,IResourceChangeEvent.POST_CHANGE);
+
 
 	}
 
@@ -240,7 +242,7 @@ public class Activator extends Plugin {
 				if (InstancePreferences.useBonjour()) {
 					SloeberNetworkDiscovery.start();
 				}
-				registerListeners();
+                registerListeners();
 				return Status.OK_STATUS;
 			}
 

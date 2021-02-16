@@ -264,7 +264,7 @@ public class Common extends Const {
      */
     static public String getOldWayEnvVar(ICConfigurationDescription confDesc, String envName) {
         return getBuildEnvironmentVariable(confDesc, envName,
-                getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, false), false);
+                getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, true), true);
     }
 
 

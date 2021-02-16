@@ -1,7 +1,6 @@
 package io.sloeber.core.api;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -580,6 +579,7 @@ public class SloeberProject extends Common {
             if (readConfigFromCDT(prjCDesc, prjDescWritable)) {
                 myNeedToPersist = true;
                 myNeedsClean = true;
+                projDescNeedsWriting = true;
             }
         }
         isInMemory = true;
@@ -667,6 +667,13 @@ public class SloeberProject extends Common {
      */
     private synchronized void createSloeberConfigFiles(Map<String, String> configs) {
 
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        if (workspace.isTreeLocked()) {
+            // we cant save now do it later
+            myNeedToPersist = true;
+            return;
+        }
+
         Map<String, String> configVars = new TreeMap<>();
         Map<String, String> versionVars = new TreeMap<>();
 
@@ -711,15 +718,17 @@ public class SloeberProject extends Common {
         try {
             storeConfigurationFile(getConfigVersionFile(), versionVars);
             storeConfigurationFile(getConfigLocalFile(), configVars);
-        } catch (CoreException e) {
+            myNeedToPersist = false;
+        } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
                     "failed to save the sloeber config files", e)); //$NON-NLS-1$
+            myNeedToPersist = true;
         }
-        myNeedToPersist = false;
+
 
     }
 
-    private static void storeConfigurationFile(IFile file, Map<String, String> vars) throws CoreException {
+    private static void storeConfigurationFile(IFile file, Map<String, String> vars) throws Exception {
         String content = EMPTY;
         for (Entry<String, String> curLine : vars.entrySet()) {
             content += curLine.getKey() + '=' + curLine.getValue() + '\n';

@@ -1,5 +1,7 @@
 package io.sloeber.core.listeners;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
@@ -30,7 +32,7 @@ public class resourceChangeListener implements IResourceChangeListener {
         final ArrayList<IProject> changedSloeberCfgFiles = new ArrayList<>();
         IResourceDelta rootDelta = event.getDelta();
         for (IResourceDelta projectDelta : rootDelta.getAffectedChildren()) {
-            IResourceDelta sloeberCfgDelta = projectDelta.findMember(new Path("sloeber.cfg"));
+            IResourceDelta sloeberCfgDelta = projectDelta.findMember(new Path(SLOEBER_CFG));
             if (sloeberCfgDelta != null) {
                 if (sloeberCfgDelta.getKind() != IResourceDelta.REMOVED) {
                     IProject iProject = sloeberCfgDelta.getResource().getProject();
@@ -40,9 +42,9 @@ public class resourceChangeListener implements IResourceChangeListener {
                     changedSloeberCfgFiles.add(iProject);
                 }
             } else {
-                // it is not a new type sloeber project check wether it is an old type sloeber
+                // it is not a new type Sloeber project check whether it is an old type Sloeber
                 // project
-                IResourceDelta cProjectDelta = projectDelta.findMember(new Path(".cproject"));
+                IResourceDelta cProjectDelta = projectDelta.findMember(new Path(".cproject")); //$NON-NLS-1$
                 if (cProjectDelta != null)
                     if (projectDelta.getFlags() == IResourceDelta.OPEN) {
                         // as it is a open of a cdt project assume it is a sloeber project.
@@ -60,7 +62,7 @@ public class resourceChangeListener implements IResourceChangeListener {
         if (changedSloeberCfgFiles.size() == 0)
             return;
 
-        Job job = new Job("Sloeber.cfg modification processor") {
+        Job job = new Job("Sloeber.cfg modification processor") { //$NON-NLS-1$
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 final IWorkspace workspace = ResourcesPlugin.getWorkspace();
