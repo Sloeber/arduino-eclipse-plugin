@@ -530,10 +530,12 @@ public class SloeberProject extends Common {
             CompileDescription compileDescription = CompileDescription.getFromCDT(confDesc);
             OtherDescription otherDesc = OtherDescription.getFromCDT(confDesc);
             if (boardDesc.getReferencingBoardsFile() != null) {
-                foundAValidConfig = true;
-                myBoardDescriptions.put(getConfigKey(confDesc), boardDesc);
-                myCompileDescriptions.put(getConfigKey(confDesc), compileDescription);
-                myOtherDescriptions.put(getConfigKey(confDesc), otherDesc);
+                if (!boardDesc.getReferencingBoardsFile().toString().isBlank()) {
+                    foundAValidConfig = true;
+                    myBoardDescriptions.put(getConfigKey(confDesc), boardDesc);
+                    myCompileDescriptions.put(getConfigKey(confDesc), compileDescription);
+                    myOtherDescriptions.put(getConfigKey(confDesc), otherDesc);
+                }
             }
         }
         return foundAValidConfig;
@@ -724,7 +726,6 @@ public class SloeberProject extends Common {
                     "failed to save the sloeber config files", e)); //$NON-NLS-1$
             myNeedToPersist = true;
         }
-
 
     }
 
