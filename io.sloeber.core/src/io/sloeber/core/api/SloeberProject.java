@@ -1014,6 +1014,33 @@ public class SloeberProject extends Common {
 
     }
 
+    /**
+     * When a board has been installed it may be that a boardDescription needs to
+     * reload the txt file
+     */
+    public static void reloadTxtFile() {
+        final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+        for (IProject curProject : workspaceRoot.getProjects()) {
+            if (curProject.isOpen()) {
+                SloeberProject sloeberProject = getSloeberProject(curProject, true);
+                if (sloeberProject != null) {
+                    sloeberProject.internalReloadTxtFile();
+                }
+            }
+        }
+    }
+
+    /**
+     * When a board has been installed it may be that a boardDescription needs to
+     * reload the txt file
+     */
+    private void internalReloadTxtFile() {
+        for (BoardDescription curBoardDescription : myBoardDescriptions.values()) {
+            curBoardDescription.reloadTxtFile();
+        }
+
+    }
+
     private static Map<String, String> getConfigs(ICProjectDescription prjCDesc) {
         Map<String, String> ret = new HashMap<>();
         for (ICConfigurationDescription curconfig : prjCDesc.getConfigurations()) {

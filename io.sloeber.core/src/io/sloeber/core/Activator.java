@@ -1,5 +1,6 @@
 package io.sloeber.core;
 
+import static io.sloeber.core.common.Const.*;
 import static org.eclipse.core.resources.IResource.*;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class Activator extends Plugin {
     private char[] uri = { 'h', 't', 't', 'p', 's', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i', 't',
 			'/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a', 'd', '/', 'p', 'l', 'u',
 			'g', 'i', 'n', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l', '?', 's', '=' };
-	private static final String PLUGIN_ID = "io.sloeber.core";
+
 
     private static IResourceChangeListener myResourceChangelistener = new resourceChangeListener();
 

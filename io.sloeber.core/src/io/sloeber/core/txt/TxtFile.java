@@ -1,5 +1,8 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -32,11 +34,8 @@ import io.sloeber.core.common.Const;
  * @author Jan Baeyens and trump
  *
  */
-public class TxtFile extends Const {
+public class TxtFile {
     private File mLoadedTxtFile = null;
-
-    public static final String ID = Messages.ID;
-    public static final String FILE = Messages.FILE;
 
     protected KeyValueTree myData = KeyValueTree.createTxtRoot();
 
@@ -73,7 +72,7 @@ public class TxtFile extends Const {
             }
         } catch (Exception e) {
             Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                    Messages.Boards_Failed_to_read_boards.replace(FILE, boardsFileName.getName()), e));
+                    Boards_Failed_to_read_boards.replace(FILE, boardsFileName.getName()), e));
         }
     }
 
@@ -115,36 +114,11 @@ public class TxtFile extends Const {
         }
     }
 
-    /**
-     *
-     * @return the file name that is currently loaded
-     */
-
-    public File getTxtFile() {
-        return this.mLoadedTxtFile;
-    }
 
     public String getNiceNameFromID(String myBoardID) {
         return myData.getValue(myBoardID + DOT + NAME);
     }
 
-    /*
-     * Returns the package name based on the boardsfile name Caters for the packages
-     * (with version number and for the old way if the boards file does not exists
-     * returns arduino
-     */
-    public String getPackage() {
-        if (this.mLoadedTxtFile.exists()) {
-            IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
-            String architecture = platformFile.removeLastSegments(1).lastSegment();
-            if (architecture.contains(Const.DOT)) { // This is a version number so
-                // package
-                return platformFile.removeLastSegments(4).lastSegment();
-            }
-            return platformFile.removeLastSegments(2).lastSegment();
-        }
-        return "arduino"; //$NON-NLS-1$
-    }
 
     /*
      * Returns the architecture based on the platform file name Caters for the
@@ -194,5 +168,11 @@ public class TxtFile extends Const {
 
     public KeyValueTree getData() {
         return myData;
+    }
+
+    public void reloadTxtFile() {
+        myData = KeyValueTree.createTxtRoot();
+        mergeFile(mLoadedTxtFile);
+
     }
 }

@@ -1,5 +1,8 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,19 +11,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import io.sloeber.core.Messages;
 
 public class BoardTxtFile extends TxtFile {
 
-    private static final String MENUITEMNAME = Messages.MENUITEMNAME;
-    private static final String MENUITEMID = Messages.MENUITEMID;
-    private static final String MENUID = Messages.MENUID;
-    private static final String BOARDID = Messages.BOARDID;
-    private File providedTxtFile = null;
-
     public BoardTxtFile(File boardsFile) {
         super(getActualTxtFile(boardsFile));
-        providedTxtFile = boardsFile;
     }
 
     private static File getActualTxtFile(File boardsFile) {
@@ -43,7 +38,7 @@ public class BoardTxtFile extends TxtFile {
                 return curOption.getKey();
             }
         }
-        return Messages.Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName)
+        return Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName)
                 .replace(MENUID, menuID).replace(BOARDID, boardID);
     }
 
@@ -112,7 +107,7 @@ public class BoardTxtFile extends TxtFile {
         // if (curOption.getKey().equalsIgnoreCase(lookupValue))
         // return curOption.getValue();
         // }
-        return Messages.Boards_Get_menu_item_name_from_id_did_not_find.replace(MENUITEMID, menuItemID)
+        return Boards_Get_menu_item_name_from_id_did_not_find.replace(MENUITEMID, menuItemID)
                 .replace(MENUID, menuID).replace(BOARDID, boardID);
     }
 
@@ -125,7 +120,7 @@ public class BoardTxtFile extends TxtFile {
                 }
             }
         }
-        return Messages.Boards_menu_ID_not_found.replace(ID, menuID);
+        return Boards_menu_ID_not_found.replace(ID, menuID);
     }
 
     /**
@@ -154,10 +149,6 @@ public class BoardTxtFile extends TxtFile {
         return getSection(MENU);
     }
 
-    @Override
-    public File getTxtFile() {
-        return providedTxtFile;
-    }
 
     /**
      * this is public String[] getAllSectionNames (String[] toaddNames) with a empty
@@ -211,4 +202,5 @@ public class BoardTxtFile extends TxtFile {
     public Map<String, String> getAllBoardEnvironVars(String boardID) {
         return myData.getChild(boardID).toKeyValues(EMPTY, false);
     }
+
 }

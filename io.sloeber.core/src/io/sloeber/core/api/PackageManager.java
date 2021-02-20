@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.Const.*;
 import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
@@ -59,10 +60,10 @@ import io.sloeber.core.txt.BoardTxtFile;
  */
 public class PackageManager {
 
-    public static final String LOCAL = "local"; //$NON-NLS-1$
+
     protected static List<PackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
-    private static boolean platformsDirty = true;// reset global variables at startup
+    private static boolean envVarsNeedUpdating = true;// reset global variables at startup
     private final static int MAX_HTTP_REDIRECTIONS = 5;
     private static HashMap<String, String> myWorkbenchEnvironmentVariables = new HashMap<>();
 
@@ -159,7 +160,7 @@ public class PackageManager {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
-        platformsDirty = true;
+        envVarsNeedUpdating = true;
         int currPlatformIndex = 1;
         NullProgressMonitor monitor = new NullProgressMonitor();
         List<Package> allPackages = InternalPackageManager.getPackages();
@@ -187,7 +188,7 @@ public class PackageManager {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
-        platformsDirty = true;
+        envVarsNeedUpdating = true;
         Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
         if (curPackage != null) {
             ArduinoPlatform curPlatform = curPackage.getLatestPlatform(architectureName, false);
@@ -574,7 +575,7 @@ public class PackageManager {
         if (!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
             loadJsons(true);
         }
-        platformsDirty = true;
+        envVarsNeedUpdating = true;
         try {
             InternalPackageManager.setReady(false);
 
@@ -598,6 +599,7 @@ public class PackageManager {
             // do nothing
         }
         InternalPackageManager.setReady(true);
+        SloeberProject.reloadTxtFile();
         return status;
     }
 
@@ -877,7 +879,7 @@ public class PackageManager {
      * explicitly define tools or platform dependencies Like private hardware
      */
     public static Map<String, String> getEnvironmentVariables() {
-        if (!platformsDirty) {
+        if (!envVarsNeedUpdating) {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
@@ -913,7 +915,7 @@ public class PackageManager {
         if( latestAvrPlatform!=null) {
         	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
         }
-        platformsDirty = false;
+        envVarsNeedUpdating = false;
         return myWorkbenchEnvironmentVariables;
     }
 

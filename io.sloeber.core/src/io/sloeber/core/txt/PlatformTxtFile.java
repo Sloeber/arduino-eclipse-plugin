@@ -1,14 +1,14 @@
 package io.sloeber.core.txt;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.util.Map;
 
 public class PlatformTxtFile extends TxtFile {
-    private File providedTxtFile = null;
 
     public PlatformTxtFile(File boardsFile) {
         super(getActualTxtFile(boardsFile));
-        providedTxtFile = boardsFile;
     }
 
     private static File getActualTxtFile(File platformFile) {
@@ -16,11 +16,6 @@ public class PlatformTxtFile extends TxtFile {
             return WorkAround.MakePlatformSloeberTXT(platformFile);
         }
         return platformFile;
-    }
-
-    @Override
-    public File getTxtFile() {
-        return providedTxtFile;
     }
 
 

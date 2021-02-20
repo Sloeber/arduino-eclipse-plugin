@@ -57,10 +57,12 @@ public class Const {
 	public static final String REMOTE_SUFFIX = "_remote";
 
 	// General stuff
+    public static final String PLUGIN_ID = "io.sloeber.core";
 	public static final String CORE_PLUGIN_ID = "io.sloeber.arduino.core";
 	public static final String ARDUINO_NATURE_ID = "io.sloeber.arduinonature";
 	public static final String KEY_LAST_USED_EXAMPLES = "Last used Examples";
 	public static final String SLOEBER_HOME = "SLOEBER_HOME";
+    public static final String LOCAL = "local";
 
 	// Folder and file Information
 	public static final String ARDUINO_HARDWARE_FOLDER_NAME = HARDWARE;

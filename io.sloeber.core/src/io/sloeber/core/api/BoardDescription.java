@@ -363,13 +363,7 @@ public class BoardDescription {
         myOptions = srcObject.myOptions;
     }
 
-    protected BoardDescription(BoardTxtFile txtFile, String boardID) {
-        this.myBoardID = boardID;
-        this.myreferencingBoardsFile = txtFile.getTxtFile();
-        this.myTxtFile = txtFile;
-        setDefaultOptions();
-        calculateDerivedFields();
-    }
+
 
     public String getuploadTool() {
         return this.myUploadTool;
@@ -410,9 +404,6 @@ public class BoardDescription {
         myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
     }
 
-    public String getPackage() {
-        return this.myTxtFile.getPackage();
-    }
 
     public String getArchitecture() {
         return this.myTxtFile.getArchitecture();
@@ -752,6 +743,14 @@ public class BoardDescription {
 
     private Map<String, String> getEnvVarsTxt() {
         return myTxtFile.getAllBoardEnvironVars(getBoardID());
+    }
+
+    protected BoardDescription(File txtFile, String boardID) {
+        this.myBoardID = boardID;
+        this.myreferencingBoardsFile = txtFile;
+        this.myTxtFile = new BoardTxtFile(txtFile);
+        setDefaultOptions();
+        calculateDerivedFields();
     }
 
     BoardDescription(TxtFile configFile, String prefix) {
@@ -1132,6 +1131,11 @@ public class BoardDescription {
             return false;
         }
         return myreferencingBoardsFile.exists();
+    }
+
+    public void reloadTxtFile() {
+        myTxtFile.reloadTxtFile();
+
     }
 
 }

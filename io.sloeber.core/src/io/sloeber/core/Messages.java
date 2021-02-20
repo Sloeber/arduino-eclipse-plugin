@@ -13,7 +13,7 @@ public class Messages extends NLS {
 	public static final String PROJECT = "{PROJECT}"; //$NON-NLS-1$
 	public static final String UPLOADER = "{UPLOADER}"; //$NON-NLS-1$
 	public static final String MS = "{MS}"; //$NON-NLS-1$
-	public static final String NAME = "{NAME}"; //$NON-NLS-1$
+	public static final String NAMEFIELD = "{NAME}"; //$NON-NLS-1$
 	public static final String ID = "{ID}"; //$NON-NLS-1$
 	public static final String COMMAND = "{COMMAND}"; //$NON-NLS-1$
 	public static final String TOOL = "{TOOL}"; //$NON-NLS-1$

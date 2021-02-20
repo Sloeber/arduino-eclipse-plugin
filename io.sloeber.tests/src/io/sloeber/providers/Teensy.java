@@ -1,5 +1,6 @@
 package io.sloeber.providers;
 
+import static io.sloeber.core.common.Const.*;
 import static org.junit.Assert.*;
 
 import java.util.Map;
@@ -81,7 +82,7 @@ public class Teensy extends MCUBoard {
 			break;
 		}
 
-        this.myBoardDescriptor = PackageManager.getBoardDescription(PackageManager.LOCAL, MySystem.getTeensyBoard_txt(),
+        this.myBoardDescriptor = PackageManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(),
                 "ignored",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
