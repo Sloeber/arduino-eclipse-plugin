@@ -65,8 +65,8 @@ public class ExternalCommandLauncher {
     private final ProcessBuilder myProcessBuilder;
 
     /**
-	 * A runnable class that will read a Stream until EOF, storing each line in
-	 * a List and also calling a listener for each line.
+     * A runnable class that will read a Stream until EOF, storing each line in a
+     * List and also calling a listener for each line.
      */
     private class LogStreamRunner implements Runnable {
 
@@ -74,8 +74,8 @@ public class ExternalCommandLauncher {
         private MessageConsoleStream fConsoleOutput = null;
 
         /**
-		 * Construct a Streamrunner that will read the given InputStream and log
-		 * all lines in the given List.
+         * Construct a Streamrunner that will read the given InputStream and log all
+         * lines in the given List.
          * <p>
          * If a valid <code>OutputStream</code> is set, everything read by this
          * <code>LogStreamRunner</code> is also written to it.
@@ -83,14 +83,13 @@ public class ExternalCommandLauncher {
          * @param instream
          *            <code>InputStream</code> to read
          * @param log
-		 *            <code>List&lt;String&gt;</code> where all lines of the
-		 *            instream are stored
+         *            <code>List&lt;String&gt;</code> where all lines of the instream
+         *            are stored
          * @param consolestream
          *            <code>OutputStream</code> for secondary console output, or
          *            <code>null</code> for no console output.
          */
-		public LogStreamRunner(InputStream instream,
-				MessageConsoleStream consolestream) {
+        public LogStreamRunner(InputStream instream, MessageConsoleStream consolestream) {
             this.fReader = new BufferedReader(new InputStreamReader(instream));
             this.fConsoleOutput = consolestream;
         }
@@ -120,8 +119,7 @@ public class ExternalCommandLauncher {
                 }
             } catch (IOException e) {
                 // This is unlikely to happen, but log it nevertheless
-				IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-						Messages.command_io, e);
+                IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
                 Common.log(status);
             } finally {
                 try {
@@ -149,14 +147,12 @@ public class ExternalCommandLauncher {
     public ExternalCommandLauncher(String command) {
         Assert.isNotNull(command);
         this.myRunLock = this;
-		String[] commandParts = command
-				.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
+        String[] commandParts = command.split(" +(?=([^\"]*\"[^\"]*\")*[^\"]*$)"); //$NON-NLS-1$
         // Remove quotes for Unix and Mac systems
         for (int curCommand = 0; curCommand < commandParts.length; curCommand++) {
             if (commandParts[curCommand].startsWith("\"") //$NON-NLS-1$
                     && commandParts[curCommand].endsWith("\"")) { //$NON-NLS-1$
-					commandParts[curCommand] = commandParts[curCommand].substring(1,
-							commandParts[curCommand].length() - 1);
+                commandParts[curCommand] = commandParts[curCommand].substring(1, commandParts[curCommand].length() - 1);
             }
         }
 
@@ -186,8 +182,7 @@ public class ExternalCommandLauncher {
      * @throws IOException
      *             An Exception from the underlying Process.
      */
-	public int launch(IProgressMonitor monitor, MessageConsoleStream highStream,
-			MessageConsoleStream stdoutStream,
+    public int launch(IProgressMonitor monitor, MessageConsoleStream highStream, MessageConsoleStream stdoutStream,
             MessageConsoleStream stderrStream) throws IOException {
 
         Process process = null;
@@ -205,15 +200,13 @@ public class ExternalCommandLauncher {
         // Get the name of the command (without the path)
         // This is used upon exit to print a nice exit message
         String command = commandAndOptions.get(0);
-		String commandname = command
-				.substring(command.lastIndexOf(File.separatorChar) + 1);
+        String commandname = command.substring(command.lastIndexOf(File.separatorChar) + 1);
 
         // After the setup we can now start the command
         try {
             monitor.beginTask(Messages.command_launching + ' ' + command, 100);
 
-			myProcessBuilder
-                    .directory(Common.getWorkspaceRoot().toFile());
+            myProcessBuilder.directory(Common.getWorkspaceRoot().toFile());
             try {
                 process = myProcessBuilder.start();
             } catch (IOException ioe) {
@@ -228,11 +221,9 @@ public class ExternalCommandLauncher {
 
             // the resource is closed in LogStreamRunner
             @SuppressWarnings("resource")
-            Thread stdoutRunner = new Thread(new LogStreamRunner(
-					process.getInputStream(), stdoutStream));
+            Thread stdoutRunner = new Thread(new LogStreamRunner(process.getInputStream(), stdoutStream));
             @SuppressWarnings("resource")
-            Thread stderrRunner = new Thread(new LogStreamRunner(
-					process.getErrorStream(), stderrStream));
+            Thread stderrRunner = new Thread(new LogStreamRunner(process.getErrorStream(), stderrStream));
 
             synchronized (myRunLock) {
                 // Wait either for the longrunners to terminate or the user to
