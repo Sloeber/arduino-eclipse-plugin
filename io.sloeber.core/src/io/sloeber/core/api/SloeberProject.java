@@ -100,6 +100,9 @@ public class SloeberProject extends Common {
      * @return
      */
     public static void convertToArduinoProject(IProject project, IProgressMonitor monitor) {
+        if (project == null) {
+            return;
+        }
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot root = workspace.getRoot();
         ICoreRunnable runnable = new ICoreRunnable() {

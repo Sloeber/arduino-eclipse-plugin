@@ -215,7 +215,6 @@
           category="io.sloeber.eclipse.newWizards"
           class="io.sloeber.ui.wizard.ConvertToSloeber"
           finalPerspective="io.sloeber.application.perspective"
-          hasPages="true"
           icon="icons/convertToSloeber.png"
           id="io.sloeber.convert.wizard"
           name="Convert to Sloeber project"
