@@ -306,7 +306,6 @@ public class CodeDescription {
 	 * I don't want to support this use case because if you want to do 
 	 * so you should know what you are doing and you don't need this
 	 * 
-	 * and if you do need this; do it yourself or become a serious patron
 	 * 
 	 * @return the path to the first linked example or NULL
 	 */

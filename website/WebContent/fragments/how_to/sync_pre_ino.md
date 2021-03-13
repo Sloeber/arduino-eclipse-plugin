@@ -31,4 +31,3 @@ In the ino file at the top add a line that looks like
  **Party success**
  
  1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

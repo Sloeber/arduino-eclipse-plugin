@@ -21,7 +21,6 @@ If you are not sure what you want to install please see the
  **Party success**
 
  1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")
 
 
 **How to install java 8 and the arduino eclipse plugin on ubuntu 14**

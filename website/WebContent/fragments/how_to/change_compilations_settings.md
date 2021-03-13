@@ -19,4 +19,3 @@ The other options seem pretty straightforward.
  **Party success**
  
  1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")

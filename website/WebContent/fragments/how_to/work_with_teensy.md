@@ -32,4 +32,3 @@ Working with Teensy and the Eclipse plugin is possible but asks some work.
  **Party success**
  
  1. drink a beer
- 2. [Become a patron of jantje](http://eclipse.baeyens.it/donate.html "thanks")
