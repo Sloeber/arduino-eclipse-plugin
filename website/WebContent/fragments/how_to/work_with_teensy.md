@@ -1,6 +1,13 @@
 How to configure for Teensy
 ===========================
 
+**Users of V4**
+
+Simply install arduiono IDE 1.8 (or later) and Teensyduino 1.5 (or later) and then, inside Arduino Eclipse, go to Windows -> Arduino -> Private Hardware path. Add a new path pointing to your Teensy hardware installation directory. For windows this is something like "C:\Program Files (x86)\arduino\hardware\teensy"
+You will now be able to select Teensy boards by right clicking your project -> Properties -> Arduino and then click on the Platform folder entry. A second entry showing the path you just set above will appear. Once selected, simply choose your Teensy variant. You must populate all the fields (for example with a 3.5 Teensy try 120 Mhz and USB type 'Serial') and then press apply. You will find that uploading may require you to press the button on the teensy. The log may say it cannot connect but normally it works like a charm anyway.
+
+
+
 *trippylighting* (a very nice guy) has done some very good documentation on how to use the Teensy boards with the Arduino Eclipse plugin.
 
 Please see [his website](http://trippylighting.com/teensy-arduino-ect/arduino-eclipse-plugin/) for detailed Teensy related stuff.
