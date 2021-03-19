@@ -210,7 +210,7 @@ public class PdePreprocessor {
 		String localHeader = header;
 		// Locate All lines that are extern "C"
 		HashMap<Integer, Integer> externCLines = new HashMap<>();
-		IASTTranslationUnit astTuTest = tu.getAST(index, 0);
+        IASTTranslationUnit astTuTest = tu.getAST(index, ITranslationUnit.AST_SKIP_ALL_HEADERS);
 		IASTDeclaration[] topDeclaratons = astTuTest.getDeclarations();
 		for (IASTDeclaration curTopDeclaration : topDeclaratons) {
 
