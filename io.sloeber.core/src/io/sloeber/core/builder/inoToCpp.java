@@ -15,6 +15,7 @@ import io.sloeber.core.tools.PdePreprocessor;
 public class inoToCpp extends IncrementalProjectBuilder {
 
     class SampleDeltaVisitor implements IResourceDeltaVisitor {
+        private boolean inoFileProcessed = false;
         /*
          * (non-Javadoc)
          *
@@ -23,6 +24,9 @@ public class inoToCpp extends IncrementalProjectBuilder {
          */
         @Override
         public boolean visit(IResourceDelta delta) throws CoreException {
+            if (inoFileProcessed) {
+                return false;
+            }
             IResource resource = delta.getResource();
             if (resource.getFileExtension() != null) {
                 if (resource.getFileExtension().equalsIgnoreCase("ino") //$NON-NLS-1$
@@ -32,6 +36,7 @@ public class inoToCpp extends IncrementalProjectBuilder {
                     } catch (CoreException e) {
                         e.printStackTrace();
                     }
+                    inoFileProcessed = true;
                     return false;
                 }
             }
