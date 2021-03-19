@@ -76,6 +76,9 @@ public class Helpers {
             List<IPath> IncludePaths, boolean isWorkspacePath) {
 
         boolean confDesckMustBeSet = false;
+        if (IncludePaths == null) {
+            return false;
+        }
         ICLanguageSetting[] languageSettings = configurationDescription.getRootFolderDescription()
                 .getLanguageSettings();
         int pathSetting = ICSettingEntry.VALUE_WORKSPACE_PATH;

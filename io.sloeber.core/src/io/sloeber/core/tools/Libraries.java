@@ -449,7 +449,7 @@ public class Libraries {
         List<IPath> foldersToAddToInclude = foldersToInclude.get(INCLUDE);
         boolean descriptionMustBeSet = Helpers.addIncludeFolder(confdesc, foldersToAddToInclude, true);
         List<IPath> foldersToRemoveFromBuildPath = foldersToInclude.get(REMOVE);
-        if (!foldersToRemoveFromBuildPath.isEmpty()) {
+        if ((foldersToRemoveFromBuildPath != null) && (!foldersToRemoveFromBuildPath.isEmpty())) {
             ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
             ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
             for (IPath curFile : foldersToRemoveFromBuildPath) {
