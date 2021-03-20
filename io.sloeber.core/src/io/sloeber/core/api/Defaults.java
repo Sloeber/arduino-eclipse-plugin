@@ -1,10 +1,10 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.Const.*;
+
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
-import io.sloeber.core.common.Const;
 
 @SuppressWarnings("nls")
 public class Defaults {
@@ -17,7 +17,6 @@ public class Defaults {
 	public static final String[] DEFAULT_INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
 			"LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
 	public static final String DEFAULT = "Default";
-	private static final String LIBRARY_PATH_SUFFIX = "libraries";
 
 	public static final boolean updateJsonFiles = true;
 	public static final boolean useBonjour=true;
@@ -46,7 +45,7 @@ public class Defaults {
 		if(SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_WINDOWS ) {
 			homPath=homPath.append("Documents");
 		}
-		return homPath.append("Arduino").append(Const.ARDUINO_HARDWARE_FOLDER_NAME).toString();
+        return homPath.append("Arduino").append(ARDUINO_HARDWARE_FOLDER_NAME).toString();
 	}
 
 	public static String getDefaultUploadProtocol() {

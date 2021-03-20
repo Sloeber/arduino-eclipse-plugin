@@ -1,5 +1,7 @@
 package io.sloeber.core.common;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -45,7 +47,6 @@ public class ConfigurationPreferences {
 			+ KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 	// preference nodes
 	private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
-	private static final String LIBRARY_PATH_SUFFIX = "libraries"; //$NON-NLS-1$
 	private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
 	private static String systemHash = "no hash generated"; //$NON-NLS-1$
