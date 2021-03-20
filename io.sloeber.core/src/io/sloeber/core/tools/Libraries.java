@@ -1,6 +1,7 @@
 package io.sloeber.core.tools;
 
 import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.Const.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -23,7 +24,6 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
-import org.eclipse.cdt.core.settings.model.ICResourceDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFolder;
@@ -43,7 +43,6 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.Library;
 
@@ -157,8 +156,8 @@ public class Libraries {
                     if (versions != null) {
                         switch (versions.length) {
                         case 0:// A empty lib folder is hanging around
-                            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                                    EmptyLibFolder.replace(LIB, curLib)));
+                            Common.log(
+                                    new Status(IStatus.WARNING, CORE_PLUGIN_ID, EmptyLibFolder.replace(LIB, curLib)));
                             Lib_root.toFile().delete();
                             break;
                         case 1:// There should only be 1
@@ -170,7 +169,7 @@ public class Libraries {
                                 // latest
                             int highestVersion = Version.getHighestVersion(versions);
                             ret.put(curLib, Lib_root.append(versions[highestVersion]));
-                            Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     MultipleVersionsOfLib.replace(LIB, curLib)));
 
                         }
@@ -199,8 +198,7 @@ public class Libraries {
                 final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
                 folderHandle.delete(true, null);
             } catch (CoreException e) {
-                Common.log(
-                        new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB, CurItem), e));
+                Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB, CurItem), e));
             }
         }
         return Helpers.removeInvalidIncludeFolders(confdesc);
@@ -421,7 +419,7 @@ public class Libraries {
                     installedLibs.keySet().retainAll(UnresolvedIncludedHeaders);
                     if (!installedLibs.isEmpty()) {
                         // there are possible libraries to add
-                        Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
+                        Common.log(new Status(IStatus.INFO, CORE_PLUGIN_ID, "list of libraries to add to project " //$NON-NLS-1$
                                 + affectedProject.getName() + ": " //$NON-NLS-1$
                                 + installedLibs.keySet().toString()));
                         Map<String, List<IPath>> foldersToChange = addLibrariesToProject(affectedProject,
@@ -450,8 +448,7 @@ public class Libraries {
         boolean descriptionMustBeSet = Helpers.addIncludeFolder(confdesc, foldersToAddToInclude, true);
         List<IPath> foldersToRemoveFromBuildPath = foldersToInclude.get(REMOVE);
         if ((foldersToRemoveFromBuildPath != null) && (!foldersToRemoveFromBuildPath.isEmpty())) {
-            ICResourceDescription cfgd = confdesc.getResourceDescription(new Path(new String()), true);
-            ICSourceEntry[] sourceEntries = cfgd.getConfiguration().getSourceEntries();
+            ICSourceEntry[] sourceEntries = confdesc.getSourceEntries();
             for (IPath curFile : foldersToRemoveFromBuildPath) {
                 try {
                     if (!CDataUtil.isExcluded(curFile, sourceEntries)) {
@@ -464,7 +461,7 @@ public class Libraries {
                 }
             }
             try {
-                cfgd.getConfiguration().setSourceEntries(sourceEntries);
+                confdesc.setSourceEntries(sourceEntries);
             } catch (Exception e) {
                 // ignore
             }
