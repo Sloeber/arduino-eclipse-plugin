@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -38,7 +37,7 @@ public class WorkAround extends Const {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
 	// for debugging I added the system time so the files get refresed at each run
-	private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 17 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 18 ";
 	// + String.valueOf(System.currentTimeMillis());
 
 	/**
@@ -284,6 +283,10 @@ public class WorkAround extends Const {
 						"\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
 				platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
 						" \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
+
+                // for STM32
+                platformTXT = platformTXT.replace(" -DBOARD_NAME=\"{build.board}\"",
+                        " \"-DBOARD_NAME=\\\"{build.board}\\\"\"");
 
 				platformTXT = platformTXT.replace("{", "${");
 				// Arduino zero openocd script uses { as parameter delimiter for program
