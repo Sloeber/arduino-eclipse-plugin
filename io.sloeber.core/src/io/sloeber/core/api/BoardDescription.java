@@ -658,7 +658,7 @@ public class BoardDescription {
         return this.getreferencingPlatformPath().append(LIBRARY_PATH_SUFFIX);
     }
 
-    public String getUploadCommand(ICConfigurationDescription confdesc) {
+    public String getUploadPatternKey() {
         updateWhenDirty();
         String upLoadTool = getActualUploadTool();
         String action = UPLOAD;
@@ -667,14 +667,10 @@ public class BoardDescription {
         }
         String networkPrefix = EMPTY;
         if (isNetworkUpload()) {
-            networkPrefix = DOT + NETWORK_PREFIX;
+            networkPrefix = NETWORK_PREFIX;
         }
-        String key = TOOLS + DOT + upLoadTool + DOT + action + networkPrefix + DOT + PATTERN;
-        String ret = Common.getBuildEnvironmentVariable(confdesc, key, EMPTY);
-        if (ret.isEmpty()) {
-            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, key + " : not found in the platform.txt file")); //$NON-NLS-1$
-        }
-        return ret;
+        return TOOLS + DOT + upLoadTool + DOT + action + DOT + networkPrefix + PATTERN;
+
     }
 
     public String getActualUploadTool() {

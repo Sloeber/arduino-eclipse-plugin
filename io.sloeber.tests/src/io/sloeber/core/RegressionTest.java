@@ -30,6 +30,7 @@ import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
+import io.sloeber.providers.ESP32;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
@@ -52,7 +53,7 @@ public class RegressionTest {
 
     public static void installAdditionalBoards() {
 
-        String[] packageUrlsToAdd = { ESP8266.packageURL };
+        String[] packageUrlsToAdd = { ESP8266.packageURL, ESP32.packageURL };
         PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
         if (reinstall_boards_and_libraries) {
             PackageManager.removeAllInstalledPlatforms();
@@ -60,6 +61,7 @@ public class RegressionTest {
         ;
         // make sure the needed boards are available
         ESP8266.installLatest();
+        ESP32.installLatest();
         Arduino.installLatestAVRBoards();
 
         if (!MySystem.getTeensyPlatform().isEmpty()) {
@@ -566,5 +568,23 @@ public class RegressionTest {
         inCompileDescription.setEnableParallelBuild(true);
         inCompileDescription.setWarningLevel(false);
         return inCompileDescription;
+    }
+
+    /**
+     * check to see whether upload recipe key is correct for a couple of boards that
+     * have failed in the past
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void uploadPattern() throws Exception {
+        BoardDescription boardDescriptor = Arduino.uno().getBoardDescriptor();
+        String recipeKey = boardDescriptor.getUploadPatternKey();
+        assertEquals("uno upload recipe key is wrong", "tools.avrdude.upload.pattern", recipeKey);
+        boardDescriptor = ESP32.esp32().getBoardDescriptor();
+        boardDescriptor.setUploadPort("host 10.10.10.10");
+        recipeKey = boardDescriptor.getUploadPatternKey();
+        assertEquals("ESP OTA upload recipe key is wrong", "tools.esptool_py.upload.network_pattern", recipeKey);
+
     }
 }

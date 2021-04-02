@@ -51,9 +51,11 @@ public class arduinoUploader implements IRealUpload {
         } else {
             uploadPort = ArduinoSerial.makeArduinoUploadready(highStream, this.myProject, mycConf, boardDescr);
         }
-
-        String command = boardDescr.getUploadCommand(mycConf);
-        if (command == null) {
+        String uploadRecipoeKey = boardDescr.getUploadPatternKey();
+        String command = Common.getBuildEnvironmentVariable(mycConf, uploadRecipoeKey, EMPTY);
+        if (command.isEmpty()) {
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
+                    uploadRecipoeKey + " : not found in the platform.txt file")); //$NON-NLS-1$
             highStream.println(Messages.uploader_Failed_to_get_upload_recipe);
             return false;
         }

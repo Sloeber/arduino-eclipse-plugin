@@ -1,6 +1,6 @@
 package io.sloeber.providers;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,7 +10,7 @@ import io.sloeber.core.api.PackageManager;
 @SuppressWarnings("nls")
 public class ESP32 extends MCUBoard {
 	private static final String provider = "esp32";
-	private static final String architectureName = "esp23";
+    private static final String architectureName = "esp32";
     private static final String jsonFileName ="package_esp32_index.json";
     public static final String packageURL ="https://dl.espressif.com/dl/package_esp32_index.json";
     public static final String esp32ID ="esp32";
