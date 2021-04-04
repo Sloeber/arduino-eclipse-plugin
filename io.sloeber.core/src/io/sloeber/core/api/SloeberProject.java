@@ -72,6 +72,7 @@ public class SloeberProject extends Common {
     private boolean myNeedsSyncWithCDT = false; // Knows CDT all configs Sloeber Knows
 
     private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
+    private static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
     private static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH; //$NON-NLS-1$
     private static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
     private static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location"; //$NON-NLS-1$
@@ -350,6 +351,7 @@ public class SloeberProject extends Common {
         HashMap<String, String> allVars = new HashMap<>();
 
         allVars.put(ENV_KEY_BUILD_SOURCE_PATH, myProject.getLocation().toOSString());
+        allVars.put(ENV_KEY_BUILD_PATH, myProject.getLocation().append(configKey).toOSString());
 
         if (boardDescription != null) {
             allVars.putAll(boardDescription.getEnvVars());
