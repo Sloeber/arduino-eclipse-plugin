@@ -154,15 +154,7 @@ public class InternalPackageManager extends PackageManager {
 				mstatus.addErrors(tool.install(monitor));
 			}
 		}
-		// On Windows install make
-		if (SystemUtils.IS_OS_WINDOWS) {
-			IPath localMakePath = ConfigurationPreferences.getMakePath();
-			if (!ConfigurationPreferences.getMakePath().append("make.exe").toFile().exists()) { //$NON-NLS-1$
-				mstatus.addErrors(
-						downloadAndInstall("https://eclipse.baeyens.it/download/make.zip", "make.zip", localMakePath, //$NON-NLS-1$ //$NON-NLS-2$
-								forceDownload, monitor));
-			}
-		}
+
 
 		WorkAround.applyKnownWorkArounds(platform);
 		return mstatus;

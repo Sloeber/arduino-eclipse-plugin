@@ -127,12 +127,16 @@ public class Common extends Const {
 
 
     /**
-     * Logs the status information
+     * Logs the status information if status is OK then nothing happens
      *
-	 * @param status the status information to log
+     * @param status
+     *            the status information to log
      */
     public static void log(IStatus status) {
         switch (status.getSeverity()) {
+        case IStatus.OK: {
+            break;
+        }
         case IStatus.ERROR: {
             int style = StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK;
             StatusManager stMan = StatusManager.getManager();
