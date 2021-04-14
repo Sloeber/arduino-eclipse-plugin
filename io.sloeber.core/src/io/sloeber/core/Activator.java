@@ -19,6 +19,8 @@ import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -200,6 +202,16 @@ public class Activator extends Plugin {
     }
 
     private static void initializeImportantVariables() {
+        // turn off auto building
+        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceDescription workspaceDesc = workspace.getDescription();
+        workspaceDesc.setAutoBuilding(false);
+        try {
+            workspace.setDescription(workspaceDesc);
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Make sure some important variables are being initialized
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
         InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());

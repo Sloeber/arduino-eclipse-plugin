@@ -33,7 +33,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -112,10 +111,6 @@ public class SloeberProject extends Common {
                 IndexerController.doNotIndex(project);
 
                 try {
-                    // turn off auto building
-                    IWorkspaceDescription workspaceDesc = workspace.getDescription();
-                    workspaceDesc.setAutoBuilding(false);
-                    workspace.setDescription(workspaceDesc);
 
                     // create a sloeber project
                     SloeberProject sloeberProject = new SloeberProject(project);
@@ -244,10 +239,6 @@ public class SloeberProject extends Common {
                 IndexerController.doNotIndex(newProjectHandle);
 
                 try {
-                    IWorkspaceDescription workspaceDesc = workspace.getDescription();
-                    workspaceDesc.setAutoBuilding(false);
-                    workspace.setDescription(workspaceDesc);
-
                     // create a eclipse project
                     IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
                     if (projectURI != null) {
