@@ -24,8 +24,10 @@ public class CompileDescription {
     private String my_Link_CompileOptions = new String();
     private String my_All_CompileOptions = new String();
 
-    private static final String ENV_KEY_WARNING_LEVEL_OFF = "compiler.warning_flags"; //$NON-NLS-1$
-    private static final String ENV_KEY_WARNING_LEVEL_ON = "${compiler.warning_flags_all}"; //$NON-NLS-1$
+    private static final String ENV_KEY_WARNING_LEVEL = "compiler.warning_flags"; //$NON-NLS-1$
+    private static final String ENV_KEY_WARNING_LEVEL_ALL = "${compiler.warning_flags.all}"; //$NON-NLS-1$
+    private static final String ENV_KEY_WARNING_LEVEL_NONE = "${compiler.warning_flags.none}"; //$NON-NLS-1$
+
     private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.compile"; //$NON-NLS-1$
     private static final String SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
@@ -137,7 +139,9 @@ public class CompileDescription {
         ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
 
         if (this.isWarningLevel()) {
-            ret.put(ENV_KEY_WARNING_LEVEL_OFF, ENV_KEY_WARNING_LEVEL_ON);
+            ret.put(ENV_KEY_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_ALL);
+        } else {
+            ret.put(ENV_KEY_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_NONE);
         }
         if (this.myAlternativeSizeCommand) {
             ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(SLOEBER_SIZE_COMMAND));

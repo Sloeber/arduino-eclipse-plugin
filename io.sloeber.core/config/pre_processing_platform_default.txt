@@ -8,6 +8,10 @@ runtime.ide.version=10812
 build.system.path=${referenced.core.path}${DirectoryDelimiter}system
 serial.port=${com_port}
 build.project_name=${ProjName}
+#make sure we have default compiling warning commands
+compiler.warning_flags.none=-w
+compiler.warning_flags.more=-Wall
+compiler.warning_flags.all=-Wall -Wextra
 
 
 
