@@ -2,6 +2,13 @@ package io.sloeber.ui.project.properties;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -11,10 +18,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.ui.Messages;
 
 public class CompileProperties extends SloeberCpropertyTab {
-	private Button myWarningLevel;
+	private ComboViewer myWarningLevel;
+	private Text myCustomWarningLevel;
 	private Button mySizeCommand;
 	private Text myCAndCppCommand;
 	private Text myCppCommand;
@@ -24,7 +33,6 @@ public class CompileProperties extends SloeberCpropertyTab {
 	private Text myAssemblyCommand;
 	private Text myLinkCommand;
 
-	
 	private static void createLine(Composite parent, int ncol) {
 		Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -41,7 +49,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 		textField.setToolTipText(toolTipText);
 		textField.setEnabled(true);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 1;
+		gridData.horizontalSpan = 2;
 		gridData.verticalSpan = 2;
 		textField.setLayoutData(gridData);
 		return textField;
@@ -51,25 +59,41 @@ public class CompileProperties extends SloeberCpropertyTab {
 	public void createControls(Composite parent, ICPropertyProvider provider) {
 		super.createControls(parent, provider);
 
-
 		GridLayout theGridLayout = new GridLayout();
-		theGridLayout.numColumns = 2;
-		this.usercomp.setLayout(theGridLayout);
+		theGridLayout.numColumns = 3;
+		usercomp.setLayout(theGridLayout);
 
-		// checkbox show all warnings => Set WARNING_LEVEL=wall else
-		// WARNING_LEVEL=$ARDUINO_WARNING_LEVEL
-		this.myWarningLevel = new Button(this.usercomp, SWT.CHECK);
-		this.myWarningLevel.setText(Messages.ui_show_all_warnings);
-		this.myWarningLevel.setEnabled(true);
-		this.myWarningLevel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+		// combobox to select warning level and optional custom values
+		Label label = new Label(usercomp, SWT.LEFT);
+		label.setText(Messages.ui_show_all_warnings);
+
+		myWarningLevel = new ComboViewer(usercomp, SWT.READ_ONLY);
+		myWarningLevel.setContentProvider(ArrayContentProvider.getInstance());
+		myWarningLevel.setInput(WarningLevels.values());
+		myWarningLevel.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection selection = event.getSelection();
+				if (selection instanceof IStructuredSelection) {
+					WarningLevels newSelection = (WarningLevels) ((IStructuredSelection) selection).getFirstElement();
+					myCustomWarningLevel.setEnabled(newSelection == WarningLevels.CUSTOM);
+					myCustomWarningLevel.setText(newSelection.getEnvValue());
+				}
+			}
+		});
+
+		myCustomWarningLevel = new Text(usercomp, SWT.BORDER | SWT.LEFT);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		myCustomWarningLevel.setLayoutData(gridData);
 
 		// checkbox show alternative size
 		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
 		this.mySizeCommand.setText(Messages.ui_Alternative_size);
 		this.mySizeCommand.setEnabled(true);
-		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
 
-		createLine(this.usercomp, 2);
+		createLine(this.usercomp, 3);
 		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);
 		this.myCppCommand = makeOptionField(Messages.ui_append_cpp, Messages.ui_append_cpp_text);
 		this.myCCommand = makeOptionField(Messages.ui_append_c, Messages.ui_append_c_text);
@@ -78,18 +102,9 @@ public class CompileProperties extends SloeberCpropertyTab {
 		this.myLinkCommand = makeOptionField(Messages.ui_append_link, Messages.ui_append_link_text);
 		this.myAllCommand = makeOptionField(Messages.ui_append_all, Messages.ui_append_all_text);
 
-		theGridLayout = new GridLayout();
-		theGridLayout.numColumns = 2;
-		this.usercomp.setLayout(theGridLayout);
-
 		updateScreen(getDescription(getConfdesc()));
 		setVisible(true);
 	}
-
-
-
-
-
 
 	@Override
 	protected String getQualifierString() {
@@ -99,7 +114,10 @@ public class CompileProperties extends SloeberCpropertyTab {
 	@Override
 	protected void updateScreen(Object object) {
 		CompileDescription compDesc = (CompileDescription) object;
-		this.myWarningLevel.setSelection(compDesc.isWarningLevel());
+		final ISelection selection = new StructuredSelection(compDesc.getWarningLevel());
+		myWarningLevel.setSelection(selection);
+		myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
+		myCustomWarningLevel.setText(compDesc.getWarningLevel().getEnvValue());
 		this.mySizeCommand.setSelection(compDesc.isAlternativeSizeCommand());
 		this.myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
 		this.myCCommand.setText(compDesc.get_C_CompileOptions());
@@ -108,13 +126,15 @@ public class CompileProperties extends SloeberCpropertyTab {
 		this.myArchiveCommand.setText(compDesc.get_Archive_CompileOptions());
 		this.myAssemblyCommand.setText(compDesc.get_Assembly_CompileOptions());
 		this.myLinkCommand.setText(compDesc.get_Link_CompileOptions());
-		
+
 	}
 
 	@Override
 	protected Object getFromScreen() {
-		CompileDescription compDesc = new CompileDescription();
-		compDesc.setWarningLevel(this.myWarningLevel.getSelection());
+		CompileDescription compDesc = mySloeberProject.getCompileDescription(getConfdesc().getName(), true);
+		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getCombo().getText());
+		warningLevel.setCustomWarningLevel(myCustomWarningLevel.getText());
+		compDesc.setWarningLevel(warningLevel);
 		compDesc.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
 		compDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
 		compDesc.set_C_CompileOptions(this.myCCommand.getText());
@@ -123,7 +143,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 		compDesc.set_Archive_CompileOptions(this.myArchiveCommand.getText());
 		compDesc.set_Assembly_CompileOptions(this.myAssemblyCommand.getText());
 		compDesc.set_Link_CompileOptions(this.myLinkCommand.getText());
-	
+
 		return compDesc;
 	}
 

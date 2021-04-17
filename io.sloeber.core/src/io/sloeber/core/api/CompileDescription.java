@@ -12,8 +12,50 @@ import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class CompileDescription {
+    public enum WarningLevels {
 
-    private boolean myWarningLevel = true;
+        NONE, MORE, ALL, CUSTOM;
+
+        private String myCustomWarningLevel = EMPTY;
+
+        /**
+         * Set the custom command but only if the warning level is CUSTOM
+         * 
+         * @param customCommand
+         *            the command that needs to be used
+         */
+        public void setCustomWarningLevel(String customCommand) {
+            if (this == CUSTOM) {
+                myCustomWarningLevel = customCommand;
+            }
+        }
+
+        /**
+         * Get the string that should be put in the environment variable that places the
+         * warning part in the command string This is a non expanded string for Arduino
+         * IDE supported options This is what the user typed in the GUI in the CUSTOM
+         * case
+         * 
+         * @return
+         */
+        public String getEnvValue() {
+            switch (this) {
+            case MORE:
+                return "${compiler.warning_flags.more}"; //$NON-NLS-1$
+            case ALL:
+                return "${compiler.warning_flags.all}"; //$NON-NLS-1$
+            case CUSTOM:
+                return myCustomWarningLevel;
+            case NONE:
+                // this is default
+            }
+            return "${compiler.warning_flags.none}"; //$NON-NLS-1$
+        }
+
+    }
+
+    private WarningLevels myWarningLevel = WarningLevels.NONE;
+
     private boolean myAlternativeSizeCommand = false;
     private boolean myEnableParallelBuild = false;
     private String my_CPP_CompileOptions = new String();
@@ -25,8 +67,6 @@ public class CompileDescription {
     private String my_All_CompileOptions = new String();
 
     private static final String ENV_KEY_WARNING_LEVEL = "compiler.warning_flags"; //$NON-NLS-1$
-    private static final String ENV_KEY_WARNING_LEVEL_ALL = "${compiler.warning_flags.all}"; //$NON-NLS-1$
-    private static final String ENV_KEY_WARNING_LEVEL_NONE = "${compiler.warning_flags.none}"; //$NON-NLS-1$
 
     private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.compile"; //$NON-NLS-1$
@@ -35,6 +75,7 @@ public class CompileDescription {
     private static final String SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
             + "extra.cpp.compile"; //$NON-NLS-1$
     private static final String SLOEBER_WARNING_LEVEL = ENV_KEY_SLOEBER_START + "warning_level"; //$NON-NLS-1$
+    private static final String SLOEBER_WARNING_LEVEL_CUSTOM = SLOEBER_WARNING_LEVEL + DOT + "custom"; //$NON-NLS-1$
     private static final String SLOEBER_SIZE_COMMAND = ENV_KEY_SLOEBER_START + "alt_size_command"; //$NON-NLS-1$
     private static final String SLOEBER_SIZE_SWITCH = ENV_KEY_SLOEBER_START + "size.switch"; //$NON-NLS-1$
     private static final String SLOEBER_ASSEMBLY_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.assembly"; //$NON-NLS-1$
@@ -42,11 +83,11 @@ public class CompileDescription {
     private static final String SLOEBER_LINK_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.link"; //$NON-NLS-1$
     private static final String SLOEBER_ALL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.all"; //$NON-NLS-1$
 
-    public boolean isWarningLevel() {
+    public WarningLevels getWarningLevel() {
         return this.myWarningLevel;
     }
 
-    public void setWarningLevel(boolean myWarningLevel) {
+    public void setWarningLevel(WarningLevels myWarningLevel) {
         this.myWarningLevel = myWarningLevel;
     }
 
@@ -137,12 +178,7 @@ public class CompileDescription {
         ret.put(SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
         ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-
-        if (this.isWarningLevel()) {
-            ret.put(ENV_KEY_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_ALL);
-        } else {
-            ret.put(ENV_KEY_WARNING_LEVEL, ENV_KEY_WARNING_LEVEL_NONE);
-        }
+        ret.put(ENV_KEY_WARNING_LEVEL, myWarningLevel.getEnvValue());
         if (this.myAlternativeSizeCommand) {
             ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(SLOEBER_SIZE_COMMAND));
         } else {
@@ -186,7 +222,8 @@ public class CompileDescription {
         ret.put(prefix + SLOEBER_ARCHIVE_COMPILE_OPTIONS, this.my_Archive_CompileOptions);
         ret.put(prefix + SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(prefix + SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
-        ret.put(prefix + SLOEBER_WARNING_LEVEL, Boolean.valueOf(myWarningLevel).toString());
+        ret.put(prefix + SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
+        ret.put(prefix + SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
         ret.put(prefix + SLOEBER_SIZE_SWITCH, Boolean.valueOf(myAlternativeSizeCommand).toString());
 
         return ret;
@@ -208,7 +245,8 @@ public class CompileDescription {
         my_Archive_CompileOptions = section.getValue(SLOEBER_ARCHIVE_COMPILE_OPTIONS);
         my_Link_CompileOptions = section.getValue(SLOEBER_LINK_COMPILE_OPTIONS);
         my_All_CompileOptions = section.getValue(SLOEBER_ALL_COMPILE_OPTIONS);
-        myWarningLevel = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_WARNING_LEVEL));
+        myWarningLevel = WarningLevels.valueOf(section.getValue(SLOEBER_WARNING_LEVEL));
+        myWarningLevel.setCustomWarningLevel(section.getValue(SLOEBER_WARNING_LEVEL_CUSTOM));
         myAlternativeSizeCommand = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_SIZE_SWITCH));
 
     }
@@ -270,7 +308,10 @@ public class CompileDescription {
         ret.my_Archive_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.archive");
         ret.my_Link_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.link");
         ret.my_All_CompileOptions = getOldWayEnvVar(confDesc, "JANTJE.extra.all");
-        ret.myWarningLevel = TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.warning_level"));
+        ret.myWarningLevel = WarningLevels.NONE;
+        if (TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.warning_level"))) {
+            ret.myWarningLevel = WarningLevels.ALL;
+        }
         ret.myAlternativeSizeCommand = TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.size.switch"));
         return ret;
     }

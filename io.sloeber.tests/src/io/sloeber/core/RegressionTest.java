@@ -25,6 +25,7 @@ import org.junit.Test;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
@@ -566,7 +567,7 @@ public class RegressionTest {
         inCompileDescription.set_CPP_CompileOptions("-Dzeven=7");
         inCompileDescription.setAlternativeSizeCommand(true);
         inCompileDescription.setEnableParallelBuild(true);
-        inCompileDescription.setWarningLevel(false);
+        inCompileDescription.setWarningLevel(WarningLevels.NONE);
         return inCompileDescription;
     }
 
