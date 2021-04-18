@@ -406,10 +406,11 @@ public class SloeberProject extends Common {
             }
             if (prjDescWritable) {
                 if (myNeedsSyncWithCDT) {
-                    saveProjDesc = syncWithCDT(prjCDesc, prjDescWritable);
+                    saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
                 }
                 if (myNeedsClean) {
-                    cleanOldData(prjCDesc);
+                    myNeedsClean = cleanOldData(prjCDesc);
+                    saveProjDesc = saveProjDesc || myNeedsClean;
                 }
             }
             return saveProjDesc;
@@ -425,7 +426,8 @@ public class SloeberProject extends Common {
             if (myNeedsClean) {
                 // we migrated from a previous sloeber configuration
                 // and we can safely delete the old data
-                cleanOldData(prjCDesc);
+                myNeedsClean = cleanOldData(prjCDesc);
+                saveProjDesc = saveProjDesc || myNeedsClean;
             }
             if (myNeedsSyncWithCDT) {
                 saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
@@ -451,7 +453,8 @@ public class SloeberProject extends Common {
      * @param prjCDesc
      * @return
      */
-    private void cleanOldData(ICProjectDescription prjCDesc) {
+    private boolean cleanOldData(ICProjectDescription prjCDesc) {
+        boolean needsClean = false;
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
         for (ICConfigurationDescription confDesc : prjCDesc.getConfigurations()) {
@@ -459,13 +462,15 @@ public class SloeberProject extends Common {
             for (int i = (CurVariables.length - 1); i > 0; i--) {
                 if (CurVariables[i].getName().startsWith("A.")) { //$NON-NLS-1$
                     contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
+                    needsClean = true;
                 }
                 if (CurVariables[i].getName().startsWith("JANTJE.")) { //$NON-NLS-1$
                     contribEnv.removeVariable(CurVariables[i].getName(), confDesc);
+                    needsClean = true;
                 }
             }
         }
-        myNeedsClean = false;
+        return needsClean;
     }
 
     /**
