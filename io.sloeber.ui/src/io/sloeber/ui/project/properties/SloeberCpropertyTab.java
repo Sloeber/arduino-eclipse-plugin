@@ -117,7 +117,7 @@ public abstract class SloeberCpropertyTab extends AbstractCPropertyTab {
 		// here is some wierd code to handle the creation of new configurations
 		// The compile description is a copy in that case but SloeberProject doesn't
 		// know this config
-		// so if sloeberProject doesn't know the config we ùmake a copy
+		// so if sloeberProject doesn't know the config we make a copy
 		if (storedDesc == null) {
 			// this should not happen
 			storedDesc = getnewDefaultObject();
