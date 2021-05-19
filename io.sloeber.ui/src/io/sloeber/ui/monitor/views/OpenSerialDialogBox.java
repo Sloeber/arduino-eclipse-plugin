@@ -42,11 +42,11 @@ public class OpenSerialDialogBox extends Dialog {
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 2;
 	parent.setLayout(layout);
-	mySerialPorts = new LabelCombo(parent, Messages.openSerialDialogBoxSerialPortToConnectTo, null, 1, false);
+	mySerialPorts = new LabelCombo(parent, Messages.openSerialDialogBoxSerialPortToConnectTo, 1, false);
 	mySerialPorts.setItems(SerialManager.listComPorts());
 	mySerialPorts.setText(MyPreferences.getLastUsedPort());
 
-	myBaudRates = new LabelCombo(parent, Messages.openSerialDialogBoxSelectTheBautRate, null, 1, false);
+	myBaudRates = new LabelCombo(parent, Messages.openSerialDialogBoxSelectTheBautRate, 1, false);
 	myBaudRates.setItems(SerialManager.listBaudRates());
 	myBaudRates.setText(MyPreferences.getLastUsedRate());
 

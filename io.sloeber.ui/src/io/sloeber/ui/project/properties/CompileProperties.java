@@ -1,28 +1,28 @@
 package io.sloeber.ui.project.properties;
 
+import java.util.Arrays;
+
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.ui.newui.ICPropertyProvider;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
+import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
 public class CompileProperties extends SloeberCpropertyTab {
-	private ComboViewer myWarningLevel;
+	private LabelCombo myWarningLevel;
 	private Text myCustomWarningLevel;
 	private Button mySizeCommand;
 	private Text myCAndCppCommand;
@@ -32,6 +32,46 @@ public class CompileProperties extends SloeberCpropertyTab {
 	private Text myArchiveCommand;
 	private Text myAssemblyCommand;
 	private Text myLinkCommand;
+
+	private boolean disableListeners = false;
+
+	private Listener buttonListener = new Listener() {
+		@Override
+		public void handleEvent(Event e) {
+			if (disableListeners)
+				return;
+			switch (e.type) {
+			case SWT.Selection:
+				getFromScreen();
+				break;
+			}
+		}
+	};
+	protected Listener myLabelComboListener = new Listener() {
+		@Override
+		public void handleEvent(Event e) {
+			if (disableListeners)
+				return;
+			getFromScreen();
+			CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
+			myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
+		}
+	};
+	private FocusListener foucusListener = new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent e) {
+			// Not interested
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (disableListeners)
+				return;
+			getFromScreen();
+		}
+
+	};
 
 	private static void createLine(Composite parent, int ncol) {
 		Label line = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BOLD);
@@ -52,7 +92,14 @@ public class CompileProperties extends SloeberCpropertyTab {
 		gridData.horizontalSpan = 2;
 		gridData.verticalSpan = 2;
 		textField.setLayoutData(gridData);
+		textField.addFocusListener(foucusListener);
 		return textField;
+	}
+
+	// From
+	// https://stackoverflow.com/questions/13783295/getting-all-names-in-an-enum-as-a-string#13783744
+	private static String[] getNames(Class<? extends Enum<?>> e) {
+		return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
 	}
 
 	@Override
@@ -64,34 +111,23 @@ public class CompileProperties extends SloeberCpropertyTab {
 		usercomp.setLayout(theGridLayout);
 
 		// combobox to select warning level and optional custom values
-		Label label = new Label(usercomp, SWT.LEFT);
-		label.setText(Messages.ui_show_all_warnings);
 
-		myWarningLevel = new ComboViewer(usercomp, SWT.READ_ONLY);
-		myWarningLevel.setContentProvider(ArrayContentProvider.getInstance());
-		myWarningLevel.setInput(WarningLevels.values());
-		myWarningLevel.addSelectionChangedListener(new ISelectionChangedListener() {
+		myWarningLevel = new LabelCombo(usercomp, Messages.ui_show_all_warnings, 1, true);
+		myWarningLevel.setItems(getNames(WarningLevels.class));
+		myWarningLevel.addListener(myLabelComboListener);
 
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection selection = event.getSelection();
-				if (selection instanceof IStructuredSelection) {
-					WarningLevels newSelection = (WarningLevels) ((IStructuredSelection) selection).getFirstElement();
-					myCustomWarningLevel.setEnabled(newSelection == WarningLevels.CUSTOM);
-					myCustomWarningLevel.setText(newSelection.getEnvValue());
-				}
-			}
-		});
 
 		myCustomWarningLevel = new Text(usercomp, SWT.BORDER | SWT.LEFT);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		myCustomWarningLevel.setLayoutData(gridData);
+		myCustomWarningLevel.addFocusListener(foucusListener);
 
 		// checkbox show alternative size
 		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
 		this.mySizeCommand.setText(Messages.ui_Alternative_size);
 		this.mySizeCommand.setEnabled(true);
 		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
+		mySizeCommand.addListener(SWT.Selection, buttonListener);
 
 		createLine(this.usercomp, 3);
 		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);
@@ -102,8 +138,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 		this.myLinkCommand = makeOptionField(Messages.ui_append_link, Messages.ui_append_link_text);
 		this.myAllCommand = makeOptionField(Messages.ui_append_all, Messages.ui_append_all_text);
 
-		updateScreen(getDescription(getConfdesc()));
-		setVisible(true);
+		updateScreen();
 	}
 
 	@Override
@@ -112,27 +147,27 @@ public class CompileProperties extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected void updateScreen(Object object) {
-		CompileDescription compDesc = (CompileDescription) object;
-		final ISelection selection = new StructuredSelection(compDesc.getWarningLevel());
-		myWarningLevel.setSelection(selection);
+	protected void updateScreen() {
+		disableListeners = true;
+		CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
+		myWarningLevel.setText(compDesc.getWarningLevel().toString());
 		myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
-		myCustomWarningLevel.setText(compDesc.getWarningLevel().getEnvValue());
-		this.mySizeCommand.setSelection(compDesc.isAlternativeSizeCommand());
-		this.myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
-		this.myCCommand.setText(compDesc.get_C_CompileOptions());
-		this.myCppCommand.setText(compDesc.get_CPP_CompileOptions());
-		this.myAllCommand.setText(compDesc.get_All_CompileOptions());
-		this.myArchiveCommand.setText(compDesc.get_Archive_CompileOptions());
-		this.myAssemblyCommand.setText(compDesc.get_Assembly_CompileOptions());
-		this.myLinkCommand.setText(compDesc.get_Link_CompileOptions());
-
+		myCustomWarningLevel.setText(compDesc.getWarningLevel().getCustomWarningLevel());
+		mySizeCommand.setSelection(compDesc.isAlternativeSizeCommand());
+		myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
+		myCCommand.setText(compDesc.get_C_CompileOptions());
+		myCppCommand.setText(compDesc.get_CPP_CompileOptions());
+		myAllCommand.setText(compDesc.get_All_CompileOptions());
+		myArchiveCommand.setText(compDesc.get_Archive_CompileOptions());
+		myAssemblyCommand.setText(compDesc.get_Assembly_CompileOptions());
+		myLinkCommand.setText(compDesc.get_Link_CompileOptions());
+		disableListeners = false;
 	}
 
 	@Override
 	protected Object getFromScreen() {
-		CompileDescription compDesc = mySloeberProject.getCompileDescription(getConfdesc().getName(), true);
-		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getCombo().getText());
+		CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
+		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getText());
 		warningLevel.setCustomWarningLevel(myCustomWarningLevel.getText());
 		compDesc.setWarningLevel(warningLevel);
 		compDesc.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
@@ -158,8 +193,9 @@ public class CompileProperties extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
-		mySloeberProject.setCompileDescription(confDesc.getName(), (CompileDescription) theObjectToStore);
+	protected void updateSloeber(ICConfigurationDescription confDesc) {
+		CompileDescription theObjectToStore = (CompileDescription) getDescription(confDesc);
+		mySloeberProject.setCompileDescription(confDesc.getName(), theObjectToStore);
 	}
 
 	@Override
