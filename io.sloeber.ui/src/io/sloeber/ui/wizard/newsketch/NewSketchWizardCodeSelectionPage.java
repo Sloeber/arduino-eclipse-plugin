@@ -69,7 +69,7 @@ public class NewSketchWizardCodeSelectionPage extends WizardPage {
 
 			}
 		};
-		myCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, null, 4, true);
+		myCodeSourceOptionsCombo = new LabelCombo(composite, Messages.ui_new_sketch_selecy_code, 4, true);
 		myCodeSourceOptionsCombo.addListener(comboListener);
 
 		myCodeSourceOptionsCombo.setItems(getCodeTypeDescriptions());

@@ -24,10 +24,23 @@ public class CompileDescription {
          * @param customCommand
          *            the command that needs to be used
          */
-        public void setCustomWarningLevel(String customCommand) {
+        public void setCustomWarningLevel(String customWarningLevel) {
             if (this == CUSTOM) {
-                myCustomWarningLevel = customCommand;
+                myCustomWarningLevel = customWarningLevel;
             }
+        }
+
+        public void setCustomWarningLevel(String customWarningLevel, boolean force) {
+            if (force) {
+                myCustomWarningLevel = customWarningLevel;
+            } else {
+                setCustomWarningLevel(customWarningLevel);
+            }
+
+        }
+
+        public String getCustomWarningLevel() {
+            return myCustomWarningLevel;
         }
 
         /**
@@ -51,6 +64,7 @@ public class CompileDescription {
             }
             return "${compiler.warning_flags.none}"; //$NON-NLS-1$
         }
+
 
     }
 

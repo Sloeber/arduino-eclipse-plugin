@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.util.StringUtil;
@@ -530,9 +529,6 @@ public class BoardDescription {
         return this.myTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
     }
 
-    public Set<String> getAllMenuNames() {
-        return this.myTxtFile.getMenuNames();
-    }
 
     public TreeMap<String, IPath> getAllExamples() {
         updateWhenDirty();
@@ -1132,6 +1128,10 @@ public class BoardDescription {
     public void reloadTxtFile() {
         myTxtFile.reloadTxtFile();
 
+    }
+
+    public Map<String, String> getAllMenus() {
+        return myTxtFile.getMenus();
     }
 
 }

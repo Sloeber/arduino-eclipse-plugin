@@ -7,6 +7,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.ui.Messages;
@@ -15,6 +17,16 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 	private Button myOtherProperties;
 
+	private Listener buttonListener = new Listener() {
+		@Override
+		public void handleEvent(Event e) {
+			switch (e.type) {
+			case SWT.Selection:
+				getFromScreen();
+				break;
+			}
+		}
+	};
 
 
 	@Override
@@ -23,18 +35,18 @@ public class OtherProperties extends SloeberCpropertyTab {
 
 		GridLayout theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
-		this.usercomp.setLayout(theGridLayout);
+		usercomp.setLayout(theGridLayout);
 
-		this.myOtherProperties = new Button(this.usercomp, SWT.CHECK);
-		this.myOtherProperties.setText(Messages.ui_put_in_version_control);
-		this.myOtherProperties.setEnabled(true);
-		this.myOtherProperties.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+		myOtherProperties = new Button(this.usercomp, SWT.CHECK);
+		myOtherProperties.setText(Messages.ui_put_in_version_control);
+		myOtherProperties.setEnabled(true);
+		myOtherProperties.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+		myOtherProperties.addListener(SWT.Selection, buttonListener);
 
 		theGridLayout = new GridLayout();
 		theGridLayout.numColumns = 2;
 		this.usercomp.setLayout(theGridLayout);
-		updateScreen(getDescription(getConfdesc()));
-		setVisible(true);
+		updateScreen();
 	}
 
 	@Override
@@ -43,15 +55,15 @@ public class OtherProperties extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected void updateScreen(Object object) {
-		OtherDescription otherDesc = (OtherDescription) object;
+	protected void updateScreen() {
+		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
 		myOtherProperties.setSelection(otherDesc.IsVersionControlled());
 	}
 
 	@Override
 	protected Object getFromScreen() {
-		OtherDescription otherDesc = new OtherDescription();
-		otherDesc.setVersionControlled(this.myOtherProperties.getSelection());
+		OtherDescription otherDesc = (OtherDescription) getDescription(getConfdesc());
+		otherDesc.setVersionControlled(myOtherProperties.getSelection());
 		return otherDesc;
 	}
 
@@ -67,8 +79,9 @@ public class OtherProperties extends SloeberCpropertyTab {
 	}
 
 	@Override
-	protected void updateSloeber(ICConfigurationDescription confDesc, Object theObjectToStore) {
-		mySloeberProject.setOtherDescription(confDesc.getName(), (OtherDescription) theObjectToStore);
+	protected void updateSloeber(ICConfigurationDescription confDesc) {
+		OtherDescription theObjectToStore = (OtherDescription) getDescription(confDesc);
+		mySloeberProject.setOtherDescription(confDesc.getName(), theObjectToStore);
 
 	}
 

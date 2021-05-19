@@ -24,14 +24,11 @@ public class NewSketchWizardBoardPage extends WizardPage {
 
     protected BoardSelectionPage mPageLayout = new BoardSelectionPage();
 
-    public void setListener(Listener BoardSelectionChangedListener) {
-	this.mPageLayout.setListener(BoardSelectionChangedListener);
-    }
 
     private Listener completeListener = new Listener() {
 	@Override
 	public void handleEvent(Event e) {
-	    setPageComplete(NewSketchWizardBoardPage.this.mPageLayout.isPageComplete());
+			setPageComplete(e.doit);
 	}
     };
 
@@ -48,14 +45,14 @@ public class NewSketchWizardBoardPage extends WizardPage {
     @Override
     public void createControl(Composite parent) {
 	Composite composite = new Composite(parent, SWT.NULL);
+	this.mPageLayout.addListener(completeListener);
 	this.mPageLayout.draw(composite);
 	setControl(composite);
-	this.mPageLayout.myFeedbackControl.addListener(SWT.Modify, this.completeListener);
-	setPageComplete(this.mPageLayout.isPageComplete());
+
     }
 
     public BoardDescription getBoardDescriptor() {
-		return this.mPageLayout.getBoardDescription(null);
+		return this.mPageLayout.getBoardFromScreen();
     }
 
 }
