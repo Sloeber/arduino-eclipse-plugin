@@ -325,15 +325,15 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	private void setTheLabelCombos() {
 
 		saveUsedOptionValues();
-		BoardDescription boardDesc = (BoardDescription) getDescription(getConfdesc());
+		BoardDescription boardOnScreen = getBoardFromScreen();
 
-		File newLabelComboBoardFile = boardDesc.getReferencingBoardsFile();
-		String newOptionBoardID = boardDesc.getBoardID();
-		boolean boardsFileChanged = !newLabelComboBoardFile.equals(myCurrentLabelComboBoardFile);
-		boolean boardIDChanged = !newOptionBoardID.equals(myCurrentOptionBoardID);
+		File onScreenComboBoardFile = boardOnScreen.getReferencingBoardsFile();
+		String onScreenBoardID = boardOnScreen.getBoardID();
+		boolean boardsFileChanged = !onScreenComboBoardFile.equals(myCurrentLabelComboBoardFile);
+		boolean boardIDChanged = !onScreenBoardID.equals(myCurrentOptionBoardID);
 		if (boardsFileChanged || boardIDChanged) {
-			myCurrentLabelComboBoardFile = newLabelComboBoardFile;
-			myCurrentOptionBoardID = newOptionBoardID;
+			myCurrentLabelComboBoardFile = onScreenComboBoardFile;
+			myCurrentOptionBoardID = onScreenBoardID;
 
 			saveUsedOptionValues();
 			for (LabelCombo labelCombo : myBoardOptionCombos.values()) {
@@ -341,23 +341,23 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			}
 			myBoardOptionCombos.clear();
 
-			Map<String, String> menus = boardDesc.getAllMenus();
-			Map<String, String> boardOptions = boardDesc.getOptions();
+			Map<String, String> menus = boardOnScreen.getAllMenus();
+			Map<String, String> boardOptions = boardOnScreen.getOptions();
 
 			for (Map.Entry<String, String> curMenu : menus.entrySet()) {
 				String menuName = curMenu.getValue();
 				String menuID = curMenu.getKey();
-				String[] menuItemNames = boardDesc.getMenuItemNamesFromMenuID(menuID);
+				String[] menuItemNames = boardOnScreen.getMenuItemNamesFromMenuID(menuID);
 				if (menuItemNames.length > 0) {
 					LabelCombo newLabelCombo = new LabelCombo(myComposite, menuName, 2, true);
 					myBoardOptionCombos.put(menuID, newLabelCombo);
 
-					newLabelCombo.setItems(boardDesc.getMenuItemNamesFromMenuID(menuID));
+					newLabelCombo.setItems(boardOnScreen.getMenuItemNamesFromMenuID(menuID));
 					newLabelCombo.setLabel(menuName);
 					String optionValue = boardOptions.get(menuID);
 					if (optionValue != null) {
 						// convert the ID to a name
-						optionValue = boardDesc.getMenuItemNamedFromMenuItemID(optionValue, menuID);
+						optionValue = boardOnScreen.getMenuItemNamedFromMenuItemID(optionValue, menuID);
 					} else {
 						// use last used name for this menu ID
 						optionValue = myUsedOptionValues.get(menuID);
@@ -376,14 +376,14 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myScrollComposite.setMinSize(point);
 		}
 		else {
-			Map<String, String> boardOptions = boardDesc.getOptions();
+			Map<String, String> boardOptions = boardOnScreen.getOptions();
 			for (Entry<String, LabelCombo> curOptionCombo : myBoardOptionCombos.entrySet()) {
 				String curMenuID = curOptionCombo.getKey();
 				LabelCombo curLabelCombo = curOptionCombo.getValue();
 				String optionValue = boardOptions.get(curMenuID);
 				if (optionValue != null) {
 					// convert the ID to a name
-					optionValue = boardDesc.getMenuItemNamedFromMenuItemID(optionValue, curMenuID);
+					optionValue = boardOnScreen.getMenuItemNamedFromMenuItemID(optionValue, curMenuID);
 				} else {
 					// use last used name for this menu ID
 					optionValue = myUsedOptionValues.get(curMenuID);
