@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,7 +50,6 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.listeners.IndexerController;
-import io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
 import io.sloeber.core.txt.KeyValueTree;
@@ -62,10 +60,11 @@ public class SloeberProject extends Common {
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
     private Map<String, OtherDescription> myOtherDescriptions = new HashMap<>();
+    private Map<String, Map<String, String>> myEnvironmentVariables = new HashMap<>();
     private TxtFile myCfgFile = null;
     private IProject myProject = null;
     private boolean isInMemory = false;
-    private boolean isDirty = false; // if anything has changed
+    private boolean myIsDirty = false; // if anything has changed
     private boolean myNeedToPersist = false; // Do we need to write data to disk
     private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
     private boolean myNeedsSyncWithCDT = false; // Knows CDT all configs Sloeber Knows
@@ -176,12 +175,13 @@ public class SloeberProject extends Common {
                         Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
 
                         String curConfigKey = getConfigKey(curConfigDesc);
-                        sloeberProject.setEnvVars(curConfigKey, sloeberProject.getEnvVars(curConfigKey));
+                        sloeberProject.myEnvironmentVariables.put(curConfigKey,
+                                sloeberProject.getEnvVars(curConfigKey));
                         configs2.put(curConfigName, curConfigDesc.getId());
 
                     }
 
-                    sloeberProject.createSloeberConfigFiles(configs2);
+                    sloeberProject.createSloeberConfigFiles(prjCDesc);
                     SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                     project.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
                     cCorePlugin.setProjectDescription(project, prjCDesc, true, null);
@@ -302,13 +302,14 @@ public class SloeberProject extends Common {
                         Libraries.adjustProjectDescription(curConfigDesc, pathMods);
                         Helpers.addIncludeFolder(curConfigDesc, addToIncludePath, true);
 
-                        arduinoProjDesc.setEnvVars(getConfigKey(curConfigDesc),
-                                arduinoProjDesc.getEnvVars(getConfigKey(curConfigDesc)));
+                        String curConfigKey = getConfigKey(curConfigDesc);
+                        arduinoProjDesc.myEnvironmentVariables.put(curConfigKey,
+                                arduinoProjDesc.getEnvVars(curConfigKey));
                         configs2.put(curConfigDesc.getName(), curConfigDesc.getId());
 
                     }
 
-                    arduinoProjDesc.createSloeberConfigFiles(configs2);
+                    arduinoProjDesc.createSloeberConfigFiles(prjCDesc);
                     SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                     newProjectHandle.open(refreshMonitor);
                     newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
@@ -392,17 +393,17 @@ public class SloeberProject extends Common {
      * @return true if the projectDesc needs to be saved
      */
 
-    public boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        Map<String, String> configs = getConfigs(prjCDesc);
+    public synchronized boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
         boolean saveProjDesc = false;
         if (isInMemory) {
-            if (isDirty) {
-                createSloeberConfigFiles(configs);
-                setEnvironmentVariables(getCfgKeys(configs));
-                isDirty = false;
+            if (myIsDirty) {
+                createSloeberConfigFiles(prjCDesc);
+                setAllEnvironmentVars(prjCDesc);
+
+                myIsDirty = false;
             }
             if (myNeedToPersist) {
-                createSloeberConfigFiles(configs);
+                createSloeberConfigFiles(prjCDesc);
             }
             if (prjDescWritable) {
                 if (myNeedsSyncWithCDT) {
@@ -418,9 +419,9 @@ public class SloeberProject extends Common {
 
         // first read the sloeber files in memory
         saveProjDesc = readConfig(prjCDesc, prjDescWritable);
-        if (myNeedToPersist || isDirty) {
-            createSloeberConfigFiles(configs);
-            isDirty = false;
+        if (myNeedToPersist || myIsDirty) {
+            createSloeberConfigFiles(prjCDesc);
+            myIsDirty = false;
         }
         if (prjDescWritable) {
             if (myNeedsClean) {
@@ -433,8 +434,17 @@ public class SloeberProject extends Common {
                 saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
             }
         }
-        setEnvironmentVariables(getCfgKeys(configs));
+        setAllEnvironmentVars(prjCDesc);
         return saveProjDesc;
+    }
+
+    private void setAllEnvironmentVars(ICProjectDescription prjCDesc) {
+        // set all the environment variables
+        myEnvironmentVariables.clear();
+        for (ICConfigurationDescription curconfig : prjCDesc.getConfigurations()) {
+            String curConfigKey = getConfigKey(curconfig);
+            myEnvironmentVariables.put(curConfigKey, getEnvVars(curConfigKey));
+        }
     }
 
     /**
@@ -650,11 +660,6 @@ public class SloeberProject extends Common {
         return runnable.projConfMustBeSaved;
     }
 
-    private void setEnvironmentVariables(Collection<String> configKeys) {
-        for (String curConfigKey : configKeys) {
-            setEnvVars(curConfigKey, getEnvVars(curConfigKey));
-        }
-    }
 
     /**
      * This methods creates/updates 2 files in the workspace. Together these files
@@ -668,7 +673,7 @@ public class SloeberProject extends Common {
      * @param project
      *            the project to store the data for
      */
-    private synchronized void createSloeberConfigFiles(Map<String, String> configs) {
+    private synchronized void createSloeberConfigFiles(ICProjectDescription prjCDesc) {
 
         final IWorkspace workspace = ResourcesPlugin.getWorkspace();
         if (workspace.isTreeLocked()) {
@@ -680,8 +685,8 @@ public class SloeberProject extends Common {
         Map<String, String> configVars = new TreeMap<>();
         Map<String, String> versionVars = new TreeMap<>();
 
-        for (Entry<String, String> confDesc : configs.entrySet()) {
-            String confName = confDesc.getKey();
+        for (ICConfigurationDescription curconfig : prjCDesc.getConfigurations()) {
+            String confName = curconfig.getName();
             BoardDescription boardDescription = myBoardDescriptions.get(confName);
             CompileDescription compileDescription = myCompileDescriptions.get(confName);
             OtherDescription otherDescription = myOtherDescriptions.get(confName);
@@ -777,24 +782,10 @@ public class SloeberProject extends Common {
             Helpers.deleteBuildFolder(myProject, confDescName);
         }
         myBoardDescriptions.put(confDescName, boardDescription);
-        isDirty = true;
+        myIsDirty = true;
     }
 
-    private void setEnvVars(String configName, Map<String, String> envVars) {
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject);
-        setEnvVars(prjCDesc, configName, envVars);
-    }
 
-    private static void setEnvVars(ICProjectDescription prjCDesc, String configName, Map<String, String> envVars) {
-        ICConfigurationDescription confDesc = prjCDesc.getConfigurationByName(configName);
-        IConfiguration configuration = ManagedBuildManager.getConfigurationForDescription(confDesc);
-        if (configuration != null) {
-            SloeberConfigurationVariableSupplier varSup = (SloeberConfigurationVariableSupplier) configuration
-                    .getEnvironmentVariableSupplier();
-            varSup.setEnvVars(configuration, envVars);
-        }
-    }
 
     /**
      * get the Arduino project description based on a project description
@@ -834,13 +825,13 @@ public class SloeberProject extends Common {
             Helpers.deleteBuildFolder(myProject, confDescName);
         }
         myCompileDescriptions.put(confDescName, compileDescription);
-        isDirty = true;
+        myIsDirty = true;
     }
 
     public void setOtherDescription(String confDescName, OtherDescription otherDesc) {
         try {
             myOtherDescriptions.put(confDescName, otherDesc);
-            isDirty = true;
+            myIsDirty = true;
         } catch (Exception e) {
             e.printStackTrace();
             Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(), "failed to save the board settings", //$NON-NLS-1$
@@ -939,12 +930,12 @@ public class SloeberProject extends Common {
         List<ICConfigurationDescription> renamedConfigs = new LinkedList<>();
 
         // make sure the dirty flag is set when needed
-        if (!isDirty) {
+        if (!myIsDirty) {
             // set dirty when the number of configurations changed
             int newNumberOfConfigs = newProjDesc.getConfigurations().length;
             int oldNumberOfConfigs = oldProjDesc.getConfigurations().length;
             if (newNumberOfConfigs != oldNumberOfConfigs) {
-                isDirty = true;
+                myIsDirty = true;
             } else {
                 // set dirty if a configname changed
                 for (ICConfigurationDescription curConfig : newProjDesc.getConfigurations()) {
@@ -968,24 +959,20 @@ public class SloeberProject extends Common {
                             myOtherDescriptions.remove(oldKey);
                         }
 
-                        isDirty = true;
+                        myIsDirty = true;
                     }
                 }
             }
         }
         // in many cases we also need to set the active config
-        boolean needsConfigSet = myNeedsClean || isDirty
+        boolean needsConfigSet = myNeedsClean || myIsDirty
                 || !newActiveConfig.getName().equals(oldActiveConfig.getName());
 
         configure(newProjDesc, true);
         if (!renamedConfigs.isEmpty()) {
             // a extra setting of the environment vars is neede because the config was not
-            // found
-            // due to the rename
-            for (ICConfigurationDescription curConfig : renamedConfigs) {
-                String curConfigKey = getConfigKey(curConfig);
-                setEnvVars(newProjDesc, curConfigKey, getEnvVars(curConfigKey));
-            }
+            // found due to the rename
+            setAllEnvironmentVars(newProjDesc);
         }
         if (needsConfigSet) {
             setActiveConfigInRunnable(newActiveConfig);
@@ -1001,7 +988,7 @@ public class SloeberProject extends Common {
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject);
         ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
-        isDirty = true;
+        myIsDirty = true;
         boolean projDescNeedsSaving = configure(projDesc, true);
         Helpers.deleteBuildFolder(myProject, activeConfig.getName());
         projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
@@ -1042,19 +1029,30 @@ public class SloeberProject extends Common {
 
     }
 
-    private static Map<String, String> getConfigs(ICProjectDescription prjCDesc) {
-        Map<String, String> ret = new HashMap<>();
-        for (ICConfigurationDescription curconfig : prjCDesc.getConfigurations()) {
-            ret.put(curconfig.getName(), curconfig.getId());
-        }
-        return ret;
-    }
-
-    private Collection<String> getCfgKeys(Map<String, String> configs) {
-        return configs.keySet();
-    }
-
+    /**
+     * This method returns the key used to identify the configuraation One can use
+     * the id or the name. Both with advantages and disadvantages
+     * 
+     * I doubted between the 2 and finally set on the name. To be able to switch
+     * between the 2 options during investigation I created this method So basically
+     * now this can be replaced by configDesc.getName();
+     * 
+     * @param configDesc
+     * @return
+     */
     private static String getConfigKey(ICConfigurationDescription configDesc) {
         return configDesc.getName();
+    }
+
+    public boolean isDirty() {
+        return myIsDirty;
+    }
+
+    public Map<String, String> getEnvironmentVariables(String configKey) {
+        if (isDirty()) {
+            configure();
+        }
+
+        return myEnvironmentVariables.get(configKey);
     }
 }

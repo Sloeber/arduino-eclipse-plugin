@@ -17,22 +17,26 @@ import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.SloeberProject;
 
 public class SloeberConfigurationVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
-    // variables per configuration
-    private Map<String, Map<String, String>> myConfigValues = new HashMap<>();
-    private boolean myIsConfigurationBussy = false;
+
+    private static SloeberProject getSloeberProject(IConfiguration configuration) {
+        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
+        ICProjectDescription projDesc = confDesc.getProjectDescription();
+        IProject project = projDesc.getProject();
+        return SloeberProject.getSloeberProject(project, false);
+    }
 
     @Override
     public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
             IEnvironmentVariableProvider provider) {
-        initializeIfNotYetDone(configuration);
-        Map<String, String> curConfigVars = myConfigValues.get(configuration.getName());
-        if (null == curConfigVars) {
+        String ret = null;
+        SloeberProject sloeberProject = getSloeberProject(configuration);
+        if (sloeberProject == null) {
             return null;
-            // This should only happen if a config is existing Sloeber does not know about
-            // because we configured the sloeber project above
-            // So this should not happen
         }
-        String ret = curConfigVars.get(variableName);
+        Map<String, String> boardEnvVars = sloeberProject.getEnvironmentVariables(configuration.getName());
+        if (null != boardEnvVars) {
+            ret = boardEnvVars.get(variableName);
+        }
         if (ret == null) {
             // when the configuration doesn't hold the env var maybe the workbench does
             ret = PackageManager.getEnvironmentVariables().get(variableName);
@@ -46,16 +50,18 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
     @Override
     public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration,
             IEnvironmentVariableProvider provider) {
-        initializeIfNotYetDone(configuration);
         Map<String, String> retVars = new HashMap<>();
         Map<String, String> workbenchVars = PackageManager.getEnvironmentVariables();
         if (workbenchVars != null) {
             retVars.putAll(workbenchVars);
         }
+        SloeberProject sloeberProject = getSloeberProject(configuration);
+        if (sloeberProject != null) {
 
-        Map<String, String> curConfigVars = myConfigValues.get(configuration.getName());
-        if (curConfigVars != null) {
-            retVars.putAll(curConfigVars);
+            Map<String, String> boardEnvVars = sloeberProject.getEnvironmentVariables(configuration.getName());
+            if (boardEnvVars != null) {
+                retVars.putAll(boardEnvVars);
+            }
         }
 
         IBuildEnvironmentVariable[] ret = new BuildEnvironmentVariable[retVars.size()];
@@ -66,25 +72,4 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         return ret;
     }
 
-    public void setEnvVars(IConfiguration configuration, Map<String, String> values) {
-        myConfigValues.put(configuration.getName(), values);
-    }
-
-    private void initializeIfNotYetDone(IConfiguration configuration) {
-        if (!myConfigValues.isEmpty()) {
-            // we have some data; asume it is correct
-            return;
-        }
-        if (myIsConfigurationBussy) {
-            // We are already configurating. Don't go in an endless loop
-            return;
-        }
-        myIsConfigurationBussy = true;
-        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
-        ICProjectDescription projDesc = confDesc.getProjectDescription();
-        IProject project = projDesc.getProject();
-        SloeberProject sloeberProject = SloeberProject.getSloeberProject(project, false);
-        sloeberProject.configure(projDesc, false);
-        myIsConfigurationBussy = false;
-    }
 }
