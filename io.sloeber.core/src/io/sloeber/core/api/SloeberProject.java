@@ -68,6 +68,7 @@ public class SloeberProject extends Common {
     private boolean myNeedToPersist = false; // Do we need to write data to disk
     private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
     private boolean myNeedsSyncWithCDT = false; // Knows CDT all configs Sloeber Knows
+    private boolean myIsConfiguring = false; // True if configuration of the project is ongoing
 
     private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
     private static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
@@ -394,47 +395,56 @@ public class SloeberProject extends Common {
      */
 
     public synchronized boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+        if (myIsConfiguring) {
+            return false;
+        }
         boolean saveProjDesc = false;
-        if (isInMemory) {
-            if (myIsDirty) {
-                createSloeberConfigFiles(prjCDesc);
-                setAllEnvironmentVars(prjCDesc);
 
+        try {
+            myIsConfiguring = true;
+
+            if (isInMemory) {
+                if (myIsDirty) {
+                    createSloeberConfigFiles(prjCDesc);
+                    setAllEnvironmentVars(prjCDesc);
+                    myIsDirty = false;
+                }
+                if (myNeedToPersist) {
+                    createSloeberConfigFiles(prjCDesc);
+                }
+                if (prjDescWritable) {
+                    if (myNeedsSyncWithCDT) {
+                        saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
+                    }
+                    if (myNeedsClean) {
+                        myNeedsClean = cleanOldData(prjCDesc);
+                        saveProjDesc = saveProjDesc || myNeedsClean;
+                    }
+                }
+                return saveProjDesc;
+            }
+
+            // first read the sloeber files in memory
+            saveProjDesc = readConfig(prjCDesc, prjDescWritable);
+            if (myNeedToPersist || myIsDirty) {
+                createSloeberConfigFiles(prjCDesc);
                 myIsDirty = false;
             }
-            if (myNeedToPersist) {
-                createSloeberConfigFiles(prjCDesc);
-            }
             if (prjDescWritable) {
-                if (myNeedsSyncWithCDT) {
-                    saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
-                }
                 if (myNeedsClean) {
+                    // we migrated from a previous sloeber configuration
+                    // and we can safely delete the old data
                     myNeedsClean = cleanOldData(prjCDesc);
                     saveProjDesc = saveProjDesc || myNeedsClean;
                 }
+                if (myNeedsSyncWithCDT) {
+                    saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
+                }
             }
-            return saveProjDesc;
+            setAllEnvironmentVars(prjCDesc);
+        } finally {
+            myIsConfiguring = false;
         }
-
-        // first read the sloeber files in memory
-        saveProjDesc = readConfig(prjCDesc, prjDescWritable);
-        if (myNeedToPersist || myIsDirty) {
-            createSloeberConfigFiles(prjCDesc);
-            myIsDirty = false;
-        }
-        if (prjDescWritable) {
-            if (myNeedsClean) {
-                // we migrated from a previous sloeber configuration
-                // and we can safely delete the old data
-                myNeedsClean = cleanOldData(prjCDesc);
-                saveProjDesc = saveProjDesc || myNeedsClean;
-            }
-            if (myNeedsSyncWithCDT) {
-                saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
-            }
-        }
-        setAllEnvironmentVars(prjCDesc);
         return saveProjDesc;
     }
 
@@ -660,7 +670,6 @@ public class SloeberProject extends Common {
         return runnable.projConfMustBeSaved;
     }
 
-
     /**
      * This methods creates/updates 2 files in the workspace. Together these files
      * contain the Sloeber project configuration info The info is split into 2 files
@@ -784,8 +793,6 @@ public class SloeberProject extends Common {
         myBoardDescriptions.put(confDescName, boardDescription);
         myIsDirty = true;
     }
-
-
 
     /**
      * get the Arduino project description based on a project description
