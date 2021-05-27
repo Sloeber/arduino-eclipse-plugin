@@ -475,9 +475,11 @@ public class BoardDescription {
         if (boardsFile == null) {
             return;// ignore
         }
-        if (this.myreferencingBoardsFile.equals(resolvePathEnvironmentString(boardsFile))) {
-            return;
-        }
+        /*
+         * do not do this optimisation as workaround changes will not be captured if
+         * (this.myreferencingBoardsFile.equals(resolvePathEnvironmentString(boardsFile)
+         * )) { return; }
+         */
 
         this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
         this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
