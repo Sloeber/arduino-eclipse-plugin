@@ -37,7 +37,7 @@ public class WorkAround extends Const {
 	// Each time this class is touched consider changing the String below to enforce
 	// updates
 	// for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 18 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.01.test 20 ";
 	// + String.valueOf(System.currentTimeMillis());
 
 	/**
@@ -123,6 +123,7 @@ public class WorkAround extends Const {
 				String correctMAN = " \"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\" ";
 				String correctPROD = " \"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\" ";
 				String correctBOARD = " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ";
+                String correctUSBSERIAL = " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ";
 
 				// replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
 				// with circuitplay32u4cat.build.usb_manufacturer=Adafruit
@@ -141,6 +142,7 @@ public class WorkAround extends Const {
 				boardsTXT = boardsTXT.replace(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ", correctMAN);
 				boardsTXT = boardsTXT.replace(" '-DUSB_PRODUCT={build.usb_product}' ", correctPROD);
 				boardsTXT = boardsTXT.replace(" '-DARDUINO_BOARD=\"{build.board}' ", correctBOARD);
+                boardsTXT = boardsTXT.replace(" '-DUSB_SERIAL={build.usb_serial}' ", correctUSBSERIAL);
 				boardsTXT = boardsTXT.replace("{", "${");
 				FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
 			} catch (IOException e) {
