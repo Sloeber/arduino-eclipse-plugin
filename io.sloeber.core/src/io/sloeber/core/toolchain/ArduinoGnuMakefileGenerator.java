@@ -1483,8 +1483,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			try {
 				// try to resolve the build macros in the tool command
 				String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(command, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool));
-				if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-					command = resolvedCommand;
+                if ((resolvedCommand = resolvedCommand.trim()).length() > 0) {
+                    command = resolvedCommand.replace(" \"\" ", " ");
+                }
 			} catch (BuildMacroException e) {
 				/* JABA is not going to write this code */
 			}
@@ -1508,8 +1509,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 			// generated
 			try {
 				String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE, new FileContextData(null, null, null, tool));
-				if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-					buildCmd = resolvedCommand;
+                if ((resolvedCommand = resolvedCommand.trim()).length() > 0) {
+                    buildCmd = resolvedCommand.replace(" \"\" ", " ");
+                }
 			} catch (BuildMacroException e) {
 				/* JABA is not going to write this code */
 			}
