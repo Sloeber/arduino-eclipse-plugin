@@ -1051,12 +1051,18 @@ public class SloeberProject extends Common {
         return configDesc.getName();
     }
 
-    public boolean isDirty() {
-        return myIsDirty;
+    /**
+     * Can we just use the available data or do we need to configure first Note this
+     * can return true when configuration is bussy
+     * 
+     * @return true if the data is available and up to date
+     */
+    private boolean needsconfiguring() {
+        return myIsDirty || !isInMemory;
     }
 
     public Map<String, String> getEnvironmentVariables(String configKey) {
-        if (isDirty()) {
+        if (needsconfiguring() || !myEnvironmentVariables.containsKey(configKey)) {
             configure();
         }
 
