@@ -259,10 +259,10 @@ public class CompileDescription {
         my_Archive_CompileOptions = section.getValue(SLOEBER_ARCHIVE_COMPILE_OPTIONS);
         my_Link_CompileOptions = section.getValue(SLOEBER_LINK_COMPILE_OPTIONS);
         my_All_CompileOptions = section.getValue(SLOEBER_ALL_COMPILE_OPTIONS);
-        myWarningLevel.setCustomWarningLevel(section.getValue(SLOEBER_WARNING_LEVEL_CUSTOM));
         myAlternativeSizeCommand = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_SIZE_SWITCH));
         try {
             myWarningLevel = WarningLevels.valueOf(section.getValue(SLOEBER_WARNING_LEVEL));
+            myWarningLevel.setCustomWarningLevel(section.getValue(SLOEBER_WARNING_LEVEL_CUSTOM));
         } catch (@SuppressWarnings("unused") Exception e) {
             // ignore as this will be default
         }

@@ -995,7 +995,7 @@ public class SloeberProject extends Common {
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject);
         ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
-        myIsDirty = true;
+        isInMemory = false;
         boolean projDescNeedsSaving = configure(projDesc, true);
         Helpers.deleteBuildFolder(myProject, activeConfig.getName());
         projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
