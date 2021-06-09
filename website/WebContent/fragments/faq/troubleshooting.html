@@ -1,9 +1,9 @@
 <h2>Trouble shooting</h2>
 <accordion close-others="true">
   <accordion-group heading="The plugin doesn't work on my system.">
-   <p>If it doesn't work with the  Arduino IDE it won't work with the plugin. Can you compile in the Arduino IDE?</p>
-   <p>If you installed the 64 bit version, do you have 64 bit java installed and configured properly?</p>
-   <p>Have you configured the plugin correctly?</p>
+   <p>If it doesn't work with the  Arduino IDE it won't work with Sloeber. Can you compile in the Arduino IDE?</p>
+   <p>Do you have the right 64 bit java installed and configured properly?</p>
+   <p>Have you configured Sloeber correctly?</p>
    <p>Have you installed in program files? The plugin does not support spaces in the path.</p>
    <p>Ask yourself: What doesn't work?</p>
   </accordion-group>
@@ -21,18 +21,6 @@
   To fix this add following line to your eclipse.ini after -vmargs<br>
   <pre>-Dgnu.io.rxtx.SerialPorts=/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyUSB0::/dev/ttyUSB1::/dev/ttyUSB2::/dev/ttyUSB3::/dev/ttyUSB4</pre><br>
   </accordion-group>
-  <accordion-group heading="Test Serial dll fails.">
-   <p>In the newer versions of the plugin this is no longer needed.</p>
-   When I press the "test serial dll" I get a dialog box telling me it did not find a proper dll.<br>
-   What is happening?<br>
-   When you press the button the plugin tries to load the dll delivered with the Arduino IDE. If this dll does not load it tries to load a dll delivered with the plugin.
-   (note older versions worked the other way around)<br>
-    Assuming Arduino IDE is working:<br>
-   The Arduino dll is 32 bit so the Eclipse environment you run the plugin in is not. In other words: you are probably running 64 bit Eclipse and
-   there is no 64 bit RXTX dll delivered for your os with the plugin.<br>
-   I would advice to try the 32 bit version of eclipse.
-   If you are adventures you may go and look for a 64 bit RXTX dll for you OS. (If you find one please inform me and I may be able to add it to the plugin.)<br>
-  </accordion-group>
   <accordion-group heading="How can I find out more of the problem at hand?">
    <p>Thanks for asking.</p>
    <p>It is always a good idea to find out more about the problem at hand.</p>
@@ -43,8 +31,7 @@
    The console view gives you more information on the commands that are being run externally.
    That is the compiler and avr dude. The commands should be nearly 100% the same as in the Arduino IDE (the order is not always relevant).
    Differences I am aware of are
-   <ul><li>-D__IN_ECLIPSE__=1: that specifies you are in Eclipse(I'm considering to remove this)</li>
-   <li>-Wall: stating that all warnings must be shown (the Arduino IDE does not show warnings)</li>
+   <ul><li>-D__IN_ECLIPSE__=1: that specifies you are in Eclipse.</li>
    <li>-x c++: An option I added to force *.pde and *.ino to be treated as C++ files (the latest versions of Arduino do this also)</ul>
    The problems view gives an overview of the code problems and is probably not what you are looking for when you are reading this.<br><br>
    The error view gives you an overview of errors and warnings that happened in Eclipse and or its plugins.
@@ -55,12 +42,7 @@
    <br><br>A final and most time consuming way to find the problem is to download the code from github. You can then compile and debug the code.<a name="spaces"></a>
   </accordion-group>
   <accordion-group heading="Can I use spaces?">
-    The usage of spaces is known to give problems, fior sure when used in<br>
-
-     <ul  type=disc>
-     <li >The Arduino Path.</li>
-     <li >Project Names.</li>
-     </ul>
+    The usage of spaces is known to give problems.<br>
   </accordion-group>
   <accordion-group heading="Eclipse tells me there are bugs in my code but it compiles ok.">
   <p>Eclipse compiles your code in 2 ways. Once when you request a build (when you press on the hammer or the verify icon) by the compiler and ones when you change code by the indexer.</p>
@@ -85,41 +67,11 @@
 
   </accordion-group>
 
-  <accordion-group heading="I have modified my Arduino setup and...">
-  <p>You are entitled to modify the Arduino IDE setup. But I'm not supporting this. If you know what you have been doing and you play a bit
-with Eclipse you will find many ways to help you to solve your problem and probably more to make it worse.</p>
 
-<br>To be frank: If you can change the Arduino IDE setup you are a big boy so you can deal with it, write a document about it and share it with the world.<br>
-This way we all become smarter.<br>
-  </accordion-group>
   <accordion-group heading="I can not cancel the upload to the Arduino board.">
 
 Someone reported that pressing the cancel button during upload to Arduino locks the com port.  Even if the upload is not working.  To solve the lock problem in windows unplug the Arduino  -after all connections to the com port have been closed -from your pc and replug.<br>
 
-  <accordion-group heading="I can't download the plugin. Is your site down?">
-  <p>update: When downloading the product: My web site provider stops downloads. Use a browser that restarts where it stopped downloading (like firefox or internet explorer not chrome)</p>
-  As you are reading this: "obviously my site is not down". The download via Eclipse is standard HTTP just like this page is to the browser. If you can access this page you can download the plugin.<br>
-If it doesn't work for you: "Convince yourself that you have a problem at your site you (and you alone) will need to fix it.".<br>
-You can check the following:<br>
-<ul><li>
-Don't try to download the plugin with a browser. See the installation instructions on how to install the plugin.
-</li><li>
-Make sure you have followed the installation instruction <b>uncheck "group items by category"</b>.
-</li><li>
-Check whether you are downloading the latestversion. Believe me many people failed because they wanted to download an old version.
-</li><li>
-In eclipse: Goto windows-&gt;preferences-&gt;general-&gt;Network settings. Verify these are set OK.<br>
-</li><li>
-Check in your firewall whether java(w) is allowed to get onto the internet.<br>
-</li><li>
-Disable virus checkers and firewalls<br>
-</li><li>
-Ask a local network specialist to help you out.
-</li><li>
-Please do not contact me on this because I can't help you with local issues.
-I will not send zip files over to people who do not sponsor this project.</li></ul>
-<br>
-  </accordion-group>
   <accordion-group heading="On Mac I get the error &quot;serial port is in use&quot; when uploading.">
 The upload will be successfull with Arduino IDE 1.0 and higher unless you are uploading to a mega.
 Run following terminal commands to fix the problem:<br>
