@@ -214,7 +214,7 @@ public class ArduinoSerial {
 
 
 		boolean bResetPortForUpload = Common
-				.getBuildEnvironmentVariable( confDesc, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.TRUE)
+                .getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.FALSE)
 				.equalsIgnoreCase(Const.TRUE);
 
 		/*
