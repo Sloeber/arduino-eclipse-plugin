@@ -22,4 +22,4 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Build with Maven
-      run: mvn verify -Pall,sloeber_release,NOSDK -Dtest=NightlyJenkins
+      run: mvn --no-transfer-progress verify -Pall,sloeber_release,NOSDK -Dtest=NightlyJenkins 
