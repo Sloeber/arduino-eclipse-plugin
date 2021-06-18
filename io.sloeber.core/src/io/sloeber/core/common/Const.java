@@ -80,7 +80,6 @@ public class Const {
 
     public static final String ENV_KEY_UPLOAD_USE_1200BPS_TOUCH = UPLOAD + DOT + "use_1200bps_touch";
     public static final String ENV_KEY_WAIT_FOR_UPLOAD_PORT = UPLOAD + DOT + "wait_for_upload_port";
-    public static final String ENV_KEY_RESET_BEFORE_UPLOAD = UPLOAD + DOT + "force_reset_before_upload";
     public static final String ENV_KEY_NETWORK_PORT = NETWORK + DOT + PORT;
     public static final String ENV_KEY_NETWORK_AUTH = NETWORK + DOT + AUTH;
     public static final String ENV_KEY_NETWORK_PASSWORD = NETWORK + DOT + "password";

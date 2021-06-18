@@ -1,5 +1,6 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.common.Common.*;
 import static io.sloeber.core.common.Const.*;
 
@@ -22,7 +23,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
@@ -37,9 +37,6 @@ import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
     // Important constants to avoid having to add the class
-    private static final String TOOL_ID = Messages.TOOL;
-    private static final String BOARD_ID = Messages.BOARD;
-    private static final String FILE_ID = Messages.FILE;
     private static final String VendorArduino = ARDUINO;
 
     /*
@@ -204,9 +201,9 @@ public class BoardDescription {
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, core)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, core)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -219,9 +216,9 @@ public class BoardDescription {
                         refVersion);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, core)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, core)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else {
@@ -238,9 +235,9 @@ public class BoardDescription {
                         architecture);
                 if (this.myReferencedBoardVariantPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, variant)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -258,9 +255,9 @@ public class BoardDescription {
                 }
                 if (this.myReferencedBoardVariantPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, variant)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else {
@@ -277,9 +274,9 @@ public class BoardDescription {
                         architecture);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, upload)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else if (valueSplit.length == 4) {
@@ -292,9 +289,9 @@ public class BoardDescription {
                         refArchitecture, refVersion);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
-                            Messages.Helpers_tool_reference_missing.replace(TOOL_ID, upload)
-                                    .replace(FILE_ID, getReferencingBoardsFile().toString())
-                                    .replace(BOARD_ID, getBoardID())));
+                            Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
+                                    .replace(FILE_TAG, getReferencingBoardsFile().toString())
+                                    .replace(BOARD_TAG, getBoardID())));
                     return;
                 }
             } else {
@@ -359,7 +356,7 @@ public class BoardDescription {
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
-        myOptions = srcObject.myOptions;
+        myOptions = new TreeMap<>(srcObject.myOptions);
     }
 
 
@@ -476,7 +473,7 @@ public class BoardDescription {
             return;// ignore
         }
         /*
-         * do not do this optimisation as workaround changes will not be captured if
+         * do not do this optimization as workaround changes will not be captured if
          * (this.myreferencingBoardsFile.equals(resolvePathEnvironmentString(boardsFile)
          * )) { return; }
          */
@@ -1013,7 +1010,7 @@ public class BoardDescription {
 
             switch (recipeParts.length) {
             case 0:
-                extraVars.put(recipeKey + DOT + '1', "echo no command for \"{KEY}\".".replace(Messages.KEY, recipeKey)); //$NON-NLS-1$
+                extraVars.put(recipeKey + DOT + '1', "echo no command for \"{KEY}\".".replace(KEY_TAG, recipeKey)); //$NON-NLS-1$
                 break;
             case 1:
                 extraVars.put(recipeKey + DOT + '1', recipeParts[0]);

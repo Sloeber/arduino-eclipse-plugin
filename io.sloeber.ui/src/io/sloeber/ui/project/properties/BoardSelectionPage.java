@@ -60,10 +60,14 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	private File myCurrentLabelComboBoardFile = null;
 	private String myCurrentOptionBoardID = null;
 	private Listener myCompleteListener = null;
+	private boolean disableListeners = false;
 
 	private Listener myBoardFileModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
+			if (disableListeners) {
+				return;
+			}
 			BoardDescription boardDesc = getBoardFromScreen();
 
 			/*
@@ -82,7 +86,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
 			}
 
-			setTheLabelCombos();
+			setTheLabelCombos(getBoardFromScreen());
 			genericListenerEnd();
 		}
 
@@ -91,16 +95,23 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	protected Listener myBoardModifyListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
-			setTheLabelCombos();
+			if (disableListeners) {
+				return;
+			}
+			setTheLabelCombos(getBoardFromScreen());
 			genericListenerEnd();
 		}
 	};
 	protected Listener myChangeListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
+			if (disableListeners) {
+				return;
+			}
 			genericListenerEnd();
 		}
 	};
+
 
 
 
@@ -237,11 +248,18 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		return true;
 	}
 
-	private Map<String, String> getOptions() {
+	/**
+	 * Get the options from screen you need the boarddescriptor to convert the menu
+	 * item name to menu item id
+	 * 
+	 * @param boardDesc
+	 * @return a map containing menuid, menuitemid mapping with what is shown on
+	 *         screen
+	 */
+	private Map<String, String> getOptions(BoardDescription boardDesc) {
 		if (myBoardOptionCombos == null) {
 			return null;
 		}
-		BoardDescription boardDesc = (BoardDescription) getDescription(getConfdesc());
 		Map<String, String> options = new HashMap<>();
 		for (Entry<String, LabelCombo> curOption : myBoardOptionCombos.entrySet()) {
 			String MenuID = curOption.getKey();
@@ -254,6 +272,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 	@Override
 	protected void updateScreen() {
+		disableListeners = true;
 		BoardDescription boardDesc = (BoardDescription) getDescription(getConfdesc());
 
 		myControlBoardsTxtFile.setText(tidyUpLength(boardDesc.getReferencingBoardsFile().toString()));
@@ -271,7 +290,8 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		}
 
 		myControlUploadPort.setText(boardDesc.getUploadPort());
-		setTheLabelCombos();
+		setTheLabelCombos(boardDesc);
+		disableListeners = false;
 	}
 
 	public BoardDescription getBoardFromScreen() {
@@ -281,7 +301,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		boardDesc.setUploadPort(myControlUploadPort.getText());
 		boardDesc.setProgrammer(myControlUploadProtocol.getText());
 		boardDesc.setBoardName(mycontrolBoardName.getText());
-		boardDesc.setOptions(getOptions());
+		boardDesc.setOptions(getOptions(boardDesc));
 		return boardDesc;
 	}
 
@@ -322,13 +342,12 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 	}
 
 
-	private void setTheLabelCombos() {
+	private void setTheLabelCombos(BoardDescription boardDesc) {
 
 		saveUsedOptionValues();
-		BoardDescription boardOnScreen = getBoardFromScreen();
 
-		File onScreenComboBoardFile = boardOnScreen.getReferencingBoardsFile();
-		String onScreenBoardID = boardOnScreen.getBoardID();
+		File onScreenComboBoardFile = boardDesc.getReferencingBoardsFile();
+		String onScreenBoardID = boardDesc.getBoardID();
 		boolean boardsFileChanged = !onScreenComboBoardFile.equals(myCurrentLabelComboBoardFile);
 		boolean boardIDChanged = !onScreenBoardID.equals(myCurrentOptionBoardID);
 		if (boardsFileChanged || boardIDChanged) {
@@ -341,23 +360,23 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			}
 			myBoardOptionCombos.clear();
 
-			Map<String, String> menus = boardOnScreen.getAllMenus();
-			Map<String, String> boardOptions = boardOnScreen.getOptions();
+			Map<String, String> menus = boardDesc.getAllMenus();
+			Map<String, String> boardOptions = boardDesc.getOptions();
 
 			for (Map.Entry<String, String> curMenu : menus.entrySet()) {
 				String menuName = curMenu.getValue();
 				String menuID = curMenu.getKey();
-				String[] menuItemNames = boardOnScreen.getMenuItemNamesFromMenuID(menuID);
+				String[] menuItemNames = boardDesc.getMenuItemNamesFromMenuID(menuID);
 				if (menuItemNames.length > 0) {
 					LabelCombo newLabelCombo = new LabelCombo(myComposite, menuName, 2, true);
 					myBoardOptionCombos.put(menuID, newLabelCombo);
 
-					newLabelCombo.setItems(boardOnScreen.getMenuItemNamesFromMenuID(menuID));
+					newLabelCombo.setItems(boardDesc.getMenuItemNamesFromMenuID(menuID));
 					newLabelCombo.setLabel(menuName);
 					String optionValue = boardOptions.get(menuID);
 					if (optionValue != null) {
 						// convert the ID to a name
-						optionValue = boardOnScreen.getMenuItemNamedFromMenuItemID(optionValue, menuID);
+						optionValue = boardDesc.getMenuItemNamedFromMenuItemID(optionValue, menuID);
 					} else {
 						// use last used name for this menu ID
 						optionValue = myUsedOptionValues.get(menuID);
@@ -376,14 +395,14 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myScrollComposite.setMinSize(point);
 		}
 		else {
-			Map<String, String> boardOptions = boardOnScreen.getOptions();
+			Map<String, String> boardOptions = boardDesc.getOptions();
 			for (Entry<String, LabelCombo> curOptionCombo : myBoardOptionCombos.entrySet()) {
 				String curMenuID = curOptionCombo.getKey();
 				LabelCombo curLabelCombo = curOptionCombo.getValue();
 				String optionValue = boardOptions.get(curMenuID);
 				if (optionValue != null) {
 					// convert the ID to a name
-					optionValue = boardOnScreen.getMenuItemNamedFromMenuItemID(optionValue, curMenuID);
+					optionValue = boardDesc.getMenuItemNamedFromMenuItemID(optionValue, curMenuID);
 				} else {
 					// use last used name for this menu ID
 					optionValue = myUsedOptionValues.get(curMenuID);
