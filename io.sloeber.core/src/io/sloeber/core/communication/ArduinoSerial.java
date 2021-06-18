@@ -14,11 +14,10 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-@SuppressWarnings("unused")
 public class ArduinoSerial {
-	private static final String MS=Messages.MS;
+	private static final String MS=Messages.MS_TAG;
 
-	private static final String PORT=Messages.PORT; 
+	private static final String PORT=Messages.PORT_TAG; 
 
 	private ArduinoSerial() {
 	}
@@ -174,20 +173,15 @@ public class ArduinoSerial {
 	 *            the time to wait between the 2 toggle commands
 	 * @return true is successful otherwise false
 	 */
-    private static boolean ToggleDTR(Serial serialPort, long delay) {
-		serialPort.setDTR(false);
-		serialPort.setRTS(false);
-
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {// Jaba is not going to write this
-			// code
-		}
-
-		serialPort.setDTR(true);
-		serialPort.setRTS(true);
-		return true;
-	}
+    /*
+     * private static boolean ToggleDTR(Serial serialPort, long delay) {
+     * serialPort.setDTR(false); serialPort.setRTS(false);
+     * 
+     * try { Thread.sleep(delay); } catch (InterruptedException e) {// Jaba is not
+     * going to write this // code }
+     * 
+     * serialPort.setDTR(true); serialPort.setRTS(true); return true; }
+     */
 
 	/**
 	 * reset the arduino
@@ -212,17 +206,7 @@ public class ArduinoSerial {
 				.equalsIgnoreCase(Const.TRUE);
 		String comPort = boardDescriptor.getActualUploadPort();
 
-
-		boolean bResetPortForUpload = Common
-                .getBuildEnvironmentVariable(confDesc, Const.ENV_KEY_RESET_BEFORE_UPLOAD, Const.FALSE)
-				.equalsIgnoreCase(Const.TRUE);
-
-		/*
-		 * Teensy uses halfkay protocol and does not require a reset in
-		 * boards.txt use Const.ENV_KEY_RESET_BEFORE_UPLOAD=FALSE to disable a
-		 * reset
-		 */
-		if (!bResetPortForUpload || "teensyloader".equalsIgnoreCase(boardDescriptor.getuploadTool())) { //$NON-NLS-1$
+        if (!use_1200bps_touch) {
 			return comPort;
 		}
 		/*
@@ -235,7 +219,6 @@ public class ArduinoSerial {
             console.println(Messages.ArduinoSerial_comport_not_found + ' ' + comPort);
 			return comPort;
 		}
-		if (use_1200bps_touch) {
 			// Get the list of the current com serial ports
 			console.println(Messages.ArduinoSerial_Using_1200bps_touch.replace(PORT, comPort)); 
 
@@ -260,37 +243,31 @@ public class ArduinoSerial {
 			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
 			console.println(Messages.ArduinoSerial_Ending_reset);
 			return comPort;
-		}
-
-		// connect to the serial port
-		console.println(Messages.ArduinoSerial_reset_dtr_toggle);
-		Serial serialPort;
-		try {
-			serialPort = new Serial(comPort, 9600);
-		} catch (Exception e) {
-			e.printStackTrace();
-			String error=Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort); 
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,error, e));
-			console.println(error);
-			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort));
-			console.println(Messages.ArduinoSerial_Ending_reset);
-			return comPort;
-		}
-		if (!serialPort.IsConnected()) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-					Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT,comPort) + comPort, null));
-			console.println(Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,comPort) );
-			console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,comPort));
-			console.println(Messages.ArduinoSerial_Ending_reset);
-			return comPort;
-		}
-
-		ToggleDTR(serialPort, 100);
-
-		serialPort.dispose();
-		console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT, comPort)); 
-		console.println(Messages.ArduinoSerial_Ending_reset);
-		return comPort;
-
+            /*
+             * this code should be dead code // connect to the serial port
+             * console.println(Messages.ArduinoSerial_reset_dtr_toggle); Serial serialPort;
+             * try { serialPort = new Serial(comPort, 9600); } catch (Exception e) {
+             * e.printStackTrace(); String
+             * error=Messages.ArduinoSerial_exception_while_opening_seral_port.replace(PORT,
+             * comPort); Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,error,
+             * e)); console.println(error);
+             * console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,
+             * comPort)); console.println(Messages.ArduinoSerial_Ending_reset); return
+             * comPort; } if (!serialPort.IsConnected()) { Common.log(new
+             * Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+             * Messages.ArduinoSerial_unable_to_open_serial_port.replace(PORT,comPort) +
+             * comPort, null));
+             * console.println(Messages.ArduinoSerial_exception_while_opening_seral_port.
+             * replace(PORT,comPort) );
+             * console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,comPort
+             * )); console.println(Messages.ArduinoSerial_Ending_reset); return comPort; }
+             * 
+             * ToggleDTR(serialPort, 100);
+             * 
+             * serialPort.dispose();
+             * console.println(Messages.ArduinoSerial_Continuing_to_use.replace(PORT,
+             * comPort)); console.println(Messages.ArduinoSerial_Ending_reset); return
+             * comPort;
+             */
 	}
 }
