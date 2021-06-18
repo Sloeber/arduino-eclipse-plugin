@@ -72,7 +72,7 @@ public class TxtFile {
             }
         } catch (Exception e) {
             Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                    Boards_Failed_to_read_boards.replace(FILE, boardsFileName.getName()), e));
+                    Boards_Failed_to_read_boards.replace(FILE_TAG, boardsFileName.getName()), e));
         }
     }
 

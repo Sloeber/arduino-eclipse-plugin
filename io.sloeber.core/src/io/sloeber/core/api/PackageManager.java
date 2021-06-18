@@ -243,7 +243,7 @@ public class PackageManager {
         }
         if (boardFiles.size() == 0) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
-                    Helpers_No_boards_txt_found.replace(FILE, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
+                    Helpers_No_boards_txt_found.replace(FILE_TAG, String.join("\n", hardwareFolders)), null)); //$NON-NLS-1$
             return null;
         }
         return boardFiles.toArray(new File[boardFiles.size()]);
@@ -255,7 +255,7 @@ public class PackageManager {
             if (a == null) {
                 if (!myHasbeenLogged) {
                     Common.log(new Status(IStatus.INFO, Const.CORE_PLUGIN_ID,
-                            Helpers_Error_The_folder_is_empty.replace(FOLDER, folder.toString()), null));
+                            Helpers_Error_The_folder_is_empty.replace(FOLDER_TAG, folder.toString()), null));
                     myHasbeenLogged = true;
                 }
                 return;
@@ -691,7 +691,7 @@ public class PackageManager {
             packageIndices.add(index);
         } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, Activator.getId(),
-                    Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
+                    Manager_Failed_to_parse.replace(FILE_TAG, jsonFile.getAbsolutePath()), e));
             jsonFile.delete();// Delete the file so it stops damaging
         }
     }

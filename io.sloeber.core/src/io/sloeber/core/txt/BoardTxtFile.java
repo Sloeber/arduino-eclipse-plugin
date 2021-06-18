@@ -38,8 +38,8 @@ public class BoardTxtFile extends TxtFile {
                 return curOption.getKey();
             }
         }
-        return Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME, menuItemName)
-                .replace(MENUID, menuID).replace(BOARDID, boardID);
+        return Boards_Get_menu_item_id_from_name_failed.replace(MENUITEMNAME_TAG, menuItemName)
+                .replace(MENUID_TAG, menuID).replace(BOARDID_TAG, boardID);
     }
 
     /**
@@ -107,8 +107,8 @@ public class BoardTxtFile extends TxtFile {
         // if (curOption.getKey().equalsIgnoreCase(lookupValue))
         // return curOption.getValue();
         // }
-        return Boards_Get_menu_item_name_from_id_did_not_find.replace(MENUITEMID, menuItemID)
-                .replace(MENUID, menuID).replace(BOARDID, boardID);
+        return Boards_Get_menu_item_name_from_id_did_not_find.replace(MENUITEMID_TAG, menuItemID)
+                .replace(MENUID_TAG, menuID).replace(BOARDID_TAG, boardID);
     }
 
     public String getMenuNameFromID(String menuID) {
@@ -120,7 +120,7 @@ public class BoardTxtFile extends TxtFile {
                 }
             }
         }
-        return Boards_menu_ID_not_found.replace(ID, menuID);
+        return Boards_menu_ID_not_found.replace(ID_TAG, menuID);
     }
 
     /**

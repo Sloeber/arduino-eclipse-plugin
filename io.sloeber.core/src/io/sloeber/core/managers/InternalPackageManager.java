@@ -54,8 +54,8 @@ import io.sloeber.core.txt.WorkAround;
 
 public class InternalPackageManager extends PackageManager {
 
-	private static final String FILE = Messages.FILE;
-	private static final String FOLDER = Messages.FOLDER;
+	private static final String FILE = Messages.FILE_TAG;
+	private static final String FOLDER = Messages.FOLDER_TAG;
 	private static boolean myIsReady = false;
 
 	public static boolean isReady() {

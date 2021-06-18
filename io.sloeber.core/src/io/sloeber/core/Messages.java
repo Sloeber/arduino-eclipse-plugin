@@ -4,26 +4,26 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "io.sloeber.core.messages"; //$NON-NLS-1$
-	public static final String PORT = "{PORT}"; //$NON-NLS-1$
-	public static final String MENUITEMID = "{MENUITEMID}"; //$NON-NLS-1$
-	public static final String MENUID = "{MENUID}"; //$NON-NLS-1$
-	public static final String BOARDID = "{BOARDID}"; //$NON-NLS-1$
-	public static final String MENUITEMNAME = "{MENUITEMNAME}"; //$NON-NLS-1$
-	public static final String LIB = "{LIB}"; //$NON-NLS-1$
-	public static final String PROJECT = "{PROJECT}"; //$NON-NLS-1$
-	public static final String UPLOADER = "{UPLOADER}"; //$NON-NLS-1$
-	public static final String MS = "{MS}"; //$NON-NLS-1$
-	public static final String NAMEFIELD = "{NAME}"; //$NON-NLS-1$
-	public static final String ID = "{ID}"; //$NON-NLS-1$
-	public static final String COMMAND = "{COMMAND}"; //$NON-NLS-1$
-	public static final String TOOL = "{TOOL}"; //$NON-NLS-1$
-	public static final String FILE = "{FILE}"; //$NON-NLS-1$
-	public static final String BOARD = "{BOARD}"; //$NON-NLS-1$
-	public static final String CONFIG = "{CONFIG}"; //$NON-NLS-1$
-	public static final String KEY = "{KEY}"; //$NON-NLS-1$
-	public static final String FOLDER =  "{FOLDER}"; //$NON-NLS-1$
-	public static final String VERSION =  "{VERSION}"; //$NON-NLS-1$
-	public static final String HOST =  "{HOST}"; //$NON-NLS-1$
+    public static final String PORT_TAG = "{PORT}"; //$NON-NLS-1$
+    public static final String MENUITEMID_TAG = "{MENUITEMID}"; //$NON-NLS-1$
+    public static final String MENUID_TAG = "{MENUID}"; //$NON-NLS-1$
+	public static final String BOARDID_TAG = "{BOARDID}"; //$NON-NLS-1$
+	public static final String MENUITEMNAME_TAG = "{MENUITEMNAME}"; //$NON-NLS-1$
+	public static final String LIB_TAG = "{LIB}"; //$NON-NLS-1$
+	public static final String PROJECT_TAG = "{PROJECT}"; //$NON-NLS-1$
+	public static final String UPLOADER_TAG = "{UPLOADER}"; //$NON-NLS-1$
+	public static final String MS_TAG = "{MS}"; //$NON-NLS-1$
+    public static final String NAME_TAG = "{NAME}"; //$NON-NLS-1$
+    public static final String ID_TAG = "{ID}"; //$NON-NLS-1$
+    public static final String COMMAND_TAG = "{COMMAND}"; //$NON-NLS-1$
+	public static final String TOOL_TAG = "{TOOL}"; //$NON-NLS-1$
+    public static final String FILE_TAG = "{FILE}"; //$NON-NLS-1$
+    public static final String BOARD_TAG = "{BOARD}"; //$NON-NLS-1$
+    public static final String CONFIG_TAG = "{CONFIG}"; //$NON-NLS-1$
+    public static final String KEY_TAG = "{KEY}"; //$NON-NLS-1$
+    public static final String FOLDER_TAG = "{FOLDER}"; //$NON-NLS-1$
+    public static final String VERSION_TAG = "{VERSION}"; //$NON-NLS-1$
+    public static final String HOST_TAG = "{HOST}"; //$NON-NLS-1$
 	
 	
 	public static String ArduinoSerial_Comport_Appeared_and_disappeared;

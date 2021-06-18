@@ -295,7 +295,7 @@ public class LibraryManager {
 			libraryIndices.add(index);
 		} catch (Exception e) {
 			Common.log(new Status(IStatus.ERROR, Activator.getId(),
-                    Manager_Failed_to_parse.replace(FILE, jsonFile.getAbsolutePath()), e));
+                    Manager_Failed_to_parse.replace(FILE_TAG, jsonFile.getAbsolutePath()), e));
 			jsonFile.delete();// Delete the file so it stops damaging
 		}
 	}

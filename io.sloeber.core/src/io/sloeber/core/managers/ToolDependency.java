@@ -54,7 +54,7 @@ public class ToolDependency {
 		Tool tool = getTool();
 		if (tool == null) {
 			return new Status(IStatus.ERROR, Activator.getId(),
-                    ToolDependency_Tool_not_found.replace(NAMEFIELD, this.name).replace(VERSION, this.version));
+                    ToolDependency_Tool_not_found.replace(NAME_TAG, this.name).replace(VERSION_TAG, this.version));
 		}
 		return tool.install(monitor);
 	}

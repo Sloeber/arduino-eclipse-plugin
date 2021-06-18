@@ -57,7 +57,7 @@ import io.sloeber.core.common.Const;
  */
 @SuppressWarnings("unused")
 public class ExternalCommandLauncher {
-    private static final String COMMAND = Messages.COMMAND;
+    private static final String COMMAND = Messages.COMMAND_TAG;
 
     /** Lock for internal synchronization */
     protected final Object myRunLock;

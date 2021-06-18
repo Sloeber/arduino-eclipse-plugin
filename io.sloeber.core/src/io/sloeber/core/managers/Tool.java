@@ -21,7 +21,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 public class Tool {
 
 	private static final String TOOLS = "tools"; //$NON-NLS-1$
-	private static final String KEY = Messages.KEY;
+	private static final String KEY = Messages.KEY_TAG;
 	private String name;
 	private String version;
 	private List<ToolSystem> systems;

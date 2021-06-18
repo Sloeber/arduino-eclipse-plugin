@@ -133,9 +133,9 @@ public class UploadSketchWrapper {
 	 *
 	 */
 	private class UploadJobWrapper extends Job {
-		private static final String PROJECT = Messages.PROJECT;
-		private static final String UPLOADER = Messages.UPLOADER;
-		private static final String FILE = Messages.FILE;
+		private static final String PROJECT = Messages.PROJECT_TAG;
+		private static final String UPLOADER = Messages.UPLOADER_TAG;
+		private static final String FILE = Messages.FILE_TAG;
 		IProject myProject;
 		ICConfigurationDescription myConfDes;
 		String myNAmeTag;

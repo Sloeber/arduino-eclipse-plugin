@@ -59,7 +59,7 @@ public class SSHPwdSetup implements SSHClientSetupChainRing {
 			// The user should set the password in the project
 			// properties->arduino
 			Common.log(
-					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing.replace(Messages.HOST,  host)));
+					new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_login_credentials_missing.replace(Messages.HOST_TAG,  host)));
 
 			return null;
 		}
