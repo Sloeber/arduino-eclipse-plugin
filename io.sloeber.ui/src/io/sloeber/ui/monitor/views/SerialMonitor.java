@@ -696,7 +696,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				});
 
 			}
-			theSerial.connect(15);
+			theSerial.connect(3);
 		}
 	}
 
