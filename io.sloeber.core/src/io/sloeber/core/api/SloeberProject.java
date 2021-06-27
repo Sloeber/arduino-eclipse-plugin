@@ -63,7 +63,7 @@ public class SloeberProject extends Common {
     private Map<String, Map<String, String>> myEnvironmentVariables = new HashMap<>();
     private TxtFile myCfgFile = null;
     private IProject myProject = null;
-    private boolean isInMemory = false;
+    private boolean myIsInMemory = false;
     private boolean myIsDirty = false; // if anything has changed
     private boolean myNeedToPersist = false; // Do we need to write data to disk
     private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
@@ -121,7 +121,7 @@ public class SloeberProject extends Common {
                         sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
                         // we failed to read from disk so we set opourselfves some values
                         // faking the stuf is in memory
-                        sloeberProject.isInMemory = true;
+                        sloeberProject.myIsInMemory = true;
                     }
                     String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
                     BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
@@ -403,7 +403,7 @@ public class SloeberProject extends Common {
         try {
             myIsConfiguring = true;
 
-            if (isInMemory) {
+            if (myIsInMemory) {
                 if (myIsDirty) {
                     createSloeberConfigFiles(prjCDesc);
                     setAllEnvironmentVars(prjCDesc);
@@ -605,7 +605,7 @@ public class SloeberProject extends Common {
                 projDescNeedsWriting = true;
             }
         }
-        isInMemory = true;
+        myIsInMemory = true;
         return projDescNeedsWriting;
     }
 
@@ -885,6 +885,10 @@ public class SloeberProject extends Common {
      * @return
      */
     public String getDecoratedText(String text) {
+        String pleaseWait = "Please wait"; //$NON-NLS-1$
+        if (!myIsInMemory || myIsConfiguring) {
+            return pleaseWait;
+        }
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
         if (prjDesc != null) {
             ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
@@ -995,7 +999,7 @@ public class SloeberProject extends Common {
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject);
         ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
-        isInMemory = false;
+        myIsInMemory = false;
         boolean projDescNeedsSaving = configure(projDesc, true);
         Helpers.deleteBuildFolder(myProject, activeConfig.getName());
         projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
@@ -1058,7 +1062,7 @@ public class SloeberProject extends Common {
      * @return true if the data is available and up to date
      */
     private boolean needsconfiguring() {
-        return myIsDirty || !isInMemory;
+        return myIsDirty || !myIsInMemory;
     }
 
     public Map<String, String> getEnvironmentVariables(String configKey) {
