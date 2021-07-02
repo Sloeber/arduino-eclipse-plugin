@@ -1075,10 +1075,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		} catch (BuildMacroException e) {
 			//jaba is not going to write this code
 		}
-		// JABA use del in windows and rm on all other oses
-        if (Common.isWindows) {
-			cleanCommand = "-del ";
-		}
+
 		buffer.append(cleanCommand).append( NEWLINE);
 		buffer.append(NEWLINE);
 		// Now add the source providers
