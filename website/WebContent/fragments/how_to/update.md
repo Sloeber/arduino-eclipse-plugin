@@ -110,4 +110,3 @@ Installing a new sloeber product next to your current one is a great fast way to
  **Party success**
 
  1. drink a beer
- 2. [Help keep Sloeber alive](http://eclipse.baeyens.it/donate.html "thanks")

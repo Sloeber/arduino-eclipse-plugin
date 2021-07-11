@@ -39,4 +39,3 @@ On linux V4.3 is reported to fail.
  **Party success**
 
  1. drink a beer
- 2. [Support jantje](http://eclipse.baeyens.it/donate.html "thanks")

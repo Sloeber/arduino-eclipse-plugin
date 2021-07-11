@@ -13,4 +13,3 @@ The dialog looks pretty much like the one in the sketch creation wizard.
 
  **Party success**
  
- 2. [Support jantje](http://eclipse.baeyens.it/donate.html "thanks")

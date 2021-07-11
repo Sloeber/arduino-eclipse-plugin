@@ -37,4 +37,3 @@ Note: that in contrast to the arduino IDE you will still need to add the include
  **Party success**
 
  1. drink a beer
- 2. [Support jantje](http://eclipse.baeyens.it/donate.html "thanks")

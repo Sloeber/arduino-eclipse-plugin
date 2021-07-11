@@ -41,6 +41,5 @@ You want the CDT IDE version
  **Party success**
  
  1. drink a beer
- 2. [Support jantje](http://eclipse.baeyens.it/donate.html "thanks")
     
 
