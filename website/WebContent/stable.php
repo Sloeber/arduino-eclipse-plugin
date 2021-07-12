@@ -2,9 +2,7 @@
 require 'fragments/file-buttons.php';
 include 'globals.txt';
 $version = $STABLE_VERSION_MAJOR.".".$STABLE_VERSION_MINOR;
-if( $STABLE_VERSION_PATCH!=0){
-    $version=$version.".".$STABLE_VERSION_PATCH;
-}
+$fullVersion=$version.".".$STABLE_VERSION_PATCH;
 
 if (isset ( $_GET ["OS"] ))
     $OS = $_GET ["OS"];
@@ -47,7 +45,7 @@ if (isset ( $_GET ["OS"] ))
 
 	<div class="container" role="main">
 		<div class="page-header">
-      <?php	echo "<h1>$OS $version Latest Stable <small>runs smoothly and nicely</small></h1>"; ?>
+      <?php	echo "<h1>$OS $fullVersion Latest Stable <small>runs smoothly and nicely</small></h1>"; ?>
         <a name="top">&nbsp;</a>
 		</div>
 		<p>This is the latest stable build of Arduino Eclipse IDE and it's
@@ -73,7 +71,8 @@ if (isset ( $_GET ["OS"] ))
         If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php
-        listFiles("V" . $version . '_' . $os);?>
+        listFiles("V" . $version . '_' . $os);
+        listFiles("V" . $fullVersion . '_' . $os);?>
         </div>
 
 
