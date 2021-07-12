@@ -58,7 +58,7 @@ if (isset ( $_GET ["OS"] ))
 			version of the Eclipse CDT and the latest stable build of our great
 			Arduino eclipse IDE!</p>
 		<p>The product is the only supported setup!</p>
-		<p>Sloeber needs java 8! Other java versions will not work!</p>
+		<p>Sloeber needs java 10 or higher and lower than 16 ! Other java versions will not work!</p>
 		<?php	if($os=="win"){echo "<p>The product includes java.</p>";}; ?>
 		<?php	if($os=="mac"){echo "<p>Due to mac new security approach a simple download and extract will not work.</p>";}; ?>
 		<?php	if($os=="mac"){echo "<p>Follow following steps to install.</p>";}; ?>
@@ -68,7 +68,6 @@ if (isset ( $_GET ["OS"] ))
 		<?php	if($os=="mac"){echo "<p></p>";}; ?>
 		<p>Read the info on this site at: install->start here-> <?php	echo "$OS";?> comments</p>
 
-        If you have download issues try another browser. Firefox seems to work fine on all oses. chrome seems to have issues.
         <div class="row">
          <?php
         listFiles("V" . $version . '_' . $os);
