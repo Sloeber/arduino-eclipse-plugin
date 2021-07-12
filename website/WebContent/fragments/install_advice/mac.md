@@ -8,6 +8,8 @@ There are some mac fans using Sloeber. Mac support has grown over the years with
 
 Mac has implemented some rules for download safety that will affect you. [Do not launch from the download location.](http://lapcatsoftware.com/articles/app-translocation.html)  
 
+Standard Mac tells you java 8 is latest greatest, but you need 10 or higher since 4.4.0. [Download java 11 from here https://adoptopenjdk.net/](https://adoptopenjdk.net/)  
+
 If you system does not have make in its path the most appropriate solution is to get make in the path.   
 If you do not have the Make utility on your system: Make comes with xcode and with pre-1.5.7 arduino IDE versions.  
 Possible fixes:  
