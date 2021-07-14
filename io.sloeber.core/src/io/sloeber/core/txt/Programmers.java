@@ -15,9 +15,18 @@ public class Programmers extends BoardTxtFile {
 	private static final String programmersFileName2 = "externalprogrammers.txt";//$NON-NLS-1$
 
 
-    private Programmers(File programmersFile) {
-        super(programmersFile);
-	}
+
+    public Programmers(File programmersFile) {
+        super(getActualTxtFile(programmersFile));
+    }
+
+    private static File getActualTxtFile(File programmersFile) {
+        String txtFileNamer = programmersFile.getName();
+        if (programmersFileName1.equals(txtFileNamer) || programmersFileName2.equals(txtFileNamer)) {
+            return WorkAround.MakeProgrammersSloeberTXT(programmersFile);
+        }
+        return programmersFile;
+    }
 
 	private static Programmers[] fromBoards(IPath referencingPlatformPath, IPath referencedPlatformPath,
 			IPath arduinoPlatformPath) {
