@@ -2,6 +2,8 @@
 name: Bug report   
 about: Create a report to help us improve   
 
+---
+
 **Before creating a bug report check for existing issues**  
 Make sure you are on the latest and greatest Sloeber version. We do not support older version.  
 Here is a list of [known limitations](https://github.com/Sloeber/arduino-eclipse-plugin/issues?q=is%3Aissue++label%3A%22status%3A+known+limitation%22+)   
