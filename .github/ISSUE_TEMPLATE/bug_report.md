@@ -4,10 +4,11 @@ about: Create a report to help us improve
 
 ---
 
-**Before creating a bug report check for existing issues**  
 _Before continuing._   
 _Click on the preview button so the text is more readable and the links work_
 
+
+**Before creating a bug report check for existing issues**  
 Make sure you are on the latest and greatest Sloeber version. We do not support older version.  
 Here is a list of [known limitations](https://github.com/Sloeber/arduino-eclipse-plugin/issues?q=is%3Aissue++label%3A%22status%3A+known+limitation%22+)   
 Here is a list of [common issues ](https://github.com/Sloeber/arduino-eclipse-plugin/issues?q=is%3Aissue+label%3A%22Hot+issue%22+)   
