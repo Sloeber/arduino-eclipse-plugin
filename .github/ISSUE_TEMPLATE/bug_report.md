@@ -21,6 +21,8 @@ Here is a list of issues that have been [fixed but are not yet available in a re
 Do you use the Sloeber product or plugin?   
 Sloeber version number  
 OS: [e.g. windows 10]   
+The url of the json that you used to download the platform  
+A image of the project properties arduino showing the board settings   
 
 **Describe the bug**   
 A clear and concise description of what the bug is.
