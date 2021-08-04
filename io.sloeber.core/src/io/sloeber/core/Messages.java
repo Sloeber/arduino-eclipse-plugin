@@ -103,6 +103,7 @@ public class Messages extends NLS {
 	public static String No_Platform_available ;
     public static String decorator_no_platform;
     public static String decorator_no_port;
+    public static String projectNotFoundInGUI;
 
 	static {
 		// initialize resource bundle

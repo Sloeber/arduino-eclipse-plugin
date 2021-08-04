@@ -514,6 +514,16 @@ priority="high"/>
     </builder>
  </extension>
  
+    <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="The expanded value of the key (provided in the argument) as defined in Arduino txt files (boaards/platfor/programmers) from the active configuration ."
+            name="Arduino_environment_variable"
+            resolver="io.sloeber.core.eclipseIntegrations.CDT_EnvironmentVariableResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
+ 
 </plugin>
 
 
