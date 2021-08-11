@@ -732,9 +732,6 @@ public class BoardDescription {
         return getHost() != null;
     }
 
-    private Map<String, String> getEnvVarsTxt() {
-        return myBoardTxtFile.getAllBoardEnvironVars(getBoardID());
-    }
 
     protected BoardDescription(File txtFile, String boardID) {
         this.myBoardID = boardID;
@@ -845,13 +842,13 @@ public class BoardDescription {
     public Map<String, String> getEnvVars() {
         updateWhenDirty();
 
-        BoardDescription pluginPreProcessingBoardsTxt = new BoardDescription(
-                new BoardTxtFile(ConfigurationPreferences.getPreProcessingBoardsFile()), getBoardID());
-        BoardDescription pluginPostProcessingBoardsTxt = new BoardDescription(
-                new BoardTxtFile(ConfigurationPreferences.getPostProcessingBoardsFile()), getBoardID());
+        BoardTxtFile pluginPreProcessingBoardsTxt = new BoardTxtFile(
+                ConfigurationPreferences.getPreProcessingBoardsFile());
+        BoardTxtFile pluginPostProcessingBoardsTxt = new BoardTxtFile(
+                ConfigurationPreferences.getPostProcessingBoardsFile());
 
         Map<String, String> allVars = pluginPreProcessingPlatformTxt.getAllEnvironVars(EMPTY);
-        allVars.putAll(pluginPreProcessingBoardsTxt.getEnvVarsTxt());
+        allVars.putAll(pluginPreProcessingBoardsTxt.getAllBoardEnvironVars(getBoardID()));
 
         String architecture = getArchitecture();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
@@ -922,7 +919,7 @@ public class BoardDescription {
 
         // add the stuff that comes with the plugin that is marked as post
         allVars.putAll(pluginPostProcessingPlatformTxt.getAllEnvironVars(EMPTY));
-        allVars.putAll(pluginPostProcessingBoardsTxt.getEnvVarsTxt());
+        allVars.putAll(pluginPostProcessingBoardsTxt.getAllBoardEnvironVars(getBoardID()));
 
         // Do some coded post processing
         allVars.putAll(getEnvVarsPostProcessing(allVars));
