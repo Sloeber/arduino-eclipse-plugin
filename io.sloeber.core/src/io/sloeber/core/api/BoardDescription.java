@@ -848,7 +848,7 @@ public class BoardDescription {
                 ConfigurationPreferences.getPostProcessingBoardsFile());
 
         Map<String, String> allVars = pluginPreProcessingPlatformTxt.getAllEnvironVars(EMPTY);
-        allVars.putAll(pluginPreProcessingBoardsTxt.getAllBoardEnvironVars(getBoardID()));
+        allVars.putAll(pluginPreProcessingBoardsTxt.getBoardEnvironVars(getBoardID()));
 
         String architecture = getArchitecture();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
@@ -904,7 +904,7 @@ public class BoardDescription {
         }
 
         // boards settings not coming from menu selections
-        allVars.putAll(myBoardTxtFile.getAllBoardEnvironVars(getBoardID()));
+        allVars.putAll(myBoardTxtFile.getBoardEnvironVars(getBoardID()));
 
         // board settings from menu selections
         Map<String, String> options = getOptions();
@@ -919,7 +919,7 @@ public class BoardDescription {
 
         // add the stuff that comes with the plugin that is marked as post
         allVars.putAll(pluginPostProcessingPlatformTxt.getAllEnvironVars(EMPTY));
-        allVars.putAll(pluginPostProcessingBoardsTxt.getAllBoardEnvironVars(getBoardID()));
+        allVars.putAll(pluginPostProcessingBoardsTxt.getBoardEnvironVars(getBoardID()));
 
         // Do some coded post processing
         allVars.putAll(getEnvVarsPostProcessing(allVars));

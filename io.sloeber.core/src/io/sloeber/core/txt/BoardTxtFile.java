@@ -195,11 +195,13 @@ public class BoardTxtFile extends TxtFile {
 
     /**
      * Get all the key value pairs that need to be added to the environment
-     * variables
+     * variables for the given boardID
      * 
-     * prefix something to add at the beginning of each key name
+     * The boardID prefix is removed from the result so uno.cpu.freq=9600 will
+     * result in key value <"cpu.freq","9600">
+     * 
      */
-    public Map<String, String> getAllBoardEnvironVars(String boardID) {
+    public Map<String, String> getBoardEnvironVars(String boardID) {
         return myData.getChild(boardID).toKeyValues(EMPTY, false);
     }
 
