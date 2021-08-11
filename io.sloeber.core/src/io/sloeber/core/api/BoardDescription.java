@@ -81,7 +81,7 @@ public class BoardDescription {
      * Stuff to make things work
      */
     private File myreferencingBoardsFile;
-    protected BoardTxtFile myTxtFile;
+    protected BoardTxtFile myBoardTxtFile;
 
     private String myBoardsVariant;
     private IPath myReferencedBoardVariantPlatformPath;
@@ -168,7 +168,7 @@ public class BoardDescription {
     }
 
     private void ParseSection() {
-        KeyValueTree rootData = myTxtFile.getData();
+        KeyValueTree rootData = myBoardTxtFile.getData();
         String boardID = getBoardID();
         KeyValueTree boardData = rootData.getChild(boardID);
 
@@ -333,7 +333,7 @@ public class BoardDescription {
     BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
         this.myBoardID = boardID;
         this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
-        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
             this.myOptions.putAll(options);
@@ -343,7 +343,7 @@ public class BoardDescription {
     public BoardDescription() {
         myreferencingBoardsFile = resolvePathEnvironmentString(
                 new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY)));
-        myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
         myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
         myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
@@ -352,7 +352,7 @@ public class BoardDescription {
 
     public BoardDescription(BoardDescription srcObject) {
         myreferencingBoardsFile = srcObject.myreferencingBoardsFile;
-        myTxtFile = srcObject.myTxtFile;
+        myBoardTxtFile = srcObject.myBoardTxtFile;
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
@@ -373,10 +373,10 @@ public class BoardDescription {
      * incomplete or invalid this method still returns a complete and valid set.
      */
     private void setDefaultOptions() {
-        Map<String, String> allMenuIDs = this.myTxtFile.getMenus();
+        Map<String, String> allMenuIDs = this.myBoardTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
-            ArrayList<String> menuOptions = this.myTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
+            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
             if (menuOptions.size() > 0) {
                 if (providedMenuValue == null) {
 
@@ -402,7 +402,7 @@ public class BoardDescription {
 
 
     public String getArchitecture() {
-        return this.myTxtFile.getArchitecture();
+        return this.myBoardTxtFile.getArchitecture();
     }
 
     public File getReferencingBoardsFile() {
@@ -410,7 +410,7 @@ public class BoardDescription {
     }
 
     public String getBoardName() {
-        return this.myTxtFile.getNiceNameFromID(this.myBoardID);
+        return this.myBoardTxtFile.getNiceNameFromID(this.myBoardID);
     }
 
     public String getUploadPort() {
@@ -459,7 +459,7 @@ public class BoardDescription {
     }
 
     public void setBoardName(String boardName) {
-        String newBoardID = this.myTxtFile.getIDFromNiceName(boardName);
+        String newBoardID = this.myBoardTxtFile.getIDFromNiceName(boardName);
         if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
             return;
         }
@@ -479,7 +479,7 @@ public class BoardDescription {
          */
 
         this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
-        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDirty();
     }
 
@@ -515,7 +515,7 @@ public class BoardDescription {
     }
 
     public String[] getCompatibleBoards() {
-        return this.myTxtFile.getAllSectionNames();
+        return this.myBoardTxtFile.getAllSectionNames();
     }
 
     public String[] getUploadProtocols() {
@@ -525,7 +525,7 @@ public class BoardDescription {
     }
 
     public String[] getMenuItemNamesFromMenuID(String menuID) {
-        return this.myTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
+        return this.myBoardTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
     }
 
 
@@ -535,15 +535,15 @@ public class BoardDescription {
     }
 
     public String getMenuNameFromMenuID(String id) {
-        return this.myTxtFile.getMenuNameFromID(id);
+        return this.myBoardTxtFile.getMenuNameFromID(id);
     }
 
     public String getMenuItemNamedFromMenuItemID(String menuItemID, String menuID) {
-        return this.myTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
+        return this.myBoardTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
     }
 
     public String getMenuItemIDFromMenuItemName(String menuItemName, String menuID) {
-        return this.myTxtFile.getMenuItemIDFromMenuItemName(this.myBoardID, menuID, menuItemName);
+        return this.myBoardTxtFile.getMenuItemIDFromMenuItemName(this.myBoardID, menuID, menuItemName);
     }
 
     /**
@@ -733,13 +733,13 @@ public class BoardDescription {
     }
 
     private Map<String, String> getEnvVarsTxt() {
-        return myTxtFile.getAllBoardEnvironVars(getBoardID());
+        return myBoardTxtFile.getAllBoardEnvironVars(getBoardID());
     }
 
     protected BoardDescription(File txtFile, String boardID) {
         this.myBoardID = boardID;
         this.myreferencingBoardsFile = txtFile;
-        this.myTxtFile = new BoardTxtFile(txtFile);
+        this.myBoardTxtFile = new BoardTxtFile(txtFile);
         setDefaultOptions();
         calculateDerivedFields();
     }
@@ -756,7 +756,7 @@ public class BoardDescription {
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
         myreferencingBoardsFile = resolvePathEnvironmentString(new File(board_txt));
-        this.myTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         setDefaultOptions();
         if (options != null) {
             // Only add the valid options for this board to our options
@@ -768,7 +768,7 @@ public class BoardDescription {
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
         Map<String, String> ret = new HashMap<>();
 
-        KeyValueTree tree = myTxtFile.getData();
+        KeyValueTree tree = myBoardTxtFile.getData();
         KeyValueTree boardMenuSection = tree.getChild(myBoardID + DOT + MENU);
         if (boardMenuSection != null) {
             for (Entry<String, String> curoption : options.entrySet()) {
@@ -907,11 +907,11 @@ public class BoardDescription {
         }
 
         // boards settings not coming from menu selections
-        allVars.putAll(myTxtFile.getAllBoardEnvironVars(getBoardID()));
+        allVars.putAll(myBoardTxtFile.getAllBoardEnvironVars(getBoardID()));
 
         // board settings from menu selections
         Map<String, String> options = getOptions();
-        KeyValueTree rootData = myTxtFile.getData();
+        KeyValueTree rootData = myBoardTxtFile.getData();
         KeyValueTree menuData = rootData.getChild(getBoardID() + DOT + MENU);
         for (Entry<String, String> curOption : options.entrySet()) {
             String menuID = curOption.getKey();
@@ -1112,7 +1112,7 @@ public class BoardDescription {
             referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
         }
         ret.myreferencingBoardsFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
-        ret.myTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
+        ret.myBoardTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
         
         return ret;
     }
@@ -1125,12 +1125,12 @@ public class BoardDescription {
     }
 
     public void reloadTxtFile() {
-        myTxtFile.reloadTxtFile();
+        myBoardTxtFile.reloadTxtFile();
 
     }
 
     public Map<String, String> getAllMenus() {
-        return myTxtFile.getMenus();
+        return myBoardTxtFile.getMenus();
     }
 
 }
