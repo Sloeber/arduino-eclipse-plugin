@@ -1180,6 +1180,21 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 		// makefile is
 		// extracted and run standalone via "make all"
 		//
+
+        // JABA add the arduino upload/program targets
+        buffer.append("\n#bootloaderTest\n" + "BurnBootLoader: \n"
+                + "\t@echo trying to burn bootloader ${bootloader.tool}\n"
+                + "\t${tools.${bootloader.tool}.erase.pattern}\n" + "\t${tools.${bootloader.tool}.bootloader.pattern}\n"
+                + "\n" + "uploadWithBuild: all\n"
+                + "\t@echo trying to build and upload with upload tool ${upload.tool}\n"
+                + "\t${tools.${upload.tool}.upload.pattern}\n" + "\n" + "uploadWithHoutBuild: \n"
+                + "\t@echo trying to upload without build with upload tool ${upload.tool}\n"
+                + "\t${tools.${upload.tool}.upload.pattern}\n" + "    \n" + "uploadWithProgrammerWithBuild: all\n"
+                + "\t@echo trying to build and upload with programmer ${programID}\n"
+                + "\t${tools.${${programID}.program.tool}.program.pattern}\n" + "\n"
+                + "uploadWithProgrammerWithHoutBuild: \n"
+                + "\t@echo trying to upload with programmer ${programID} without build\n"
+                + "\t${tools.${${programID}.program.tool}.program.pattern}\n\n");
 		String defaultTarget = "all:";
 		if (prebuildStep.length() > 0) {
 			// Add the comment for the "All" target
