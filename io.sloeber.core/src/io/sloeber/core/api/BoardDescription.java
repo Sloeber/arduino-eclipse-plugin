@@ -655,38 +655,14 @@ public class BoardDescription {
 
     public String getUploadPatternKey() {
         updateWhenDirty();
-        String upLoadTool = getActualUploadTool();
-        String action = UPLOAD;
-        if (usesProgrammer()) {
-            action = PROGRAM;
-        }
+        String upLoadTool = getuploadTool();
         String networkPrefix = EMPTY;
         if (isNetworkUpload()) {
             networkPrefix = NETWORK_PREFIX;
         }
-        return TOOLS + DOT + upLoadTool + DOT + action + DOT + networkPrefix + PATTERN;
-
+        return TOOLS + DOT + upLoadTool + DOT + UPLOAD + DOT + networkPrefix + PATTERN;
     }
 
-    public String getActualUploadTool() {
-        updateWhenDirty();
-        // if (confdesc == null) {
-        // Common.log(new Status(IStatus.ERROR, .CORE_PLUGIN_ID, "Confdesc null is
-        // not alowed here")); //$NON-NLS-1$
-        // return this.myUploadTool;
-        // }
-        // if (usesProgrammer()) {
-        // return Common.getBuildEnvironmentVariable(confdesc, PROGRAM_TOOL,
-        // "Program tool not properly configured"); //$NON-NLS-1$
-        // }
-        //
-        // if (this.myUploadTool == null) {
-        // return Common.getBuildEnvironmentVariable(confdesc, UPLOAD_TOOL,
-        // "upload tool not properly configured"); //$NON-NLS-1$
-        // }
-        return myUploadTool;
-
-    }
 
     public boolean usesProgrammer() {
         updateWhenDirty();
@@ -897,6 +873,7 @@ public class BoardDescription {
         Programmers localProgrammers[] = Programmers.fromBoards(this);
         String programmer = getProgrammer();
         for (Programmers curProgrammer : localProgrammers) {
+       //     allVars.putAll(curProgrammer.getAllEnvironVars());
             String programmerID = curProgrammer.getIDFromNiceName(programmer);
             if (programmerID != null) {
                 allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));

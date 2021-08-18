@@ -50,7 +50,7 @@ public class Const {
 	public static final String COM_PORT = "com_port";
 	public static final String ARDUINO = "arduino";
 	public static final String PATH = "path";
-	public static final String PROTOCOL = "protocol";
+    public static final String PROTOCOL = "protocol";
 
 	// arduino txt pre and suffix
 	public static final String NETWORK_PREFIX = "network_";

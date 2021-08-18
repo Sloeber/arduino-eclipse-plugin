@@ -59,7 +59,7 @@ public class UploadSketchWrapper {
         SloeberProject sProject = SloeberProject.getSloeberProject(project, false);
         BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
 
-        String UpLoadTool = boardDescriptor.getActualUploadTool();
+        String UpLoadTool = boardDescriptor.getuploadTool();
 		// String uploadClass = Common.getBuildEnvironmentVariable(confDesc,
 		// Common.get_ENV_KEY_TOOL(Const.UPLOAD_CLASS),
 		// new String());/** @jniclass flags=no_gen */

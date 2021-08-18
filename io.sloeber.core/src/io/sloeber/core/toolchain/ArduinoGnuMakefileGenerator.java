@@ -1190,11 +1190,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 + "\t${tools.${upload.tool}.upload.pattern}\n" + "\n" + "uploadWithHoutBuild: \n"
                 + "\t@echo trying to upload without build with upload tool ${upload.tool}\n"
                 + "\t${tools.${upload.tool}.upload.pattern}\n" + "    \n" + "uploadWithProgrammerWithBuild: all\n"
-                + "\t@echo trying to build and upload with programmer ${programID}\n"
-                + "\t${tools.${${programID}.program.tool}.program.pattern}\n" + "\n"
+                + "\t@echo trying to build and upload with programmer ${program.tool}\n"
+                + "\t${tools.${program.tool}.program.pattern}\n" + "\n"
                 + "uploadWithProgrammerWithHoutBuild: \n"
-                + "\t@echo trying to upload with programmer ${programID} without build\n"
-                + "\t${tools.${${programID}.program.tool}.program.pattern}\n\n");
+                + "\t@echo trying to upload with programmer ${program.tool} without build\n"
+                + "\t${tools.${program.tool}.program.pattern}\n\n");
 		String defaultTarget = "all:";
 		if (prebuildStep.length() > 0) {
 			// Add the comment for the "All" target

@@ -43,9 +43,7 @@ public class arduinoUploader implements IRealUpload {
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
 
-        if (boardDescr.usesProgrammer()) {
-            highStream.println(Messages.uploader_no_reset_using_programmer);
-        } else if (boardDescr.isNetworkUpload()) {
+        if (boardDescr.isNetworkUpload()) {
             setEnvironmentvarsForAutorizedUpload(contribEnv, mycConf);
             highStream.println(Messages.uploader_no_reset_using_network);
         } else {
