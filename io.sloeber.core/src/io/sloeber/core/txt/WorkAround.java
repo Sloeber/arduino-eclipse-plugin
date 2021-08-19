@@ -8,9 +8,9 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
@@ -107,39 +107,11 @@ public class WorkAround extends Const {
 
         // generate the workaround file
         try {
-            String boardsTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n";
-            boardsTXT += FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
+            String boardsTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
 
-            boardsTXT = boardsTXT.replace("\r\n", "\n");
-            // because I search for spaces around string as delimiters I add a space at the
-            // end of the line
-            boardsTXT = boardsTXT.replace("\n", " \n");
-            boardsTXT = solveOSStuff(boardsTXT);
+            boardsTXT = boardsApplyWorkArounds(boardsTXT);
 
-            String correctMAN = " \"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\" ";
-            String correctPROD = " \"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\" ";
-            String correctBOARD = " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ";
-            String correctUSBSERIAL = " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ";
-
-            // replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
-            // with circuitplay32u4cat.build.usb_manufacturer=Adafruit
-            boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
-
-            // quoting fixes for embedutils
-            // ['\"]?(-DMBEDTLS_\S+)=\\?"(mbedtls\S+?)\\?\"["']? \"$1=\\\"$2\\\"\"
-            boardsTXT = boardsTXT.replaceAll(" ['\\\"]?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+?)\\\\?\\\"[\"']? ",
-                    " \\\"$1=\\\\\\\"$2\\\\\\\"\\\" ");
-
-            // some providers put -DUSB_PRODUCT={build.usb_product} in boards.txt
-            boardsTXT = boardsTXT.replace(" \"-DUSB_MANUFACTURER={build.usb_manufacturer}\" ", correctMAN);
-            boardsTXT = boardsTXT.replace(" \"-DUSB_PRODUCT={build.usb_product}\" ", correctPROD);
-            boardsTXT = boardsTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ", correctBOARD);
-
-            boardsTXT = boardsTXT.replace(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ", correctMAN);
-            boardsTXT = boardsTXT.replace(" '-DUSB_PRODUCT={build.usb_product}' ", correctPROD);
-            boardsTXT = boardsTXT.replace(" '-DARDUINO_BOARD=\"{build.board}' ", correctBOARD);
-            boardsTXT = boardsTXT.replace(" '-DUSB_SERIAL={build.usb_serial}' ", correctUSBSERIAL);
-            boardsTXT = boardsTXT.replace("{", "${");
+            boardsTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + boardsTXT;
             FileUtils.write(boardsSloeberTXT, boardsTXT, Charset.defaultCharset());
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -148,6 +120,40 @@ public class WorkAround extends Const {
         }
 
         return boardsSloeberTXT;
+    }
+
+    public static String boardsApplyWorkArounds(String inBoardsTXT) {
+        String boardsTXT = inBoardsTXT.replace("\r\n", "\n");
+        // because I search for spaces around string as delimiters I add a space at the
+        // end of the line
+        boardsTXT = boardsTXT.replace("\n", " \n");
+        boardsTXT = solveOSStuff(boardsTXT);
+
+        String correctMAN = " \"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\" ";
+        String correctPROD = " \"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\" ";
+        String correctBOARD = " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ";
+        String correctUSBSERIAL = " \"-DUSB_SERIAL=\\\"{build.usb_serial}\\\"\" ";
+
+        // replace FI circuitplay32u4cat.build.usb_manufacturer="Adafruit"
+        // with circuitplay32u4cat.build.usb_manufacturer=Adafruit
+        boardsTXT = boardsTXT.replaceAll("(\\S+\\.build\\.usb\\S+)=\\\"(.+)\\\"", "$1=$2");
+
+        // quoting fixes for embedutils
+        // ['\"]?(-DMBEDTLS_\S+)=\\?"(mbedtls\S+?)\\?\"["']? \"$1=\\\"$2\\\"\"
+        boardsTXT = boardsTXT.replaceAll(" ['\\\"]?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+?)\\\\?\\\"[\"']? ",
+                " \\\"$1=\\\\\\\"$2\\\\\\\"\\\" ");
+
+        // some providers put -DUSB_PRODUCT={build.usb_product} in boards.txt
+        boardsTXT = boardsTXT.replace(" \"-DUSB_MANUFACTURER={build.usb_manufacturer}\" ", correctMAN);
+        boardsTXT = boardsTXT.replace(" \"-DUSB_PRODUCT={build.usb_product}\" ", correctPROD);
+        boardsTXT = boardsTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ", correctBOARD);
+
+        boardsTXT = boardsTXT.replace(" '-DUSB_MANUFACTURER={build.usb_manufacturer}' ", correctMAN);
+        boardsTXT = boardsTXT.replace(" '-DUSB_PRODUCT={build.usb_product}' ", correctPROD);
+        boardsTXT = boardsTXT.replace(" '-DARDUINO_BOARD=\"{build.board}' ", correctBOARD);
+        boardsTXT = boardsTXT.replace(" '-DUSB_SERIAL={build.usb_serial}' ", correctUSBSERIAL);
+        boardsTXT = boardsTXT.replace("{", "${");
+        return boardsTXT;
     }
 
     /**
@@ -185,102 +191,12 @@ public class WorkAround extends Const {
 
         // generate the workaround file
         try {
-            String platformTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n";
-            platformTXT += FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-            platformTXT = platformTXT.replace("\r\n", "\n");
 
-            platformTXT = solveOSStuff(platformTXT);
+            String platformTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
 
-            // Arduino treats core differently so we need to change the location of directly
-            // referenced files this manifests only in the combine recipe
-            String inCombineRecipe = findLineStartingWith(platformTXT, "recipe.c.combine.pattern");
-            if (null != inCombineRecipe) {
-                String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys",
-                        "$1/core/core/sys");
-                platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
-            }
-            // replace tools.x.y* {path}
-            // by
-            // tools.x.y* {tools.x.path}
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
-            // Need to do this 2 times because of arduino samd boards
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
-            // change {cmd.path} to fqn {cmd.path}
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
-            // needed a second time for teensy
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
-            // change {cmd} to fqn {cmd}
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd})", "$1{$2.cmd}");
-            // change {config.path} to fqn {config.path}
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{config.path})",
-                    "$1{$2.config.path}");
-            // for arduino 101
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.string})",
-                    "$1{$2.ble.fw.string}");
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.position})",
-                    "$1{$2.ble.fw.position}");
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.string})",
-                    "$1{$2.rtos.fw.string}");
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.position})",
-                    "$1{$2.rtos.fw.position}");
-            platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{version})", "$1{$2.version}");
+            platformTXT = platformApplyWorkArounds(platformTXT, requestedFileToWorkAround);
 
-            // workaround for infineon arm v1.4.0 overwriting the default to a wrong value
-            platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
-
-            // workaround for jantje PC
-            platformTXT = platformTXT.replace("{runtime.tools.mingw.path}/bin/", "{runtime.tools.MinGW.path}/bin/");
-
-            try { // https://github.com/Sloeber/arduino-eclipse-plugin/issues/1182#
-                Path platformTXTPath = new Path(requestedFileToWorkAround.toString());
-                int totalSegments = platformTXTPath.segmentCount();
-                String platformVersion = platformTXTPath.segment(totalSegments - 2);
-                String platformArchitecture = platformTXTPath.segment(totalSegments - 3);
-                String platformName = platformTXTPath.segment(totalSegments - 5);
-                if (Version.compare("1.8.0", platformVersion) != 1) {
-                    if ("stm32".equals(platformArchitecture)) {
-                        if ("STM32".equals(platformName)) {
-                            platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
-                            platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-
-            // for adafruit nfr
-            platformTXT = platformTXT.replace(" -DARDUINO_BSP_VERSION=\"{version}\" ",
-                    " \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
-            platformTXT = platformTXT.replace(" '-DARDUINO_BSP_VERSION=\"{version}\"' ",
-                    " \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
-
-            // replace FI '-DUSB_PRODUCT={build.usb_product}' with
-            // "-DUSB_PRODUCT=\"{build.usb_product}\""
-            platformTXT = platformTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
-
-            // quoting fixes for embedutils
-            platformTXT = platformTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*",
-                    "\"$1=\\\\\"$2\\\\\"\"");
-
-            // Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}"
-            // "-DUSB_PRODUCT={build.usb_product}"
-            // is used fi LinKit smart
-            platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"",
-                    "\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
-            platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"",
-                    "\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
-            platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
-                    " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
-
-            // for STM32
-            platformTXT = platformTXT.replace(" -DBOARD_NAME=\"{build.board}\"",
-                    " \"-DBOARD_NAME=\\\"{build.board}\\\"\"");
-
-            platformTXT = platformTXT.replace("{", "${");
-            // Arduino zero openocd script uses { as parameter delimiter for program
-            platformTXT = platformTXT.replace("program ${${", "program {${");
-
+            platformTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + platformTXT;
             FileUtils.write(platformSloeberTXT, platformTXT, Charset.defaultCharset());
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -289,6 +205,159 @@ public class WorkAround extends Const {
         }
 
         return platformSloeberTXT;
+    }
+
+    /**
+     * Method that does the actual conversion of the provided platform.txt to the
+     * platform.sloeber.txt without eh house keeping. Basically this produces the
+     * content of platform.sloeber.txt after the header
+     * 
+     * @param inPlatformTxt
+     *            the content of the platform.txt
+     * @param requestedFileToWorkAround
+     *            the fqn filename of the platform.txt
+     * @return the "worked around" content of platform.txtx
+     */
+    public static String platformApplyWorkArounds(String inPlatformTxt, File requestedFileToWorkAround) {
+        String platformTXT = inPlatformTxt.replace("\r\n", "\n");
+
+        platformTXT = solveOSStuff(platformTXT);
+
+        platformTXT = platformApplyReleaseWorkArounds(platformTXT, requestedFileToWorkAround);
+
+        platformTXT = platformApplyCustomWorkArounds(platformTXT);
+
+        platformTXT = platformApplyStandardWorkArounds(platformTXT);
+
+        platformTXT = platformTXT.replace("{", "${");
+        // Arduino zero openocd script uses { as parameter delimiter for program
+        platformTXT = platformTXT.replace("program ${${", "program {${");
+        return platformTXT;
+    }
+
+    /**
+     * This method applies workarounds for specific platforms
+     * 
+     * @param inPlatformTxt
+     * @return
+     */
+    private static String platformApplyCustomWorkArounds(String inPlatformTxt) {
+        String platformTXT = inPlatformTxt;
+        // workaround for infineon arm v1.4.0 overwriting the default to a wrong value
+        platformTXT = platformTXT.replace("\nbuild.core.path", "\n#line removed by Sloeber build.core.path");
+
+        // workaround for jantje PC
+        platformTXT = platformTXT.replace("{runtime.tools.mingw.path}/bin/", "{runtime.tools.MinGW.path}/bin/");
+
+        // for adafruit nfr
+        platformTXT = platformTXT.replace(" -DARDUINO_BSP_VERSION=\"{version}\" ",
+                " \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
+        platformTXT = platformTXT.replace(" '-DARDUINO_BSP_VERSION=\"{version}\"' ",
+                " \"-DARDUINO_BSP_VERSION=\\\"{version}\\\"\" ");
+
+        // for STM32
+        platformTXT = platformTXT.replace(" -DBOARD_NAME=\"{build.board}\"", " \"-DBOARD_NAME=\\\"{build.board}\\\"\"");
+
+        return platformTXT;
+    }
+
+    /**
+     * This method applies workaround to specific releases of specific platforms
+     * 
+     * @param inPlatformTxt
+     *            The content of the platform.txt
+     * 
+     * @param requestedFileToWorkAround
+     *            The path of the platform.txt so we can validate for
+     *            provider/architecture and versions
+     * @return the worked around platform.txt
+     */
+    private static String platformApplyReleaseWorkArounds(String inPlatformTxt, File requestedFileToWorkAround) {
+        String platformTXT = inPlatformTxt;
+        try { // https://github.com/Sloeber/arduino-eclipse-plugin/issues/1182#
+            Path platformTXTPath = new Path(requestedFileToWorkAround.toString());
+            int totalSegments = platformTXTPath.segmentCount();
+            String platformVersion = platformTXTPath.segment(totalSegments - 2);
+            String platformArchitecture = platformTXTPath.segment(totalSegments - 3);
+            String platformName = platformTXTPath.segment(totalSegments - 5);
+            if (Version.compare("1.8.0", platformVersion) != 1) {
+                if ("stm32".equals(platformArchitecture)) {
+                    if ("STM32".equals(platformName)) {
+                        platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");
+                        platformTXT = platformTXT.replaceAll("recipe\\.hooks\\.prebuild\\..*", "");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return platformTXT;
+    }
+
+    /**
+     * This method applies the default workarounds
+     * 
+     * @param inPlatformTxt
+     * @return
+     */
+    private static String platformApplyStandardWorkArounds(String inPlatformTxt) {
+        String platformTXT = inPlatformTxt;
+
+        // the fix below seems no longer needed but is still on august 2021
+        // Arduino treats core differently so we need to change the location of directly
+        // referenced files this manifests only in the combine recipe
+        String inCombineRecipe = findLineStartingWith(platformTXT, "recipe.c.combine.pattern");
+        if (null != inCombineRecipe) {
+            String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys");
+            platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
+        }
+
+        // replace tools.x.y* {path}
+        // by
+        // tools.x.y* {tools.x.path}
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
+        // Need to do this 2 times because of arduino samd boards
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
+        // change {cmd.path} to fqn {cmd.path}
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
+        // needed a second time for teensy
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
+        // change {cmd} to fqn {cmd}
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd})", "$1{$2.cmd}");
+        // change {config.path} to fqn {config.path}
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{config.path})",
+                "$1{$2.config.path}");
+        // for arduino 101
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.string})",
+                "$1{$2.ble.fw.string}");
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.position})",
+                "$1{$2.ble.fw.position}");
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.string})",
+                "$1{$2.rtos.fw.string}");
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.position})",
+                "$1{$2.rtos.fw.position}");
+        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{version})", "$1{$2.version}");
+
+        // replace FI '-DUSB_PRODUCT={build.usb_product}' with
+        // "-DUSB_PRODUCT=\"{build.usb_product}\""
+        platformTXT = platformTXT.replaceAll("\\'-D(\\S+)=\\{(\\S+)}\\'", "\"-D$1=\\\\\"{$2}\\\\\"\"");
+
+        // quoting fixes for embedutils
+        platformTXT = platformTXT.replaceAll("\"?(-DMBEDTLS_\\S+)=\\\\?\"(mbedtls\\S+)\"\\\\?\"*",
+                "\"$1=\\\\\"$2\\\\\"\"");
+
+        // Sometimes "-DUSB_MANUFACTURER={build.usb_manufacturer}"
+        // "-DUSB_PRODUCT={build.usb_product}"
+        // is used fi LinKit smart
+        platformTXT = platformTXT.replace("\"-DUSB_MANUFACTURER={build.usb_manufacturer}\"",
+                "\"-DUSB_MANUFACTURER=\\\"{build.usb_manufacturer}\\\"\"");
+        platformTXT = platformTXT.replace("\"-DUSB_PRODUCT={build.usb_product}\"",
+                "\"-DUSB_PRODUCT=\\\"{build.usb_product}\\\"\"");
+        platformTXT = platformTXT.replace(" -DARDUINO_BOARD=\"{build.board}\" ",
+                " \"-DARDUINO_BOARD=\\\"{build.board}\\\"\" ");
+
+        return platformTXT;
+
     }
 
     private static String findLineStartingWith(String text, String startOfLine) {
@@ -304,11 +373,13 @@ public class WorkAround extends Const {
 
     private static String findLineContaining(String text, String searchString) {
         int SearchStringIndex = text.indexOf(searchString) + 1;
-        int lineStartIndex = text.lastIndexOf("\n", SearchStringIndex) + 1;
-        if (lineStartIndex > 0) {
-            int lineEndIndex = text.indexOf("\n", lineStartIndex);
-            if (lineEndIndex > 0) {
-                return text.substring(lineStartIndex, lineEndIndex);
+        if (SearchStringIndex > 0) {
+            int lineStartIndex = text.lastIndexOf("\n", SearchStringIndex) + 1;
+            if (lineStartIndex > 0) {
+                int lineEndIndex = text.indexOf("\n", lineStartIndex);
+                if (lineEndIndex > 0) {
+                    return text.substring(lineStartIndex, lineEndIndex);
+                }
             }
         }
         return null;
@@ -321,26 +392,20 @@ public class WorkAround extends Const {
         LinkedList<String> Otherosses = new LinkedList<>();
 
         String thisOSKey = null;
-        switch (Platform.getOS()) {
-        case Platform.OS_WIN32: {
+        // do not use platform as I run this in plain junit tests
+        if (SystemUtils.IS_OS_WINDOWS) {
             thisOSKey = WINDOWSKEY;
             Otherosses.add(LINUXKEY);
             Otherosses.add(MACKEY);
-            break;
-        }
-        case Platform.OS_LINUX: {
+        } else if (SystemUtils.IS_OS_LINUX) {
             thisOSKey = LINUXKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(MACKEY);
-            break;
-        }
-        case Platform.OS_MACOSX: {
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
             thisOSKey = MACKEY;
             Otherosses.add(WINDOWSKEY);
             Otherosses.add(LINUXKEY);
-            break;
-        }
-        default:
+        } else {
             Common.log(new Status(IStatus.ERROR, Activator.getId(), "Failed to recognize the os you are using"));
             return inpuText;
         }
@@ -411,14 +476,11 @@ public class WorkAround extends Const {
 
         // generate the workaround file
         try {
-            String programmersTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n";
-            programmersTXT += FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
-            programmersTXT = programmersTXT.replace("\r\n", "\n");
 
-            programmersTXT = solveOSStuff(programmersTXT);
+            String programmersTXT = FileUtils.readFileToString(requestedFileToWorkAround, Charset.defaultCharset());
+            programmersTXT = programmersApplyWorkArounds(programmersTXT);
 
-            programmersTXT = programmersTXT.replace("{", "${");
-
+            programmersTXT = FIRST_SLOEBER_WORKAROUND_LINE + "\n" + programmersTXT;
             FileUtils.write(actualProgrammersTXT, programmersTXT, Charset.defaultCharset());
         } catch (IOException e) {
             Common.log(new Status(IStatus.WARNING, Activator.getId(),
@@ -427,6 +489,16 @@ public class WorkAround extends Const {
         }
         return actualProgrammersTXT;
 
+    }
+
+    public static String programmersApplyWorkArounds(String inProgrammersTXT) {
+        String programmersTXT = inProgrammersTXT.replace("\r\n", "\n");
+
+        programmersTXT = solveOSStuff(programmersTXT);
+
+        programmersTXT = programmersTXT.replace("{", "${");
+
+        return programmersTXT;
     }
 
     /**
