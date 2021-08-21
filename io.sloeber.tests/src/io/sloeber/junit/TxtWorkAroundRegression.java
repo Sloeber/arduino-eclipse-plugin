@@ -38,9 +38,10 @@ public class TxtWorkAroundRegression {
         if (fullList) {
             searchFolders(new File(ROOTFOLDER), folders, 10);
         } else {
+            folders.add(new Object[] { "E:\\arduinoTxt-Backup-2021-08-19\\STM32\\hardware\\stm32\\1.9.0" });
             folders.add(new Object[] { "E:\\arduinoTxt-Backup-2021-08-19\\digistump\\hardware\\sam\\1.6.7" });
             folders.add(new Object[] { "E:\\arduinoTxt-Backup-2021-08-19\\nucDuino\\hardware\\nucDuino\\1.0.3" });
-            folders.add(new Object[] { "E:\\arduinoTxt-Backup-2021-08-19\\STM32\\hardware\\stm32\\1.9.0" });
+
             folders.add(new Object[] { "E:\\arduinoTxt-Backup-2021-08-19\\TL7788\\hardware\\arm\\1.0.3" });
         }
         return folders;
@@ -152,7 +153,8 @@ public class TxtWorkAroundRegression {
     }
 
     private String clean(String expected) {
-        return expected.replaceAll("(?m)^#.*", "").replaceAll("(?m)^\\s*", "").replaceAll("(?m)\\s*$", "")
+        return expected.replace("\r\n", "\n").replaceAll("(?m)^#.*", "").replaceAll("(?m)^\\s*", "")
+                .replaceAll("(?m)\\s*$", "").replaceAll("(?m)^(\\S*)\\s*=", "$1=")
                 .replace("\n\n", "\n").replace("\n\n", "\n");
     }
 
