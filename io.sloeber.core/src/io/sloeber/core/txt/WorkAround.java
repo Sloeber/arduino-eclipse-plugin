@@ -6,6 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -220,6 +226,8 @@ public class WorkAround extends Const {
      */
     public static String platformApplyWorkArounds(String inPlatformTxt, File requestedFileToWorkAround) {
         String platformTXT = inPlatformTxt.replace("\r\n", "\n");
+        // remove spaces before =
+        platformTXT = platformTXT.replaceAll("(?m)^(\\S*)\\s*=", "$1=");
 
         platformTXT = solveOSStuff(platformTXT);
 
@@ -302,6 +310,7 @@ public class WorkAround extends Const {
      */
     private static String platformApplyStandardWorkArounds(String inPlatformTxt) {
         String platformTXT = inPlatformTxt;
+        String searchPlatformTXT = "\n" + inPlatformTxt;
 
         // the fix below seems no longer needed but is still on august 2021
         // Arduino treats core differently so we need to change the location of directly
@@ -315,28 +324,38 @@ public class WorkAround extends Const {
         // replace tools.x.y* {path}
         // by
         // tools.x.y* {tools.x.path}
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
-        // Need to do this 2 times because of arduino samd boards
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*)(\\{path})", "$1{$2.path}");
-        // change {cmd.path} to fqn {cmd.path}
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
-        // needed a second time for teensy
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd.path})", "$1{$2.cmd.path}");
-        // change {cmd} to fqn {cmd}
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{cmd})", "$1{$2.cmd}");
-        // change {config.path} to fqn {config.path}
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{config.path})",
-                "$1{$2.config.path}");
-        // for arduino 101
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.string})",
-                "$1{$2.ble.fw.string}");
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{ble.fw.position})",
-                "$1{$2.ble.fw.position}");
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.string})",
-                "$1{$2.rtos.fw.string}");
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{rtos.fw.position})",
-                "$1{$2.rtos.fw.position}");
-        platformTXT = platformTXT.replaceAll("((tools\\.[^\\.]*).*\\.pattern=.*)(\\{version})", "$1{$2.version}");
+        List<String> knownShortHands = List.of("cmd", "path", "cmd.path", "config.path");
+        List<String> keepAsShortHands = List.of("upload.verify", "program.verify");
+        Pattern tools_x_y_pattern = Pattern.compile("(?m)^tools\\.[^\\.]*.*=.*$");
+        Matcher tools_x_y_macher = tools_x_y_pattern.matcher(platformTXT);
+
+        Map<String, String> replaceInfo = new TreeMap<>();
+        while (tools_x_y_macher.find()) {
+            String origLine = platformTXT.substring(tools_x_y_macher.start(), tools_x_y_macher.end());
+            String prefix = origLine.substring(0, origLine.indexOf('.', 7) + 1);
+            String workedAroundLine = origLine;
+            Pattern variablePattern = Pattern.compile("\\{[^}]*}");
+            Matcher variableMacher = variablePattern.matcher(origLine);
+            while (variableMacher.find()) {
+                String origVar = origLine.substring(variableMacher.start() + 1, variableMacher.end() - 1);
+                String newVar = prefix + origVar;
+                if (keepAsShortHands.contains(origVar)) {
+                    // ignore these
+                } else {
+                    if (knownShortHands.contains(origVar)) {
+                        workedAroundLine = workedAroundLine.replace("{" + origVar + "}", "{" + newVar + "}");
+                    } else if (searchPlatformTXT.contains("\n" + newVar + "=")) {
+                        workedAroundLine = workedAroundLine.replace("{" + origVar + "}", "{" + newVar + "}");
+                    }
+                }
+            }
+            if (!origLine.equals(workedAroundLine)) {
+                replaceInfo.put(origLine, workedAroundLine);
+            }
+        }
+        for (Entry<String, String> replaceSet : replaceInfo.entrySet()) {
+            platformTXT = platformTXT.replace(replaceSet.getKey(), replaceSet.getValue());
+        }
 
         // replace FI '-DUSB_PRODUCT={build.usb_product}' with
         // "-DUSB_PRODUCT=\"{build.usb_product}\""
