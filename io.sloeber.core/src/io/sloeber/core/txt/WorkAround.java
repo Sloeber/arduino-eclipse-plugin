@@ -43,7 +43,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.02.test 20 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.03.test 01 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -265,6 +265,8 @@ public class WorkAround extends Const {
 
         // for STM32
         platformTXT = platformTXT.replace(" -DBOARD_NAME=\"{build.board}\"", " \"-DBOARD_NAME=\\\"{build.board}\\\"\"");
+        platformTXT = platformTXT.replace(" -DVARIANT_H=\"{build.variant_h}\"",
+                " \"-DVARIANT_H=\\\"{build.variant_h}\\\"\"");
 
         return platformTXT;
     }
