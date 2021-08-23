@@ -96,6 +96,7 @@
 -->
 		<builder
         autoBuildTarget="all"
+        buildRunner="io.sloeber.core.toolchain.SloeberBuildRunner"
         buildfileGenerator="io.sloeber.core.toolchain.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
         command="${sloeber.make_location}make"
