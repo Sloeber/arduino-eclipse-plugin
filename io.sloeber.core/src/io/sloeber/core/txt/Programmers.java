@@ -8,7 +8,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.Defaults;
 
 public class Programmers extends BoardTxtFile {
 	private static final String programmersFileName1 = "programmers.txt";//$NON-NLS-1$
@@ -59,8 +58,7 @@ public class Programmers extends BoardTxtFile {
 	}
 
 	public static String[] getUploadProtocols(BoardDescription boardsDescriptor) {
-		String[] ret = new String[1];
-		ret[0] = Defaults.getDefaultUploadProtocol();
+        String[] ret = new String[0];
 		Programmers allProgrammers[] = fromBoards(boardsDescriptor);
 		for (Programmers curprogrammer : allProgrammers) {
             ret = curprogrammer.getAllSectionNames(ret);

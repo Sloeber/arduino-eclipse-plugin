@@ -72,7 +72,7 @@ public class BoardDescription {
      * This is the basic info contained in the descriptor
      */
     private String myUploadPort = EMPTY;
-    private String myProgrammer = Defaults.getDefaultUploadProtocol();
+    private String myProgrammer = EMPTY;
     private String myBoardID = EMPTY;
     private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
@@ -346,7 +346,7 @@ public class BoardDescription {
         myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
         myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
         myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
-        myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, Defaults.getDefaultUploadProtocol());
+        myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
         myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
     }
 
@@ -663,11 +663,6 @@ public class BoardDescription {
         return TOOLS + DOT + upLoadTool + DOT + UPLOAD + DOT + networkPrefix + PATTERN;
     }
 
-
-    public boolean usesProgrammer() {
-        updateWhenDirty();
-        return !myProgrammer.equals(Defaults.getDefaultUploadProtocol());
-    }
 
     public IPath getreferencedHardwarePath() {
         updateWhenDirty();

@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
@@ -82,9 +81,6 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myControlUploadProtocol.setItems(boardDesc.getUploadProtocols());
 			myControlUploadProtocol.setText(boardDesc.getProgrammer());
 
-			if (myControlUploadProtocol.getText().isEmpty()) {
-				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
-			}
 
 			setTheLabelCombos(getBoardFromScreen());
 			genericListenerEnd();
@@ -284,9 +280,6 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 		myControlUploadProtocol.setText(CurrentUploadProtocol);
 		if (myControlUploadProtocol.getText().trim().isEmpty()) {
 			myControlUploadProtocol.setText(boardDesc.getProgrammer());
-			if (myControlUploadProtocol.getText().isEmpty()) {
-				myControlUploadProtocol.setText(Defaults.getDefaultUploadProtocol());
-			}
 		}
 
 		myControlUploadPort.setText(boardDesc.getUploadPort());
