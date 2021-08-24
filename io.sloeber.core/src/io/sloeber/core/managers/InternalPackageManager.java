@@ -90,7 +90,7 @@ public class InternalPackageManager extends PackageManager {
 			if (mstatus.isOK()) {
 				// if successfully installed the examples: add the boards
 				ArduinoPlatform platform = null;
-				Collection<ArduinoPlatform> latestsPlatforms = PackageManager.getLatestPlatforms();
+                Collection<ArduinoPlatform> latestsPlatforms = getLatestPlatforms();
 				if (!latestsPlatforms.isEmpty()) {
 					platform = latestsPlatforms.iterator().next();
 					for (ArduinoPlatform curPlatform : latestsPlatforms) {
@@ -652,11 +652,11 @@ public class InternalPackageManager extends PackageManager {
 	 */
 	public static void removePackageURLs(Set<String> packageUrlsToRemove) {
 		// remove the files from memory
-		Set<String> activeUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+        Set<String> activeUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
 
 		activeUrls.removeAll(packageUrlsToRemove);
 
-		ConfigurationPreferences.setJsonURLs(activeUrls.toArray((String[]) null));
+        setJsonURLs(activeUrls.toArray((String[]) null));
 
 		// remove the files from disk
 		for (String curJson : packageUrlsToRemove) {

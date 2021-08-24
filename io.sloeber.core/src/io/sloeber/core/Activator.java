@@ -42,6 +42,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -216,7 +217,7 @@ public class Activator extends Plugin {
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
         InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
         InstancePreferences.setAutomaticallyImportLibraries(InstancePreferences.getAutomaticallyImportLibraries());
-        ConfigurationPreferences.setJsonURLs(ConfigurationPreferences.getJsonURLs());
+        PackageManager.setJsonURLs(PackageManager.getJsonURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {

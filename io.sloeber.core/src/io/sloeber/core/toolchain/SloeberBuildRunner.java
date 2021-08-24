@@ -16,10 +16,10 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 
 public class SloeberBuildRunner extends ExternalBuildRunner {
@@ -33,7 +33,7 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
 
         String actualUploadPort = Const.EMPTY;
 
-        List<String> stopSerialOnBuildTargets = List.of(ConfigurationPreferences.getDisconnectSerialTargetsList());
+        List<String> stopSerialOnBuildTargets = List.of(Preferences.getDisconnectSerialTargetsList());
         if (stopSerialOnBuildTargets.contains(theBuildTarget)) {
             SloeberProject sloeberProject = SloeberProject.getSloeberProject(project, true);
             if (sloeberProject != null) {

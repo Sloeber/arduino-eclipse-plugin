@@ -1,5 +1,12 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.ConfigurationPreferences.*;
+import static io.sloeber.core.common.Const.*;
+
+import java.util.HashSet;
+
+import org.eclipse.cdt.core.parser.util.StringUtil;
+
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
@@ -11,6 +18,10 @@ import io.sloeber.core.common.InstancePreferences;
  *
  */
 public class Preferences {
+    private static String stringSplitter = "\n";//$NON-NLS-1$
+    private static final String KEY_DISCONNECT_SERIAL_TAGETS = "Target names that require serial disconnect to run";//$NON-NLS-1$
+    private static final String DEFAULT_DISCONNECT_SERIAL_TARGETS = "BurnBootLoader\nuploadWithBuild\nuploadWithoutBuild\nuploadWithProgrammerWithBuild\nuploadWithProgrammerWithoutBuild"; //$NON-NLS-1$
+
 	public static void setAutoImportLibraries(boolean booleanValue) {
 		InstancePreferences.setAutomaticallyImportLibraries(booleanValue);
 
@@ -63,5 +74,29 @@ public class Preferences {
 			SloeberNetworkDiscovery.stop();
 		}
 	}
+
+    public static String getDefaultDisconnectSerialTargets() {
+        return DEFAULT_DISCONNECT_SERIAL_TARGETS;
+    }
+
+    public static String[] getDisconnectSerialTargetsList() {
+        return getDisconnectSerialTargets().split(stringSplitter);
+    }
+
+    public static String getDisconnectSerialTargets() {
+        return getString(KEY_DISCONNECT_SERIAL_TAGETS, DEFAULT_DISCONNECT_SERIAL_TARGETS).replace("\r", EMPTY);//$NON-NLS-1$
+    }
+
+    public static void setDisconnectSerialTargets(String targets) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, targets);
+    }
+
+    public static void setDisconnectSerialTargets(String targets[]) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, StringUtil.join(targets, stringSplitter));
+    }
+
+    public static void setDisconnectSerialTargets(HashSet<String> targets) {
+        setString(KEY_DISCONNECT_SERIAL_TAGETS, StringUtil.join(targets, stringSplitter));
+    }
 
 }

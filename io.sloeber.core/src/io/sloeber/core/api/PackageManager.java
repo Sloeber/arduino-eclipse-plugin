@@ -1,6 +1,7 @@
 package io.sloeber.core.api;
 
 import static io.sloeber.core.Messages.*;
+import static io.sloeber.core.common.ConfigurationPreferences.*;
 import static io.sloeber.core.common.Const.*;
 import static java.nio.file.StandardCopyOption.*;
 
@@ -27,6 +28,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -59,6 +61,15 @@ import io.sloeber.core.txt.BoardTxtFile;
  *
  */
 public class PackageManager {
+    private static String stringSplitter = "\n";//$NON-NLS-1$
+    private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
+    private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
+    private static final String KEY_MANAGER_JSON_URLS = "Manager jsons"; //$NON-NLS-1$
+    private static final String DEFAULT_JSON_URLS = "https://downloads.arduino.cc/packages/package_index.json\n" //$NON-NLS-1$
+            + "https://raw.githubusercontent.com/jantje/hardware/master/package_jantje_index.json\n" //$NON-NLS-1$
+            + "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
+            + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
+            + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 
 
     protected static List<PackageIndex> packageIndices;
@@ -120,10 +131,10 @@ public class PackageManager {
     }
 
     public static void addPackageURLs(HashSet<String> packageUrlsToAdd, boolean forceDownload) {
-        HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(ConfigurationPreferences.getJsonURLList()));
+        HashSet<String> originalJsonUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
         packageUrlsToAdd.addAll(originalJsonUrls);
 
-        ConfigurationPreferences.setJsonURLs(packageUrlsToAdd);
+        setJsonURLs(packageUrlsToAdd);
         loadJsons(forceDownload);
     }
 
@@ -132,7 +143,7 @@ public class PackageManager {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
             return;
         }
-        ConfigurationPreferences.setJsonURLs(packageUrls);
+        setJsonURLs(packageUrls);
         loadJsons(forceDownload);
     }
 
@@ -641,7 +652,7 @@ public class PackageManager {
         packageIndices = new ArrayList<>();
         LibraryManager.flushIndices();
 
-        String[] jsonUrls = ConfigurationPreferences.getJsonURLList();
+        String[] jsonUrls = getJsonURLList();
         for (String jsonUrl : jsonUrls) {
             if (!jsonUrl.trim().isEmpty()) // skip empty lines
                 loadJson(jsonUrl, forceDownload);
@@ -812,10 +823,50 @@ public class PackageManager {
         }
     }
 
-    public static String[] getJsonURLList() {
-        return ConfigurationPreferences.getJsonURLList();
+    public static String getDefaultJsonURLs() {
+        return DEFAULT_JSON_URLS;
     }
 
+    public static String getJsonUrlsKey() {
+        return KEY_MANAGER_JSON_URLS;
+    }
+
+    public static void setJsonURLs(String urls) {
+        setString(KEY_MANAGER_JSON_URLS, urls);
+    }
+
+    private static void saveJsonURLs(String urls[]) {
+        setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
+    }
+
+    public static void setJsonURLs(HashSet<String> urls) {
+        setString(KEY_MANAGER_JSON_URLS, StringUtil.join(urls, stringSplitter));
+    }
+
+    public static String[] getJsonURLList() {
+        return getJsonURLs().replace("\r", new String()).split(stringSplitter); //$NON-NLS-1$
+    }
+
+    public static String getJsonURLs() {
+        // I added some code here to get easier from V3 to V4
+        // the library json url is now managed as the boards url's so it also
+        // needs to be added to the json url's
+        // this is doen in the default but people who have installed other
+        // boards or do not move to the default (which is by default)
+        // wil not see libraries
+        // to fix this I changed the storage name and if the new storage name is
+        // empty I read the ol one and add the lib
+        String ret = getString(KEY_MANAGER_JSON_URLS, DEFAULT_JSON_URLS);
+        if (DEFAULT_JSON_URLS.equals(ret)) {
+            ret = getString(KEY_MANAGER_JSON_URLS_V3, DEFAULT_JSON_URLS);
+            if (!DEFAULT_JSON_URLS.equals(ret)) {
+                ret += System.lineSeparator() + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
+                setString(KEY_MANAGER_JSON_URLS, ret);
+                removeKey(KEY_MANAGER_JSON_URLS_V3);
+            }
+        }
+        return ret;
+    }
     /**
      * Completely replace the list with jsons with a new list
      *
@@ -844,7 +895,7 @@ public class PackageManager {
             }
         }
         // save to configurationsettings before calling LoadIndices
-        ConfigurationPreferences.setJsonURLs(newJsonUrls);
+        saveJsonURLs(newJsonUrls);
         // reload the indices (this will remove all potential remaining
         // references
         // existing files do not need to be refreshed as they have been
@@ -853,9 +904,7 @@ public class PackageManager {
         loadJsons(false);
     }
 
-    public static String getDefaultURLs() {
-        return ConfigurationPreferences.getDefaultJsonURLs();
-    }
+
 
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
