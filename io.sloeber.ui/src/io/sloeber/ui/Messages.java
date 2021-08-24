@@ -160,8 +160,11 @@ public class Messages extends NLS {
     public static String ui_workspace_settings;
     public static String ui_enable_bonjour;
 	public static String ui_put_in_version_control;
+	public static String target_maintain;
+	public static String Add_Targets_To_force_serial_disconnect_when_run;
 
     public static String yes;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

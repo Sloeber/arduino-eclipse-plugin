@@ -321,6 +321,12 @@
           id="io.sloeber.eclipse.libraries"
           name="%page.preferences.libraries.name">
     </page>
+    <page
+          category="io.sloeber.eclipse.ArduinoPreferencePage"
+          class="io.sloeber.ui.preferences.TargetSerialDisconnectPage"
+          id="io.sloeber.eclipse.tagets"
+          name="%page.preferences.targets.name">
+    </page>
  </extension>
   <extension
        point="org.eclipse.ui.commands">

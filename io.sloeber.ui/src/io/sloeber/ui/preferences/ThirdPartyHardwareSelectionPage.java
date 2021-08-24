@@ -47,7 +47,7 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		this.urlsText.setText(PackageManager.getDefaultURLs());	
+		this.urlsText.setText(PackageManager.getDefaultJsonURLs());
 	}
 
 	@Override
