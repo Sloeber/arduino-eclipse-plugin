@@ -1,5 +1,7 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -21,12 +23,16 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.make.core.IMakeTarget;
+import org.eclipse.cdt.make.core.IMakeTargetManager;
+import org.eclipse.cdt.make.core.MakeCorePlugin;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.core.ManagedCProjectNature;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -43,6 +49,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
@@ -52,11 +59,12 @@ import io.sloeber.core.common.Const;
 import io.sloeber.core.listeners.IndexerController;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
+import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 import io.sloeber.core.txt.KeyValueTree;
 import io.sloeber.core.txt.TxtFile;
 
 public class SloeberProject extends Common {
-    private static QualifiedName sloeberQualifiedName = new QualifiedName(Activator.NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
+    private static QualifiedName sloeberQualifiedName = new QualifiedName(NODE_ARDUINO, "SloeberProject"); //$NON-NLS-1$
     private Map<String, BoardDescription> myBoardDescriptions = new HashMap<>();
     private Map<String, CompileDescription> myCompileDescriptions = new HashMap<>();
     private Map<String, OtherDescription> myOtherDescriptions = new HashMap<>();
@@ -1072,4 +1080,56 @@ public class SloeberProject extends Common {
 
         return myEnvironmentVariables.get(configKey);
     }
+
+    public IStatus upLoadUsingProgrammer() {
+        return BuildTarget("uploadWithProgrammerWithoutBuild"); //$NON-NLS-1$
+    }
+
+    public IStatus burnBootloader() {
+        return BuildTarget("BurnBootLoader"); //$NON-NLS-1$
+    }
+
+    private IStatus BuildTarget(String targetName) {
+
+        try {
+            IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
+            IContainer targetResource = myProject.getFolder("Release");
+            IMakeTarget target = targetManager.findTarget(targetResource, targetName);
+            if (target == null) {
+                target = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder");
+                target.setBuildTarget(targetName);
+                targetManager.addTarget(targetResource, target);
+            }
+            if (target != null) {
+                target.build(new NullProgressMonitor());
+            }
+        } catch (CoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return Status.OK_STATUS;
+    }
+
+    /**
+     * Synchronous upload of the sketch to the board returning the status.
+     *
+     * @param project
+     * @return the status of the upload. Status.OK means upload is OK
+     */
+    public IStatus upload() {
+
+        Job upLoadJob = UploadSketchWrapper.upload(myProject,
+                CoreModel.getDefault().getProjectDescription(myProject).getActiveConfiguration());
+
+        if (upLoadJob == null)
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, null);
+        try {
+            upLoadJob.join();
+            return upLoadJob.getResult();
+        } catch (InterruptedException e) {
+            // not sure if this is needed
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_failed, e);
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package io.sloeber.ui.helpers;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -9,7 +11,6 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.prefs.BackingStoreException;
 
 import io.sloeber.core.api.Defaults;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 
 /**
@@ -41,14 +42,12 @@ public class MyPreferences {
 	private static final String KEY_LAST_USED_PLOTTER_FILTER_MENU_OPTION = "Board plotter filter on off"; //$NON-NLS-1$
 	private static final String KEY_HIDE_JSON_FILES = "Hide json files in preferences platform selection page"; //$NON-NLS-1$
 
-
 	/***
-	 * get the stored option whether a build before the upload is wanted or not.
-	 * If nothing is stored the option is ask and this method will pop up a
-	 * dialogbox
+	 * get the stored option whether a build before the upload is wanted or not. If
+	 * nothing is stored the option is ask and this method will pop up a dialogbox
 	 *
-	 * @return true if a build is wanted before upload false if no build is
-	 *         wanted before upload
+	 * @return true if a build is wanted before upload false if no build is wanted
+	 *         before upload
 	 */
 	public static boolean getBuildBeforeUploadOption() {
 
@@ -136,8 +135,7 @@ public class MyPreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
-					"failed to set global variable of type string " + key)); //$NON-NLS-1$
+			log(new Status(IStatus.WARNING, PLUGIN_ID, "failed to set global variable of type string " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}
 	}
@@ -148,8 +146,7 @@ public class MyPreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Activator.log(
-					new Status(IStatus.WARNING, Activator.getId(), "failed to set global variable of type int " + key)); //$NON-NLS-1$
+			log(new Status(IStatus.WARNING, PLUGIN_ID, "failed to set global variable of type int " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}
 	}
@@ -160,8 +157,7 @@ public class MyPreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
-					"failed to set global variable of type boolean " + key)); //$NON-NLS-1$
+			log(new Status(IStatus.WARNING, PLUGIN_ID, "failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}
 	}
@@ -173,8 +169,7 @@ public class MyPreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(),
-					"failed to set global variable of type long " + key)); //$NON-NLS-1$
+			log(new Status(IStatus.WARNING, PLUGIN_ID, "failed to set global variable of type long " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}
 	}
@@ -194,8 +189,8 @@ public class MyPreferences {
 	}
 
 	/**
-	 * This method returns the index of the last used line ending options are CR
-	 * LF CR+LF none
+	 * This method returns the index of the last used line ending options are CR LF
+	 * CR+LF none
 	 *
 	 * @return the index of the last used setting
 	 */
@@ -204,8 +199,8 @@ public class MyPreferences {
 	}
 
 	/**
-	 * This method returns the index of the last used line ending options are CR
-	 * LF CR+LF none
+	 * This method returns the index of the last used line ending options are CR LF
+	 * CR+LF none
 	 *
 	 * @return the index of the last used setting
 	 */
@@ -233,7 +228,6 @@ public class MyPreferences {
 	public static void setCleanSerialMonitorAfterUpload(boolean newFilter) {
 		setGlobalValue(KEY_CLEAN_MONITOR_AFTER_UPLOAD, newFilter);
 	}
-
 
 	public static void setEnableParallelBuildForNewProjects(boolean newSetting) {
 		setGlobalValue(KEY_ENABLE_PARALLEL_BUILD_FOR_NEW_PROJECTS, newSetting);
@@ -276,6 +270,6 @@ public class MyPreferences {
 	}
 
 	public static boolean getAutomaticallyInstallLibrariesOption() {
-		return getGlobalBoolean(KEY_AUTO_INSTALL_LIBRARIES,Defaults.autoInstallLibraries);
+		return getGlobalBoolean(KEY_AUTO_INSTALL_LIBRARIES, Defaults.autoInstallLibraries);
 	}
 }

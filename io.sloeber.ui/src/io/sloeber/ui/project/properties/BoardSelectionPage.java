@@ -1,5 +1,7 @@
 package io.sloeber.ui.project.properties;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,6 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
 
@@ -148,7 +149,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 			myAllBoardsFiles.put(tidyUpLength(curBoardFile.toString()), curBoardFile);
 		}
 		if (myAllBoardsFiles.isEmpty()) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.error_no_platform_files_found, null));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.error_no_platform_files_found, null));
 		}
 
 
@@ -174,8 +175,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 				case SWT.Selection:
 					String host = myControlUploadPort.getText().split(" ")[0]; //$NON-NLS-1$
 					if (host.equals(myControlUploadPort.getText())) {
-						Activator.log(
-								new Status(IStatus.ERROR, Activator.getId(), Messages.port_is_not_a_computer_name));
+						log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.port_is_not_a_computer_name));
 					} else {
 						PasswordManager passwordManager = new PasswordManager();
 						PasswordDialog dialog = new PasswordDialog(myComposite.getShell());

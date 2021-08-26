@@ -1,5 +1,7 @@
 package io.sloeber.ui.wizard.newsketch;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.net.URI;
 
 import org.eclipse.core.resources.IProject;
@@ -23,7 +25,6 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.SloeberProject;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -96,7 +97,7 @@ public class NewSketchWizard extends Wizard implements INewWizard, IExecutableEx
 				locationURI, boardDescription, codeDescription, compileDescription, new NullProgressMonitor());
 
 		if (this.mProject == null) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+			log(new Status(IStatus.ERROR, PLUGIN_ID,
 					Messages.ui_new_sketch_error_failed_to_create_project));
 			return false;
 		}

@@ -1,5 +1,7 @@
 package io.sloeber.ui.actions;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -14,7 +16,6 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 
 import io.sloeber.core.api.PackageManager;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 
@@ -25,14 +26,14 @@ public class AddSourceFolderAction extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 	if (!PackageManager.isReady()) {
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.pleaseWaitForInstallerJob, null));
+		log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.pleaseWaitForInstallerJob, null));
 	    return null;
 	}
 
 	IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 	switch (SelectedProjects.length) {
 	case 0:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(), "No project found to build")); //$NON-NLS-1$
+		log(new Status(IStatus.ERROR, PLUGIN_ID, "No project found to build")); //$NON-NLS-1$
 	    break;
 	case 1:
 	    //
@@ -42,7 +43,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    try {
 		wizard = wizardDescriptor.createWizard();
 	    } catch (CoreException e) {
-		Activator.log(new Status(IStatus.ERROR, Activator.getId(), "Failed to find import wizard", e)); //$NON-NLS-1$
+			log(new Status(IStatus.ERROR, PLUGIN_ID, "Failed to find import wizard", e)); //$NON-NLS-1$
 		return null;
 	    }
 	    WizardDialog wd = new WizardDialog(ConsolePlugin.getStandardDisplay().getActiveShell(), wizard);
@@ -50,7 +51,7 @@ public class AddSourceFolderAction extends AbstractHandler {
 	    wd.open();
 	    break;
 	default:
-	    Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+		log(new Status(IStatus.ERROR, PLUGIN_ID,
 		    "Adding a source folder to multiple projects is not supported")); //$NON-NLS-1$
 	}
 	return null;

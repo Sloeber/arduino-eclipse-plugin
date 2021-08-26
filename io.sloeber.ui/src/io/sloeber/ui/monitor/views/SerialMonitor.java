@@ -1,5 +1,7 @@
 package io.sloeber.ui.monitor.views;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -61,7 +63,6 @@ import org.eclipse.ui.themes.IThemeManager;
 import io.sloeber.core.api.ISerialUser;
 import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
@@ -99,10 +100,10 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
 
 	static {
-		IMG_CLEAR = Activator.getDefault().getBundle().getEntry("icons/clear_console.png"); //$NON-NLS-1$
-		IMG_LOCK = Activator.getDefault().getBundle().getEntry("icons/lock_console.png"); //$NON-NLS-1$
-		IMG_FILTER = Activator.getDefault().getBundle().getEntry("icons/filter_console.png"); //$NON-NLS-1$
-		IMG_TIMESTAMP = Activator.getDefault().getBundle().getEntry("icons/timestamp_console.png"); //$NON-NLS-1$
+		IMG_CLEAR = getDefault().getBundle().getEntry("icons/clear_console.png"); //$NON-NLS-1$
+		IMG_LOCK = getDefault().getBundle().getEntry("icons/lock_console.png"); //$NON-NLS-1$
+		IMG_FILTER = getDefault().getBundle().getEntry("icons/filter_console.png"); //$NON-NLS-1$
+		IMG_TIMESTAMP = getDefault().getBundle().getEntry("icons/timestamp_console.png"); //$NON-NLS-1$
 	}
 
 	// Connect to a serial port
@@ -174,7 +175,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 */
 	public SerialMonitor() {
 		if (instance != null) {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), "You can only have one serial monitor")); //$NON-NLS-1$
+			log(new Status(IStatus.ERROR, PLUGIN_ID, "You can only have one serial monitor")); //$NON-NLS-1$
 		}
 		instance = this;
 		serialConnections = new LinkedHashMap<>(MY_MAX_SERIAL_PORTS);
@@ -601,7 +602,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 			}
 
 			if (colorindex < 0) {
-				Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.serialMonitorNoMoreSerialPortsSupported,
+				log(new Status(IStatus.ERROR, PLUGIN_ID,
+						Messages.serialMonitorNoMoreSerialPortsSupported,
 						null));
 			}
 
@@ -621,7 +623,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 				return;
 			}
 		} else {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.serialMonitorNoMoreSerialPortsSupported,
+			log(new Status(IStatus.ERROR, PLUGIN_ID,
+					Messages.serialMonitorNoMoreSerialPortsSupported,
 					null));
 		}
 

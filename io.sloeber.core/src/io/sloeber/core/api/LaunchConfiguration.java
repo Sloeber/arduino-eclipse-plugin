@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+
 @SuppressWarnings("unused")
 public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
@@ -49,29 +50,29 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
 
     @Override
     public void launch(ILaunchConfiguration launchConfig, String launchMode, ILaunch launchHandle,
-	    IProgressMonitor launchMonitor) throws CoreException {
+            IProgressMonitor launchMonitor) throws CoreException {
 
-	this.config = launchConfig;
-	this.mode = launchMode;
-	this.launch = launchHandle;
-	this.monitor = launchMonitor;
+        this.config = launchConfig;
+        this.mode = launchMode;
+        this.launch = launchHandle;
+        this.monitor = launchMonitor;
 
-	// Get data from config
-	loadSettingsFromConfiguration();
+        // Get data from config
+        loadSettingsFromConfiguration();
 
-	if (this.project != null) {
-	    // Delegate launching the project
-	    Sketch.upload(this.project);
-	}
+        if (this.project != null) {
+            // Delegate launching the project
+            Sketch.syncUpload(this.project);
+        }
     }
 
     private void loadSettingsFromConfiguration() {
-	try {
-	    String projectName = this.config.getAttribute(ATTR_PROJECT, ""); //$NON-NLS-1$
-	    this.project = findProject(projectName);
-	} catch (CoreException e) {
-	    // Stupid exception...
-	}
+        try {
+            String projectName = this.config.getAttribute(ATTR_PROJECT, ""); //$NON-NLS-1$
+            this.project = findProject(projectName);
+        } catch (CoreException e) {
+            // Stupid exception...
+        }
     }
 
     /**
@@ -81,12 +82,12 @@ public class LaunchConfiguration implements ILaunchConfigurationDelegate {
      * @return the project handle if a project was found
      */
     public static IProject findProject(String name) {
-	if (StringUtils.isNotBlank(name) && new Path(name).isValidPath(name)) {
-	    IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
-	    if (p.getLocation() != null)
-		return p;
-	}
-	return null;
+        if (StringUtils.isNotBlank(name) && new Path(name).isValidPath(name)) {
+            IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+            if (p.getLocation() != null)
+                return p;
+        }
+        return null;
     }
 
 }

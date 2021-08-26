@@ -1,5 +1,7 @@
 package io.sloeber.ui;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -58,7 +60,7 @@ public class ImportLibraries implements IImportWizard {
 			this.mPages[0] = this.mProjectSelectionPage;
 		} else {
 
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.no_project_found));
 		}
 	}
 

@@ -1,5 +1,7 @@
 package io.sloeber.ui.monitor.internal;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -8,7 +10,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 import io.sloeber.core.api.MessageConsumer;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.monitor.views.MyPlotter;
 @SuppressWarnings({"unused"})
@@ -43,7 +44,7 @@ public class PlotterListener implements MessageConsumer {
 			return;
 		if (this.myReceivedSerialData.remaining() < newData.length) {
 			this.myReceivedSerialData.clear();
-			Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serialListenerPlotterSkippingData));
+			log(new Status(IStatus.WARNING, PLUGIN_ID, Messages.serialListenerPlotterSkippingData));
 		} else {
 
 			this.myReceivedSerialData.put(newData);
@@ -98,7 +99,7 @@ public class PlotterListener implements MessageConsumer {
 			// Scan for plotter data
 			for (int curByte = this.myReceivedSerialData.position(); curByte < this.myReceivedSerialData.limit()
 					- 4; curByte++) {
-				if (this.myReceivedSerialData.getShort(curByte) == Activator.PLOTTER_START_DATA) {
+				if (this.myReceivedSerialData.getShort(curByte) == PLOTTER_START_DATA) {
 					// we have a hit.
 					this.myReceivedSerialData.position(curByte + 2);
 					found = true;
@@ -108,7 +109,8 @@ public class PlotterListener implements MessageConsumer {
 			if (found) {
 				int bytestoRead = this.myReceivedSerialData.getShort();
 				if ((bytestoRead < 0) || (bytestoRead > 10 * 2)) {
-					Activator.log(new Status(IStatus.WARNING, Activator.getId(), Messages.serial_listener_error.replace(Messages.NUMBER,Integer.toString( bytestoRead / 2))));
+					log(new Status(IStatus.WARNING, PLUGIN_ID, Messages.serial_listener_error
+							.replace(Messages.NUMBER, Integer.toString(bytestoRead / 2))));
 				} else {
 					if (bytestoRead < this.myReceivedSerialData.remaining()) {
 						// all data is available

@@ -339,8 +339,22 @@
           categoryId="io.sloeber.commands"
           defaultHandler="io.sloeber.ui.actions.UploadProjectHandler"
           description="%command.upload.description"
-          id="io.sloeber.actions.UploadprojectAction"
+          id="io.sloeber.actions.UploadProjectAction"
           name="%command.upload.label">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.ProgramProjectHandler"
+          description="%command.program.description"
+          id="io.sloeber.actions.ProgramProjectAction"
+          name="%command.program.label">
+    </command>
+    <command
+          categoryId="io.sloeber.commands"
+          defaultHandler="io.sloeber.ui.actions.BurnBootloaderHandler"
+          description="%command.burnBootloader.description"
+          id="io.sloeber.actions.BurnBootloaderAction"
+          name="%command.burnBootloader.label">
     </command>
     <command
           categoryId="io.sloeber.commands"
@@ -452,7 +466,7 @@
                 style="push">
           </command>
           <command
-                commandId="io.sloeber.actions.UploadprojectAction"
+                commandId="io.sloeber.actions.UploadProjectAction"
                 icon="icons/arrow.png"
                 label="%command.upload.label"
                 style="push">
@@ -501,9 +515,9 @@
                 tooltip="%command.build.project.tooltip">
           </command>
           <command
-                commandId="io.sloeber.actions.UploadprojectAction"
+                commandId="io.sloeber.actions.UploadProjectAction"
                 icon="icons/arrow.png"
-                id="UploadprojectAction"
+                id="UploadProjectAction"
                 tooltip="%command.upload.tooltip">
           </command>
           <command
@@ -548,6 +562,22 @@
           </command>
           <separator
                 name="io.sloeber.core.separator1"
+                visible="true">
+          </separator>
+          <command
+                commandId="io.sloeber.actions.ProgramProjectAction"
+                icon="icons/arrow.png"
+                id="ProgramProjectAction"
+                tooltip="%command.program.tooltip">
+          </command>
+          <command
+                commandId="io.sloeber.actions.BurnBootloaderAction"
+                icon="icons/arrow.png"
+                id="burnBootloaderAction"
+                tooltip="%command.burnBootloader.tooltip">
+          </command>
+          <separator
+                name="io.sloeber.ui.separator2"
                 visible="true">
           </separator>
           <command

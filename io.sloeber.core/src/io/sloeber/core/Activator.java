@@ -45,7 +45,6 @@ import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
@@ -60,8 +59,7 @@ import io.sloeber.core.listeners.resourceChangeListener;
  */
 @SuppressWarnings({ "nls" })
 public class Activator extends Plugin {
-    // preference nodes
-    public static final String NODE_ARDUINO = "io.sloeber.arduino";
+
     // TOFIX I think the fix below for unix users is no longer needed and we no
     // longer use the rxtx dll
     private static final String ENV_KEY_GNU_SERIAL_PORTS = "gnu.io.rxtx.SerialPorts";
@@ -124,7 +122,7 @@ public class Activator extends Plugin {
             if (!installFile.canWrite()) {
                 errorString += addString + "The folder " + installPath.toString()
                         + " exists but Sloeber does not have write access to it.\n";
-                errorString += "Alternatively use the environment var " + Const.SLOEBER_HOME + ".";
+                errorString += "Alternatively use the environment var " + SLOEBER_HOME + ".";
                 addString = "\nand\n";
             }
         } else {
@@ -132,7 +130,7 @@ public class Activator extends Plugin {
                 errorString += addString + "Sloeber does not have write access to "
                         + installFile.getParentFile().toString() + " and therefore can not create the folder "
                         + installPath.toString();
-                errorString += "\nAlternatively use the environment var " + Const.SLOEBER_HOME + ".";
+                errorString += "\nAlternatively use the environment var " + SLOEBER_HOME + ".";
                 addString = "\nand\n";
             }
         }
@@ -143,7 +141,7 @@ public class Activator extends Plugin {
             errorString += "Your current path: " + installPath.toString();
             errorString += " is too long and the plugin will no longer function correctly for all boards.\n";
             errorString += "Please visit issue #705 for details. https://github.com/Sloeber/arduino-eclipse-plugin/issues/705\n";
-            errorString += "Alternatively use the environment var " + Const.SLOEBER_HOME + ".";
+            errorString += "Alternatively use the environment var " + SLOEBER_HOME + ".";
             addString = "\nand\n";
         }
         if (installPath.toString().contains(" ")) {

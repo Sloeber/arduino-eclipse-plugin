@@ -1,5 +1,7 @@
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -38,8 +40,8 @@ import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.LibraryManager.LibraryTree;
 import io.sloeber.core.api.Node;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
+
 public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	private FilteredTree tree;
@@ -86,8 +88,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			Job job = new Job(Messages.ui_Adopting_arduino_libraries) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_arduino_libraries,
-							null);
+					MultiStatus status = new MultiStatus(PLUGIN_ID, 0, Messages.ui_installing_arduino_libraries, null);
 					return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor, status);
 				}
 			};
@@ -97,13 +98,14 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				public void done(IJobChangeEvent event) {
 					LibrarySelectionPage.this.isJobRunning = false;
 				}
-				
+
 			});
 			job.setUser(true);
 			job.schedule();
 			return true;
 		} else {
-			MessageDialog.openInformation(getShell(), "Library Manager", "Library Manager is busy. Please wait some time...");
+			MessageDialog.openInformation(getShell(), "Library Manager",
+					"Library Manager is busy. Please wait some time...");
 		}
 		return false;
 	}
@@ -124,7 +126,8 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			}
 		};
 
-		this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true,true) {
+		this.tree = new FilteredTree(parent, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, filter, true,
+				true) {
 			@Override
 			protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
 				CheckboxTreeViewer viewer1 = new CheckboxTreeViewer(composite);
@@ -231,8 +234,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	 * Ensures the correct checked/unchecked/greyed attributes are set on the
 	 * category.
 	 *
-	 * @param item
-	 *            the tree item representing the category
+	 * @param item the tree item representing the category
 	 */
 	protected static void verifySubtreeCheckStatus(TreeItem item) {
 		boolean grayed = false;

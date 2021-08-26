@@ -1,5 +1,7 @@
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -25,7 +27,6 @@ import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -118,12 +119,12 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		String filteredList[] =filterUnwantedPaths(hardWarePaths);
 		if (filteredList!=null) {
 		    hardWarePaths=filteredList;
-		    Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Invalid_Private_Hardware_folder));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.Invalid_Private_Hardware_folder));
 		}
 		filteredList=filterUnwantedPaths(libraryPaths);
         if (filteredList!=null) {
             libraryPaths=filteredList;
-            Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.Invalid_Private_Library_folder));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.Invalid_Private_Library_folder));
         }
         Preferences.setUseArduinoToolSelection(this.useArduinoToolchainSelectionEditor.getBooleanValue());
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());

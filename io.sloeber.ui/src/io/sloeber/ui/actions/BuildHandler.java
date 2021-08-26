@@ -1,17 +1,19 @@
 package io.sloeber.ui.actions;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.core.api.Sketch;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
 
@@ -36,7 +38,14 @@ class BuildJobHandler extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		Sketch.verify(this.myBuildProject, monitor);
+		try {
+			myBuildProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+		} catch (CoreException e) {
+			return new Status(IStatus.ERROR, NODE_ARDUINO,
+					Messages.buildHandler_build_code_of_project.replace(Messages.PROJECT, myBuildProject.getName())
+							+ " failed",
+					e);
+		}
 		return Status.OK_STATUS;
 	}
 }
@@ -53,7 +62,7 @@ public class BuildHandler extends AbstractHandler {
 		IProject SelectedProjects[] = ProjectExplorerListener.getSelectedProjects();
 		switch (SelectedProjects.length) {
 		case 0:
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.no_project_found));
 			break;
 		default:
 			PlatformUI.getWorkbench().saveAllEditors(false);

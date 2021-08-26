@@ -10,6 +10,9 @@ import org.eclipse.core.runtime.IStatus;
  */
 @SuppressWarnings("nls")
 public class Const {
+    // preference nodes
+    public static final String NODE_ARDUINO = "io.sloeber.arduino";
+
     //for debug messages
     public static final int SLOEBER_STATUS_DEBUG=IStatus.CANCEL;
     

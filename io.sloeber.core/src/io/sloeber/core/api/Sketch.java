@@ -1,74 +1,40 @@
 package io.sloeber.core.api;
 
-import java.net.URL;
+import static io.sloeber.core.common.Const.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ui.console.MessageConsole;
-import org.osgi.service.prefs.BackingStoreException;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.common.IndexHelper;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.Libraries;
-import io.sloeber.core.tools.uploaders.UploadSketchWrapper;
 
-@SuppressWarnings("unused")
 public class Sketch {
-    // preference nodes
-    public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
     public static IStatus isUploadableProject(IProject project) {
         try {
-            if (project == null || !project.hasNature(Const.ARDUINO_NATURE_ID)) {
-                return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null);
+            if (project == null || !project.hasNature(ARDUINO_NATURE_ID)) {
+                return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_no_arduino_sketch, null);
             }
         } catch (CoreException e) {
-            return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e);
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, Messages.Upload_Project_nature_unaccesible, e);
         }
         return Status.OK_STATUS;
     }
 
-    /**
-     * Asynchronous upload of the sketch. The upload status has to be followed in
-     * the GUI
-     *
-     * @param project
-     *
-     */
-    public static Job asyncUpload(IProject project) {
-        IStatus ret = isUploadableProject(project);
-        if (!ret.isOK()) {
-            Common.log(ret);
-            return null;
-        }
 
-        return UploadSketchWrapper.upload(project,
-                CoreModel.getDefault().getProjectDescription(project).getActiveConfiguration());
-
-    }
 
     /**
      * Synchronous upload of the sketch returning the status.
@@ -77,104 +43,13 @@ public class Sketch {
      * @return the status of the upload. Status.OK means upload is OK
      */
     public static IStatus syncUpload(IProject project) {
+
         IStatus ret = isUploadableProject(project);
         if (!ret.isOK()) {
             return ret;
         }
-        Job upLoadJob = UploadSketchWrapper.upload(project,
-                CoreModel.getDefault().getProjectDescription(project).getActiveConfiguration());
-
-        if (upLoadJob == null)
-            return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_failed, null);
-        try {
-            upLoadJob.join();
-            return upLoadJob.getResult();
-        } catch (InterruptedException e) {
-            // not sure if this is needed
-            return new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.Upload_failed, e);
-        }
-    }
-
-    /**
-     * Synchronous upload of the sketch with the errors shown in the gui.
-     *
-     * @param project
-     * @return the status of the upload. true means upload is OK
-     */
-    public static boolean upload(IProject project) {
-        IStatus ret = syncUpload(project);
-        if (!ret.isOK()) {
-            Common.log(ret);
-        }
-
-        return ret.isOK();
-    }
-
-    /**
-     * Verifies a project. Builds the active configuration If the build fails
-     * returns false else tru
-     *
-     * @param project
-     * @return
-     */
-    public static boolean verify(IProject project, IProgressMonitor monitor) {
-        MessageConsole theconsole = Helpers.findConsole("CDT Build Console (" + project.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (theconsole != null) {
-            theconsole.activate();
-        }
-        try {
-            project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
-
-            Job job = new Job("Start build Activator") { //$NON-NLS-1$
-                @Override
-                protected IStatus run(IProgressMonitor _monitor) {
-                    try {
-                        String buildflag = "FbStatus"; //$NON-NLS-1$
-                        char[] uri = { 'h', 't', 't', 'p', ':', '/', '/', 'b', 'a', 'e', 'y', 'e', 'n', 's', '.', 'i',
-                                't', '/', 'e', 'c', 'l', 'i', 'p', 's', 'e', '/', 'd', 'o', 'w', 'n', 'l', 'o', 'a',
-                                'd', '/', 'b', 'u', 'i', 'l', 'd', 'S', 't', 'a', 'r', 't', '.', 'h', 't', 'm', 'l',
-                                '?', 'b', '=' };
-                        IEclipsePreferences myScope = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-                        int curFsiStatus = myScope.getInt(buildflag, 0) + 1;
-                        myScope.putInt(buildflag, curFsiStatus);
-                        try {
-                            myScope.flush();
-                        } catch (BackingStoreException e) {
-                            // this should not happen
-                        }
-                        URL pluginStartInitiator = new URL(new String(uri) + Integer.toString(curFsiStatus));
-                        pluginStartInitiator.getContent();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return Status.OK_STATUS;
-                }
-            };
-            job.setPriority(Job.DECORATE);
-            job.schedule();
-            return isBuildSuccessFull(project);
-        } catch (CoreException e) {
-            // don't care about the error; the only thing that matters is: the
-            // build failed
-            return true;
-        }
-    }
-
-    /**
-     * Checks if build completed successfully.
-     *
-     * @return true iff project was built successfully last time.
-     * @throws CoreException
-     *             if current project does not exist or is not open.
-     */
-    private static boolean isBuildSuccessFull(IProject project) throws CoreException {
-        IMarker[] markers = project.findMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
-        for (IMarker marker : markers) {
-            if (marker.getAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO) == IMarker.SEVERITY_ERROR) {
-                return false;
-            }
-        }
-        return true;
+        SloeberProject sProject = SloeberProject.getSloeberProject(project, true);
+        return sProject.upload();
     }
 
     /**
@@ -205,7 +80,7 @@ public class Sketch {
 
     public static boolean isSketch(IProject proj) {
         try {
-            return proj.hasNature(Const.ARDUINO_NATURE_ID);
+            return proj.hasNature(ARDUINO_NATURE_ID);
         } catch (CoreException e) {
             // ignore
             e.printStackTrace();
@@ -221,19 +96,12 @@ public class Sketch {
 
     public static boolean addLibrariesToProject(IProject project, ICConfigurationDescription confDesc,
             Set<String> libraries) {
-        Map<String, List<IPath>> foldersToChange = Libraries.addLibrariesToProject(project, confDesc,
-                libraries);
+        Map<String, List<IPath>> foldersToChange = Libraries.addLibrariesToProject(project, confDesc, libraries);
         return Libraries.adjustProjectDescription(confDesc, foldersToChange);
     }
 
-    public static Map<String, IPath> getAllAvailableLibraries(IProject project) {
-        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        if (prjDesc != null) {
-            return Libraries.getAllInstalledLibraries(prjDesc.getActiveConfiguration());
-        }
-        Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
-                "Is the selected project a C/Cpp project? " + project.getName(), null)); //$NON-NLS-1$
-        return new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    public static Map<String, IPath> getAllAvailableLibraries(ICConfigurationDescription confDesc) {
+        return Libraries.getAllInstalledLibraries(confDesc);
     }
 
     public static Set<String> getAllImportedLibraries(IProject project) {
@@ -263,8 +131,7 @@ public class Sketch {
             }
         }
         if (projDescNeedsSaving) {
-            coreModel.getProjectDescriptionManager().setProjectDescription(project, projectDescription,
-                    true, null);
+            coreModel.getProjectDescriptionManager().setProjectDescription(project, projectDescription, true, null);
         }
     }
 

@@ -1,8 +1,11 @@
 package io.sloeber.ui;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.cdt.core.model.CoreModel;
@@ -87,7 +90,12 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 		this.myLibrarySelector.setLayoutData(theGriddata);
 
 		// find the items to add to the list
-		Map<String, IPath> allLibraries = Sketch.getAllAvailableLibraries(this.myProject);
+		Map<String, IPath> allLibraries = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
+		if (prjDesc != null) {
+			ICConfigurationDescription confDesc = prjDesc.getActiveConfiguration();
+			allLibraries = Sketch.getAllAvailableLibraries(confDesc);
+		}
 
 		// Get the data in the tree
 		Set<String> allLibrariesAlreadyUsed = Sketch.getAllImportedLibraries(this.myProject);
@@ -123,7 +131,7 @@ public class Import_Libraries_Page extends WizardResourceImportPage {
 				try {
 					folder.create(false, true, null);
 				} catch (CoreException e) {
-					Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+					log(new Status(IStatus.ERROR, PLUGIN_ID,
 							"Failed to create \"libraries\" folder.\nThis is probably a windows case insensetivity problem", //$NON-NLS-1$
 							e));
 					return true;

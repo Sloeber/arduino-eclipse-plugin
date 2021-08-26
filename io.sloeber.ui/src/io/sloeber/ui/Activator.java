@@ -23,14 +23,12 @@ import io.sloeber.ui.listeners.ProjectExplorerListener;
 @SuppressWarnings("nls")
 public class Activator extends AbstractUIPlugin {
 
-	private static final String PLUGIN_ID = "io.sloeber.core.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "io.sloeber.core.ui"; //$NON-NLS-1$
 	public static final String NODE_ARDUINO = "io.sloeber.arduino";
 	private static Activator instance;
 	private static BundleContext myContext;
 
-	public static String getId() {
-		return PLUGIN_ID;
-	}
+
 
 	private static void runGUIRegistration() {
 		UIJob installJob = new UIJob("Gui Registration") { //$NON-NLS-1$

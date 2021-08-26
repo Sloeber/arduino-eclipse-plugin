@@ -1,6 +1,8 @@
 
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -22,7 +24,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.Preferences;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -69,10 +70,10 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 		this.upDateJsons = new BooleanFieldEditor(KEY_UPDATE_JASONS, Messages.json_update, BooleanFieldEditor.DEFAULT,
 				parent);
 		addField(this.upDateJsons);
-		IPreferenceStore prefstore=getPreferenceStore();
+		IPreferenceStore prefstore = getPreferenceStore();
 		prefstore.setValue(KEY_UPDATE_JASONS, Preferences.getUpdateJsonFiles());
 		prefstore.setDefault(KEY_UPDATE_JASONS, true);
-		
+
 		final Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		link.setText(Messages.json_find);
 		link.setHref("https://github.com/arduino/Arduino/wiki/Unofficial-list-of-3rd-party-boards-support-urls"); //$NON-NLS-1$
@@ -83,7 +84,7 @@ public class ThirdPartyHardwareSelectionPage extends FieldEditorPreferencePage i
 				try {
 					org.eclipse.swt.program.Program.launch(link.getHref().toString());
 				} catch (IllegalArgumentException e) {
-					Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.json_browser_fail, e));
+					log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.json_browser_fail, e));
 				}
 			}
 		});

@@ -1,5 +1,7 @@
 package io.sloeber.core.tools.uploaders;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -20,18 +22,14 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.themes.ITheme;
 import org.eclipse.ui.themes.IThemeManager;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
-import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
 
 public class UploadSketchWrapper {
-	// preference nodes
-    private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
     private static final String UPLOAD_TOOL_TEENSY = "teensy_reboot"; //$NON-NLS-1$
 
 
@@ -203,7 +201,7 @@ public class UploadSketchWrapper {
 						WeStoppedTheComPort = SerialManager.StopSerialMonitor(
 								myBoardDescriptor.getActualUploadPort());
 					} catch (Exception e) {
-						ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                        ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 								Messages.Upload_Error_com_port, e);
 						Common.log(ret);
 					}
@@ -214,12 +212,12 @@ public class UploadSketchWrapper {
 							outStream, errStream)) {
 						String error=Messages.Upload_failed_upload_file.replace(FILE, hexFile.toString());
 						highLevelStream.println(error);
-						ret = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,error);
+                        ret = new Status(IStatus.ERROR, CORE_PLUGIN_ID, error);
 					}
 
 				} catch (Exception e) {
 					String error=Messages.Upload_failed_upload_file.replace(FILE, hexFile.toString());
-					Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,error, e));
+                    Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, error, e));
 				} finally {
 					try {
 						if (WeStoppedTheComPort) {
@@ -228,7 +226,7 @@ public class UploadSketchWrapper {
 						}
 
 					} catch (Exception e) {
-						ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+                        ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 								Messages.Upload_Error_serial_monitor_restart,
 								e);
 						Common.log(ret);

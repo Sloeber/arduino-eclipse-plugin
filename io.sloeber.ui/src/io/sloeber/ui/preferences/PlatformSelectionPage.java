@@ -1,6 +1,8 @@
 
 package io.sloeber.ui.preferences;
 
+import static io.sloeber.ui.Activator.*;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +44,6 @@ import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.PackageManager.PlatformTree.Package;
 import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
@@ -68,7 +69,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		control.setLayout(new GridLayout());
 
 		Button btnCheckButton = new Button(control, SWT.CHECK);
-		btnCheckButton.setText(Messages.PlatformSelectionPage_hide_third_party_url); 
+		btnCheckButton.setText(Messages.PlatformSelectionPage_hide_third_party_url);
 		btnCheckButton.setSelection(this.myHideJson);
 		btnCheckButton.addListener(SWT.Selection, new Listener() {
 
@@ -137,7 +138,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 		};
 
 		this.myGuiplatformTree = new FilteredTree(control, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION,
-				filter, true,true) {
+				filter, true, true) {
 
 			@Override
 			protected TreeViewer doCreateTreeViewer(Composite composite, int style) {
@@ -227,7 +228,8 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						}
 						if (parentElement instanceof Platform) {
 							Collection<InstallableVersion> versions = ((Platform) parentElement).getVersions();
-							InstallableVersion arrayVersions[]= versions.toArray(new InstallableVersion[versions.size()]);
+							InstallableVersion arrayVersions[] = versions
+									.toArray(new InstallableVersion[versions.size()]);
 							Arrays.sort(arrayVersions, Collections.reverseOrder());
 							return arrayVersions;
 						}
@@ -254,19 +256,21 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 						}
 						if (element instanceof Package) {
-						    String NULL="NULL"; //$NON-NLS-1$
+							String NULL = "NULL"; //$NON-NLS-1$
 							Package pkg = (Package) element;
-							String maintainer=pkg.getMaintainer();
-							String email=pkg.getEmail();
-							URL weburl=pkg.getWebsiteURL();
-							String weburlString=NULL; 
-							if(maintainer==null)maintainer=NULL; 
-							if(email==null)email=NULL; 
-							if(weburl!=null) weburlString=weburl.toString();
-						
+							String maintainer = pkg.getMaintainer();
+							String email = pkg.getEmail();
+							URL weburl = pkg.getWebsiteURL();
+							String weburlString = NULL;
+							if (maintainer == null)
+								maintainer = NULL;
+							if (email == null)
+								email = NULL;
+							if (weburl != null)
+								weburlString = weburl.toString();
+
 							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer)
-									.replace(Messages.EMAIL, email)
-									.replace(Messages.URL, weburlString);
+									.replace(Messages.EMAIL, email).replace(Messages.URL, weburlString);
 
 						}
 						if (element instanceof Platform) {
@@ -330,7 +334,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	}
 
 	protected IStatus updateInstallation(IProgressMonitor monitor) {
-		MultiStatus status = new MultiStatus(Activator.getId(), 0, Messages.ui_installing_platforms, null);
+		MultiStatus status = new MultiStatus(PLUGIN_ID, 0, Messages.ui_installing_platforms, null);
 		PackageManager.setPlatformTree(this.myPlatformTree, monitor, status);
 		return status;
 	}

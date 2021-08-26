@@ -1,5 +1,7 @@
 package io.sloeber.core.common;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +25,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 import io.sloeber.core.Activator;
 
-public class Common extends Const {
+public class Common {
 
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new Path(sloeberHome);

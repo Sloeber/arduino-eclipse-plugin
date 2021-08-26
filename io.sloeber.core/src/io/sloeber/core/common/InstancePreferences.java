@@ -1,5 +1,7 @@
 package io.sloeber.core.common;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.io.File;
 
 import org.eclipse.core.runtime.IStatus;
@@ -8,7 +10,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
 
 /**
@@ -26,8 +27,6 @@ public class InstancePreferences {
 	private static final String KEY_PRAGMA_ONCE_HEADER = "add pragma once to headers"; //$NON-NLS-1$
 	private static final String KEY_USE_ARDUINO_TOOLS_SELECTION_ALGORITHM="Use the algoritm to find the toolchain like Arduino IDE"; //$NON-NLS-1$
 	private static final String KEY_USE_BONJOUR="use bonjour service to find devices"; //$NON-NLS-1$
-	// preference nodes
-	public static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
 
 	/**
 	 * Give back the user option if the libraries need to be added or not
@@ -60,7 +59,7 @@ public class InstancePreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 					"failed to set global variable of type string " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}
@@ -74,7 +73,7 @@ public class InstancePreferences {
 		try {
 			myScope.flush();
 		} catch (BackingStoreException e) {
-			Common.log(new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
+            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
 					"failed to set global variable of type boolean " + key)); //$NON-NLS-1$
 			e.printStackTrace();
 		}

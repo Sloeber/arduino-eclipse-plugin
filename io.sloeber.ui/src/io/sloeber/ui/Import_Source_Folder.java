@@ -1,5 +1,7 @@
 package io.sloeber.ui;
 
+import static io.sloeber.ui.Activator.*;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -58,7 +60,7 @@ public class Import_Source_Folder implements IImportWizard {
 			this.mPages[0] = this.mFolderSelectionPage;
 			this.mFolderSelectionPage.setImportProject(SelectedProjects[0]);
 		} else {
-			Activator.log(new Status(IStatus.ERROR, Activator.getId(), Messages.no_project_found));
+			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.no_project_found));
 		}
 	}
 
@@ -166,9 +168,9 @@ public class Import_Source_Folder implements IImportWizard {
 			return true;
 		} catch (CoreException e) {
 			e.printStackTrace();
-			IStatus status = new Status(IStatus.ERROR, Activator.getId(),
+			IStatus status = new Status(IStatus.ERROR, PLUGIN_ID,
 					Messages.error_failed_to_import_library_in_project, e);
-			Activator.log(status);
+			log(status);
 
 		}
 		return false;

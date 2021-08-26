@@ -5,6 +5,8 @@ package io.sloeber.ui.listeners;
  * on
  */
 
+import static io.sloeber.ui.Activator.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import io.sloeber.ui.Activator;
 import io.sloeber.ui.Messages;
 
 public class ProjectExplorerListener implements ISelectionListener {
@@ -37,13 +38,13 @@ public class ProjectExplorerListener implements ISelectionListener {
 	public static IProject getSelectedProject() {
 	    switch (projects.length) {
 	    case 0:
-	        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+			log(new Status(IStatus.ERROR, PLUGIN_ID,
 	            Messages.no_project_found));
 	        break;
 	    case 1:
 	        return projects[0];
 	    default:
-	        Activator.log(new Status(IStatus.ERROR, Activator.getId(),
+			log(new Status(IStatus.ERROR, PLUGIN_ID,
 	            Messages.arduino_upload_project_handler_multiple_projects_found.
 	            replace(Messages.NUMBER, Integer.toString(projects.length) ).
 	            replace(Messages.PROJECT_LIST,  projects.toString()) ));

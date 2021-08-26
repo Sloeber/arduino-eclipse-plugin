@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.managers.ArduinoPlatform;
@@ -61,7 +60,6 @@ public class BoardDescription {
     private static final String ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH = REFERENCED + DOT + UPLOAD + PATH;
 
     // preference nodes
-    private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
     private static final TxtFile pluginPreProcessingPlatformTxt = new TxtFile(
             ConfigurationPreferences.getPreProcessingPlatformFile());

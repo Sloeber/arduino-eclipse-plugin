@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.api.Defaults;
 
 /**
@@ -39,7 +38,6 @@ public class ConfigurationPreferences {
 
 
     // preference nodes
-    private static final String NODE_ARDUINO = Activator.NODE_ARDUINO;
     private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
 
     private static String systemHash = "no hash generated"; //$NON-NLS-1$
