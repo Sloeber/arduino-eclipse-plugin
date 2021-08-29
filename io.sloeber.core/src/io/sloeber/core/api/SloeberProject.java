@@ -95,6 +95,10 @@ public class SloeberProject extends Common {
         }
     }
 
+    public IProject getProject() {
+        return myProject;
+    }
+
     /**
      * convenient method to create project
      * 
@@ -1118,7 +1122,7 @@ public class SloeberProject extends Common {
      */
     public IStatus upload() {
 
-        Job upLoadJob = UploadSketchWrapper.upload(myProject,
+        Job upLoadJob = UploadSketchWrapper.upload(this,
                 CoreModel.getDefault().getProjectDescription(myProject).getActiveConfiguration());
 
         if (upLoadJob == null)
