@@ -396,9 +396,13 @@ public class WorkAround extends Const {
         int SearchStringIndex = text.indexOf(searchString) + 1;
         if (SearchStringIndex > 0) {
             int lineStartIndex = text.lastIndexOf("\n", SearchStringIndex) + 1;
-            if (lineStartIndex > 0) {
+            if (lineStartIndex >= 0) {
                 int lineEndIndex = text.indexOf("\n", lineStartIndex);
-                if (lineEndIndex > 0) {
+                if (lineEndIndex == -1) {
+                    // We are at the last line and it does not end with \n
+                    lineEndIndex = text.length();
+                }
+                if (lineEndIndex > lineStartIndex) {
                     return text.substring(lineStartIndex, lineEndIndex);
                 }
             }
