@@ -26,11 +26,11 @@ https://github.com/sloeber/arduino-eclipse-plugin/graphs/contributors
 --launcher.defaultAction openFile
 --launcher.appendVmargs
       </programArgs>
-      <vmArgs>-Dxosgi.requiredJavaVersion=11
+      <vmArgs>-Dosgi.requiredJavaVersion=11
 -Dorg.eclipse.update.reconcile=false
 -Dlog4j.configuration=log4j/log4j.xml
--Xms40m
--Xmx512m
+-Xms256m
+-Xmx1024m
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
