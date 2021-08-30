@@ -5,14 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.sloeber.arduino-eclipse-plugin</groupId>
 	<artifactId>io.sloeber.parent</artifactId>
-	<version>4.4.0-SNAPSHOT</version>
+	<version>4.4.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
 		<tycho.version>2.3.0</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<!-- maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target -->
 	</properties>
 
 	<parent>
@@ -45,6 +45,19 @@
 	<build>
 		<outputDirectory>bin</outputDirectory>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<dependency-resolution>
+						<profileProperties>
+							<org.eclipse.justj.buildtime>true</org.eclipse.justj.buildtime>
+						</profileProperties>
+					</dependency-resolution>
+				</configuration>
+			</plugin>
+		
 			<!-- Enable tycho build extension -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -60,9 +73,12 @@
 				<configuration>
 					<debug>true</debug>
 					<encoding>UTF-8</encoding>
+<!--
 					<source>11</source>
-					<target>11</target>
-				</configuration>
+					<target>11</target> -->
+                   <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-15</executionEnvironment>
+
+ 				</configuration>
 			</plugin>
 
 			<!-- Enable version management -->
@@ -333,6 +349,12 @@
 			<id>nebula</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/nebula/releases/latest/</url>
+		</repository>
+
+		<repository>
+			<id>justj</id>
+			<layout>p2</layout>
+			<url>https://download.eclipse.org/justj/jres/15/updates/release/latest/</url>
 		</repository>
 
 		<repository>

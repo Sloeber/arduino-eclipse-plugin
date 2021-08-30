@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber product
 Bundle-SymbolicName: io.sloeber.product;singleton:=true
-Bundle-Version: 4.4.0.qualifier
+Bundle-Version: 4.4.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: sloeber.io
 Automatic-Module-Name: io.sloeber.product
