@@ -4,5 +4,5 @@ Bundle-Name: Sloeber product
 Bundle-SymbolicName: io.sloeber.product;singleton:=true
 Bundle-Version: 4.4.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Bundle-Vendor: sloeber.io
+Bundle-Vendor: baeyens.it
 Automatic-Module-Name: io.sloeber.product
