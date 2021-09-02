@@ -9,7 +9,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -17,6 +16,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.ui.LabelCombo;
 import io.sloeber.ui.Messages;
@@ -24,7 +24,8 @@ import io.sloeber.ui.Messages;
 public class CompileProperties extends SloeberCpropertyTab {
 	private LabelCombo myWarningLevel;
 	private Text myCustomWarningLevel;
-	private Button mySizeCommand;
+	private LabelCombo mySizeCommand;
+	private Text myCustomSizeCommand;
 	private Text myCAndCppCommand;
 	private Text myCppCommand;
 	private Text myCCommand;
@@ -35,18 +36,6 @@ public class CompileProperties extends SloeberCpropertyTab {
 
 	private boolean disableListeners = false;
 
-	private Listener buttonListener = new Listener() {
-		@Override
-		public void handleEvent(Event e) {
-			if (disableListeners)
-				return;
-			switch (e.type) {
-			case SWT.Selection:
-				getFromScreen();
-				break;
-			}
-		}
-	};
 	protected Listener myLabelComboListener = new Listener() {
 		@Override
 		public void handleEvent(Event e) {
@@ -55,6 +44,7 @@ public class CompileProperties extends SloeberCpropertyTab {
 			getFromScreen();
 			CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
 			myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
+			myCustomSizeCommand.setEnabled(compDesc.getSizeCommand() == SizeCommands.CUSTOM);
 		}
 	};
 	private FocusListener foucusListener = new FocusListener() {
@@ -116,18 +106,26 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myWarningLevel.setItems(getNames(WarningLevels.class));
 		myWarningLevel.addListener(myLabelComboListener);
 
-
 		myCustomWarningLevel = new Text(usercomp, SWT.BORDER | SWT.LEFT);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		myCustomWarningLevel.setLayoutData(gridData);
 		myCustomWarningLevel.addFocusListener(foucusListener);
 
 		// checkbox show alternative size
-		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
-		this.mySizeCommand.setText(Messages.ui_Alternative_size);
-		this.mySizeCommand.setEnabled(true);
-		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
-		mySizeCommand.addListener(SWT.Selection, buttonListener);
+		mySizeCommand = new LabelCombo(usercomp, Messages.ui_Alternative_size, 1, true);
+		mySizeCommand.setItems(getNames(SizeCommands.class));
+		mySizeCommand.addListener(myLabelComboListener);
+
+		myCustomSizeCommand = new Text(usercomp, SWT.BORDER | SWT.LEFT);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		myCustomSizeCommand.setLayoutData(gridData);
+		myCustomSizeCommand.addFocusListener(foucusListener);
+
+//		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
+//		this.mySizeCommand.setText(Messages.ui_Alternative_size);
+//		this.mySizeCommand.setEnabled(true);
+//		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
+//		mySizeCommand.addListener(SWT.Selection, buttonListener);
 
 		createLine(this.usercomp, 3);
 		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);
@@ -153,7 +151,11 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myWarningLevel.setText(compDesc.getWarningLevel().toString());
 		myCustomWarningLevel.setEnabled(compDesc.getWarningLevel() == WarningLevels.CUSTOM);
 		myCustomWarningLevel.setText(compDesc.getWarningLevel().getCustomWarningLevel());
-		mySizeCommand.setSelection(compDesc.isAlternativeSizeCommand());
+
+		mySizeCommand.setText(compDesc.getSizeCommand().toString());
+		myCustomSizeCommand.setEnabled(compDesc.getSizeCommand() == SizeCommands.CUSTOM);
+		myCustomSizeCommand.setText(compDesc.getSizeCommand().getCustomSizeCommand());
+
 		myCAndCppCommand.setText(compDesc.get_C_andCPP_CompileOptions());
 		myCCommand.setText(compDesc.get_C_CompileOptions());
 		myCppCommand.setText(compDesc.get_CPP_CompileOptions());
@@ -169,8 +171,12 @@ public class CompileProperties extends SloeberCpropertyTab {
 		CompileDescription compDesc = (CompileDescription) getDescription(getConfdesc());
 		WarningLevels warningLevel = WarningLevels.valueOf(myWarningLevel.getText());
 		warningLevel.setCustomWarningLevel(myCustomWarningLevel.getText());
+
+		SizeCommands sizeCommand = SizeCommands.valueOf(mySizeCommand.getText());
+		sizeCommand.setCustomSizeCommand(myCustomSizeCommand.getText());
+
 		compDesc.setWarningLevel(warningLevel);
-		compDesc.setAlternativeSizeCommand(this.mySizeCommand.getSelection());
+		compDesc.setSizeCommand(sizeCommand);
 		compDesc.set_C_andCPP_CompileOptions(this.myCAndCppCommand.getText());
 		compDesc.set_C_CompileOptions(this.myCCommand.getText());
 		compDesc.set_CPP_CompileOptions(this.myCppCommand.getText());

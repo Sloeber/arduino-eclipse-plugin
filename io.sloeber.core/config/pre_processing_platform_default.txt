@@ -4,7 +4,7 @@ recipe.objcopy.hex.pattern=${recipe.objcopy.bin.pattern}
 archive_file=arduino.ar
 archive_file_path=${build.path}/${archive_file}
 sloeber.size_command.avr="${compiler.path}${compiler.size.cmd}" --format=avr --mcu=${build.mcu} "${build.path}/${build.project_name}.elf"
-sloeber.size_command.orig=${recipe.size.pattern} | C:\test\awk\awk -f size.awk
+sloeber.size_command.awk=${recipe.size.pattern} | C:\test\awk\awk -f size.awk
 runtime.ide.version=10812
 build.system.path=${referenced.core.path}${DirectoryDelimiter}system
 serial.port=${com_port}
