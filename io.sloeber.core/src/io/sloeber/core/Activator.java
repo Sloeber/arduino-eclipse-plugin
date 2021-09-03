@@ -50,7 +50,6 @@ import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.listeners.resourceChangeListener;
 
-
 /**
  * generated code
  *
@@ -398,8 +397,14 @@ public class Activator extends Plugin {
         String SH_EXE = "sh.exe";
         String MAKE_ZIP = "make1.zip";
         String MAKE_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/files/2695478/make.zip";
-        // On Windows install make
+
+        String AWK_EXE = "awk.exe";
+        String AWK_ZIP = "awk_GNU_64_bit_V4_2_1.zip";
+        String AWK_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/files/7102568/awk_GNU_64_bit_V4_2_1.zip";
+
+        // On Windows install make and awk
         if (SystemUtils.IS_OS_WINDOWS) {
+            // Install make if needed
             IPath localMakePath = ConfigurationPreferences.getMakePath();
             if (localMakePath.append(MAKE_EXE).toFile().exists()) {
                 if (!localMakePath.append(SH_EXE).toFile().exists()) {
@@ -414,6 +419,13 @@ public class Activator extends Plugin {
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 Common.log(downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
+            }
+
+            // Install awk if needed
+            IPath localAwkPath = ConfigurationPreferences.getAwkPath();
+            if (!localAwkPath.append(AWK_EXE).toFile().exists()) {
+                IProgressMonitor monitor = new NullProgressMonitor();
+                Common.log(downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
             }
         }
     }
