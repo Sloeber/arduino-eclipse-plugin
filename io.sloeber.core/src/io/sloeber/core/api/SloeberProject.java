@@ -83,6 +83,7 @@ public class SloeberProject extends Common {
     private static final String ENV_KEY_BUILD_GENERIC_PATH = BUILD + DOT + "generic" + DOT + PATH; //$NON-NLS-1$
     private static final String ENV_KEY_COMPILER_PATH = COMPILER + DOT + PATH;
     private static final String SLOEBER_MAKE_LOCATION = ENV_KEY_SLOEBER_START + "make_location"; //$NON-NLS-1$
+    private static final String SLOEBER_AWK_LOCATION = ENV_KEY_SLOEBER_START + "awk.path"; //$NON-NLS-1$
     private static final String CONFIG = "Config";//$NON-NLS-1$
     private static final String CONFIG_DOT = CONFIG + DOT;
 
@@ -372,6 +373,9 @@ public class SloeberProject extends Common {
         if (Common.isWindows) {
             allVars.put(SLOEBER_MAKE_LOCATION,
                     ConfigurationPreferences.getMakePath().addTrailingSeparator().toOSString());
+            allVars.put(SLOEBER_AWK_LOCATION,
+                    ConfigurationPreferences.getAwkPath().addTrailingSeparator().toOSString());
+
             String systemroot = makeEnvironmentVar("SystemRoot"); //$NON-NLS-1$
             allVars.put("PATH", //$NON-NLS-1$
                     makeEnvironmentVar(ENV_KEY_COMPILER_PATH) + pathDelimiter
