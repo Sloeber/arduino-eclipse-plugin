@@ -110,6 +110,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
+import io.sloeber.core.Messages;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 
@@ -904,14 +905,21 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
         IFile sizeAwkFile1 = root.getFile(topBuildDir.append("size.awk"));
         File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
-        String awkContent = new String();
         String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);
-        awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
+        String awkContent = "BEGIN {maximum_size=ENVIRON[\"upload.maximum_size\"]\n"
+                + "    maximum_data_size=ENVIRON[\"upload.maximum_data_size\"]}";
+        awkContent += "/" + regex + "/ {arduino_size += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.data", EMPTY);
         awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.eeprom", EMPTY);
         awkContent += "/" + regex + "/ {arduino_eeprom += $2 }\n";
-        awkContent += "END { print \"size is \" arduino_size \" data is \" arduino_data}";
+        awkContent += "END { print \"\\n";
+        awkContent += Messages.sizeReportSketch;
+        awkContent += "\\n";
+        awkContent += Messages.sizeReportData;
+        awkContent += "\\n";
+        awkContent += "\"}";
+
         try {
             FileUtils.write(sizeAwkFile, awkContent, Charset.defaultCharset());
         } catch (IOException e) {
