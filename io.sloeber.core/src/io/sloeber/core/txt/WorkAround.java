@@ -43,7 +43,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.03.test 01 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.03.test 03 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -351,6 +351,21 @@ public class WorkAround extends Const {
                     }
                 }
             }
+            if (!origLine.equals(workedAroundLine)) {
+                replaceInfo.put(origLine, workedAroundLine);
+            }
+        }
+        for (Entry<String, String> replaceSet : replaceInfo.entrySet()) {
+            platformTXT = platformTXT.replace(replaceSet.getKey(), replaceSet.getValue());
+        }
+
+        // make the size regex expressions compatible with awk
+        Pattern regex_pattern = Pattern.compile("(?m)^recipe\\.size\\.regex.*=.*$");
+        Matcher regex_macher = regex_pattern.matcher(platformTXT);
+        replaceInfo.clear();
+        while (regex_macher.find()) {
+            String origLine = platformTXT.substring(regex_macher.start(), regex_macher.end());
+            String workedAroundLine = origLine.replace("(?:", "(");
             if (!origLine.equals(workedAroundLine)) {
                 replaceInfo.put(origLine, workedAroundLine);
             }
