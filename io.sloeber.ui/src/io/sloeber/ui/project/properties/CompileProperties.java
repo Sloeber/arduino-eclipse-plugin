@@ -121,12 +121,6 @@ public class CompileProperties extends SloeberCpropertyTab {
 		myCustomSizeCommand.setLayoutData(gridData);
 		myCustomSizeCommand.addFocusListener(foucusListener);
 
-//		this.mySizeCommand = new Button(this.usercomp, SWT.CHECK);
-//		this.mySizeCommand.setText(Messages.ui_Alternative_size);
-//		this.mySizeCommand.setEnabled(true);
-//		this.mySizeCommand.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
-//		mySizeCommand.addListener(SWT.Selection, buttonListener);
-
 		createLine(this.usercomp, 3);
 		this.myCAndCppCommand = makeOptionField(Messages.ui_append_c_cpp, Messages.ui_append_c_cpp_text);
 		this.myCppCommand = makeOptionField(Messages.ui_append_cpp, Messages.ui_append_cpp_text);
