@@ -906,17 +906,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         IFile sizeAwkFile1 = root.getFile(topBuildDir.append("size.awk"));
         File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
         String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);
-        String awkContent = "BEGIN {maximum_size=ENVIRON[\"upload.maximum_size\"]\n"
-                + "    maximum_data_size=ENVIRON[\"upload.maximum_data_size\"]}";
-        awkContent += "/" + regex + "/ {arduino_size += $2 }\n";
+         String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.data", EMPTY);
         awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.eeprom", EMPTY);
         awkContent += "/" + regex + "/ {arduino_eeprom += $2 }\n";
         awkContent += "END { print \"\\n";
-        awkContent += Messages.sizeReportSketch;
+        String max = Common.getBuildEnvironmentVariable(confDesc, "upload.maximum_size", "10000");
+        awkContent += Messages.sizeReportSketch.replace("maximum_size", max);
         awkContent += "\\n";
-        awkContent += Messages.sizeReportData;
+        max = Common.getBuildEnvironmentVariable(confDesc, "upload.maximum_data_size", "10000");
+        awkContent += Messages.sizeReportData.replace("maximum_data_size", max);
         awkContent += "\\n";
         awkContent += "\"}";
 

@@ -43,7 +43,7 @@ public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
     // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.03.test 03 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 02 ";
     // + String.valueOf(System.currentTimeMillis());
 
     /**
@@ -366,6 +366,10 @@ public class WorkAround extends Const {
         while (regex_macher.find()) {
             String origLine = platformTXT.substring(regex_macher.start(), regex_macher.end());
             String workedAroundLine = origLine.replace("(?:", "(");
+            String badSuffix="\\s+([0-9]+).*";
+            if(workedAroundLine.endsWith(badSuffix)) {
+            	workedAroundLine=workedAroundLine.substring(0, workedAroundLine.length()-badSuffix.length());
+            }
             if (!origLine.equals(workedAroundLine)) {
                 replaceInfo.put(origLine, workedAroundLine);
             }
