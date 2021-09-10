@@ -65,12 +65,67 @@ public class CompileDescription {
             return "${compiler.warning_flags.none}"; //$NON-NLS-1$
         }
 
+    }
+
+    public enum SizeCommands {
+
+        ARDUINO_WAY, AVR_ALTERANATIVE, RAW_RESULT, CUSTOM;
+
+        private String myCustomSizeCommand = EMPTY;
+
+        /**
+         * Set the custom command but only if the warning level is CUSTOM
+         * 
+         * @param customCommand
+         *            the command that needs to be used
+         */
+        public void setCustomSizeCommand(String customWarningLevel) {
+            if (this == CUSTOM) {
+                myCustomSizeCommand = customWarningLevel;
+            }
+        }
+
+        public void setCustomSizeCommand(String customWarningLevel, boolean force) {
+            if (force) {
+                myCustomSizeCommand = customWarningLevel;
+            } else {
+                setCustomSizeCommand(customWarningLevel);
+            }
+
+        }
+
+        public String getCustomSizeCommand() {
+            return myCustomSizeCommand;
+        }
+
+        /**
+         * Get the string that should be put in the environment variable that places the
+         * warning part in the command string This is a non expanded string for Arduino
+         * IDE supported options This is what the user typed in the GUI in the CUSTOM
+         * case
+         * 
+         * @return
+         */
+        public String getEnvValue() {
+            switch (this) {
+            case ARDUINO_WAY:
+                return "${sloeber.size_command.awk}"; //$NON-NLS-1$
+            case AVR_ALTERANATIVE:
+                return "${sloeber.size_command.avr}"; //$NON-NLS-1$
+            case RAW_RESULT:
+                return "${recipe.size.pattern}"; //$NON-NLS-1$
+            case CUSTOM:
+                return myCustomSizeCommand;
+
+            }
+            return "${recipe.size.pattern}"; //$NON-NLS-1$
+        }
 
     }
 
     private WarningLevels myWarningLevel = WarningLevels.NONE;
+    private SizeCommands mySizeCommand = SizeCommands.RAW_RESULT;
 
-    private boolean myAlternativeSizeCommand = false;
     private boolean myEnableParallelBuild = false;
     private String my_CPP_CompileOptions = new String();
     private String my_C_CompileOptions = new String();
@@ -82,15 +137,16 @@ public class CompileDescription {
 
     private static final String ENV_KEY_WARNING_LEVEL = "compiler.warning_flags"; //$NON-NLS-1$
 
-    private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
-            + "extra.compile"; //$NON-NLS-1$
-    private static final String SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
-            + "extra.c.compile"; //$NON-NLS-1$
-    private static final String SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START
-            + "extra.cpp.compile"; //$NON-NLS-1$
+    private static final String SLOEBER_ADDITIONAL_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.compile"; //$NON-NLS-1$
+    private static final String SLOEBER_ADDITIONAL_C_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.c.compile"; //$NON-NLS-1$
+    private static final String SLOEBER_ADDITIONAL_CPP_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.cpp.compile"; //$NON-NLS-1$
     private static final String SLOEBER_WARNING_LEVEL = ENV_KEY_SLOEBER_START + "warning_level"; //$NON-NLS-1$
+    private static final String SLOEBER_SIZE_TYPE = ENV_KEY_SLOEBER_START + "size.type"; //$NON-NLS-1$
+    private static final String SLOEBER_SIZE_CUSTOM = ENV_KEY_SLOEBER_START + "size.custom"; //$NON-NLS-1$
+
     private static final String SLOEBER_WARNING_LEVEL_CUSTOM = SLOEBER_WARNING_LEVEL + DOT + "custom"; //$NON-NLS-1$
-    private static final String SLOEBER_SIZE_COMMAND = ENV_KEY_SLOEBER_START + "alt_size_command"; //$NON-NLS-1$
+    // private static final String SLOEBER_SIZE_COMMAND = ENV_KEY_SLOEBER_START +
+    // "alt_size_command"; //$NON-NLS-1$
     private static final String SLOEBER_SIZE_SWITCH = ENV_KEY_SLOEBER_START + "size.switch"; //$NON-NLS-1$
     private static final String SLOEBER_ASSEMBLY_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.assembly"; //$NON-NLS-1$
     private static final String SLOEBER_ARCHIVE_COMPILE_OPTIONS = ENV_KEY_SLOEBER_START + "extra.archive"; //$NON-NLS-1$
@@ -113,12 +169,12 @@ public class CompileDescription {
         this.myEnableParallelBuild = parrallelBuild;
     }
 
-    public boolean isAlternativeSizeCommand() {
-        return this.myAlternativeSizeCommand;
+    public void setSizeCommand(SizeCommands sizeCommand) {
+        this.mySizeCommand = sizeCommand;
     }
 
-    public void setAlternativeSizeCommand(boolean alternativeSizeCommand) {
-        this.myAlternativeSizeCommand = alternativeSizeCommand;
+    public SizeCommands getSizeCommand() {
+        return mySizeCommand;
     }
 
     public String get_CPP_CompileOptions() {
@@ -193,11 +249,7 @@ public class CompileDescription {
         ret.put(SLOEBER_LINK_COMPILE_OPTIONS, this.my_Link_CompileOptions);
         ret.put(SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
         ret.put(ENV_KEY_WARNING_LEVEL, myWarningLevel.getEnvValue());
-        if (this.myAlternativeSizeCommand) {
-            ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(SLOEBER_SIZE_COMMAND));
-        } else {
-            ret.put(SLOEBER_SIZE_SWITCH, makeEnvironmentVar(RECIPE_SIZE));
-        }
+        ret.put(SLOEBER_SIZE_SWITCH, mySizeCommand.getEnvValue());
 
         return ret;
     }
@@ -238,7 +290,8 @@ public class CompileDescription {
         ret.put(prefix + SLOEBER_ALL_COMPILE_OPTIONS, this.my_All_CompileOptions);
         ret.put(prefix + SLOEBER_WARNING_LEVEL, myWarningLevel.toString());
         ret.put(prefix + SLOEBER_WARNING_LEVEL_CUSTOM, myWarningLevel.myCustomWarningLevel);
-        ret.put(prefix + SLOEBER_SIZE_SWITCH, Boolean.valueOf(myAlternativeSizeCommand).toString());
+        ret.put(prefix + SLOEBER_SIZE_TYPE, mySizeCommand.toString());
+        ret.put(prefix + SLOEBER_SIZE_CUSTOM, mySizeCommand.myCustomSizeCommand);
 
         return ret;
     }
@@ -259,10 +312,16 @@ public class CompileDescription {
         my_Archive_CompileOptions = section.getValue(SLOEBER_ARCHIVE_COMPILE_OPTIONS);
         my_Link_CompileOptions = section.getValue(SLOEBER_LINK_COMPILE_OPTIONS);
         my_All_CompileOptions = section.getValue(SLOEBER_ALL_COMPILE_OPTIONS);
-        myAlternativeSizeCommand = TRUE.equalsIgnoreCase(section.getValue(SLOEBER_SIZE_SWITCH));
+
         try {
             myWarningLevel = WarningLevels.valueOf(section.getValue(SLOEBER_WARNING_LEVEL));
             myWarningLevel.setCustomWarningLevel(section.getValue(SLOEBER_WARNING_LEVEL_CUSTOM));
+        } catch (@SuppressWarnings("unused") Exception e) {
+            // ignore as this will be default
+        }
+        try {
+            mySizeCommand = SizeCommands.valueOf(section.getValue(SLOEBER_SIZE_TYPE));
+            mySizeCommand.setCustomSizeCommand(section.getValue(SLOEBER_SIZE_CUSTOM));
         } catch (@SuppressWarnings("unused") Exception e) {
             // ignore as this will be default
         }
@@ -278,7 +337,7 @@ public class CompileDescription {
 
     public CompileDescription(CompileDescription compileDescription) {
         myWarningLevel = compileDescription.myWarningLevel;
-        myAlternativeSizeCommand = compileDescription.myAlternativeSizeCommand;
+        mySizeCommand = compileDescription.mySizeCommand;
         myEnableParallelBuild = compileDescription.myEnableParallelBuild;
         my_CPP_CompileOptions = compileDescription.my_CPP_CompileOptions;
         my_C_CompileOptions = compileDescription.my_C_CompileOptions;
@@ -296,7 +355,7 @@ public class CompileDescription {
      * @return true if the 2 are equal else false
      */
     public boolean equals(CompileDescription other) {
-        return (myWarningLevel == other.myWarningLevel) && (myAlternativeSizeCommand == other.myAlternativeSizeCommand)
+        return (myWarningLevel == other.myWarningLevel) && (mySizeCommand == other.mySizeCommand)
                 && equalCompileOptions(other);
     }
 
@@ -330,7 +389,7 @@ public class CompileDescription {
         if (TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.warning_level"))) {
             ret.myWarningLevel = WarningLevels.ALL;
         }
-        ret.myAlternativeSizeCommand = TRUE.equalsIgnoreCase(getOldWayEnvVar(confDesc, "JANTJE.size.switch"));
+        ret.mySizeCommand = SizeCommands.RAW_RESULT;
         return ret;
     }
 }

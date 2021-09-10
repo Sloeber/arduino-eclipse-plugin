@@ -1,18 +1,23 @@
-#this file contains default/fallback/resque values
+#this file contains default/fallback/rescue values
 software=ARDUINO
 recipe.objcopy.hex.pattern=${recipe.objcopy.bin.pattern}
 archive_file=arduino.ar
 archive_file_path=${build.path}/${archive_file}
-sloeber.alt_size_command="${compiler.path}${compiler.size.cmd}" --format=avr --mcu=${build.mcu} "${build.path}/${build.project_name}.elf"
 runtime.ide.version=10812
 build.system.path=${referenced.core.path}${DirectoryDelimiter}system
 serial.port=${com_port}
 build.project_name=${ProjName}
+
+#size stuff
+sloeber.size_command.avr="${compiler.path}${compiler.size.cmd}" --format=avr --mcu=${build.mcu} "${build.path}/${build.project_name}.elf"
+sloeber.size_command.awk=${recipe.size.pattern} | "${sloeber.awk.path}awk" -f size.awk
+
+
 #make sure we have default compiling warning commands
 compiler.warning_flags.none=-w
 compiler.warning_flags.more=-Wall
 compiler.warning_flags.all=-Wall -Wextra
-
+compiler.warning_flags=-w
 
 
 #quick fix for issue #810
@@ -32,12 +37,7 @@ tools.avrdude_remote.upload.verbose=-v
 #for due
 serial.port.file=${serial.port}
 
-#to turn warnings on/off
-compiler.warning_flags=-w
-compiler.warning_flags.all=-Wall -Wextra
-
 #for stm
-
 upload.altID=no_altID
 upload.usbID=no_altID
 

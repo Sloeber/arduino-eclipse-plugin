@@ -25,6 +25,7 @@ import org.junit.Test;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
+import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.core.api.OtherDescription;
 import io.sloeber.core.api.PackageManager;
@@ -368,6 +369,7 @@ public class RegressionTest {
             fail("Failed to compile the project after config rename");
         }
     }
+
     /**
      * open and close a project should keep the compileDescription and
      * BoardDescriotion
@@ -429,7 +431,6 @@ public class RegressionTest {
             fail("Failed to compile the project:" + projectName);
         }
 
-
     }
 
     @Test
@@ -458,9 +459,6 @@ public class RegressionTest {
             fail("non persistent projectdescription properties behave persistent during project close open in Sloeber");
         }
     }
-
-
-
 
     /**
      * open and close a project should keep the compileDescription and
@@ -565,7 +563,7 @@ public class RegressionTest {
         inCompileDescription.set_C_CompileOptions("-Dvijf=5");
         inCompileDescription.set_Link_CompileOptions("-Dzes=6");
         inCompileDescription.set_CPP_CompileOptions("-Dzeven=7");
-        inCompileDescription.setAlternativeSizeCommand(true);
+        inCompileDescription.setSizeCommand(SizeCommands.ARDUINO_WAY);
         inCompileDescription.setEnableParallelBuild(true);
         inCompileDescription.setWarningLevel(WarningLevels.NONE);
         return inCompileDescription;

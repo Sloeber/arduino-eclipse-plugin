@@ -26,7 +26,6 @@ import io.sloeber.core.api.Defaults;
  */
 public class ConfigurationPreferences {
 
-
     private static final String EXAMPLE_FOLDER_NAME = "examples"; //$NON-NLS-1$
     private static final String DOWNLOADS_FOLDER = "downloads"; //$NON-NLS-1$
     private static final String PRE_PROCESSING_PLATFORM_TXT = "pre_processing_platform.txt"; //$NON-NLS-1$
@@ -35,7 +34,6 @@ public class ConfigurationPreferences {
     private static final String POST_PROCESSING_BOARDS_TXT = "post_processing_boards.txt"; //$NON-NLS-1$
 
     private static final String KEY_UPDATE_JASONS = "Update jsons files"; //$NON-NLS-1$
-
 
     // preference nodes
     private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
@@ -151,12 +149,13 @@ public class ConfigurationPreferences {
         return getInstallationPath().append(POST_PROCESSING_BOARDS_TXT).toFile();
     }
 
-
-
-
     public static Path getMakePath() {
         return new Path(getInstallationPath().append("tools/make").toString()); //$NON-NLS-1$
 
+    }
+
+    public static IPath getAwkPath() {
+        return new Path(getInstallationPath().append("tools/awk").toString()); //$NON-NLS-1$
     }
 
     public static boolean getUpdateJasonFilesFlag() {
