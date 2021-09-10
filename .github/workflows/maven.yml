@@ -23,3 +23,15 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn --no-transfer-progress verify -Pall,sloeber_release,NOSDK -Dtest=NightlyJenkins 
+      
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Repository
+        path: |
+          io.sloeber.updatesite/target/repository
+    - name: Archive Windows 64 bit
+      uses: actions/upload-artifact@v2
+      with:
+        name: Sloeber for Windows
+        path: io.sloeber.product/target/products/io.sloeber.product/win32/win32/x86_64/Sloeber
