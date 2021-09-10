@@ -28,8 +28,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Repository
-        path: |
-          io.sloeber.updatesite/target/repository
+        path: io.sloeber.updatesite/target/repository
     - name: Archive Windows 64 bit
       uses: actions/upload-artifact@v2
       with:
