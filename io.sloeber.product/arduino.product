@@ -208,7 +208,6 @@ United States, other countries, or both.
    </plugins>
 
    <features>
-      <feature id="ilg.gnumcueclipse.debug.gdbjtag.openocd.feature" installMode="root"/>
       <feature id="io.sloeber.feature" installMode="root"/>
       <feature id="org.eclipse.cdt.autotools" installMode="root"/>
       <feature id="org.eclipse.cdt.gdb" installMode="root"/>
@@ -248,6 +247,7 @@ United States, other countries, or both.
       <feature id="org.eclipse.rse.ssh" installMode="root"/>
       <feature id="org.eclipse.rse.telnet" installMode="root"/>
       <feature id="org.eclipse.rse" installMode="root"/>
+      <feature id="org.eclipse.embedcdt.debug.gdbjtag.openocd" installMode="root"/>
    </features>
 
    <configurations>
