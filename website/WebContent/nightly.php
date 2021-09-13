@@ -56,21 +56,24 @@ if (isset ( $_GET ["OS"] ))
 		<p>
 			Beware though, as the nightly build represents the latest and
 			greatest version off the code, but
-			<mark>there is no guarantee that these versions do not contain any
-				issue</mark>
-			(they probably do) as the little gnome is not renowned for his
-			patience and he doesn't test the build extensively: actually he runs
-			away right after launching it!</p>
-			<P>And probably worse: The nightly is the playground of the contributors.
-			No testing has been done, no validation has been done.</P>
-		<P>In contrast to the stable the nightly product downloads do not contain a java run time.</P>
+			<mark>there is no guarantee that these versions are stable</mark>
+			(they probably are not). It is build from the latest sources, without extensive checking</p>
+			
+	        <p>     And probably worse: The nightly is the playground of the contributors.
+			No testing has been done, no validation has been done.</p>
 
-
+      <h3>Downloading a nighty product</h3>
+      <p>Every build on GitHub contains an Artifacts section. you can download the latest product from the artifacts section by finding the latest succesclicking on this link:</p>
+	    <p><a href="https://github.com/Sloeber/arduino-eclipse-plugin/actions" target="blanks"><b>* Latest GitHub builds</b></a></p>
+      <p>The latest Sloeber products come with an embedded JRE.</p>
+	    
 
       <h3>Eclipse Update Site</h3>
       <p>Alternatively you can get the latest nightly build by setting the following update site within an existing Sloeber installation.</p>
-      <h2>The latest nightly needs java 11!!!!</h2>
-      <p>So if you update your product on a windows machine that holds a jre folder you will need to delete the jre folder or upgrade the content to java11</p>
+      <h2>The latest nightly needs at least java 11!!!!</h2>
+      <p>The latest Sloeber products come with an embedded JRE. 
+	      If you are running the product, you must install the latest stable product first
+	      before you update from the nightly update site.</p>
       <div class="row">
         <div class="col-md-4 col-md-offset-4">
         			<?php
