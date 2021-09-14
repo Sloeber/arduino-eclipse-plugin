@@ -10,13 +10,13 @@ Bundle-Activator: io.sloeber.core.Activator
 Bundle-ClassPath: .,
  lib/jsch-0.1.50.jar,
  lib/jmdns-3.5.3.jar,
- lib/jssc-2.9.2.jar
+ lib/jssc-2.9.2.jar,
+ lib/gson-2.8.8.jar
 Require-Bundle: org.eclipse.cdt.managedbuilder.core,
  org.eclipse.core.filesystem,
  org.eclipse.cdt.core;bundle-version="7.0.0",
  org.apache.commons.compress,
  org.apache.commons.lang,
- com.google.gson,
  org.eclipse.equinox.security,
  org.eclipse.core.runtime,
  org.apache.commons.io;bundle-version="2.0.0",
