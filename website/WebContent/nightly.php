@@ -48,7 +48,7 @@ if (isset ( $_GET ["OS"] ))
 
     <div class="container" role="main">
       <div class="page-header">
-        <h1>Nightly Builds <small>use only if you feel confident</small></h1>"
+        <h1>Nightly Builds <small>use only if you feel confident</small></h1>
       </div>
       		<p>Every night, a little gnome called Jenkins walks around our servers looking for
 			changes occurred during the day and, when he finds any, he feels so
@@ -63,8 +63,9 @@ if (isset ( $_GET ["OS"] ))
 			No testing has been done, no validation has been done.</p>
 
       <h3>Downloading a nighty product</h3>
-      <p>Every build on GitHub contains an Artifacts section. you can download the latest product from the artifacts section by finding the latest succesclicking on this link:</p>
-	    <p><a href="https://github.com/Sloeber/arduino-eclipse-plugin/actions" target="blanks"><b>* Latest GitHub builds</b></a></p>
+      <p>Every build on GitHub contains an Artifacts section. You can download the latest product from the artifacts section by finding the latest successful master 
+	      build by clicking on this link:</p>
+	    <p><a href="https://github.com/Sloeber/arduino-eclipse-plugin/actions?query=branch%3Amaster" target="_blank"><b>* Latest GitHub builds</b></a></p>
       <p>The latest Sloeber products come with an embedded JRE.</p>
 	    
 
