@@ -41,7 +41,7 @@ class UploadJobHandler extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		boolean canUpload = false;
+		boolean canUpload = true;
 		IStatus retStatus = Status.OK_STATUS;
 		if (MyPreferences.getBuildBeforeUploadOption()) {
 			try {

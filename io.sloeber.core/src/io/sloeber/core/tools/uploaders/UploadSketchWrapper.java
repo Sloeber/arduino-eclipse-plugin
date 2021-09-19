@@ -29,6 +29,7 @@ import org.eclipse.ui.themes.IThemeManager;
 
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.IndexHelper;
@@ -108,6 +109,7 @@ public class UploadSketchWrapper {
         private ICConfigurationDescription myConfDes;
         private String myNAmeTag;
         private IProject myProject;
+        private String myProvidedUploadPort;
 
         public UploadJobWrapper(String name, SloeberProject project, ICConfigurationDescription cConf) {
             super(name);
@@ -124,6 +126,7 @@ public class UploadSketchWrapper {
 
             String projectName = myProject.getName();
             BoardDescription boardDescriptor = mySProject.getBoardDescription(myConfDes.getName(), true);
+            myProvidedUploadPort = boardDescriptor.getActualUploadPort();
 
             MessageConsole console = Helpers.findConsole(Messages.Upload_console_name.replace(PROJECT, projectName));
             console.clearConsole();
@@ -153,7 +156,7 @@ public class UploadSketchWrapper {
                 highLevelStream.println(message);
                 monitor.beginTask(message, 2);
                 try {
-                    WeStoppedTheComPort = SerialManager.StopSerialMonitor(boardDescriptor.getActualUploadPort());
+                    WeStoppedTheComPort = SerialManager.StopSerialMonitor(myProvidedUploadPort);
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e);
                     log(ret);
@@ -171,7 +174,7 @@ public class UploadSketchWrapper {
             } finally {
                 try {
                     if (WeStoppedTheComPort) {
-                        SerialManager.StartSerialMonitor(boardDescriptor.getActualUploadPort());
+                        SerialManager.StartSerialMonitor(myProvidedUploadPort);
                     }
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Messages.Upload_Error_serial_monitor_restart, e);
@@ -185,7 +188,7 @@ public class UploadSketchWrapper {
         private boolean actualUpload(IProgressMonitor monitor, MessageConsoleStream highStream,
                 MessageConsoleStream outStream, MessageConsoleStream errStream) {
             BoardDescription boardDescr = mySProject.getBoardDescription(myConfDes.getName(), true);
-            String uploadPort = boardDescr.getActualUploadPort();
+            String uploadPort = myProvidedUploadPort;
 
             IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
             IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -234,9 +237,10 @@ public class UploadSketchWrapper {
          * @return the password string or no_pwd_found_in_code if not found
          */
         @SuppressWarnings("nls")
-        private String getPasswordFromCode() {
+        private String getPasswordFromCode(String defaultPassword) {
+
             String parameter = IndexHelper.findParameterInFunction(myProject.getProject(), "setup",
-                    "ArduinoOTA.setPassword", "no_pwd_found_in_code");
+                    "ArduinoOTA.setPassword", defaultPassword);
             return parameter.replaceAll("\\(.*\\)", "").trim();
 
         }
@@ -251,7 +255,12 @@ public class UploadSketchWrapper {
 
         private void setEnvironmentvarsForAutorizedUpload(IContributedEnvironment contribEnv,
                 ICConfigurationDescription configurationDescription) {
-            String passWord = getPasswordFromCode();
+            String defaultPassword = "no_pwd_configured_nor_found_in_code"; //$NON-NLS-1$
+            PasswordManager pwdManager = new PasswordManager();
+            if (pwdManager.setHost(myProvidedUploadPort)) {
+                defaultPassword = pwdManager.getPassword();
+            }
+            String passWord = getPasswordFromCode(defaultPassword);
             String OTAPort = getOTAPortFromCode();
             IEnvironmentVariable var = new EnvironmentVariable(ENV_KEY_NETWORK_AUTH, passWord);
             contribEnv.addVariable(var, configurationDescription);

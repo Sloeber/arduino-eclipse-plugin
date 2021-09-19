@@ -50,7 +50,7 @@ public class PasswordDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		parent.getShell().setText(Messages.ui_sec_login_and_password + this.myPassWordmanager.getHost());
+		parent.getShell().setText(Messages.ui_sec_login_and_password + ' ' + this.myPassWordmanager.getHost());
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginRight = 5;
