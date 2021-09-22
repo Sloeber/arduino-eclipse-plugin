@@ -69,7 +69,7 @@ public class CompileDescription {
 
     public enum SizeCommands {
 
-        ARDUINO_WAY, AVR_ALTERANATIVE, RAW_RESULT, CUSTOM;
+        ARDUINO_WAY, AVR_ALTERNATIVE, RAW_RESULT, CUSTOM;
 
         private String myCustomSizeCommand = EMPTY;
 
@@ -110,7 +110,7 @@ public class CompileDescription {
             switch (this) {
             case ARDUINO_WAY:
                 return "${sloeber.size_command.awk}"; //$NON-NLS-1$
-            case AVR_ALTERANATIVE:
+            case AVR_ALTERNATIVE:
                 return "${sloeber.size_command.avr}"; //$NON-NLS-1$
             case RAW_RESULT:
                 return "${recipe.size.pattern}"; //$NON-NLS-1$
