@@ -7,6 +7,7 @@ import static io.sloeber.core.common.Const.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.envvar.EnvironmentVariable;
@@ -43,6 +44,7 @@ import cc.arduino.packages.ssh.SSHPwdSetup;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.PasswordManager;
+import io.sloeber.core.api.Serial;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.IndexHelper;
@@ -132,7 +134,7 @@ public class UploadSketchWrapper {
         @Override
         protected IStatus run(IProgressMonitor monitor) {
             IStatus ret = Status.OK_STATUS;
-            boolean WeStoppedTheComPort = false;
+            boolean theComPortIsPauzed = false;
 
             String projectName = myProject.getName();
             BoardDescription boardDescriptor = mySProject.getBoardDescription(myConfDes.getName(), true);
@@ -166,7 +168,7 @@ public class UploadSketchWrapper {
                 highLevelStream.println(message);
                 monitor.beginTask(message, 2);
                 try {
-                    WeStoppedTheComPort = SerialManager.StopSerialMonitor(myProvidedUploadPort);
+                    theComPortIsPauzed = SerialManager.pauzeSerialMonitor(myProvidedUploadPort);
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Upload_Error_com_port, e);
                     log(ret);
@@ -183,8 +185,22 @@ public class UploadSketchWrapper {
                 log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, error, e));
             } finally {
                 try {
-                    if (WeStoppedTheComPort) {
-                        SerialManager.StartSerialMonitor(myProvidedUploadPort);
+                    if (theComPortIsPauzed) {
+                        // wait for the port to reappear
+                        boolean portFound = false;
+                        int counter = 0;
+                        while (!portFound & counter++ < 100) {
+                            List<String> currentPorts = Serial.list();
+                            portFound = currentPorts.contains(myProvidedUploadPort);
+                            if (!portFound) {
+                                Thread.sleep(100);
+                            }
+                        }
+                        if (portFound) {
+                            SerialManager.resumeSerialMonitor(myProvidedUploadPort);
+                        } else {
+                            SerialManager.pauzeSerialMonitor(myProvidedUploadPort);
+                        }
                     }
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Messages.Upload_Error_serial_monitor_restart, e);

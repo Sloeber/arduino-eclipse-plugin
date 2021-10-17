@@ -36,14 +36,14 @@ public class SerialManager {
 		otherSerialUser = null;
 	}
 
-	public static boolean StopSerialMonitor(String mComPort) {
+	public static boolean pauzeSerialMonitor(String mComPort) {
 		if (otherSerialUser != null) {
 			return otherSerialUser.PauzePort(mComPort);
 		}
 		return false;
 	}
 
-	public static void StartSerialMonitor(String mComPort) {
+	public static void resumeSerialMonitor(String mComPort) {
 		if (otherSerialUser != null) {
 			otherSerialUser.ResumePort(mComPort);
 		}
