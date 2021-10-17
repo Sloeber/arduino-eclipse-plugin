@@ -199,7 +199,7 @@ public class UploadSketchWrapper {
                         if (portFound) {
                             SerialManager.resumeSerialMonitor(myProvidedUploadPort);
                         } else {
-                            SerialManager.pauzeSerialMonitor(myProvidedUploadPort);
+                            SerialManager.stopSerialMonitor(myProvidedUploadPort);
                         }
                     }
                 } catch (Exception e) {
