@@ -29,9 +29,13 @@
 
 package cc.arduino.packages.ssh;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 import com.jcraft.jsch.Channel;
@@ -39,83 +43,131 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-@SuppressWarnings({ "nls","unused" })
+import io.sloeber.core.Messages;
+import io.sloeber.core.common.Common;
+import io.sloeber.core.common.Const;
+
+@SuppressWarnings({ "nls", "unused" })
 public class SSH {
 
-	final Session session;
+    final Session session;
 
-	public SSH(Session session) {
-		this.session = session;
-	}
+    public SSH(Session session) {
+        this.session = session;
+    }
 
-	public boolean execSyncCommand(String command) throws JSchException, IOException {
-		return execSyncCommand(command, null, null);
-	}
+    public boolean execSyncCommand(String command) throws JSchException, IOException {
+        return execSyncCommand(command, null, null);
+    }
 
-	@SuppressWarnings("resource")
-	public boolean execSyncCommand(String command, MessageConsoleStream stdoutConsumer,
-			MessageConsoleStream stderrConsumer) throws JSchException, IOException {
-		InputStream stdout = null;
-		InputStream stderr = null;
-		Channel channel = null;
-		try {
-			channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
+    public boolean execSyncCommand(String command, MessageConsoleStream stdoutStream,
+            MessageConsoleStream stderrConsumer) throws JSchException, IOException {
+        ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
-			channel.setInputStream(null);
+        try (InputStream stdout = channel.getInputStream(); InputStream stderr = channel.getErrStream();) {
 
-			stdout = channel.getInputStream();
-			stderr = ((ChannelExec) channel).getErrStream();
+            channel.setCommand(command);
 
-			channel.connect();
+            channel.setInputStream(null);
 
-			int exitCode = consumeOutputSyncAndReturnExitCode(channel);
+            // for one reason or another I need to swap error and output stream here
+            Thread stdoutRunner = new Thread(new LogStreamRunner(stderr, stdoutStream));
+            Thread stderrRunner = new Thread(new LogStreamRunner(stdout, stderrConsumer));
+            stdoutRunner.start();
+            stderrRunner.start();
 
-			return exitCode == 0;
+            channel.connect();
 
-		} finally {
-			try {
-				if (stdout != null) {
-					stdout.close();
-				}
-				if (stderr != null) {
-					stderr.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (channel != null) {
-				channel.disconnect();
-			}
-		}
-	}
+            int exitCode = consumeOutputSyncAndReturnExitCode(channel);
 
-	private static int consumeOutputSyncAndReturnExitCode(Channel channel) {
-		while (true) {
+            return exitCode == 0;
 
-			if (channel.isClosed()) {
-				return channel.getExitStatus();
-			}
-			try {
-				Thread.sleep(100);
-			} catch (Exception ee) {
-				// noop
-			}
-		}
-	}
+        } finally {
+            if (channel != null) {
+                channel.disconnect();
+            }
+        }
+    }
 
-	// @SuppressWarnings("static-method")
-	// private void consumeStream(byte[] buffer, InputStream in, PrintStream
-	// out) throws IOException {
-	// while (in.available() > 0) {
-	// int length = in.read(buffer, 0, buffer.length);
-	// if (length < 0) {
-	// break;
-	// }
-	// if (out != null) {
-	// out.print(new String(buffer, 0, length));
-	// }
-	// }
-	// }
+    private static int consumeOutputSyncAndReturnExitCode(Channel channel) {
+        while (true) {
+
+            if (channel.isClosed()) {
+                return channel.getExitStatus();
+            }
+            try {
+                Thread.sleep(100);
+            } catch (Exception ee) {
+                // noop
+            }
+        }
+    }
+
+    /**
+     * A runnable class that will read a Stream until EOF, storing each line in a
+     * List and also calling a listener for each line.
+     */
+    private class LogStreamRunner implements Runnable {
+
+        private final BufferedReader fReader;
+        private MessageConsoleStream fConsoleOutput = null;
+
+        /**
+         * Construct a Streamrunner that will read the given InputStream and log all
+         * lines in the given List.
+         * <p>
+         * If a valid <code>OutputStream</code> is set, everything read by this
+         * <code>LogStreamRunner</code> is also written to it.
+         *
+         * @param instream
+         *            <code>InputStream</code> to read
+         * @param log
+         *            <code>List&lt;String&gt;</code> where all lines of the instream
+         *            are stored
+         * @param consolestream
+         *            <code>OutputStream</code> for secondary console output, or
+         *            <code>null</code> for no console output.
+         */
+        public LogStreamRunner(InputStream instream, MessageConsoleStream consolestream) {
+            this.fReader = new BufferedReader(new InputStreamReader(instream));
+            this.fConsoleOutput = consolestream;
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            try {
+                for (;;) {
+                    // Processes a new process output line.
+                    // If a Listener has been registered, call it
+                    int read = this.fReader.read();
+                    if (read != -1) {
+                        String readChar = new String() + (char) read;
+
+                        // And print to the console (if active)
+                        if (this.fConsoleOutput != null) {
+                            this.fConsoleOutput.print(readChar);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                // This is unlikely to happen, but log it nevertheless
+                IStatus status = new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, Messages.command_io, e);
+                Common.log(status);
+            } finally {
+                try {
+                    this.fReader.close();
+                } catch (IOException e) {
+                    // can't do anything
+                }
+            }
+        }
+    }
 
 }

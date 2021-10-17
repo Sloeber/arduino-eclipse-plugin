@@ -1140,4 +1140,15 @@ public class SloeberProject extends Common {
         }
     }
 
+    public IFile getTargetFile() {
+        // I assume the extension is .hex as the Arduino Framework does not provide the
+        // extension nor a key for the uploadable sketch (=build target)
+        // as currently this method is only used for network upload via yun this is ok
+        // nor now
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject);
+        String activeConfig = prjCDesc.getActiveConfiguration().getName();
+        return myProject.getFolder(activeConfig).getFile(myProject.getName() + ".hex");
+    }
+
 }
