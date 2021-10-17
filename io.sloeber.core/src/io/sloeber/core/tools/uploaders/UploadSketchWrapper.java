@@ -134,7 +134,7 @@ public class UploadSketchWrapper {
         @Override
         protected IStatus run(IProgressMonitor monitor) {
             IStatus ret = Status.OK_STATUS;
-            boolean theComPortIsPauzed = false;
+            boolean theComPortIsPaused = false;
 
             String projectName = myProject.getName();
             BoardDescription boardDescriptor = mySProject.getBoardDescription(myConfDes.getName(), true);
@@ -168,7 +168,7 @@ public class UploadSketchWrapper {
                 highLevelStream.println(message);
                 monitor.beginTask(message, 2);
                 try {
-                    theComPortIsPauzed = SerialManager.pauzeSerialMonitor(myProvidedUploadPort);
+                    theComPortIsPaused = SerialManager.pauseSerialMonitor(myProvidedUploadPort);
                 } catch (Exception e) {
                     ret = new Status(IStatus.WARNING, CORE_PLUGIN_ID, Upload_Error_com_port, e);
                     log(ret);
@@ -185,7 +185,7 @@ public class UploadSketchWrapper {
                 log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, error, e));
             } finally {
                 try {
-                    if (theComPortIsPauzed) {
+                    if (theComPortIsPaused) {
                         // wait for the port to reappear
                         boolean portFound = false;
                         int counter = 0;
