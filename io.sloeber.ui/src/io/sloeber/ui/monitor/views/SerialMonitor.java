@@ -74,7 +74,7 @@ import io.sloeber.ui.monitor.internal.SerialListener;
  * serial connection.
  *
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({ "unused" })
 public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	/**
@@ -97,7 +97,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	static private final URL IMG_LOCK;
 	static private final URL IMG_FILTER;
 	static private final URL IMG_TIMESTAMP;
-	static private final String newLine=System.getProperty("line.separator"); //$NON-NLS-1$
+	static private final String newLine = System.getProperty("line.separator"); //$NON-NLS-1$
 
 	static {
 		IMG_CLEAR = getDefault().getBundle().getEntry("icons/clear_console.png"); //$NON-NLS-1$
@@ -122,7 +122,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 	// The string to send to the serial port
 	protected Text sendString;
-	//  control contains the output of the serial port
+	// control contains the output of the serial port
 	static protected StyledText monitorOutput;
 	// Port used when doing actions
 	protected ComboViewer serialPorts;
@@ -330,41 +330,41 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		monitorOutput.setText(Messages.serialMonitorNoInput + newLine);
 		monitorOutput.addMouseListener(new MouseListener() {
 
-            @Override
-            public void mouseUp(MouseEvent e) {
-             // ignore
-            }
+			@Override
+			public void mouseUp(MouseEvent e) {
+				// ignore
+			}
 
-            @Override
-            public void mouseDown(MouseEvent e) {
-                // If right button get selected text save it and start external tool
-                if (e.button==3) {
-                    String selectedText=monitorOutput.getSelectionText();
-                    if(!selectedText.isEmpty()) {
-                        IProject selectedProject = ProjectExplorerListener.getSelectedProject();
-                        if (selectedProject!=null) {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				// If right button get selected text save it and start external tool
+				if (e.button == 3) {
+					String selectedText = monitorOutput.getSelectionText();
+					if (!selectedText.isEmpty()) {
+						IProject selectedProject = ProjectExplorerListener.getSelectedProject();
+						if (selectedProject != null) {
 
-                            try {
+							try {
                                 ICConfigurationDescription activeCfg=CoreModel.getDefault().getProjectDescription(selectedProject).getActiveConfiguration();
-                                String activeConfigName= activeCfg.getName();
-                                IPath buildFolder=selectedProject.findMember(activeConfigName).getLocation();
-                                File dumpFile=buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
-                                FileUtils.writeStringToFile(dumpFile, selectedText, Charset.defaultCharset());
-                            } catch (Exception e1) {
-                                // ignore
-                                e1.printStackTrace();
-                            }
-                        }
+								String activeConfigName = activeCfg.getName();
+								IPath buildFolder = selectedProject.findMember(activeConfigName).getLocation();
+								File dumpFile = buildFolder.append("serialdump.txt").toFile(); //$NON-NLS-1$
+								FileUtils.writeStringToFile(dumpFile, selectedText, Charset.defaultCharset());
+							} catch (Exception e1) {
+								// ignore
+								e1.printStackTrace();
+							}
+						}
 
-                    }
-                }
-            }
+					}
+				}
+			}
 
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-                // ignore
-            }
-        });
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				// ignore
+			}
+		});
 
 		parent.getShell().setDefaultButton(send);
 		makeActions();
@@ -595,7 +595,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 		if (serialConnections.size() < MY_MAX_SERIAL_PORTS) {
 			int colorindex = -1;
 			for (int idx = 0; idx < serialPortAllocated.length; idx++) {
-				if ( ! serialPortAllocated[idx]) {
+				if (!serialPortAllocated[idx]) {
 					colorindex = idx;
 					break;
 				}
@@ -653,8 +653,8 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 
 			newSerial.dispose();
 			theListener.dispose();
-			SerialPortsUpdated();
 		}
+		SerialPortsUpdated();
 	}
 
 	/**
@@ -673,7 +673,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * done ResumePort will be called
 	 */
 	@Override
-	public boolean PauzePort(String portName) {
+	public boolean pausePort(String portName) {
 		Serial theSerial = GetSerial(portName);
 		if (theSerial != null) {
 			theSerial.disconnect();
@@ -686,7 +686,7 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	 * see PauzePort
 	 */
 	@Override
-	public void ResumePort(String portName) {
+	public void resumePort(String portName) {
 		Serial theSerial = GetSerial(portName);
 		if (theSerial != null) {
 			if (MyPreferences.getCleanSerialMonitorAfterUpload()) {
@@ -704,14 +704,28 @@ public class SerialMonitor extends ViewPart implements ISerialUser {
 	}
 
 	public static List<String> getMonitorContent() {
-		int numLines =monitorOutput.getContent().getLineCount();
-		List<String>ret=new ArrayList<>();
-		for(int curLine=1;curLine<numLines;curLine++) {
-			ret.add(monitorOutput.getContent().getLine(curLine-1));
+		int numLines = monitorOutput.getContent().getLineCount();
+		List<String> ret = new ArrayList<>();
+		for (int curLine = 1; curLine < numLines; curLine++) {
+			ret.add(monitorOutput.getContent().getLine(curLine - 1));
 		}
 		return ret;
 	}
+
 	public static void clearMonitor() {
 		monitorOutput.setText(new String());
+	}
+
+	@Override
+	public boolean stopPort(String mComPort) {
+		// run this in the gui thread
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				disConnectSerialPort(mComPort);
+			}
+		});
+
+		return true;
 	}
 }

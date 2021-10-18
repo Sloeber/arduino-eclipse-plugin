@@ -54,10 +54,10 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
             }
         }
 
-        boolean WeStoppedTheComPort = false;
+        boolean theComPortIsPaused = false;
         if (!actualUploadPort.isBlank()) {
             try {
-                WeStoppedTheComPort = SerialManager.StopSerialMonitor(actualUploadPort);
+                theComPortIsPaused = SerialManager.pauseSerialMonitor(actualUploadPort);
             } catch (Exception e) {
                 Status ret = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID, Messages.Upload_Error_com_port, e);
                 Common.log(ret);
@@ -93,9 +93,9 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
         boolean ret = super.invokeBuild(kind, project, configuration, builder, console, markerGenerator, projectBuilder,
                 monitor);
 
-        if (WeStoppedTheComPort) {
+        if (theComPortIsPaused) {
             try {
-                SerialManager.StartSerialMonitor(actualUploadPort);
+                SerialManager.resumeSerialMonitor(actualUploadPort);
             } catch (Exception e) {
                 Status ret2 = new Status(IStatus.WARNING, Const.CORE_PLUGIN_ID,
                         Messages.Upload_Error_serial_monitor_restart, e);

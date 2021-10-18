@@ -28,8 +28,11 @@ import io.sloeber.core.tools.Version;
 
 /**
  * A class to apply workarounds to installed packages. Workaround are done after
- * installation and at usage of boards.txt or platform.txt file currently there
- * are noworkarounds for programmers.trx
+ * installation on boards.txt or platform.txt programmers.txt files
+ * Sloeber creates boards.sloeber.txt or platform.sloeber.txt
+ * programmers.sloeber.txt files
+ * 
+ * Sloeber tries to minimize workarounds in the code
  * 
  * The first line of the worked around files contain a key. A newer version of
  * sloeber that has a different workaround should change the key. This way the
@@ -42,9 +45,7 @@ import io.sloeber.core.tools.Version;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    // for debugging I added the system time so the files get refresed at each run
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 02 ";
-    // + String.valueOf(System.currentTimeMillis());
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 03 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -268,6 +269,9 @@ public class WorkAround extends Const {
         platformTXT = platformTXT.replace(" -DVARIANT_H=\"{build.variant_h}\"",
                 " \"-DVARIANT_H=\\\"{build.variant_h}\\\"\"");
 
+        // for ESP32 remove the build options fix for arduino ide #1390
+        platformTXT = platformTXT.replace(" \"@{build.opt.path}\" ", " ");
+
         return platformTXT;
     }
 
@@ -366,9 +370,9 @@ public class WorkAround extends Const {
         while (regex_macher.find()) {
             String origLine = platformTXT.substring(regex_macher.start(), regex_macher.end());
             String workedAroundLine = origLine.replace("(?:", "(");
-            String badSuffix="\\s+([0-9]+).*";
-            if(workedAroundLine.endsWith(badSuffix)) {
-            	workedAroundLine=workedAroundLine.substring(0, workedAroundLine.length()-badSuffix.length());
+            String badSuffix = "\\s+([0-9]+).*";
+            if (workedAroundLine.endsWith(badSuffix)) {
+                workedAroundLine = workedAroundLine.substring(0, workedAroundLine.length() - badSuffix.length());
             }
             if (!origLine.equals(workedAroundLine)) {
                 replaceInfo.put(origLine, workedAroundLine);

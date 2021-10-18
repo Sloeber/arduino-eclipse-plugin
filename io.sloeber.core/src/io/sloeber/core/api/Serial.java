@@ -113,7 +113,6 @@ public class Serial implements SerialPortEventListener {
 
     }
 
-
     public static List<String> list() {
         try {
             String[] portNames;
@@ -208,7 +207,7 @@ public class Serial implements SerialPortEventListener {
     }
 
     public void dispose() {
-        notifyConsumersOfEvent("Disconnect of port " + this.port.getPortName() + " executed"); //$NON-NLS-1$ //$NON-NLS-2$
+        notifyConsumersOfEvent("Disconnect of port " + portName + " executed"); //$NON-NLS-1$ //$NON-NLS-2$
         disconnect();
 
         if (this.fServiceRegistration != null) {
