@@ -39,9 +39,9 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.Messages;
+import io.sloeber.core.Gson.LibraryJson;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Library;
 import io.sloeber.core.managers.Tool;
 import io.sloeber.core.managers.ToolDependency;
 
@@ -229,7 +229,7 @@ public class Helpers {
             addToIncludePath.add(link.getFullPath());
         } else {
             // add src or root give priority to src
-            possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
+            possibleIncludeFolder = LibraryJson.LIBRARY_SOURCE_FODER;
             file = toLinkFolder.append(possibleIncludeFolder).toFile();
             if (file.exists()) {
                 addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));

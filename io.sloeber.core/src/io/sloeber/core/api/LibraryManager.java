@@ -30,13 +30,13 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.Gson.LibraryJson;
+import io.sloeber.core.Gson.LibraryIndexJson;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.managers.InternalPackageManager;
-import io.sloeber.core.managers.Library;
-import io.sloeber.core.managers.LibraryIndex;
 import io.sloeber.core.tools.Version;
 
 /**
@@ -54,10 +54,10 @@ public class LibraryManager {
 	private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
 	private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
 
-	static private List<LibraryIndex> libraryIndices;
+	static private List<LibraryIndexJson> libraryIndices;
 	private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
 
-	static public List<LibraryIndex> getLibraryIndices() {
+	static public List<LibraryIndexJson> getLibraryIndices() {
 		if (libraryIndices == null) {
 			InternalPackageManager.getPackageIndices();
 		}
@@ -177,14 +177,14 @@ public class LibraryManager {
 		}
 
 		public LibraryTree() {
-			for (LibraryIndex libraryIndex : getLibraryIndices()) {
+			for (LibraryIndexJson libraryIndex : getLibraryIndices()) {
 				for (String categoryName : libraryIndex.getCategories()) {
 					Category category = this.categories.get(categoryName);
 					if (category == null) {
 						category = new Category(categoryName);
 						this.categories.put(category.getName(), category);
 					}
-					for (io.sloeber.core.managers.Library library : libraryIndex.getLibraries(categoryName)) {
+					for (io.sloeber.core.Gson.LibraryJson library : libraryIndex.getLibraries(categoryName)) {
 						Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 						if (lib == null) {
                             String builder = "Architectures:" + library.getArchitectures().toString() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
@@ -213,8 +213,8 @@ public class LibraryManager {
 			return all;
 		}
 
-		private static LibraryIndex findLibraryIndex(String name) {
-			for (LibraryIndex libraryIndex : getLibraryIndices()) {
+		private static LibraryIndexJson findLibraryIndex(String name) {
+			for (LibraryIndexJson libraryIndex : getLibraryIndices()) {
 				if (libraryIndex.getName().equals(name))
 					return libraryIndex;
 			}
@@ -223,10 +223,10 @@ public class LibraryManager {
 
 		public void reset() {
 			for (Library library : this.getAllLibraries()) {
-				LibraryIndex libraryIndex = findLibraryIndex(library.getIndexName());
+				LibraryIndexJson libraryIndex = findLibraryIndex(library.getIndexName());
 
 				if (libraryIndex != null) {
-					io.sloeber.core.managers.Library installed = libraryIndex.getInstalledLibrary(library.getName());
+					io.sloeber.core.Gson.LibraryJson installed = libraryIndex.getInstalledLibrary(library.getName());
 					library.setVersion(installed != null ? installed.getVersion() : null);
 				}
 			}
@@ -236,14 +236,14 @@ public class LibraryManager {
 
 	public static IStatus setLibraryTree(LibraryTree libs, IProgressMonitor monitor, MultiStatus status) {
 		for (LibraryTree.Library lib : libs.getAllLibraries()) {
-			LibraryIndex libraryIndex = getLibraryIndex(lib.getIndexName());
+			LibraryIndexJson libraryIndex = getLibraryIndex(lib.getIndexName());
 
 			if (libraryIndex != null) {
-				io.sloeber.core.managers.Library toRemove = libraryIndex.getInstalledLibrary(lib.getName());
+				io.sloeber.core.Gson.LibraryJson toRemove = libraryIndex.getInstalledLibrary(lib.getName());
 				if (toRemove != null && !toRemove.getVersion().equals(lib.getVersion())) {
 					status.add(toRemove.remove(monitor));
 				}
-				io.sloeber.core.managers.Library toInstall = libraryIndex.getLibrary(lib.getName(), lib.getVersion());
+				io.sloeber.core.Gson.LibraryJson toInstall = libraryIndex.getLibrary(lib.getName(), lib.getVersion());
 				if (toInstall != null && !toInstall.isInstalled()) {
 					status.add(toInstall.install(monitor));
 				}
@@ -266,20 +266,20 @@ public class LibraryManager {
 
 
 	public static void InstallDefaultLibraries(IProgressMonitor monitor) {
-		LibraryIndex libindex = getLibraryIndex(Defaults.DEFAULT);
+		LibraryIndexJson libindex = getLibraryIndex(Defaults.DEFAULT);
 		if (libindex == null)
 			return;
 
 		for (String library : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
-			Library toInstalLib = libindex.getLatestLibrary(library);
+			LibraryJson toInstalLib = libindex.getLatestLibrary(library);
 			if (toInstalLib != null) {
 				toInstalLib.install(monitor);
 			}
 		}
 	}
 
-	static private LibraryIndex getLibraryIndex(String name) {
-		for (LibraryIndex index : getLibraryIndices()) {
+	static private LibraryIndexJson getLibraryIndex(String name) {
+		for (LibraryIndexJson index : getLibraryIndices()) {
 			if (index.getName().equals(name)) {
 				return index;
 			}
@@ -289,7 +289,7 @@ public class LibraryManager {
 
 	static public void loadJson(File jsonFile) {
 		try (Reader reader = new FileReader(jsonFile)) {
-			LibraryIndex index = new Gson().fromJson(reader, LibraryIndex.class);
+			LibraryIndexJson index = new Gson().fromJson(reader, LibraryIndexJson.class);
 			index.resolve();
 			index.setJsonFile(jsonFile);
 			libraryIndices.add(index);
@@ -323,14 +323,14 @@ public class LibraryManager {
 	 * @param category
 	 */
 	public static void installAllLatestLibraries() {
-		List<LibraryIndex> libraryIndices1 = getLibraryIndices();
-		Map<String, Library> latestLibs = new HashMap<>();
-		for (LibraryIndex libraryIndex : libraryIndices1) {
-			Map<String, Library> libraries = libraryIndex.getLatestLibraries();
-			for (Map.Entry<String, Library> entry : libraries.entrySet()) {
+		List<LibraryIndexJson> libraryIndices1 = getLibraryIndices();
+		Map<String, LibraryJson> latestLibs = new HashMap<>();
+		for (LibraryIndexJson libraryIndex : libraryIndices1) {
+			Map<String, LibraryJson> libraries = libraryIndex.getLatestLibraries();
+			for (Map.Entry<String, LibraryJson> entry : libraries.entrySet()) {
 				String curLibName = entry.getKey();
-				Library curLibrary = entry.getValue();
-				Library current = latestLibs.get(curLibName);
+				LibraryJson curLibrary = entry.getValue();
+				LibraryJson current = latestLibs.get(curLibName);
 				if (current != null) {
 					if (Version.compare(curLibrary.getVersion(), current.getVersion()) > 0) {
 						latestLibs.put(curLibName, curLibrary);
@@ -342,12 +342,12 @@ public class LibraryManager {
 		}
 		// Base64 is a 1.0.0 version replaced with base64 So Don't install it
 		latestLibs.remove("Base64"); //$NON-NLS-1$
-		for (Map.Entry<String, Library> entry : latestLibs.entrySet()) {
+		for (Map.Entry<String, LibraryJson> entry : latestLibs.entrySet()) {
 			String curLibName = entry.getKey();
-			Library curLibrary = entry.getValue();
-			for (LibraryIndex libraryIndex : libraryIndices1) {
+			LibraryJson curLibrary = entry.getValue();
+			for (LibraryIndexJson libraryIndex : libraryIndices1) {
 
-				Library previousVersion = libraryIndex.getInstalledLibrary(curLibName);
+				LibraryJson previousVersion = libraryIndex.getInstalledLibrary(curLibName);
 				if ((previousVersion != null) && (previousVersion != curLibrary)) {
 					previousVersion.remove(new NullProgressMonitor());
 				}
@@ -374,7 +374,7 @@ public class LibraryManager {
 	public static Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libnames) {
 		Set<String> remainingLibNames = new TreeSet<>(libnames);
 		Map<String, LibraryDescriptor> ret = new HashMap<>();
-		for (LibraryIndex libraryIndex : libraryIndices) {
+		for (LibraryIndexJson libraryIndex : libraryIndices) {
 			ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
 			remainingLibNames.removeAll(ret.keySet());
 		}

@@ -1,15 +1,15 @@
 package io.sloeber.core.api;
 
-import io.sloeber.core.managers.Library;
+import io.sloeber.core.Gson.LibraryJson;
 
 public class LibraryDescriptor {
-	private Library library=null;
+	private LibraryJson library=null;
 
-	public LibraryDescriptor(Library value) {
+	public LibraryDescriptor(LibraryJson value) {
 		this.library=value;
 	}
 
-	public Library toLibrary() {
+	public LibraryJson toLibrary() {
 		return this.library;
 	}
 
