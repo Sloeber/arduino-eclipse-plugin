@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.core.Gson.LibraryJson;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
@@ -44,7 +45,6 @@ import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.managers.Library;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
@@ -497,8 +497,8 @@ public class Libraries {
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
             IPath sourcePath = CurItem.getValue();
             String curLibName = CurItem.getKey();
-            if (sourcePath.append(Library.LIBRARY_SOURCE_FODER).toFile().exists()) {
-                sourcePath = sourcePath.append(Library.LIBRARY_SOURCE_FODER);
+            if (sourcePath.append(LibraryJson.LIBRARY_SOURCE_FODER).toFile().exists()) {
+                sourcePath = sourcePath.append(LibraryJson.LIBRARY_SOURCE_FODER);
             }
             File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
                 @Override

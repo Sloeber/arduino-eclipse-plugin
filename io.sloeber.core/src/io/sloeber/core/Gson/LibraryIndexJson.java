@@ -1,4 +1,4 @@
-package io.sloeber.core.managers;
+package io.sloeber.core.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,18 +21,18 @@ import io.sloeber.core.tools.Version;
  * @author jan
  *
  */
-public class LibraryIndex {
+public class LibraryIndexJson {
 	private String jsonFileName;
-	private List<Library> libraries;
+	private List<LibraryJson> libraries;
 
 	// category name to library name
 	private Map<String, Set<String>> categories = new HashMap<>();
 
 	// library name to latest version of library
-	private Map<String, Library> latestLibs = new HashMap<>();
+	private Map<String, LibraryJson> latestLibs = new HashMap<>();
 
 	public void resolve() {
-		for (Library library : this.libraries) {
+		for (LibraryJson library : this.libraries) {
 			String name = library.getName();
 
 			String category = library.getCategory();
@@ -47,7 +47,7 @@ public class LibraryIndex {
 			}
 			categoryLibs.add(name);
 
-			Library current = this.latestLibs.get(name);
+			LibraryJson current = this.latestLibs.get(name);
 			if (current != null) {
 				if (Version.compare(library.getVersion(), current.getVersion()) > 0) {
 					this.latestLibs.put(name, library);
@@ -58,12 +58,12 @@ public class LibraryIndex {
 		}
 	}
 
-	public Library getLatestLibrary(String name) {
+	public LibraryJson getLatestLibrary(String name) {
 		return this.latestLibs.get(name);
 	}
 
-	public Library getLibrary(String libName, String version) {
-		for (Library library : this.libraries) {
+	public LibraryJson getLibrary(String libName, String version) {
+		for (LibraryJson library : this.libraries) {
 			if (library.getName().equals(libName) && (library.getVersion().equals(version))) {
 				return library;
 			}
@@ -71,8 +71,8 @@ public class LibraryIndex {
 		return null;
 	}
 
-	public Library getInstalledLibrary(String libName) {
-		for (Library library : this.libraries) {
+	public LibraryJson getInstalledLibrary(String libName) {
+		for (LibraryJson library : this.libraries) {
 			if (library.getName().equals(libName) && library.isInstalled()) {
 				return library;
 			}
@@ -84,20 +84,20 @@ public class LibraryIndex {
 		return this.categories.keySet();
 	}
 
-	public Collection<Library> getLatestLibraries(String category) {
+	public Collection<LibraryJson> getLatestLibraries(String category) {
 		Set<String> categoryLibs = this.categories.get(category);
 		if (categoryLibs == null) {
 			return new ArrayList<>(0);
 		}
 
-		List<Library> libs = new ArrayList<>(categoryLibs.size());
+		List<LibraryJson> libs = new ArrayList<>(categoryLibs.size());
 		for (String name : categoryLibs) {
 			libs.add(this.latestLibs.get(name));
 		}
 		return libs;
 	}
 
-	public Map<String, Library> getLatestLibraries() {
+	public Map<String, LibraryJson> getLatestLibraries() {
 		return this.latestLibs;
 	}
 
@@ -110,7 +110,7 @@ public class LibraryIndex {
 	 */
 	public Map<String, LibraryDescriptor> getLatestInstallableLibraries() {
 		Map<String, LibraryDescriptor> ret = new HashMap<>();
-		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
+		for (Entry<String, LibraryJson> curLibrary : this.latestLibs.entrySet()) {
 			if (!curLibrary.getValue().isAVersionInstalled()) {
 				ret.put(curLibrary.getKey(),new LibraryDescriptor( curLibrary.getValue()));
 			}
@@ -118,14 +118,14 @@ public class LibraryIndex {
 		return ret;
 	}
 
-	public Collection<Library> getLibraries(String category) {
+	public Collection<LibraryJson> getLibraries(String category) {
 		Set<String> categoryLibs = this.categories.get(category);
 		if (categoryLibs == null) {
 			return new ArrayList<>(0);
 		}
 
-		List<Library> libs = new ArrayList<>(categoryLibs.size());
-		for (Library curLibrary : this.libraries) {
+		List<LibraryJson> libs = new ArrayList<>(categoryLibs.size());
+		for (LibraryJson curLibrary : this.libraries) {
 			if (categoryLibs.contains(curLibrary.getName())) {
 				libs.add(curLibrary);
 			}
@@ -159,7 +159,7 @@ public class LibraryIndex {
 		if (libNames.isEmpty()) {
 			return ret;
 		}
-		for (Entry<String, Library> curLibrary : this.latestLibs.entrySet()) {
+		for (Entry<String, LibraryJson> curLibrary : this.latestLibs.entrySet()) {
 			if (libNames.contains(curLibrary.getKey())) {
 				if (!curLibrary.getValue().isAVersionInstalled()) {
 					ret.put(curLibrary.getKey(), new LibraryDescriptor(curLibrary.getValue()));
