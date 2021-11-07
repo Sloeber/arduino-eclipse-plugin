@@ -1,6 +1,6 @@
 package io.sloeber.core.api;
 
-import io.sloeber.core.Gson.LibraryJson;
+import io.sloeber.core.api.Json.library.LibraryJson;
 
 public class LibraryDescriptor {
 	private LibraryJson library=null;

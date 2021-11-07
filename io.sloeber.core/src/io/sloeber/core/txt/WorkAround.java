@@ -20,9 +20,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Version;
 
@@ -366,9 +366,9 @@ public class WorkAround extends Const {
         while (regex_macher.find()) {
             String origLine = platformTXT.substring(regex_macher.start(), regex_macher.end());
             String workedAroundLine = origLine.replace("(?:", "(");
-            String badSuffix="\\s+([0-9]+).*";
-            if(workedAroundLine.endsWith(badSuffix)) {
-            	workedAroundLine=workedAroundLine.substring(0, workedAroundLine.length()-badSuffix.length());
+            String badSuffix = "\\s+([0-9]+).*";
+            if (workedAroundLine.endsWith(badSuffix)) {
+                workedAroundLine = workedAroundLine.substring(0, workedAroundLine.length() - badSuffix.length());
             }
             if (!origLine.equals(workedAroundLine)) {
                 replaceInfo.put(origLine, workedAroundLine);

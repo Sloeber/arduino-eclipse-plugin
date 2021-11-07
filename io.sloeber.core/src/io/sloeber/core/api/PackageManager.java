@@ -42,14 +42,14 @@ import io.sloeber.core.Activator;
 import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
 import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
 import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
+import io.sloeber.core.api.Json.packages.ArduinoPlatform;
+import io.sloeber.core.api.Json.packages.Package;
+import io.sloeber.core.api.Json.packages.PackageIndex;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.InternalPackageManager;
-import io.sloeber.core.managers.Package;
-import io.sloeber.core.managers.PackageIndex;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.txt.BoardTxtFile;
 
@@ -70,7 +70,6 @@ public class PackageManager {
             + "https://raw.githubusercontent.com/jantje/ArduinoLibraries/master/library_jantje_index.json\n" //$NON-NLS-1$
             + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
             + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
-
 
     protected static List<PackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
@@ -472,7 +471,7 @@ public class PackageManager {
                 this.name = name;
             }
 
-            public Package(io.sloeber.core.managers.Package pack, IndexFile indexFile) {
+            public Package(io.sloeber.core.api.Json.packages.Package pack, IndexFile indexFile) {
                 this.name = pack.getName();
                 this.maintainer = pack.getMaintainer();
                 try {
@@ -522,9 +521,10 @@ public class PackageManager {
         public PlatformTree() {
             List<PackageIndex> packageIndexes = InternalPackageManager.getPackageIndices();
             for (PackageIndex curPackageIndex : packageIndexes) {
+                String packageFileName = curPackageIndex.getJsonFile().getName();
                 IndexFile curIndexFile = new IndexFile(curPackageIndex.getJsonFile());
-                this.IndexFiles.put(curPackageIndex.getJsonFileName(), curIndexFile);
-                for (io.sloeber.core.managers.Package curInternalPackage : curPackageIndex.getPackages()) {
+                this.IndexFiles.put(packageFileName, curIndexFile);
+                for (io.sloeber.core.api.Json.packages.Package curInternalPackage : curPackageIndex.getPackages()) {
                     Package curPackage = new Package(curInternalPackage, curIndexFile);
                     curIndexFile.packages.put(curPackage.getName(), curPackage);
                     for (ArduinoPlatform curInternalPlatform : curInternalPackage.getPlatforms()) {
@@ -563,11 +563,11 @@ public class PackageManager {
         }
 
         public IndexFile getIndexFile(PackageIndex packageIndex) {
-            return this.IndexFiles.get(packageIndex.getJsonFileName());
+            return this.IndexFiles.get(packageIndex.getJsonFile().getName());
         }
 
         @SuppressWarnings("static-method")
-        public Package getPackage(IndexFile indexFile, io.sloeber.core.managers.Package curInternalPackage) {
+        public Package getPackage(IndexFile indexFile, io.sloeber.core.api.Json.packages.Package curInternalPackage) {
             return indexFile.packages.get(curInternalPackage.getName());
         }
 
@@ -697,8 +697,7 @@ public class PackageManager {
     static private void loadPackage(File jsonFile) {
         try (Reader reader = new FileReader(jsonFile)) {
             PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-            index.setOwners();
-            index.setJsonFile(jsonFile);
+            index.setPackageFile(jsonFile);
             packageIndices.add(index);
         } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, Activator.getId(),
@@ -867,6 +866,7 @@ public class PackageManager {
         }
         return ret;
     }
+
     /**
      * Completely replace the list with jsons with a new list
      *
@@ -904,8 +904,6 @@ public class PackageManager {
         loadJsons(false);
     }
 
-
-
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
@@ -932,37 +930,37 @@ public class PackageManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatform latestAvrPlatform=null;
-        ArduinoPlatform latestSamdPlatform=null;
-        ArduinoPlatform latestSamPlatform=null;
+        ArduinoPlatform latestAvrPlatform = null;
+        ArduinoPlatform latestSamdPlatform = null;
+        ArduinoPlatform latestSamPlatform = null;
         for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
             Package pkg = curPlatform.getParent();
             if (pkg != null) {
                 myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
-                if(Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())){
-                switch (curPlatform.getArchitecture()) {
-                case Const.AVR:
-                	latestAvrPlatform=curPlatform;
-                	break;
-                case Const.SAM:
-                	latestSamPlatform=curPlatform;
-                	break;
-                case Const.SAMD:
-                	latestSamdPlatform=curPlatform;
-                	break;
-                }            	
+                if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) {
+                    switch (curPlatform.getArchitecture()) {
+                    case Const.AVR:
+                        latestAvrPlatform = curPlatform;
+                        break;
+                    case Const.SAM:
+                        latestSamPlatform = curPlatform;
+                        break;
+                    case Const.SAMD:
+                        latestSamdPlatform = curPlatform;
+                        break;
+                    }
                 }
             }
         }
 
-        if( latestSamdPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
+        if (latestSamdPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
         }
-        if( latestSamPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamPlatform, false));
+        if (latestSamPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamPlatform, false));
         }
-        if( latestAvrPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
+        if (latestAvrPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
         }
         envVarsNeedUpdating = false;
         return myWorkbenchEnvironmentVariables;

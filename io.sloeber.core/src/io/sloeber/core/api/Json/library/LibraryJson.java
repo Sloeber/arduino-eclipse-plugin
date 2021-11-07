@@ -1,4 +1,6 @@
-package io.sloeber.core.Gson;
+package io.sloeber.core.api.Json.library;
+
+import static io.sloeber.core.Gson.GsonConverter.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +18,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.common.Common;
@@ -30,24 +34,52 @@ import io.sloeber.core.tools.FileModifiers;
  * @author jan
  *
  */
-@JsonAdapter(LibraryDeserializer.class)
+
 public class LibraryJson implements Comparable<LibraryJson> {
 
-    protected String name;
-    protected String version;
-    protected String author;
-    protected String maintainer;
-    protected String sentence;
-    protected String paragraph;
-    protected String website;
-    protected String category;
-    protected List<String> architectures = new ArrayList<>();
-    protected List<String> types = new ArrayList<>();
-    protected String url;
-    protected String archiveFileName;
-    protected int size;
-    protected String checksum;
+    private String name;
+    private String version;
+    private String author;
+    private String maintainer;
+    private String sentence;
+    private String paragraph;
+    private String website;
+    private String category;
+    private List<String> architectures = new ArrayList<>();
+    private List<String> types = new ArrayList<>();
+    private String url;
+    private String archiveFileName;
+    private int size;
+    private String checksum;
     public static final String LIBRARY_SOURCE_FODER = "src"; //$NON-NLS-1$
+
+    @SuppressWarnings("nls")
+    public LibraryJson(JsonElement json, LibraryIndexJson libraryIndexJson) {
+        JsonObject jsonObject = json.getAsJsonObject();
+        try {
+            name = getSafeString(jsonObject, "name");
+            version = getSafeString(jsonObject, "version");
+            author = getSafeString(jsonObject, "author");
+            maintainer = getSafeString(jsonObject, "maintainer");
+            sentence = getSafeString(jsonObject, "sentence");
+            paragraph = getSafeString(jsonObject, "paragraph");
+            website = getSafeString(jsonObject, "website");
+            category = getSafeString(jsonObject, "category");
+            for (JsonElement curType : jsonObject.get("architectures").getAsJsonArray()) {
+                architectures.add(curType.getAsString());
+            }
+            for (JsonElement curType : jsonObject.get("types").getAsJsonArray()) {
+                types.add(curType.getAsString());
+            }
+            url = getSafeString(jsonObject, "url");
+            archiveFileName = getSafeString(jsonObject, "archiveFileName");
+            size = jsonObject.get("size").getAsInt();
+            checksum = getSafeString(jsonObject, "checksum");
+        } catch (Exception e) {
+            throw new JsonParseException("failed to parse json  " + e.getMessage());
+        }
+
+    }
 
     public String getName() {
         return this.name;
@@ -95,10 +127,6 @@ public class LibraryJson implements Comparable<LibraryJson> {
 
     public String getArchiveFileName() {
         return this.archiveFileName;
-    }
-
-    public void setArchiveFileName(String archiveFileName) {
-        this.archiveFileName = archiveFileName;
     }
 
     public int getSize() {
