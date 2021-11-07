@@ -74,7 +74,6 @@ public class BoardDescription {
     private String myBoardID = EMPTY;
     private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-
     /*
      * Stuff to make things work
      */
@@ -93,7 +92,6 @@ public class BoardDescription {
     private final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
     private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
     private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
-
 
     @Override
     public String toString() {
@@ -207,7 +205,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 myBoardsCore = actualValue;
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
@@ -241,7 +239,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 this.myBoardsVariant = actualValue;
                 if ("*".equals(refVersion)) { //$NON-NLS-1$
@@ -280,7 +278,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 this.myUploadTool = actualValue;
                 this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
@@ -357,8 +355,6 @@ public class BoardDescription {
         myOptions = new TreeMap<>(srcObject.myOptions);
     }
 
-
-
     public String getuploadTool() {
         return this.myUploadTool;
     }
@@ -374,7 +370,8 @@ public class BoardDescription {
         Map<String, String> allMenuIDs = this.myBoardTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
-            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
+            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(),
+                    getBoardID());
             if (menuOptions.size() > 0) {
                 if (providedMenuValue == null) {
 
@@ -397,7 +394,6 @@ public class BoardDescription {
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
         myStorageNode.put(KEY_LAST_USED_BOARD_MENU_OPTIONS, KeyValue.makeString(this.myOptions));
     }
-
 
     public String getArchitecture() {
         return this.myBoardTxtFile.getArchitecture();
@@ -525,7 +521,6 @@ public class BoardDescription {
     public String[] getMenuItemNamesFromMenuID(String menuID) {
         return this.myBoardTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
     }
-
 
     public TreeMap<String, IPath> getAllExamples() {
         updateWhenDirty();
@@ -661,7 +656,6 @@ public class BoardDescription {
         return TOOLS + DOT + upLoadTool + DOT + UPLOAD + DOT + networkPrefix + PATTERN;
     }
 
-
     public IPath getreferencedHardwarePath() {
         updateWhenDirty();
         IPath platformPath = getReferencedCorePlatformPath();
@@ -701,7 +695,6 @@ public class BoardDescription {
         return getHost() != null;
     }
 
-
     protected BoardDescription(File txtFile, String boardID) {
         this.myBoardID = boardID;
         this.myreferencingBoardsFile = txtFile;
@@ -729,7 +722,6 @@ public class BoardDescription {
             myOptions.putAll(onlyKeepValidOptions(options));
         }
     }
-
 
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
         Map<String, String> ret = new HashMap<>();
@@ -824,7 +816,6 @@ public class BoardDescription {
         allVars.put(ENV_KEY_HARDWARE_PATH, getreferencedHardwarePath().toOSString());
         allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
 
-
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
         allVars.put(ENV_KEY_SERIAL_DOT_PORT, getActualUploadPort());
 
@@ -846,7 +837,6 @@ public class BoardDescription {
         allVars.put(ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH, getReferencedVariantPlatformPath().toOSString());
         allVars.put(ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH, getReferencedUploadPlatformPath().toOSString());
 
-
         PlatformTxtFile referencedPlatfromFile = getreferencedPlatformFile();
         // process the platform file referenced by the boards.txt
         if (referencedPlatfromFile != null) {
@@ -861,12 +851,10 @@ public class BoardDescription {
         // put in the installed tools info
         allVars.putAll(getEnVarPlatformInfo());
 
-
-
         Programmers localProgrammers[] = Programmers.fromBoards(this);
         String programmer = getProgrammer();
         for (Programmers curProgrammer : localProgrammers) {
-       //     allVars.putAll(curProgrammer.getAllEnvironVars());
+            //     allVars.putAll(curProgrammer.getAllEnvironVars());
             String programmerID = curProgrammer.getIDFromNiceName(programmer);
             if (programmerID != null) {
                 allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));
@@ -1069,18 +1057,18 @@ public class BoardDescription {
         ret.myBoardID = getOldWayEnvVar(confDesc, "JANTJE.board_ID");
         String optinconcat = getOldWayEnvVar(confDesc, "JANTJE.menu");
         ret.myOptions = KeyValue.makeMap(optinconcat);
-        
+
         String referencingBoardsFile = getOldWayEnvVar(confDesc, "JANTJE.boards_file");
-        int packagesIndex=referencingBoardsFile.indexOf( "\\arduinoPlugin\\packages\\");
-        if(packagesIndex==-1) {
-            packagesIndex=referencingBoardsFile.indexOf( "/arduinoPlugin/packages/");
+        int packagesIndex = referencingBoardsFile.indexOf("\\arduinoPlugin\\packages\\");
+        if (packagesIndex == -1) {
+            packagesIndex = referencingBoardsFile.indexOf("/arduinoPlugin/packages/");
         }
-        if(packagesIndex!=-1) {
+        if (packagesIndex != -1) {
             referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
         }
         ret.myreferencingBoardsFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
         ret.myBoardTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
-        
+
         return ret;
     }
 

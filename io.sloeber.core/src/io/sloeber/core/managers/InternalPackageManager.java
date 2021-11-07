@@ -47,6 +47,7 @@ import io.sloeber.core.Messages;
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.api.Json.packages.Package;
 import io.sloeber.core.api.Json.packages.PackageIndex;
@@ -210,13 +211,13 @@ public class InternalPackageManager extends PackageManager {
         return null;
     }
 
-    public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, String refVersion) {
+    public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, VersionNumber refVersion) {
         for (PackageIndex index : getPackageIndices()) {
             for (Package pkg : index.getPackages()) {
                 if (refVendor.equalsIgnoreCase(pkg.getName())) {
                     for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
                         if (refArchitecture.equalsIgnoreCase(curPlatform.getArchitecture())
-                                && refVersion.equalsIgnoreCase(curPlatform.getVersion())) {
+                                && refVersion.compareTo(curPlatform.getVersion()) == 0) {
                             return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
                         }
                     }

@@ -41,6 +41,7 @@ import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.library.LibraryJson;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
@@ -156,8 +157,8 @@ public class Libraries {
                     if (versions != null) {
                         switch (versions.length) {
                         case 0:// A empty lib folder is hanging around
-                            Common.log(
-                                    new Status(IStatus.WARNING, CORE_PLUGIN_ID, EmptyLibFolder.replace(LIB_TAG, curLib)));
+                            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+                                    EmptyLibFolder.replace(LIB_TAG, curLib)));
                             Lib_root.toFile().delete();
                             break;
                         case 1:// There should only be 1
@@ -167,7 +168,7 @@ public class Libraries {
                         default:// multiple lib versions are installed take
                                 // the
                                 // latest
-                            int highestVersion = Version.getHighestVersion(versions);
+                            int highestVersion = getHighestVersion(versions);
                             ret.put(curLib, Lib_root.append(versions[highestVersion]));
                             Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     MultipleVersionsOfLib.replace(LIB_TAG, curLib)));
@@ -179,6 +180,28 @@ public class Libraries {
         }
         return ret;
 
+    }
+
+    /**
+     * Given a list of version strings returns the index of the highest version
+     * If the highest version is multiple times in the list the result will
+     * point to one of those but the result may be different for each call
+     *
+     * @param versions
+     *            a string list of version numbers
+     *
+     * @return the index to the highest version or 0 in case of an empty
+     *         versions
+     */
+    private static int getHighestVersion(String[] versions) {
+        int returnIndex = 0;
+        for (int curVersion = 1; curVersion < versions.length; curVersion++) {
+            if (new VersionNumber(versions[returnIndex]).compareTo(versions[curVersion]) == -1) {
+                returnIndex = curVersion;
+            }
+
+        }
+        return returnIndex;
     }
 
     /**
@@ -198,7 +221,8 @@ public class Libraries {
                 final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
                 folderHandle.delete(true, null);
             } catch (CoreException e) {
-                Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB_TAG, CurItem), e));
+                Common.log(
+                        new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB_TAG, CurItem), e));
             }
         }
         return Helpers.removeInvalidIncludeFolders(confdesc);

@@ -37,7 +37,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.managers.InternalPackageManager;
-import io.sloeber.core.tools.Version;
 
 /**
  * This class is the main entry point for libraries. It handles private
@@ -116,7 +115,7 @@ public class LibraryManager {
             private String indexName;
             private Category category;
             protected TreeSet<VersionNumber> versions = new TreeSet<>();
-            protected String version;
+            protected VersionNumber version;
             private String tooltip;
 
             public Library(Category category, String name, String indexName, String tooltip) {
@@ -132,26 +131,26 @@ public class LibraryManager {
 
             @Override
             public String getName() {
-                return this.name;
+                return name;
             }
 
             public String getTooltip() {
-                return this.tooltip;
+                return tooltip;
             }
 
-            public String getLatest() {
-                return this.versions.last().toString();
+            public VersionNumber getLatest() {
+                return versions.last();
             }
 
-            public String getVersion() {
-                return this.version;
+            public VersionNumber getVersion() {
+                return version;
             }
 
             public String getIndexName() {
-                return this.indexName;
+                return indexName;
             }
 
-            public void setVersion(String version) {
+            public void setVersion(VersionNumber version) {
                 this.version = version;
             }
 
@@ -184,7 +183,8 @@ public class LibraryManager {
                         category = new Category(categoryName);
                         this.categories.put(category.getName(), category);
                     }
-                    for (io.sloeber.core.api.Json.library.LibraryJson library : libraryIndex.getLibraries(categoryName)) {
+                    for (io.sloeber.core.api.Json.library.LibraryJson library : libraryIndex
+                            .getLibraries(categoryName)) {
                         Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                         if (lib == null) {
                             String builder = "Architectures:" + library.getArchitectures().toString() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
@@ -192,7 +192,7 @@ public class LibraryManager {
                             lib = new Library(category, library.getName(), libraryIndex.getName(), builder);
                             category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib); //$NON-NLS-1$//$NON-NLS-2$
                         }
-                        lib.versions.add(new VersionNumber(library.getVersion()));
+                        lib.versions.add(library.getVersion());
                         if (library.isInstalled()) {
                             lib.version = library.getVersion();
                         }
@@ -226,7 +226,8 @@ public class LibraryManager {
                 LibraryIndexJson libraryIndex = findLibraryIndex(library.getIndexName());
 
                 if (libraryIndex != null) {
-                    io.sloeber.core.api.Json.library.LibraryJson installed = libraryIndex.getInstalledLibrary(library.getName());
+                    io.sloeber.core.api.Json.library.LibraryJson installed = libraryIndex
+                            .getInstalledLibrary(library.getName());
                     library.setVersion(installed != null ? installed.getVersion() : null);
                 }
             }
@@ -243,7 +244,8 @@ public class LibraryManager {
                 if (toRemove != null && !toRemove.getVersion().equals(lib.getVersion())) {
                     status.add(toRemove.remove(monitor));
                 }
-                io.sloeber.core.api.Json.library.LibraryJson toInstall = libraryIndex.getLibrary(lib.getName(), lib.getVersion());
+                io.sloeber.core.api.Json.library.LibraryJson toInstall = libraryIndex.getLibrary(lib.getName(),
+                        lib.getVersion());
                 if (toInstall != null && !toInstall.isInstalled()) {
                     status.add(toInstall.install(monitor));
                 }
@@ -331,7 +333,7 @@ public class LibraryManager {
                 LibraryJson curLibrary = entry.getValue();
                 LibraryJson current = latestLibs.get(curLibName);
                 if (current != null) {
-                    if (Version.compare(curLibrary.getVersion(), current.getVersion()) > 0) {
+                    if (curLibrary.getVersion().compareTo(current.getVersion()) > 0) {
                         latestLibs.put(curLibName, curLibrary);
                     }
                 } else {

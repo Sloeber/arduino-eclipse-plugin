@@ -21,8 +21,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.tools.Version;
-
 public class Package implements Comparable<Package> {
 
     private String name;
@@ -95,7 +93,7 @@ public class Package implements Comparable<Package> {
         Map<String, ArduinoPlatform> platformMap = new HashMap<>();
         for (ArduinoPlatform platform : this.platforms) {
             ArduinoPlatform p = platformMap.get(platform.getArchitecture());
-            if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
+            if (p == null || platform.getVersion().compareTo(p.getVersion()) > 0) {
                 platformMap.put(platform.getArchitecture(), platform);
             }
         }
@@ -115,7 +113,7 @@ public class Package implements Comparable<Package> {
         for (ArduinoPlatform platform : this.platforms) {
             if (platform.isInstalled()) {
                 ArduinoPlatform p = platformMap.get(platform.getID());
-                if (p == null || Version.compare(platform.getVersion(), p.getVersion()) > 0) {
+                if (p == null || platform.getVersion().compareTo(p.getVersion()) > 0) {
                     platformMap.put(platform.getID(), platform);
                 }
             }
@@ -147,7 +145,7 @@ public class Package implements Comparable<Package> {
                     if (foundPlatform == null) {
                         foundPlatform = platform;
                     } else {
-                        if (Version.compare(platform.getVersion(), foundPlatform.getVersion()) > 0) {
+                        if (platform.getVersion().compareTo(foundPlatform.getVersion()) > 0) {
                             foundPlatform = platform;
                         }
                     }
@@ -161,7 +159,7 @@ public class Package implements Comparable<Package> {
 
         for (ArduinoPlatform platform : this.platforms) {
             if (platform.getName().equals(platformName)) {
-                if (Version.compare(platform.getVersion(), version) == 0) {
+                if (platform.getVersion().compareTo(version) == 0) {
                     return platform;
                 }
             }
@@ -186,7 +184,7 @@ public class Package implements Comparable<Package> {
         Tool latestTool = null;
         for (Tool tool : this.tools) {
             if (tool.getName().equals(toolName)) {
-                if (latestTool == null || Version.compare(tool.getVersion(), latestTool.getVersion()) > 0) {
+                if (latestTool == null || tool.getVersion().compareTo(latestTool.getVersion()) > 0) {
                     latestTool = tool;
                 }
             }

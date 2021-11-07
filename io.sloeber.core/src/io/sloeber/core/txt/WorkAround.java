@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.FileModifiers;
-import io.sloeber.core.tools.Version;
 
 /**
  * A class to apply workarounds to installed packages. Workaround are done after
@@ -60,10 +60,10 @@ public class WorkAround extends Const {
          * prebuild actions remove the build_opt
          * https://github.com/Sloeber/arduino-eclipse-plugin/issues/1143
          */
-        if (Version.compare("1.8.0", platform.getVersion()) != 1) {
+        if (new VersionNumber("1.8.0").compareTo(platform.getVersion()) != 1) {
             if ("stm32".equals(platform.getArchitecture())) {
                 if ("STM32".equals(platform.getParent().getName())) {
-                    if (Version.compare("1.8.0", platform.getVersion()) == 0) {
+                    if (platform.getVersion().compareTo("1.8.0") == 0) {
                         File arduino_h = platform.getInstallPath().append("cores").append("arduino").append("Arduino.h")
                                 .toFile();
                         if (arduino_h.exists()) {
@@ -290,7 +290,7 @@ public class WorkAround extends Const {
             String platformVersion = platformTXTPath.segment(totalSegments - 2);
             String platformArchitecture = platformTXTPath.segment(totalSegments - 3);
             String platformName = platformTXTPath.segment(totalSegments - 5);
-            if (Version.compare("1.8.0", platformVersion) != 1) {
+            if (new VersionNumber("1.8.0").compareTo(platformVersion) != 1) {
                 if ("stm32".equals(platformArchitecture)) {
                     if ("STM32".equals(platformName)) {
                         platformTXT = platformTXT.replace("\"@{build.opt.path}\"", "");

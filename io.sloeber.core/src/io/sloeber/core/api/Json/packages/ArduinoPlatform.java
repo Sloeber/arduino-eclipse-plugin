@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.managers.InternalPackageManager;
@@ -34,7 +35,7 @@ public class ArduinoPlatform {
 
     private String name;
     private String architecture;
-    private String version;
+    private VersionNumber version;
     private String category;
     private String url;
     private String archiveFileName;
@@ -55,7 +56,7 @@ public class ArduinoPlatform {
         try {
             name = getSafeString(jsonObject, "name");
             architecture = getSafeString(jsonObject, "architecture");
-            version = getSafeString(jsonObject, "version");
+            version = getSafeVersion(jsonObject, "version");
             category = getSafeString(jsonObject, "category");
             url = getSafeString(jsonObject, "url");
             archiveFileName = getSafeString(jsonObject, "archiveFileName");
@@ -83,35 +84,35 @@ public class ArduinoPlatform {
     }
 
     public String getArchitecture() {
-        return this.architecture;
+        return architecture;
     }
 
-    public String getVersion() {
-        return this.version;
+    public VersionNumber getVersion() {
+        return version;
     }
 
     public String getCategory() {
-        return this.category;
+        return category;
     }
 
     public String getUrl() {
-        return this.url;
+        return url;
     }
 
     public String getArchiveFileName() {
-        return this.archiveFileName;
+        return archiveFileName;
     }
 
     public String getChecksum() {
-        return this.checksum;
+        return checksum;
     }
 
     public String getSize() {
-        return this.size;
+        return size;
     }
 
     public List<ToolDependency> getToolsDependencies() {
-        return this.toolsDependencies;
+        return toolsDependencies;
     }
 
     public boolean isInstalled() {
@@ -128,7 +129,7 @@ public class ArduinoPlatform {
 
     public IPath getInstallPath() {
         IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getName())
-                .append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version);
+                .append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version.toString());
         return stPath;
     }
 
@@ -138,7 +139,6 @@ public class ArduinoPlatform {
                 installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
-    @SuppressWarnings("unused")
     public IStatus remove(IProgressMonitor monitor) {
         // Check if we're installed
         if (!isInstalled()) {
