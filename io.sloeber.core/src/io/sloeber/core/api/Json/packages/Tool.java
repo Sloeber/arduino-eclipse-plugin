@@ -33,10 +33,10 @@ public class Tool {
     private String version;
     private List<ToolSystem> systems = new ArrayList<>();
 
-    private transient Package pkg;
+    private transient ArduinoPackage pkg;
 
     @SuppressWarnings("nls")
-    public Tool(JsonElement json, Package pkg) {
+    public Tool(JsonElement json, ArduinoPackage pkg) {
         this.pkg = pkg;
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -54,7 +54,7 @@ public class Tool {
 
     }
 
-    public Package getPackage() {
+    public ArduinoPackage getPackage() {
         return this.pkg;
     }
 

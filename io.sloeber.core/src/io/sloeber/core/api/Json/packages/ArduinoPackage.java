@@ -21,7 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class Package implements Comparable<Package> {
+public class ArduinoPackage implements Comparable<ArduinoPackage> {
 
     private String name;
     private String maintainer;
@@ -33,7 +33,7 @@ public class Package implements Comparable<Package> {
     private transient PackageIndex myParent = null;
 
     @SuppressWarnings("nls")
-    public Package(JsonElement json, PackageIndex packageIndex) {
+    public ArduinoPackage(JsonElement json, PackageIndex packageIndex) {
         myParent = packageIndex;
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -167,12 +167,29 @@ public class Package implements Comparable<Package> {
         return null;
     }
 
+    /**
+     * Given a platform name return all the platform's with that name.
+     * This results in a list of all the known versions of this platform
+     * 
+     * @param platformName
+     * @return all the known versions of this platform
+     */
+    public List<ArduinoPlatform> getPlatformVersions(String platformName) {
+        List<ArduinoPlatform> versionList = new ArrayList<>();
+        for (ArduinoPlatform platform : this.platforms) {
+            if (platform.getName().equals(platformName)) {
+                versionList.add(platform);
+            }
+        }
+        return versionList;
+    }
+
     public List<Tool> getTools() {
-        return this.tools;
+        return tools;
     }
 
     public Tool getTool(String toolName, String version) {
-        for (Tool tool : this.tools) {
+        for (Tool tool : tools) {
             if (tool.getName().trim().equals(toolName) && tool.getVersion().equals(version)) {
                 return tool;
             }
@@ -194,8 +211,8 @@ public class Package implements Comparable<Package> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Package) {
-            return ((Package) obj).getName().equals(this.name);
+        if (obj instanceof ArduinoPackage) {
+            return ((ArduinoPackage) obj).getName().equals(this.name);
         }
         return super.equals(obj);
     }
@@ -206,7 +223,7 @@ public class Package implements Comparable<Package> {
     }
 
     @Override
-    public int compareTo(Package other) {
+    public int compareTo(ArduinoPackage other) {
         return this.name.compareTo(other.name);
     }
 
@@ -219,13 +236,34 @@ public class Package implements Comparable<Package> {
         }
     }
 
-    public boolean hasInstalledBoards() {
+    public boolean isInstalled() {
         for (ArduinoPlatform platform : this.platforms) {
             if (platform.isInstalled()) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Is any version of the platform installed
+     * 
+     * @param platformName
+     * @return if a platform with this name is installed
+     */
+    public boolean isAVersionOfThisPlatformInstalled(String platformName) {
+        for (ArduinoPlatform platform : this.platforms) {
+            if (platform.getName().equals(platformName)) {
+                if (platform.isInstalled()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String getID() {
+        return name;
     }
 
 }

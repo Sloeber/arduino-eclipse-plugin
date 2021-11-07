@@ -36,7 +36,6 @@ import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
-import io.sloeber.core.managers.InternalPackageManager;
 
 /**
  * This class is the main entry point for libraries. It handles private
@@ -58,7 +57,7 @@ public class LibraryManager {
 
     static public List<LibraryIndexJson> getLibraryIndices() {
         if (libraryIndices == null) {
-            InternalPackageManager.getPackageIndices();
+            PackageManager.getPackageIndices();
         }
         return libraryIndices;
     }
