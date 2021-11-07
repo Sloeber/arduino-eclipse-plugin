@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.managers.InternalPackageManager;
+import io.sloeber.core.api.PackageManager;
 
 public class ToolDependency {
 
@@ -50,9 +50,9 @@ public class ToolDependency {
 
     //TODO remove this code
     public Tool getTool() {
-        Package pkg = this.platform.getParent();
+        ArduinoPackage pkg = this.platform.getParent();
         if (!pkg.getName().equals(this.packager)) {
-            pkg = InternalPackageManager.getPackage(this.packager);
+            pkg = PackageManager.getPackage(this.packager);
         }
         if (pkg == null) {
             return null;

@@ -22,16 +22,16 @@ import com.google.gson.annotations.JsonAdapter;
 @JsonAdapter(PackageIndex.class)
 public class PackageIndex implements JsonDeserializer<PackageIndex> {
 
-    private List<Package> packages = new ArrayList<>();
+    private List<ArduinoPackage> myPackages = new ArrayList<>();
 
-    private transient File jsonFile;
+    private transient File myJsonFile;
 
-    public List<Package> getPackages() {
-        return this.packages;
+    public List<ArduinoPackage> getPackages() {
+        return myPackages;
     }
 
-    public Package getPackage(String packageName) {
-        for (Package pkg : this.packages) {
+    public ArduinoPackage getPackage(String packageName) {
+        for (ArduinoPackage pkg : myPackages) {
             if (pkg.getName().equals(packageName)) {
                 return pkg;
             }
@@ -40,11 +40,20 @@ public class PackageIndex implements JsonDeserializer<PackageIndex> {
     }
 
     public void setPackageFile(File packageFile) {
-        this.jsonFile = packageFile;
+        myJsonFile = packageFile;
     }
 
     public File getJsonFile() {
-        return this.jsonFile;
+        return myJsonFile;
+    }
+
+    /**
+     * provide a identifier that uniquely identifies this package
+     * 
+     * @return A ID that you can uses to identify this package
+     */
+    public String getID() {
+        return myJsonFile.getPath();
     }
 
     @SuppressWarnings("nls")
@@ -55,7 +64,7 @@ public class PackageIndex implements JsonDeserializer<PackageIndex> {
 
         try {
             for (JsonElement curElement : jsonObject.get("packages").getAsJsonArray()) {
-                packages.add(new Package(curElement, this));
+                myPackages.add(new ArduinoPackage(curElement, this));
             }
         } catch (Exception e) {
             throw new JsonParseException("failed to parse PackageIndex json  " + e.getMessage());
@@ -63,6 +72,19 @@ public class PackageIndex implements JsonDeserializer<PackageIndex> {
 
         return this;
 
+    }
+
+    public boolean isInstalled() {
+        for (ArduinoPackage pkg : myPackages) {
+            if (pkg.isInstalled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getNiceName() {
+        return myJsonFile.getName();
     }
 
 }

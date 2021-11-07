@@ -16,7 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.managers.InternalPackageManager;
+import io.sloeber.core.api.PackageManager;
 
 public class ToolSystem {
 
@@ -120,8 +120,8 @@ public class ToolSystem {
     }
 
     public IStatus install(IProgressMonitor monitor) {
-        return InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(),
-                false, monitor);
+        return PackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false,
+                monitor);
     }
 
 }

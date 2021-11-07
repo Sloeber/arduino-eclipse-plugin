@@ -26,12 +26,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.managers.InternalPackageManager;
 
-public class ArduinoPlatform {
+public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
 
     private String name;
     private String architecture;
@@ -44,12 +44,12 @@ public class ArduinoPlatform {
     private List<String> boards = new ArrayList<>();
     private List<ToolDependency> toolsDependencies = new ArrayList<>();;
 
-    private Package myParent;
+    private ArduinoPackage myParent;
 
     private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
 
     @SuppressWarnings("nls")
-    public ArduinoPlatform(JsonElement json, Package parent) {
+    public ArduinoPlatform(JsonElement json, ArduinoPackage parent) {
         myParent = parent;
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -75,7 +75,7 @@ public class ArduinoPlatform {
         }
     }
 
-    public Package getParent() {
+    public ArduinoPackage getParent() {
         return this.myParent;
     }
 
@@ -119,6 +119,10 @@ public class ArduinoPlatform {
         return getBoardsFile().exists();
     }
 
+    public boolean isAVersionOfThisPlatformInstalled() {
+        return myParent.isAVersionOfThisPlatformInstalled(name);
+    }
+
     public File getBoardsFile() {
         return getInstallPath().append(Const.BOARDS_FILE_NAME).toFile();
     }
@@ -128,8 +132,8 @@ public class ArduinoPlatform {
     }
 
     public IPath getInstallPath() {
-        IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getName())
-                .append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(this.architecture).append(this.version.toString());
+        IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getID())
+                .append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(getID()).append(this.version.toString());
         return stPath;
     }
 
@@ -166,7 +170,7 @@ public class ArduinoPlatform {
 
         // Download platform archive
         System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")");
-        IStatus ret = InternalPackageManager.downloadAndInstall(this, false, monitor);
+        IStatus ret = PackageManager.downloadAndInstall(this, false, monitor);
         System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")");
         return ret;
 
@@ -214,16 +218,30 @@ public class ArduinoPlatform {
     }
 
     public String getID() {
-        String ID = new String();
+        return architecture;
+        //        String ID = new String();
+        //
+        //        if (myParent == null) {
+        //            ID = getInstallPath().toString();
+        //        } else {
+        //            ID = myParent.getName();
+        //        }
+        //        ID = ID + ID_SEPERATOR + name + ID_SEPERATOR + architecture;
+        //
+        //        return ID;
+    }
 
-        if (myParent == null) {
-            ID = getInstallPath().toString();
-        } else {
-            ID = myParent.getName();
-        }
-        ID = ID + ID_SEPERATOR + name + ID_SEPERATOR + architecture;
+    public String getConcattenatedBoardNames() {
+        return String.join("\n", getBoardNames()); //$NON-NLS-1$
+    }
 
-        return ID;
+    public List<ArduinoPlatform> getPlatformVersions() {
+        return myParent.getPlatformVersions(name);
+    }
+
+    @Override
+    public int compareTo(ArduinoPlatform o) {
+        return name.compareTo(o.getName());
     }
 
 }

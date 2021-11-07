@@ -23,10 +23,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.FileModifiers;
 
 /**
@@ -173,7 +173,7 @@ public class LibraryJson implements Comparable<LibraryJson> {
         if (isInstalled()) {
             return Status.OK_STATUS;
         }
-        IStatus ret = InternalPackageManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false,
+        IStatus ret = PackageManager.downloadAndInstall(this.url, this.archiveFileName, getInstallPath(), false,
                 monitor);
         FileModifiers.addPragmaOnce(getInstallPath());
         return ret;

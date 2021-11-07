@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
@@ -194,7 +193,7 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String actualValue = valueSplit[1];
                 myBoardsCore = actualValue;
-                myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, architecture);
+                myReferencedCorePlatformPath = PackageManager.getPlatformInstallPath(refVendor, architecture);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, core)
@@ -208,7 +207,7 @@ public class BoardDescription {
                 VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 myBoardsCore = actualValue;
-                myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
+                myReferencedCorePlatformPath = PackageManager.getPlatformInstallPath(refVendor, refArchitecture,
                         refVersion);
                 if (this.myReferencedCorePlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
@@ -227,7 +226,7 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String actualValue = valueSplit[1];
                 this.myBoardsVariant = actualValue;
-                this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
+                this.myReferencedBoardVariantPlatformPath = PackageManager.getPlatformInstallPath(refVendor,
                         architecture);
                 if (this.myReferencedBoardVariantPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
@@ -243,10 +242,10 @@ public class BoardDescription {
                 String actualValue = valueSplit[3];
                 this.myBoardsVariant = actualValue;
                 if ("*".equals(refVersion)) { //$NON-NLS-1$
-                    this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
+                    this.myReferencedBoardVariantPlatformPath = PackageManager.getPlatformInstallPath(refVendor,
                             refArchitecture);
                 } else {
-                    this.myReferencedBoardVariantPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
+                    this.myReferencedBoardVariantPlatformPath = PackageManager.getPlatformInstallPath(refVendor,
                             refArchitecture, refVersion);
                 }
                 if (this.myReferencedBoardVariantPlatformPath == null) {
@@ -266,7 +265,7 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String actualValue = valueSplit[1];
                 this.myUploadTool = actualValue;
-                this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
+                this.myReferencedUploadToolPlatformPath = PackageManager.getPlatformInstallPath(refVendor,
                         architecture);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
@@ -281,7 +280,7 @@ public class BoardDescription {
                 VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 this.myUploadTool = actualValue;
-                this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
+                this.myReferencedUploadToolPlatformPath = PackageManager.getPlatformInstallPath(refVendor,
                         refArchitecture, refVersion);
                 if (this.myReferencedUploadToolPlatformPath == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
@@ -669,7 +668,7 @@ public class BoardDescription {
      */
     public IPath getArduinoPlatformPath() {
         updateWhenDirty();
-        return InternalPackageManager.getPlatformInstallPath(VendorArduino, getArchitecture());
+        return PackageManager.getPlatformInstallPath(VendorArduino, getArchitecture());
     }
 
     /**
@@ -894,8 +893,8 @@ public class BoardDescription {
             return new HashMap<>();
         }
 
-        ArduinoPlatform referencingPlatform = InternalPackageManager.getPlatform(referencingPlatformPath);
-        ArduinoPlatform referencedPlatform = InternalPackageManager.getPlatform(referencedPlatformPath);
+        ArduinoPlatform referencingPlatform = PackageManager.getPlatform(referencingPlatformPath);
+        ArduinoPlatform referencedPlatform = PackageManager.getPlatform(referencedPlatformPath);
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
         if (jsonBasedPlatformManagement) {
