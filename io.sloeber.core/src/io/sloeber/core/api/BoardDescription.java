@@ -205,7 +205,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 myBoardsCore = actualValue;
                 myReferencedCorePlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor, refArchitecture,
@@ -239,7 +239,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 this.myBoardsVariant = actualValue;
                 if ("*".equals(refVersion)) { //$NON-NLS-1$
@@ -278,7 +278,7 @@ public class BoardDescription {
             } else if (valueSplit.length == 4) {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
-                String refVersion = valueSplit[2];
+                VersionNumber refVersion = new VersionNumber(valueSplit[2]);
                 String actualValue = valueSplit[3];
                 this.myUploadTool = actualValue;
                 this.myReferencedUploadToolPlatformPath = InternalPackageManager.getPlatformInstallPath(refVendor,
@@ -370,7 +370,8 @@ public class BoardDescription {
         Map<String, String> allMenuIDs = this.myBoardTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
-            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(), getBoardID());
+            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(),
+                    getBoardID());
             if (menuOptions.size() > 0) {
                 if (providedMenuValue == null) {
 
@@ -853,7 +854,6 @@ public class BoardDescription {
         Programmers localProgrammers[] = Programmers.fromBoards(this);
         String programmer = getProgrammer();
         for (Programmers curProgrammer : localProgrammers) {
-            // allVars.putAll(curProgrammer.getAllEnvironVars());
             String programmerID = curProgrammer.getIDFromNiceName(programmer);
             if (programmerID != null) {
                 allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));

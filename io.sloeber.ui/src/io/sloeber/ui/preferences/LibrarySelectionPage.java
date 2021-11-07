@@ -180,7 +180,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 						for (TreeItem child : item.getItems()) {
 							child.setChecked(item.getChecked());
 							if (item.getChecked()) {
-								child.setText(1, ((LibraryTree.Library) child.getData()).getLatest());
+								child.setText(1, ((LibraryTree.Library) child.getData()).getLatest().toString());
 							} else {
 								child.setText(1, emptyString);
 							}
@@ -189,7 +189,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 						if (item.getChecked()) {
 							((LibraryTree.Library) item.getData())
 									.setVersion(((LibraryTree.Library) item.getData()).getLatest());
-							item.setText(1, ((LibraryTree.Library) item.getData()).getLatest());
+							item.setText(1, ((LibraryTree.Library) item.getData()).getLatest().toString());
 						} else {
 							((LibraryTree.Library) item.getData()).setVersion(null);
 							item.setText(1, emptyString);
@@ -219,7 +219,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					combo.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent event1) {
-							((LibraryTree.Library) item.getData()).setVersion(combo.getText());
+							((LibraryTree.Library) item.getData()).setVersion(new VersionNumber(combo.getText()));
 							item.setText(1, combo.getText());
 							// Item selected: end the editing session
 							combo.dispose();
@@ -275,7 +275,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				return emptyString;
 			case 1:
 				if (element instanceof LibraryTree.Library) {
-					return ((LibraryTree.Library) element).getVersion();
+					return ((LibraryTree.Library) element).getVersion().toString();
 				}
 				return emptyString;
 			default:
@@ -309,7 +309,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 					cell.setText(((Node) cell.getElement()).getName());
 				}
 			} else if (cell.getElement() instanceof LibraryTree.Library) {
-				cell.setText(((LibraryTree.Library) cell.getElement()).getVersion());
+				cell.setText(((LibraryTree.Library) cell.getElement()).getVersion().toString());
 			} else {
 				cell.setText(null);
 			}

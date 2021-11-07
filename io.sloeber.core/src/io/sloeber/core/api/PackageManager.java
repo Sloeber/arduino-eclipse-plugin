@@ -305,7 +305,7 @@ public class PackageManager {
             }
 
             public VersionNumber getVersion() {
-                return new VersionNumber(this.myInternalPlatformm.getVersion());
+                return myInternalPlatformm.getVersion();
             }
 
             public boolean isInstalled() {

@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.managers.InternalPackageManager;
@@ -38,7 +39,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class LibraryJson implements Comparable<LibraryJson> {
 
     private String name;
-    private String version;
+    private VersionNumber version;
     private String author;
     private String maintainer;
     private String sentence;
@@ -58,7 +59,7 @@ public class LibraryJson implements Comparable<LibraryJson> {
         JsonObject jsonObject = json.getAsJsonObject();
         try {
             name = getSafeString(jsonObject, "name");
-            version = getSafeString(jsonObject, "version");
+            version = getSafeVersion(jsonObject, "version");
             author = getSafeString(jsonObject, "author");
             maintainer = getSafeString(jsonObject, "maintainer");
             sentence = getSafeString(jsonObject, "sentence");
@@ -82,64 +83,64 @@ public class LibraryJson implements Comparable<LibraryJson> {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public String getVersion() {
-        return this.version;
+    public VersionNumber getVersion() {
+        return version;
     }
 
     public String getAuthor() {
-        return this.author;
+        return author;
     }
 
     public String getMaintainer() {
-        return this.maintainer;
+        return maintainer;
     }
 
     public String getSentence() {
-        return this.sentence;
+        return sentence;
     }
 
     public String getParagraph() {
-        return this.paragraph;
+        return paragraph;
     }
 
     public String getWebsite() {
-        return this.website;
+        return website;
     }
 
     public String getCategory() {
-        return this.category;
+        return category;
     }
 
     public List<String> getArchitectures() {
-        return this.architectures;
+        return architectures;
     }
 
     public List<String> getTypes() {
-        return this.types;
+        return types;
     }
 
     public String getUrl() {
-        return this.url;
+        return url;
     }
 
     public String getArchiveFileName() {
-        return this.archiveFileName;
+        return archiveFileName;
     }
 
     public int getSize() {
-        return this.size;
+        return size;
     }
 
     public String getChecksum() {
-        return this.checksum;
+        return checksum;
     }
 
     public IPath getInstallPath() {
         return ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'))
-                .append(this.version);
+                .append(version.toString());
     }
 
     public boolean isInstalled() {

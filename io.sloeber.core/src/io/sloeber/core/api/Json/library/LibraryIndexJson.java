@@ -21,7 +21,7 @@ import com.google.gson.annotations.JsonAdapter;
 
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryDescriptor;
-import io.sloeber.core.tools.Version;
+import io.sloeber.core.api.VersionNumber;
 
 /**
  * This class represents a json file that references libraries
@@ -64,7 +64,7 @@ public class LibraryIndexJson implements Comparable<LibraryJson>, JsonDeserializ
 
             LibraryJson current = this.latestLibs.get(name);
             if (current != null) {
-                if (Version.compare(library.getVersion(), current.getVersion()) > 0) {
+                if (library.getVersion().compareTo(current.getVersion()) > 0) {
                     this.latestLibs.put(name, library);
                 }
             } else {
@@ -77,7 +77,7 @@ public class LibraryIndexJson implements Comparable<LibraryJson>, JsonDeserializ
         return this.latestLibs.get(name);
     }
 
-    public LibraryJson getLibrary(String libName, String version) {
+    public LibraryJson getLibrary(String libName, VersionNumber version) {
         for (LibraryJson library : this.libraries) {
             if (library.getName().equals(libName) && (library.getVersion().equals(version))) {
                 return library;
