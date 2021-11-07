@@ -20,9 +20,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
+import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
-import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.tools.FileModifiers;
 import io.sloeber.core.tools.Version;
 

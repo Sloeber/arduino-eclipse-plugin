@@ -39,11 +39,11 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.Messages;
-import io.sloeber.core.Gson.LibraryJson;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Tool;
-import io.sloeber.core.managers.ToolDependency;
+import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.packages.ArduinoPlatform;
+import io.sloeber.core.api.Json.packages.Tool;
+import io.sloeber.core.api.Json.packages.ToolDependency;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions

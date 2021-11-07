@@ -22,9 +22,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
+import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.managers.ArduinoPlatform;
 import io.sloeber.core.managers.InternalPackageManager;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.KeyValue;
