@@ -3,11 +3,6 @@ package io.sloeber.core.common;
 import static io.sloeber.core.common.Const.*;
 
 import java.io.File;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -37,36 +32,6 @@ public class ConfigurationPreferences {
 
     // preference nodes
     private static final String PACKAGES_FOLDER_NAME = "packages"; //$NON-NLS-1$
-
-    private static String systemHash = "no hash generated"; //$NON-NLS-1$
-    static {
-        // make a hashkey to identify the system
-        Collection<String> macs = new TreeSet<>();
-        Enumeration<NetworkInterface> inters;
-        try {
-            inters = NetworkInterface.getNetworkInterfaces();
-
-            while (inters.hasMoreElements()) {
-                NetworkInterface inter = inters.nextElement();
-                if (inter.getHardwareAddress() == null) {
-                    continue;
-                }
-                if (inter.isVirtual()) {
-                    continue;
-                }
-                byte curmac[] = inter.getHardwareAddress();
-                StringBuilder b = new StringBuilder();
-                for (byte curbyte : curmac) {
-                    b.append(String.format("%02X", Byte.valueOf(curbyte))); //$NON-NLS-1$
-                }
-                macs.add(b.toString());
-            }
-        } catch (@SuppressWarnings("unused") SocketException e) {
-            // ignore
-        }
-        Integer hascode = Integer.valueOf(macs.toString().hashCode());
-        systemHash = hascode.toString();
-    }
 
     public static void removeKey(String key) {
         IEclipsePreferences myScope = ConfigurationScope.INSTANCE.getNode(NODE_ARDUINO);
@@ -164,16 +129,6 @@ public class ConfigurationPreferences {
 
     public static void setUpdateJasonFilesFlag(boolean newFlag) {
         setBoolean(KEY_UPDATE_JASONS, newFlag);
-    }
-
-    /**
-     * Make a unique hashKey based on system parameters so we can identify users To
-     * make the key the mac addresses of the network cards are used
-     *
-     * @return a unique key identifying the system
-     */
-    public static String getSystemHash() {
-        return systemHash;
     }
 
 }
