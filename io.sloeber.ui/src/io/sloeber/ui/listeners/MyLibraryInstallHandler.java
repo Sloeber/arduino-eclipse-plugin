@@ -3,7 +3,7 @@ package io.sloeber.ui.listeners;
 import java.util.Map;
 
 import io.sloeber.core.api.IInstallLibraryHandler;
-import io.sloeber.core.api.LibraryDescriptor;
+import io.sloeber.core.api.Json.library.LibraryJson;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class MyLibraryInstallHandler implements IInstallLibraryHandler {
@@ -14,7 +14,7 @@ public class MyLibraryInstallHandler implements IInstallLibraryHandler {
 	}
 
 	@Override
-	public Map<String, LibraryDescriptor> selectLibrariesToInstall(Map<String, LibraryDescriptor> proposedLibsToInstall) {
+	public Map<String, LibraryJson> selectLibrariesToInstall(Map<String, LibraryJson> proposedLibsToInstall) {
 		return proposedLibsToInstall;
 	}
 
