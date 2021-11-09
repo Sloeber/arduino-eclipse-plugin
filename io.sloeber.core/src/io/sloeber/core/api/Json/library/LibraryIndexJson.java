@@ -20,7 +20,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 
 import io.sloeber.core.api.Defaults;
-import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.VersionNumber;
 
 /**
@@ -123,11 +122,11 @@ public class LibraryIndexJson implements Comparable<LibraryJson>, JsonDeserializ
      *
      * @return
      */
-    public Map<String, LibraryDescriptor> getLatestInstallableLibraries() {
-        Map<String, LibraryDescriptor> ret = new HashMap<>();
+    public Map<String, LibraryJson> getLatestInstallableLibraries() {
+        Map<String, LibraryJson> ret = new HashMap<>();
         for (Entry<String, LibraryJson> curLibrary : this.latestLibs.entrySet()) {
             if (!curLibrary.getValue().isAVersionInstalled()) {
-                ret.put(curLibrary.getKey(), new LibraryDescriptor(curLibrary.getValue()));
+                ret.put(curLibrary.getKey(), curLibrary.getValue());
             }
         }
         return ret;
@@ -159,15 +158,15 @@ public class LibraryIndexJson implements Comparable<LibraryJson>, JsonDeserializ
      *
      * @return
      */
-    public Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libNames) {
-        Map<String, LibraryDescriptor> ret = new HashMap<>();
+    public Map<String, LibraryJson> getLatestInstallableLibraries(Set<String> libNames) {
+        Map<String, LibraryJson> ret = new HashMap<>();
         if (libNames.isEmpty()) {
             return ret;
         }
         for (Entry<String, LibraryJson> curLibrary : this.latestLibs.entrySet()) {
             if (libNames.contains(curLibrary.getKey())) {
                 if (!curLibrary.getValue().isAVersionInstalled()) {
-                    ret.put(curLibrary.getKey(), new LibraryDescriptor(curLibrary.getValue()));
+                    ret.put(curLibrary.getKey(), curLibrary.getValue());
                 }
             }
         }

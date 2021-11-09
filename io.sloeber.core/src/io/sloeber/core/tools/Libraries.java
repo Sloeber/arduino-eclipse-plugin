@@ -38,7 +38,6 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
-import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
@@ -423,7 +422,7 @@ public class Libraries {
                         if (!uninstalledIncludedHeaders.isEmpty()) {
                             // some libraries may need to be installed
 
-                            Map<String, LibraryDescriptor> availableLibs = LibraryManager
+                            Map<String, LibraryJson> availableLibs = LibraryManager
                                     .getLatestInstallableLibraries(uninstalledIncludedHeaders);
 
                             if (!availableLibs.isEmpty()) {
@@ -432,8 +431,8 @@ public class Libraries {
                                 // be some user
                                 // interaction
                                 availableLibs = installHandler.selectLibrariesToInstall(availableLibs);
-                                for (Entry<String, LibraryDescriptor> curLib : availableLibs.entrySet()) {
-                                    curLib.getValue().toLibrary().install(new NullProgressMonitor());
+                                for (Entry<String, LibraryJson> curLib : availableLibs.entrySet()) {
+                                    curLib.getValue().install(new NullProgressMonitor());
                                 }
                             }
                         }
