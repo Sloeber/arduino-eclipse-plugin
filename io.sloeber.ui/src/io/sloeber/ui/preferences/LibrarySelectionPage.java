@@ -56,7 +56,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	protected LibraryTree libs = new LibraryTree();
 	final static String emptyString = ""; //$NON-NLS-1$
 	final static String blankLine = "\n\n";//$NON-NLS-1$
-	final static String canUpdateLabel = " (update)";
+	final static String canUpdateLabel = " (can update)";
 
 	public interface Node {
 		boolean hasChildren();
