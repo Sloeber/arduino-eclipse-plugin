@@ -8,11 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -62,194 +60,15 @@ public class LibraryManager {
         return libraryIndices;
     }
 
-    public static LibraryTree getLibraryTree() {
-        return new LibraryTree();
-
-    }
-
-    public static class LibraryTree {
-
-        private TreeMap<String, Category> categories = new TreeMap<>();
-
-        public class Category implements Comparable<Category>, Node {
-            private String name;
-            protected TreeMap<String, Library> libraries = new TreeMap<>();
-
-            public Category(String name) {
-                this.name = name;
-            }
-
-            @Override
-            public String getName() {
-                return this.name;
-            }
-
-            public Collection<Library> getLibraries() {
-                return this.libraries.values();
-            }
-
-            @Override
-            public int compareTo(Category other) {
-                return this.name.compareTo(other.name);
-            }
-
-            @Override
-            public boolean hasChildren() {
-                return !this.libraries.isEmpty();
-            }
-
-            @Override
-            public Object[] getChildren() {
-                return this.libraries.values().toArray();
-            }
-
-            @Override
-            public Object getParent() {
-                return LibraryTree.this;
-            }
+    public static IStatus setLibraryTree(List<LibraryJson> removeLibs, List<LibraryJson> addLibs,
+            IProgressMonitor monitor, MultiStatus status) {
+        for (LibraryJson lib : removeLibs) {
+            status.add(lib.remove(monitor));
+            if (monitor.isCanceled())
+                return Status.CANCEL_STATUS;
         }
-
-        public class Library implements Comparable<Library>, Node {
-            private String name;
-            private String indexName;
-            private Category category;
-            protected TreeSet<VersionNumber> versions = new TreeSet<>();
-            protected VersionNumber version;
-            private String tooltip;
-
-            public Library(Category category, String name, String indexName, String tooltip) {
-                this.category = category;
-                this.name = name;
-                this.tooltip = tooltip;
-                this.indexName = indexName;
-            }
-
-            public Collection<VersionNumber> getVersions() {
-                return this.versions;
-            }
-
-            @Override
-            public String getName() {
-                return name;
-            }
-
-            public String getTooltip() {
-                return tooltip;
-            }
-
-            public VersionNumber getLatest() {
-                return versions.last();
-            }
-
-            public VersionNumber getVersion() {
-                return version;
-            }
-
-            public String getIndexName() {
-                return indexName;
-            }
-
-            public void setVersion(VersionNumber version) {
-                this.version = version;
-            }
-
-            @Override
-            public int compareTo(Library other) {
-                return this.name.compareTo(other.name);
-            }
-
-            @Override
-            public boolean hasChildren() {
-                return false;
-            }
-
-            @Override
-            public Object[] getChildren() {
-                return null;
-            }
-
-            @Override
-            public Object getParent() {
-                return this.category;
-            }
-        }
-
-        public LibraryTree() {
-            for (LibraryIndexJson libraryIndex : getLibraryIndices()) {
-                for (String categoryName : libraryIndex.getCategories()) {
-                    Category category = this.categories.get(categoryName);
-                    if (category == null) {
-                        category = new Category(categoryName);
-                        this.categories.put(category.getName(), category);
-                    }
-                    for (io.sloeber.core.api.Json.library.LibraryJson library : libraryIndex
-                            .getLibraries(categoryName)) {
-                        Library lib = category.libraries.get(library.getName() + " (" + libraryIndex.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-                        if (lib == null) {
-                            String builder = "Architectures:" + library.getArchitectures().toString() + "\n\n" //$NON-NLS-1$ //$NON-NLS-2$
-                                    + library.getSentence();
-                            lib = new Library(category, library.getName(), libraryIndex.getName(), builder);
-                            category.libraries.put(library.getName() + " (" + libraryIndex.getName() + ")", lib); //$NON-NLS-1$//$NON-NLS-2$
-                        }
-                        lib.versions.add(library.getVersion());
-                        if (library.isInstalled()) {
-                            lib.version = library.getVersion();
-                        }
-                    }
-                }
-            }
-        }
-
-        public Collection<Category> getCategories() {
-            return this.categories.values();
-        }
-
-        public Collection<Library> getAllLibraries() {
-            Set<Library> all = new TreeSet<>();
-            for (Category category : this.categories.values()) {
-                all.addAll(category.getLibraries());
-            }
-            return all;
-        }
-
-        private static LibraryIndexJson findLibraryIndex(String name) {
-            for (LibraryIndexJson libraryIndex : getLibraryIndices()) {
-                if (libraryIndex.getName().equals(name))
-                    return libraryIndex;
-            }
-            return null;
-        }
-
-        public void reset() {
-            for (Library library : this.getAllLibraries()) {
-                LibraryIndexJson libraryIndex = findLibraryIndex(library.getIndexName());
-
-                if (libraryIndex != null) {
-                    io.sloeber.core.api.Json.library.LibraryJson installed = libraryIndex
-                            .getInstalledLibrary(library.getName());
-                    library.setVersion(installed != null ? installed.getVersion() : null);
-                }
-            }
-        }
-
-    }
-
-    public static IStatus setLibraryTree(LibraryTree libs, IProgressMonitor monitor, MultiStatus status) {
-        for (LibraryTree.Library lib : libs.getAllLibraries()) {
-            LibraryIndexJson libraryIndex = getLibraryIndex(lib.getIndexName());
-
-            if (libraryIndex != null) {
-                io.sloeber.core.api.Json.library.LibraryJson toRemove = libraryIndex.getInstalledLibrary(lib.getName());
-                if (toRemove != null && !toRemove.getVersion().equals(lib.getVersion())) {
-                    status.add(toRemove.remove(monitor));
-                }
-                io.sloeber.core.api.Json.library.LibraryJson toInstall = libraryIndex.getLibrary(lib.getName(),
-                        lib.getVersion());
-                if (toInstall != null && !toInstall.isInstalled()) {
-                    status.add(toInstall.install(monitor));
-                }
-            }
-
+        for (LibraryJson lib : addLibs) {
+            status.add(lib.install(monitor));
             if (monitor.isCanceled())
                 return Status.CANCEL_STATUS;
         }
@@ -307,10 +126,10 @@ public class LibraryManager {
     public static void installLibrary(String libName) {
         Set<String> libNamesToInstall = new TreeSet<>();
         libNamesToInstall.add(libName);
-        Map<String, LibraryDescriptor> libsToInstall = LibraryManager.getLatestInstallableLibraries(libNamesToInstall);
+        Map<String, LibraryJson> libsToInstall = LibraryManager.getLatestInstallableLibraries(libNamesToInstall);
         if (!libsToInstall.isEmpty()) {
-            for (Entry<String, LibraryDescriptor> curLib : libsToInstall.entrySet()) {
-                curLib.getValue().toLibrary().install(new NullProgressMonitor());
+            for (LibraryJson curLib : libsToInstall.values()) {
+                curLib.install(new NullProgressMonitor());
             }
         }
     }
@@ -371,9 +190,9 @@ public class LibraryManager {
         }
     }
 
-    public static Map<String, LibraryDescriptor> getLatestInstallableLibraries(Set<String> libnames) {
+    public static Map<String, LibraryJson> getLatestInstallableLibraries(Set<String> libnames) {
         Set<String> remainingLibNames = new TreeSet<>(libnames);
-        Map<String, LibraryDescriptor> ret = new HashMap<>();
+        Map<String, LibraryJson> ret = new HashMap<>();
         for (LibraryIndexJson libraryIndex : libraryIndices) {
             ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
             remainingLibNames.removeAll(ret.keySet());

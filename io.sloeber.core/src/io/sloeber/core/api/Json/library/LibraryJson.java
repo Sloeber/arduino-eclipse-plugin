@@ -52,12 +52,15 @@ public class LibraryJson implements Comparable<LibraryJson> {
     private String archiveFileName;
     private int size;
     private String checksum;
+    private LibraryIndexJson myParent;
+
     public static final String LIBRARY_SOURCE_FODER = "src"; //$NON-NLS-1$
 
     @SuppressWarnings("nls")
     public LibraryJson(JsonElement json, LibraryIndexJson libraryIndexJson) {
         JsonObject jsonObject = json.getAsJsonObject();
         try {
+            myParent = libraryIndexJson;
             name = getSafeString(jsonObject, "name");
             version = getSafeVersion(jsonObject, "version");
             author = getSafeString(jsonObject, "author");
@@ -221,7 +224,11 @@ public class LibraryJson implements Comparable<LibraryJson> {
 
     @Override
     public int compareTo(LibraryJson other) {
-        return this.name.compareTo(other.name);
+        int ret = this.name.compareTo(other.name);
+        if (ret == 0) {
+            ret = this.version.compareTo(other.version);
+        }
+        return ret;
     }
 
     /**
@@ -247,4 +254,7 @@ public class LibraryJson implements Comparable<LibraryJson> {
         return Status.OK_STATUS;
     }
 
+    public LibraryIndexJson getParent() {
+        return myParent;
+    }
 }
