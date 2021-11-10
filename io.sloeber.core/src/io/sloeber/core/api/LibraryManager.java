@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,14 @@ import org.eclipse.core.runtime.Status;
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.Json.library.LibraryIndexJson;
-import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.ArduinoLibrary;
+import io.sloeber.core.api.Json.ArduinoLibraryIndex;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
+import io.sloeber.core.tools.FileModifiers;
 
 /**
  * This class is the main entry point for libraries. It handles private
@@ -50,25 +53,25 @@ public class LibraryManager {
     private static final String LIBRARY_DESCRIPTOR_PREFIX = "Library"; //$NON-NLS-1$
     private static final String EXAMPLE_DESCRIPTOR_PREFIX = "Example"; //$NON-NLS-1$
 
-    static private List<LibraryIndexJson> libraryIndices;
+    static private List<ArduinoLibraryIndex> libraryIndices;
     private static IInstallLibraryHandler myInstallLibraryHandler = new DefaultInstallHandler();
 
-    static public List<LibraryIndexJson> getLibraryIndices() {
+    static public List<ArduinoLibraryIndex> getLibraryIndices() {
         if (libraryIndices == null) {
             PackageManager.getPackageIndices();
         }
         return libraryIndices;
     }
 
-    public static IStatus setLibraryTree(List<LibraryJson> removeLibs, List<LibraryJson> addLibs,
+    public static IStatus install(List<ArduinoLibraryVersion> removeLibs, List<ArduinoLibraryVersion> addLibs,
             IProgressMonitor monitor, MultiStatus status) {
-        for (LibraryJson lib : removeLibs) {
-            status.add(lib.remove(monitor));
+        for (ArduinoLibraryVersion lib : removeLibs) {
+            status.add(unInstall(lib, monitor));
             if (monitor.isCanceled())
                 return Status.CANCEL_STATUS;
         }
-        for (LibraryJson lib : addLibs) {
-            status.add(lib.install(monitor));
+        for (ArduinoLibraryVersion lib : addLibs) {
+            status.add(install(lib, monitor));
             if (monitor.isCanceled())
                 return Status.CANCEL_STATUS;
         }
@@ -85,31 +88,28 @@ public class LibraryManager {
     }
 
     public static void InstallDefaultLibraries(IProgressMonitor monitor) {
-        LibraryIndexJson libindex = getLibraryIndex(Defaults.DEFAULT);
-        if (libindex == null)
-            return;
+        for (ArduinoLibraryIndex libindex : libraryIndices) {
 
-        for (String library : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
-            LibraryJson toInstalLib = libindex.getLatestLibrary(library);
-            if (toInstalLib != null) {
-                toInstalLib.install(monitor);
+            for (String libraryName : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
+                ArduinoLibrary toInstalLib = libindex.getLibrary(libraryName);
+                ArduinoLibraryVersion toInstalLibVersion = toInstalLib.getNewestVersion();
+                ArduinoLibraryVersion instaledLibVersion = toInstalLib.getInstalledVersion();
+                if (toInstalLibVersion != null) {
+                    if (toInstalLibVersion != instaledLibVersion) {
+                        if (instaledLibVersion != null) {
+                            unInstall(instaledLibVersion, monitor);
+                        }
+                        install(toInstalLibVersion, monitor);
+                    }
+                }
             }
         }
-    }
-
-    static private LibraryIndexJson getLibraryIndex(String name) {
-        for (LibraryIndexJson index : getLibraryIndices()) {
-            if (index.getName().equals(name)) {
-                return index;
-            }
-        }
-        return null;
     }
 
     static public void loadJson(File jsonFile) {
         try (Reader reader = new FileReader(jsonFile)) {
-            LibraryIndexJson index = new Gson().fromJson(reader, LibraryIndexJson.class);
-            index.resolve(jsonFile);
+            ArduinoLibraryIndex index = new Gson().fromJson(reader, ArduinoLibraryIndex.class);
+            index.setJsonFile(jsonFile);
             libraryIndices.add(index);
         } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, Activator.getId(),
@@ -126,12 +126,48 @@ public class LibraryManager {
     public static void installLibrary(String libName) {
         Set<String> libNamesToInstall = new TreeSet<>();
         libNamesToInstall.add(libName);
-        Map<String, LibraryJson> libsToInstall = LibraryManager.getLatestInstallableLibraries(libNamesToInstall);
+        Map<String, ArduinoLibraryVersion> libsToInstall = LibraryManager
+                .getLatestInstallableLibraries(libNamesToInstall);
         if (!libsToInstall.isEmpty()) {
-            for (LibraryJson curLib : libsToInstall.values()) {
-                curLib.install(new NullProgressMonitor());
+            for (ArduinoLibraryVersion curLib : libsToInstall.values()) {
+                install(curLib, new NullProgressMonitor());
             }
         }
+    }
+
+    public static IStatus install(ArduinoLibraryVersion lib, IProgressMonitor monitor) {
+        monitor.setTaskName("Downloading and installing " + lib.getName() + " library."); //$NON-NLS-1$ //$NON-NLS-2$
+        if (lib.isInstalled()) {
+            return Status.OK_STATUS;
+        }
+        IStatus ret = PackageManager.downloadAndInstall(lib.getUrl(), lib.getArchiveFileName(), lib.getInstallPath(),
+                false, monitor);
+        FileModifiers.addPragmaOnce(lib.getInstallPath());
+        return ret;
+    }
+
+    /**
+     * delete the library This will delete all installed versions of the library.
+     * Normally only 1 version can be installed so deleting all versions should be
+     * delete 1 version
+     *
+     * @param monitor
+     * @return Status.OK_STATUS if delete is successful otherwise IStatus.ERROR
+     */
+    public static IStatus unInstall(ArduinoLibraryVersion lib, IProgressMonitor monitor) {
+        if (!lib.isInstalled()) {
+            return Status.OK_STATUS;
+        }
+
+        try {
+            FileUtils.deleteDirectory(lib.getInstallPath().toFile().getParentFile());
+        } catch (IOException e) {
+            return new Status(IStatus.ERROR, Activator.getId(),
+                    "Failed to remove folder" + lib.getInstallPath().toString(), //$NON-NLS-1$
+                    e);
+        }
+
+        return Status.OK_STATUS;
     }
 
     /**
@@ -142,47 +178,31 @@ public class LibraryManager {
      * @param category
      */
     public static void installAllLatestLibraries() {
-        List<LibraryIndexJson> libraryIndices1 = getLibraryIndices();
-        Map<String, LibraryJson> latestLibs = new HashMap<>();
-        for (LibraryIndexJson libraryIndex : libraryIndices1) {
-            Map<String, LibraryJson> libraries = libraryIndex.getLatestLibraries();
-            for (Map.Entry<String, LibraryJson> entry : libraries.entrySet()) {
-                String curLibName = entry.getKey();
-                LibraryJson curLibrary = entry.getValue();
-                LibraryJson current = latestLibs.get(curLibName);
-                if (current != null) {
-                    if (curLibrary.getVersion().compareTo(current.getVersion()) > 0) {
-                        latestLibs.put(curLibName, curLibrary);
+        List<ArduinoLibraryIndex> libraryIndices1 = getLibraryIndices();
+        for (ArduinoLibraryIndex libraryIndex : libraryIndices1) {
+            for (ArduinoLibrary curLib : libraryIndex.getLibraries()) {
+                String curLibName = curLib.getName();
+                String[] skipArray = { "Base64", "Add others if needed" }; //$NON-NLS-1$ //$NON-NLS-2$
+                List<String> skipList = Arrays.asList(skipArray);
+                if (!skipList.contains(curLibName)) {
+                    ArduinoLibraryVersion latestLibVersion = curLib.getNewestVersion();
+                    if (!latestLibVersion.isInstalled()) {
+                        ArduinoLibraryVersion installedLibVersion = curLib.getInstalledVersion();
+                        if (installedLibVersion != null) {
+                            unInstall(installedLibVersion, null);
+                        }
+                        install(latestLibVersion, null);
                     }
-                } else {
-                    latestLibs.put(curLibName, curLibrary);
                 }
             }
         }
-        // Base64 is a 1.0.0 version replaced with base64 So Don't install it
-        latestLibs.remove("Base64"); //$NON-NLS-1$
-        for (Map.Entry<String, LibraryJson> entry : latestLibs.entrySet()) {
-            String curLibName = entry.getKey();
-            LibraryJson curLibrary = entry.getValue();
-            for (LibraryIndexJson libraryIndex : libraryIndices1) {
-
-                LibraryJson previousVersion = libraryIndex.getInstalledLibrary(curLibName);
-                if ((previousVersion != null) && (previousVersion != curLibrary)) {
-                    previousVersion.remove(new NullProgressMonitor());
-                }
-            }
-            if (!curLibrary.isInstalled()) {
-                curLibrary.install(new NullProgressMonitor());
-            }
-        }
-
     }
 
     public static void flushIndices() {
         libraryIndices = new ArrayList<>();
     }
 
-    public static void removeAllLibs() {
+    public static void unInstallAllLibs() {
         try {
             FileUtils.deleteDirectory(ConfigurationPreferences.getInstallationPathLibraries().toFile());
         } catch (IOException e) {
@@ -190,10 +210,10 @@ public class LibraryManager {
         }
     }
 
-    public static Map<String, LibraryJson> getLatestInstallableLibraries(Set<String> libnames) {
+    public static Map<String, ArduinoLibraryVersion> getLatestInstallableLibraries(Set<String> libnames) {
         Set<String> remainingLibNames = new TreeSet<>(libnames);
-        Map<String, LibraryJson> ret = new HashMap<>();
-        for (LibraryIndexJson libraryIndex : libraryIndices) {
+        Map<String, ArduinoLibraryVersion> ret = new HashMap<>();
+        for (ArduinoLibraryIndex libraryIndex : libraryIndices) {
             ret.putAll(libraryIndex.getLatestInstallableLibraries(remainingLibNames));
             remainingLibNames.removeAll(ret.keySet());
         }
@@ -377,6 +397,17 @@ public class LibraryManager {
         examples.putAll(getAllHardwareLibraryExamples(boardDescriptor));
 
         return examples;
+    }
+
+    public static IStatus updateLibraries(Set<ArduinoLibraryVersion> toUnInstallLibs,
+            Set<ArduinoLibraryVersion> toInstallLibs, IProgressMonitor monitor, MultiStatus status) {
+        for (ArduinoLibraryVersion curLib : toUnInstallLibs) {
+            status.add(unInstall(curLib, monitor));
+        }
+        for (ArduinoLibraryVersion curLib : toInstallLibs) {
+            status.add(install(curLib, monitor));
+        }
+        return status;
     }
 
 }

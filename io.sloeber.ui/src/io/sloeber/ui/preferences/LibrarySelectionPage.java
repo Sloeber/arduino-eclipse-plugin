@@ -3,9 +3,9 @@ package io.sloeber.ui.preferences;
 import static io.sloeber.ui.Activator.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -43,9 +43,13 @@ import org.eclipse.ui.dialogs.PatternFilter;
 
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.api.Json.library.LibraryIndexJson;
-import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.ArduinoLibrary;
+import io.sloeber.core.api.Json.ArduinoLibraryIndex;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
+import io.sloeber.core.api.Json.Node;
 import io.sloeber.ui.Messages;
+import io.sloeber.ui.preferences.LibrarySelectionPage.LibraryTree.Category;
+import io.sloeber.ui.preferences.LibrarySelectionPage.LibraryTree.Library;
 
 public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -58,21 +62,11 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 	final static String blankLine = "\n\n";//$NON-NLS-1$
 	final static String canUpdateLabel = " (can update)";
 
-	public interface Node {
-		boolean hasChildren();
-
-		Object[] getChildren();
-
-		Object getParent();
-
-		String getName();
-	}
-
-	public static class LibraryTree implements Node {
+	public static class LibraryTree extends Node {
 
 		private TreeMap<String, Category> categories = new TreeMap<>();
 
-		public class Category implements Comparable<Category>, Node {
+		public class Category extends Node implements Comparable<Category> {
 			private String name;
 			private TreeMap<String, Library> libraries = new TreeMap<>();
 
@@ -96,87 +90,97 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 
 			@Override
 			public boolean hasChildren() {
-				return !this.libraries.isEmpty();
+				return !libraries.isEmpty();
 			}
 
 			@Override
-			public Object[] getChildren() {
-				return this.libraries.values().toArray();
+			public Node[] getChildren() {
+				return libraries.values().toArray(new Node[libraries.size()]);
 			}
 
 			@Override
-			public Object getParent() {
+			public Node getParent() {
 				return LibraryTree.this;
+			}
+
+			@Override
+			public String getID() {
+				return getName();
 			}
 		}
 
-		public class Library implements Comparable<Library>, Node {
-			private String myName;
+		public class Library extends Node implements Comparable<Library> {
+			private ArduinoLibrary myLib;
 			private Category myParent;
-			protected TreeSet<LibraryJson> myVersions = new TreeSet<>(Collections.reverseOrder());
-			protected LibraryJson myInstalledVersion;
+			protected ArduinoLibraryVersion myToInstallVersion;
+			protected ArduinoLibraryVersion myInstalledVersion;
 
-			public Library(Category category, String name) {
+			public Library(Category category, ArduinoLibrary lib) {
 				myParent = category;
-				myName = name;
+				myLib = lib;
+				myInstalledVersion = myLib.getInstalledVersion();
+				myToInstallVersion = myInstalledVersion;
 			}
 
-			public Collection<LibraryJson> getVersions() {
-				return myVersions;
+			public ArduinoLibraryVersion getInstalledVersion() {
+				return myInstalledVersion;
+			}
+
+			public Collection<ArduinoLibraryVersion> getVersions() {
+				return myLib.getVersions();
 			}
 
 			@Override
 			public String getName() {
 				if (canUpdate()) {
-					return myName + canUpdateLabel;
+					return myLib.getName() + canUpdateLabel;
 				}
-				return myName;
+				return myLib.getName();
 			}
 
 			public boolean canUpdate() {
-				return myInstalledVersion == null ? false : getLatest().compareTo(myInstalledVersion) != 0;
+				return myToInstallVersion == null ? false : getLatest().compareTo(myToInstallVersion) != 0;
 			}
 
 			private String myTooltip = null;
 
 			public String getTooltip() {
 				if (myTooltip == null) {
-					LibraryJson library = getLatest();
-					myTooltip = "Architectures:" + library.getArchitectures().toString() + blankLine
-							+ library.getSentence() + blankLine + "provided by: " + library.getParent().getName();
+					ArduinoLibraryVersion libVers = getLatest();
+					myTooltip = "Architectures:" + libVers.getArchitectures().toString() + blankLine
+							+ libVers.getSentence() + blankLine + libVers.getParagraph() + blankLine + "Author: "
+							+ libVers.getAuthor() + blankLine + "Maintainer: " + libVers.getMaintainer() + blankLine
+							+ "provided by: " + libVers.getParent().getParent().getName();
 				}
 				return myTooltip;
 			}
 
-			public LibraryJson getLatest() {
-				return myVersions.first();
+			public ArduinoLibraryVersion getLatest() {
+				return myLib.getNewestVersion();
 			}
 
-			public LibraryJson getVersion() {
-				return myInstalledVersion;
+			public ArduinoLibraryVersion getVersion() {
+				return myToInstallVersion;
 			}
 
-			public void setVersion(LibraryJson version) {
-				myInstalledVersion = version;
+			public void setVersion(ArduinoLibraryVersion version) {
+				myToInstallVersion = version;
 			}
 
 			public void setVersion(VersionNumber versionNumber) {
 				if (versionNumber == null) {
-					myInstalledVersion = null;
+					myToInstallVersion = null;
 				}
-				for (LibraryJson curLib : myVersions) {
-					if (curLib.getVersion().compareTo(versionNumber) == 0) {
-						myInstalledVersion = curLib;
-						return;
-					}
-				}
-				// this should not happen
-				myInstalledVersion = null;
+				myToInstallVersion = myLib.getVersion(versionNumber);
 			}
 
 			@Override
 			public int compareTo(Library other) {
-				return myName.compareTo(other.myName);
+				return myLib.compareTo(other.getArduinoLibrary());
+			}
+
+			private ArduinoLibrary getArduinoLibrary() {
+				return myLib;
 			}
 
 			@Override
@@ -185,49 +189,45 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			}
 
 			@Override
-			public Object[] getChildren() {
+			public Node[] getChildren() {
 				return null;
 			}
 
 			@Override
-			public Object getParent() {
+			public Node getParent() {
 				return myParent;
 			}
 
 			public String getVersionString() {
-				if (myInstalledVersion == null) {
+				if (myToInstallVersion == null) {
 					return emptyString;
 				}
-				return myInstalledVersion.getVersion().toString();
+				return myToInstallVersion.getVersion().toString();
+			}
+
+			@Override
+			public String getID() {
+				return getName();
 			}
 
 		}
 
 		public LibraryTree() {
-			for (LibraryIndexJson libraryIndex : LibraryManager.getLibraryIndices()) {
-				for (String categoryName : libraryIndex.getCategories()) {
+			for (ArduinoLibraryIndex libraryIndex : LibraryManager.getLibraryIndices()) {
+				for (ArduinoLibrary arduinoLibrary : libraryIndex.getLibraries()) {
+					String categoryName = arduinoLibrary.getCategory();
 					Category category = this.categories.get(categoryName);
 					if (category == null) {
 						category = new Category(categoryName);
 						this.categories.put(category.getName(), category);
 					}
-					for (LibraryJson library : libraryIndex.getLibraries(categoryName)) {
-						Library lib = category.libraries.get(library.getName());
-						if (lib == null) {
-							lib = new Library(category, library.getName());
-							category.libraries.put(library.getName(), lib);
-						}
-						lib.myVersions.add(library);
-						if (library.isInstalled()) {
-							lib.myInstalledVersion = library;
-						}
-					}
+					category.libraries.put(arduinoLibrary.getName(), new Library(category, arduinoLibrary));
 				}
 			}
 		}
 
 		private Collection<Category> getCategories() {
-			return this.categories.values();
+			return categories.values();
 		}
 
 		@Override
@@ -236,17 +236,22 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 		}
 
 		@Override
-		public Object[] getChildren() {
-			return getCategories().toArray();
+		public Node[] getChildren() {
+			return categories.values().toArray(new Node[categories.size()]);
 		}
 
 		@Override
-		public Object getParent() {
+		public Node getParent() {
 			return null;
 		}
 
 		@Override
 		public String getName() {
+			return null;
+		}
+
+		@Override
+		public String getID() {
 			return null;
 		}
 	}
@@ -283,9 +288,21 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				MultiStatus status = new MultiStatus(PLUGIN_ID, 0, Messages.ui_installing_arduino_libraries, null);
-				// return LibraryManager.setLibraryTree(LibrarySelectionPage.this.libs, monitor,
-				// status);
-				return null;
+				Set<ArduinoLibraryVersion> toRemoveLibs = new HashSet<>();
+				Set<ArduinoLibraryVersion> toInstallLibs = new HashSet<>();
+				for (Category category : libs.categories.values()) {
+					for (Library library : category.libraries.values()) {
+						ArduinoLibraryVersion installedVersion = library.getInstalledVersion();
+						ArduinoLibraryVersion toInstalVersion = library.getVersion();
+						if ((installedVersion != null) && (installedVersion.compareTo(toInstalVersion) != 0)) {
+							toRemoveLibs.add(installedVersion);
+						}
+						if ((toInstalVersion != null) && (toInstalVersion.compareTo(installedVersion) != 0)) {
+							toInstallLibs.add(toInstalVersion);
+						}
+					}
+				}
+				return LibraryManager.updateLibraries(toRemoveLibs, toInstallLibs, monitor, status);
 			}
 		};
 		job.addJobChangeListener(new JobChangeAdapter() {
@@ -360,43 +377,49 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 				final TreeItem item = event.item instanceof TreeItem ? (TreeItem) event.item : null;
 				if (item != null && event.detail == SWT.CHECK) {
 					if (item.getData() instanceof LibraryTree.Category) {
+						Category category = ((LibraryTree.Category) item.getData());
 						item.setGrayed(false);
-						for (LibraryTree.Library child : ((LibraryTree.Category) item.getData()).getLibraries()) {
+						for (LibraryTree.Library child : category.getLibraries()) {
 							if (item.getChecked()) {
 								child.setVersion(child.getLatest());
 							} else {
-								child.setVersion((LibraryJson) null);
+								child.setVersion((ArduinoLibraryVersion) null);
 							}
 						}
 						for (TreeItem child : item.getItems()) {
 							child.setChecked(item.getChecked());
-							if (item.getChecked()) {
-								child.setText(1, ((LibraryTree.Library) child.getData()).getLatest().toString());
-							} else {
-								child.setText(1, emptyString);
-							}
+							child.setText(1, ((LibraryTree.Library) child.getData()).getVersionString());
 						}
 					} else {
-						if (item.getChecked()) {
-							((LibraryTree.Library) item.getData())
-									.setVersion(((LibraryTree.Library) item.getData()).getLatest());
-							item.setText(1, ((LibraryTree.Library) item.getData()).getLatest().toString());
-						} else {
-							((LibraryTree.Library) item.getData()).setVersion((LibraryJson) null);
-							item.setText(1, emptyString);
+						if (item.getData() instanceof LibraryTree.Library) {
+							Library lib = ((LibraryTree.Library) item.getData());
+							if (item.getChecked()) {
+								lib.setVersion(lib.getLatest());
+							} else {
+								lib.setVersion((ArduinoLibraryVersion) null);
+
+							}
+							item.setText(0, lib.getName());
+							item.setText(1, lib.getVersionString());
+							verifySubtreeCheckStatus(item.getParentItem());
 						}
-						verifySubtreeCheckStatus(item.getParentItem());
 					}
 				}
 				if (item != null && item.getItemCount() == 0 && item.getChecked()) {
 					// Create the dropdown and add data to it
 					final CCombo combo = new CCombo(LibrarySelectionPage.this.viewer.getTree(), SWT.READ_ONLY);
-					for (LibraryJson version1 : ((LibraryTree.Library) item.getData()).getVersions()) {
+					Library selectedLib = ((LibraryTree.Library) item.getData());
+					for (ArduinoLibraryVersion version1 : selectedLib.getVersions()) {
 						combo.add(version1.getVersion().toString());
 					}
 
-					// Select the previously selected item from the cell
-					combo.select(combo.indexOf(item.getText(1)));
+					ArduinoLibraryVersion displayVersion = selectedLib.getVersion();
+					if (displayVersion == null) {
+						displayVersion = selectedLib.getLatest();
+						selectedLib.setVersion(displayVersion);
+						item.setText(0, selectedLib.getName());
+					}
+					combo.select(combo.indexOf(displayVersion.getVersion().toString()));
 
 					// Compute the width for the editor
 					// Also, compute the column width, so that the dropdown fits
@@ -412,7 +435,7 @@ public class LibrarySelectionPage extends PreferencePage implements IWorkbenchPr
 						public void widgetSelected(SelectionEvent event1) {
 							LibraryTree.Library lib = (LibraryTree.Library) item.getData();
 							lib.setVersion(new VersionNumber(combo.getText()));
-							item.setText(1, combo.getText());
+							item.setText(1, lib.getVersionString());
 							item.setText(0, lib.getName());
 							// Item selected: end the editing session
 							combo.dispose();
