@@ -312,7 +312,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	public static void installAdditionalBoards() {
 		if (removeAllinstallationInfoAtStartup) {
 			PackageManager.removeAllInstalledPlatforms();
-			LibraryManager.removeAllLibs();
+			LibraryManager.unInstallAllLibs();
 		}
 
 		HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));

@@ -40,7 +40,7 @@ import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.core.api.Json.packages.ArduinoPlatform;
 import io.sloeber.core.api.Json.packages.Tool;
 import io.sloeber.core.api.Json.packages.ToolDependency;
@@ -229,7 +229,7 @@ public class Helpers {
             addToIncludePath.add(link.getFullPath());
         } else {
             // add src or root give priority to src
-            possibleIncludeFolder = LibraryJson.LIBRARY_SOURCE_FODER;
+            possibleIncludeFolder = ArduinoLibraryVersion.LIBRARY_SOURCE_FODER;
             file = toLinkFolder.append(possibleIncludeFolder).toFile();
             if (file.exists()) {
                 addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));

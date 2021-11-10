@@ -41,7 +41,7 @@ import io.sloeber.core.api.IInstallLibraryHandler;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
@@ -422,7 +422,7 @@ public class Libraries {
                         if (!uninstalledIncludedHeaders.isEmpty()) {
                             // some libraries may need to be installed
 
-                            Map<String, LibraryJson> availableLibs = LibraryManager
+                            Map<String, ArduinoLibraryVersion> availableLibs = LibraryManager
                                     .getLatestInstallableLibraries(uninstalledIncludedHeaders);
 
                             if (!availableLibs.isEmpty()) {
@@ -431,8 +431,8 @@ public class Libraries {
                                 // be some user
                                 // interaction
                                 availableLibs = installHandler.selectLibrariesToInstall(availableLibs);
-                                for (Entry<String, LibraryJson> curLib : availableLibs.entrySet()) {
-                                    curLib.getValue().install(new NullProgressMonitor());
+                                for (Entry<String, ArduinoLibraryVersion> curLib : availableLibs.entrySet()) {
+                                    LibraryManager.install(curLib.getValue(), new NullProgressMonitor());
                                 }
                             }
                         }
@@ -520,8 +520,8 @@ public class Libraries {
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
             IPath sourcePath = CurItem.getValue();
             String curLibName = CurItem.getKey();
-            if (sourcePath.append(LibraryJson.LIBRARY_SOURCE_FODER).toFile().exists()) {
-                sourcePath = sourcePath.append(LibraryJson.LIBRARY_SOURCE_FODER);
+            if (sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER).toFile().exists()) {
+                sourcePath = sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER);
             }
             File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
                 @Override

@@ -2,7 +2,7 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 
-import io.sloeber.core.api.Json.library.LibraryJson;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 
 /**
  * this interface is to allow the ui to handle the automatic installation
@@ -34,5 +34,5 @@ public interface IInstallLibraryHandler {
      *
      * @return The libraries the user wants to install
      */
-    abstract Map<String, LibraryJson> selectLibrariesToInstall(Map<String, LibraryJson> proposedLibsToInstall);
+    abstract Map<String, ArduinoLibraryVersion> selectLibrariesToInstall(Map<String, ArduinoLibraryVersion> proposedLibsToInstall);
 }

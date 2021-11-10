@@ -102,7 +102,7 @@ public class CreateAndCompileLibraryExamplesTest {
 			PackageManager.installAllLatestPlatforms();
 			PackageManager.onlyKeepLatestPlatforms();
 			// deal with removal of json files or libs from json files
-			LibraryManager.removeAllLibs();
+			LibraryManager.unInstallAllLibs();
 			LibraryManager.installAllLatestLibraries();
 			// LibraryManager.onlyKeepLatestPlatforms();
 		}
