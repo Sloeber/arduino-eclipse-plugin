@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json.packages;
+package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
 
@@ -26,30 +26,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.PackageManager;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 
-public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
+public class ArduinoPlatformVersion extends ArduinoInstallable implements Comparable<ArduinoPlatformVersion> {
 
-    private String name;
     private String architecture;
     private VersionNumber version;
     private String category;
-    private String url;
-    private String archiveFileName;
-    private String checksum;
-    private String size;
+
     private List<String> boards = new ArrayList<>();
-    private List<ToolDependency> toolsDependencies = new ArrayList<>();;
+    private List<ArduinoPlatformTooldDependency> toolsDependencies = new ArrayList<>();;
 
-    private ArduinoPackage myParent;
-
-    private static final String ID_SEPERATOR = "-"; //$NON-NLS-1$
+    private ArduinoPlatform myParent;
 
     @SuppressWarnings("nls")
-    public ArduinoPlatform(JsonElement json, ArduinoPackage parent) {
+    public ArduinoPlatformVersion(JsonElement json, ArduinoPlatform parent) {
         myParent = parent;
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -67,7 +59,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
             }
             if (jsonObject.get("toolsDependencies") != null) {
                 for (JsonElement curElement : jsonObject.get("toolsDependencies").getAsJsonArray()) {
-                    toolsDependencies.add(new ToolDependency(curElement, this));
+                    toolsDependencies.add(new ArduinoPlatformTooldDependency(curElement, this));
                 }
             }
         } catch (Exception e) {
@@ -75,12 +67,8 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         }
     }
 
-    public ArduinoPackage getParent() {
-        return this.myParent;
-    }
-
-    public String getName() {
-        return this.name;
+    public ArduinoPlatform getParent() {
+        return myParent;
     }
 
     public String getArchitecture() {
@@ -95,32 +83,12 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         return category;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getArchiveFileName() {
-        return archiveFileName;
-    }
-
-    public String getChecksum() {
-        return checksum;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public List<ToolDependency> getToolsDependencies() {
+    public List<ArduinoPlatformTooldDependency> getToolsDependencies() {
         return toolsDependencies;
     }
 
     public boolean isInstalled() {
         return getBoardsFile().exists();
-    }
-
-    public boolean isAVersionOfThisPlatformInstalled() {
-        return myParent.isAVersionOfThisPlatformInstalled(name);
     }
 
     public File getBoardsFile() {
@@ -131,10 +99,9 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         return getInstallPath().append(Const.PLATFORM_FILE_NAME).toFile();
     }
 
+    @Override
     public IPath getInstallPath() {
-        IPath stPath = ConfigurationPreferences.getInstallationPathPackages().append(this.myParent.getID())
-                .append(Const.ARDUINO_HARDWARE_FOLDER_NAME).append(getID()).append(this.version.toString());
-        return stPath;
+        return getParent().getInstallPath().append(this.version.toString());
     }
 
     public List<IPath> getIncludePath() {
@@ -143,6 +110,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
                 installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
     }
 
+    //TODO delete
     public IStatus remove(IProgressMonitor monitor) {
         // Check if we're installed
         if (!isInstalled()) {
@@ -157,23 +125,6 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
         }
 
         return Status.OK_STATUS;
-    }
-
-    //jaba added the @SuppressWarnings("nls") because I added some debugging stuff
-    @SuppressWarnings("nls")
-    public IStatus install(IProgressMonitor monitor) {
-        // Check if we're installed already
-        if (isInstalled()) {
-            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")");
-            return Status.OK_STATUS;
-        }
-
-        // Download platform archive
-        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")");
-        IStatus ret = PackageManager.downloadAndInstall(this, false, monitor);
-        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")");
-        return ret;
-
     }
 
     @Override
@@ -194,7 +145,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ArduinoPlatform other = (ArduinoPlatform) obj;
+        ArduinoPlatformVersion other = (ArduinoPlatformVersion) obj;
         if (this.name == null) {
             if (other.name != null)
                 return false;
@@ -218,29 +169,15 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
     }
 
     public String getID() {
-        return architecture;
-        //        String ID = new String();
-        //
-        //        if (myParent == null) {
-        //            ID = getInstallPath().toString();
-        //        } else {
-        //            ID = myParent.getName();
-        //        }
-        //        ID = ID + ID_SEPERATOR + name + ID_SEPERATOR + architecture;
-        //
-        //        return ID;
+        return version.toString();
     }
 
     public String getConcattenatedBoardNames() {
         return String.join("\n", getBoardNames()); //$NON-NLS-1$
     }
 
-    public List<ArduinoPlatform> getPlatformVersions() {
-        return myParent.getPlatformVersions(name);
-    }
-
     @Override
-    public int compareTo(ArduinoPlatform o) {
+    public int compareTo(ArduinoPlatformVersion o) {
         return name.compareTo(o.getName());
     }
 

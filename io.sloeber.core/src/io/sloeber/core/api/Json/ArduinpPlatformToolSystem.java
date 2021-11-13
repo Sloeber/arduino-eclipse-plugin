@@ -5,32 +5,24 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json.packages;
+package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.IPath;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.api.PackageManager;
+public class ArduinpPlatformToolSystem extends ArduinoInstallable {
 
-public class ToolSystem {
-
-    private String host;
-    private String archiveFileName;
-    private String url;
-    private String checksum;
-    private String size;
-
-    private transient Tool tool;
+    private transient ArduinoPlatformTool myParent;
+    protected String host;
 
     @SuppressWarnings("nls")
-    public ToolSystem(JsonElement json, Tool tool) {
-        this.tool = tool;
+    public ArduinpPlatformToolSystem(JsonElement json, ArduinoPlatformTool tool) {
+        this.myParent = tool;
         JsonObject jsonObject = json.getAsJsonObject();
 
         try {
@@ -42,26 +34,6 @@ public class ToolSystem {
         } catch (Exception e) {
             throw new JsonParseException("failed to parse Tool json  " + e.getMessage());
         }
-    }
-
-    public String getHost() {
-        return this.host;
-    }
-
-    public String getArchiveFileName() {
-        return this.archiveFileName;
-    }
-
-    public String getUrl() {
-        return this.url;
-    }
-
-    public String getChecksum() {
-        return this.checksum;
-    }
-
-    public String getSize() {
-        return this.size;
     }
 
     /**
@@ -119,9 +91,13 @@ public class ToolSystem {
         return false;
     }
 
-    public IStatus install(IProgressMonitor monitor) {
-        return PackageManager.downloadAndInstall(this.url, this.archiveFileName, this.tool.getInstallPath(), false,
-                monitor);
+    public String getHost() {
+        return this.host;
+    }
+
+    @Override
+    public IPath getInstallPath() {
+        return myParent.getInstallPath();
     }
 
 }

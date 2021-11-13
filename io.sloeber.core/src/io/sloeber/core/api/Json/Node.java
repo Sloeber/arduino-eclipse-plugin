@@ -1,7 +1,5 @@
 package io.sloeber.core.api.Json;
 
-import org.eclipse.core.runtime.IPath;
-
 public abstract class Node {
     public boolean hasChildren() {
         Node[] children = getChildren();
@@ -18,8 +16,4 @@ public abstract class Node {
 
     abstract public String getID();
 
-    @SuppressWarnings("static-method")
-    public IPath getInstallPath() {
-        return null;
-    };
 }

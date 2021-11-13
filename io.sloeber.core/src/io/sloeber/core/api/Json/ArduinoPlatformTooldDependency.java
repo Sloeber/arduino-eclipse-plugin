@@ -1,30 +1,24 @@
-package io.sloeber.core.api.Json.packages;
+package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
-import static io.sloeber.core.Messages.*;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.Activator;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 
-public class ToolDependency {
+public class ArduinoPlatformTooldDependency {
 
     private String packager;
     private String name;
     private String version;
 
-    private transient ArduinoPlatform platform;
+    private transient ArduinoPlatformVersion platform;
 
     @SuppressWarnings("nls")
-    public ToolDependency(JsonElement json, ArduinoPlatform arduinoPlatform) {
-        platform = arduinoPlatform;
+    public ArduinoPlatformTooldDependency(JsonElement json, ArduinoPlatformVersion arduinoPlatformVersion) {
+        platform = arduinoPlatformVersion;
         JsonObject jsonObject = json.getAsJsonObject();
         try {
 
@@ -48,26 +42,15 @@ public class ToolDependency {
         return this.version;
     }
 
-    //TODO remove this code
-    public Tool getTool() {
-        ArduinoPackage pkg = this.platform.getParent();
+    public ArduinoPlatformTool getTool() {
+        ArduinoPackage pkg = this.platform.getParent().getParent();
         if (!pkg.getName().equals(this.packager)) {
-            pkg = PackageManager.getPackage(this.packager);
+            pkg = BoardsManager.getPackage(this.packager);
         }
         if (pkg == null) {
             return null;
         }
         return pkg.getTool(this.name, getVersion());
-    }
-
-    //TODO remove this code
-    public IStatus install(IProgressMonitor monitor) {
-        Tool tool = getTool();
-        if (tool == null) {
-            return new Status(IStatus.ERROR, Activator.getId(),
-                    ToolDependency_Tool_not_found.replace(NAME_TAG, this.name).replace(VERSION_TAG, this.version));
-        }
-        return tool.install(monitor);
     }
 
 }

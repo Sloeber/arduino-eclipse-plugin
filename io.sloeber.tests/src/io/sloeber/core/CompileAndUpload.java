@@ -31,7 +31,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.Sketch;
 import io.sloeber.core.api.SloeberProject;
@@ -122,10 +122,10 @@ public class CompileAndUpload {
 		String[] packageUrlsToAdd = {
                 ESP32.packageURL,
                 ESP8266.packageURL };
-		PackageManager.addPackageURLs(
+		BoardsManager.addPackageURLs(
 				new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
         if (reinstall_boards_and_libraries) {
-            PackageManager.removeAllInstalledPlatforms();
+            BoardsManager.removeAllInstalledPlatforms();
         }
 
         // make sure the needed boards are available
@@ -135,7 +135,7 @@ public class CompileAndUpload {
         Arduino.installLatestIntellCurieBoards();
         Arduino.installLatestSamBoards();
 
-		PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+		BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 
 	}
 

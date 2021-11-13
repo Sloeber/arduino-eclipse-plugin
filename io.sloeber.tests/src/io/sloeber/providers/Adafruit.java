@@ -2,7 +2,7 @@ package io.sloeber.providers;
 
 import static org.junit.Assert.*;
 
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 @SuppressWarnings("nls")
 public class Adafruit extends MCUBoard {
 	public final static String packageURL = "https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
@@ -18,7 +18,7 @@ public class Adafruit extends MCUBoard {
 
 	public  Adafruit( String architectureName, String boardName) {
 
-		this.myBoardDescriptor = PackageManager.getBoardDescription( "package_adafruit_index.json","adafruit",architectureName ,
+		this.myBoardDescriptor = BoardsManager.getBoardDescription( "package_adafruit_index.json","adafruit",architectureName ,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");

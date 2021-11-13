@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class ESP32 extends MCUBoard {
@@ -29,7 +29,7 @@ public class ESP32 extends MCUBoard {
 
 
 	public ESP32(String boardName, Map<String, String> options) {
-		this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName, provider, architectureName,
+		this.myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, provider, architectureName,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -38,7 +38,7 @@ public class ESP32 extends MCUBoard {
 	}
 	
 	public static void installLatest() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, architectureName);
+	    BoardsManager.installLatestPlatform(jsonFileName,provider, architectureName);
 	}
 
 }

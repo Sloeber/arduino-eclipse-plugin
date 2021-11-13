@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json.packages;
+package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
 
@@ -13,30 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.Activator;
-import io.sloeber.core.Messages;
 import io.sloeber.core.common.ConfigurationPreferences;
 
-public class Tool {
+public class ArduinoPlatformTool {
 
     private static final String TOOLS = "tools"; //$NON-NLS-1$
-    private static final String KEY = Messages.KEY_TAG;
     private String name;
     private String version;
-    private List<ToolSystem> systems = new ArrayList<>();
+    private List<ArduinpPlatformToolSystem> systems = new ArrayList<>();
 
     private transient ArduinoPackage pkg;
 
     @SuppressWarnings("nls")
-    public Tool(JsonElement json, ArduinoPackage pkg) {
+    public ArduinoPlatformTool(JsonElement json, ArduinoPackage pkg) {
         this.pkg = pkg;
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -45,7 +39,7 @@ public class Tool {
             version = getSafeString(jsonObject, "version");
             if (jsonObject.get("systems") != null) {
                 for (JsonElement curElement : jsonObject.get("systems").getAsJsonArray()) {
-                    systems.add(new ToolSystem(curElement, this));
+                    systems.add(new ArduinpPlatformToolSystem(curElement, this));
                 }
             }
         } catch (Exception e) {
@@ -66,7 +60,7 @@ public class Tool {
         return this.version;
     }
 
-    public List<ToolSystem> getSystems() {
+    public List<ArduinpPlatformToolSystem> getSystems() {
         return this.systems;
     }
 
@@ -80,19 +74,17 @@ public class Tool {
         return getInstallPath().toFile().exists();
     }
 
-    public IStatus install(IProgressMonitor monitor) {
-        if (isInstalled()) {
-            return Status.OK_STATUS;
-        }
-
-        for (ToolSystem system : this.systems) {
+    /*
+     * Get the installable for this tool on this system
+     * May return null if none is found
+     */
+    public ArduinoInstallable getInstallable() {
+        for (ArduinpPlatformToolSystem system : this.systems) {
             if (system.isApplicable()) {
-                return system.install(monitor);
+                return system;
             }
         }
-
-        // No valid system
-        return new Status(IStatus.ERROR, Activator.getId(), Messages.Tool_no_valid_system.replace(KEY, this.name));
+        return null;
     }
 
 }

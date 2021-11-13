@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.api.VersionNumber;
-import io.sloeber.core.api.Json.packages.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.FileModifiers;
@@ -52,21 +52,21 @@ public class WorkAround extends Const {
      * none platform.txt and boards.txt workarounds need to be done during install
      * time
      * 
-     * @param platform
+     * @param arduinoPlatformVersion
      */
-    static public void applyKnownWorkArounds(ArduinoPlatform platform) {
+    static public void applyKnownWorkArounds(ArduinoPlatformVersion arduinoPlatformVersion) {
 
         /*
          * for STM32 V1.8 and later #include "SrcWrapper.h" to Arduino.h remove the
          * prebuild actions remove the build_opt
          * https://github.com/Sloeber/arduino-eclipse-plugin/issues/1143
          */
-        if (new VersionNumber("1.8.0").compareTo(platform.getVersion()) != 1) {
-            if ("stm32".equals(platform.getArchitecture())) {
-                if ("STM32".equals(platform.getParent().getName())) {
-                    if (platform.getVersion().compareTo("1.8.0") == 0) {
-                        File arduino_h = platform.getInstallPath().append("cores").append("arduino").append("Arduino.h")
-                                .toFile();
+        if (new VersionNumber("1.8.0").compareTo(arduinoPlatformVersion.getVersion()) != 1) {
+            if ("stm32".equals(arduinoPlatformVersion.getArchitecture())) {
+                if ("STM32".equals(arduinoPlatformVersion.getParent().getName())) {
+                    if (arduinoPlatformVersion.getVersion().compareTo("1.8.0") == 0) {
+                        File arduino_h = arduinoPlatformVersion.getInstallPath().append("cores").append("arduino")
+                                .append("Arduino.h").toFile();
                         if (arduino_h.exists()) {
                             FileModifiers.replaceInFile(arduino_h, false, "#include \"pins_arduino.h\"",
                                     "#include \"pins_arduino.h\"\n#include \"SrcWrapper.h\"");
@@ -76,8 +76,8 @@ public class WorkAround extends Const {
             }
         }
 
-        MakePlatformSloeberTXT(platform.getPlatformFile());
-        MakeBoardsSloeberTxt(platform.getBoardsFile());
+        MakePlatformSloeberTXT(arduinoPlatformVersion.getPlatformFile());
+        MakeBoardsSloeberTxt(arduinoPlatformVersion.getBoardsFile());
 
     }
 

@@ -21,7 +21,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 
 @SuppressWarnings("nls")
@@ -271,7 +271,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		installAdditionalBoards();
 
 		List<BoardDescription> boards = new ArrayList<>();
-		for (File curBoardFile : PackageManager.getAllBoardsFiles()) {
+		for (File curBoardFile : BoardsManager.getAllBoardsFiles()) {
 			// TOFIX these options should not be set here but in IBoard.getOptions
 			Map<String, String> options = null;
 			System.out.println("Adding boards of " + curBoardFile.toString());
@@ -311,12 +311,12 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 	 */
 	public static void installAdditionalBoards() {
 		if (removeAllinstallationInfoAtStartup) {
-			PackageManager.removeAllInstalledPlatforms();
+			BoardsManager.removeAllInstalledPlatforms();
 			LibraryManager.unInstallAllLibs();
 		}
 
 		HashSet<String> toAddList = new HashSet<>(Arrays.asList(packageUrlsFromThirthPartyWebPage));
-		toAddList.addAll(Arrays.asList(PackageManager.getJsonURLList()));
+		toAddList.addAll(Arrays.asList(BoardsManager.getJsonURLList()));
 		toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonAllOSes));
 		if (SystemUtils.IS_OS_WINDOWS) {
 			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreonWindows));
@@ -327,14 +327,14 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 		if (SystemUtils.IS_OS_MAC) {
 			toAddList.removeAll(Arrays.asList(packageUrlsToIgnoreOnMac));
 		}
-		PackageManager.setPackageURLs(toAddList, true);
+		BoardsManager.setPackageURLs(toAddList, true);
 
 		if (testPrivateHardware) {
-			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
 		if (!skipPlatformInstallation) {
-			PackageManager.installAllLatestPlatforms();
+			BoardsManager.installAllLatestPlatforms();
 			// PackageManager.installsubsetOfLatestPlatforms(0,5);
 			// PackageManager.onlyKeepLatestPlatforms();
 		}

@@ -25,7 +25,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import io.sloeber.core.api.Defaults;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
@@ -130,7 +130,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 		Preferences.setAutoImportLibraries(this.automaticallyImportLibrariesOptionEditor.getBooleanValue());
 		Preferences.setPragmaOnceHeaders(this.pragmaOnceHeaderOptionEditor.getBooleanValue());
 		Preferences.setUseBonjour(enableBonjour.getBooleanValue());
-		PackageManager.setPrivateHardwarePaths(hardWarePaths);
+		BoardsManager.setPrivateHardwarePaths(hardWarePaths);
 		LibraryManager.setPrivateLibraryPaths(libraryPaths);
 		return ret;
 	}
@@ -142,7 +142,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	 * @return null if no filtering is needed else filtered list
 	 */
 	private static String[] filterUnwantedPaths(String[] paths) {
-	    IPath unWanted=PackageManager.getInstallationPath();
+	    IPath unWanted=BoardsManager.getInstallationPath();
 	    ArrayList<String> filteredList = new ArrayList<>();
 	    boolean filtered=false;
 	    for (int i = 0; i < paths.length; i++) {
@@ -162,7 +162,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
     @Override
 	public void init(IWorkbench workbench) {
-		String hardWarePaths = PackageManager.getPrivateHardwarePathsString();
+		String hardWarePaths = BoardsManager.getPrivateHardwarePathsString();
 		String libraryPaths = LibraryManager.getPrivateLibraryPathsString();
 		boolean autoImport = Preferences.getAutoImportLibraries();
 		boolean pragmaOnceHeaders = Preferences.getPragmaOnceHeaders();

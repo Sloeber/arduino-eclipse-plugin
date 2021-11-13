@@ -9,7 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.listeners.ProjectExplorerListener;
@@ -25,7 +25,7 @@ public class BurnBootloaderHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (!PackageManager.isReady()) {
+		if (!BoardsManager.isReady()) {
 			log(new Status(IStatus.ERROR, PLUGIN_ID, Messages.pleaseWaitForInstallerJob, null));
 			return null;
 		}

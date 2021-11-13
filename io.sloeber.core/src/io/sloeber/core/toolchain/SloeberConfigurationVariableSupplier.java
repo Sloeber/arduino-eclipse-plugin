@@ -13,7 +13,7 @@ import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSu
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.resources.IProject;
 
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 
 public class SloeberConfigurationVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
@@ -39,7 +39,7 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         }
         if (ret == null) {
             // when the configuration doesn't hold the env var maybe the workbench does
-            ret = PackageManager.getEnvironmentVariables().get(variableName);
+            ret = BoardsManager.getEnvironmentVariables().get(variableName);
         }
         if (ret == null) {
             return null;
@@ -51,7 +51,7 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
     public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration,
             IEnvironmentVariableProvider provider) {
         Map<String, String> retVars = new HashMap<>();
-        Map<String, String> workbenchVars = PackageManager.getEnvironmentVariables();
+        Map<String, String> workbenchVars = BoardsManager.getEnvironmentVariables();
         if (workbenchVars != null) {
             retVars.putAll(workbenchVars);
         }

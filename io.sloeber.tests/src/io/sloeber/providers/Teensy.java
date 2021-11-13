@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import io.sloeber.core.BoardAttributes;
 import io.sloeber.core.Examples;
 import io.sloeber.core.MySystem;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Teensy extends MCUBoard {
@@ -82,7 +82,7 @@ public class Teensy extends MCUBoard {
 			break;
 		}
 
-        this.myBoardDescriptor = PackageManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(),
+        this.myBoardDescriptor = BoardsManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(),
                 "ignored",
 				boardName, options);
 		if (this.myBoardDescriptor == null) {

@@ -3,16 +3,11 @@ package io.sloeber.core.api;
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.common.ConfigurationPreferences.*;
 import static io.sloeber.core.common.Const.*;
-import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -23,22 +18,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.eclipse.cdt.core.parser.util.StringUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,10 +38,13 @@ import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
 import io.sloeber.core.Messages;
-import io.sloeber.core.api.Json.packages.ArduinoPackage;
-import io.sloeber.core.api.Json.packages.ArduinoPlatform;
-import io.sloeber.core.api.Json.packages.PackageIndex;
-import io.sloeber.core.api.Json.packages.ToolDependency;
+import io.sloeber.core.api.Json.ArduinoInstallable;
+import io.sloeber.core.api.Json.ArduinoPackage;
+import io.sloeber.core.api.Json.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformPackageIndex;
+import io.sloeber.core.api.Json.ArduinoPlatformTool;
+import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
@@ -63,6 +52,7 @@ import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
 import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.MyMultiStatus;
+import io.sloeber.core.tools.PackageManager;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.WorkAround;
 
@@ -73,7 +63,7 @@ import io.sloeber.core.txt.WorkAround;
  * @author jantje
  *
  */
-public class PackageManager {
+public class BoardsManager {
     private static String stringSplitter = "\n";//$NON-NLS-1$
     private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
     private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
@@ -84,10 +74,10 @@ public class PackageManager {
             + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
             + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 
-    protected static List<PackageIndex> packageIndices;
+    protected static List<ArduinoPlatformPackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
     private static boolean envVarsNeedUpdating = true;// reset global variables at startup
-    private final static int MAX_HTTP_REDIRECTIONS = 5;
+
     private static HashMap<String, String> myWorkbenchEnvironmentVariables = new HashMap<>();
 
     /**
@@ -130,13 +120,14 @@ public class PackageManager {
             // fail("failed to find package:" + this.mPackageName);
             return null;
         }
-        ArduinoPlatform platform = thePackage.getLatestPlatform(architectureName, true);
+        ArduinoPlatform platform = thePackage.getPlatform(architectureName);
         if (platform == null) {
             // fail("failed to find platform " + this.mPlatform + " in
             // package:" + this.mPackageName);
             return null;
         }
-        java.io.File boardsFile = platform.getBoardsFile();
+        ArduinoPlatformVersion platformVersion = platform.getNewestVersion();
+        java.io.File boardsFile = platformVersion.getBoardsFile();
         BoardDescription boardid = new BoardDescription(boardsFile, boardID, options);
 
         return boardid;
@@ -179,10 +170,10 @@ public class PackageManager {
         NullProgressMonitor monitor = new NullProgressMonitor();
         List<ArduinoPackage> allPackages = getPackages();
         for (ArduinoPackage curPackage : allPackages) {
-            Collection<ArduinoPlatform> latestPlatforms = curPackage.getLatestPlatforms();
+            Collection<ArduinoPlatform> latestPlatforms = curPackage.getPlatforms();
             for (ArduinoPlatform curPlatform : latestPlatforms) {
                 if (currPlatformIndex > fromIndex) {
-                    curPlatform.install(monitor);
+                    install(curPlatform.getNewestVersion(), monitor);
                 }
                 if (currPlatformIndex++ > toIndex)
                     return;
@@ -205,15 +196,36 @@ public class PackageManager {
         envVarsNeedUpdating = true;
         ArduinoPackage curPackage = getPackage(JasonName, packageName);
         if (curPackage != null) {
-            ArduinoPlatform curPlatform = curPackage.getLatestPlatform(architectureName, false);
+            ArduinoPlatform curPlatform = curPackage.getPlatform(architectureName);
             if (curPlatform != null) {
-                NullProgressMonitor monitor = new NullProgressMonitor();
-                curPlatform.install(monitor);
-                return;
+                ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestVersion();
+                if (curPlatformVersion != null) {
+                    NullProgressMonitor monitor = new NullProgressMonitor();
+                    install(curPlatformVersion, monitor);
+                    return;
+                }
             }
         }
         Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    @SuppressWarnings("nls")
+    private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
+        String name = platformVersion.getName();
+        String architecture = platformVersion.getArchitecture();
+        String version = platformVersion.getVersion().toString();
+        // Check if we're installed already
+        if (platformVersion.isInstalled()) {
+            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")");
+            return Status.OK_STATUS;
+        }
+
+        // Download platform archive
+        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")");
+        IStatus ret = BoardsManager.downloadAndInstall(platformVersion, false, monitor);
+        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")");
+        return ret;
     }
 
     public static void addPrivateHardwarePath(String newHardwarePath) {
@@ -290,8 +302,8 @@ public class PackageManager {
                 + ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
     }
 
-    public static IStatus installRemovePlatforms(List<ArduinoPlatform> platformsToInstall,
-            List<ArduinoPlatform> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
+    public static IStatus updatePlatforms(List<ArduinoPlatformVersion> platformsToInstall,
+            List<ArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
         if (!isReady()) {
             status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
             return status;
@@ -303,11 +315,11 @@ public class PackageManager {
         envVarsNeedUpdating = true;
         try {
             myIsReady = false;
-            for (ArduinoPlatform curPlatform : platformsToRemove) {
-                status.add(curPlatform.remove(monitor));
+            for (ArduinoPlatformVersion curPlatform : platformsToRemove) {
+                status.add(uninstall(curPlatform, monitor));
             }
-            for (ArduinoPlatform curPlatform : platformsToInstall) {
-                status.add(curPlatform.install(monitor));
+            for (ArduinoPlatformVersion curPlatform : platformsToInstall) {
+                status.add(install(curPlatform, monitor));
             }
 
         } catch (Exception e) {
@@ -316,6 +328,10 @@ public class PackageManager {
         myIsReady = true;
         SloeberProject.reloadTxtFile();
         return status;
+    }
+
+    public static IStatus uninstall(ArduinoPlatformVersion curPlatform, IProgressMonitor monitor) {
+        return curPlatform.remove(monitor);
     }
 
     public static TreeMap<String, String> getAllmenus() {
@@ -369,7 +385,7 @@ public class PackageManager {
         if (!jsonFile.exists() || forceDownload) {
             jsonFile.getParentFile().mkdirs();
             try {
-                mySafeCopy(new URL(url.trim()), jsonFile, false);
+                PackageManager.mySafeCopy(new URL(url.trim()), jsonFile, false);
             } catch (IOException e) {
                 Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
             }
@@ -388,7 +404,7 @@ public class PackageManager {
 
     static private void loadPackage(File jsonFile) {
         try (Reader reader = new FileReader(jsonFile)) {
-            PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
+            ArduinoPlatformPackageIndex index = new Gson().fromJson(reader, ArduinoPlatformPackageIndex.class);
             index.setPackageFile(jsonFile);
             packageIndices.add(index);
         } catch (Exception e) {
@@ -430,88 +446,6 @@ public class PackageManager {
         java.nio.file.Path packagePath = Paths
                 .get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
         return packagePath.toFile();
-    }
-
-    /**
-     * copy a url locally taking into account redirections
-     *
-     * @param url
-     * @param localFile
-     * @throws IOException
-     */
-    protected static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
-        myCopy(url, localFile, report_error, 0);
-    }
-
-    @SuppressWarnings("nls")
-    private static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
-            throws IOException {
-        if ("file".equals(url.getProtocol())) {
-            FileUtils.copyFile(new File(url.getFile()), localFile);
-            return;
-        }
-        try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(30000);
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-            conn.addRequestProperty("Referer", "google.com");
-
-            // normally, 3xx is redirect
-            int status = conn.getResponseCode();
-
-            if (status == HttpURLConnection.HTTP_OK) {
-                try (InputStream stream = url.openStream()) {
-                    Files.copy(stream, localFile.toPath(), REPLACE_EXISTING);
-                }
-                return;
-            }
-
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-                    || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                if (redirectionCounter >= MAX_HTTP_REDIRECTIONS) {
-                    throw new IOException("Too many redirections while downloading file.");
-                }
-                myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error, redirectionCounter + 1);
-                return;
-            }
-            if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(),
-                        "Failed to download url " + url + " error code is: " + status, null));
-            }
-            throw new IOException("Failed to download url " + url + " error code is: " + status);
-
-        } catch (Exception e) {
-            if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
-            }
-            throw e;
-
-        }
-    }
-
-    /**
-     * copy a url locally taking into account redirections in such a way that if
-     * there is already a file it does not get lost if the download fails
-     *
-     * @param url
-     * @param localFile
-     * @throws IOException
-     */
-    protected static void mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
-        File savedFile = null;
-        if (localFile.exists()) {
-            savedFile = File.createTempFile(localFile.getName(), "Sloeber"); //$NON-NLS-1$
-            Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
-        }
-        try {
-            myCopy(url, localFile, report_error);
-        } catch (Exception e) {
-            if (null != savedFile) {
-                Files.move(savedFile.toPath(), localFile.toPath(), REPLACE_EXISTING);
-            }
-            throw e;
-        }
     }
 
     public static String getDefaultJsonURLs() {
@@ -622,11 +556,11 @@ public class PackageManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatform latestAvrPlatform = null;
-        ArduinoPlatform latestSamdPlatform = null;
-        ArduinoPlatform latestSamPlatform = null;
-        for (ArduinoPlatform curPlatform : getInstalledPlatforms()) {
-            ArduinoPackage pkg = curPlatform.getParent();
+        ArduinoPlatformVersion latestAvrPlatform = null;
+        ArduinoPlatformVersion latestSamdPlatform = null;
+        ArduinoPlatformVersion latestSamPlatform = null;
+        for (ArduinoPlatformVersion curPlatform : getInstalledPlatforms()) {
+            ArduinoPackage pkg = curPlatform.getParent().getParent();
             if (pkg != null) {
                 myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
                 if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) {
@@ -658,23 +592,8 @@ public class PackageManager {
         return myWorkbenchEnvironmentVariables;
     }
 
-    /**
-     * Only the latest versions of the platforms.
-     *
-     * @return latest platforms
-     */
-    public static Collection<ArduinoPlatform> getLatestPlatforms() {
-        Collection<ArduinoPlatform> allLatestPlatforms = new LinkedList<>();
-        List<ArduinoPackage> allPackages = getPackages();
-        for (ArduinoPackage curPackage : allPackages) {
-            allLatestPlatforms.addAll(curPackage.getLatestPlatforms());
-        }
-        return allLatestPlatforms;
-    }
-
     //Below is what used to be the internal package manager class
-    private static final String FILE = Messages.FILE_TAG;
-    private static final String FOLDER = Messages.FOLDER_TAG;
+
     private static boolean myIsReady = false;
 
     public static boolean isReady() {
@@ -696,39 +615,33 @@ public class PackageManager {
         IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
         if (!examplesPath.toFile().exists()) {// examples are not installed
             // Download arduino IDE example programs
-            Common.log(
-                    downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath, false, monitor));
+            Common.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
+                    false, monitor));
         }
         if (!areThereInstalledBoards()) {
 
-            MyMultiStatus mstatus = new MyMultiStatus("Failed to configer Sloeber"); //$NON-NLS-1$
+            IStatus status = null;
 
-            if (mstatus.isOK()) {
-                // if successfully installed the examples: add the boards
-                ArduinoPlatform platform = null;
-                Collection<ArduinoPlatform> latestsPlatforms = getLatestPlatforms();
-                if (!latestsPlatforms.isEmpty()) {
-                    platform = latestsPlatforms.iterator().next();
-                    for (ArduinoPlatform curPlatform : latestsPlatforms) {
-
-                        if (Defaults.DEFAULT_INSTALL_PLATFORM_NAME.equalsIgnoreCase(curPlatform.getName())
-                                && Defaults.DEFAULT_INSTALL_ARCHITECTURE.equalsIgnoreCase(curPlatform.getArchitecture())
-                                && Defaults.DEFAULT_INSTALL_MAINTAINER
-                                        .equalsIgnoreCase(curPlatform.getParent().getMaintainer())) {
-                            platform = curPlatform;
-                        }
-                    }
+            // if successfully installed the examples: add the boards
+            ArduinoPlatform platform = getPlatform(Defaults.DEFAULT_INSTALL_MAINTAINER,
+                    Defaults.DEFAULT_INSTALL_ARCHITECTURE);
+            //we failed to find arduino avr platform. Take the fiorst one
+            if (platform == null) {
+                try {
+                    platform = getPlatforms().get(0);
+                } catch (@SuppressWarnings("unused") Exception e) {
+                    //no need to do anything
                 }
-                if (platform == null) {
-                    mstatus.add(new Status(IStatus.ERROR, Activator.getId(), Messages.No_Platform_available));
-                } else {
-                    mstatus.addErrors(downloadAndInstall(platform, false, monitor));
-                }
-
             }
-            if (!mstatus.isOK()) {
+            if (platform == null) {
+                status = new Status(IStatus.ERROR, Activator.getId(), Messages.No_Platform_available);
+            } else {
+                status = downloadAndInstall(platform.getNewestVersion(), false, monitor);
+            }
+
+            if (!status.isOK()) {
                 StatusManager stMan = StatusManager.getManager();
-                stMan.handle(mstatus, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
+                stMan.handle(status, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
             }
 
         }
@@ -736,47 +649,49 @@ public class PackageManager {
 
     }
 
-    /**
-     * Given a platform description in a json file download and install all needed
-     * stuff. All stuff is including all tools and core files and hardware specific
-     * libraries. That is (on windows) inclusive the make.exe
-     *
-     * @param platform
-     * @param monitor
-     * @param object
-     * @return
-     */
-    static public synchronized IStatus downloadAndInstall(ArduinoPlatform platform, boolean forceDownload,
+    private static IStatus downloadAndInstall(ArduinoPlatformVersion platformVersion, boolean forceDownload,
             IProgressMonitor monitor) {
-
-        MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platform.getName()); //$NON-NLS-1$
-        mstatus.addErrors(downloadAndInstall(platform.getUrl(), platform.getArchiveFileName(),
-                platform.getInstallPath(), forceDownload, monitor));
+        MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
+        mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
         if (!mstatus.isOK()) {
             // no use going on installing tools if the boards failed installing
             return mstatus;
         }
-        File packageFile = platform.getParent().getParent().getJsonFile();
-        File copyToFile = platform.getInstallPath().append(packageFile.getName()).toFile();
+
+        //keep a copy of the json file used at install
+        File packageFile = platformVersion.getParent().getParent().getPackageIndex().getJsonFile();
+        File copyToFile = platformVersion.getInstallPath().append(packageFile.getName()).toFile();
         try {
             Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (platform.getToolsDependencies() != null) {
-            for (ToolDependency toolDependency : platform.getToolsDependencies()) {
-                monitor.setTaskName(InstallProgress.getRandomMessage());
-                mstatus.addErrors(toolDependency.install(monitor));
+        if (platformVersion.getToolsDependencies() != null) {
+            ArduinoPackage pkg = platformVersion.getParent().getParent();
+            if (pkg == null) {
+                return null;
+            }
+            for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
+                ArduinoPlatformTool tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+                if (tool == null) {
+                    mstatus.add(new Status(IStatus.ERROR, Activator.getId(),
+                            Messages.Tool_no_valid_system.replace(Messages.KEY_TAG, toolDependency.getName())));
+                } else if (!tool.isInstalled()) {
+                    ArduinoInstallable installable = tool.getInstallable();
+                    if (installable != null) {
+                        monitor.setTaskName(InstallProgress.getRandomMessage());
+                        mstatus.addErrors(PackageManager.downloadAndInstall(installable, forceDownload, monitor));
+                    }
+                }
             }
         }
 
-        WorkAround.applyKnownWorkArounds(platform);
+        WorkAround.applyKnownWorkArounds(platformVersion);
         return mstatus;
-
     }
 
-    synchronized static public List<PackageIndex> getPackageIndices() {
+    synchronized static public List<ArduinoPlatformPackageIndex> getPackageIndices() {
         if (packageIndices == null) {
             loadJsons(false);
         }
@@ -785,7 +700,7 @@ public class PackageManager {
 
     public static List<ArduinoPlatform> getPlatforms() {
         List<ArduinoPlatform> platforms = new ArrayList<>();
-        for (PackageIndex index : getPackageIndices()) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             for (ArduinoPackage pkg : index.getPackages()) {
                 platforms.addAll(pkg.getPlatforms());
             }
@@ -793,33 +708,33 @@ public class PackageManager {
         return platforms;
     }
 
-    public static IPath getPlatformInstallPath(String vendor, String architecture) {
+    public static ArduinoPlatform getPlatform(String vendor, String architecture) {
 
-        for (PackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
-                for (ArduinoPlatform curPlatform : pkg.getLatestInstalledPlatforms()) {
-                    if (architecture.equalsIgnoreCase(curPlatform.getArchitecture())
-                            && (vendor.equalsIgnoreCase(pkg.getName()))) {
-                        return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
-                    }
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            ArduinoPackage pkg = index.getPackage(vendor);
+            if (pkg != null) {
+                ArduinoPlatform platform = pkg.getPlatform(architecture);
+                if (platform != null) {
+                    return platform;
                 }
             }
         }
         return null;
     }
 
+    public static IPath getPlatformInstallPath(String vendor, String architecture) {
+
+        ArduinoPlatform platform = getPlatform(vendor, architecture);
+        if (platform != null) {
+            return new org.eclipse.core.runtime.Path(platform.getInstallPath().toString());
+        }
+        return null;
+    }
+
     public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, VersionNumber refVersion) {
-        for (PackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
-                if (refVendor.equalsIgnoreCase(pkg.getName())) {
-                    for (ArduinoPlatform curPlatform : pkg.getInstalledPlatforms()) {
-                        if (refArchitecture.equalsIgnoreCase(curPlatform.getArchitecture())
-                                && refVersion.compareTo(curPlatform.getVersion()) == 0) {
-                            return new org.eclipse.core.runtime.Path(curPlatform.getInstallPath().toString());
-                        }
-                    }
-                }
-            }
+        ArduinoPlatformVersion platformVersion = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
+        if (platformVersion != null) {
+            return platformVersion.getInstallPath();
         }
         return null;
     }
@@ -830,34 +745,27 @@ public class PackageManager {
      * @param platformTxt
      * @return the found platform otherwise null
      */
-    public static ArduinoPlatform getPlatform(IPath platformPath) {
-        for (PackageIndex index : getPackageIndices()) {
+    public static ArduinoPlatformVersion getPlatform(IPath platformPath) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             for (ArduinoPackage pkg : index.getPackages()) {
                 for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
-                    if (curPlatform.getInstallPath().equals(platformPath)) {
-                        return curPlatform;
-                    }
+                    if (platformPath
+                            .matchingFirstSegments(curPlatform.getInstallPath()) > (platformPath.segmentCount() - 2))
+
+                        for (ArduinoPlatformVersion curPlatformVersion : curPlatform.getVersions()) {
+                            if (curPlatformVersion.getInstallPath().equals(platformPath)) {
+                                return curPlatformVersion;
+                            }
+                        }
                 }
             }
         }
         return null;
     }
 
-    static public List<ArduinoPlatform> getLatestInstalledPlatforms() {
-        List<ArduinoPlatform> platforms = new ArrayList<>();
-        for (PackageIndex index : getPackageIndices()) {
-            for (ArduinoPackage pkg : index.getPackages()) {
-
-                platforms.addAll(pkg.getLatestInstalledPlatforms());
-
-            }
-        }
-        return platforms;
-    }
-
-    static public List<ArduinoPlatform> getInstalledPlatforms() {
-        List<ArduinoPlatform> platforms = new ArrayList<>();
-        for (PackageIndex index : getPackageIndices()) {
+    static public List<ArduinoPlatformVersion> getInstalledPlatforms() {
+        List<ArduinoPlatformVersion> platforms = new ArrayList<>();
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             for (ArduinoPackage pkg : index.getPackages()) {
 
                 platforms.addAll(pkg.getInstalledPlatforms());
@@ -868,7 +776,7 @@ public class PackageManager {
     }
 
     static public boolean areThereInstalledBoards() {
-        for (PackageIndex index : getPackageIndices()) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             for (ArduinoPackage pkg : index.getPackages()) {
                 if (pkg.isInstalled()) {
                     return true;
@@ -880,14 +788,14 @@ public class PackageManager {
 
     static public List<ArduinoPackage> getPackages() {
         List<ArduinoPackage> packages = new ArrayList<>();
-        for (PackageIndex index : getPackageIndices()) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             packages.addAll(index.getPackages());
         }
         return packages;
     }
 
     static public ArduinoPackage getPackage(String JasonName, String packageName) {
-        for (PackageIndex index : getPackageIndices()) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             if (index.getJsonFile().getName().equals(JasonName)) {
                 return index.getPackage(packageName);
             }
@@ -896,342 +804,13 @@ public class PackageManager {
     }
 
     static public ArduinoPackage getPackage(String packageName) {
-        for (PackageIndex index : getPackageIndices()) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             ArduinoPackage pkg = index.getPackage(packageName);
             if (pkg != null) {
                 return pkg;
             }
         }
         return null;
-    }
-
-    /**
-     * downloads an archive file from the internet and saves it in the download
-     * folder under the name "pArchiveFileName" then extrats the file to
-     * pInstallPath if pForceDownload is true the file will be downloaded even if
-     * the download file already exists if pForceDownload is false the file will
-     * only be downloaded if the download file does not exists The extraction is
-     * done with processArchive so only files types supported by this method will be
-     * properly extracted
-     *
-     * @param pURL
-     *            the url of the file to download
-     * @param pArchiveFileName
-     *            the name of the file in the download folder
-     * @param pInstallPath
-     * @param pForceDownload
-     * @param pMonitor
-     * @return
-     */
-    public static IStatus downloadAndInstall(String pURL, String pArchiveFileName, IPath pInstallPath,
-            boolean pForceDownload, IProgressMonitor pMonitor) {
-        IPath dlDir = ConfigurationPreferences.getInstallationPathDownload();
-        IPath archivePath = dlDir.append(pArchiveFileName);
-        try {
-            URL dl = new URL(pURL);
-            dlDir.toFile().mkdir();
-            if (!archivePath.toFile().exists() || pForceDownload) {
-                pMonitor.subTask("Downloading " + pArchiveFileName + " .."); //$NON-NLS-1$ //$NON-NLS-2$
-                myCopy(dl, archivePath.toFile(), true);
-            }
-        } catch (IOException e) {
-            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Failed_to_download.replace(FILE, pURL),
-                    e);
-        }
-        return processArchive(pArchiveFileName, pInstallPath, pForceDownload, archivePath.toString(), pMonitor);
-    }
-
-    private static IStatus processArchive(String pArchiveFileName, IPath pInstallPath, boolean pForceDownload,
-            String pArchiveFullFileName, IProgressMonitor pMonitor) {
-        // Create an ArchiveInputStream with the correct archiving algorithm
-        String faileToExtractMessage = Messages.Manager_Failed_to_extract.replace(FILE, pArchiveFullFileName);
-        if (pArchiveFileName.endsWith("tar.bz2")) { //$NON-NLS-1$
-            try (ArchiveInputStream inStream = new TarArchiveInputStream(
-                    new BZip2CompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(inStream, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("zip")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new ZipArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("tar.gz")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(
-                    new GzipCompressorInputStream(new FileInputStream(pArchiveFullFileName)))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else if (pArchiveFileName.endsWith("tar")) { //$NON-NLS-1$
-            try (ArchiveInputStream in = new TarArchiveInputStream(new FileInputStream(pArchiveFullFileName))) {
-                return extract(in, pInstallPath.toFile(), 1, pForceDownload, pMonitor);
-            } catch (IOException | InterruptedException e) {
-                return new Status(IStatus.ERROR, Activator.getId(), faileToExtractMessage, e);
-            }
-        } else {
-            return new Status(IStatus.ERROR, Activator.getId(), Messages.Manager_Format_not_supported);
-        }
-    }
-
-    public static IStatus extract(ArchiveInputStream in, File destFolder, int stripPath, boolean overwrite,
-            IProgressMonitor pMonitor) throws IOException, InterruptedException {
-
-        // Folders timestamps must be set at the end of archive extraction
-        // (because creating a file in a folder alters the folder's timestamp)
-        Map<File, Long> foldersTimestamps = new HashMap<>();
-
-        String pathPrefix = new String();
-
-        Map<File, File> hardLinks = new HashMap<>();
-        Map<File, Integer> hardLinksMode = new HashMap<>();
-        Map<File, String> symLinks = new HashMap<>();
-        Map<File, Long> symLinksModifiedTimes = new HashMap<>();
-
-        // Cycle through all the archive entries
-        while (true) {
-            ArchiveEntry entry = in.getNextEntry();
-            if (entry == null) {
-                break;
-            }
-
-            // Extract entry info
-            long size = entry.getSize();
-            String name = entry.getName();
-            boolean isDirectory = entry.isDirectory();
-            boolean isLink = false;
-            boolean isSymLink = false;
-            String linkName = null;
-            Integer mode = null;
-            Long modifiedTime = Long.valueOf(entry.getLastModifiedDate().getTime());
-
-            pMonitor.subTask("Processing " + name); //$NON-NLS-1$
-
-            {
-                // Skip MacOSX metadata
-                // http://superuser.com/questions/61185/why-do-i-get-files-like-foo-in-my-tarball-on-os-x
-                int slash = name.lastIndexOf('/');
-                if (slash == -1) {
-                    if (name.startsWith("._")) { //$NON-NLS-1$
-                        continue;
-                    }
-                } else {
-                    if (name.substring(slash + 1).startsWith("._")) { //$NON-NLS-1$
-                        continue;
-                    }
-                }
-            }
-
-            // Skip git metadata
-            // http://www.unix.com/unix-for-dummies-questions-and-answers/124958-file-pax_global_header-means-what.html
-            if (name.contains("pax_global_header")) { //$NON-NLS-1$
-                continue;
-            }
-
-            if (entry instanceof TarArchiveEntry) {
-                TarArchiveEntry tarEntry = (TarArchiveEntry) entry;
-                mode = Integer.valueOf(tarEntry.getMode());
-                isLink = tarEntry.isLink();
-                isSymLink = tarEntry.isSymbolicLink();
-                linkName = tarEntry.getLinkName();
-            }
-
-            // On the first archive entry, if requested, detect the common path
-            // prefix to be stripped from filenames
-            int localstripPath = stripPath;
-            if (localstripPath > 0 && pathPrefix.isEmpty()) {
-                int slash = 0;
-                while (localstripPath > 0) {
-                    slash = name.indexOf("/", slash); //$NON-NLS-1$
-                    if (slash == -1) {
-                        throw new IOException(Messages.Manager_archiver_eror_single_root_folder_required);
-                    }
-                    slash++;
-                    localstripPath--;
-                }
-                pathPrefix = name.substring(0, slash);
-            }
-
-            // Strip the common path prefix when requested
-            if (!name.startsWith(pathPrefix)) {
-                throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
-                        .replace(FOLDER, pathPrefix));
-
-            }
-            name = name.substring(pathPrefix.length());
-            if (name.isEmpty()) {
-                continue;
-            }
-            File outputFile = new File(destFolder, name);
-
-            File outputLinkedFile = null;
-            if (isLink && linkName != null) {
-                if (!linkName.startsWith(pathPrefix)) {
-                    throw new IOException(Messages.Manager_archive_error_root_folder_name_mismatch.replace(FILE, name)
-                            .replace(FOLDER, pathPrefix));
-                }
-                linkName = linkName.substring(pathPrefix.length());
-                outputLinkedFile = new File(destFolder, linkName);
-            }
-            if (isSymLink) {
-                // Symbolic links are referenced with relative paths
-                outputLinkedFile = new File(linkName);
-                if (outputLinkedFile.isAbsolute()) {
-                    System.err.println(Messages.Manager_archive_error_symbolic_link_to_absolute_path
-                            .replace(FILE, outputFile.toString()).replace(FOLDER, outputLinkedFile.toString()));
-                    System.err.println();
-                }
-            }
-
-            // Safety check
-            if (isDirectory) {
-                if (outputFile.isFile() && !overwrite) {
-                    throw new IOException(
-                            Messages.Manager_Cant_create_folder_exists.replace(FILE, outputFile.getPath()));
-                }
-            } else {
-                // - isLink
-                // - isSymLink
-                // - anything else
-                if (outputFile.exists() && !overwrite) {
-                    throw new IOException(Messages.Manager_Cant_extract_file_exist.replace(FILE, outputFile.getPath()));
-                }
-            }
-
-            // Extract the entry
-            if (isDirectory) {
-                if (!outputFile.exists() && !outputFile.mkdirs()) {
-                    throw new IOException(Messages.Manager_Cant_create_folder.replace(FILE, outputFile.getPath()));
-                }
-                foldersTimestamps.put(outputFile, modifiedTime);
-            } else if (isLink) {
-                hardLinks.put(outputFile, outputLinkedFile);
-                hardLinksMode.put(outputFile, mode);
-            } else if (isSymLink) {
-                symLinks.put(outputFile, linkName);
-                symLinksModifiedTimes.put(outputFile, modifiedTime);
-            } else {
-                // Create the containing folder if not exists
-                if (!outputFile.getParentFile().isDirectory()) {
-                    outputFile.getParentFile().mkdirs();
-                }
-                copyStreamToFile(in, size, outputFile);
-                outputFile.setLastModified(modifiedTime.longValue());
-            }
-
-            // Set file/folder permission
-            if (mode != null && !isSymLink && outputFile.exists()) {
-                chmod(outputFile, mode.intValue());
-            }
-        }
-
-        for (Map.Entry<File, File> entry : hardLinks.entrySet()) {
-            if (entry.getKey().exists() && overwrite) {
-                entry.getKey().delete();
-            }
-            link(entry.getValue(), entry.getKey());
-            Integer mode = hardLinksMode.get(entry.getKey());
-            if (mode != null) {
-                chmod(entry.getKey(), mode.intValue());
-            }
-        }
-
-        for (Map.Entry<File, String> entry : symLinks.entrySet()) {
-            if (entry.getKey().exists() && overwrite) {
-                entry.getKey().delete();
-            }
-
-            symlink(entry.getValue(), entry.getKey());
-            entry.getKey().setLastModified(symLinksModifiedTimes.get(entry.getKey()).longValue());
-        }
-
-        // Set folders timestamps
-        for (Map.Entry<File, Long> entry : foldersTimestamps.entrySet()) {
-            entry.getKey().setLastModified(entry.getValue().longValue());
-        }
-
-        return Status.OK_STATUS;
-
-    }
-
-    private static void symlink(String from, File to) throws IOException, InterruptedException {
-        if (Common.isWindows) {
-            // needs special rights only one board seems to fail due to this
-            // Process process = Runtime.getRuntime().exec(new String[] {
-            // "mklink", from, to.getAbsolutePath() }, //$NON-NLS-1$
-            // null, to.getParentFile());
-            // process.waitFor();
-        } else {
-            Process process = Runtime.getRuntime().exec(new String[] { "ln", "-s", from, to.getAbsolutePath() }, //$NON-NLS-1$ //$NON-NLS-2$
-                    null, to.getParentFile());
-            process.waitFor();
-        }
-
-    }
-
-    /*
-     * create a link file at the level of the os using mklink /H on windows makes
-     * that no admin rights are needed
-     */
-    @SuppressWarnings("nls")
-    private static void link(File actualFile, File linkName) throws IOException, InterruptedException {
-        String[] command = new String[] { "ln", actualFile.getAbsolutePath(), linkName.getAbsolutePath() };
-        if (SystemUtils.IS_OS_WINDOWS) {
-            command = new String[] { "cmd", "/c", "mklink", "/H", linkName.getAbsolutePath(),
-                    actualFile.getAbsolutePath() };
-        }
-        Process process = Runtime.getRuntime().exec(command, null, null);
-        process.waitFor();
-    }
-
-    private static void chmod(File file, int mode) throws IOException, InterruptedException {
-        String octal = Integer.toOctalString(mode);
-        if (Common.isWindows) {
-            boolean ownerExecute = (((mode / (8 * 8)) & 1) == 1);
-            boolean ownerRead = (((mode / (8 * 8)) & 4) == 4);
-            boolean ownerWrite = (((mode / (8 * 8)) & 2) == 2);
-            boolean everyoneExecute = (((mode / 8) & 1) == 1);
-            boolean everyoneRead = (((mode / 8) & 4) == 4);
-            boolean everyoneWrite = (((mode / 8) & 2) == 2);
-            file.setWritable(true, false);
-            file.setExecutable(ownerExecute, !everyoneExecute);
-            file.setReadable(ownerRead, !everyoneRead);
-            file.setWritable(ownerWrite, !everyoneWrite);
-        } else {
-            Process process = Runtime.getRuntime().exec(new String[] { "chmod", octal, file.getAbsolutePath() }, null, //$NON-NLS-1$
-                    null);
-            process.waitFor();
-        }
-    }
-
-    private static void copyStreamToFile(InputStream in, long size, File outputFile) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-
-            // if size is not available, copy until EOF...
-            if (size == -1) {
-                byte[] buffer = new byte[4096];
-                int length;
-                while ((length = in.read(buffer)) != -1) {
-                    fos.write(buffer, 0, length);
-                }
-                return;
-            }
-
-            // ...else copy just the needed amount of bytes
-            byte[] buffer = new byte[4096];
-            long leftToWrite = size;
-            while (leftToWrite > 0) {
-                int length = in.read(buffer);
-                if (length <= 0) {
-                    throw new IOException(
-                            Messages.Manager_Failed_to_extract.replace(FILE, outputFile.getAbsolutePath()));
-                }
-                fos.write(buffer, 0, length);
-                leftToWrite -= length;
-            }
-        }
     }
 
     /**
@@ -1282,6 +861,14 @@ public class PackageManager {
         for (ArduinoPackage curPackage : allPackages) {
             curPackage.onlyKeepLatestPlatforms();
         }
+    }
+
+    public static ArduinoPlatformVersion getPlatform(String vendor, String architecture, VersionNumber refVersion) {
+        ArduinoPlatform platform = getPlatform(vendor, architecture);
+        if (platform != null) {
+            return platform.getVersion(refVersion);
+        }
+        return null;
     }
 
 }

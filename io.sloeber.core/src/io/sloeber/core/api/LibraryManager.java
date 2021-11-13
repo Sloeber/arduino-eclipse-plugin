@@ -37,6 +37,7 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.core.DefaultInstallHandler;
 import io.sloeber.core.tools.FileModifiers;
+import io.sloeber.core.tools.PackageManager;
 
 /**
  * This class is the main entry point for libraries. It handles private
@@ -58,7 +59,7 @@ public class LibraryManager {
 
     static public List<ArduinoLibraryIndex> getLibraryIndices() {
         if (libraryIndices == null) {
-            PackageManager.getPackageIndices();
+            BoardsManager.getPackageIndices();
         }
         return libraryIndices;
     }

@@ -149,7 +149,6 @@ public class ArduinoLibrary extends Node implements Comparable<ArduinoLibrary> {
         return name;
     }
 
-    @Override
     public IPath getInstallPath() {
         return ConfigurationPreferences.getInstallationPathLibraries().append(this.name.replace(' ', '_'));
     }

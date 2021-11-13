@@ -41,13 +41,14 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.listeners.resourceChangeListener;
+import io.sloeber.core.tools.PackageManager;
 
 /**
  * generated code
@@ -213,7 +214,7 @@ public class Activator extends Plugin {
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
         InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
         InstancePreferences.setAutomaticallyImportLibraries(InstancePreferences.getAutomaticallyImportLibraries());
-        PackageManager.setJsonURLs(PackageManager.getJsonURLs());
+        BoardsManager.setJsonURLs(BoardsManager.getJsonURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {
@@ -251,7 +252,7 @@ public class Activator extends Plugin {
 
                 installOtherStuff();
 
-                PackageManager.startup_Pluging(monitor);
+                BoardsManager.startup_Pluging(monitor);
 
                 monitor.setTaskName("Done!");
                 if (InstancePreferences.useBonjour()) {

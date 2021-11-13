@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.sloeber.core.Examples;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Jantje extends MCUBoard {
@@ -24,7 +24,7 @@ public class Jantje extends MCUBoard {
 	public Jantje(String boardName) {
 		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		options.put("type", "debug");
-		this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName,packageName,localDebugArchitectureName ,
+		this.myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName,packageName,localDebugArchitectureName ,
 				boardName, options);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -63,7 +63,7 @@ public class Jantje extends MCUBoard {
     }
     
 	public static void installLatestLocalDebugBoards() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, localDebugArchitectureName);
+	    BoardsManager.installLatestPlatform(jsonFileName,provider, localDebugArchitectureName);
 	}
 
 
