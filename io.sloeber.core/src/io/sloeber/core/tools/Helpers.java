@@ -41,9 +41,9 @@ import org.eclipse.ui.console.MessageConsole;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.api.Json.packages.ArduinoPlatform;
-import io.sloeber.core.api.Json.packages.Tool;
-import io.sloeber.core.api.Json.packages.ToolDependency;
+import io.sloeber.core.api.Json.ArduinoPlatformTool;
+import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -440,7 +440,8 @@ public class Helpers {
 
     }
 
-    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatform platform, boolean reportToolNotFound) {
+    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platform,
+            boolean reportToolNotFound) {
         HashMap<String, String> vars = new HashMap<>();
         if (platform == null) {
             return vars;
@@ -448,12 +449,12 @@ public class Helpers {
         if (platform.getToolsDependencies() == null) {
             return vars;
         }
-        Iterable<ToolDependency> tools = platform.getToolsDependencies();
+        Iterable<ArduinoPlatformTooldDependency> tools = platform.getToolsDependencies();
         String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
         String DOT_PATH = DOT + PATH;
-        for (ToolDependency tool : tools) {
+        for (ArduinoPlatformTooldDependency tool : tools) {
             String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-            Tool theTool = tool.getTool();
+            ArduinoPlatformTool theTool = tool.getTool();
             if (theTool == null) {
                 if (reportToolNotFound) {
                     log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,

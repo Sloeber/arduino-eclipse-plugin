@@ -31,7 +31,7 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.MCUBoard;
 import io.sloeber.providers.Teensy;
@@ -103,7 +103,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		if (MySystem.getTeensyPlatform().isEmpty()) {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
 		} else {
-			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 
 	}

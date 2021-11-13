@@ -13,7 +13,7 @@ import org.junit.Test;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Arduino;
 
@@ -34,9 +34,9 @@ public class RegressionTestFailingOnTravis {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { "http://talk2arduino.wisen.com.au/master/package_talk2.wisen.com_index.json" };
-		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), false);
 		if (!MySystem.getTeensyPlatform().isEmpty()) {
-			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
 	}
 
@@ -49,10 +49,10 @@ public class RegressionTestFailingOnTravis {
 	public void redirectedJson() {
 		//this board references to arduino avr so install that one to
 	    Arduino.installLatestAVRBoards();
-        PackageManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
+        BoardsManager.installLatestPlatform("package_talk2.wisen.com_index.json", "Talk2", "avr");
 		Map<String, String> options = new HashMap<>();
 		options.put("mhz", "16MHz");
-		BoardDescription boardid = PackageManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
+		BoardDescription boardid = BoardsManager.getBoardDescription("package_talk2.wisen.com_index.json", "Talk2",
                 "avr", "whispernode", options);
 		if (boardid == null) {
 			fail("redirect Json ");

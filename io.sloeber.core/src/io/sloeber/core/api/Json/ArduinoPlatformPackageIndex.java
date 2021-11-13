@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package io.sloeber.core.api.Json.packages;
+package io.sloeber.core.api.Json;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -19,8 +19,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 
-@JsonAdapter(PackageIndex.class)
-public class PackageIndex implements JsonDeserializer<PackageIndex> {
+@JsonAdapter(ArduinoPlatformPackageIndex.class)
+public class ArduinoPlatformPackageIndex extends Node implements JsonDeserializer<ArduinoPlatformPackageIndex> {
 
     private List<ArduinoPackage> myPackages = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public class PackageIndex implements JsonDeserializer<PackageIndex> {
 
     @SuppressWarnings("nls")
     @Override
-    public PackageIndex deserialize(JsonElement json, Type arg1, JsonDeserializationContext arg2)
+    public ArduinoPlatformPackageIndex deserialize(JsonElement json, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
@@ -83,7 +83,18 @@ public class PackageIndex implements JsonDeserializer<PackageIndex> {
         return false;
     }
 
-    public String getNiceName() {
+    @Override
+    public Node[] getChildren() {
+        return myPackages.toArray(new Node[myPackages.size()]);
+    }
+
+    @Override
+    public Node getParent() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
         return myJsonFile.getName();
     }
 

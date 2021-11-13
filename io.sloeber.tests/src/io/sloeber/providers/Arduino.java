@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Arduino extends MCUBoard {
@@ -166,7 +166,7 @@ public class Arduino extends MCUBoard {
 
 
 	private Arduino(String providerName, String architectureName, String boardName) {
-        this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName, providerName, architectureName,
+        this.myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, providerName, architectureName,
 				boardName, null);
 		if (this.myBoardDescriptor == null) {
 			fail(boardName + " Board not found");
@@ -240,19 +240,19 @@ public class Arduino extends MCUBoard {
 		return ret;
 	}
 	public static void installLatestAVRBoards() {
-	    PackageManager.installLatestPlatform(jsonFileName,providerArduino, AVRArchitectureName);
+	    BoardsManager.installLatestPlatform(jsonFileName,providerArduino, AVRArchitectureName);
 	}
 
     public static void installLatestSamDBoards() {
-        PackageManager.installLatestPlatform(jsonFileName, providerArduino, SAMDArchitectureName);
+        BoardsManager.installLatestPlatform(jsonFileName, providerArduino, SAMDArchitectureName);
     }
 
     public static void installLatestSamBoards() {
-        PackageManager.installLatestPlatform(jsonFileName, providerArduino, SAMArchitectureName);
+        BoardsManager.installLatestPlatform(jsonFileName, providerArduino, SAMArchitectureName);
     }
 
     public static void installLatestIntellCurieBoards() {
-        PackageManager.installLatestPlatform(jsonFileName, providerIntel, intelCurieArchitectureName);
+        BoardsManager.installLatestPlatform(jsonFileName, providerIntel, intelCurieArchitectureName);
     }
 
     public static MCUBoard[] getAllBoards() {

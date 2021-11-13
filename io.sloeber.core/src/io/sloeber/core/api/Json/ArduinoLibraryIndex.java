@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.IPath;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -110,12 +108,6 @@ public class ArduinoLibraryIndex extends Node
     @Override
     public String getID() {
         return getName();
-    }
-
-    @Override
-    public IPath getInstallPath() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

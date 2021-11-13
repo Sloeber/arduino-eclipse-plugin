@@ -163,8 +163,7 @@ public class ArduinoLibraryVersion extends Node implements Comparable<ArduinoLib
         return version.toString();
     }
 
-    @Override
     public IPath getInstallPath() {
-        return getParent().getInstallPath().append(version.toString());
+        return myParent.getInstallPath().append(version.toString());
     }
 }

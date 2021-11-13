@@ -135,7 +135,7 @@ public class TxtWorkAroundRegression {
         }
         if (!expectedFile.exists()) {
             System.out.println("file does not exists " + expectedFile);
-            assumeFalse(true);// skip the test
+            return;
         }
         String input = FileUtils.readFileToString(inputFile, Charset.defaultCharset());
         input = input.replace("\r\n", "\n");
@@ -154,8 +154,8 @@ public class TxtWorkAroundRegression {
 
     private String clean(String expected) {
         return expected.replace("\r\n", "\n").replaceAll("(?m)^#.*", "").replaceAll("(?m)^\\s*", "")
-                .replaceAll("(?m)\\s*$", "").replaceAll("(?m)^(\\S*)\\s*=", "$1=")
-                .replace("\n\n", "\n").replace("\n\n", "\n");
+                .replaceAll("(?m)\\s*$", "").replaceAll("(?m)^(\\S*)\\s*=", "$1=").replace("\n\n", "\n")
+                .replace("\n\n", "\n");
     }
 
 }

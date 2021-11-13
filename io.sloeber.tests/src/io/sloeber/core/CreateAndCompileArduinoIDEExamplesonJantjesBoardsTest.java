@@ -20,7 +20,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Jantje;
 import io.sloeber.providers.MCUBoard;
@@ -48,7 +48,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 	public static Collection examples() {
 		Preferences.setUseBonjour(false);
 		String[] packageUrlsToAdd = {Jantje.jsonURL };
-		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		Jantje.installLatestLocalDebugBoards();
 		Shared.waitForAllJobsToFinish();
 		
