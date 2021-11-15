@@ -93,14 +93,16 @@ public class LibraryManager {
 
             for (String libraryName : Defaults.DEFAULT_INSTALLED_LIBRARIES) {
                 ArduinoLibrary toInstalLib = libindex.getLibrary(libraryName);
-                ArduinoLibraryVersion toInstalLibVersion = toInstalLib.getNewestVersion();
-                ArduinoLibraryVersion instaledLibVersion = toInstalLib.getInstalledVersion();
-                if (toInstalLibVersion != null) {
-                    if (toInstalLibVersion != instaledLibVersion) {
-                        if (instaledLibVersion != null) {
-                            unInstall(instaledLibVersion, monitor);
+                if (toInstalLib != null) {
+                    ArduinoLibraryVersion toInstalLibVersion = toInstalLib.getNewestVersion();
+                    ArduinoLibraryVersion instaledLibVersion = toInstalLib.getInstalledVersion();
+                    if (toInstalLibVersion != null) {
+                        if (toInstalLibVersion != instaledLibVersion) {
+                            if (instaledLibVersion != null) {
+                                unInstall(instaledLibVersion, monitor);
+                            }
+                            install(toInstalLibVersion, monitor);
                         }
-                        install(toInstalLibVersion, monitor);
                     }
                 }
             }
