@@ -331,7 +331,19 @@ public class BoardsManager {
     }
 
     public static IStatus uninstall(ArduinoPlatformVersion curPlatform, IProgressMonitor monitor) {
-        return curPlatform.remove(monitor);
+        if (!curPlatform.isInstalled()) {
+            return Status.OK_STATUS;
+        }
+
+        File installFolder = curPlatform.getInstallPath().toFile();
+        try {
+            FileUtils.deleteDirectory(installFolder);
+        } catch (IOException e) {
+            return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
+                    e);
+        }
+
+        return Status.OK_STATUS;
     }
 
     public static TreeMap<String, String> getAllmenus() {
