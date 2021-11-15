@@ -10,22 +10,16 @@ package io.sloeber.core.api.Json;
 import static io.sloeber.core.Gson.GsonConverter.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.Activator;
 import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.Const;
 
@@ -108,23 +102,6 @@ public class ArduinoPlatformVersion extends ArduinoInstallable implements Compar
         IPath installPath = getInstallPath();
         return Arrays.asList(installPath.append("cores/{build.core}"), //$NON-NLS-1$
                 installPath.append(Const.VARIANTS_FOLDER_NAME + "/{build.variant}")); //$NON-NLS-1$
-    }
-
-    //TODO delete
-    public IStatus remove(IProgressMonitor monitor) {
-        // Check if we're installed
-        if (!isInstalled()) {
-            return Status.OK_STATUS;
-        }
-
-        try {
-            FileUtils.deleteDirectory(getInstallPath().toFile());
-        } catch (IOException e) {
-            return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + getInstallPath().toString(), //$NON-NLS-1$
-                    e);
-        }
-
-        return Status.OK_STATUS;
     }
 
     @Override
