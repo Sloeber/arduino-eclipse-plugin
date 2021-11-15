@@ -738,7 +738,11 @@ public class BoardsManager {
 
         ArduinoPlatform platform = getPlatform(vendor, architecture);
         if (platform != null) {
-            return new org.eclipse.core.runtime.Path(platform.getInstallPath().toString());
+            ArduinoPlatformVersion latestInstall = platform.getNewestInstalled();
+            if (latestInstall == null) {
+                return null;
+            }
+            return latestInstall.getInstallPath();
         }
         return null;
     }
