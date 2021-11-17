@@ -35,13 +35,6 @@ import io.sloeber.core.txt.Programmers;
 import io.sloeber.core.txt.TxtFile;
 
 public class BoardDescription {
-    // Important constants to avoid having to add the class
-    private static final String VendorArduino = ARDUINO;
-
-    /*
-     * Some constants
-     */
-    private static final String REFERENCED = "referenced"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_BOARD = "Last used Board"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_UPLOAD_PORT = "Last Used Upload port"; //$NON-NLS-1$
     private static final String KEY_LAST_USED_UPLOAD_PROTOCOL = "last Used upload Protocol"; //$NON-NLS-1$
@@ -55,16 +48,14 @@ public class BoardDescription {
     private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
     private static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
     private static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
-    private static final String ENV_KEY_REFERENCED_CORE_PLATFORM_PATH = REFERENCED + DOT + CORE + DOT + PATH;
-    private static final String ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH = REFERENCED + DOT + VARIANT + DOT + PATH;
-    private static final String ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH = REFERENCED + DOT + UPLOAD + PATH;
 
-    // preference nodes
+    // stuff to store last used board
+    private final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
+    private final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
+    private final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
+    private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
+    private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
-    private static final TxtFile pluginPreProcessingPlatformTxt = new TxtFile(
-            ConfigurationPreferences.getPreProcessingPlatformFile());
-    private static final TxtFile pluginPostProcessingPlatformTxt = new TxtFile(
-            ConfigurationPreferences.getPostProcessingPlatformFile());
 
     /*
      * This is the basic info contained in the descriptor
@@ -73,25 +64,17 @@ public class BoardDescription {
     private String myProgrammer = EMPTY;
     private String myBoardID = EMPTY;
     private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private BoardTxtFile myBoardTxtFile;
 
-    /*
-     * Stuff to make things work
-     */
-    private File myreferencingBoardsFile;
-    protected BoardTxtFile myBoardTxtFile;
+    private String myBoardsCore = null;
+    private String myBoardsVariant = null;
+    private String myUploadTool = null;
 
-    private String myBoardsVariant;
-    private IPath myReferencedBoardVariantPlatformPath;
-    private String myBoardsCore;
-    private IPath myReferencedCorePlatformPath;
-    private IPath myReferencedUploadToolPlatformPath;
-    private String myUploadTool;
+    private ArduinoPlatformVersion myReferencedPlatformVariant = null;
+    private ArduinoPlatformVersion myReferencedPlatformCore = null;
+    private ArduinoPlatformVersion myReferencedPlatformUpload = null;
+
     private boolean isDirty = true;
-    private final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
 
     @Override
     public String toString() {
@@ -133,8 +116,8 @@ public class BoardDescription {
         if (!this.getBoardID().equals(otherBoardDescriptor.getBoardID())) {
             return true;
         }
-        String moddedReferencingBoardsFile = makePathEnvironmentString(getReferencingBoardsFile());
-        String moddedOtherReferencingBoardsFile = makePathEnvironmentString(
+        String moddedReferencingBoardsFile = makePathVersionString(getReferencingBoardsFile());
+        String moddedOtherReferencingBoardsFile = makePathVersionString(
                 otherBoardDescriptor.getReferencingBoardsFile());
         if (!moddedReferencingBoardsFile.equals(moddedOtherReferencingBoardsFile)) {
             return true;
@@ -151,11 +134,11 @@ public class BoardDescription {
      */
     private void calculateDerivedFields() {
 
-        myReferencedCorePlatformPath = getreferencingPlatformPath();
+        myReferencedPlatformCore = null;
         myBoardsCore = null;
-        myReferencedBoardVariantPlatformPath = myReferencedCorePlatformPath;
+        myReferencedPlatformVariant = null;
         myBoardsVariant = null;
-        myReferencedUploadToolPlatformPath = myReferencedCorePlatformPath;
+        myReferencedPlatformUpload = null;
         myUploadTool = null;
         setDefaultOptions();
         // search in the board info
@@ -192,15 +175,9 @@ public class BoardDescription {
             String valueSplit[] = core.split(COLON);
             if (valueSplit.length == 2) {
                 String refVendor = valueSplit[0];
-                String actualValue = valueSplit[1];
-                myBoardsCore = actualValue;
-                ArduinoPlatform platform = BoardsManager.getPlatform(refVendor, architecture);
-                ArduinoPlatformVersion platformVersion = null;
-                platformVersion = platform.getNewestInstalled();
-                if (platformVersion != null) {
-                    myReferencedCorePlatformPath = platformVersion.getInstallPath();
-                }
-                if (myReferencedCorePlatformPath == null) {
+                myBoardsCore = valueSplit[1];
+                myReferencedPlatformCore = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
+                if (myReferencedPlatformCore == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, core)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -211,14 +188,9 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
                 VersionNumber refVersion = new VersionNumber(valueSplit[2]);
-                String actualValue = valueSplit[3];
-                myBoardsCore = actualValue;
-                ArduinoPlatformVersion platformVersion = BoardsManager.getPlatform(refVendor, refArchitecture,
-                        refVersion);
-                if (platformVersion != null) {
-                    myReferencedCorePlatformPath = platformVersion.getInstallPath();
-                }
-                if (this.myReferencedCorePlatformPath == null) {
+                myBoardsCore = valueSplit[3];
+                myReferencedPlatformCore = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
+                if (myReferencedPlatformCore == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, core)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -233,11 +205,9 @@ public class BoardDescription {
             String valueSplit[] = variant.split(COLON);
             if (valueSplit.length == 2) {
                 String refVendor = valueSplit[0];
-                String actualValue = valueSplit[1];
-                this.myBoardsVariant = actualValue;
-                this.myReferencedBoardVariantPlatformPath = BoardsManager.getPlatformInstallPath(refVendor,
-                        architecture);
-                if (this.myReferencedBoardVariantPlatformPath == null) {
+                myBoardsVariant = valueSplit[1];
+                myReferencedPlatformVariant = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
+                if (myReferencedPlatformVariant == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -248,16 +218,13 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
                 VersionNumber refVersion = new VersionNumber(valueSplit[2]);
-                String actualValue = valueSplit[3];
-                this.myBoardsVariant = actualValue;
-                if ("*".equals(refVersion)) { //$NON-NLS-1$
-                    this.myReferencedBoardVariantPlatformPath = BoardsManager.getPlatformInstallPath(refVendor,
-                            refArchitecture);
+                myBoardsVariant = valueSplit[3];
+                if ("*".equals(valueSplit[2])) { //$NON-NLS-1$
+                    myReferencedPlatformVariant = BoardsManager.getNewestInstalledPlatform(refVendor, refArchitecture);
                 } else {
-                    this.myReferencedBoardVariantPlatformPath = BoardsManager.getPlatformInstallPath(refVendor,
-                            refArchitecture, refVersion);
+                    myReferencedPlatformVariant = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
                 }
-                if (this.myReferencedBoardVariantPlatformPath == null) {
+                if (myReferencedPlatformVariant == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, variant)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -272,10 +239,9 @@ public class BoardDescription {
             String valueSplit[] = upload.split(COLON);
             if (valueSplit.length == 2) {
                 String refVendor = valueSplit[0];
-                String actualValue = valueSplit[1];
-                this.myUploadTool = actualValue;
-                this.myReferencedUploadToolPlatformPath = BoardsManager.getPlatformInstallPath(refVendor, architecture);
-                if (this.myReferencedUploadToolPlatformPath == null) {
+                myUploadTool = valueSplit[1];
+                myReferencedPlatformUpload = BoardsManager.getNewestInstalledPlatform(refVendor, architecture);
+                if (myReferencedPlatformUpload == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -286,11 +252,9 @@ public class BoardDescription {
                 String refVendor = valueSplit[0];
                 String refArchitecture = valueSplit[1];
                 VersionNumber refVersion = new VersionNumber(valueSplit[2]);
-                String actualValue = valueSplit[3];
-                this.myUploadTool = actualValue;
-                this.myReferencedUploadToolPlatformPath = BoardsManager.getPlatformInstallPath(refVendor,
-                        refArchitecture, refVersion);
-                if (this.myReferencedUploadToolPlatformPath == null) {
+                myUploadTool = valueSplit[3];
+                myReferencedPlatformUpload = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
+                if (this.myReferencedPlatformUpload == null) {
                     Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID,
                             Helpers_tool_reference_missing.replace(TOOL_TAG, upload)
                                     .replace(FILE_TAG, getReferencingBoardsFile().toString())
@@ -334,19 +298,17 @@ public class BoardDescription {
      *            if null default options are taken
      */
     BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
-        this.myBoardID = boardID;
-        this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
-        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        myBoardID = boardID;
+        myBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(boardsFile));
         setDefaultOptions();
         if (options != null) {
-            this.myOptions.putAll(options);
+            myOptions.putAll(options);
         }
     }
 
     public BoardDescription() {
-        myreferencingBoardsFile = resolvePathEnvironmentString(
-                new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY)));
-        myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        File boardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
+        myBoardTxtFile = new BoardTxtFile(boardsFile);
         myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
         myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
         myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
@@ -354,7 +316,6 @@ public class BoardDescription {
     }
 
     public BoardDescription(BoardDescription srcObject) {
-        myreferencingBoardsFile = srcObject.myreferencingBoardsFile;
         myBoardTxtFile = srcObject.myBoardTxtFile;
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
@@ -395,7 +356,7 @@ public class BoardDescription {
      * project
      */
     public void saveUserSelection() {
-        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, makePathEnvironmentString(getReferencingBoardsFile()));
+        myStorageNode.put(KEY_LAST_USED_BOARDS_FILE, getReferencingBoardsFile().toString());
         myStorageNode.put(KEY_LAST_USED_BOARD, this.myBoardID);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PORT, this.myUploadPort);
         myStorageNode.put(KEY_LAST_USED_UPLOAD_PROTOCOL, this.myProgrammer);
@@ -403,11 +364,11 @@ public class BoardDescription {
     }
 
     public String getArchitecture() {
-        return this.myBoardTxtFile.getArchitecture();
+        return myBoardTxtFile.getArchitecture();
     }
 
     public File getReferencingBoardsFile() {
-        return this.myreferencingBoardsFile;
+        return myBoardTxtFile.getLoadedFile();
     }
 
     public String getBoardName() {
@@ -479,8 +440,7 @@ public class BoardDescription {
          * )) { return; }
          */
 
-        this.myreferencingBoardsFile = resolvePathEnvironmentString(boardsFile);
-        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        myBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(boardsFile));
         setDirty();
     }
 
@@ -554,14 +514,15 @@ public class BoardDescription {
      */
     public IPath getActualVariantPath() {
         updateWhenDirty();
-        if (getBoardVariant() == null) {
+        String boardVariant = getBoardVariant();
+        if (boardVariant == null) {
             return null;
         }
-        IPath retPath = getReferencedVariantPlatformPath();
-        if (retPath == null) {
-            retPath = getreferencingPlatformPath();
+        if (myReferencedPlatformVariant == null) {
+            return new Path(myBoardTxtFile.getLoadedFile().getParent().toString()).append(VARIANTS_FOLDER_NAME)
+                    .append(boardVariant);
         }
-        return retPath.append(VARIANTS_FOLDER_NAME).append(getBoardVariant());
+        return myReferencedPlatformVariant.getInstallPath().append(VARIANTS_FOLDER_NAME).append(boardVariant);
     }
 
     private String getBoardVariant() {
@@ -571,42 +532,22 @@ public class BoardDescription {
 
     public IPath getActualCoreCodePath() {
         updateWhenDirty();
-        IPath retPath = getReferencedCorePlatformPath();
-        if (retPath == null) {
-            retPath = getreferencingPlatformPath();
-        }
-        if (this.myBoardsCore == null) {
+        if (myBoardsCore == null) {
             return null;
         }
-        return retPath.append(CORES).append(this.myBoardsCore);
-    }
-
-    /**
-     * provide the actual path to the variant. Use this method if you want to know
-     * where the variant is
-     *
-     * @return the path to the variant
-     */
-    public IPath getReferencedCorePlatformPath() {
-        updateWhenDirty();
-        if (myReferencedCorePlatformPath != null) {
-            return myReferencedCorePlatformPath;
+        IPath retPath = null;
+        if (myReferencedPlatformCore == null) {
+            retPath = getreferencingPlatformPath();
+        } else {
+            retPath = myReferencedPlatformCore.getInstallPath();
         }
-        return getreferencingPlatformPath();
+        return retPath.append(CORES).append(myBoardsCore);
     }
 
     public IPath getReferencedUploadPlatformPath() {
         updateWhenDirty();
-        if (myReferencedUploadToolPlatformPath != null) {
-            return myReferencedUploadToolPlatformPath;
-        }
-        return getreferencingPlatformPath();
-    }
-
-    public IPath getReferencedVariantPlatformPath() {
-        updateWhenDirty();
-        if (myReferencedBoardVariantPlatformPath != null) {
-            return myReferencedBoardVariantPlatformPath;
+        if (myReferencedPlatformUpload != null) {
+            return myReferencedPlatformUpload.getInstallPath();
         }
         return getreferencingPlatformPath();
     }
@@ -622,30 +563,32 @@ public class BoardDescription {
 
     public Path getreferencingPlatformPath() {
         try {
-            return new Path(this.myreferencingBoardsFile.getParent());
+            return new Path(myBoardTxtFile.getLoadedFile().getParent());
         } catch (@SuppressWarnings("unused") Exception e) {
             return new Path(EMPTY);
         }
     }
 
+    //TODO rename add core
     public PlatformTxtFile getreferencedPlatformFile() {
         updateWhenDirty();
-        if (this.myReferencedCorePlatformPath == null) {
+        if (myReferencedPlatformCore == null) {
             return null;
         }
-        File platformFile = myReferencedCorePlatformPath.append(PLATFORM_FILE_NAME).toFile();
+        File platformFile = myReferencedPlatformCore.getInstallPath().append(PLATFORM_FILE_NAME).toFile();
         if (platformFile != null && platformFile.exists()) {
             return new PlatformTxtFile(platformFile);
         }
         return null;
     }
 
+    //TODO rename add core
     public IPath getReferencedLibraryPath() {
         updateWhenDirty();
-        if (this.myReferencedCorePlatformPath == null) {
+        if (myReferencedPlatformCore == null) {
             return null;
         }
-        return this.myReferencedCorePlatformPath.append(LIBRARY_PATH_SUFFIX);
+        return this.myReferencedPlatformCore.getInstallPath().append(LIBRARY_PATH_SUFFIX);
     }
 
     public IPath getReferencingLibraryPath() {
@@ -663,9 +606,13 @@ public class BoardDescription {
         return TOOLS + DOT + upLoadTool + DOT + UPLOAD + DOT + networkPrefix + PATTERN;
     }
 
+    //TODO rename add core
     public IPath getreferencedHardwarePath() {
         updateWhenDirty();
-        IPath platformPath = getReferencedCorePlatformPath();
+        if (myReferencedPlatformCore == null) {
+            return new Path(myBoardTxtFile.getLoadedFile().toString()).removeLastSegments(2);
+        }
+        IPath platformPath = myReferencedPlatformCore.getInstallPath();
         return platformPath.removeLastSegments(1);
     }
 
@@ -708,9 +655,8 @@ public class BoardDescription {
     }
 
     protected BoardDescription(File txtFile, String boardID) {
-        this.myBoardID = boardID;
-        this.myreferencingBoardsFile = txtFile;
-        this.myBoardTxtFile = new BoardTxtFile(txtFile);
+        myBoardID = boardID;
+        myBoardTxtFile = new BoardTxtFile(txtFile);
         setDefaultOptions();
         calculateDerivedFields();
     }
@@ -719,15 +665,15 @@ public class BoardDescription {
 
         KeyValueTree tree = configFile.getData();
         KeyValueTree section = tree.getChild(prefix);
-        this.myProgrammer = section.getValue(KEY_SLOEBER_PROGRAMMER);
-        this.myBoardID = section.getValue(KEY_SLOEBER_BOARD_ID);
+        myProgrammer = section.getValue(KEY_SLOEBER_PROGRAMMER);
+        myBoardID = section.getValue(KEY_SLOEBER_BOARD_ID);
         String board_txt = section.getValue(KEY_SLOEBER_BOARD_TXT);
-        this.myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
+        myUploadPort = section.getValue(KEY_SLOEBER_UPLOAD_PORT);
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
-        myreferencingBoardsFile = resolvePathEnvironmentString(new File(board_txt));
-        this.myBoardTxtFile = new BoardTxtFile(this.myreferencingBoardsFile);
+        File ResolvedFile = resolvePathEnvironmentString(new File(board_txt));
+        myBoardTxtFile = new BoardTxtFile(ResolvedFile);
         setDefaultOptions();
         if (options != null) {
             // Only add the valid options for this board to our options
@@ -815,6 +761,8 @@ public class BoardDescription {
     public Map<String, String> getEnvVars() {
         updateWhenDirty();
 
+        TxtFile pluginPreProcessingPlatformTxt = new TxtFile(ConfigurationPreferences.getPreProcessingPlatformFile());
+        TxtFile pluginPostProcessingPlatformTxt = new TxtFile(ConfigurationPreferences.getPostProcessingPlatformFile());
         BoardTxtFile pluginPreProcessingBoardsTxt = new BoardTxtFile(
                 ConfigurationPreferences.getPreProcessingBoardsFile());
         BoardTxtFile pluginPostProcessingBoardsTxt = new BoardTxtFile(
@@ -841,13 +789,6 @@ public class BoardDescription {
         } else {// teensy does not use variants
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
         }
-
-        // the entries below are only saved for special platforms that heavily rely on
-        // referencing such as jantjes hardware
-
-        allVars.put(ENV_KEY_REFERENCED_CORE_PLATFORM_PATH, getReferencedCorePlatformPath().toOSString());
-        allVars.put(ENV_KEY_REFERENCED_VARIANT_PLATFORM_PATH, getReferencedVariantPlatformPath().toOSString());
-        allVars.put(ENV_KEY_REFERENCED_UPLOAD_PLATFORM_PATH, getReferencedUploadPlatformPath().toOSString());
 
         PlatformTxtFile referencedPlatfromFile = getreferencedPlatformFile();
         // process the platform file referenced by the boards.txt
@@ -898,26 +839,24 @@ public class BoardDescription {
 
     private Map<String, String> getEnVarPlatformInfo() {
         IPath referencingPlatformPath = getreferencingPlatformPath();
-        IPath referencedPlatformPath = getReferencedCorePlatformPath();
 
-        if ((referencingPlatformPath == null) || (referencedPlatformPath == null)) {
+        if ((referencingPlatformPath == null) || (myReferencedPlatformCore == null)) {
             // something is seriously wrong -->shoot
             return new HashMap<>();
         }
 
         ArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
-        ArduinoPlatformVersion referencedPlatform = BoardsManager.getPlatform(referencedPlatformPath);
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
         if (jsonBasedPlatformManagement) {
             // overrule the Arduino IDE way of working and use the json refereced tools
-            Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(referencedPlatform, true);
+            Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(myReferencedPlatformCore, true);
             ret.putAll(Helpers.getEnvVarPlatformFileTools(referencingPlatform, false));
             return ret;
         }
         // standard arduino IDE way
         Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(referencingPlatform, false);
-        ret.putAll(Helpers.getEnvVarPlatformFileTools(referencedPlatform, true));
+        ret.putAll(Helpers.getEnvVarPlatformFileTools(myReferencedPlatformCore, true));
         return ret;
 
     }
@@ -1077,17 +1016,18 @@ public class BoardDescription {
         if (packagesIndex != -1) {
             referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
         }
-        ret.myreferencingBoardsFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
-        ret.myBoardTxtFile = new BoardTxtFile(ret.myreferencingBoardsFile);
+        File resolvedFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
+        ret.myBoardTxtFile = new BoardTxtFile(resolvedFile);
 
         return ret;
     }
 
     public boolean isValid() {
-        if (myreferencingBoardsFile == null) {
+        File boardsFile = myBoardTxtFile.getLoadedFile();
+        if (boardsFile == null) {
             return false;
         }
-        return myreferencingBoardsFile.exists();
+        return boardsFile.exists();
     }
 
     public void reloadTxtFile() {

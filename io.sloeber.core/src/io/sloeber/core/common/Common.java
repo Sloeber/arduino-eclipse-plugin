@@ -29,7 +29,6 @@ public class Common {
 
     public final static String sloeberHome = getSloeberHome();
     public final static IPath sloeberHomePath = new Path(sloeberHome);
-    public final static String sloeberHomePathToOSString = sloeberHomePath.toOSString();
     public final static String sloeberHomePathToString = sloeberHomePath.toString();
 
     private static String getSloeberHome() {
@@ -54,14 +53,11 @@ public class Common {
                     e));
         }
         return null;
-        }
-
-
+    }
 
     public static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
     public static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
     public static final boolean isMac = Platform.getOS().equals(Platform.OS_MACOSX);
-
 
     /**
      * This method makes sure that a string can be used as a file or folder name
@@ -70,52 +66,53 @@ public class Common {
      * Currently it replaces (based on http://en.wikipedia.org/wiki/Filename ) /
      * slash used as a path name component separator in Unix-like, Windows, and
      * Amiga systems. (The MS-DOS command.com shell would consume it as a switch
-	 * character, but Windows itself always accepts it as a
+     * character, but Windows itself always accepts it as a
      * separator.[6][vague]) \ backslash Also used as a path name component
      * separator in MS-DOS, OS/2 and Windows (where there are few differences
      * between slash and backslash); allowed in Unix filenames, see Note 1 ?
-	 * question mark used as a wildcard in Unix, Windows and AmigaOS; marks a
-	 * single character. Allowed in Unix filenames, see Note 1 % percent used as
-	 * a wildcard in RT-11; marks a single character. asterisk or star used as a
-	 * wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of
-	 * characters (Unix, Windows, later versions of MS-DOS) or any sequence of
-	 * characters in either the basename or extension (thus "*.*" in early
-	 * versions of MS-DOS means "all files". Allowed in Unix filenames, see note
-	 * 1 : colon used to determine the mount point / drive on Windows; used to
-	 * determine the virtual device or physical device such as a drive on
-	 * AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac OS.
-	 * Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
-	 * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar
-	 * or pipe designates software pipelining in Unix and Windows; allowed in
-	 * Unix filenames, see Note 1 " quote used to mark beginning and end of
-	 * filenames containing spaces in Windows, see Note 1 < less than used to
-	 * redirect input, allowed in Unix filenames, see Note 1 > greater than used
-	 * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
+     * question mark used as a wildcard in Unix, Windows and AmigaOS; marks a
+     * single character. Allowed in Unix filenames, see Note 1 % percent used as
+     * a wildcard in RT-11; marks a single character. asterisk or star used as a
+     * wildcard in Unix, MS-DOS, RT-11, VMS and Windows. Marks any sequence of
+     * characters (Unix, Windows, later versions of MS-DOS) or any sequence of
+     * characters in either the basename or extension (thus "*.*" in early
+     * versions of MS-DOS means "all files". Allowed in Unix filenames, see note
+     * 1 : colon used to determine the mount point / drive on Windows; used to
+     * determine the virtual device or physical device such as a drive on
+     * AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac OS.
+     * Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+     * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar
+     * or pipe designates software pipelining in Unix and Windows; allowed in
+     * Unix filenames, see Note 1 " quote used to mark beginning and end of
+     * filenames containing spaces in Windows, see Note 1 < less than used to
+     * redirect input, allowed in Unix filenames, see Note 1 > greater than used
+     * to redirect output, allowed in Unix filenames, see Note 1 . period or dot
      * 
-	 * # is excluded as it is seen as a special character by make
-=======
-	 * character, but Windows itself always accepts it as a separator.[6][vague]) \
-	 * backslash Also used as a path name component separator in MS-DOS, OS/2 and
-	 * Windows (where there are few differences between slash and backslash);
-	 * allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in
-	 * Unix, Windows and AmigaOS; marks a single character. Allowed in Unix
-	 * filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single
-	 * character. asterisk or star used as a wildcard in Unix, MS-DOS, RT-11, VMS
-	 * and Windows. Marks any sequence of characters (Unix, Windows, later versions
-	 * of MS-DOS) or any sequence of characters in either the basename or extension
-	 * (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
-	 * filenames, see note 1 : colon used to determine the mount point / drive on
-	 * Windows; used to determine the virtual device or physical device such as a
-	 * drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac
-	 * OS. Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
-	 * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or
-	 * pipe designates software pipelining in Unix and Windows; allowed in Unix
+     * # is excluded as it is seen as a special character by make
+     * =======
+     * character, but Windows itself always accepts it as a separator.[6][vague]) \
+     * backslash Also used as a path name component separator in MS-DOS, OS/2 and
+     * Windows (where there are few differences between slash and backslash);
+     * allowed in Unix filenames, see Note 1 ? question mark used as a wildcard in
+     * Unix, Windows and AmigaOS; marks a single character. Allowed in Unix
+     * filenames, see Note 1 % percent used as a wildcard in RT-11; marks a single
+     * character. asterisk or star used as a wildcard in Unix, MS-DOS, RT-11, VMS
+     * and Windows. Marks any sequence of characters (Unix, Windows, later versions
+     * of MS-DOS) or any sequence of characters in either the basename or extension
+     * (thus "*.*" in early versions of MS-DOS means "all files". Allowed in Unix
+     * filenames, see note 1 : colon used to determine the mount point / drive on
+     * Windows; used to determine the virtual device or physical device such as a
+     * drive on AmigaOS, RT-11 and VMS; used as a pathname separator in classic Mac
+     * OS. Doubled after a name on VMS, indicates the DECnet nodename (equivalent to
+     * a NetBIOS (Windows networking) hostname preceded by "\\".) | vertical bar or
+     * pipe designates software pipelining in Unix and Windows; allowed in Unix
      * filenames, see Note 1 " quote used to mark beginning and end of filenames
      * containing spaces in Windows, see Note 1 < less than used to redirect input,
      * allowed in Unix filenames, see Note 1 > greater than used to redirect output,
-	 * allowed in Unix filenames, see Note 1 . period or dot
+     * allowed in Unix filenames, see Note 1 . period or dot
      *
-	 * @param name the string that needs to be checked
+     * @param name
+     *            the string that needs to be checked
      * @return a name safe to create files or folders
      */
     public static String MakeNameCompileSafe(String name) {
@@ -126,7 +123,6 @@ public class Common {
         }
         return ret;
     }
-
 
     /**
      * Logs the status information if status is OK then nothing happens
@@ -145,23 +141,26 @@ public class Common {
             stMan.handle(status, style);
             break;
         }
-        case SLOEBER_STATUS_DEBUG: 
+        case SLOEBER_STATUS_DEBUG:
             // break;//remove break to add debugging
-        default: 
+        default:
             Activator.getDefault().getLog().log(status);
         }
     }
-
 
     /**
      *
      * Provides the build environment variable based on project and string This
      * method does not add any knowledge.(like adding A.)
      *
-	 * @param project      the project that contains the environment variable
-	 * @param configName   the project configuration to use
-	 * @param envName      the key that describes the variable
-	 * @param defaultvalue The return value if the variable is not found.
+     * @param project
+     *            the project that contains the environment variable
+     * @param configName
+     *            the project configuration to use
+     * @param envName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
     static public String getBuildEnvironmentVariable(IProject project, String configName, String envName,
@@ -175,10 +174,13 @@ public class Common {
      * Provides the build environment variable based on project and string This
      * method does not add any knowledge.(like adding A.)
      *
-	 * @param project      the project that contains the environment variable
+     * @param project
+     *            the project that contains the environment variable
      *
-	 * @param envName      the key that describes the variable
-	 * @param defaultvalue The return value if the variable is not found.
+     * @param envName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
     static public String getBuildEnvironmentVariable(IProject project, String envName, String defaultvalue) {
@@ -191,9 +193,12 @@ public class Common {
      * Provides the build environment variable based on project and string This
      * method does not add any knowledge.(like adding A.)
      *
-	 * @param project      the project that contains the environment variable
-	 * @param envName      the key that describes the variable
-	 * @param defaultvalue The return value if the variable is not found.
+     * @param project
+     *            the project that contains the environment variable
+     * @param envName
+     *            the key that describes the variable
+     * @param defaultvalue
+     *            The return value if the variable is not found.
      * @return The expanded build environment variable
      */
     static public String getBuildEnvironmentVariable(ICConfigurationDescription configurationDescription,
@@ -229,24 +234,23 @@ public class Common {
      * @return modified string or the original
      */
     public static String makePathEnvironmentString(IPath path) {
-        return path.toOSString().replace(sloeberHomePathToOSString, SLOEBER_HOME_VAR);
-    }
-
-    public static String makePathEnvironmentString(File file) {
-        return file.getPath().replace(sloeberHomePathToOSString, SLOEBER_HOME_VAR);
+        return path.toOSString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
     }
 
     public static String makePathVersionString(File file) {
-        String osPathString = file.getPath();
-        IPath path = new Path(osPathString);
-        return path.toString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
+        return file.getPath().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
     }
 
+    /**
+     * Support for the environment variable SLOBER_HOME
+     * 
+     * @param file
+     * @return
+     */
     public static File resolvePathEnvironmentString(File file) {
-        String retString = file.getPath().replace(SLOEBER_HOME_VAR, sloeberHomePathToOSString);
+        String retString = file.getPath().replace(SLOEBER_HOME_VAR, sloeberHomePathToString);
         return new File(retString);
     }
-
 
     /**
      * Converts a name to a tagged environment variable if variableName ="this" the
@@ -272,6 +276,5 @@ public class Common {
         return getBuildEnvironmentVariable(confDesc, envName,
                 getBuildEnvironmentVariable(confDesc, envName.toUpperCase(), EMPTY, true), true);
     }
-
 
 }
