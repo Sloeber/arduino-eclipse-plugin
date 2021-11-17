@@ -569,27 +569,8 @@ public class BoardsManager {
         }
         myWorkbenchEnvironmentVariables.clear();
         ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.AVR);
-        ArduinoPlatformVersion latestSamdPlatform = null;
-        ArduinoPlatformVersion latestSamPlatform = null;
-        for (ArduinoPlatformVersion curPlatform : getInstalledPlatforms()) {
-            ArduinoPackage pkg = curPlatform.getParent().getParent();
-            if (pkg != null) {
-                myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
-                if (Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())) {
-                    switch (curPlatform.getArchitecture()) {
-                    case Const.AVR:
-                        latestAvrPlatform = curPlatform;
-                        break;
-                    case Const.SAM:
-                        latestSamPlatform = curPlatform;
-                        break;
-                    case Const.SAMD:
-                        latestSamdPlatform = curPlatform;
-                        break;
-                    }
-                }
-            }
-        }
+        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAMD);
+        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAM);
 
         if (latestSamdPlatform != null) {
             myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
