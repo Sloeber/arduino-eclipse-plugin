@@ -9,7 +9,6 @@ package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.VersionNumber;
 import io.sloeber.core.common.ConfigurationPreferences;
 
 public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
@@ -32,7 +32,7 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
     private String email;
     private String helpOnline;
     private TreeMap<String, ArduinoPlatform> platforms = new TreeMap<>();
-    private List<ArduinoPlatformTool> tools = new ArrayList<>();
+    private TreeMap<String, ArduinoPlatformTool> tools = new TreeMap<>();
     private transient ArduinoPlatformPackageIndex myParent = null;
 
     @SuppressWarnings("nls")
@@ -59,7 +59,16 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
                 }
             }
             for (JsonElement curElement : jsonObject.get("tools").getAsJsonArray()) {
-                tools.add(new ArduinoPlatformTool(curElement, this));
+                JsonObject jsonObject2 = curElement.getAsJsonObject();
+                // architecture is the id for a platform
+                String toolName = getSafeString(jsonObject2, "name");
+                ArduinoPlatformTool tool = tools.get(toolName);
+                if (tool == null) {
+                    ArduinoPlatformTool newTool = new ArduinoPlatformTool(curElement, this);
+                    tools.put(newTool.getID(), newTool);
+                } else {
+                    tool.addVersion(curElement);
+                }
             }
         } catch (Exception e) {
             throw new JsonParseException("failed to parse Package json  " + e.getMessage());
@@ -124,29 +133,28 @@ public class ArduinoPackage extends Node implements Comparable<ArduinoPackage> {
         return platforms.get(platformID);
     }
 
-    public List<ArduinoPlatformTool> getTools() {
-        return tools;
+    public Collection<ArduinoPlatformTool> getTools() {
+        return tools.values();
     }
 
-    public ArduinoPlatformTool getTool(String toolName, String version) {
-        for (ArduinoPlatformTool tool : tools) {
-            if (tool.getName().trim().equals(toolName) && tool.getVersion().equals(version)) {
-                return tool;
-            }
+    public ArduinoPlatformToolVersion getTool(String toolName, VersionNumber version) {
+        ArduinoPlatformTool tool = tools.get(toolName);
+        if (tool == null) {
+            return null;
         }
-        return null;
+        return tool.getVersion(version);
     }
 
-    public ArduinoPlatformTool getLatestTool(String toolName) {
-        ArduinoPlatformTool latestTool = null;
-        for (ArduinoPlatformTool tool : this.tools) {
-            if (tool.getName().equals(toolName)) {
-                if (latestTool == null || tool.getVersion().compareTo(latestTool.getVersion()) > 0) {
-                    latestTool = tool;
-                }
-            }
+    public ArduinoPlatformTool getTool(String toolName) {
+        return tools.get(toolName);
+    }
+
+    public ArduinoPlatformToolVersion getNewestInstalled(String toolName) {
+        ArduinoPlatformTool tool = tools.get(toolName);
+        if (tool == null) {
+            return null;
         }
-        return latestTool;
+        return tool.getNewestInstalled();
     }
 
     @Override

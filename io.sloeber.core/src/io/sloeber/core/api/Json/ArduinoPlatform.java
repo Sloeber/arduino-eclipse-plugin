@@ -84,9 +84,9 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
     }
 
     /**
-     * Get the newest version of this library
+     * Get the newest version of this platform
      * 
-     * @return the newest version of this library
+     * @return the newest version of this platform
      */
     public ArduinoPlatformVersion getNewestVersion() {
         return myVersions.firstEntry().getValue();
@@ -101,7 +101,7 @@ public class ArduinoPlatform implements Comparable<ArduinoPlatform> {
     }
 
     /**
-     * return the installed version with the biggest version number
+     * return the installed version with the newest version number
      * Null if no version is installed
      * 
      * @return

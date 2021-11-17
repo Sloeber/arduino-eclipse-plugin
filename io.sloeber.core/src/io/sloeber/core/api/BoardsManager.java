@@ -43,6 +43,7 @@ import io.sloeber.core.api.Json.ArduinoPackage;
 import io.sloeber.core.api.Json.ArduinoPlatform;
 import io.sloeber.core.api.Json.ArduinoPlatformPackageIndex;
 import io.sloeber.core.api.Json.ArduinoPlatformTool;
+import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
@@ -50,7 +51,6 @@ import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.managers.InstallProgress;
-import io.sloeber.core.tools.Helpers;
 import io.sloeber.core.tools.MyMultiStatus;
 import io.sloeber.core.tools.PackageManager;
 import io.sloeber.core.txt.BoardTxtFile;
@@ -573,16 +573,31 @@ public class BoardsManager {
         ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAM);
 
         if (latestSamdPlatform != null) {
-            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));
         }
         if (latestSamPlatform != null) {
-            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamPlatform, false));
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamPlatform));
         }
         if (latestAvrPlatform != null) {
-            myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestAvrPlatform));
         }
         envVarsNeedUpdating = false;
         return myWorkbenchEnvironmentVariables;
+    }
+
+    private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
+        HashMap<String, String> vars = new HashMap<>();
+        ArduinoPackage pkg = platformVersion.getParent().getParent();
+        for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
+            ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
+            for (ArduinoPlatformToolVersion curToolVersion : theTool.getVersions()) {
+                if (curToolVersion.isInstalled()) {
+                    vars.putAll(curToolVersion.getEnvVars(true));
+
+                }
+            }
+        }
+        return vars;
     }
 
     /**
@@ -682,7 +697,7 @@ public class BoardsManager {
                 return null;
             }
             for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
-                ArduinoPlatformTool tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+                ArduinoPlatformToolVersion tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
                 if (tool == null) {
                     mstatus.add(new Status(IStatus.ERROR, Activator.getId(),
                             Messages.Tool_no_valid_system.replace(Messages.KEY_TAG, toolDependency.getName())));

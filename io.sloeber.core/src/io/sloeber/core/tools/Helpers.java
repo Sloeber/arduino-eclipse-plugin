@@ -7,10 +7,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -41,9 +39,6 @@ import org.eclipse.ui.console.MessageConsole;
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.Json.ArduinoLibraryVersion;
-import io.sloeber.core.api.Json.ArduinoPlatformTool;
-import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -440,36 +435,4 @@ public class Helpers {
 
     }
 
-    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion,
-            boolean reportToolNotFound) {
-        HashMap<String, String> vars = new HashMap<>();
-        if (platformVersion == null) {
-            return vars;
-        }
-        if (platformVersion.getToolsDependencies() == null) {
-            return vars;
-        }
-        Iterable<ArduinoPlatformTooldDependency> tools = platformVersion.getToolsDependencies();
-        String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
-        String DOT_PATH = DOT + PATH;
-        for (ArduinoPlatformTooldDependency tool : tools) {
-            String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-            ArduinoPlatformTool theTool = tool.getTool();
-            if (theTool == null) {
-                if (reportToolNotFound) {
-                    log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
-                            "Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
-                                    + tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
-                }
-            } else {
-                IPath installPath = theTool.getInstallPath();
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-            }
-        }
-        return vars;
-    }
 }

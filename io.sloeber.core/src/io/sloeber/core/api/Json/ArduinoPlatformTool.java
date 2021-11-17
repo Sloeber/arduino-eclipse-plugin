@@ -9,8 +9,9 @@ package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -18,73 +19,93 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.common.ConfigurationPreferences;
+import io.sloeber.core.api.VersionNumber;
 
-public class ArduinoPlatformTool {
+public class ArduinoPlatformTool extends Node {
 
     private static final String TOOLS = "tools"; //$NON-NLS-1$
-    private String name;
-    private String version;
-    private List<ArduinpPlatformToolSystem> systems = new ArrayList<>();
+    private String myName;
+    private TreeMap<VersionNumber, ArduinoPlatformToolVersion> myVersions = new TreeMap<>(Collections.reverseOrder());
 
-    private transient ArduinoPackage pkg;
+    private transient ArduinoPackage myParentPackage;
 
     @SuppressWarnings("nls")
     public ArduinoPlatformTool(JsonElement json, ArduinoPackage pkg) {
-        this.pkg = pkg;
+        myParentPackage = pkg;
         JsonObject jsonObject = json.getAsJsonObject();
 
         try {
-            name = getSafeString(jsonObject, "name");
-            version = getSafeString(jsonObject, "version");
-            if (jsonObject.get("systems") != null) {
-                for (JsonElement curElement : jsonObject.get("systems").getAsJsonArray()) {
-                    systems.add(new ArduinpPlatformToolSystem(curElement, this));
-                }
-            }
+            myName = getSafeString(jsonObject, "name");
+            addVersion(jsonObject);
         } catch (Exception e) {
             throw new JsonParseException("failed to parse Tool json  " + e.getMessage());
         }
+    }
 
+    protected void addVersion(JsonElement json) {
+        ArduinoPlatformToolVersion version = new ArduinoPlatformToolVersion(json, this);
+        myVersions.put(version.getVersion(), version);
     }
 
     public ArduinoPackage getPackage() {
-        return this.pkg;
+        return myParentPackage;
     }
 
+    @Override
     public String getName() {
-        return this.name;
+        return myName;
     }
 
-    public String getVersion() {
-        return this.version;
-    }
-
-    public List<ArduinpPlatformToolSystem> getSystems() {
-        return this.systems;
+    public ArduinoPlatformToolVersion getVersion(VersionNumber version) {
+        return myVersions.get(version);
     }
 
     public IPath getInstallPath() {
-        return ConfigurationPreferences.getInstallationPathPackages().append(this.pkg.getName()).append(TOOLS)
-                .append(this.name).append(this.version);
+        return myParentPackage.getInstallPath().append(TOOLS).append(getID());
 
     }
 
-    public boolean isInstalled() {
-        return getInstallPath().toFile().exists();
+    @Override
+    public Node[] getChildren() {
+        return myVersions.values().toArray(new Node[myVersions.size()]);
     }
 
-    /*
-     * Get the installable for this tool on this system
-     * May return null if none is found
+    @Override
+    public Node getParent() {
+        return myParentPackage;
+    }
+
+    @Override
+    public String getID() {
+        return getName();
+    }
+
+    /**
+     * Get the newest version of this tool
+     * 
+     * @return the newest version of this tool
      */
-    public ArduinoInstallable getInstallable() {
-        for (ArduinpPlatformToolSystem system : this.systems) {
-            if (system.isApplicable()) {
-                return system;
+    public ArduinoPlatformToolVersion getNewest() {
+        return myVersions.firstEntry().getValue();
+    }
+
+    /**
+     * return the installed version with the newest version number
+     * Null if no version is installed
+     * 
+     * @return
+     */
+    public ArduinoPlatformToolVersion getNewestInstalled() {
+        for (ArduinoPlatformToolVersion curVersion : myVersions.values()) {
+            if (curVersion.isInstalled()) {
+                return curVersion;
             }
         }
         return null;
+    }
+
+    public Collection<ArduinoPlatformToolVersion> getVersions() {
+        return myVersions.values();
     }
 
 }
