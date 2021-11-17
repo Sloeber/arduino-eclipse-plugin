@@ -6,51 +6,34 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformTooldDependency {
 
-    private String packager;
-    private String name;
-    private String version;
+    private String myName;
+    private VersionNumber myVersion;
 
-    private transient ArduinoPlatformVersion platform;
+    private transient ArduinoPlatformVersion myParentPlatform;
 
     @SuppressWarnings("nls")
     public ArduinoPlatformTooldDependency(JsonElement json, ArduinoPlatformVersion arduinoPlatformVersion) {
-        platform = arduinoPlatformVersion;
+        myParentPlatform = arduinoPlatformVersion;
         JsonObject jsonObject = json.getAsJsonObject();
         try {
 
-            packager = getSafeString(jsonObject, "packager");
-            name = getSafeString(jsonObject, "name");
-            version = getSafeString(jsonObject, "version");
+            myName = getSafeString(jsonObject, "name");
+            myVersion = getSafeVersion(jsonObject, "version");
         } catch (Exception e) {
             throw new JsonParseException("failed to parse json  " + e.getMessage());
         }
     }
 
-    public String getPackager() {
-        return this.packager;
-    }
-
     public String getName() {
-        return this.name;
+        return this.myName;
     }
 
-    public String getVersion() {
-        return this.version;
-    }
-
-    public ArduinoPlatformTool getTool() {
-        ArduinoPackage pkg = this.platform.getParent().getParent();
-        if (!pkg.getName().equals(this.packager)) {
-            pkg = BoardsManager.getPackage(this.packager);
-        }
-        if (pkg == null) {
-            return null;
-        }
-        return pkg.getTool(this.name, getVersion());
+    public VersionNumber getVersion() {
+        return myVersion;
     }
 
 }

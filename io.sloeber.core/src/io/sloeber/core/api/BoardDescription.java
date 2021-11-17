@@ -22,11 +22,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
+import io.sloeber.core.api.Json.ArduinoPackage;
 import io.sloeber.core.api.Json.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformTool;
+import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
+import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
-import io.sloeber.core.tools.Helpers;
+import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.KeyValue;
 import io.sloeber.core.txt.BoardTxtFile;
 import io.sloeber.core.txt.KeyValueTree;
@@ -838,27 +842,62 @@ public class BoardDescription {
     }
 
     private Map<String, String> getEnVarPlatformInfo() {
+        Map<String, String> ret = new HashMap<>();
         IPath referencingPlatformPath = getreferencingPlatformPath();
+        ArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
 
-        if ((referencingPlatformPath == null) || (myReferencedPlatformCore == null)) {
-            // something is seriously wrong -->shoot
-            return new HashMap<>();
+        if (referencingPlatform == null) {
+            // This is the case for private hardware
+            //there is no need to specidy tool path as they do not use them
+            return ret;
+        }
+        ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.ARDUINO,
+                referencingPlatform.getArchitecture());
+        if (latestArduinoPlatform != null) {
+            ret.putAll(getEnvVarPlatformFileTools(latestArduinoPlatform));
         }
 
-        ArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
+        if (myReferencedPlatformCore == null) {
+            //there is no referenced core so no need to do smart stuff
+            return getEnvVarPlatformFileTools(referencingPlatform);
+        }
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
         if (jsonBasedPlatformManagement) {
             // overrule the Arduino IDE way of working and use the json refereced tools
-            Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(myReferencedPlatformCore, true);
-            ret.putAll(Helpers.getEnvVarPlatformFileTools(referencingPlatform, false));
+            ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
+            ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
             return ret;
         }
         // standard arduino IDE way
-        Map<String, String> ret = Helpers.getEnvVarPlatformFileTools(referencingPlatform, false);
-        ret.putAll(Helpers.getEnvVarPlatformFileTools(myReferencedPlatformCore, true));
+        ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
+        ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
         return ret;
 
+    }
+
+    /**
+     * This method only returns environment variables without the version number
+     * The environment variables with version number are "global" and as sutch are
+     * understood to exists
+     * 
+     * @param platformVersion
+     * @return environment variables pointing to the tools used by the platform
+     */
+    private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
+        HashMap<String, String> vars = new HashMap<>();
+        if (platformVersion.getToolsDependencies() == null) {
+            return vars;
+        }
+        ArduinoPackage pkg = platformVersion.getParent().getParent();
+        for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
+            ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
+            ArduinoPlatformToolVersion theNewestTool = theTool.getNewestInstalled();
+            if (theNewestTool != null) {
+                vars.putAll(theNewestTool.getEnvVars(false));
+            }
+        }
+        return vars;
     }
 
     /**

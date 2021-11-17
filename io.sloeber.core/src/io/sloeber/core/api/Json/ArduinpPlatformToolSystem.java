@@ -17,12 +17,12 @@ import com.google.gson.JsonParseException;
 
 public class ArduinpPlatformToolSystem extends ArduinoInstallable {
 
-    private transient ArduinoPlatformTool myParent;
+    private transient ArduinoPlatformToolVersion myParent;
     protected String host;
 
     @SuppressWarnings("nls")
-    public ArduinpPlatformToolSystem(JsonElement json, ArduinoPlatformTool tool) {
-        this.myParent = tool;
+    public ArduinpPlatformToolSystem(JsonElement json, ArduinoPlatformToolVersion tool) {
+        myParent = tool;
         JsonObject jsonObject = json.getAsJsonObject();
 
         try {
