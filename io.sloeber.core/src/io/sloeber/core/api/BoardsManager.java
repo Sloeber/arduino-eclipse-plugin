@@ -568,7 +568,7 @@ public class BoardsManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatformVersion latestAvrPlatform = null;
+        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.AVR);
         ArduinoPlatformVersion latestSamdPlatform = null;
         ArduinoPlatformVersion latestSamPlatform = null;
         for (ArduinoPlatformVersion curPlatform : getInstalledPlatforms()) {
@@ -602,6 +602,22 @@ public class BoardsManager {
         }
         envVarsNeedUpdating = false;
         return myWorkbenchEnvironmentVariables;
+    }
+
+    /**
+     * given a vendor and a architecture provide the newest installed platform
+     * version
+     * 
+     * @param vendor
+     * @param architecture
+     * @return the found platformVersion or null if none found
+     */
+    public static ArduinoPlatformVersion getNewestInstalledPlatform(String vendor, String architecture) {
+        ArduinoPlatform platform = getPlatform(vendor, architecture);
+        if (platform == null) {
+            return null;
+        }
+        return platform.getNewestInstalled();
     }
 
     //Below is what used to be the internal package manager class
@@ -730,27 +746,6 @@ public class BoardsManager {
                     return platform;
                 }
             }
-        }
-        return null;
-    }
-
-    public static IPath getPlatformInstallPath(String vendor, String architecture) {
-
-        ArduinoPlatform platform = getPlatform(vendor, architecture);
-        if (platform != null) {
-            ArduinoPlatformVersion latestInstall = platform.getNewestInstalled();
-            if (latestInstall == null) {
-                return null;
-            }
-            return latestInstall.getInstallPath();
-        }
-        return null;
-    }
-
-    public static IPath getPlatformInstallPath(String refVendor, String refArchitecture, VersionNumber refVersion) {
-        ArduinoPlatformVersion platformVersion = BoardsManager.getPlatform(refVendor, refArchitecture, refVersion);
-        if (platformVersion != null) {
-            return platformVersion.getInstallPath();
         }
         return null;
     }

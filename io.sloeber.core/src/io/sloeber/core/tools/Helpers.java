@@ -440,16 +440,16 @@ public class Helpers {
 
     }
 
-    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platform,
+    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion,
             boolean reportToolNotFound) {
         HashMap<String, String> vars = new HashMap<>();
-        if (platform == null) {
+        if (platformVersion == null) {
             return vars;
         }
-        if (platform.getToolsDependencies() == null) {
+        if (platformVersion.getToolsDependencies() == null) {
             return vars;
         }
-        Iterable<ArduinoPlatformTooldDependency> tools = platform.getToolsDependencies();
+        Iterable<ArduinoPlatformTooldDependency> tools = platformVersion.getToolsDependencies();
         String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
         String DOT_PATH = DOT + PATH;
         for (ArduinoPlatformTooldDependency tool : tools) {
