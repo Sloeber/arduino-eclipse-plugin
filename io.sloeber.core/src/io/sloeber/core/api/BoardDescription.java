@@ -22,10 +22,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 
-import io.sloeber.core.api.Json.ArduinoPackage;
 import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformTool;
-import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
 import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
@@ -859,7 +856,8 @@ public class BoardDescription {
 
         if (myReferencedPlatformCore == null) {
             //there is no referenced core so no need to do smart stuff
-            return getEnvVarPlatformFileTools(referencingPlatform);
+            ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
+            return ret;
         }
 
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
@@ -877,25 +875,23 @@ public class BoardDescription {
     }
 
     /**
-     * This method only returns environment variables without the version number
-     * The environment variables with version number are "global" and as sutch are
-     * understood to exists
+     * This method only returns environment variables with and without version
+     * number
+     * These are purely based on the tool dependencies
      * 
      * @param platformVersion
      * @return environment variables pointing to the tools used by the platform
      */
     private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
         HashMap<String, String> vars = new HashMap<>();
-        if (platformVersion.getToolsDependencies() == null) {
-            return vars;
-        }
-        ArduinoPackage pkg = platformVersion.getParent().getParent();
         for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
-            ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
-            ArduinoPlatformToolVersion theNewestTool = theTool.getNewestInstalled();
-            if (theNewestTool != null) {
-                vars.putAll(theNewestTool.getEnvVars(false));
-            }
+            String installPath = tool.getInstallPath().toOSString();
+            String keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
+            vars.put(keyString, installPath);
+            keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
+            vars.put(keyString, installPath);
+            keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
+            vars.put(keyString, installPath);
         }
         return vars;
     }

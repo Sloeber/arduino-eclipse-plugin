@@ -23,8 +23,6 @@ import com.google.gson.JsonParseException;
 import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformToolVersion extends Node {
-    static final private String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
-    static final private String DOT_PATH = DOT + PATH;
 
     private VersionNumber myVersion;
     private List<ArduinpPlatformToolSystem> mySystems = new ArrayList<>();
