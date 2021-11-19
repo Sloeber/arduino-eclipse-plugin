@@ -212,20 +212,63 @@ public class BoardsManager {
 
     @SuppressWarnings("nls")
     private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
+        boolean forceDownload = false;
         String name = platformVersion.getName();
         String architecture = platformVersion.getArchitecture();
         String version = platformVersion.getVersion().toString();
         // Check if we're installed already
         if (platformVersion.isInstalled()) {
-            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")");
+            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             return Status.OK_STATUS;
         }
 
         // Download platform archive
-        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")");
-        IStatus ret = BoardsManager.downloadAndInstall(platformVersion, false, monitor);
-        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")");
-        return ret;
+        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+        MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
+        mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
+        if (!mstatus.isOK()) {
+            // no use installing tools when the boards failed installing
+            return mstatus;
+        }
+
+        //keep a copy of the json file used at install
+        File packageFile = platformVersion.getParent().getParent().getPackageIndex().getJsonFile();
+        File copyToFile = platformVersion.getInstallPath().append(packageFile.getName()).toFile();
+        try {
+            Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ArduinoPackage referencingPkg = platformVersion.getParent().getParent();
+        for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
+            //TODO make sure that tools from other providers are installed
+            ArduinoPackage pkg = referencingPkg;
+            ArduinoPlatformToolVersion tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+            if (tool == null) {
+                //maybe these are referenced tools
+                pkg = getPackageByProvider(toolDependency.getPackager());
+                if (pkg != null) {
+                    tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+                }
+            }
+            if (tool == null) {
+                mstatus.add(new Status(IStatus.ERROR, Activator.getId(),
+                        Messages.Tool_no_valid_system.replace(Messages.KEY_TAG, toolDependency.getName())));
+            } else if (!tool.isInstalled()) {
+                ArduinoInstallable installable = tool.getInstallable();
+                if (installable != null) {
+                    monitor.setTaskName(InstallProgress.getRandomMessage());
+                    mstatus.addErrors(PackageManager.downloadAndInstall(installable, forceDownload, monitor));
+                }
+            }
+        }
+
+        WorkAround.applyKnownWorkArounds(platformVersion);
+
+        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        return mstatus;
     }
 
     public static void addPrivateHardwarePath(String newHardwarePath) {
@@ -590,11 +633,10 @@ public class BoardsManager {
         ArduinoPackage pkg = platformVersion.getParent().getParent();
         for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
             ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
-            for (ArduinoPlatformToolVersion curToolVersion : theTool.getVersions()) {
-                if (curToolVersion.isInstalled()) {
-                    vars.putAll(curToolVersion.getEnvVars(true));
-
-                }
+            if (theTool == null) {
+                System.err.println("Did not find " + tool.getName() + " in package with ID " + pkg.getID()); //$NON-NLS-1$ //$NON-NLS-2$
+            } else {
+                vars.putAll(theTool.getEnvVars(null));
             }
         }
         return vars;
@@ -660,7 +702,7 @@ public class BoardsManager {
             if (platform == null) {
                 status = new Status(IStatus.ERROR, Activator.getId(), Messages.No_Platform_available);
             } else {
-                status = downloadAndInstall(platform.getNewestVersion(), false, monitor);
+                status = install(platform.getNewestVersion(), monitor);
             }
 
             if (!status.isOK()) {
@@ -671,48 +713,6 @@ public class BoardsManager {
         }
         myIsReady = true;
 
-    }
-
-    private static IStatus downloadAndInstall(ArduinoPlatformVersion platformVersion, boolean forceDownload,
-            IProgressMonitor monitor) {
-        MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
-        mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
-        if (!mstatus.isOK()) {
-            // no use going on installing tools if the boards failed installing
-            return mstatus;
-        }
-
-        //keep a copy of the json file used at install
-        File packageFile = platformVersion.getParent().getParent().getPackageIndex().getJsonFile();
-        File copyToFile = platformVersion.getInstallPath().append(packageFile.getName()).toFile();
-        try {
-            Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (platformVersion.getToolsDependencies() != null) {
-            ArduinoPackage pkg = platformVersion.getParent().getParent();
-            if (pkg == null) {
-                return null;
-            }
-            for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
-                ArduinoPlatformToolVersion tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
-                if (tool == null) {
-                    mstatus.add(new Status(IStatus.ERROR, Activator.getId(),
-                            Messages.Tool_no_valid_system.replace(Messages.KEY_TAG, toolDependency.getName())));
-                } else if (!tool.isInstalled()) {
-                    ArduinoInstallable installable = tool.getInstallable();
-                    if (installable != null) {
-                        monitor.setTaskName(InstallProgress.getRandomMessage());
-                        mstatus.addErrors(PackageManager.downloadAndInstall(installable, forceDownload, monitor));
-                    }
-                }
-            }
-        }
-
-        WorkAround.applyKnownWorkArounds(platformVersion);
-        return mstatus;
     }
 
     synchronized static public List<ArduinoPlatformPackageIndex> getPackageIndices() {
@@ -874,6 +874,17 @@ public class BoardsManager {
         ArduinoPlatform platform = getPlatform(vendor, architecture);
         if (platform != null) {
             return platform.getVersion(refVersion);
+        }
+        return null;
+    }
+
+    public static ArduinoPackage getPackageByProvider(String packager) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+                if (packager.equals(pkg.getID())) {
+                    return pkg;
+                }
+            }
         }
         return null;
     }
