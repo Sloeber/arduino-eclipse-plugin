@@ -8,9 +8,11 @@
 package io.sloeber.core.api.Json;
 
 import static io.sloeber.core.Gson.GsonConverter.*;
+import static io.sloeber.core.common.Const.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -23,7 +25,6 @@ import io.sloeber.core.api.VersionNumber;
 
 public class ArduinoPlatformTool extends Node {
 
-    private static final String TOOLS = "tools"; //$NON-NLS-1$
     private String myName;
     private TreeMap<VersionNumber, ArduinoPlatformToolVersion> myVersions = new TreeMap<>(Collections.reverseOrder());
 
@@ -106,6 +107,19 @@ public class ArduinoPlatformTool extends Node {
 
     public Collection<ArduinoPlatformToolVersion> getVersions() {
         return myVersions.values();
+    }
+
+    public HashMap<String, String> getEnvVars(VersionNumber defaultVersionNumber) {
+
+        HashMap<String, String> vars = new HashMap<>();
+        for (ArduinoPlatformToolVersion curToolVersion : myVersions.values()) {
+            if (curToolVersion.isInstalled()) {
+                boolean skipdefault = (defaultVersionNumber == null)
+                        || (curToolVersion.getVersion().compareTo(defaultVersionNumber) != 0);
+                vars.putAll(curToolVersion.getEnvVars(skipdefault));
+            }
+        }
+        return vars;
     }
 
 }
