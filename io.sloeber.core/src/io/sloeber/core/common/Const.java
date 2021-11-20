@@ -50,6 +50,7 @@ public class Const {
     public static final String AUTH = "auth";
     public static final String RECIPE = "recipe";
     public static final String BUILD = "build";
+    public static final String SYSTEM = "system";
     public static final String COM_PORT = "com_port";
     public static final String ARDUINO = "arduino";
     public static final String PATH = "path";

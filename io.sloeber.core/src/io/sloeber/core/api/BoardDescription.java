@@ -45,6 +45,7 @@ public class BoardDescription {
     private static final String ENV_KEY_SERIAL_DOT_PORT = "serial.port"; //$NON-NLS-1$
     private static final String ENV_KEY_SERIAL_PORT_FILE = "serial.port.file"; //$NON-NLS-1$
     private static final String ENV_KEY_BUILD_VARIANT_PATH = BUILD + DOT + VARIANT + DOT + PATH;
+    private static final String ENV_KEY_BUILD_SYSTEM_PATH = BUILD + DOT + SYSTEM + DOT + PATH;
     private static final String ENV_KEY_BUILD_ACTUAL_CORE_PATH = BUILD + DOT + CORE + DOT + PATH;
     private static final String ENV_KEY_BUILD_ARCH = BUILD + DOT + "arch"; //$NON-NLS-1$
     private static final String ENV_KEY_HARDWARE_PATH = RUNTIME + DOT + HARDWARE + DOT + PATH;
@@ -611,10 +612,9 @@ public class BoardDescription {
     public IPath getreferencedHardwarePath() {
         updateWhenDirty();
         if (myReferencedPlatformCore == null) {
-            return new Path(myBoardTxtFile.getLoadedFile().toString()).removeLastSegments(2);
+            return new Path(myBoardTxtFile.getLoadedFile().toString()).removeLastSegments(1);
         }
-        IPath platformPath = myReferencedPlatformCore.getInstallPath();
-        return platformPath.removeLastSegments(1);
+        return myReferencedPlatformCore.getInstallPath();
     }
 
     /*
@@ -773,8 +773,10 @@ public class BoardDescription {
         allVars.putAll(pluginPreProcessingBoardsTxt.getBoardEnvironVars(getBoardID()));
 
         String architecture = getArchitecture();
+        IPath coreHardwarePath = getreferencedHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
-        allVars.put(ENV_KEY_HARDWARE_PATH, getreferencedHardwarePath().toOSString());
+        allVars.put(ENV_KEY_HARDWARE_PATH, coreHardwarePath.removeLastSegments(1).toOSString());
+        allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
         allVars.put(ENV_KEY_PLATFORM_PATH, getreferencingPlatformPath().toOSString());
 
         allVars.put(ENV_KEY_SERIAL_PORT, getActualUploadPort());
@@ -846,7 +848,7 @@ public class BoardDescription {
 
         if (referencingPlatform == null) {
             // This is the case for private hardware
-            //there is no need to specidy tool path as they do not use them
+            //there is no need to specify tool path as they do not use them
             return ret;
         }
         ArduinoPlatformVersion latestArduinoPlatform = BoardsManager.getNewestInstalledPlatform(Const.ARDUINO,
@@ -886,13 +888,16 @@ public class BoardDescription {
     private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
         HashMap<String, String> vars = new HashMap<>();
         for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
-            String installPath = tool.getInstallPath().toOSString();
-            String keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
-            vars.put(keyString, installPath);
-            keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
-            vars.put(keyString, installPath);
-            keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-            vars.put(keyString, installPath);
+            IPath installPath = tool.getInstallPath();
+            if (installPath.toFile().exists()) {
+                String value = installPath.toOSString();
+                String keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
+                vars.put(keyString, value);
+                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
+                vars.put(keyString, value);
+                keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
+                vars.put(keyString, value);
+            }
         }
         return vars;
     }
