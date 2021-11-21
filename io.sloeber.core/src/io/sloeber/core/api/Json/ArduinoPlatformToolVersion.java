@@ -28,6 +28,7 @@ public class ArduinoPlatformToolVersion extends Node {
     private List<ArduinpPlatformToolSystem> mySystems = new ArrayList<>();
 
     private transient ArduinoPlatformTool myParentTool;
+    private transient IPath myInstallPath = null;
 
     @SuppressWarnings("nls")
     public ArduinoPlatformToolVersion(JsonElement json, ArduinoPlatformTool tool) {
@@ -64,8 +65,37 @@ public class ArduinoPlatformToolVersion extends Node {
         return mySystems;
     }
 
+    /**
+     * This method is fucking wierd ...
+     * but I can't help it...
+     * The problem is that the tool depency references a packager (which is part of
+     * the install path)
+     * but the tool itself doe not
+     * So to know where to install there are 2 options
+     * 1) install in the local platform (resulting in tool duplication)
+     * 2) search the dependency tree for the tooldepency and use the installpath
+     * from there
+     * 
+     * @return
+     */
     public IPath getInstallPath() {
-        return myParentTool.getInstallPath().append(getID());
+        if (myInstallPath != null) {
+            return myInstallPath;
+        }
+        ArduinoPackage pkg = myParentTool.getPackage();
+        for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
+            for (ArduinoPlatformVersion curplatformVersion : curPlatform.getVersions()) {
+                for (ArduinoPlatformTooldDependency curTooldependency : curplatformVersion.getToolsDependencies()) {
+                    if (curTooldependency.getName().equals(myParentTool.getName())
+                            && curTooldependency.getVersion().compareTo(myVersion) == 0) {
+                        myInstallPath = curTooldependency.getInstallPath();
+                        return myInstallPath;
+                    }
+                }
+            }
+        }
+        myInstallPath = myParentTool.getInstallPath().append(getID());
+        return myInstallPath;
 
     }
 

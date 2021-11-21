@@ -243,12 +243,13 @@ public class BoardsManager {
 
         ArduinoPackage referencingPkg = platformVersion.getParent().getParent();
         for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
-            //TODO make sure that tools from other providers are installed
-            ArduinoPackage pkg = referencingPkg;
-            ArduinoPlatformToolVersion tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+            ArduinoPlatformToolVersion tool = referencingPkg.getTool(toolDependency.getName(),
+                    toolDependency.getVersion());
             if (tool == null) {
-                //maybe these are referenced tools
-                pkg = getPackageByProvider(toolDependency.getPackager());
+                //this is a tool provided by another platform
+                //and the referencing platform does not specify the installable info
+                //This means the package file of the referencing platform needs to be provided
+                ArduinoPackage pkg = getPackageByProvider(toolDependency.getPackager());
                 if (pkg != null) {
                     tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
                 }
