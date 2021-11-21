@@ -36,7 +36,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     private static final boolean closeFailedProjects = false;
     private static int myBuildCounter = 0;
     private static int myTotalFails = 0;
-    private static int maxFails = 10;
+    private static int maxFails = 50;
     private static int mySkipTestsAtStart = 0;
     private BoardDescription mBoard;
     private static final String[] packageUrlsToIgnoreonAllOSes = {
@@ -346,7 +346,7 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
     public void testBoard() throws Exception {
         myBuildCounter++;
         Assume.assumeTrue("Skipping first " + mySkipTestsAtStart + " tests", myBuildCounter >= mySkipTestsAtStart);
-        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < 10);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
         IPath templateFolder = Shared.getTemplateFolder("CreateAndCompileTest");
         if (!Shared.BuildAndVerify(this.mBoard, CodeDescription.createCustomTemplate(templateFolder), null,
