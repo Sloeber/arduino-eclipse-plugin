@@ -289,11 +289,6 @@ public class BoardsManager {
         InstancePreferences.setPrivateHardwarePaths(newPaths);
     }
 
-    public static String[] getBoardNames(String boardFile) {
-        BoardTxtFile theBoardsFile = new BoardTxtFile(new File(boardFile));
-        return theBoardsFile.getAllSectionNames();
-    }
-
     /**
      * Searches for all boards.txt files from the hardware folders and the boards
      * manager

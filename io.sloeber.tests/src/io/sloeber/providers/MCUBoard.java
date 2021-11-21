@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.sloeber.core.BoardAttributes;
-import io.sloeber.core.Examples;
+import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardDescription;
 
 @SuppressWarnings("nls")
@@ -21,7 +21,7 @@ public  class MCUBoard {
 	}
 
 
-	public boolean isExampleSupported(Examples example) {
+	public boolean isExampleSupported(Example example) {
 		if (myBoardDescriptor == null) {
 			return false;
 		}
@@ -70,7 +70,7 @@ public  class MCUBoard {
 		}
 
         @SuppressWarnings({ "static-method" })
-	public Map<String, String> getBoardOptions(Examples example) {
+	public Map<String, String> getBoardOptions(Example example) {
 		Map<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		return ret;
 	}

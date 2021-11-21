@@ -1101,10 +1101,10 @@ public class SloeberProject extends Common {
 
         try {
             IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
-            IContainer targetResource = myProject.getFolder("Release");
+            IContainer targetResource = myProject.getFolder("Release"); //$NON-NLS-1$
             IMakeTarget target = targetManager.findTarget(targetResource, targetName);
             if (target == null) {
-                target = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder");
+                target = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$
                 target.setBuildTarget(targetName);
                 targetManager.addTarget(targetResource, target);
             }
@@ -1112,8 +1112,7 @@ public class SloeberProject extends Common {
                 target.build(new NullProgressMonitor());
             }
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            return new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e);
         }
         return Status.OK_STATUS;
     }

@@ -9,11 +9,12 @@ package io.sloeber.core;
  * At the time of writing 560 examples are compiled
  * 
  */
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,72 +35,72 @@ import io.sloeber.providers.MCUBoard;
 @SuppressWarnings({ "nls" })
 @RunWith(Parameterized.class)
 public class CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest {
-	private CodeDescription myCodeDescriptor;
-	private MCUBoard myBoard;
-	private String myProjectName;
-	private static int myBuildCounter = 0;
-	private static int myTotalFails = 0;
-	private static int maxFails = 50;
-	private static int mySkipAtStart = 0;
+    private CodeDescription myCodeDescriptor;
+    private MCUBoard myBoard;
+    private String myProjectName;
+    private static int myBuildCounter = 0;
+    private static int myTotalFails = 0;
+    private static int maxFails = 50;
+    private static int mySkipAtStart = 0;
 
-	public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String projectName, CodeDescription codeDescriptor,
-			MCUBoard board) {
+    public CreateAndCompileArduinoIDEExamplesOnAVRHardwareTest(String projectName, CodeDescription codeDescriptor,
+            MCUBoard board) {
 
-		myCodeDescriptor = codeDescriptor;
-		myBoard = board;
-		myProjectName = projectName;
-	}
+        myCodeDescriptor = codeDescriptor;
+        myBoard = board;
+        myProjectName = projectName;
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Parameters(name = " {0}")
-	public static Collection examples() {
-		Shared.waitForAllJobsToFinish();
-		Preferences.setUseBonjour(false);
-		LinkedList<Object[]> examples = new LinkedList<>();
-		MCUBoard[] allBoards = Arduino.getAllBoards();
+    @SuppressWarnings("rawtypes")
+    @Parameters(name = " {0}")
+    public static Collection examples() {
+        Shared.waitForAllJobsToFinish();
+        Preferences.setUseBonjour(false);
+        LinkedList<Object[]> examples = new LinkedList<>();
+        List<MCUBoard> allBoards = Arduino.getAllBoards();
 
-		TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
-		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
-			String fqn = curexample.getKey().trim();
-			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn, examplePath);
-			if (!skipExample(example)) {
-				ArrayList<IPath> paths = new ArrayList<>();
+        TreeMap<String, IPath> exampleFolders = LibraryManager.getAllArduinoIDEExamples();
+        for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
+            String fqn = curexample.getKey().trim();
+            IPath examplePath = curexample.getValue();
+            Example example = new Example(fqn, examplePath);
+            if (!skipExample(example)) {
+                ArrayList<IPath> paths = new ArrayList<>();
 
-				paths.add(examplePath);
-				CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
-				for (MCUBoard curboard : allBoards) {
-					if (curboard.isExampleSupported(example)) {
-						String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
-						Object[] theData = new Object[] { projectName, codeDescriptor, curboard };
-						examples.add(theData);
-					}
-				}
-			}
-		}
+                paths.add(examplePath);
+                CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
+                for (MCUBoard curboard : allBoards) {
+                    if (curboard.isExampleSupported(example)) {
+                        String projectName = Shared.getProjectName(codeDescriptor, example, curboard);
+                        Object[] theData = new Object[] { projectName, codeDescriptor, curboard };
+                        examples.add(theData);
+                    }
+                }
+            }
+        }
 
-		return examples;
+        return examples;
 
-	}
+    }
 
-	private static boolean skipExample(Examples example) {
-		// skip Teensy stuff on Arduino hardware
-		// Teensy is so mutch more advanced that most arduino avr hardware can not
-		// handle it
-		return example.getPath().toString().contains("Teensy");
-	}
+    private static boolean skipExample(Example example) {
+        // skip Teensy stuff on Arduino hardware
+        // Teensy is so mutch more advanced that most arduino avr hardware can not
+        // handle it
+        return example.getPath().toString().contains("Teensy");
+    }
 
-	@Test
-	public void testExample() {
+    @Test
+    public void testExample() {
 
-		Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
-		Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
+        Assume.assumeTrue("Skipping first " + mySkipAtStart + " tests", myBuildCounter++ >= mySkipAtStart);
+        Assume.assumeTrue("To many fails. Stopping test", myTotalFails < maxFails);
 
-		if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,
+        if (!Shared.BuildAndVerify(myProjectName, myBoard.getBoardDescriptor(), myCodeDescriptor,
                 new CompileDescription())) {
-			myTotalFails++;
-			fail(Shared.getLastFailMessage());
-		}
-	}
+            myTotalFails++;
+            fail(Shared.getLastFailMessage());
+        }
+    }
 
 }

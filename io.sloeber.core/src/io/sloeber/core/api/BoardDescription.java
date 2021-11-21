@@ -279,12 +279,12 @@ public class BoardDescription {
     public static List<BoardDescription> makeBoardDescriptors(File boardFile, Map<String, String> options) {
         BoardTxtFile txtFile = new BoardTxtFile(resolvePathEnvironmentString(boardFile));
         List<BoardDescription> boards = new ArrayList<>();
-        String[] allSectionNames = txtFile.getAllSectionNames();
-        for (String curboardName : allSectionNames) {
-            Map<String, String> boardSection = txtFile.getSection(txtFile.getIDFromNiceName(curboardName));
+        List<String> boardIDs = txtFile.getAllBoardIDs();
+        for (String curboardID : boardIDs) {
+            Map<String, String> boardSection = txtFile.getSection(curboardID);
             if (boardSection != null) {
                 if (!"true".equalsIgnoreCase(boardSection.get("hide"))) { //$NON-NLS-1$ //$NON-NLS-2$
-                    boards.add(new BoardDescription(boardFile, txtFile.getIDFromNiceName(curboardName), options));
+                    boards.add(new BoardDescription(boardFile, curboardID, options));
                 }
             }
         }
@@ -571,8 +571,7 @@ public class BoardDescription {
         }
     }
 
-    //TODO rename add core
-    public PlatformTxtFile getreferencedPlatformFile() {
+    public PlatformTxtFile getreferencedCorePlatformFile() {
         updateWhenDirty();
         if (myReferencedPlatformCore == null) {
             return null;
@@ -584,8 +583,7 @@ public class BoardDescription {
         return null;
     }
 
-    //TODO rename add core
-    public IPath getReferencedLibraryPath() {
+    public IPath getReferencedCoreLibraryPath() {
         updateWhenDirty();
         if (myReferencedPlatformCore == null) {
             return null;
@@ -608,8 +606,7 @@ public class BoardDescription {
         return TOOLS + DOT + upLoadTool + DOT + UPLOAD + DOT + networkPrefix + PATTERN;
     }
 
-    //TODO rename add core
-    public IPath getreferencedHardwarePath() {
+    public IPath getreferencedCoreHardwarePath() {
         updateWhenDirty();
         if (myReferencedPlatformCore == null) {
             return new Path(myBoardTxtFile.getLoadedFile().toString()).removeLastSegments(1);
@@ -773,7 +770,7 @@ public class BoardDescription {
         allVars.putAll(pluginPreProcessingBoardsTxt.getBoardEnvironVars(getBoardID()));
 
         String architecture = getArchitecture();
-        IPath coreHardwarePath = getreferencedHardwarePath();
+        IPath coreHardwarePath = getreferencedCoreHardwarePath();
         allVars.put(ENV_KEY_BUILD_ARCH, architecture.toUpperCase());
         allVars.put(ENV_KEY_HARDWARE_PATH, coreHardwarePath.removeLastSegments(1).toOSString());
         allVars.put(ENV_KEY_BUILD_SYSTEM_PATH, coreHardwarePath.append(SYSTEM).toOSString());
@@ -793,7 +790,7 @@ public class BoardDescription {
             allVars.put(ENV_KEY_BUILD_VARIANT_PATH, EMPTY);
         }
 
-        PlatformTxtFile referencedPlatfromFile = getreferencedPlatformFile();
+        PlatformTxtFile referencedPlatfromFile = getreferencedCorePlatformFile();
         // process the platform file referenced by the boards.txt
         if (referencedPlatfromFile != null) {
             allVars.putAll(referencedPlatfromFile.getAllEnvironVars());

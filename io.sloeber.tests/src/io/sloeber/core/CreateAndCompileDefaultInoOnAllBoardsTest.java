@@ -269,7 +269,6 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
         List<BoardDescription> boards = new ArrayList<>();
         for (File curBoardFile : BoardsManager.getAllBoardsFiles()) {
-            // TOFIX these options should not be set here but in IBoard.getOptions
             Map<String, String> options = null;
             System.out.println("Adding boards of " + curBoardFile.toString());
             boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile, options));

@@ -207,8 +207,7 @@ public class Activator extends Plugin {
         try {
             workspace.setDescription(workspaceDesc);
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e));
         }
         // Make sure some important variables are being initialized
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());

@@ -38,11 +38,11 @@ public class CreateAndCompileLibraryExamplesTest {
 
 	private static int myBuildCounter = 0;
 	private static int myTotalFails = 0;
-	private Examples myExample;
+	private Example myExample;
 	private MCUBoard myBoard;
 
 	@SuppressWarnings("unused")
-	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
+	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Example example) {
 		myBoard = boardID;
 		myExample = example;
 	}
@@ -66,10 +66,10 @@ public class CreateAndCompileLibraryExamplesTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn, examplePath);
+			Example example = new Example(fqn, examplePath);
 
 			// with the current amount of examples only do one
-			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
+			MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
 
 			if (curBoard != null) {
 				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
