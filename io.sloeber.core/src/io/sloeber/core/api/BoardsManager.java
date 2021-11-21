@@ -16,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -421,6 +422,8 @@ public class BoardsManager {
             if (!jsonUrl.trim().isEmpty()) // skip empty lines
                 loadJson(jsonUrl, forceDownload);
         }
+        //sorting here so things look good in the gui
+        Collections.sort(packageIndices);
     }
 
     /**
@@ -799,6 +802,7 @@ public class BoardsManager {
         for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
             packages.addAll(index.getPackages());
         }
+
         return packages;
     }
 

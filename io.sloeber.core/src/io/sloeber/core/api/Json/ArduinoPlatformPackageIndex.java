@@ -20,7 +20,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 
 @JsonAdapter(ArduinoPlatformPackageIndex.class)
-public class ArduinoPlatformPackageIndex extends Node implements JsonDeserializer<ArduinoPlatformPackageIndex> {
+public class ArduinoPlatformPackageIndex extends Node
+        implements Comparable<ArduinoPlatformPackageIndex>, JsonDeserializer<ArduinoPlatformPackageIndex> {
 
     private List<ArduinoPackage> myPackages = new ArrayList<>();
 
@@ -96,6 +97,11 @@ public class ArduinoPlatformPackageIndex extends Node implements JsonDeserialize
     @Override
     public String getName() {
         return myJsonFile.getName();
+    }
+
+    @Override
+    public int compareTo(ArduinoPlatformPackageIndex o) {
+        return getID().compareTo(o.getID());
     }
 
 }
