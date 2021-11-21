@@ -59,7 +59,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn,  examplePath);
+			Example example = new Example(fqn,  examplePath);
 			if (!skipExample(example)) {
 				ArrayList<IPath> paths = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class CreateAndCompileArduinoIDEExamplesonJantjesBoardsTest {
 
 	}
 
-	private static boolean skipExample(Examples example) {
+	private static boolean skipExample(Example example) {
 		switch (example.getFQN()) {
 		case "example/10.StarterKit/BasicKit/p13_TouchSensorLamp":
 			return true;

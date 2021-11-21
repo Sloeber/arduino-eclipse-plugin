@@ -7,10 +7,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 
 public class BoardTxtFile extends TxtFile {
 
@@ -27,7 +28,6 @@ public class BoardTxtFile extends TxtFile {
         }
         return boardsFile;
     }
-
 
     public String getMenuItemIDFromMenuItemName(String boardID, String menuID, String menuItemName) {
 
@@ -149,7 +149,6 @@ public class BoardTxtFile extends TxtFile {
         return getSection(MENU);
     }
 
-
     /**
      * this is public String[] getAllSectionNames (String[] toaddNames) with a empty
      * toaddnames
@@ -173,7 +172,7 @@ public class BoardTxtFile extends TxtFile {
      * @author Trump
      *
      */
-    String[] getAllSectionNames(String[] toaddNames) {
+    public String[] getAllSectionNames(String[] toaddNames) {
 
         HashSet<String> allNames = new HashSet<>();
         for (String curName : toaddNames) {
@@ -191,6 +190,19 @@ public class BoardTxtFile extends TxtFile {
         allNames.toArray(sBoards);
         Arrays.sort(sBoards);
         return sBoards;
+    }
+
+    public List<String> getAllBoardIDs() {
+        List<String> allBoardIDs = new LinkedList<>();
+        for (String curKey : myData.getChildren().keySet()) {
+            if ((curKey != null) && (!curKey.isEmpty())) {
+                String theName = myData.getValue(curKey + DOT + NAME);
+                if ((theName != null) && (!theName.isEmpty())) {
+                    allBoardIDs.add(curKey);
+                }
+            }
+        }
+        return allBoardIDs;
     }
 
     /**

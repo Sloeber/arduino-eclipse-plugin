@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.Examples;
+import io.sloeber.core.Example;
 import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
@@ -36,7 +36,7 @@ public class Jantje extends MCUBoard {
 		myAttributes.keyboard=Arduino.supportKeyboardList().contains(boardName);
 	}
     @Override
-    public boolean isExampleSupported(Examples example) {
+    public boolean isExampleSupported(Example example) {
         LinkedList<String> notSupportedExamples = new LinkedList<>();
         notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardLogout");
         notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardMessage");

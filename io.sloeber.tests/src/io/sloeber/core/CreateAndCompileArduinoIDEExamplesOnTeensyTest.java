@@ -70,7 +70,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn, examplePath);
+			Example example = new Example(fqn, examplePath);
 			if (!skipExample(example)) {
 				ArrayList<IPath> paths = new ArrayList<>();
 				paths.add(examplePath);
@@ -94,7 +94,7 @@ public class CreateAndCompileArduinoIDEExamplesOnTeensyTest {
 	}
 
 	@SuppressWarnings("unused")
-	private static boolean skipExample(Examples example) {
+	private static boolean skipExample(Example example) {
 		// no need to skip examples in this test
 		return false;
 	}

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.sloeber.core.BoardAttributes;
-import io.sloeber.core.Examples;
+import io.sloeber.core.Example;
 import io.sloeber.core.MySystem;
 import io.sloeber.core.api.BoardsManager;
 
@@ -113,7 +113,7 @@ public class Teensy extends MCUBoard {
 	 * io.sloeber.core.boards.MCUBoard#getBoardOptions(io.sloeber.core.Examples)
 	 */
 	@Override
-	public Map<String, String> getBoardOptions(Examples example) {
+	public Map<String, String> getBoardOptions(Example example) {
 		Map<String, String> ret = super.getBoardOptions(example);
 		switch (myBoardDescriptor.getBoardID()) {
 		case Teensy3_5_ID:

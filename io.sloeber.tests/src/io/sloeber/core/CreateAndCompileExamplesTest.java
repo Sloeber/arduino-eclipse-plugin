@@ -75,9 +75,9 @@ public class CreateAndCompileExamplesTest {
 			CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
 			String fqn=curexample.getKey();
-			Examples example=new Examples(fqn,curexample.getValue());
+			Example example=new Example(fqn,curexample.getValue());
             // with the current amount of examples only do one
-            MCUBoard board = Examples.pickBestBoard(example, myBoards);
+            MCUBoard board = Example.pickBestBoard(example, myBoards);
             if (board != null) {
                 BoardDescription curBoard = board.getBoardDescriptor();
                 if (curBoard != null) {

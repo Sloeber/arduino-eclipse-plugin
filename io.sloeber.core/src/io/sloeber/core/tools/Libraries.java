@@ -117,7 +117,7 @@ public class Libraries {
         SloeberProject sProject = SloeberProject.getSloeberProject(project, false);
         BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
         // first add the referenced
-        IPath libPath = boardDescriptor.getReferencedLibraryPath();
+        IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
         if (libPath != null) {
             ret.putAll(findAllSubFolders(libPath));
         }
@@ -426,10 +426,7 @@ public class Libraries {
                                     .getLatestInstallableLibraries(uninstalledIncludedHeaders);
 
                             if (!availableLibs.isEmpty()) {
-                                // We now know which libraries to install
-                                // TODO for now I just install but there should
-                                // be some user
-                                // interaction
+                                // Ask the user which libs need installing
                                 availableLibs = installHandler.selectLibrariesToInstall(availableLibs);
                                 for (Entry<String, ArduinoLibraryVersion> curLib : availableLibs.entrySet()) {
                                     LibraryManager.install(curLib.getValue(), new NullProgressMonitor());
