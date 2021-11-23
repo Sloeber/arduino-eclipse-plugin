@@ -11,8 +11,15 @@ public class BoardAttributes {
     public boolean wire1 = false;
     public boolean rawHID = false;
     public boolean buildInLed = true;
+    public boolean tone = true;
+    //the number of ADC ports needed/available
+    //default is ridiculous high so boards should 
+    // 1)default to test 
+    // 2 fail if insufficient ADC's are available
+    public int myNumAD = 20;
+
     /*
-     * Only a very rara selection of boards supports input_pulldown as pin mode
+     * Only a very rare selection of boards supports input_pulldown as pin mode
      */
     public boolean inputPullDown = false;
     public boolean teensy = false;// Teensy specific hardware or software
@@ -44,6 +51,9 @@ public class BoardAttributes {
         ret = ret && matches(example.mo_mcu, mo_mcu);
         ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
         ret = ret && matches(example.buildInLed, buildInLed);
+        ret = ret && matches(example.tone, tone);
+        ret = ret && example.myNumAD <= myNumAD;
+
         if (example.boardName != null) {
             ret = ret && example.boardName.equals(boardName);
         }
@@ -67,6 +77,7 @@ public class BoardAttributes {
         // fields that need a binary and
         ret.worksOutOfTheBox = worksOutOfTheBox && or.worksOutOfTheBox;
         ret.buildInLed = buildInLed && or.buildInLed;
+        ret.tone = tone && or.tone;
         // fields that can do with or
         ret.serial = serial || or.serial;
         ret.rawHID = rawHID || or.rawHID;

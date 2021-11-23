@@ -8,5 +8,5 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ TestPlatformWorkAround.class, TestSerialPlotterFilter.class, TestTxtFile.class, TestWorkAround.class,
         TxtWorkAroundRegression.class, TestVersionCompare.class })
 public class AllJUnitTests {
-
+    //no need for code here
 }

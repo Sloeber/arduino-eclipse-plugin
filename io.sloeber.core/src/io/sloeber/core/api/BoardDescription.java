@@ -276,7 +276,7 @@ public class BoardDescription {
      * @param boardFile
      * @return a list of board descriptors
      */
-    public static List<BoardDescription> makeBoardDescriptors(File boardFile, Map<String, String> options) {
+    public static List<BoardDescription> makeBoardDescriptors(File boardFile) {
         BoardTxtFile txtFile = new BoardTxtFile(resolvePathEnvironmentString(boardFile));
         List<BoardDescription> boards = new ArrayList<>();
         List<String> boardIDs = txtFile.getAllBoardIDs();
@@ -284,7 +284,7 @@ public class BoardDescription {
             Map<String, String> boardSection = txtFile.getSection(curboardID);
             if (boardSection != null) {
                 if (!"true".equalsIgnoreCase(boardSection.get("hide"))) { //$NON-NLS-1$ //$NON-NLS-2$
-                    boards.add(new BoardDescription(boardFile, curboardID, options));
+                    boards.add(new BoardDescription(boardFile, curboardID, null));
                 }
             }
         }

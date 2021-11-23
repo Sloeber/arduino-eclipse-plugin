@@ -31,6 +31,7 @@ public class Example {
         myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(myFQN);
         myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(myFQN);
         myRequiredBoardAttributes.mouse = examplesUsingMouse().contains(myFQN);
+        myRequiredBoardAttributes.tone = examplesUsingTone().contains(myFQN);
         myRequiredBoardAttributes.wire1 = examplesUsingWire1().contains(myFQN);
         myRequiredBoardAttributes.midi = examplesUsingMidi().contains(myFQN) || myFQN.contains("USB_MIDI");
         myRequiredBoardAttributes.teensy = myFQN.startsWith("Example/Teensy");
@@ -39,7 +40,22 @@ public class Example {
         myRequiredBoardAttributes.mo_mcu = examplesUsingMCUmo().contains(fqn);
         myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
         myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
+        myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
         myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibName()));
+    }
+
+    private static int getNumADCUsedInExample(String myFQN2) {
+        switch (myFQN2) {
+        case "Example/04.Communication/VirtualColorMixer":
+        case "Example/10.StarterKit_BasicKit/p04_ColorMixingLamp":
+            return 3;
+        case "Example/06.Sensors/ADXL3xx":
+            return 4;
+        case "Example/08.Strings/StringComparisonOperators":
+            return 6;
+        default:
+            return 0;
+        }
     }
 
     private void getLibNameFromPath() {
@@ -177,6 +193,17 @@ public class Example {
         ret.add("Example/Teensy/USB_Joystick/Buttons");
         ret.add("Example/Teensy/USB_Joystick/Complete");
         ret.add("Example/Teensy/USB_RawHID/Basic");
+        return ret;
+    }
+
+    private static LinkedList<String> examplesUsingTone() {
+        LinkedList<String> ret = new LinkedList<>();
+        ret.add("Example/10.StarterKit_BasicKit/p06_LightTheremin");
+        ret.add("Example/02.Digital/toneMultiple");
+        ret.add("Example/02.Digital/toneMelody");
+        ret.add("Example/02.Digital/toneKeyboard");
+        ret.add("Example/02.Digital/tonePitchFollower");
+
         return ret;
     }
 

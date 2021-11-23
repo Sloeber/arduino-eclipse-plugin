@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.SystemUtils;
 import org.eclipse.core.runtime.IPath;
@@ -269,9 +268,8 @@ public class CreateAndCompileDefaultInoOnAllBoardsTest {
 
         List<BoardDescription> boards = new ArrayList<>();
         for (File curBoardFile : BoardsManager.getAllBoardsFiles()) {
-            Map<String, String> options = null;
             System.out.println("Adding boards of " + curBoardFile.toString());
-            boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile, options));
+            boards.addAll(BoardDescription.makeBoardDescriptors(curBoardFile));
         }
         // to avoid warnings set the upload port to some value
         for (BoardDescription curBoard : boards) {

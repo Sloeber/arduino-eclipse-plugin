@@ -9,9 +9,6 @@ import java.util.TreeMap;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
-import io.sloeber.core.api.Json.ArduinoPackage;
-import io.sloeber.core.api.Json.ArduinoPlatform;
-import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 @SuppressWarnings("nls")
 public class Arduino extends MCUBoard {
@@ -183,10 +180,17 @@ public class Arduino extends MCUBoard {
         myAttributes.keyboard = supportKeyboardList().contains(boardID);
         myAttributes.wire1 = supportWire1List().contains(boardID);
         myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
+        myAttributes.tone = !doesNotSupportTone().contains(boardID);
 
     }
 
-    private Arduino(BoardDescription boardDescriptor) {
+    @Override
+    public MCUBoard createMCUBoard(BoardDescription boardDescriptor) {
+        return new Arduino(boardDescriptor);
+
+    }
+
+    public Arduino(BoardDescription boardDescriptor) {
         myBoardDescriptor = boardDescriptor;
         myBoardDescriptor.setUploadPort("none");
         String boardID = myBoardDescriptor.getBoardID();
@@ -195,23 +199,39 @@ public class Arduino extends MCUBoard {
         myAttributes.keyboard = supportKeyboardList().contains(boardID);
         myAttributes.wire1 = supportWire1List().contains(boardID);
         myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
-
+        myAttributes.tone = !doesNotSupportTone().contains(boardID);
+        myAttributes.myNumAD = getNumADCsAvailable(boardID);
     }
 
-    static List<String> supportWire1List() {
+    private int getNumADCsAvailable(String boardID) {
+        switch (boardID) {
+        case "nicla_sense":
+            return 2;
+        case "pico":
+        case "nanorp2040connect":
+            return 4;
+        default:
+            //don't change default
+            return myAttributes.myNumAD;
+        }
+    }
+
+    private static List<String> supportWire1List() {
         List<String> ret = new LinkedList<>();
         ret.add("zero");
         return ret;
     }
 
-    static List<String> doesNotSupportbuildInLed() {
+    private static List<String> doesNotSupportbuildInLed() {
         List<String> ret = new LinkedList<>();
         ret.add("robotControl");
         ret.add("robotMotor");
+        ret.add("edge_control");
+        ret.add("nicla_sense");
         return ret;
     }
 
-    static List<String> supportSerial1List() {
+    protected static List<String> supportSerial1List() {
         List<String> ret = new LinkedList<>();
         ret.add("circuitplay32u4cat");
         ret.add("LilyPadUSB");
@@ -231,14 +251,22 @@ public class Arduino extends MCUBoard {
         return ret;
     }
 
-    static List<String> doesNotSupportSerialList() {
+    protected static List<String> doesNotSupportSerialList() {
         List<String> ret = new LinkedList<>();
         ret.add("gemma");
 
         return ret;
     }
 
-    static List<String> supportKeyboardList() {
+    private static List<String> doesNotSupportTone() {
+        List<String> ret = new LinkedList<>();
+        ret.add("arduino_due_x");
+        ret.add("arduino_due_x_dbg");
+
+        return ret;
+    }
+
+    protected static List<String> supportKeyboardList() {
         List<String> ret = new LinkedList<>();
         ret.add("circuitplay32u4cat");
         ret.add("LilyPadUSB");
@@ -274,21 +302,7 @@ public class Arduino extends MCUBoard {
     }
 
     public static List<MCUBoard> getAllBoards() {
-        List<MCUBoard> ret = new LinkedList<>();
-        Map<String, String> options = null;
-        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
-        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
-            ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
-            if (curPlatformVersion != null) {
-                List<BoardDescription> boardDescriptions = BoardDescription
-                        .makeBoardDescriptors(curPlatformVersion.getBoardsFile(), options);
-                for (BoardDescription curBoardDesc : boardDescriptions) {
-                    ret.add(new Arduino(curBoardDesc));
-                }
-            }
-        }
-        return ret;
-
+        return getAllBoards(providerArduino, uno());
     }
 
     public static MCUBoard zeroNatviePort() {
