@@ -210,7 +210,6 @@ public class Arduino extends MCUBoard {
     protected static List<String> doesNotSupportSerialList() {
         List<String> ret = new LinkedList<>();
         ret.add("gemma");
-
         return ret;
     }
 

@@ -17,12 +17,18 @@ public class Adafruit extends MCUBoard {
 
     public Adafruit(String architectureName, String boardName) {
 
-        this.myBoardDescriptor = BoardsManager.getBoardDescription("package_adafruit_index.json", "adafruit",
+        myBoardDescriptor = BoardsManager.getBoardDescription("package_adafruit_index.json", "adafruit",
                 architectureName, boardName, null);
-        if (this.myBoardDescriptor == null) {
+        if (myBoardDescriptor == null) {
             fail(boardName + " Board not found");
         }
-        this.myBoardDescriptor.setUploadPort("none");
+        myBoardDescriptor.setUploadPort("none");
+        setAttributes();
+    }
+
+    public Adafruit(BoardDescription boardDesc) {
+        myBoardDescriptor = boardDesc;
+        myBoardDescriptor.setUploadPort("none");
         setAttributes();
     }
 
@@ -56,7 +62,7 @@ public class Adafruit extends MCUBoard {
 
     @Override
     public MCUBoard createMCUBoard(BoardDescription boardDesc) {
-        return new Teensy(boardDesc);
+        return new Adafruit(boardDesc);
     }
 
 }

@@ -38,7 +38,6 @@ public abstract class MCUBoard {
             }
         }
         return ret;
-
     }
 
     public BoardDescription getBoardDescriptor() {
@@ -49,7 +48,6 @@ public abstract class MCUBoard {
         if (myBoardDescriptor == null) {
             return false;
         }
-
         /*
          * There is one know Teensy example that does not
          * run on all teensy boards
@@ -67,9 +65,9 @@ public abstract class MCUBoard {
     }
 
     /**
-     * give the ID of the board as it appears in boards.txt
+     * give the name of the board as it appears in boards.txt
      * 
-     * @return the ID or null
+     * @return the name of the board as shown in the gui
      */
     public String getID() {
         if (myBoardDescriptor == null) {
