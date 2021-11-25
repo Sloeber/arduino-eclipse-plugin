@@ -1,6 +1,10 @@
 package io.sloeber.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -27,6 +31,7 @@ public class Example {
         myRequiredBoardAttributes = new BoardAttributes();
         myRequiredBoardAttributes.serial = examplesUsingSerial().contains(myFQN);
         myRequiredBoardAttributes.serial1 = examplesUsingSerial1().contains(myFQN);
+        myRequiredBoardAttributes.serialUSB = examplesUsingSerialUSB().contains(myFQN);
         myRequiredBoardAttributes.keyboard = examplesUsingKeyboard().contains(myFQN);
         myRequiredBoardAttributes.flightSim = examplesUsingFlightSim().contains(myFQN);
         myRequiredBoardAttributes.joyStick = examplesUsingJoyStick().contains(myFQN);
@@ -41,6 +46,8 @@ public class Example {
         myRequiredBoardAttributes.rawHID = myFQN.contains("USB_RawHID");
         myRequiredBoardAttributes.buildInLed = myFQN.contains("Blink");
         myRequiredBoardAttributes.myNumAD = getNumADCUsedInExample(myFQN);
+        myRequiredBoardAttributes.directMode = examplesUsingDirectMode().contains(myFQN);
+
         myRequiredBoardAttributes = myRequiredBoardAttributes.or(Libraries.getRequiredBoardAttributes(getLibName()));
     }
 
@@ -104,6 +111,18 @@ public class Example {
         ret.add("Example/04.Communication/MultiSerial");
         ret.add("Example/04.Communication/SerialPassthrough");
         ret.add("Example/Teensy/Serial/EchoBoth");
+        return ret;
+    }
+
+    private static LinkedList<String> examplesUsingSerialUSB() {
+        LinkedList<String> ret = new LinkedList<>();
+        ret.add("Example/11.ArduinoISP/ArduinoISP");
+        return ret;
+    }
+
+    private static LinkedList<String> examplesUsingDirectMode() {
+        LinkedList<String> ret = new LinkedList<>();
+        ret.add("Example/10.StarterKit_BasicKit/p13_TouchSensorLamp");
         return ret;
     }
 
@@ -203,7 +222,7 @@ public class Example {
         ret.add("Example/02.Digital/toneMelody");
         ret.add("Example/02.Digital/toneKeyboard");
         ret.add("Example/02.Digital/tonePitchFollower");
-
+        ret.add("Example/10.StarterKit_BasicKit/p07_Keyboard");
         return ret;
     }
 
@@ -444,10 +463,14 @@ public class Example {
                 }
                 // if the boardname is in the libname or ino name pick this one
                 for (MCUBoard curBoard : myBoards) {
-                    String curBoardName = curBoard.getSlangName().toLowerCase();
-                    if (libName.toLowerCase().contains(curBoardName) || fqn.toLowerCase().contains(curBoardName)) {
-                        if (curBoard.isExampleSupported(example)) {
-                            return curBoard;
+                    String curBoardName = curBoard.getName();
+                    List<String> curBoardExampleNames = getSlangNames(curBoardName);
+                    for (String curBoardExampleName : curBoardExampleNames) {
+                        if (libName.toLowerCase().contains(curBoardName)
+                                || fqn.toLowerCase().contains(curBoardExampleName)) {
+                            if (curBoard.isExampleSupported(example)) {
+                                return curBoard;
+                            }
                         }
                     }
                 }
@@ -497,6 +520,28 @@ public class Example {
         }
         System.out.println("No board found for " + Integer.toString(++noBoardFoundCount) + " " + example.getFQN());
         return null;
+    }
+
+    private static List<String> getSlangNames(String curBoardName) {
+        Map<String, String> singleNames = new HashMap<>();
+        singleNames.put("adafruit_metro_m4", "metroM4");
+        singleNames.put("feather52832", "feather");
+        singleNames.put("trinket3", "trinket");
+        singleNames.put("adafruit_feather_m0", "FeatherM0");
+        singleNames.put("arduino_zero_edbg", "zero");
+        singleNames.put("arduino_101", "101");
+        singleNames.put("arduino_zero_native", "zero Native");
+        singleNames.put("d1_mini", "wemos");
+        singleNames.put("teensy36", "teensy3");
+        singleNames.put("adafruit_metro_m4", "metroM4");
+
+        List<String> ret = new ArrayList<>();
+        String singleName = singleNames.get(curBoardName);
+        if (singleName != null) {
+            ret.add(singleName);
+        }
+        ret.add(curBoardName);
+        return ret;
     }
 
     private static String getRequiredBoardID(String fqn) {

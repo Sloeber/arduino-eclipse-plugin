@@ -21,21 +21,6 @@ public class Jantje extends MCUBoard {
     // the below json url is need as esp8266 is a referenced platform
     public static final String additionalJsonURL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
-    public Jantje(String boardName) {
-        Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        options.put("type", "debug");
-        this.myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, packageName,
-                localDebugArchitectureName, boardName, options);
-        if (this.myBoardDescriptor == null) {
-            fail(boardName + " Board not found");
-        }
-        this.myBoardDescriptor.setUploadPort("none");
-
-        myAttributes.serial = !Arduino.doesNotSupportSerialList().contains(boardName);
-        myAttributes.serial1 = Arduino.supportSerial1List().contains(boardName);
-        myAttributes.keyboard = Arduino.supportKeyboardList().contains(boardName);
-    }
-
     @Override
     public boolean isExampleSupported(Example example) {
         LinkedList<String> notSupportedExamples = new LinkedList<>();
@@ -59,21 +44,36 @@ public class Jantje extends MCUBoard {
 
     @Override
     public MCUBoard createMCUBoard(BoardDescription boardDescriptor) {
-        return new Arduino(boardDescriptor);
+        return new Jantje(boardDescriptor);
 
     }
 
     public Jantje(BoardDescription boardDescriptor) {
         myBoardDescriptor = boardDescriptor;
-        myBoardDescriptor.setUploadPort("none");
-        String boardID = myBoardDescriptor.getBoardID();
-        myAttributes.serial = !Arduino.doesNotSupportSerialList().contains(boardID);
-        myAttributes.serial1 = Arduino.supportSerial1List().contains(boardID);
-        myAttributes.keyboard = Arduino.supportKeyboardList().contains(boardID);
+        setAttributes();
+    }
+
+    public Jantje(String boardName) {
+        Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        options.put("type", "debug");
+        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, packageName, localDebugArchitectureName,
+                boardName, options);
+        if (myBoardDescriptor == null) {
+            fail(boardName + " Board not found");
+        }
+        setAttributes();
     }
 
     public static void installLatestLocalDebugBoards() {
         BoardsManager.installLatestPlatform(jsonFileName, provider, localDebugArchitectureName);
+    }
+
+    @Override
+    protected void setAttributes() {
+        String boardID = myBoardDescriptor.getBoardID();
+        Arduino.sharedsetAttributes(boardID, myAttributes);
+        setUploadPort("none");
+
     }
 
 }

@@ -23,12 +23,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.CompileDescription.SizeCommands;
 import io.sloeber.core.api.CompileDescription.WarningLevels;
 import io.sloeber.core.api.OtherDescription;
-import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.providers.Arduino;
@@ -85,7 +85,7 @@ public class RegressionTest {
         }
         System.out.println("Teensy is installed at " + MySystem.getTeensyPlatform());
         BoardDescription unoBoardid = Arduino.uno().getBoardDescriptor();
-        BoardDescription teensyBoardid = Teensy.Teensy3_1("").getBoardDescriptor();
+        BoardDescription teensyBoardid = Teensy.Teensy3_1().getBoardDescriptor();
 
         IProject theTestProject = null;
         CodeDescription codeDescriptor = CodeDescription.createDefaultIno();

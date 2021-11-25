@@ -36,22 +36,27 @@ public class MySystem {
     public static MCUBoard[] getUploadBoards() {
         switch (currentMachine) {
         case jantjesLinuxMachine: {
-            MCUBoard[] boards = { Teensy.teensypp2("/dev/ttyACM0"), Arduino.leonardo("/dev/ttyS0"), //werkt niet
-                    Arduino.fried2016("/dev/ttyS0"), //werkt niet
-                    Arduino.zeroNatviePort("/dev/ttyS0"), //werkt niet
-                    Arduino.yun("COM20"), ESP8266.wemosD1("/dev/ttyUSB0"), Arduino.arduino_101("COM15"),
-                    Arduino.zeroProgrammingPort("COM14"), Arduino.getMega2560Board("COM11"),
-                    Arduino.dueprogramming("COM8"), Arduino.uno("COM6"), };
+            MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("/dev/ttyACM0"),
+                    Arduino.leonardo().setUploadPort("/dev/ttyS0"), //werkt niet
+                    Arduino.fried2016().setUploadPort("/dev/ttyS0"), //werkt niet
+                    Arduino.zeroNatviePort().setUploadPort("/dev/ttyS0"), //werkt niet
+                    Arduino.yun().setUploadPort("COM20"), ESP8266.wemosD1().setUploadPort("/dev/ttyUSB0"),
+                    Arduino.arduino_101().setUploadPort("COM15"), Arduino.zeroProgrammingPort().setUploadPort("COM14"),
+                    Arduino.getMega2560Board().setUploadPort("COM11"), Arduino.dueprogramming().setUploadPort("COM8"),
+                    Arduino.uno().setUploadPort("COM6"), };
             return boards;
         }
         case jantjesWindowsMachine:
             //due native upload gives to mutch trouble even in arduino IDE
-            MCUBoard[] boards = { Teensy.teensypp2("COM103"),
+            MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("COM103"),
                     //	Teensy.Teensy3_1("COM24"), 
-                    Arduino.leonardo("COM101"), Arduino.fried2016("COM102"), Arduino.zeroNatviePort("COM104"), //boardSponsor
-                    Arduino.yun("COM106"), ESP8266.wemosD1("COM108"), Arduino.arduino_101("COM110"),
-                    Arduino.zeroProgrammingPort("COM111"), Arduino.getMega2560Board("COM112"),
-                    Arduino.dueprogramming("COM124"), Arduino.uno("COM126"), };
+                    Arduino.leonardo().setUploadPort("COM101"), Arduino.fried2016().setUploadPort("COM102"),
+                    Arduino.zeroNatviePort().setUploadPort("COM104"), //boardSponsor
+                    Arduino.yun().setUploadPort("COM106"), ESP8266.wemosD1().setUploadPort("COM108"),
+                    Arduino.arduino_101().setUploadPort("COM110"),
+                    Arduino.zeroProgrammingPort().setUploadPort("COM111"),
+                    Arduino.getMega2560Board().setUploadPort("COM112"),
+                    Arduino.dueprogramming().setUploadPort("COM124"), Arduino.uno().setUploadPort("COM126"), };
             return boards;
         default:
             fail("Boards for the system with haskey " + currentMachine + " are not found");

@@ -3,8 +3,6 @@ package io.sloeber.providers;
 import static io.sloeber.core.common.Const.*;
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,19 +33,11 @@ public class Teensy extends MCUBoard {
     }
 
     public static MCUBoard Teensy3_6() {
-        MCUBoard board = new Teensy(Teensy3_6_ID);
-        board.mySlangName = "teensy3";
-        return board;
+        return new Teensy(Teensy3_6_ID);
     }
 
     public static MCUBoard Teensy3_1() {
         return new Teensy(Teensy3_1_ID);
-    }
-
-    public static MCUBoard Teensy3_1(String uploadPort) {
-        MCUBoard board = Teensy3_1();
-        board.myBoardDescriptor.setUploadPort(uploadPort);
-        return board;
     }
 
     public static MCUBoard Teensy3_0() {
@@ -56,12 +46,6 @@ public class Teensy extends MCUBoard {
 
     public static MCUBoard teensypp2() {
         return new Teensy(Teensy_PP2_ID);
-    }
-
-    public static MCUBoard teensypp2(String uploadPort) {
-        MCUBoard board = teensypp2();
-        board.myBoardDescriptor.setUploadPort(uploadPort);
-        return board;
     }
 
     public static MCUBoard teensy2() {
@@ -88,22 +72,13 @@ public class Teensy extends MCUBoard {
             break;
         }
 
-        this.myBoardDescriptor = BoardsManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(), "ignored",
+        myBoardDescriptor = BoardsManager.getBoardDescription(LOCAL, MySystem.getTeensyBoard_txt(), "ignored",
                 boardName, options);
-        if (this.myBoardDescriptor == null) {
+        if (myBoardDescriptor == null) {
             fail(boardName + " Board not found");
         }
-        this.myBoardDescriptor.setUploadPort("none");
-
-        myAttributes.serial = true;
-        myAttributes.serial1 = true;
-        myAttributes.keyboard = true;
-        myAttributes.joyStick = true;
-        myAttributes.mouse = true;
-        myAttributes.flightSim = true;
-        myAttributes.midi = true;
-        myAttributes.wire1 = true;
-        myAttributes.teensy = true;
+        setUploadPort("none");
+        setAttributes();
     }
 
     /*
@@ -142,14 +117,7 @@ public class Teensy extends MCUBoard {
     }
 
     public static List<MCUBoard> getAllBoards() {
-        List<MCUBoard> ret = new LinkedList<>();
-        MCUBoard tmp = new MCUBoard();
-        File boardsFile = new File(MySystem.getTeensyBoard_txt());
-        List<BoardDescription> boardDescriptions = BoardDescription.makeBoardDescriptors(boardsFile);
-        for (BoardDescription curBoardDesc : boardDescriptions) {
-            ret.add(tmp.createMCUBoard(curBoardDesc));
-        }
-        return ret;
+        return getAllBoards(MySystem.getTeensyPlatform(), teensy2());
     }
 
     @Override
@@ -161,15 +129,20 @@ public class Teensy extends MCUBoard {
     public Teensy(BoardDescription boardDescriptor) {
         myBoardDescriptor = boardDescriptor;
         myBoardDescriptor.setUploadPort("none");
+        setAttributes();
 
+    }
+
+    @Override
+    protected void setAttributes() {
+        myAttributes.flightSim = true;
+        myAttributes.joyStick = true;
+        myAttributes.keyboard = true;
+        myAttributes.midi = true;
+        myAttributes.mouse = true;
         myAttributes.serial = true;
         myAttributes.serial1 = true;
-        myAttributes.keyboard = true;
-        myAttributes.joyStick = true;
-        myAttributes.mouse = true;
-        myAttributes.flightSim = true;
-        myAttributes.midi = true;
-        myAttributes.wire1 = true;
         myAttributes.teensy = true;
+        myAttributes.wire1 = true;
     }
 }

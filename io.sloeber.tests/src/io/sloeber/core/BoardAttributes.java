@@ -3,6 +3,7 @@ package io.sloeber.core;
 public class BoardAttributes {
     public boolean serial = false;
     public boolean serial1 = false;
+    public boolean serialUSB = false;
     public boolean keyboard = false;
     public boolean flightSim = false;
     public boolean joyStick = false;
@@ -17,6 +18,10 @@ public class BoardAttributes {
     // 1)default to test 
     // 2 fail if insufficient ADC's are available
     public int myNumAD = 20;
+    //directmode is something from the capacitiveSensor library
+    //but as the arduino examples contain examples using this libraries
+    //and mbed boards do not support it I added it as a boardAttribute
+    public boolean directMode = true;
 
     /*
      * Only a very rare selection of boards supports input_pulldown as pin mode
@@ -38,8 +43,9 @@ public class BoardAttributes {
     public boolean compatibleWithExampleRequirements(BoardAttributes example) {
         boolean ret = worksOutOfTheBox;
         ret = ret && matches(example.serial, serial);
-        ret = ret && matches(example.rawHID, rawHID);
         ret = ret && matches(example.serial1, serial1);
+        ret = ret && matches(example.serialUSB, serialUSB);
+        ret = ret && matches(example.rawHID, rawHID);
         ret = ret && matches(example.keyboard, keyboard);
         ret = ret && matches(example.flightSim, flightSim);
         ret = ret && matches(example.joyStick, joyStick);
@@ -52,6 +58,8 @@ public class BoardAttributes {
         ret = ret && matches(example.esp8266_mcu, esp8266_mcu);
         ret = ret && matches(example.buildInLed, buildInLed);
         ret = ret && matches(example.tone, tone);
+        ret = ret && matches(example.directMode, directMode);
+
         ret = ret && example.myNumAD <= myNumAD;
 
         if (example.boardName != null) {
@@ -78,10 +86,12 @@ public class BoardAttributes {
         ret.worksOutOfTheBox = worksOutOfTheBox && or.worksOutOfTheBox;
         ret.buildInLed = buildInLed && or.buildInLed;
         ret.tone = tone && or.tone;
+        ret.directMode = directMode && or.directMode;
         // fields that can do with or
         ret.serial = serial || or.serial;
-        ret.rawHID = rawHID || or.rawHID;
         ret.serial1 = serial1 || or.serial1;
+        ret.serialUSB = serialUSB || or.serialUSB;
+        ret.rawHID = rawHID || or.rawHID;
         ret.keyboard = keyboard || or.keyboard;
         ret.flightSim = flightSim || or.flightSim;
         ret.joyStick = joyStick || or.joyStick;

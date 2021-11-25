@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import io.sloeber.core.BoardAttributes;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.Json.ArduinoPackage;
+import io.sloeber.core.api.Json.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 @SuppressWarnings("nls")
 public class Arduino extends MCUBoard {
@@ -19,17 +23,17 @@ public class Arduino extends MCUBoard {
     private static final String SAMDArchitectureName = "samd";
     private static final String SAMArchitectureName = "sam";
     private static final String NFRArchitectureName = "nrf52";
+    private static final String MBEDArchitectureName = "mbed";
     private static final String intelCurieArchitectureName = "arc32";
     private static final String jsonFileName = "package_index.json";
 
     public static final String circuitplay32ID = "circuitplay32u4cat";
     public static final String unoID = "uno";
     public static final String ethernetID = "ethernet";
+    public static final List<String> mbedBoards = getAllmBedBoardNames();
 
     public static MCUBoard gemma() {
-        MCUBoard ret = new Arduino(providerArduino, AVRArchitectureName, "gemma");
-        ret.mySlangName = "gemma";
-        return ret;
+        return new Arduino(providerArduino, AVRArchitectureName, "gemma");
     }
 
     public static MCUBoard MegaADK() {
@@ -48,18 +52,8 @@ public class Arduino extends MCUBoard {
         return new Arduino(providerArduino, SAMDArchitectureName, "adafruit_circuitplayground_m0");
     }
 
-    public static MCUBoard getAvrBoard(String boardID) {
-        return new Arduino(providerArduino, AVRArchitectureName, boardID);
-    }
-
     public static MCUBoard fried2016() {
         return new Arduino(providerArduino, AVRArchitectureName, "LilyPadUSB");
-    }
-
-    public static MCUBoard fried2016(String uploadPort) {
-        MCUBoard fried = fried2016();
-        fried.myBoardDescriptor.setUploadPort(uploadPort);
-        return fried;
     }
 
     public static MCUBoard getMega2560Board() {
@@ -70,43 +64,21 @@ public class Arduino extends MCUBoard {
         return mega;
     }
 
-    public static MCUBoard getMega2560Board(String uploadPort) {
-        MCUBoard mega = getMega2560Board();
-        mega.myBoardDescriptor.setUploadPort(uploadPort);
-        return mega;
-    }
-
     public static MCUBoard leonardo() {
-        MCUBoard leonardo = new Arduino(providerArduino, AVRArchitectureName, "leonardo");
-        return leonardo;
-    }
-
-    public static MCUBoard leonardo(String uploadPort) {
-        MCUBoard leonardo = leonardo();
-        leonardo.myBoardDescriptor.setUploadPort(uploadPort);
-        return leonardo;
+        return new Arduino(providerArduino, AVRArchitectureName, "leonardo");
     }
 
     public static MCUBoard yun() {
-        MCUBoard yun = new Arduino(providerArduino, AVRArchitectureName, "yun");
-        return yun;
-    }
-
-    public static MCUBoard yun(String uploadPort) {
-        MCUBoard yun = yun();
-        yun.myBoardDescriptor.setUploadPort(uploadPort);
-        return yun;
+        return new Arduino(providerArduino, AVRArchitectureName, "yun");
     }
 
     public static MCUBoard zeroProgrammingPort() {
-        MCUBoard zero = new Arduino(providerArduino, SAMDArchitectureName, "arduino_zero_edbg");
-        zero.mySlangName = "zero";
-        return zero;
+        return new Arduino(providerArduino, SAMDArchitectureName, "arduino_zero_edbg");
     }
 
-    public static MCUBoard zeroProgrammingPort(String uploadPort) {
-        MCUBoard zero = zeroProgrammingPort();
-        zero.myBoardDescriptor.setUploadPort(uploadPort);
+    public static MCUBoard zeroNatviePort() {
+        MCUBoard zero = new Arduino(providerArduino, SAMDArchitectureName, "arduino_zero_native");
+        zero.mySerialPort = "SerialUSB";
         return zero;
     }
 
@@ -114,20 +86,8 @@ public class Arduino extends MCUBoard {
         return new Arduino(providerArduino, SAMArchitectureName, "arduino_due_x");
     }
 
-    public static MCUBoard due(String uploadPort) {
-        MCUBoard board = due();
-        board.myBoardDescriptor.setUploadPort(uploadPort);
-        return board;
-    }
-
     public static MCUBoard dueprogramming() {
         return new Arduino(providerArduino, SAMArchitectureName, "arduino_due_x_dbg");
-    }
-
-    public static MCUBoard dueprogramming(String uploadPort) {
-        MCUBoard board = dueprogramming();
-        board.myBoardDescriptor.setUploadPort(uploadPort);
-        return board;
     }
 
     public static MCUBoard mkrfox1200() {
@@ -139,32 +99,15 @@ public class Arduino extends MCUBoard {
     }
 
     public static MCUBoard uno() {
-        MCUBoard uno = new Arduino(providerArduino, AVRArchitectureName, unoID);
-        uno.mySlangName = "uno";
-        return uno;
+        return new Arduino(providerArduino, AVRArchitectureName, unoID);
     }
 
     public static MCUBoard ethernet() {
-        MCUBoard uno = new Arduino(providerArduino, AVRArchitectureName, ethernetID);
-        return uno;
-    }
-
-    public static MCUBoard uno(String uploadPort) {
-        MCUBoard uno = uno();
-        uno.myBoardDescriptor.setUploadPort(uploadPort);
-        return uno;
+        return new Arduino(providerArduino, AVRArchitectureName, ethernetID);
     }
 
     public static MCUBoard arduino_101() {
-        MCUBoard arduino_101 = new Arduino(providerIntel, intelCurieArchitectureName, "arduino_101");
-        arduino_101.mySlangName = "101";
-        return arduino_101;
-    }
-
-    public static MCUBoard arduino_101(String uploadPort) {
-        MCUBoard arduino_101 = arduino_101();
-        arduino_101.myBoardDescriptor.setUploadPort(uploadPort);
-        return arduino_101;
+        return new Arduino(providerIntel, intelCurieArchitectureName, "arduino_101");
     }
 
     private Arduino(String providerName, String architectureName, String boardID) {
@@ -174,14 +117,7 @@ public class Arduino extends MCUBoard {
             fail(boardID + " Board not found");
         }
         this.myBoardDescriptor.setUploadPort("none");
-
-        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
-        myAttributes.serial1 = supportSerial1List().contains(boardID);
-        myAttributes.keyboard = supportKeyboardList().contains(boardID);
-        myAttributes.wire1 = supportWire1List().contains(boardID);
-        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
-        myAttributes.tone = !doesNotSupportTone().contains(boardID);
-
+        setAttributes();
     }
 
     @Override
@@ -193,17 +129,37 @@ public class Arduino extends MCUBoard {
     public Arduino(BoardDescription boardDescriptor) {
         myBoardDescriptor = boardDescriptor;
         myBoardDescriptor.setUploadPort("none");
-        String boardID = myBoardDescriptor.getBoardID();
-        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
-        myAttributes.serial1 = supportSerial1List().contains(boardID);
-        myAttributes.keyboard = supportKeyboardList().contains(boardID);
-        myAttributes.wire1 = supportWire1List().contains(boardID);
-        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
-        myAttributes.tone = !doesNotSupportTone().contains(boardID);
-        myAttributes.myNumAD = getNumADCsAvailable(boardID);
+        setAttributes();
     }
 
-    private int getNumADCsAvailable(String boardID) {
+    @Override
+    protected void setAttributes() {
+        String boardID = myBoardDescriptor.getBoardID();
+        sharedsetAttributes(boardID, myAttributes);
+        //        myAttributes.serial = !doesNotSupportSerialList().contains(boardID);
+        //        myAttributes.serial1 = supportSerial1List().contains(boardID);
+        //        myAttributes.keyboard = supportKeyboardList().contains(boardID);
+        //        myAttributes.wire1 = supportWire1List().contains(boardID);
+        //        myAttributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
+        //        myAttributes.tone = !doesNotSupportTone().contains(boardID);
+        //        myAttributes.myNumAD = getNumADCsAvailable(boardID);
+        //        myAttributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
+        //        myAttributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
+    }
+
+    static protected void sharedsetAttributes(String boardID, BoardAttributes attributes) {
+        attributes.serial = !doesNotSupportSerialList().contains(boardID);
+        attributes.serial1 = supportSerial1List().contains(boardID);
+        attributes.keyboard = supportKeyboardList().contains(boardID);
+        attributes.wire1 = supportWire1List().contains(boardID);
+        attributes.buildInLed = !doesNotSupportbuildInLed().contains(boardID);
+        attributes.tone = !doesNotSupportTone().contains(boardID);
+        attributes.myNumAD = getNumADCsAvailable(boardID, attributes.myNumAD);
+        attributes.directMode = !doesNotSupportDirectModeList().contains(boardID);
+        attributes.serialUSB = !doesNotSupportSerialUSBList().contains(boardID);
+    }
+
+    private static int getNumADCsAvailable(String boardID, int standard) {
         switch (boardID) {
         case "nicla_sense":
             return 2;
@@ -212,7 +168,7 @@ public class Arduino extends MCUBoard {
             return 4;
         default:
             //don't change default
-            return myAttributes.myNumAD;
+            return standard;
         }
     }
 
@@ -258,6 +214,18 @@ public class Arduino extends MCUBoard {
         return ret;
     }
 
+    protected static List<String> doesNotSupportSerialUSBList() {
+        List<String> ret = new LinkedList<>();
+        ret.addAll(mbedBoards);
+        return ret;
+    }
+
+    private static List<String> doesNotSupportDirectModeList() {
+        List<String> ret = new LinkedList<>();
+        ret.addAll(mbedBoards);
+        return ret;
+    }
+
     private static List<String> doesNotSupportTone() {
         List<String> ret = new LinkedList<>();
         ret.add("arduino_due_x");
@@ -266,7 +234,7 @@ public class Arduino extends MCUBoard {
         return ret;
     }
 
-    protected static List<String> supportKeyboardList() {
+    private static List<String> supportKeyboardList() {
         List<String> ret = new LinkedList<>();
         ret.add("circuitplay32u4cat");
         ret.add("LilyPadUSB");
@@ -276,12 +244,6 @@ public class Arduino extends MCUBoard {
         ret.add("Esplora");
         ret.add("chiwawa");
         ret.add("yun");
-        // mySupportKeyboardList.add("one");
-        // mySupportKeyboardList.add("Leonardo");
-        // mySupportKeyboardList.add("robotMotor");
-        // mySupportKeyboardList.add("LeonardoEth");
-        // mySupportKeyboardList.add("MegaADK");
-
         return ret;
     }
 
@@ -305,17 +267,22 @@ public class Arduino extends MCUBoard {
         return getAllBoards(providerArduino, uno());
     }
 
-    public static MCUBoard zeroNatviePort() {
-        MCUBoard zero = new Arduino(providerArduino, SAMDArchitectureName, "arduino_zero_native");
-        zero.mySlangName = "zero Native";
-        zero.mySerialPort = "SerialUSB";
-        return zero;
-    }
-
-    public static MCUBoard zeroNatviePort(String uploadPort) {
-        MCUBoard zero = zeroNatviePort();
-        zero.myBoardDescriptor.setUploadPort(uploadPort);
-        return zero;
+    private static List<String> getAllmBedBoardNames() {
+        List<String> ret = new LinkedList<>();
+        ArduinoPackage arduinoPkg = BoardsManager.getPackageByProvider(providerArduino);
+        for (ArduinoPlatform curPlatform : arduinoPkg.getPlatforms()) {
+            if (curPlatform.getArchitecture().equals(MBEDArchitectureName)) {
+                ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestInstalled();
+                if (curPlatformVersion != null) {
+                    List<BoardDescription> boardDescriptions = BoardDescription
+                            .makeBoardDescriptors(curPlatformVersion.getBoardsFile());
+                    for (BoardDescription curBoardDesc : boardDescriptions) {
+                        ret.add(curBoardDesc.getBoardName());
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
 }

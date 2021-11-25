@@ -14,20 +14,15 @@ import io.sloeber.core.api.Json.ArduinoPlatform;
 import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 
 @SuppressWarnings("nls")
-public class MCUBoard {
+public abstract class MCUBoard {
 
     protected BoardDescription myBoardDescriptor = null;
     public BoardAttributes myAttributes = new BoardAttributes();
-    public String mySlangName = "";
     public String mySerialPort = "Serial";
 
-    @SuppressWarnings("static-method")
-    public MCUBoard createMCUBoard(BoardDescription boardDesc) {
-        MCUBoard ret = new MCUBoard();
-        ret.myBoardDescriptor = boardDesc;
-        ret.mySlangName = boardDesc.getBoardName();
-        return ret;
-    }
+    public abstract MCUBoard createMCUBoard(BoardDescription boardDesc);
+
+    protected abstract void setAttributes();
 
     public static List<MCUBoard> getAllBoards(String provider, MCUBoard creator) {
         List<MCUBoard> ret = new LinkedList<>();
@@ -72,9 +67,9 @@ public class MCUBoard {
     }
 
     /**
-     * give the name of the board as it appears in boards.txt
+     * give the ID of the board as it appears in boards.txt
      * 
-     * @return the name of the board as shown in the gui
+     * @return the ID or null
      */
     public String getID() {
         if (myBoardDescriptor == null) {
@@ -83,24 +78,28 @@ public class MCUBoard {
         return myBoardDescriptor.getBoardID();
     }
 
-    /**
-     * give the name of the board as it is generally known
-     * For instance the board "Arduino genuino uno" is uno
-     * or zero programming port is zero
-     *
-     * @return the name of the board as commonly used
-     */
-    public String getSlangName() {
-        if (mySlangName != null) {
-            return mySlangName;
-        }
-        return getID();
-    }
-
     @SuppressWarnings({ "static-method" })
     public Map<String, String> getBoardOptions(Example example) {
         Map<String, String> ret = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         return ret;
+    }
+
+    /**
+     * give the name of the board as it appears in boards.txt
+     * 
+     * @return the name of the board as shown in the gui or null
+     */
+    public String getName() {
+        if (myBoardDescriptor == null) {
+            return null;
+        }
+        return myBoardDescriptor.getBoardName();
+    }
+
+    public MCUBoard setUploadPort(String uploadPort) {
+        myBoardDescriptor.setUploadPort(uploadPort);
+        return this;
+
     }
 
 }
