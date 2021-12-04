@@ -626,6 +626,9 @@ public class BoardDescription {
             return null;
         }
         ArduinoPlatformVersion platformVersion = platform.getNewestInstalled();
+        if(platformVersion==null) {
+        	return null;
+        }
         return platformVersion.getInstallPath();
     }
 
