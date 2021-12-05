@@ -3,11 +3,12 @@ package io.sloeber.ui.preferences;
 
 import static io.sloeber.ui.Activator.*;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -38,22 +39,124 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
-import io.sloeber.core.api.PackageManager;
-import io.sloeber.core.api.PackageManager.PlatformTree;
-import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
-import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
-import io.sloeber.core.api.PackageManager.PlatformTree.Package;
-import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
+import io.sloeber.core.api.BoardsManager;
+import io.sloeber.core.api.VersionNumber;
+import io.sloeber.core.api.Json.ArduinoPackage;
+import io.sloeber.core.api.Json.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformPackageIndex;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.ui.Messages;
 import io.sloeber.ui.helpers.MyPreferences;
 
 public class PlatformSelectionPage extends PreferencePage implements IWorkbenchPreferencePage {
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+	// platform index json, package,platform,versions structure
+	private TreeMap<String, TreeMap<String, TreeMap<String, InstallableVersion[]>>> myShownPlatforms = new TreeMap<>();
 
-	public PlatformSelectionPage() {
+	private boolean mustBeInstalled(ArduinoPlatform platform) {
+		ArduinoPackage parentPkg = platform.getParent();
+		ArduinoPlatformPackageIndex parentIndex = parentPkg.getPackageIndex();
+		InstallableVersion[] inScopeVersions = myShownPlatforms.get(parentIndex.getID()).get(parentPkg.getID())
+				.get(platform.getID());
+		for (InstallableVersion version : inScopeVersions) {
+			if (version.mustBeInstalled()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	protected PlatformTree myPlatformTree = new PackageManager.PlatformTree();
+	private boolean mustBeInstalled(ArduinoPlatformPackageIndex packageIndex) {
+		TreeMap<String, TreeMap<String, InstallableVersion[]>> inScopeVersions = myShownPlatforms
+				.get(packageIndex.getID());
+		for (TreeMap<String, InstallableVersion[]> platform : inScopeVersions.values()) {
+			for (InstallableVersion[] versions : platform.values()) {
+				for (InstallableVersion version : versions) {
+					if (version.mustBeInstalled()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean mustBeInstalled(ArduinoPackage pkg) {
+		ArduinoPlatformPackageIndex parentIndex = pkg.getPackageIndex();
+		TreeMap<String, InstallableVersion[]> inScopeVersions = myShownPlatforms.get(parentIndex.getID())
+				.get(pkg.getID());
+		for (InstallableVersion[] versions : inScopeVersions.values()) {
+			for (InstallableVersion version : versions) {
+				if (version.mustBeInstalled()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static class InstallableVersion implements Comparable<InstallableVersion> {
+		private ArduinoPlatformVersion myPlatformm;
+		private boolean myMustBeInstalled;
+
+		public InstallableVersion(ArduinoPlatformVersion platformm) {
+			myPlatformm = platformm;
+			myMustBeInstalled = myPlatformm.isInstalled();
+		}
+
+		public boolean mustBeInstalled() {
+			return myMustBeInstalled;
+		}
+
+		public VersionNumber getVersion() {
+			return myPlatformm.getVersion();
+		}
+
+		public boolean isInstalled() {
+			return myPlatformm.isInstalled();
+		}
+
+		public void setMustBeInstalled(boolean mustBeInstalled) {
+			this.myMustBeInstalled = mustBeInstalled;
+		}
+
+		@Override
+		public int compareTo(InstallableVersion o) {
+			return getVersion().compareTo(o.getVersion());
+		}
+
+		public ArduinoPlatformVersion getPlatform() {
+			return myPlatformm;
+		}
+
+	}
+
+	public PlatformSelectionPage() {
+		for (ArduinoPlatformPackageIndex curPackageIndex : BoardsManager.getPackageIndices()) {
+			String pkgIndexID = curPackageIndex.getID();
+			TreeMap<String, TreeMap<String, InstallableVersion[]>> packageMap = new TreeMap<>();
+			for (ArduinoPackage curPackage : curPackageIndex.getPackages()) {
+				TreeMap<String, InstallableVersion[]> platformMap = new TreeMap<>();
+				String pkgID = curPackage.getID();
+				for (ArduinoPlatform curPlatform : curPackage.getPlatforms()) {
+					String platformID = curPlatform.getID();
+					Collection<ArduinoPlatformVersion> platformVersions = curPlatform.getVersions();
+					InstallableVersion versions[] = new InstallableVersion[platformVersions.size()];
+					int index = 0;
+					for (ArduinoPlatformVersion curPlatformversion : platformVersions) {
+						versions[index++] = new InstallableVersion(curPlatformversion);
+					}
+//					InstallableVersion arrayVersions[] = versions.toArray(new InstallableVersion[versions.size()]);
+//					Arrays.sort(arrayVersions, Collections.reverseOrder());
+					platformMap.put(platformID, versions);
+				}
+				packageMap.put(pkgID, platformMap);
+			}
+			myShownPlatforms.put(pkgIndexID, packageMap);
+		}
+	}
+
+//	protected PlatformTree myPlatformTree = new PackageManager.PlatformTree();
 	protected FilteredTree myGuiplatformTree;
 	protected boolean myHideJson = MyPreferences.getHideJson();
 	protected TreeViewer viewer;
@@ -98,42 +201,42 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 					isMatch |= myWordMatches(ver.getPlatform());
 
 				}
-				if (element instanceof IndexFile) {
-					IndexFile indexFile = (IndexFile) element;
+				if (element instanceof ArduinoPlatformPackageIndex) {
+					ArduinoPlatformPackageIndex indexFile = (ArduinoPlatformPackageIndex) element;
 					isMatch |= myWordMatches(indexFile);
 				}
-				if (element instanceof Package) {
-					Package pac = (Package) element;
+				if (element instanceof ArduinoPackage) {
+					ArduinoPackage pac = (ArduinoPackage) element;
 					isMatch |= myWordMatches(pac);
 				}
-				if (element instanceof Platform) {
-					Platform platform = (Platform) element;
+				if (element instanceof ArduinoPlatformVersion) {
+					ArduinoPlatformVersion platform = (ArduinoPlatformVersion) element;
 					isMatch |= myWordMatches(platform);
 
 				}
 				return isMatch;
 			}
 
-			private boolean myWordMatches(Platform platform) {
-				boolean ret = wordMatches(platform.getName());
-				ret |= wordMatches(platform.getArchitecture());
-				ret |= wordMatches(platform.getBoards());
-				ret |= myWordMatches(platform.getPackage());
+			private boolean myWordMatches(ArduinoPlatformVersion arduinoPlatformVersion) {
+				boolean ret = wordMatches(arduinoPlatformVersion.getName());
+				ret |= wordMatches(arduinoPlatformVersion.getArchitecture());
+				ret |= wordMatches(arduinoPlatformVersion.getConcattenatedBoardNames());
+				ret |= myWordMatches(arduinoPlatformVersion.getParent().getParent());
 				return ret;
 			}
 
-			private boolean myWordMatches(Package pac) {
+			private boolean myWordMatches(ArduinoPackage pac) {
 				boolean ret = wordMatches(pac.getEmail());
 				ret |= wordMatches(pac.getMaintainer());
 				ret |= wordMatches(pac.getName());
 				ret |= wordMatches(pac.getWebsiteURL().toString());
-				ret |= wordMatches(pac.getIndexFile().toString());
+				ret |= wordMatches(pac.getPackageIndex().getJsonFile().toString());
 				return ret;
 			}
 
-			private boolean myWordMatches(IndexFile indexFile) {
+			private boolean myWordMatches(ArduinoPlatformPackageIndex indexFile) {
 
-				return wordMatches(indexFile.getFullName());
+				return wordMatches(indexFile.getID());
 			}
 		};
 
@@ -148,16 +251,16 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 					@Override
 					public boolean isChecked(Object element) {
 						if (element instanceof InstallableVersion) {
-							return ((InstallableVersion) element).isInstalled();
+							return ((InstallableVersion) element).mustBeInstalled();
 						}
-						if (element instanceof IndexFile) {
-							return ((IndexFile) element).isInstalled();
+						if (element instanceof ArduinoPlatformPackageIndex) {
+							return mustBeInstalled((ArduinoPlatformPackageIndex) element);
 						}
-						if (element instanceof Package) {
-							return ((Package) element).isInstalled();
+						if (element instanceof ArduinoPackage) {
+							return mustBeInstalled((ArduinoPackage) element);
 						}
-						if (element instanceof Platform) {
-							return ((Platform) element).isInstalled();
+						if (element instanceof ArduinoPlatform) {
+							return mustBeInstalled((ArduinoPlatform) element);
 						}
 						return false;
 					}
@@ -167,17 +270,18 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						if (element instanceof InstallableVersion) {
 							return false;
 						}
-						if (element instanceof IndexFile) {
-							return ((IndexFile) element).isInstalled();
+						if (element instanceof ArduinoPlatformPackageIndex) {
+							return mustBeInstalled((ArduinoPlatformPackageIndex) element);
 						}
-						if (element instanceof Package) {
-							return ((Package) element).isInstalled();
+						if (element instanceof ArduinoPackage) {
+							return mustBeInstalled((ArduinoPackage) element);
 						}
-						if (element instanceof Platform) {
-							return ((Platform) element).isInstalled();
+						if (element instanceof ArduinoPlatform) {
+							return mustBeInstalled((ArduinoPlatform) element);
 						}
 						return false;
 					}
+
 				});
 				viewer1.addCheckStateListener(new ICheckStateListener() {
 
@@ -187,7 +291,7 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 						Object element = event.getElement();
 						if (element instanceof InstallableVersion) {
 							InstallableVersion cur = (InstallableVersion) element;
-							cur.setInstalled(event.getChecked());
+							cur.setMustBeInstalled(event.getChecked());
 						}
 
 						PlatformSelectionPage.this.viewer.refresh();
@@ -198,12 +302,12 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 					@Override
 					public Object[] getElements(Object inputElement) {
 						if (PlatformSelectionPage.this.myHideJson) {
-							Set<Package> packages = PlatformSelectionPage.this.myPlatformTree.getAllPackages();
+							List<ArduinoPackage> packages = BoardsManager.getPackages();
+							Collections.sort(packages);
 							return packages.toArray(new Object[packages.size()]);
 						}
-						Collection<IndexFile> indexFiles = PlatformSelectionPage.this.myPlatformTree.getAllIndexFiles();
+						List<ArduinoPlatformPackageIndex> indexFiles = BoardsManager.getPackageIndices();
 						return indexFiles.toArray(new Object[indexFiles.size()]);
-
 					}
 
 					@Override
@@ -218,20 +322,23 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 					@Override
 					public Object[] getChildren(Object parentElement) {
-						if (parentElement instanceof IndexFile) {
-							Collection<Package> packages = ((IndexFile) parentElement).getAllPackages();
+						if (parentElement instanceof ArduinoPlatformPackageIndex) {
+							Collection<ArduinoPackage> packages = ((ArduinoPlatformPackageIndex) parentElement)
+									.getPackages();
 							return packages.toArray(new Object[packages.size()]);
 						}
-						if (parentElement instanceof Package) {
-							Collection<Platform> platforms = ((Package) parentElement).getPlatforms();
-							return platforms.toArray(new Object[platforms.size()]);
+						if (parentElement instanceof ArduinoPackage) {
+							Collection<ArduinoPlatform> platforms = ((ArduinoPackage) parentElement).getPlatforms();
+							ArduinoPlatform platformArray[] = platforms.toArray(new ArduinoPlatform[platforms.size()]);
+							Arrays.sort(platformArray);
+							return platformArray;
 						}
-						if (parentElement instanceof Platform) {
-							Collection<InstallableVersion> versions = ((Platform) parentElement).getVersions();
-							InstallableVersion arrayVersions[] = versions
-									.toArray(new InstallableVersion[versions.size()]);
-							Arrays.sort(arrayVersions, Collections.reverseOrder());
-							return arrayVersions;
+						if (parentElement instanceof ArduinoPlatform) {
+							ArduinoPlatform platform = (ArduinoPlatform) parentElement;
+							ArduinoPackage parentPackage = platform.getParent();
+							ArduinoPlatformPackageIndex parentIndex = parentPackage.getPackageIndex();
+							return myShownPlatforms.get(parentIndex.getID()).get(parentPackage.getID())
+									.get(platform.getID());
 						}
 
 						return null;
@@ -251,30 +358,29 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 				viewer1.setLabelProvider(new CellLabelProvider() {
 					@Override
 					public String getToolTipText(Object element) {
-						if (element instanceof IndexFile) {
-							return ((IndexFile) element).getFullName();
+						if (element instanceof ArduinoPlatformPackageIndex) {
+							return ((ArduinoPlatformPackageIndex) element).getID();
 
 						}
-						if (element instanceof Package) {
+						if (element instanceof ArduinoPackage) {
 							String NULL = "NULL"; //$NON-NLS-1$
-							Package pkg = (Package) element;
+							ArduinoPackage pkg = (ArduinoPackage) element;
 							String maintainer = pkg.getMaintainer();
 							String email = pkg.getEmail();
-							URL weburl = pkg.getWebsiteURL();
-							String weburlString = NULL;
+							String weburlString = pkg.getWebsiteURL();
 							if (maintainer == null)
 								maintainer = NULL;
 							if (email == null)
 								email = NULL;
-							if (weburl != null)
-								weburlString = weburl.toString();
+							if (weburlString == null)
+								weburlString = NULL;
 
 							return Messages.packageTooltip.replace(Messages.MAINTAINER, maintainer)
 									.replace(Messages.EMAIL, email).replace(Messages.URL, weburlString);
 
 						}
-						if (element instanceof Platform) {
-							return ((Platform) element).getBoards();
+						if (element instanceof ArduinoPlatformVersion) {
+							return ((ArduinoPlatformVersion) element).getConcattenatedBoardNames();
 
 						}
 						if (element instanceof InstallableVersion) {
@@ -301,16 +407,16 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 
 					@Override
 					public void update(ViewerCell cell) {
-						if (cell.getElement() instanceof IndexFile) {
-							cell.setText(((IndexFile) cell.getElement()).getNiceName());
+						if (cell.getElement() instanceof ArduinoPlatformPackageIndex) {
+							cell.setText(((ArduinoPlatformPackageIndex) cell.getElement()).getName());
 
 						}
-						if (cell.getElement() instanceof Package) {
-							cell.setText(((Package) cell.getElement()).getName());
+						if (cell.getElement() instanceof ArduinoPackage) {
+							cell.setText(((ArduinoPackage) cell.getElement()).getName());
 
 						}
-						if (cell.getElement() instanceof Platform) {
-							cell.setText(((Platform) cell.getElement()).getName());
+						if (cell.getElement() instanceof ArduinoPlatform) {
+							cell.setText(((ArduinoPlatform) cell.getElement()).getName());
 
 						}
 						if (cell.getElement() instanceof InstallableVersion) {
@@ -334,8 +440,26 @@ public class PlatformSelectionPage extends PreferencePage implements IWorkbenchP
 	}
 
 	protected IStatus updateInstallation(IProgressMonitor monitor) {
+		List<ArduinoPlatformVersion> platformsToInstall = new LinkedList<>();
+		List<ArduinoPlatformVersion> platformsToRemove = new LinkedList<>();
+		for (TreeMap<String, TreeMap<String, InstallableVersion[]>> packageIndex : myShownPlatforms.values()) {
+			for (TreeMap<String, InstallableVersion[]> arduinoPackage : packageIndex.values()) {
+				for (InstallableVersion[] versions : arduinoPackage.values()) {
+					for (InstallableVersion version : versions) {
+						if (version.isInstalled() != version.mustBeInstalled()) {
+							if (version.mustBeInstalled()) {
+								platformsToInstall.add(version.getPlatform());
+							} else {
+								platformsToRemove.add(version.getPlatform());
+							}
+						}
+					}
+				}
+			}
+		}
+
 		MultiStatus status = new MultiStatus(PLUGIN_ID, 0, Messages.ui_installing_platforms, null);
-		PackageManager.setPlatformTree(this.myPlatformTree, monitor, status);
+		BoardsManager.updatePlatforms(platformsToInstall, platformsToRemove, monitor, status);
 		return status;
 	}
 

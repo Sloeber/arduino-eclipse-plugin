@@ -28,7 +28,7 @@ import io.sloeber.providers.MCUBoard;
 public class NightlyBoardPatronTest {
 
     private static int myBuildCounter = 0;
-    private Examples myExample;
+    private Example myExample;
     private MCUBoard myBoardID;
     private static int mySkipAtStart = 0;
     private static int myTotalFails = 0;
@@ -36,7 +36,7 @@ public class NightlyBoardPatronTest {
     private static CompileDescription myCompileOptions;
     private static boolean deleteProjects =true; //delete the projects after trying to build them
 
-	public NightlyBoardPatronTest(String name, MCUBoard boardID, Examples example) {
+	public NightlyBoardPatronTest(String name, MCUBoard boardID, Example example) {
         myBoardID = boardID;
         myExample = example;
     }
@@ -62,7 +62,7 @@ public class NightlyBoardPatronTest {
             IPath examplePath = curexample.getValue();
             //for patron Keith Willis. Thanks Keith
             if (fqn.contains("RTCZero")) {
-                Examples example = new Examples(fqn,  examplePath);
+                Example example = new Example(fqn,  examplePath);
 
                 Object[] theData = new Object[] {Shared.getCounterName( example.getLibName() + ":" + fqn + ":" + zeroBoard.getID()),
                         zeroBoard, example };

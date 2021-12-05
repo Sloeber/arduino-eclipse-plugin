@@ -3,24 +3,22 @@ package io.sloeber.core.api;
 import static io.sloeber.core.Messages.*;
 import static io.sloeber.core.common.ConfigurationPreferences.*;
 import static io.sloeber.core.common.Const.*;
-import static java.nio.file.StandardCopyOption.*;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,23 +33,29 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.google.gson.Gson;
 
 import io.sloeber.core.Activator;
-import io.sloeber.core.api.PackageManager.PlatformTree.IndexFile;
-import io.sloeber.core.api.PackageManager.PlatformTree.InstallableVersion;
-import io.sloeber.core.api.PackageManager.PlatformTree.Platform;
+import io.sloeber.core.Messages;
+import io.sloeber.core.api.Json.ArduinoInstallable;
+import io.sloeber.core.api.Json.ArduinoPackage;
+import io.sloeber.core.api.Json.ArduinoPlatform;
+import io.sloeber.core.api.Json.ArduinoPlatformPackageIndex;
+import io.sloeber.core.api.Json.ArduinoPlatformTool;
+import io.sloeber.core.api.Json.ArduinoPlatformToolVersion;
+import io.sloeber.core.api.Json.ArduinoPlatformTooldDependency;
+import io.sloeber.core.api.Json.ArduinoPlatformVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.InternalPackageManager;
-import io.sloeber.core.managers.Package;
-import io.sloeber.core.managers.PackageIndex;
-import io.sloeber.core.tools.Helpers;
+import io.sloeber.core.managers.InstallProgress;
+import io.sloeber.core.tools.MyMultiStatus;
+import io.sloeber.core.tools.PackageManager;
 import io.sloeber.core.txt.BoardTxtFile;
+import io.sloeber.core.txt.WorkAround;
 
 /**
  * This class groups both boards installed by the hardware manager and boards
@@ -60,7 +64,7 @@ import io.sloeber.core.txt.BoardTxtFile;
  * @author jantje
  *
  */
-public class PackageManager {
+public class BoardsManager {
     private static String stringSplitter = "\n";//$NON-NLS-1$
     private static final String KEY_MANAGER_JSON_URLS_V3 = "Arduino Manager board Urls"; //$NON-NLS-1$
     private static final String KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL = "https://downloads.arduino.cc/libraries/library_index.json"; //$NON-NLS-1$
@@ -71,11 +75,10 @@ public class PackageManager {
             + "https://arduino.esp8266.com/stable/package_esp8266com_index.json\n" //$NON-NLS-1$
             + KEY_MANAGER_ARDUINO_LIBRARY_JSON_URL;
 
-
-    protected static List<PackageIndex> packageIndices;
+    protected static List<ArduinoPlatformPackageIndex> packageIndices;
     private static boolean myHasbeenLogged = false;
     private static boolean envVarsNeedUpdating = true;// reset global variables at startup
-    private final static int MAX_HTTP_REDIRECTIONS = 5;
+
     private static HashMap<String, String> myWorkbenchEnvironmentVariables = new HashMap<>();
 
     /**
@@ -113,18 +116,19 @@ public class PackageManager {
     static private BoardDescription getNewestBoardIDFromBoardsManager(String jsonFileName, String packageName,
             String architectureName, String boardID, Map<String, String> options) {
 
-        Package thePackage = InternalPackageManager.getPackage(jsonFileName, packageName);
+        ArduinoPackage thePackage = getPackage(jsonFileName, packageName);
         if (thePackage == null) {
             // fail("failed to find package:" + this.mPackageName);
             return null;
         }
-        ArduinoPlatform platform = thePackage.getLatestPlatform(architectureName, true);
+        ArduinoPlatform platform = thePackage.getPlatform(architectureName);
         if (platform == null) {
             // fail("failed to find platform " + this.mPlatform + " in
             // package:" + this.mPackageName);
             return null;
         }
-        java.io.File boardsFile = platform.getBoardsFile();
+        ArduinoPlatformVersion platformVersion = platform.getNewestVersion();
+        java.io.File boardsFile = platformVersion.getBoardsFile();
         BoardDescription boardid = new BoardDescription(boardsFile, boardID, options);
 
         return boardid;
@@ -147,15 +151,6 @@ public class PackageManager {
         loadJsons(forceDownload);
     }
 
-    public static void removePackageURLs(Set<String> packageUrlsToRemove) {
-        if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
-            return;
-        }
-        InternalPackageManager.removePackageURLs(packageUrlsToRemove);
-
-    }
-
     /**
      * installs a subset of the latest platforms It skips the first <fromIndex>
      * platforms And stops at <toIndex> platforms. To install the 5 first latest
@@ -174,12 +169,12 @@ public class PackageManager {
         envVarsNeedUpdating = true;
         int currPlatformIndex = 1;
         NullProgressMonitor monitor = new NullProgressMonitor();
-        List<Package> allPackages = InternalPackageManager.getPackages();
-        for (Package curPackage : allPackages) {
-            Collection<ArduinoPlatform> latestPlatforms = curPackage.getLatestPlatforms();
+        List<ArduinoPackage> allPackages = getPackages();
+        for (ArduinoPackage curPackage : allPackages) {
+            Collection<ArduinoPlatform> latestPlatforms = curPackage.getPlatforms();
             for (ArduinoPlatform curPlatform : latestPlatforms) {
                 if (currPlatformIndex > fromIndex) {
-                    curPlatform.install(monitor);
+                    install(curPlatform.getNewestVersion(), monitor);
                 }
                 if (currPlatformIndex++ > toIndex)
                     return;
@@ -200,17 +195,82 @@ public class PackageManager {
             return;
         }
         envVarsNeedUpdating = true;
-        Package curPackage = InternalPackageManager.getPackage(JasonName, packageName);
+        ArduinoPackage curPackage = getPackage(JasonName, packageName);
         if (curPackage != null) {
-            ArduinoPlatform curPlatform = curPackage.getLatestPlatform(architectureName, false);
+            ArduinoPlatform curPlatform = curPackage.getPlatform(architectureName);
             if (curPlatform != null) {
-                NullProgressMonitor monitor = new NullProgressMonitor();
-                curPlatform.install(monitor);
-                return;
+                ArduinoPlatformVersion curPlatformVersion = curPlatform.getNewestVersion();
+                if (curPlatformVersion != null) {
+                    NullProgressMonitor monitor = new NullProgressMonitor();
+                    install(curPlatformVersion, monitor);
+                    return;
+                }
             }
         }
         Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
                 "failed to find " + JasonName + " " + packageName + " " + architectureName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    @SuppressWarnings("nls")
+    private static IStatus install(ArduinoPlatformVersion platformVersion, IProgressMonitor monitor) {
+        boolean forceDownload = false;
+        String name = platformVersion.getName();
+        String architecture = platformVersion.getArchitecture();
+        String version = platformVersion.getVersion().toString();
+        // Check if we're installed already
+        if (platformVersion.isInstalled()) {
+            System.out.println("reusing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            return Status.OK_STATUS;
+        }
+
+        // Download platform archive
+        System.out.println("start installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+        MyMultiStatus mstatus = new MyMultiStatus("Failed to install " + platformVersion.getName()); //$NON-NLS-1$
+        mstatus.addErrors(PackageManager.downloadAndInstall(platformVersion, forceDownload, monitor));
+        if (!mstatus.isOK()) {
+            // no use installing tools when the boards failed installing
+            return mstatus;
+        }
+
+        //keep a copy of the json file used at install
+        File packageFile = platformVersion.getParent().getParent().getPackageIndex().getJsonFile();
+        File copyToFile = platformVersion.getInstallPath().append(packageFile.getName()).toFile();
+        try {
+            Files.copy(packageFile.toPath(), copyToFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ArduinoPackage referencingPkg = platformVersion.getParent().getParent();
+        for (ArduinoPlatformTooldDependency toolDependency : platformVersion.getToolsDependencies()) {
+            ArduinoPlatformToolVersion tool = referencingPkg.getTool(toolDependency.getName(),
+                    toolDependency.getVersion());
+            if (tool == null) {
+                //this is a tool provided by another platform
+                //and the referencing platform does not specify the installable info
+                //This means the package file of the referencing platform needs to be provided
+                ArduinoPackage pkg = getPackageByProvider(toolDependency.getPackager());
+                if (pkg != null) {
+                    tool = pkg.getTool(toolDependency.getName(), toolDependency.getVersion());
+                }
+            }
+            if (tool == null) {
+                mstatus.add(new Status(IStatus.ERROR, Activator.getId(),
+                        Messages.Tool_no_valid_system.replace(Messages.KEY_TAG, toolDependency.getName())));
+            } else if (!tool.isInstalled()) {
+                ArduinoInstallable installable = tool.getInstallable();
+                if (installable != null) {
+                    monitor.setTaskName(InstallProgress.getRandomMessage());
+                    mstatus.addErrors(PackageManager.downloadAndInstall(installable, forceDownload, monitor));
+                }
+            }
+        }
+
+        WorkAround.applyKnownWorkArounds(platformVersion);
+
+        System.out.println("done installing platform " + name + " " + architecture + "(" + version + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        return mstatus;
     }
 
     public static void addPrivateHardwarePath(String newHardwarePath) {
@@ -227,15 +287,6 @@ public class PackageManager {
         }
         newPaths[currentPaths.length] = newHardwarePath;
         InstancePreferences.setPrivateHardwarePaths(newPaths);
-    }
-
-    public static boolean isReady() {
-        return InternalPackageManager.isReady();
-    }
-
-    public static String[] getBoardNames(String boardFile) {
-        BoardTxtFile theBoardsFile = new BoardTxtFile(new File(boardFile));
-        return theBoardsFile.getAllSectionNames();
     }
 
     /**
@@ -291,327 +342,48 @@ public class PackageManager {
                 + ConfigurationPreferences.getInstallationPathPackages()).split(File.pathSeparator);
     }
 
-    public static class PlatformTree {
-        private TreeMap<String, IndexFile> IndexFiles = new TreeMap<>();
-
-        public class InstallableVersion implements Comparable<InstallableVersion> {
-            private Platform platform;
-            private ArduinoPlatform myInternalPlatformm;
-            private boolean isInstalled;
-
-            public InstallableVersion(ArduinoPlatform internalPlatformm, Platform platform) {
-                this.platform = platform;
-                this.myInternalPlatformm = internalPlatformm;
-                this.isInstalled = this.myInternalPlatformm.isInstalled();
-            }
-
-            public VersionNumber getVersion() {
-                return new VersionNumber(this.myInternalPlatformm.getVersion());
-            }
-
-            public boolean isInstalled() {
-                return this.isInstalled;
-            }
-
-            public void setInstalled(boolean isInstalled) {
-                this.isInstalled = isInstalled;
-            }
-
-            @Override
-            public int compareTo(InstallableVersion o) {
-                return getVersion().compareTo(o.getVersion());
-            }
-
-            public Platform getPlatform() {
-                return this.platform;
-            }
-
-            public ArduinoPlatform getInternalPlatform() {
-                return this.myInternalPlatformm;
-            }
-
-        }
-
-        public class Platform implements Comparable<Platform> {
-
-            private String name;
-            private String architecture;
-            protected TreeSet<InstallableVersion> versions = new TreeSet<>();
-            protected String boards;
-            private Package pac;
-
-            public String getArchitecture() {
-                return this.architecture;
-            }
-
-            public String getBoards() {
-                return this.boards;
-            }
-
-            public Platform(ArduinoPlatform internalPlatformm, Package pac) {
-                this.name = internalPlatformm.getName();
-                this.architecture = internalPlatformm.getArchitecture();
-                this.versions.add(new InstallableVersion(internalPlatformm, this));
-                this.boards = String.join("\n", internalPlatformm.getBoardNames()); //$NON-NLS-1$
-                this.pac = pac;
-            }
-
-            public void addVersion(ArduinoPlatform internalPlatformm) {
-                this.versions.add(new InstallableVersion(internalPlatformm, this));
-
-            }
-
-            public Collection<InstallableVersion> getVersions() {
-                return this.versions;
-            }
-
-            public String getName() {
-                return this.name;
-            }
-
-            public String getLatest() {
-                return this.versions.last().toString();
-            }
-
-            @Override
-            public int compareTo(Platform other) {
-                return this.name.compareToIgnoreCase(other.name);
-            }
-
-            public InstallableVersion getVersion(VersionNumber versionNumber) {
-                for (InstallableVersion curVersion : this.versions) {
-                    if (curVersion.getVersion().compareTo(versionNumber) == 0) {
-                        return curVersion;
-                    }
-                }
-                return null;
-            }
-
-            public boolean isInstalled() {
-                for (InstallableVersion curVersion : this.versions) {
-                    if (curVersion.isInstalled()) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            public Package getPackage() {
-                return this.pac;
-            }
-        }
-
-        /**
-         * This class represents the json file on disk
-         */
-        public class IndexFile implements Comparable<IndexFile> {
-            protected File jsonFile;
-            protected TreeMap<String, Package> packages = new TreeMap<>();
-
-            public IndexFile(File jsonFile) {
-                this.jsonFile = jsonFile;
-            }
-
-            @Override
-            public int compareTo(IndexFile other) {
-                return this.jsonFile.compareTo(other.jsonFile);
-            }
-
-            public Collection<Package> getAllPackages() {
-                return this.packages.values();
-            }
-
-            public String getNiceName() {
-                return this.jsonFile.getName();
-            }
-
-            public String getFullName() {
-                return this.jsonFile.getPath();
-            }
-
-            /**
-             * is one ore more packages of this index file installed
-             *
-             * @return returns true if at least one version of one child platform of a child
-             *         packageis installed
-             */
-
-            public boolean isInstalled() {
-                for (Package curpackage : this.packages.values()) {
-                    if (curpackage.isInstalled()) {
-                        return true;
-
-                    }
-                }
-                return false;
-            }
-        }
-
-        public class Package implements Comparable<Package> {
-            public String getMaintainer() {
-                return this.maintainer;
-            }
-
-            public URL getWebsiteURL() {
-                return this.websiteURL;
-            }
-
-            public String getEmail() {
-                return this.email;
-            }
-
-            private String name;
-            private String maintainer;
-            private URL websiteURL;
-            private String email;
-
-            protected TreeMap<String, Platform> platforms = new TreeMap<>();
-            private IndexFile indexFile;
-
-            public Package(String name) {
-                this.name = name;
-            }
-
-            public Package(io.sloeber.core.managers.Package pack, IndexFile indexFile) {
-                this.name = pack.getName();
-                this.maintainer = pack.getMaintainer();
-                try {
-                    this.websiteURL = new URL(pack.getWebsiteURL());
-                } catch (MalformedURLException e) {
-                    // ignore this error
-                }
-                this.email = pack.getEmail();
-                this.indexFile = indexFile;
-            }
-
-            public String getName() {
-                return this.name;
-            }
-
-            public Collection<Platform> getPlatforms() {
-                return this.platforms.values();
-            }
-
-            @Override
-            public int compareTo(Package other) {
-                return this.name.compareToIgnoreCase(other.name);
-            }
-
-            /**
-             * is one ore more platforms of this package installed
-             *
-             * @return returns true if at least one version of one child platform is
-             *         installed
-             */
-            public boolean isInstalled() {
-                for (Platform curplatform : this.platforms.values()) {
-                    if (curplatform.isInstalled()) {
-                        return true;
-
-                    }
-                }
-                return false;
-            }
-
-            public IndexFile getIndexFile() {
-                return this.indexFile;
-            }
-
-        }
-
-        public PlatformTree() {
-            List<PackageIndex> packageIndexes = InternalPackageManager.getPackageIndices();
-            for (PackageIndex curPackageIndex : packageIndexes) {
-                IndexFile curIndexFile = new IndexFile(curPackageIndex.getJsonFile());
-                this.IndexFiles.put(curPackageIndex.getJsonFileName(), curIndexFile);
-                for (io.sloeber.core.managers.Package curInternalPackage : curPackageIndex.getPackages()) {
-                    Package curPackage = new Package(curInternalPackage, curIndexFile);
-                    curIndexFile.packages.put(curPackage.getName(), curPackage);
-                    for (ArduinoPlatform curInternalPlatform : curInternalPackage.getPlatforms()) {
-                        Platform curPlatform = new Platform(curInternalPlatform, curPackage);
-                        Platform foundPlatform = curPackage.platforms.get(curPlatform.getName());
-                        if (foundPlatform == null) {
-                            curPackage.platforms.put(curPlatform.getName(), curPlatform);
-                        } else {
-                            foundPlatform.addVersion(curInternalPlatform);
-                        }
-                    }
-                }
-            }
-        }
-
-        public Collection<IndexFile> getAllIndexFiles() {
-            return this.IndexFiles.values();
-        }
-
-        public Set<Package> getAllPackages() {
-            Set<Package> all = new TreeSet<>();
-            for (IndexFile indexFile : this.IndexFiles.values()) {
-                all.addAll(indexFile.getAllPackages());
-            }
-            return all;
-        }
-
-        public Collection<Platform> getAllPlatforms() {
-            Set<Platform> all = new TreeSet<>();
-            for (IndexFile curIndexFile : this.IndexFiles.values()) {
-                for (Package curPackage : curIndexFile.getAllPackages()) {
-                    all.addAll(curPackage.getPlatforms());
-                }
-            }
-            return all;
-        }
-
-        public IndexFile getIndexFile(PackageIndex packageIndex) {
-            return this.IndexFiles.get(packageIndex.getJsonFileName());
-        }
-
-        @SuppressWarnings("static-method")
-        public Package getPackage(IndexFile indexFile, io.sloeber.core.managers.Package curInternalPackage) {
-            return indexFile.packages.get(curInternalPackage.getName());
-        }
-
-        @SuppressWarnings("static-method")
-        public Platform getPlatform(Package curPackage, ArduinoPlatform curInternalPlatform) {
-            return curPackage.platforms.get(curInternalPlatform.getName());
-        }
-
-    }
-
-    public static IStatus setPlatformTree(PlatformTree platformTree, IProgressMonitor monitor, MultiStatus status) {
+    public static IStatus updatePlatforms(List<ArduinoPlatformVersion> platformsToInstall,
+            List<ArduinoPlatformVersion> platformsToRemove, IProgressMonitor monitor, MultiStatus status) {
         if (!isReady()) {
             status.add(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, null));
             return status;
         }
+        //TODO updating the jsons after selecting what to install seems dangerous to me; check to delete
         if (!ConfigurationPreferences.getUpdateJasonFilesFlag()) {
             loadJsons(true);
         }
         envVarsNeedUpdating = true;
         try {
-            InternalPackageManager.setReady(false);
-
-            for (IndexFile curIndexFile : platformTree.getAllIndexFiles()) {
-                for (io.sloeber.core.api.PackageManager.PlatformTree.Package curPackage : curIndexFile
-                        .getAllPackages()) {
-                    for (Platform curPlatform : curPackage.getPlatforms()) {
-                        for (InstallableVersion curVersion : curPlatform.getVersions()) {
-                            if (curVersion.isInstalled()) {
-                                status.add(curVersion.getInternalPlatform().install(monitor));
-                            } else {
-
-                                status.add(curVersion.getInternalPlatform().remove(monitor));
-                            }
-                        }
-                    }
-                }
-
+            myIsReady = false;
+            for (ArduinoPlatformVersion curPlatform : platformsToRemove) {
+                status.add(uninstall(curPlatform, monitor));
             }
+            for (ArduinoPlatformVersion curPlatform : platformsToInstall) {
+                status.add(install(curPlatform, monitor));
+            }
+
         } catch (Exception e) {
             // do nothing
         }
-        InternalPackageManager.setReady(true);
+        myIsReady = true;
         SloeberProject.reloadTxtFile();
         return status;
+    }
+
+    public static IStatus uninstall(ArduinoPlatformVersion curPlatform, IProgressMonitor monitor) {
+        if (!curPlatform.isInstalled()) {
+            return Status.OK_STATUS;
+        }
+
+        File installFolder = curPlatform.getInstallPath().toFile();
+        try {
+            FileUtils.deleteDirectory(installFolder);
+        } catch (IOException e) {
+            return new Status(IStatus.ERROR, Activator.getId(), "Failed to remove folder" + installFolder.toString(), //$NON-NLS-1$
+                    e);
+        }
+
+        return Status.OK_STATUS;
     }
 
     public static TreeMap<String, String> getAllmenus() {
@@ -622,18 +394,6 @@ public class PackageManager {
             ret.putAll(txtFile.getMenus());
         }
         return ret;
-    }
-
-    /**
-     * Remove all packages that have a more recent version
-     */
-    public static void onlyKeepLatestPlatforms() {
-        if (!isReady()) {
-            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
-            return;
-        }
-        InternalPackageManager.onlyKeepLatestPlatforms();
-
     }
 
     public static void setPrivateHardwarePaths(String[] hardWarePaths) {
@@ -657,6 +417,8 @@ public class PackageManager {
             if (!jsonUrl.trim().isEmpty()) // skip empty lines
                 loadJson(jsonUrl, forceDownload);
         }
+        //sorting here so things look good in the gui
+        Collections.sort(packageIndices);
     }
 
     /**
@@ -677,7 +439,7 @@ public class PackageManager {
         if (!jsonFile.exists() || forceDownload) {
             jsonFile.getParentFile().mkdirs();
             try {
-                mySafeCopy(new URL(url.trim()), jsonFile, false);
+                PackageManager.mySafeCopy(new URL(url.trim()), jsonFile, false);
             } catch (IOException e) {
                 Common.log(new Status(IStatus.ERROR, Activator.getId(), "Unable to download " + url, e)); //$NON-NLS-1$
             }
@@ -696,9 +458,8 @@ public class PackageManager {
 
     static private void loadPackage(File jsonFile) {
         try (Reader reader = new FileReader(jsonFile)) {
-            PackageIndex index = new Gson().fromJson(reader, PackageIndex.class);
-            index.setOwners();
-            index.setJsonFile(jsonFile);
+            ArduinoPlatformPackageIndex index = new Gson().fromJson(reader, ArduinoPlatformPackageIndex.class);
+            index.setPackageFile(jsonFile);
             packageIndices.add(index);
         } catch (Exception e) {
             Common.log(new Status(IStatus.ERROR, Activator.getId(),
@@ -739,88 +500,6 @@ public class PackageManager {
         java.nio.file.Path packagePath = Paths
                 .get(ConfigurationPreferences.getInstallationPath().append(localFileName).toString());
         return packagePath.toFile();
-    }
-
-    /**
-     * copy a url locally taking into account redirections
-     *
-     * @param url
-     * @param localFile
-     * @throws IOException
-     */
-    protected static void myCopy(URL url, File localFile, boolean report_error) throws IOException {
-        myCopy(url, localFile, report_error, 0);
-    }
-
-    @SuppressWarnings("nls")
-    private static void myCopy(URL url, File localFile, boolean report_error, int redirectionCounter)
-            throws IOException {
-        if ("file".equals(url.getProtocol())) {
-            FileUtils.copyFile(new File(url.getFile()), localFile);
-            return;
-        }
-        try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(30000);
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-            conn.addRequestProperty("Referer", "google.com");
-
-            // normally, 3xx is redirect
-            int status = conn.getResponseCode();
-
-            if (status == HttpURLConnection.HTTP_OK) {
-                try (InputStream stream = url.openStream()) {
-                    Files.copy(stream, localFile.toPath(), REPLACE_EXISTING);
-                }
-                return;
-            }
-
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM
-                    || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                if (redirectionCounter >= MAX_HTTP_REDIRECTIONS) {
-                    throw new IOException("Too many redirections while downloading file.");
-                }
-                myCopy(new URL(conn.getHeaderField("Location")), localFile, report_error, redirectionCounter + 1);
-                return;
-            }
-            if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(),
-                        "Failed to download url " + url + " error code is: " + status, null));
-            }
-            throw new IOException("Failed to download url " + url + " error code is: " + status);
-
-        } catch (Exception e) {
-            if (report_error) {
-                Common.log(new Status(IStatus.WARNING, Activator.getId(), "Failed to download url " + url, e));
-            }
-            throw e;
-
-        }
-    }
-
-    /**
-     * copy a url locally taking into account redirections in such a way that if
-     * there is already a file it does not get lost if the download fails
-     *
-     * @param url
-     * @param localFile
-     * @throws IOException
-     */
-    protected static void mySafeCopy(URL url, File localFile, boolean report_error) throws IOException {
-        File savedFile = null;
-        if (localFile.exists()) {
-            savedFile = File.createTempFile(localFile.getName(), "Sloeber"); //$NON-NLS-1$
-            Files.move(localFile.toPath(), savedFile.toPath(), REPLACE_EXISTING);
-        }
-        try {
-            myCopy(url, localFile, report_error);
-        } catch (Exception e) {
-            if (null != savedFile) {
-                Files.move(savedFile.toPath(), localFile.toPath(), REPLACE_EXISTING);
-            }
-            throw e;
-        }
     }
 
     public static String getDefaultJsonURLs() {
@@ -867,6 +546,7 @@ public class PackageManager {
         }
         return ret;
     }
+
     /**
      * Completely replace the list with jsons with a new list
      *
@@ -904,8 +584,6 @@ public class PackageManager {
         loadJsons(false);
     }
 
-
-
     public static void removeAllInstalledPlatforms() {
         if (!isReady()) {
             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
@@ -932,54 +610,283 @@ public class PackageManager {
             return myWorkbenchEnvironmentVariables;
         }
         myWorkbenchEnvironmentVariables.clear();
-        ArduinoPlatform latestAvrPlatform=null;
-        ArduinoPlatform latestSamdPlatform=null;
-        ArduinoPlatform latestSamPlatform=null;
-        for (ArduinoPlatform curPlatform : InternalPackageManager.getInstalledPlatforms()) {
-            Package pkg = curPlatform.getParent();
-            if (pkg != null) {
-                myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(curPlatform, false));
-                if(Const.ARDUINO.equalsIgnoreCase(pkg.getMaintainer())){
-                switch (curPlatform.getArchitecture()) {
-                case Const.AVR:
-                	latestAvrPlatform=curPlatform;
-                	break;
-                case Const.SAM:
-                	latestSamPlatform=curPlatform;
-                	break;
-                case Const.SAMD:
-                	latestSamdPlatform=curPlatform;
-                	break;
-                }            	
-                }
-            }
-        }
+        ArduinoPlatformVersion latestAvrPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.AVR);
+        ArduinoPlatformVersion latestSamdPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAMD);
+        ArduinoPlatformVersion latestSamPlatform = getNewestInstalledPlatform(Const.ARDUINO, Const.SAM);
 
-        if( latestSamdPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamdPlatform, false));
+        if (latestSamdPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamdPlatform));
         }
-        if( latestSamPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestSamPlatform, false));
+        if (latestSamPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestSamPlatform));
         }
-        if( latestAvrPlatform!=null) {
-        	myWorkbenchEnvironmentVariables.putAll(Helpers.getEnvVarPlatformFileTools(latestAvrPlatform, false));
+        if (latestAvrPlatform != null) {
+            myWorkbenchEnvironmentVariables.putAll(getEnvVarPlatformFileTools(latestAvrPlatform));
         }
         envVarsNeedUpdating = false;
         return myWorkbenchEnvironmentVariables;
     }
 
-    /**
-     * Only the latest versions of the platforms.
-     *
-     * @return latest platforms
-     */
-    public static Collection<ArduinoPlatform> getLatestPlatforms() {
-        Collection<ArduinoPlatform> allLatestPlatforms = new LinkedList<>();
-        List<Package> allPackages = InternalPackageManager.getPackages();
-        for (Package curPackage : allPackages) {
-            allLatestPlatforms.addAll(curPackage.getLatestPlatforms());
+    private static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatformVersion platformVersion) {
+        HashMap<String, String> vars = new HashMap<>();
+        ArduinoPackage pkg = platformVersion.getParent().getParent();
+        for (ArduinoPlatformTooldDependency tool : platformVersion.getToolsDependencies()) {
+            ArduinoPlatformTool theTool = pkg.getTool(tool.getName());
+            if (theTool == null) {
+                System.err.println("Did not find " + tool.getName() + " in package with ID " + pkg.getID()); //$NON-NLS-1$ //$NON-NLS-2$
+            } else {
+                vars.putAll(theTool.getEnvVars(null));
+            }
         }
-        return allLatestPlatforms;
+        return vars;
+    }
+
+    /**
+     * given a vendor and a architecture provide the newest installed platform
+     * version
+     * 
+     * @param vendor
+     * @param architecture
+     * @return the found platformVersion or null if none found
+     */
+    public static ArduinoPlatformVersion getNewestInstalledPlatform(String vendor, String architecture) {
+        ArduinoPlatform platform = getPlatform(vendor, architecture);
+        if (platform == null) {
+            return null;
+        }
+        return platform.getNewestInstalled();
+    }
+
+    //Below is what used to be the internal package manager class
+
+    private static boolean myIsReady = false;
+
+    public static boolean isReady() {
+        return myIsReady;
+    }
+
+    /**
+     * Loads all stuff needed and if this is the first time downloads the avr boards
+     * and needed tools
+     *
+     * @param monitor
+     */
+    public static synchronized void startup_Pluging(IProgressMonitor monitor) {
+        loadJsons(ConfigurationPreferences.getUpdateJasonFilesFlag());
+
+        if (!LibraryManager.libsAreInstalled()) {
+            LibraryManager.InstallDefaultLibraries(monitor);
+        }
+        IPath examplesPath = ConfigurationPreferences.getInstallationPathExamples();
+        if (!examplesPath.toFile().exists()) {// examples are not installed
+            // Download arduino IDE example programs
+            Common.log(PackageManager.downloadAndInstall(Defaults.EXAMPLES_URL, Defaults.EXAMPLE_PACKAGE, examplesPath,
+                    false, monitor));
+        }
+        if (!areThereInstalledBoards()) {
+
+            IStatus status = null;
+
+            // if successfully installed the examples: add the boards
+            ArduinoPlatform platform = getPlatform(Defaults.DEFAULT_INSTALL_MAINTAINER,
+                    Defaults.DEFAULT_INSTALL_ARCHITECTURE);
+            //we failed to find arduino avr platform. Take the fiorst one
+            if (platform == null) {
+                try {
+                    platform = getPlatforms().get(0);
+                } catch (@SuppressWarnings("unused") Exception e) {
+                    //no need to do anything
+                }
+            }
+            if (platform == null) {
+                status = new Status(IStatus.ERROR, Activator.getId(), Messages.No_Platform_available);
+            } else {
+                status = install(platform.getNewestVersion(), monitor);
+            }
+
+            if (!status.isOK()) {
+                StatusManager stMan = StatusManager.getManager();
+                stMan.handle(status, StatusManager.LOG | StatusManager.SHOW | StatusManager.BLOCK);
+            }
+
+        }
+        myIsReady = true;
+
+    }
+
+    synchronized static public List<ArduinoPlatformPackageIndex> getPackageIndices() {
+        if (packageIndices == null) {
+            loadJsons(false);
+        }
+        return packageIndices;
+    }
+
+    public static List<ArduinoPlatform> getPlatforms() {
+        List<ArduinoPlatform> platforms = new ArrayList<>();
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+                platforms.addAll(pkg.getPlatforms());
+            }
+        }
+        return platforms;
+    }
+
+    public static ArduinoPlatform getPlatform(String vendor, String architecture) {
+
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            ArduinoPackage pkg = index.getPackage(vendor);
+            if (pkg != null) {
+                ArduinoPlatform platform = pkg.getPlatform(architecture);
+                if (platform != null) {
+                    return platform;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Given a platform.txt file find the platform in the platform manager
+     *
+     * @param platformTxt
+     * @return the found platform otherwise null
+     */
+    public static ArduinoPlatformVersion getPlatform(IPath platformPath) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+                for (ArduinoPlatform curPlatform : pkg.getPlatforms()) {
+                    if (platformPath
+                            .matchingFirstSegments(curPlatform.getInstallPath()) > (platformPath.segmentCount() - 2))
+
+                        for (ArduinoPlatformVersion curPlatformVersion : curPlatform.getVersions()) {
+                            if (curPlatformVersion.getInstallPath().equals(platformPath)) {
+                                return curPlatformVersion;
+                            }
+                        }
+                }
+            }
+        }
+        return null;
+    }
+
+    static public List<ArduinoPlatformVersion> getInstalledPlatforms() {
+        List<ArduinoPlatformVersion> platforms = new ArrayList<>();
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+
+                platforms.addAll(pkg.getInstalledPlatforms());
+
+            }
+        }
+        return platforms;
+    }
+
+    static public boolean areThereInstalledBoards() {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+                if (pkg.isInstalled()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static public List<ArduinoPackage> getPackages() {
+        List<ArduinoPackage> packages = new ArrayList<>();
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            packages.addAll(index.getPackages());
+        }
+
+        return packages;
+    }
+
+    static public ArduinoPackage getPackage(String JasonName, String packageName) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            if (index.getJsonFile().getName().equals(JasonName)) {
+                return index.getPackage(packageName);
+            }
+        }
+        return null;
+    }
+
+    static public ArduinoPackage getPackage(String packageName) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            ArduinoPackage pkg = index.getPackage(packageName);
+            if (pkg != null) {
+                return pkg;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This method removes the json files from disk and removes memory references to
+     * these files or their content
+     *
+     * @param packageUrlsToRemove
+     */
+    public static void removePackageURLs(Set<String> packageUrlsToRemove) {
+        if (!isReady()) {
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            return;
+        }
+        // remove the files from memory
+        Set<String> activeUrls = new HashSet<>(Arrays.asList(getJsonURLList()));
+
+        activeUrls.removeAll(packageUrlsToRemove);
+
+        setJsonURLs(activeUrls.toArray((String[]) null));
+
+        // remove the files from disk
+        for (String curJson : packageUrlsToRemove) {
+            File localFile = getLocalFileName(curJson, true);
+            if (localFile != null) {
+                if (localFile.exists()) {
+                    localFile.delete();
+                }
+            }
+        }
+
+        // reload the indices (this will remove all potential remaining
+        // references
+        // existing files do not need to be refreshed as they have been
+        // refreshed at startup
+        loadJsons(false);
+
+    }
+
+    /**
+     * Remove all packages that have a more recent version
+     */
+    public static void onlyKeepLatestPlatforms() {
+        if (!isReady()) {
+            Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, BoardsManagerIsBussy, new Exception()));
+            return;
+        }
+        List<ArduinoPackage> allPackages = getPackages();
+        for (ArduinoPackage curPackage : allPackages) {
+            curPackage.onlyKeepLatestPlatforms();
+        }
+    }
+
+    public static ArduinoPlatformVersion getPlatform(String vendor, String architecture, VersionNumber refVersion) {
+        ArduinoPlatform platform = getPlatform(vendor, architecture);
+        if (platform != null) {
+            return platform.getVersion(refVersion);
+        }
+        return null;
+    }
+
+    public static ArduinoPackage getPackageByProvider(String packager) {
+        for (ArduinoPlatformPackageIndex index : getPackageIndices()) {
+            for (ArduinoPackage pkg : index.getPackages()) {
+                if (packager.equals(pkg.getID())) {
+                    return pkg;
+                }
+            }
+        }
+        return null;
     }
 
 }

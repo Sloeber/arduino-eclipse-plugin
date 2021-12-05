@@ -22,7 +22,7 @@ import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
@@ -75,9 +75,9 @@ public class CreateAndCompileExamplesTest {
 			CodeDescription codeDescriptor = CodeDescription.createExample(false, paths);
 
 			String fqn=curexample.getKey();
-			Examples example=new Examples(fqn,curexample.getValue());
+			Example example=new Example(fqn,curexample.getValue());
             // with the current amount of examples only do one
-            MCUBoard board = Examples.pickBestBoard(example, myBoards);
+            MCUBoard board = Example.pickBestBoard(example, myBoards);
             if (board != null) {
                 BoardDescription curBoard = board.getBoardDescriptor();
                 if (curBoard != null) {
@@ -106,12 +106,12 @@ public class CreateAndCompileExamplesTest {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL };
-		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), true);
 		if (reinstall_boards_and_examples) {
-			PackageManager.installAllLatestPlatforms();
-			PackageManager.onlyKeepLatestPlatforms();
+			BoardsManager.installAllLatestPlatforms();
+			BoardsManager.onlyKeepLatestPlatforms();
 			// deal with removal of json files or libs from json files
-			LibraryManager.removeAllLibs();
+			LibraryManager.unInstallAllLibs();
 			LibraryManager.installAllLatestLibraries();
 		}
 

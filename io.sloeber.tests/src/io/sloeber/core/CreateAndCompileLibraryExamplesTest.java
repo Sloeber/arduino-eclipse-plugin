@@ -20,7 +20,7 @@ import org.junit.runners.Parameterized.Parameters;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.LibraryManager;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.Preferences;
 import io.sloeber.providers.Adafruit;
 import io.sloeber.providers.Arduino;
@@ -38,11 +38,11 @@ public class CreateAndCompileLibraryExamplesTest {
 
 	private static int myBuildCounter = 0;
 	private static int myTotalFails = 0;
-	private Examples myExample;
+	private Example myExample;
 	private MCUBoard myBoard;
 
 	@SuppressWarnings("unused")
-	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Examples example) {
+	public CreateAndCompileLibraryExamplesTest(String name, MCUBoard boardID, Example example) {
 		myBoard = boardID;
 		myExample = example;
 	}
@@ -66,10 +66,10 @@ public class CreateAndCompileLibraryExamplesTest {
 		for (Map.Entry<String, IPath> curexample : exampleFolders.entrySet()) {
 			String fqn = curexample.getKey().trim();
 			IPath examplePath = curexample.getValue();
-			Examples example = new Examples(fqn, examplePath);
+			Example example = new Example(fqn, examplePath);
 
 			// with the current amount of examples only do one
-			MCUBoard curBoard = Examples.pickBestBoard(example, myBoards);
+			MCUBoard curBoard = Example.pickBestBoard(example, myBoards);
 
 			if (curBoard != null) {
 				Object[] theData = new Object[] { example.getLibName() + ":" + fqn + ":" + curBoard.getID(), curBoard,
@@ -97,21 +97,21 @@ public class CreateAndCompileLibraryExamplesTest {
 
 	public static void installAdditionalBoards() {
 		String[] packageUrlsToAdd = { ESP8266.packageURL, Adafruit.packageURL, ESP32.packageURL };
-		PackageManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
+		BoardsManager.addPackageURLs(new HashSet<>(Arrays.asList(packageUrlsToAdd)), reinstall_boards_and_examples);
 		if (reinstall_boards_and_examples) {
-			PackageManager.installAllLatestPlatforms();
-			PackageManager.onlyKeepLatestPlatforms();
+			BoardsManager.installAllLatestPlatforms();
+			BoardsManager.onlyKeepLatestPlatforms();
 			// deal with removal of json files or libs from json files
-			LibraryManager.removeAllLibs();
+			LibraryManager.unInstallAllLibs();
 			LibraryManager.installAllLatestLibraries();
 			// LibraryManager.onlyKeepLatestPlatforms();
 		}
 		if (MySystem.getTeensyPlatform().isEmpty()) {
 			System.err.println("ERROR: Teensy not installed/configured skipping tests!!!");
 		} else {
-			PackageManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
+			BoardsManager.addPrivateHardwarePath(MySystem.getTeensyPlatform());
 		}
-		PackageManager.installAllLatestPlatforms();
+		BoardsManager.installAllLatestPlatforms();
 
 	}
 

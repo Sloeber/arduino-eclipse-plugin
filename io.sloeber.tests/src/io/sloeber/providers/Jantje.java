@@ -3,40 +3,26 @@ package io.sloeber.providers;
 import static org.junit.Assert.*;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import io.sloeber.core.Examples;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.Example;
+import io.sloeber.core.api.BoardDescription;
+import io.sloeber.core.api.BoardsManager;
 
 @SuppressWarnings("nls")
 public class Jantje extends MCUBoard {
 
-	private static final String provider = "Jantje";
-	private static final String packageName = "Jantje";
+    private static final String provider = "Jantje";
+    private static final String packageName = "Jantje";
     private static final String localDebugArchitectureName = "pc";
-    private static final String jsonFileName ="package_jantje_index.json";
-    // TODO check the line below as it seems wrong
-    public static final String jsonURL ="http://arduino.esp8266.com/stable/package_esp8266com_index.json";
+    private static final String jsonFileName = "package_jantje_index.json";
+    // the below json url is need as esp8266 is a referenced platform
+    public static final String additionalJsonURL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
-
-
-	public Jantje(String boardName) {
-		Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		options.put("type", "debug");
-		this.myBoardDescriptor = PackageManager.getBoardDescription(jsonFileName,packageName,localDebugArchitectureName ,
-				boardName, options);
-		if (this.myBoardDescriptor == null) {
-			fail(boardName + " Board not found");
-		}
-		this.myBoardDescriptor.setUploadPort("none");
-
-		myAttributes.serial=!Arduino.doesNotSupportSerialList().contains(boardName);
-		myAttributes.serial1=Arduino.supportSerial1List().contains(boardName);
-		myAttributes.keyboard=Arduino.supportKeyboardList().contains(boardName);
-	}
     @Override
-    public boolean isExampleSupported(Examples example) {
+    public boolean isExampleSupported(Example example) {
         LinkedList<String> notSupportedExamples = new LinkedList<>();
         notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardLogout");
         notSupportedExamples.add("Example/09.USB/Keyboard/KeyboardMessage");
@@ -46,25 +32,48 @@ public class Jantje extends MCUBoard {
         notSupportedExamples.add("Example/09.USB/Mouse/ButtonMouseControl");
         notSupportedExamples.add("Example/09.USB/Mouse/JoystickMouseControl");
         notSupportedExamples.add("Example/10.StarterKit_BasicKit/p13_TouchSensorLamp");
-      if(  notSupportedExamples.contains(example.getFQN())) {
-          return false;
-      }
+        if (notSupportedExamples.contains(example.getFQN())) {
+            return false;
+        }
         return super.isExampleSupported(example);
     }
 
-    public static MCUBoard[] getAllBoards() {
-        // TOFIX hardcode this stuff now because I want to release 4.3.1
-    	//shoulds be something like 
-        //return PackageManager.getAllBoardDescriptors(getJsonFileName(),getPackageName(),getPlatformName() , options);
-    	MCUBoard[] boards = {  new Jantje("yun"),new Jantje("uno"),new Jantje("diecimila"),new Jantje("nano"),new Jantje("mega"),new Jantje("megaADK"),new Jantje("leonardo"),new Jantje("micro"),
-        		new Jantje("esplora"),new Jantje("mini"),new Jantje("ethernet"),new Jantje("fio"),new Jantje("bt"),new Jantje("LilyPadUSB"),new Jantje("lilypad"),new Jantje("pro"),
-        		new Jantje("atmegang"),new Jantje("robotControl") };
-		return boards;
+    public static List<MCUBoard> getAllBoards() {
+        return getAllBoards(provider, Arduino.uno());
     }
-    
-	public static void installLatestLocalDebugBoards() {
-	    PackageManager.installLatestPlatform(jsonFileName,provider, localDebugArchitectureName);
-	}
 
+    @Override
+    public MCUBoard createMCUBoard(BoardDescription boardDescriptor) {
+        return new Jantje(boardDescriptor);
+
+    }
+
+    public Jantje(BoardDescription boardDescriptor) {
+        myBoardDescriptor = boardDescriptor;
+        setAttributes();
+    }
+
+    public Jantje(String boardName) {
+        Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        options.put("type", "debug");
+        myBoardDescriptor = BoardsManager.getBoardDescription(jsonFileName, packageName, localDebugArchitectureName,
+                boardName, options);
+        if (myBoardDescriptor == null) {
+            fail(boardName + " Board not found");
+        }
+        setAttributes();
+    }
+
+    public static void installLatestLocalDebugBoards() {
+        BoardsManager.installLatestPlatform(jsonFileName, provider, localDebugArchitectureName);
+    }
+
+    @Override
+    protected void setAttributes() {
+        String boardID = myBoardDescriptor.getBoardID();
+        Arduino.sharedsetAttributes(boardID, myAttributes);
+        setUploadPort("none");
+
+    }
 
 }

@@ -41,7 +41,7 @@ public class TxtFile {
 
     public TxtFile(File boardsFileName) {
 
-        this.mLoadedTxtFile = boardsFileName;
+        mLoadedTxtFile = boardsFileName;
         mergeFile(boardsFileName);
 
     }
@@ -114,11 +114,9 @@ public class TxtFile {
         }
     }
 
-
     public String getNiceNameFromID(String myBoardID) {
         return myData.getValue(myBoardID + DOT + NAME);
     }
-
 
     /*
      * Returns the architecture based on the platform file name Caters for the
@@ -130,7 +128,7 @@ public class TxtFile {
         IPath platformFile = new Path(this.mLoadedTxtFile.toString().trim());
         String architecture = platformFile.removeLastSegments(1).lastSegment();
         if (architecture == null) {// for error conditions
-            architecture = Const.AVR; 
+            architecture = Const.AVR;
         }
         if (architecture.contains(Const.DOT)) { // This is a version number so
             // package
@@ -174,5 +172,9 @@ public class TxtFile {
         myData = KeyValueTree.createTxtRoot();
         mergeFile(mLoadedTxtFile);
 
+    }
+
+    public File getLoadedFile() {
+        return mLoadedTxtFile;
     }
 }

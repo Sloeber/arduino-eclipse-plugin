@@ -2,6 +2,8 @@ package io.sloeber.core.api;
 
 import java.util.Map;
 
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
+
 /**
  * this interface is to allow the ui to handle the automatic installation
  * of libraries.
@@ -14,20 +16,23 @@ import java.util.Map;
  *
  */
 
-public interface  IInstallLibraryHandler {
-	/**
-	 * The core will call this method to find out if you want to install
-	 * the libraries automatically or not
-	 *
-	 * @return true if you want libraries to beinstalled automatically
-	 */
- abstract boolean autoInstall();
- /**
-  * given the set of proposed libraries to install
-  * let the user decide on what to install
-  * @param proposedLibsToInstall the libraries Sloeber proposes to install
-  *
-  * @return The libraries the user wants to install
-  */
- abstract Map<String, LibraryDescriptor> selectLibrariesToInstall(Map<String, LibraryDescriptor> proposedLibsToInstall);
+public interface IInstallLibraryHandler {
+    /**
+     * The core will call this method to find out if you want to install
+     * the libraries automatically or not
+     *
+     * @return true if you want libraries to beinstalled automatically
+     */
+    abstract boolean autoInstall();
+
+    /**
+     * given the set of proposed libraries to install
+     * let the user decide on what to install
+     * 
+     * @param proposedLibsToInstall
+     *            the libraries Sloeber proposes to install
+     *
+     * @return The libraries the user wants to install
+     */
+    abstract Map<String, ArduinoLibraryVersion> selectLibrariesToInstall(Map<String, ArduinoLibraryVersion> proposedLibsToInstall);
 }

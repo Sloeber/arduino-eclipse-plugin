@@ -7,10 +7,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.CIncludePathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -40,10 +38,7 @@ import org.eclipse.ui.console.MessageConsole;
 
 import io.sloeber.core.Messages;
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.managers.ArduinoPlatform;
-import io.sloeber.core.managers.Library;
-import io.sloeber.core.managers.Tool;
-import io.sloeber.core.managers.ToolDependency;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 
 /**
  * ArduinoHelpers is a static class containing general purpose functions
@@ -229,7 +224,7 @@ public class Helpers {
             addToIncludePath.add(link.getFullPath());
         } else {
             // add src or root give priority to src
-            possibleIncludeFolder = Library.LIBRARY_SOURCE_FODER;
+            possibleIncludeFolder = ArduinoLibraryVersion.LIBRARY_SOURCE_FODER;
             file = toLinkFolder.append(possibleIncludeFolder).toFile();
             if (file.exists()) {
                 addToIncludePath.add(link.getFullPath().append(possibleIncludeFolder));
@@ -440,35 +435,4 @@ public class Helpers {
 
     }
 
-    public static Map<String, String> getEnvVarPlatformFileTools(ArduinoPlatform platform, boolean reportToolNotFound) {
-        HashMap<String, String> vars = new HashMap<>();
-        if (platform == null) {
-            return vars;
-        }
-        if (platform.getToolsDependencies() == null) {
-            return vars;
-        }
-        Iterable<ToolDependency> tools = platform.getToolsDependencies();
-        String RUNTIME_TOOLS = RUNTIME + DOT + TOOLS + DOT;
-        String DOT_PATH = DOT + PATH;
-        for (ToolDependency tool : tools) {
-            String keyString = RUNTIME_TOOLS + tool.getName() + DOT_PATH;
-            Tool theTool = tool.getTool();
-            if (theTool == null) {
-                if (reportToolNotFound) {
-                    log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
-                            "Error adding platformFileTools while processing tool " + tool.getName() + " version " //$NON-NLS-1$ //$NON-NLS-2$
-                                    + tool.getVersion() + " Installpath is null")); //$NON-NLS-1$
-                }
-            } else {
-                IPath installPath = theTool.getInstallPath();
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-                keyString = RUNTIME_TOOLS + tool.getName() + '-' + tool.getVersion() + DOT_PATH;
-                vars.put(keyString, installPath.toOSString());
-            }
-        }
-        return vars;
-    }
 }

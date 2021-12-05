@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import io.sloeber.core.api.BoardDescription;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.PasswordManager;
 import io.sloeber.core.api.SerialManager;
 import io.sloeber.ui.LabelCombo;
@@ -144,7 +144,7 @@ public class BoardSelectionPage extends SloeberCpropertyTab {
 
 		myScrollComposite.setContent(myComposite);
 
-		File[] allBoardsFileNames = PackageManager.getAllBoardsFiles();
+		File[] allBoardsFileNames = BoardsManager.getAllBoardsFiles();
 		for (File curBoardFile : allBoardsFileNames) {
 			myAllBoardsFiles.put(tidyUpLength(curBoardFile.toString()), curBoardFile);
 		}

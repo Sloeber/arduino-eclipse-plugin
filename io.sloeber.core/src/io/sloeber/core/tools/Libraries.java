@@ -38,13 +38,13 @@ import org.eclipse.core.runtime.Status;
 
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.IInstallLibraryHandler;
-import io.sloeber.core.api.LibraryDescriptor;
 import io.sloeber.core.api.LibraryManager;
 import io.sloeber.core.api.SloeberProject;
+import io.sloeber.core.api.VersionNumber;
+import io.sloeber.core.api.Json.ArduinoLibraryVersion;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
-import io.sloeber.core.managers.Library;
 
 public class Libraries {
     public static final String WORKSPACE_LIB_FOLDER = "libraries/"; //$NON-NLS-1$
@@ -117,7 +117,7 @@ public class Libraries {
         SloeberProject sProject = SloeberProject.getSloeberProject(project, false);
         BoardDescription boardDescriptor = sProject.getBoardDescription(confDesc.getName(), false);
         // first add the referenced
-        IPath libPath = boardDescriptor.getReferencedLibraryPath();
+        IPath libPath = boardDescriptor.getReferencedCoreLibraryPath();
         if (libPath != null) {
             ret.putAll(findAllSubFolders(libPath));
         }
@@ -156,8 +156,8 @@ public class Libraries {
                     if (versions != null) {
                         switch (versions.length) {
                         case 0:// A empty lib folder is hanging around
-                            Common.log(
-                                    new Status(IStatus.WARNING, CORE_PLUGIN_ID, EmptyLibFolder.replace(LIB_TAG, curLib)));
+                            Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
+                                    EmptyLibFolder.replace(LIB_TAG, curLib)));
                             Lib_root.toFile().delete();
                             break;
                         case 1:// There should only be 1
@@ -167,7 +167,7 @@ public class Libraries {
                         default:// multiple lib versions are installed take
                                 // the
                                 // latest
-                            int highestVersion = Version.getHighestVersion(versions);
+                            int highestVersion = getHighestVersion(versions);
                             ret.put(curLib, Lib_root.append(versions[highestVersion]));
                             Common.log(new Status(IStatus.WARNING, CORE_PLUGIN_ID,
                                     MultipleVersionsOfLib.replace(LIB_TAG, curLib)));
@@ -179,6 +179,28 @@ public class Libraries {
         }
         return ret;
 
+    }
+
+    /**
+     * Given a list of version strings returns the index of the highest version
+     * If the highest version is multiple times in the list the result will
+     * point to one of those but the result may be different for each call
+     *
+     * @param versions
+     *            a string list of version numbers
+     *
+     * @return the index to the highest version or 0 in case of an empty
+     *         versions
+     */
+    private static int getHighestVersion(String[] versions) {
+        int returnIndex = 0;
+        for (int curVersion = 1; curVersion < versions.length; curVersion++) {
+            if (new VersionNumber(versions[returnIndex]).compareTo(versions[curVersion]) == -1) {
+                returnIndex = curVersion;
+            }
+
+        }
+        return returnIndex;
     }
 
     /**
@@ -198,7 +220,8 @@ public class Libraries {
                 final IFolder folderHandle = project.getFolder(WORKSPACE_LIB_FOLDER + CurItem);
                 folderHandle.delete(true, null);
             } catch (CoreException e) {
-                Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB_TAG, CurItem), e));
+                Common.log(
+                        new Status(IStatus.ERROR, CORE_PLUGIN_ID, failed_to_remove_lib.replace(LIB_TAG, CurItem), e));
             }
         }
         return Helpers.removeInvalidIncludeFolders(confdesc);
@@ -399,17 +422,14 @@ public class Libraries {
                         if (!uninstalledIncludedHeaders.isEmpty()) {
                             // some libraries may need to be installed
 
-                            Map<String, LibraryDescriptor> availableLibs = LibraryManager
+                            Map<String, ArduinoLibraryVersion> availableLibs = LibraryManager
                                     .getLatestInstallableLibraries(uninstalledIncludedHeaders);
 
                             if (!availableLibs.isEmpty()) {
-                                // We now know which libraries to install
-                                // TODO for now I just install but there should
-                                // be some user
-                                // interaction
+                                // Ask the user which libs need installing
                                 availableLibs = installHandler.selectLibrariesToInstall(availableLibs);
-                                for (Entry<String, LibraryDescriptor> curLib : availableLibs.entrySet()) {
-                                    curLib.getValue().toLibrary().install(new NullProgressMonitor());
+                                for (Entry<String, ArduinoLibraryVersion> curLib : availableLibs.entrySet()) {
+                                    LibraryManager.install(curLib.getValue(), new NullProgressMonitor());
                                 }
                             }
                         }
@@ -497,8 +517,8 @@ public class Libraries {
         for (Entry<String, IPath> CurItem : libraries.entrySet()) {
             IPath sourcePath = CurItem.getValue();
             String curLibName = CurItem.getKey();
-            if (sourcePath.append(Library.LIBRARY_SOURCE_FODER).toFile().exists()) {
-                sourcePath = sourcePath.append(Library.LIBRARY_SOURCE_FODER);
+            if (sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER).toFile().exists()) {
+                sourcePath = sourcePath.append(ArduinoLibraryVersion.LIBRARY_SOURCE_FODER);
             }
             File[] allHeaderFiles = sourcePath.toFile().listFiles(new FilenameFilter() {
                 @Override

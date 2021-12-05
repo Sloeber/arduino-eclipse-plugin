@@ -1,7 +1,6 @@
 package io.sloeber.core;
 
 import static io.sloeber.core.common.Const.*;
-import static io.sloeber.core.managers.InternalPackageManager.*;
 import static org.eclipse.core.resources.IResource.*;
 
 import java.io.File;
@@ -42,13 +41,14 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import cc.arduino.packages.discoverers.SloeberNetworkDiscovery;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.core.common.InstancePreferences;
 import io.sloeber.core.listeners.ConfigurationChangeListener;
 import io.sloeber.core.listeners.IndexerListener;
 import io.sloeber.core.listeners.resourceChangeListener;
+import io.sloeber.core.tools.PackageManager;
 
 /**
  * generated code
@@ -207,14 +207,13 @@ public class Activator extends Plugin {
         try {
             workspace.setDescription(workspaceDesc);
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Common.log(new Status(IStatus.ERROR, CORE_PLUGIN_ID, e.getMessage(), e));
         }
         // Make sure some important variables are being initialized
         InstancePreferences.setPrivateLibraryPaths(InstancePreferences.getPrivateLibraryPaths());
         InstancePreferences.setPrivateHardwarePaths(InstancePreferences.getPrivateHardwarePaths());
         InstancePreferences.setAutomaticallyImportLibraries(InstancePreferences.getAutomaticallyImportLibraries());
-        PackageManager.setJsonURLs(PackageManager.getJsonURLs());
+        BoardsManager.setJsonURLs(BoardsManager.getJsonURLs());
     }
 
     private void runPluginCoreStartInstantiatorJob() {
@@ -252,7 +251,7 @@ public class Activator extends Plugin {
 
                 installOtherStuff();
 
-                startup_Pluging(monitor);
+                BoardsManager.startup_Pluging(monitor);
 
                 monitor.setTaskName("Done!");
                 if (InstancePreferences.useBonjour()) {
@@ -418,14 +417,14 @@ public class Activator extends Plugin {
             }
             if (!localMakePath.append(MAKE_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                Common.log(downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
+                Common.log(PackageManager.downloadAndInstall(MAKE_URL, MAKE_ZIP, localMakePath, false, monitor));
             }
 
             // Install awk if needed
             IPath localAwkPath = ConfigurationPreferences.getAwkPath();
             if (!localAwkPath.append(AWK_EXE).toFile().exists()) {
                 IProgressMonitor monitor = new NullProgressMonitor();
-                Common.log(downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
+                Common.log(PackageManager.downloadAndInstall(AWK_URL, AWK_ZIP, localAwkPath, false, monitor));
             }
         }
     }

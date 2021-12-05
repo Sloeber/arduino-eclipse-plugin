@@ -35,7 +35,7 @@ import org.osgi.framework.Bundle;
 import io.sloeber.core.api.BoardDescription;
 import io.sloeber.core.api.CodeDescription;
 import io.sloeber.core.api.CompileDescription;
-import io.sloeber.core.api.PackageManager;
+import io.sloeber.core.api.BoardsManager;
 import io.sloeber.core.api.SloeberProject;
 import io.sloeber.core.common.ConfigurationPreferences;
 import io.sloeber.providers.MCUBoard;
@@ -89,7 +89,7 @@ public class Shared {
         try {
             Thread.sleep(1000);
             IJobManager jobMan = Job.getJobManager();
-            while (!(jobMan.isIdle() && PackageManager.isReady())) {
+            while (!(jobMan.isIdle() && BoardsManager.isReady())) {
                 Thread.sleep(500);
                 // If you do not get out of this loop it probably means you are
                 // runnning the test in the gui thread
@@ -263,7 +263,7 @@ public class Shared {
     }
 
     @SuppressWarnings("unused")
-    public static String getProjectName(CodeDescription codeDescriptor, Examples example, MCUBoard board) {
+    public static String getProjectName(CodeDescription codeDescriptor, Example example, MCUBoard board) {
         return String.format("%05d_%s_%s", Integer.valueOf(myTestCounter++), codeDescriptor.getExampleName(),
                 board.getBoardDescriptor().getBoardID());
     }
