@@ -109,7 +109,7 @@ public class RegressionTest {
             e.printStackTrace();
             fail("Failed to compile the project:" + unoBoardid.getBoardName() + " as uno exception");
         }
-        SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject, false);
+        SloeberProject arduinoProject = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription cProjectDescription = CCorePlugin.getDefault().getProjectDescription(theTestProject);
         arduinoProject.setBoardDescription(cProjectDescription.getActiveConfiguration().getName(), teensyBoardid, true);
 
@@ -390,7 +390,7 @@ public class RegressionTest {
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject, false);
+        SloeberProject sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         ICConfigurationDescription confDesc = projDesc.getActiveConfiguration();
         BoardDescription createdBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
@@ -405,7 +405,7 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // read the data we want to test
-        sloeberDesc = SloeberProject.getSloeberProject(theTestProject, false);
+        sloeberDesc = SloeberProject.getSloeberProject(theTestProject);
         projDesc = CoreModel.getDefault().getProjectDescription(theTestProject);
         confDesc = projDesc.getActiveConfiguration();
         BoardDescription reopenedBoardDesc = sloeberDesc.getBoardDescription(confDesc.getName(), false);
@@ -486,14 +486,14 @@ public class RegressionTest {
 
         // Read the data we want to test
         Shared.waitForAllJobsToFinish(); // for the indexer
-        SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1, false);
+        SloeberProject proj1SloeberDesc = SloeberProject.getSloeberProject(proj1);
         ICProjectDescription proj1Desc = CoreModel.getDefault().getProjectDescription(proj1);
         ICConfigurationDescription proj1ConfDesc = proj1Desc.getActiveConfiguration();
         BoardDescription proj1CreatedBoardDesc = proj1SloeberDesc.getBoardDescription(proj1ConfDesc.getName(), false);
         CompileDescription proj1CreatedCompileDesc = proj1SloeberDesc.getCompileDescription(proj1ConfDesc.getName(),
                 false);
 
-        SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2, false);
+        SloeberProject proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         ICProjectDescription proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         ICConfigurationDescription proj2ConfDesc = proj2Desc.getActiveConfiguration();
         BoardDescription proj2CreatedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);
@@ -522,7 +522,7 @@ public class RegressionTest {
         Shared.waitForAllJobsToFinish();
 
         // reread project 2
-        proj2SloeberDesc = SloeberProject.getSloeberProject(proj2, false);
+        proj2SloeberDesc = SloeberProject.getSloeberProject(proj2);
         proj2Desc = CoreModel.getDefault().getProjectDescription(proj2);
         proj2ConfDesc = proj2Desc.getActiveConfiguration();
         BoardDescription proj2OpenedBoardDesc = proj2SloeberDesc.getBoardDescription(proj2ConfDesc.getName(), false);

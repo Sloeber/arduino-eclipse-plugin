@@ -42,7 +42,7 @@ public class SloeberBuildRunner extends ExternalBuildRunner {
 
         List<String> stopSerialOnBuildTargets = List.of(Preferences.getDisconnectSerialTargetsList());
         if (stopSerialOnBuildTargets.contains(theBuildTarget)) {
-            SloeberProject sloeberProject = SloeberProject.getSloeberProject(project, true);
+            SloeberProject sloeberProject = SloeberProject.getSloeberProject(project);
             if (sloeberProject != null) {
                 BoardDescription myBoardDescriptor = sloeberProject.getBoardDescription(configuration.getName(), true);
                 if (myBoardDescriptor != null) {

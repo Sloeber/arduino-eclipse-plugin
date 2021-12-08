@@ -41,7 +41,7 @@ public class ExplorerLabelDecorator implements ILabelDecorator {
 	public String decorateText(String text, Object element) {
 		IProject proj = (IProject) element;
 		if (proj != null) {
-			SloeberProject arduinoProject = SloeberProject.getSloeberProject(proj, true);
+			SloeberProject arduinoProject = SloeberProject.getSloeberProject(proj);
 			if (arduinoProject != null) {
 				return arduinoProject.getDecoratedText(text);
 			}

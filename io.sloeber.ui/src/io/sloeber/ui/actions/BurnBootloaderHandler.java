@@ -31,7 +31,7 @@ public class BurnBootloaderHandler extends AbstractHandler {
 		}
 		IProject selectedProject = ProjectExplorerListener.getSelectedProject();
 		if (selectedProject != null) {
-			SloeberProject sProject = SloeberProject.getSloeberProject(selectedProject, true);
+			SloeberProject sProject = SloeberProject.getSloeberProject(selectedProject);
 			if (sProject != null) {
 				sProject.burnBootloader();
 			}

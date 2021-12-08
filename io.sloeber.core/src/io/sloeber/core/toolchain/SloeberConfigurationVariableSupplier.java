@@ -22,7 +22,7 @@ public class SloeberConfigurationVariableSupplier implements IConfigurationEnvir
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(configuration);
         ICProjectDescription projDesc = confDesc.getProjectDescription();
         IProject project = projDesc.getProject();
-        return SloeberProject.getSloeberProject(project, false);
+        return SloeberProject.getSloeberProject(project);
     }
 
     @Override

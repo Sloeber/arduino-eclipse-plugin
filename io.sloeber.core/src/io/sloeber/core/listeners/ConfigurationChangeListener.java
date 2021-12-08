@@ -17,7 +17,7 @@ public class ConfigurationChangeListener implements ICProjectDescriptionListener
     public void handleEvent(CProjectDescriptionEvent event) {
 
         IProject activeProject = event.getProject();
-        SloeberProject sloeberProject = SloeberProject.getSloeberProject(activeProject, true);
+        SloeberProject sloeberProject = SloeberProject.getSloeberProject(activeProject);
         if (sloeberProject == null) {
             // this is not a sloeber project so ignore
             return;

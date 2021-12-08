@@ -68,7 +68,7 @@ class UploadJobHandler extends Job {
 			}
 		}
 		if (canUpload) {
-			SloeberProject sProject = SloeberProject.getSloeberProject(UploadJobHandler.this.myBuildProject, true);
+			SloeberProject sProject = SloeberProject.getSloeberProject(UploadJobHandler.this.myBuildProject);
 			if (sProject != null) {
 				if (myIsProgram) {
 					retStatus = sProject.upLoadUsingProgrammer();

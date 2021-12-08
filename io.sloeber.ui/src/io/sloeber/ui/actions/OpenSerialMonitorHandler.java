@@ -43,7 +43,7 @@ public class OpenSerialMonitorHandler extends AbstractHandler {
 				for (IProject curproject : SelectedProjects) {
 					int baud = Sketch.getCodeBaudRate(curproject);
 					if (baud > 0) {
-						SloeberProject sProject = SloeberProject.getSloeberProject(curproject, true);
+						SloeberProject sProject = SloeberProject.getSloeberProject(curproject);
 						if (sProject != null) {
 							ICConfigurationDescription activeConf = CoreModel.getDefault()
 									.getProjectDescription(curproject).getActiveConfiguration();

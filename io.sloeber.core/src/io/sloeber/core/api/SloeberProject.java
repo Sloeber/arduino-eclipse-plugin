@@ -73,10 +73,21 @@ public class SloeberProject extends Common {
     private IProject myProject = null;
     private boolean myIsInMemory = false;
     private boolean myIsDirty = false; // if anything has changed
-    private boolean myNeedToPersist = false; // Do we need to write data to disk
-    private boolean myNeedsClean = false; // is there old sloeber data that needs cleaning
-    private boolean myNeedsSyncWithCDT = false; // Knows CDT all configs Sloeber Knows
-    private boolean myIsConfiguring = false; // True if configuration of the project is ongoing
+    // Do we need to write data to disk
+    //this only happens when we were not able to write the data to disk
+    //due to a locked workspace
+    private boolean myNeedToPersist = false;
+    private boolean myNeedsSyncWithCDT = false; // CDT config or env var sync needed
+    /* I didn't wan to introduce the functionality provided by myIsTryingCDTRead but ..
+     * I didn't find a better way
+     * The problem is that when trying to read the old sloeber data the sloeber environment variable 
+     * providers are being called.
+     * I have even see this happen when calling CCorePlugin.getProjectDescription(myProject);
+     * So I think it is scarry and the only way I see this possible to fix
+     * is by removing the auto upgrade code
+     * Maybe I will one day but not today
+     */
+    private boolean myIsTryingCDTRead = false;
 
     private static final String ENV_KEY_BUILD_SOURCE_PATH = BUILD + DOT + SOURCE + DOT + PATH;
     private static final String ENV_KEY_BUILD_PATH = BUILD + DOT + PATH;
@@ -134,7 +145,7 @@ public class SloeberProject extends Common {
                         sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
                         // we failed to read from disk so we set opourselfves some values
                         // faking the stuf is in memory
-                        sloeberProject.myIsInMemory = true;
+
                     }
                     String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
                     BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
@@ -194,7 +205,7 @@ public class SloeberProject extends Common {
                         configs2.put(curConfigName, curConfigDesc.getId());
 
                     }
-
+                    sloeberProject.myIsInMemory = true;
                     sloeberProject.createSloeberConfigFiles(prjCDesc);
                     SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                     project.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
@@ -204,6 +215,7 @@ public class SloeberProject extends Common {
                     Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
                             "Project conversion failed: ", e)); //$NON-NLS-1$
                 }
+
                 IndexerController.index(project);
             }
 
@@ -300,9 +312,12 @@ public class SloeberProject extends Common {
                         }
                     }
 
-                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
                     // create a sloeber project
                     SloeberProject arduinoProjDesc = new SloeberProject(newProjectHandle);
+                    arduinoProjDesc.myIsInMemory = true;
+                    //the line below will trigger environment var requests causing loops if called to early
+                    ManagedBuildManager.setDefaultConfiguration(newProjectHandle, defaultConfig);
+
                     Map<String, String> configs2 = new HashMap<>();
 
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
@@ -324,6 +339,9 @@ public class SloeberProject extends Common {
                     }
 
                     arduinoProjDesc.createSloeberConfigFiles(prjCDesc);
+                    arduinoProjDesc.setAllEnvironmentVars(prjCDesc);
+                    arduinoProjDesc.myIsInMemory = true;
+
                     SubMonitor refreshMonitor = SubMonitor.convert(internalMonitor, 3);
                     newProjectHandle.open(refreshMonitor);
                     newProjectHandle.refreshLocal(IResource.DEPTH_INFINITE, refreshMonitor);
@@ -411,57 +429,70 @@ public class SloeberProject extends Common {
      */
 
     public synchronized boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        if (myIsConfiguring) {
-            return false;
-        }
         boolean saveProjDesc = false;
 
-        try {
-            myIsConfiguring = true;
-
-            if (myIsInMemory) {
-                if (myIsDirty) {
+        if (!isInMemory()) {
+            //we need to read the stuff from disk or CDT
+            if (getConfigLocalFile().exists()) {
+                //as the sloeber project file exists we assume the project has been migrated
+                //read from disk
+                readConfigFromFiles();
+                List<String> newConfigs = newConfigNeededInCDT(prjCDesc);
+                if (newConfigs.size() > 0) {
+                    if (prjDescWritable) {
+                        createNeededCDTConfigs(newConfigs, prjCDesc);
+                        saveProjDesc = true;
+                    } else {
+                        myNeedsSyncWithCDT = true;
+                    }
+                }
+            } else {
+                //No sloeber project file try to migrate from old CDT storage
+                // Maybe this is a old Sloeber project with the data in the eclipse build
+                // environment variables
+                if (readConfigFromCDT(prjCDesc)) {
                     createSloeberConfigFiles(prjCDesc);
                     setAllEnvironmentVars(prjCDesc);
-                    myIsDirty = false;
-                }
-                if (myNeedToPersist) {
-                    createSloeberConfigFiles(prjCDesc);
-                }
-                if (prjDescWritable) {
-                    if (myNeedsSyncWithCDT) {
-                        saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
-                    }
-                    if (myNeedsClean) {
-                        myNeedsClean = cleanOldData(prjCDesc);
-                        saveProjDesc = saveProjDesc || myNeedsClean;
+                    if (prjDescWritable) {
+                        removeCDTEnvironmentVars(prjCDesc);
+                        saveProjDesc = true;
+                    } else {
+                        myNeedsSyncWithCDT = true;
                     }
                 }
-                return saveProjDesc;
             }
-
-            // first read the sloeber files in memory
-            saveProjDesc = readConfig(prjCDesc, prjDescWritable);
-            if (myNeedToPersist || myIsDirty) {
+        } else {
+            if (myIsDirty || myNeedToPersist) {
                 createSloeberConfigFiles(prjCDesc);
-                myIsDirty = false;
             }
             if (prjDescWritable) {
-                if (myNeedsClean) {
-                    // we migrated from a previous sloeber configuration
-                    // and we can safely delete the old data
-                    myNeedsClean = cleanOldData(prjCDesc);
-                    saveProjDesc = saveProjDesc || myNeedsClean;
-                }
                 if (myNeedsSyncWithCDT) {
-                    saveProjDesc = saveProjDesc || syncWithCDT(prjCDesc, prjDescWritable);
+                    saveProjDesc = saveProjDesc || removeCDTEnvironmentVars(prjCDesc);
+                    saveProjDesc = saveProjDesc || createNeededCDTConfigs(newConfigNeededInCDT(prjCDesc), prjCDesc);
+                    myNeedsSyncWithCDT = false;
                 }
             }
-            setAllEnvironmentVars(prjCDesc);
-        } finally {
-            myIsConfiguring = false;
         }
+
+        setAllEnvironmentVars(prjCDesc);
+        myIsInMemory = true;
+        myIsDirty = false;
         return saveProjDesc;
+
+    }
+
+    /**
+     * When the project is in memory it is available for all activity
+     * When the project is in memory it may not be persistent with what is on disk
+     * 
+     * When it is in memory there still may be old sloeber configuration stuff in
+     * CDT
+     * 
+     * @return
+     */
+    public boolean isInMemory() {
+        // if We are in memory we are configured
+        return myIsInMemory;
     }
 
     private void setAllEnvironmentVars(ICProjectDescription prjCDesc) {
@@ -474,22 +505,14 @@ public class SloeberProject extends Common {
     }
 
     /**
-     * sync the Sloeber configuration info with CDT Currently only Sloeber known
-     * configurations will be created by Sloeber inside CDT
-     */
-    private boolean syncWithCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        boolean ret = readConfig(prjCDesc, prjDescWritable);
-        myNeedsSyncWithCDT = false;
-        return ret;
-    }
-
-    /**
-     * remove environment variables from the old sloeber way
+     * remove environment variables from CDT
+     * that were created the old sloeber way
      * 
      * @param prjCDesc
-     * @return
+     *            a writable project description
+     * @return true if at least one environment var was removed
      */
-    private boolean cleanOldData(ICProjectDescription prjCDesc) {
+    private static boolean removeCDTEnvironmentVars(ICProjectDescription prjCDesc) {
         boolean needsClean = false;
         IEnvironmentVariableManager envManager = CCorePlugin.getDefault().getBuildEnvironmentManager();
         IContributedEnvironment contribEnv = envManager.getContributedEnvironment();
@@ -510,9 +533,7 @@ public class SloeberProject extends Common {
     }
 
     /**
-     * Read the configuration needed to setup the project First try the
-     * configuration files If they do not exist try the old Sloeber CDT environment
-     * variable way
+     * Read the sloeber configuration file and setup the project
      * 
      * @param confDesc
      *            returns true if the files exist
@@ -530,9 +551,7 @@ public class SloeberProject extends Common {
                 myCfgFile.mergeFile(versionFile.getLocation().toFile());
             }
         } else {
-            if (versionFile.exists()) {
-                myCfgFile = new TxtFile(versionFile.getLocation().toFile());
-            }
+            myCfgFile = new TxtFile(versionFile.getLocation().toFile());
         }
 
         KeyValueTree allFileConfigs = myCfgFile.getData().getChild(CONFIG);
@@ -550,14 +569,14 @@ public class SloeberProject extends Common {
     }
 
     /**
-     * Read the configuration needed to setup the project First try the
-     * configuration files If they do not exist try the old Sloeber CDT environment
+     * Read the configuration the old Sloeber CDT environment
      * variable way
      * 
      * @param confDesc
      *            returns true if the config was found
      */
-    private boolean readConfigFromCDT(ICProjectDescription prjCDesc, boolean prjDescWritable) {
+    private boolean readConfigFromCDT(ICProjectDescription prjCDesc) {
+        myIsTryingCDTRead = true;
         boolean foundAValidConfig = false;
         // Check if this is a old Sloeber project with the data in the eclipse build
         // environment variables
@@ -575,54 +594,48 @@ public class SloeberProject extends Common {
                 }
             }
         }
+        myIsTryingCDTRead = false;
         return foundAValidConfig;
     }
 
     /**
-     * Read the configuration needed to setup the project First try the
-     * configuration files If they do not exist try the old Sloeber CDT environment
-     * variable way
+     * return the list of configNames known by Sloeber not known by CDT
      * 
-     * @param confDesc
-     *            returns true if the config needs saving otherwise false
+     * @param prjCDesc
+     * @return a list of sloeber known configurationNames unknown to CDT
      */
-    private boolean readConfig(ICProjectDescription prjCDesc, boolean prjDescWritable) {
-        boolean projDescNeedsWriting = false;
-        if (readConfigFromFiles()) {
-            KeyValueTree allFileConfigs = myCfgFile.getData().getChild(CONFIG);
-            for (Entry<String, KeyValueTree> curChild : allFileConfigs.getChildren().entrySet()) {
-                String curConfName = curChild.getKey();
-                ICConfigurationDescription curConfDesc = prjCDesc.getConfigurationByName(curConfName);
-                if (curConfDesc == null) {
-                    myNeedsSyncWithCDT = true;
-                    // I set persist because most likely this new config comes from sloeber.cfg
-                    // and it must be copied to .sproject
-                    myNeedToPersist = true;
-                    if (prjDescWritable) {
-                        try {
-                            String id = CDataUtil.genId(null);
-                            projDescNeedsWriting = true;
-                            curConfDesc = prjCDesc.createConfiguration(id, curConfName,
-                                    prjCDesc.getActiveConfiguration());
-                        } catch (Exception e) {
-                            // ignore as we will try again later
-                        }
-                    }
-                }
-            }
-
-        } else {
-
-            // Maybe this is a old Sloeber project with the data in the eclipse build
-            // environment variables
-            if (readConfigFromCDT(prjCDesc, prjDescWritable)) {
-                myNeedToPersist = true;
-                myNeedsClean = true;
-                projDescNeedsWriting = true;
+    private List<String> newConfigNeededInCDT(ICProjectDescription prjCDesc) {
+        List<String> ret = new LinkedList<>();
+        for (String curConfName : myBoardDescriptions.keySet()) {
+            ICConfigurationDescription curConfDesc = prjCDesc.getConfigurationByName(curConfName);
+            if (curConfDesc == null) {
+                ret.add(curConfName);
             }
         }
-        myIsInMemory = true;
-        return projDescNeedsWriting;
+        return ret;
+
+    }
+
+    /**
+     * create the cdt configurations from the list
+     * 
+     * @param configs
+     * @param prjCDesc
+     * @return true if at least one config was created (basically only false if
+     *         configs is empty)
+     */
+    private static boolean createNeededCDTConfigs(List<String> configs, ICProjectDescription prjCDesc) {
+        boolean ret = false;
+        for (String curConfName : configs) {
+            try {
+                String id = CDataUtil.genId(null);
+                prjCDesc.createConfiguration(id, curConfName, prjCDesc.getActiveConfiguration());
+                ret = true;
+            } catch (Exception e) {
+                // ignore as we will try again later
+            }
+        }
+        return ret;
     }
 
     /**
@@ -814,11 +827,9 @@ public class SloeberProject extends Common {
      * get the Arduino project description based on a project description
      * 
      * @param project
-     * @param allowNull
-     *            set true if a null response is ok
-     * @return
+     * @return the sloeber project or null if this is not a sloeber project
      */
-    public static synchronized SloeberProject getSloeberProject(IProject project, boolean allowNull) {
+    public static synchronized SloeberProject getSloeberProject(IProject project) {
 
         if (project.isOpen() && project.getLocation().toFile().exists()) {
             if (Sketch.isSketch(project)) {
@@ -832,10 +843,7 @@ public class SloeberProject extends Common {
                 } catch (CoreException e) {
                     e.printStackTrace();
                 }
-                if (!allowNull) {
-                    SloeberProject ret = new SloeberProject(project);
-                    return ret;
-                }
+                return new SloeberProject(project);
             }
         }
         return null;
@@ -901,9 +909,8 @@ public class SloeberProject extends Common {
      * @return
      */
     public String getDecoratedText(String text) {
-        String pleaseWait = "Please wait"; //$NON-NLS-1$
-        if (!myIsInMemory || myIsConfiguring) {
-            return pleaseWait;
+        if (!isInMemory()) {
+            configure();
         }
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(myProject);
         if (prjDesc != null) {
@@ -992,8 +999,7 @@ public class SloeberProject extends Common {
             }
         }
         // in many cases we also need to set the active config
-        boolean needsConfigSet = myNeedsClean || myIsDirty
-                || !newActiveConfig.getName().equals(oldActiveConfig.getName());
+        boolean needsConfigSet = myIsDirty || !newActiveConfig.getName().equals(oldActiveConfig.getName());
 
         configure(newProjDesc, true);
         if (!renamedConfigs.isEmpty()) {
@@ -1037,7 +1043,7 @@ public class SloeberProject extends Common {
         final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
         for (IProject curProject : workspaceRoot.getProjects()) {
             if (curProject.isOpen()) {
-                SloeberProject sloeberProject = getSloeberProject(curProject, true);
+                SloeberProject sloeberProject = getSloeberProject(curProject);
                 if (sloeberProject != null) {
                     sloeberProject.internalReloadTxtFile();
                 }
@@ -1071,18 +1077,11 @@ public class SloeberProject extends Common {
         return configDesc.getName();
     }
 
-    /**
-     * Can we just use the available data or do we need to configure first Note this
-     * can return true when configuration is bussy
-     * 
-     * @return true if the data is available and up to date
-     */
-    private boolean needsconfiguring() {
-        return myIsDirty || !myIsInMemory;
-    }
-
     public Map<String, String> getEnvironmentVariables(String configKey) {
-        if (needsconfiguring() || !myEnvironmentVariables.containsKey(configKey)) {
+        if (myIsTryingCDTRead) {
+            return null;
+        }
+        if (!isInMemory()) {
             configure();
         }
 

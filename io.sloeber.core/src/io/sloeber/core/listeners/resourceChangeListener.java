@@ -38,6 +38,7 @@ public class resourceChangeListener implements IResourceChangeListener {
                     IProject iProject = sloeberCfgDelta.getResource().getProject();
                     // stop the indexer
                     IndexerController.doNotIndex(iProject);
+
                     // log to process later
                     changedSloeberCfgFiles.add(iProject);
                 }
@@ -50,10 +51,16 @@ public class resourceChangeListener implements IResourceChangeListener {
                         // as it is a open of a cdt project assume it is a sloeber project.
                         // We will find out later if not
                         IProject iProject = cProjectDelta.getResource().getProject();
-                        // stop the indexer
-                        IndexerController.doNotIndex(iProject);
+                        SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
+                        if (curSloeberProject != null) {
+                            if (!curSloeberProject.isInMemory()) {
+                                // stop the indexer
+                                IndexerController.doNotIndex(iProject);
+                                curSloeberProject.configure();
+                            }
+                        }
                         // log to process later
-                        changedSloeberCfgFiles.add(iProject);
+                        //changedSloeberCfgFiles.add(iProject);
                     }
             }
         }
@@ -73,12 +80,15 @@ public class resourceChangeListener implements IResourceChangeListener {
                     public void run(IProgressMonitor monitor) throws CoreException {
                         for (IProject curProject : changedSloeberCfgFiles) {
                             if (curProject.isOpen()) {
-                                SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject, false);
+                                SloeberProject curSloeberProject = SloeberProject.getSloeberProject(curProject);
                                 if (curSloeberProject == null) {
                                     // this is not a sloeber project;
                                     // make it one?
                                 } else {
-                                    curSloeberProject.sloeberCfgChanged();
+                                    //no use updating the cfg if it wasn't read already
+                                    if (curSloeberProject.isInMemory()) {
+                                        curSloeberProject.sloeberCfgChanged();
+                                    }
                                 }
                             }
                             IndexerController.index(curProject);

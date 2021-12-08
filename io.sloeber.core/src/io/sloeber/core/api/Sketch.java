@@ -34,8 +34,6 @@ public class Sketch {
         return Status.OK_STATUS;
     }
 
-
-
     /**
      * Synchronous upload of the sketch returning the status.
      *
@@ -48,7 +46,7 @@ public class Sketch {
         if (!ret.isOK()) {
             return ret;
         }
-        SloeberProject sProject = SloeberProject.getSloeberProject(project, true);
+        SloeberProject sProject = SloeberProject.getSloeberProject(project);
         return sProject.upload();
     }
 
