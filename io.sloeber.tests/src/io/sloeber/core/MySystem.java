@@ -2,6 +2,7 @@ package io.sloeber.core;
 
 import static org.junit.Assert.*;
 
+import io.sloeber.core.common.Common;
 import io.sloeber.providers.Arduino;
 import io.sloeber.providers.ESP8266;
 import io.sloeber.providers.MCUBoard;
@@ -16,7 +17,16 @@ public class MySystem {
     private static final String jantjesWindowsMachine = "1248215851";
     //the one below is based on one mac address Fysiek adres (MAC):	C0-3F-D5-66-04-58 
     private static final String jantjesLinuxMachine = "88937904";
-    private static final String currentMachine = jantjesWindowsMachine;
+    private static final String currentMachine = getMachine();
+
+    private static String getMachine() {
+        if (Common.isWindows) {
+            if ("jan".equals(System.getProperty("user.name"))) {
+                return jantjesWindowsMachine;
+            }
+        }
+        return new String();
+    }
 
     public static String getTeensyPlatform() {
         switch (currentMachine) {
