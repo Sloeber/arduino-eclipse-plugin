@@ -52,11 +52,11 @@ public class BoardDescription {
     private static final String ENV_KEY_PLATFORM_PATH = RUNTIME + DOT + PLATFORM + DOT + PATH;
 
     // stuff to store last used board
-    private final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
-    private final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
+    private static final String KEY_SLOEBER_PROGRAMMER = "PROGRAMMER.NAME"; //$NON-NLS-1$
+    private static final String KEY_SLOEBER_BOARD_TXT = "BOARD.TXT"; //$NON-NLS-1$
+    private static final String KEY_SLOEBER_BOARD_ID = "BOARD.ID"; //$NON-NLS-1$
+    private static final String KEY_SLOEBER_UPLOAD_PORT = "UPLOAD.PORT"; //$NON-NLS-1$
+    private static final String KEY_SLOEBER_MENU_SELECTION = "BOARD.MENU"; //$NON-NLS-1$
     private static final IEclipsePreferences myStorageNode = InstanceScope.INSTANCE.getNode(NODE_ARDUINO);
 
     /*
@@ -626,8 +626,8 @@ public class BoardDescription {
             return null;
         }
         ArduinoPlatformVersion platformVersion = platform.getNewestInstalled();
-        if(platformVersion==null) {
-        	return null;
+        if (platformVersion == null) {
+            return null;
         }
         return platformVersion.getInstallPath();
     }
