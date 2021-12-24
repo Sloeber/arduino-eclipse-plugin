@@ -310,11 +310,19 @@ public class BoardDescription {
 
     public BoardDescription() {
         File boardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
-        myBoardTxtFile = new BoardTxtFile(boardsFile);
-        myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
-        myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
-        myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
-        myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
+        if (!boardsFile.exists()) {
+            List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
+            //If you crash on the next line no platform have been installed
+            ArduinoPlatformVersion platform = platforms.get(0);
+            myBoardTxtFile = new BoardTxtFile(platform.getBoardsFile());
+            myBoardID = myBoardTxtFile.getAllBoardIDs().get(0);
+        } else {
+            myBoardTxtFile = new BoardTxtFile(boardsFile);
+            myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
+            myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
+            myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
+            myOptions = KeyValue.makeMap(myStorageNode.get(KEY_LAST_USED_BOARD_MENU_OPTIONS, EMPTY));
+        }
     }
 
     public BoardDescription(BoardDescription srcObject) {
