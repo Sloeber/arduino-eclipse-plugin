@@ -149,8 +149,6 @@ public class SloeberProject extends Common {
                     }
                     String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
                     BoardDescription boardDescriptor = sloeberProject.getBoardDescription(configName, true);
-                    CompileDescription compileDescriptor = sloeberProject.getCompileDescription(configName, true);
-                    OtherDescription otherDesc = sloeberProject.getOtherDescription(configName, true);
 
                     // Add the arduino code folders
                     List<IPath> addToIncludePath = Helpers.addArduinoCodeToProject(project, boardDescriptor);
@@ -535,8 +533,7 @@ public class SloeberProject extends Common {
     /**
      * Read the sloeber configuration file and setup the project
      * 
-     * @param confDesc
-     *            returns true if the files exist
+     * @return true if the files exist
      */
     private boolean readConfigFromFiles() {
         IFile file = getConfigLocalFile();
