@@ -172,7 +172,7 @@ public class Serial implements SerialPortEventListener {
                         } else if (SerialPortException.TYPE_PORT_NOT_FOUND.equals(e.getExceptionType())) {
                             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID, "Serial port " //$NON-NLS-1$
                                     + this.portName
-                                    + " not found. Did you select the right one from the project properties -> Arduino -> Arduino?", //$NON-NLS-1$
+                                    + " not found. Did you select the right one from the project properties -> Sloeber?", //$NON-NLS-1$
                                     e));
                         } else {
                             Common.log(new Status(IStatus.ERROR, Const.CORE_PLUGIN_ID,
