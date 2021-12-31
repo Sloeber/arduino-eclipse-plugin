@@ -460,8 +460,7 @@
        <toolbar
              id="io.sloeber.toolbar.main"
              label="Sloeber">
-          <visibleWhen
-                checkEnabled="true">
+          <visibleWhen>
              <reference
                    definitionId="io.sloeber.definition.isArduinoPerspective">
              </reference>
@@ -520,8 +519,7 @@
        <toolbar
              id="io.sloeber.toolbar.Extra"
              label="Sloeber Extra tools">
-          <visibleWhen
-                checkEnabled="true">
+          <visibleWhen>
              <reference
                    definitionId="io.sloeber.definition.hide">
              </reference>
