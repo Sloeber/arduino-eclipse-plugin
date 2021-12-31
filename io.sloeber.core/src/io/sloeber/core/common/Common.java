@@ -238,7 +238,7 @@ public class Common {
     }
 
     public static String makePathVersionString(File file) {
-        return file.getPath().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
+        return new Path(file.getPath()).toString().replace(sloeberHomePathToString, SLOEBER_HOME_VAR);
     }
 
     /**
