@@ -76,7 +76,7 @@
 <!--
 					<source>11</source>
 					<target>11</target> -->
-                   <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-15</executionEnvironment>
+                   <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
 
  				</configuration>
 			</plugin>
@@ -354,7 +354,7 @@
 		<repository>
 			<id>justj</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/justj/jres/15/updates/release/latest/</url>
+			<url>https://download.eclipse.org/justj/jres/17/updates/release/latest/</url>
 		</repository>
 
 		<repository>

@@ -18,7 +18,9 @@
    </category-def>
    <repository-reference location="https://download.eclipse.org/releases/latest/" enabled="true" />
    <repository-reference location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/justj/jres/15/updates/release/latest/" enabled="true" />
    <repository-reference location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/nebula/snapshot/" enabled="true" />
+   <repository-reference location="https://eclipse.baeyens.it/update/V4/stable/" enabled="false" />
+   <repository-reference location="https://eclipse.baeyens.it/update/V4/nightly/" enabled="true" />
 </site>
