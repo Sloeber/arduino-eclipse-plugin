@@ -257,18 +257,18 @@ United States, other countries, or both.
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
       <property name="org.eclipse.oomph.setup.ui/enable.preference.recorder" value="false" />
+      <property name="osgi.instance.area.default" value="@user.home/Documents/sloeber-workspace" os="win32" />
    </configurations>
 
    <repositories>
-      <repository location="https://download.eclipse.org/nebula/releases/latest/" enabled="true" />
       <repository location="https://eclipse.baeyens.it/update/V4/nightly/" enabled="false" />
       <repository location="https://eclipse.baeyens.it/update/V4/stable/" enabled="true" />
       <repository location="https://download.eclipse.org/releases/latest/" enabled="true" />
       <repository location="https://download.eclipse.org/technology/babel/update-site/latest/" enabled="true" />
-      <repository location="https://download.eclipse.org/justj/jres/15/updates/release/latest/" enabled="true" />
       <repository location="https://download.eclipse.org/eclipse/updates/latest" enabled="true" />
+      <repository location="https://download.eclipse.org/justj/jres/17/updates/release/latest/" enabled="true" />
+      <repository location="https://download.eclipse.org/nebula/snapshot" enabled="true" />
    </repositories>
 
    <preferencesInfo>
