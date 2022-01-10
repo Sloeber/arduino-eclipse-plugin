@@ -193,7 +193,7 @@
        point="org.eclipse.ui.newWizards">
     <category
           id="io.sloeber.eclipse.newWizards"
-          name="Arduino">
+          name="Sloeber">
     </category>
     <wizard
           category="io.sloeber.eclipse.newWizards"
@@ -250,7 +250,7 @@
           point="org.eclipse.ui.importWizards">
        <category
              id="io.sloeber.eclipse.importWizards"
-             name="Arduino">
+             name="Sloeber">
        </category>
        <wizard
              category="io.sloeber.eclipse.importWizards"
