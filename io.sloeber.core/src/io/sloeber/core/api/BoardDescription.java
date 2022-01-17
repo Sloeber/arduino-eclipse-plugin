@@ -815,15 +815,6 @@ public class BoardDescription {
         // put in the installed tools info
         allVars.putAll(getEnVarPlatformInfo());
 
-        Programmers localProgrammers[] = Programmers.fromBoards(this);
-        String programmer = getProgrammer();
-        for (Programmers curProgrammer : localProgrammers) {
-            String programmerID = curProgrammer.getIDFromNiceName(programmer);
-            if (programmerID != null) {
-                allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));
-            }
-        }
-
         // boards settings not coming from menu selections
         allVars.putAll(myBoardTxtFile.getBoardEnvironVars(getBoardID()));
 
@@ -836,6 +827,16 @@ public class BoardDescription {
             String SelectedMenuItemID = curOption.getValue();
             KeyValueTree curSelectedMenuItem = menuData.getChild(menuID + DOT + SelectedMenuItemID);
             allVars.putAll(curSelectedMenuItem.toKeyValues(EMPTY, false));
+        }
+
+        //This moved last. See github issue 1410
+        Programmers localProgrammers[] = Programmers.fromBoards(this);
+        String programmer = getProgrammer();
+        for (Programmers curProgrammer : localProgrammers) {
+            String programmerID = curProgrammer.getIDFromNiceName(programmer);
+            if (programmerID != null) {
+                allVars.putAll(curProgrammer.getAllEnvironVars(programmerID));
+            }
         }
 
         // add the stuff that comes with the plugin that is marked as post
