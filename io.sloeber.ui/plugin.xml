@@ -460,11 +460,6 @@
        <toolbar
              id="io.sloeber.toolbar.main"
              label="Sloeber">
-          <visibleWhen>
-             <reference
-                   definitionId="io.sloeber.definition.isArduinoPerspective">
-             </reference>
-          </visibleWhen>
           <command
                 commandId="io.sloeber.actions.ArduinoBuildAction"
                 icon="icons/check.png"
@@ -507,9 +502,9 @@
           <command
                 commandId="io.sloeber.ui.actions.openPreferences"
                 icon="icons/preferences.png"
-                label="%command.preferences.label"
+                label="%command.project.properties.label"
                 style="push"
-                tooltip="%command.open.sloeber.preferences.description">
+                tooltip="%command.project.properties.description">
              <parameter
                    name="io.sloeber.ui.actions.openPreferences.pageId"
                    value="io.sloeber.eclipse.propertypage.ArduinoProperty">
@@ -519,11 +514,6 @@
        <toolbar
              id="io.sloeber.toolbar.Extra"
              label="Sloeber Extra tools">
-          <visibleWhen>
-             <reference
-                   definitionId="io.sloeber.definition.hide">
-             </reference>
-          </visibleWhen>
           <command
                 commandId="io.sloeber.actions.AddLibraryAction"
                 icon="icons/library.png"
