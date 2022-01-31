@@ -256,7 +256,7 @@ public class Serial implements SerialPortEventListener {
     @Override
     public synchronized void serialEvent(SerialPortEvent serialEvent) {
         switch (serialEvent.getEventType()) {
-        case SerialPortEvent.RXCHAR:
+        case SerialPort.MASK_RXCHAR:
             int bytesCount = serialEvent.getEventValue();
 
             if (IsConnected() && bytesCount > 0) {
@@ -267,7 +267,7 @@ public class Serial implements SerialPortEventListener {
                 }
             }
             break;
-        case SerialPortEvent.BREAK:
+        case SerialPort.MASK_BREAK:
             errorMessage("Break detected", new Exception()); //$NON-NLS-1$
             break;
         default:
