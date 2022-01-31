@@ -56,7 +56,7 @@ public class Arduino extends MCUBoard {
         return new Arduino(providerArduino, AVRArchitectureName, "LilyPadUSB");
     }
 
-    public static MCUBoard getMega2560Board() {
+    public static MCUBoard mega2560Board() {
         MCUBoard mega = new Arduino(providerArduino, AVRArchitectureName, "mega");
         Map<String, String> options = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         options.put("cpu", "atmega2560");

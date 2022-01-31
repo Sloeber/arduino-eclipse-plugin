@@ -60,7 +60,7 @@ public class CreateAndCompileExamplesTest {
 				Arduino.adafruitnCirquitPlayground(),
 				ESP8266.nodeMCU(),
 				Arduino.primo(),
-				Arduino.getMega2560Board(),
+				Arduino.mega2560Board(),
 				Arduino.gemma(),
 				Arduino.zeroProgrammingPort(),
 				Arduino.mkrfox1200(),

@@ -52,7 +52,7 @@ public class MySystem {
                     Arduino.zeroNatviePort().setUploadPort("/dev/ttyS0"), //werkt niet
                     Arduino.yun().setUploadPort("COM20"), ESP8266.wemosD1().setUploadPort("/dev/ttyUSB0"),
                     Arduino.arduino_101().setUploadPort("COM15"), Arduino.zeroProgrammingPort().setUploadPort("COM14"),
-                    Arduino.getMega2560Board().setUploadPort("COM11"), Arduino.dueprogramming().setUploadPort("COM8"),
+                    Arduino.mega2560Board().setUploadPort("COM11"), Arduino.dueprogramming().setUploadPort("COM8"),
                     Arduino.uno().setUploadPort("COM6"), };
             return boards;
         }
@@ -65,7 +65,7 @@ public class MySystem {
                     Arduino.yun().setUploadPort("COM106"), ESP8266.wemosD1().setUploadPort("COM108"),
                     Arduino.arduino_101().setUploadPort("COM110"),
                     Arduino.zeroProgrammingPort().setUploadPort("COM111"),
-                    Arduino.getMega2560Board().setUploadPort("COM112"),
+                    Arduino.mega2560Board().setUploadPort("COM112"),
                     Arduino.dueprogramming().setUploadPort("COM124"), Arduino.uno().setUploadPort("COM126"), };
             return boards;
         default:

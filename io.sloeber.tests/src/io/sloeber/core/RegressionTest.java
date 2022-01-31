@@ -479,7 +479,7 @@ public class RegressionTest {
                 proj1CompileDesc, otherDesc, new NullProgressMonitor());
 
         String proj2Name = "openModAndClose2";
-        BoardDescription proj2BoardDesc = Arduino.getMega2560Board().getBoardDescriptor();
+        BoardDescription proj2BoardDesc = Arduino.mega2560Board().getBoardDescriptor();
         CompileDescription proj2CompileDesc = new CompileDescription();
         IProject proj2 = SloeberProject.createArduinoProject(proj2Name, null, proj2BoardDesc, codeDesc,
                 proj2CompileDesc, new NullProgressMonitor());
