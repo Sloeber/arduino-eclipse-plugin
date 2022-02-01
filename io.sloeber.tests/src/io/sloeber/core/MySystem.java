@@ -49,31 +49,35 @@ public class MySystem {
         switch (currentMachine) {
         case jantjesLinuxMachine: {
             /* using this udev file thins work for most but not all boards (fried 101 )
-              KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="003d", SYMLINK+="ttyDueProg"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0041", SYMLINK+="ttyYun"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="8041", SYMLINK+="ttyYun"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", SYMLINK+="ttyUno"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", SYMLINK+="ttyMega2560"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0010", SYMLINK+="ttyMega2560"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="8036", SYMLINK+="ttyLeonardo"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0036", SYMLINK+="ttyLeonardo"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="1B4F", ATTRS{idProduct}=="9207", SYMLINK+="ttyFried"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="1B4F", ATTRS{idProduct}=="9208", SYMLINK+="ttyFried"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2157", SYMLINK+="ttyZeroProg"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="804d", SYMLINK+="ttyZeroNa"
-            KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="004d", SYMLINK+="ttyZeroNa"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="003d", SYMLINK+="s_DueProg"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0041", SYMLINK+="s_Yun"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="8041", SYMLINK+="s_Yun"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", SYMLINK+="s_Uno"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", SYMLINK+="s_Mega2560"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0010", SYMLINK+="s_Mega2560"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="8036", SYMLINK+="s_Leonardo"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0036", SYMLINK+="s_Leonardo"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="1B4F", ATTRS{idProduct}=="9207", SYMLINK+="s_Fried"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="1B4F", ATTRS{idProduct}=="9208", SYMLINK+="s_Fried"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2157", SYMLINK+="s_ZeroProg"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="804d", SYMLINK+="s_ZeroNa"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="004d", SYMLINK+="s_ZeroNa"
+KERNEL=="ttyACM*", ACTION=="add", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0487", SYMLINK+="s_teensy"
+
+KERNEL=="ttyUSB*", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="s_NanoFakeChina"
+
             
              */
-            MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("/dev/ttyACM0"),
-                    Arduino.leonardo().setUploadPort("/dev/ttyLeonardo"), //werkt niet
-                    Arduino.fried2016().setUploadPort("/dev/ttyFried"), //werkt niet
-                    Arduino.zeroNatviePort().setUploadPort("/dev/ttyZeroNa"), //werkt niet
-                    Arduino.yun().setUploadPort("/dev/ttyYun"), ESP8266.wemosD1().setUploadPort("/dev/ttyUSB0"),
-                    Arduino.arduino_101().setUploadPort("/dev/ttyArduino_101"),
-                    Arduino.zeroProgrammingPort().setUploadPort("/dev/ttyZeroProg"),
-                    Arduino.mega2560Board().setUploadPort("/dev/ttyMega2560"),
-                    Arduino.dueprogramming().setUploadPort("/dev/ttyDueProg"),
-                    Arduino.uno().setUploadPort("/dev/ttyUno"), };
+            MCUBoard[] boards = { Teensy.teensypp2().setUploadPort("/dev/s_teensy"),
+                    Arduino.leonardo().setUploadPort("/dev/s_Leonardo"), 
+                    Arduino.fried2016().setUploadPort("/dev/s_Fried"), //werkt niet
+                    Arduino.zeroNatviePort().setUploadPort("/dev/s_ZeroNa"), 
+                    Arduino.yun().setUploadPort("/dev/s_Yun"), ESP8266.wemosD1().setUploadPort("/dev/ttyUSB0"),
+                    Arduino.arduino_101().setUploadPort("/dev/s_Arduino_101"),
+                    Arduino.zeroProgrammingPort().setUploadPort("/dev/s_ZeroProg"),
+                    Arduino.mega2560Board().setUploadPort("/dev/s_Mega2560"),
+                    Arduino.dueprogramming().setUploadPort("/dev/s_DueProg"),
+                    Arduino.uno().setUploadPort("/dev/s_Uno"), };
             return boards;
         }
         case jantjesWindowsMachine:
