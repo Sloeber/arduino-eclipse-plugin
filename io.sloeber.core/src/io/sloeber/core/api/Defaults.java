@@ -12,9 +12,8 @@ public class Defaults {
     public static final String EXAMPLES_URL = "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_3_2/"
             + EXAMPLE_PACKAGE;
 
-    public static final String DEFAULT_INSTALL_PLATFORM_NAME = "Arduino AVR Boards";
-    public static final String DEFAULT_INSTALL_ARCHITECTURE = "AVR";
-    public static final String DEFAULT_INSTALL_MAINTAINER = "Arduino";
+    public static final String DEFAULT_INSTALL_ARCHITECTURE = "avr";
+    public static final String DEFAULT_INSTALL_MAINTAINER = "arduino";
     public static final String[] DEFAULT_INSTALLED_LIBRARIES = new String[] { "Ethernet", "Firmata", "GSM", "Keyboard",
             "LiquidCrystal", "Mouse", "SD", "Servo", "Stepper", "TFT", "WiFi", "CapacitiveSensor" };
     public static final String DEFAULT = "Default";
