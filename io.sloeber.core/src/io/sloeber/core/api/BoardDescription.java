@@ -851,6 +851,18 @@ public class BoardDescription {
 
     private Map<String, String> getEnVarPlatformInfo() {
         Map<String, String> ret = new HashMap<>();
+
+        if (myReferencedPlatformUpload != null) {
+            ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformUpload));
+        }
+        if (myReferencedPlatformVariant != null) {
+            ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformVariant));
+        }
+
+        if (myReferencedPlatformCore != null) {
+            ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
+        }
+
         IPath referencingPlatformPath = getreferencingPlatformPath();
         ArduinoPlatformVersion referencingPlatform = BoardsManager.getPlatform(referencingPlatformPath);
 
@@ -874,7 +886,6 @@ public class BoardDescription {
         boolean jsonBasedPlatformManagement = !Preferences.getUseArduinoToolSelection();
         if (jsonBasedPlatformManagement) {
             // overrule the Arduino IDE way of working and use the json refereced tools
-            ret.putAll(getEnvVarPlatformFileTools(myReferencedPlatformCore));
             ret.putAll(getEnvVarPlatformFileTools(referencingPlatform));
             return ret;
         }
