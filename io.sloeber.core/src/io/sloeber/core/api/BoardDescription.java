@@ -66,7 +66,8 @@ public class BoardDescription {
     private String myProgrammer = EMPTY;
     private String myBoardID = EMPTY;
     private Map<String, String> myOptions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private BoardTxtFile myBoardTxtFile;
+    private File myUserSelectedBoardsTxtFile; //this is the boards.txt file selected in the gui
+    private BoardTxtFile mySloeberBoardTxtFile; // this is the actual used and loaded sloeber.boards.txt file
 
     private String myBoardsCore = null;
     private String myBoardsVariant = null;
@@ -149,7 +150,7 @@ public class BoardDescription {
     }
 
     private void ParseSection() {
-        KeyValueTree rootData = myBoardTxtFile.getData();
+        KeyValueTree rootData = mySloeberBoardTxtFile.getData();
         String boardID = getBoardID();
         KeyValueTree boardData = rootData.getChild(boardID);
 
@@ -301,7 +302,8 @@ public class BoardDescription {
      */
     BoardDescription(File boardsFile, String boardID, Map<String, String> options) {
         myBoardID = boardID;
-        myBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(boardsFile));
+        myUserSelectedBoardsTxtFile = boardsFile;
+        mySloeberBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(myUserSelectedBoardsTxtFile));
         setDefaultOptions();
         if (options != null) {
             myOptions.putAll(options);
@@ -309,15 +311,16 @@ public class BoardDescription {
     }
 
     public BoardDescription() {
-        File boardsFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
-        if (!boardsFile.exists()) {
+        myUserSelectedBoardsTxtFile = new File(myStorageNode.get(KEY_LAST_USED_BOARDS_FILE, EMPTY));
+        if (!myUserSelectedBoardsTxtFile.exists()) {
             List<ArduinoPlatformVersion> platforms = BoardsManager.getInstalledPlatforms();
             //If you crash on the next line no platform have been installed
             ArduinoPlatformVersion platform = platforms.get(0);
-            myBoardTxtFile = new BoardTxtFile(platform.getBoardsFile());
-            myBoardID = myBoardTxtFile.getAllBoardIDs().get(0);
+            myUserSelectedBoardsTxtFile = platform.getBoardsFile();
+            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
+            myBoardID = mySloeberBoardTxtFile.getAllBoardIDs().get(0);
         } else {
-            myBoardTxtFile = new BoardTxtFile(boardsFile);
+            mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
             myBoardID = myStorageNode.get(KEY_LAST_USED_BOARD, EMPTY);
             myUploadPort = myStorageNode.get(KEY_LAST_USED_UPLOAD_PORT, EMPTY);
             myProgrammer = myStorageNode.get(KEY_LAST_USED_UPLOAD_PROTOCOL, EMPTY);
@@ -326,7 +329,8 @@ public class BoardDescription {
     }
 
     public BoardDescription(BoardDescription srcObject) {
-        myBoardTxtFile = srcObject.myBoardTxtFile;
+        myUserSelectedBoardsTxtFile = srcObject.myUserSelectedBoardsTxtFile;
+        mySloeberBoardTxtFile = srcObject.mySloeberBoardTxtFile;
         myBoardID = srcObject.myBoardID;
         myUploadPort = srcObject.myUploadPort;
         myProgrammer = srcObject.myProgrammer;
@@ -345,10 +349,10 @@ public class BoardDescription {
      * incomplete or invalid this method still returns a complete and valid set.
      */
     private void setDefaultOptions() {
-        Map<String, String> allMenuIDs = this.myBoardTxtFile.getMenus();
+        Map<String, String> allMenuIDs = this.mySloeberBoardTxtFile.getMenus();
         for (Map.Entry<String, String> curMenuID : allMenuIDs.entrySet()) {
             String providedMenuValue = this.myOptions.get(curMenuID.getKey());
-            ArrayList<String> menuOptions = this.myBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(),
+            ArrayList<String> menuOptions = this.mySloeberBoardTxtFile.getMenuItemIDsFromMenuID(curMenuID.getKey(),
                     getBoardID());
             if (menuOptions.size() > 0) {
                 if (providedMenuValue == null) {
@@ -374,15 +378,15 @@ public class BoardDescription {
     }
 
     public String getArchitecture() {
-        return myBoardTxtFile.getArchitecture();
+        return mySloeberBoardTxtFile.getArchitecture();
     }
 
     public File getReferencingBoardsFile() {
-        return myBoardTxtFile.getLoadedFile();
+        return myUserSelectedBoardsTxtFile;
     }
 
     public String getBoardName() {
-        return this.myBoardTxtFile.getNiceNameFromID(this.myBoardID);
+        return this.mySloeberBoardTxtFile.getNiceNameFromID(this.myBoardID);
     }
 
     public String getUploadPort() {
@@ -431,7 +435,7 @@ public class BoardDescription {
     }
 
     public void setBoardName(String boardName) {
-        String newBoardID = this.myBoardTxtFile.getIDFromNiceName(boardName);
+        String newBoardID = this.mySloeberBoardTxtFile.getIDFromNiceName(boardName);
         if ((newBoardID == null || this.myBoardID.equals(newBoardID))) {
             return;
         }
@@ -444,14 +448,15 @@ public class BoardDescription {
         if (boardsFile == null) {
             return;// ignore
         }
-        /*
-         * do not do this optimization as workaround changes will not be captured if
-         * (this.myreferencingBoardsFile.equals(resolvePathEnvironmentString(boardsFile)
-         * )) { return; }
-         */
 
-        myBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(boardsFile));
-        setDirty();
+        if (!myUserSelectedBoardsTxtFile.equals(boardsFile)) {
+            myUserSelectedBoardsTxtFile = boardsFile;
+            setDirty();
+        }
+
+        /* do not remove this for optimization as workaround changes will not be captured */
+        mySloeberBoardTxtFile = new BoardTxtFile(resolvePathEnvironmentString(myUserSelectedBoardsTxtFile));
+
     }
 
     public void setOptions(Map<String, String> options) {
@@ -486,7 +491,7 @@ public class BoardDescription {
     }
 
     public String[] getCompatibleBoards() {
-        return this.myBoardTxtFile.getAllSectionNames();
+        return this.mySloeberBoardTxtFile.getAllSectionNames();
     }
 
     public String[] getUploadProtocols() {
@@ -496,7 +501,7 @@ public class BoardDescription {
     }
 
     public String[] getMenuItemNamesFromMenuID(String menuID) {
-        return this.myBoardTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
+        return this.mySloeberBoardTxtFile.getMenuItemNamesFromMenuID(menuID, this.myBoardID);
     }
 
     public TreeMap<String, IPath> getAllExamples() {
@@ -505,15 +510,15 @@ public class BoardDescription {
     }
 
     public String getMenuNameFromMenuID(String id) {
-        return this.myBoardTxtFile.getMenuNameFromID(id);
+        return this.mySloeberBoardTxtFile.getMenuNameFromID(id);
     }
 
     public String getMenuItemNamedFromMenuItemID(String menuItemID, String menuID) {
-        return this.myBoardTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
+        return this.mySloeberBoardTxtFile.getMenuItemNameFromMenuItemID(this.myBoardID, menuID, menuItemID);
     }
 
     public String getMenuItemIDFromMenuItemName(String menuItemName, String menuID) {
-        return this.myBoardTxtFile.getMenuItemIDFromMenuItemName(this.myBoardID, menuID, menuItemName);
+        return this.mySloeberBoardTxtFile.getMenuItemIDFromMenuItemName(this.myBoardID, menuID, menuItemName);
     }
 
     /**
@@ -529,7 +534,7 @@ public class BoardDescription {
             return null;
         }
         if (myReferencedPlatformVariant == null) {
-            return new Path(myBoardTxtFile.getLoadedFile().getParent().toString()).append(VARIANTS_FOLDER_NAME)
+            return new Path(myUserSelectedBoardsTxtFile.getParent().toString()).append(VARIANTS_FOLDER_NAME)
                     .append(boardVariant);
         }
         return myReferencedPlatformVariant.getInstallPath().append(VARIANTS_FOLDER_NAME).append(boardVariant);
@@ -573,7 +578,7 @@ public class BoardDescription {
 
     public Path getreferencingPlatformPath() {
         try {
-            return new Path(myBoardTxtFile.getLoadedFile().getParent());
+            return new Path(myUserSelectedBoardsTxtFile.getParent());
         } catch (@SuppressWarnings("unused") Exception e) {
             return new Path(EMPTY);
         }
@@ -617,7 +622,7 @@ public class BoardDescription {
     public IPath getreferencedCoreHardwarePath() {
         updateWhenDirty();
         if (myReferencedPlatformCore == null) {
-            return new Path(myBoardTxtFile.getLoadedFile().toString()).removeLastSegments(1);
+            return getreferencingPlatformPath();
         }
         return myReferencedPlatformCore.getInstallPath();
     }
@@ -663,9 +668,10 @@ public class BoardDescription {
         return getHost() != null;
     }
 
-    protected BoardDescription(File txtFile, String boardID) {
+    protected BoardDescription(File boardsFile, String boardID) {
         myBoardID = boardID;
-        myBoardTxtFile = new BoardTxtFile(txtFile);
+        myUserSelectedBoardsTxtFile = boardsFile;
+        mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
         setDefaultOptions();
         calculateDerivedFields();
     }
@@ -681,8 +687,8 @@ public class BoardDescription {
         KeyValueTree optionsTree = section.getChild(KEY_SLOEBER_MENU_SELECTION);
         Map<String, String> options = optionsTree.toKeyValues(EMPTY, false);
 
-        File ResolvedFile = resolvePathEnvironmentString(new File(board_txt));
-        myBoardTxtFile = new BoardTxtFile(ResolvedFile);
+        myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(board_txt));
+        mySloeberBoardTxtFile = new BoardTxtFile(myUserSelectedBoardsTxtFile);
         setDefaultOptions();
         if (options != null) {
             // Only add the valid options for this board to our options
@@ -693,7 +699,7 @@ public class BoardDescription {
     private Map<String, String> onlyKeepValidOptions(Map<String, String> options) {
         Map<String, String> ret = new HashMap<>();
 
-        KeyValueTree tree = myBoardTxtFile.getData();
+        KeyValueTree tree = mySloeberBoardTxtFile.getData();
         KeyValueTree boardMenuSection = tree.getChild(myBoardID + DOT + MENU);
         if (boardMenuSection != null) {
             for (Entry<String, String> curoption : options.entrySet()) {
@@ -816,11 +822,11 @@ public class BoardDescription {
         allVars.putAll(getEnVarPlatformInfo());
 
         // boards settings not coming from menu selections
-        allVars.putAll(myBoardTxtFile.getBoardEnvironVars(getBoardID()));
+        allVars.putAll(mySloeberBoardTxtFile.getBoardEnvironVars(getBoardID()));
 
         // board settings from menu selections
         Map<String, String> options = getOptions();
-        KeyValueTree rootData = myBoardTxtFile.getData();
+        KeyValueTree rootData = mySloeberBoardTxtFile.getData();
         KeyValueTree menuData = rootData.getChild(getBoardID() + DOT + MENU);
         for (Entry<String, String> curOption : options.entrySet()) {
             String menuID = curOption.getKey();
@@ -1076,14 +1082,17 @@ public class BoardDescription {
         if (packagesIndex != -1) {
             referencingBoardsFile = sloeberHomePath.append(referencingBoardsFile.substring(packagesIndex)).toString();
         }
-        File resolvedFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
-        ret.myBoardTxtFile = new BoardTxtFile(resolvedFile);
+        ret.myUserSelectedBoardsTxtFile = resolvePathEnvironmentString(new File(referencingBoardsFile));
+        ret.mySloeberBoardTxtFile = new BoardTxtFile(ret.myUserSelectedBoardsTxtFile);
 
         return ret;
     }
 
     public boolean isValid() {
-        File boardsFile = myBoardTxtFile.getLoadedFile();
+        if (!myUserSelectedBoardsTxtFile.exists()) {
+            return false;
+        }
+        File boardsFile = mySloeberBoardTxtFile.getLoadedFile();
         if (boardsFile == null) {
             return false;
         }
@@ -1091,12 +1100,12 @@ public class BoardDescription {
     }
 
     public void reloadTxtFile() {
-        myBoardTxtFile.reloadTxtFile();
+        mySloeberBoardTxtFile.reloadTxtFile();
 
     }
 
     public Map<String, String> getAllMenus() {
-        return myBoardTxtFile.getMenus();
+        return mySloeberBoardTxtFile.getMenus();
     }
 
     public boolean isSSHUpload() {
