@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 03 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 04 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -370,9 +370,13 @@ public class WorkAround extends Const {
         while (regex_macher.find()) {
             String origLine = platformTXT.substring(regex_macher.start(), regex_macher.end());
             String workedAroundLine = origLine.replace("(?:", "(");
-            String badSuffix = "\\s+([0-9]+).*";
-            if (workedAroundLine.endsWith(badSuffix)) {
-                workedAroundLine = workedAroundLine.substring(0, workedAroundLine.length() - badSuffix.length());
+            String badSuffix1 = "\\s+([0-9]+).*";
+            String badSuffix2 = "|)";
+            if (workedAroundLine.endsWith(badSuffix1)) {
+                workedAroundLine = workedAroundLine.substring(0, workedAroundLine.length() - badSuffix1.length());
+            }
+            if (workedAroundLine.endsWith(badSuffix2)) {
+                workedAroundLine = workedAroundLine.substring(0, workedAroundLine.length() - 2) + ")";
             }
             if (!origLine.equals(workedAroundLine)) {
                 replaceInfo.put(origLine, workedAroundLine);
