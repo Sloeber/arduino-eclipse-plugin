@@ -25,9 +25,18 @@ import org.junit.runners.Parameterized.Parameters;
 public class TxtWorkAroundRegression {
     final static private String ROOTFOLDER = "E:\\arduinoTxt-Backup-2021-08-19";
     private Path myPath;
+
+    //this value should only be true for on, github
+    //you can set it to false to test differences in outcome of you code changes
+    //to do so make a copy of the original code od io.sloeber.core.txt.WorkAround 
+    // and name it io.sloeber.core.txt.WorkAroundOrg (do not check it in)
+    //modify io.sloeber.core.txt.WorkAround
+    //running the test will provide the differences between the 2 code sets 
+    // for all platform.txt files provided
+    private boolean comparePlarformFiles = true;
+    //following variables are only used when comparePlarformFiles is false
     private Path myOutputPath = new Path(
             "E:\\test\\workaround\\" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-DD")));
-    private boolean comparePlarformFiles = false;
     static private int differenceCount = 0;
 
     public TxtWorkAroundRegression(String pathName) {
@@ -141,6 +150,7 @@ public class TxtWorkAroundRegression {
 
             if (!cleanedOldWorkAround.equals(cleanedCurrentWorkAround)) {
                 differenceCount += 1;
+                @SuppressWarnings("boxing")
                 String prefix = String.format("%04d", differenceCount) + "_";
                 System.err.println("ERROR for " + inputFile);
                 String difference = StringUtils.difference(cleanedCurrentWorkAround, cleanedOldWorkAround);
