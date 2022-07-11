@@ -75,7 +75,7 @@ public class ArduinpPlatformToolSystem extends ArduinoInstallable {
         }
 
         if (osName.contains("Mac")) {
-            if (osArch.contains("x86_64")) {
+            if (osArch.contains("x86_64") || osArch.contains("aarch64")) {
                 return host.matches("x86_64-apple-darwin.*") || host.matches("i[3456]86-apple-darwin.*");
             }
             return host.matches("i[3456]86-apple-darwin.*");
