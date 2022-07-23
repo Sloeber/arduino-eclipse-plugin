@@ -329,7 +329,7 @@
            <tool
                  announcement="%tool.Arduino.combiner.announcement"
                  command="${recipe.c.combine.pattern}"
-                 commandLinePattern="${sloeber.pre.link}${recipe.c.combine.pattern.1} ${FLAGS} ${INPUTS} ${recipe.c.combine.pattern.2} ${archive_file_path} ${recipe.c.combine.pattern.3} ${sloeber.extra_all} ${sloeber.extra_link}${sloeber.post.link}"
+                 commandLinePattern="${sloeber.pre.link}${recipe.c.combine.pattern.1} ${FLAGS} ${INPUTS} ${recipe.c.combine.pattern.2} ${archive_file_path} ${recipe.c.combine.pattern.3} ${sloeber.extra_all} ${sloeber.extra.link}${sloeber.post.link}"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
                  name="%tool.combiner.name"
