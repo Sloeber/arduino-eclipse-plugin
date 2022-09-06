@@ -9,7 +9,7 @@ The Sloeber IDE bridges that gap and helps move you to a more powerful developme
 It works on MS Windows, Mac OSX and Linux.
 
 # Downloads
-If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. See the details at http://baeyens.it/.
+If you are not a developer and don't want to build from sources, then there are precompiled product packages and update sites available. You can find them here on github as releases. See the details at http://baeyens.it/.
 
 # Build from source
 Below are instructions on how to download and compile the source code from the command line and from eclipse.
