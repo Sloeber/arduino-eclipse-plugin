@@ -65,6 +65,10 @@ $files = array(
     "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_4_0/V4.4.0_mac64.2021-07-04_06-48-31.zip",
     "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_4_0/V4.4.0_win64.2021-07-04_06-48-31.zip",
     
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_4_1_0/V4.4.1_linux64.2022-07-09_05-48-31.zip",
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_4_1_0/V4.4.1_mac64.2022-09-05_06-48-31.zip",
+    "https://github.com/Sloeber/arduino-eclipse-plugin/releases/download/V4_4_1_0/V4.4.1_win64.2022-09-05_06-48-31.zip",
+    
 );
 
 ?>
