@@ -960,47 +960,6 @@ public class BoardDescription {
 
         Map<String, String> extraVars = new HashMap<>();
 
-        // split the recipes so we can add the input and output markers as cdt needs
-        // them
-        String recipeKeys[] = { RECIPE_C_to_O, RECIPE_CPP_to_O, RECIPE_S_to_O, RECIPE_SIZE, RECIPE_AR,
-                RECIPE_C_COMBINE };
-        for (String recipeKey : recipeKeys) {
-            String recipe = vars.get(recipeKey);
-            if (null == recipe) {
-                continue;
-            }
-
-            // Sloeber should split o, -o {output} but to be safe that needs a regex so I
-            // simply delete the -o
-            if (!RECIPE_C_COMBINE.equals(recipeKey)) {
-                recipe = recipe.replace(" -o ", " "); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            String recipeParts[] = recipe.split(
-                    "(\"\\$\\{object_file}\")|(\\$\\{object_files})|(\"\\$\\{source_file}\")|(\"[^\"]*\\$\\{archive_file}\")|(\"[^\"]*\\$\\{archive_file_path}\")", //$NON-NLS-1$
-                    3);
-
-            switch (recipeParts.length) {
-            case 0:
-                extraVars.put(recipeKey + DOT + '1', "echo no command for \"{KEY}\".".replace(KEY_TAG, recipeKey)); //$NON-NLS-1$
-                break;
-            case 1:
-                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-                break;
-            case 2:
-                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-                extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
-                break;
-            case 3:
-                extraVars.put(recipeKey + DOT + '1', recipeParts[0]);
-                extraVars.put(recipeKey + DOT + '2', recipeParts[1]);
-                extraVars.put(recipeKey + DOT + '3', recipeParts[2]);
-
-                break;
-            default:
-                // this should never happen as the split is limited to 3
-            }
-        }
-
         ArrayList<String> objcopyCommand = new ArrayList<>();
         for (Entry<String, String> curVariable : vars.entrySet()) {
             String name = curVariable.getKey();

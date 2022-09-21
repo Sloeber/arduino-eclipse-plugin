@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.04.test 04 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.05.test 05 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -318,12 +318,50 @@ public class WorkAround extends Const {
         String platformTXT = inPlatformTxt;
         String searchPlatformTXT = "\n" + inPlatformTxt;
 
-        // the fix below seems no longer needed but is still on august 2021
-        // Arduino treats core differently so we need to change the location of directly
-        // referenced files this manifests only in the combine recipe
-        String inCombineRecipe = findLineStartingWith(platformTXT, "recipe.c.combine.pattern");
-        if (null != inCombineRecipe) {
+        //C o need the input and output file stuff removed as CDT wants thes at the command level
+        String inCORecipe = findLineStartingWith(platformTXT, RECIPE_C_to_O);
+        if (null != inCORecipe) {
+            String outCORecipe = inCORecipe.replace(" -o ", " ");
+            outCORecipe = outCORecipe.replace(" \"{source_file}\"", " ");
+            outCORecipe = outCORecipe.replace(" \"{object_file}\"", " ");
+            platformTXT = platformTXT.replace(inCORecipe, outCORecipe);
+        }
+
+        //Cpp o need the input and output file stuff removed as CDT wants thes at the command level
+        String inCppORecipe = findLineStartingWith(platformTXT, RECIPE_CPP_to_O);
+        if (null != inCppORecipe) {
+            String outCppORecipe = inCppORecipe.replace(" -o ", " ");
+            outCppORecipe = outCppORecipe.replace(" \"{source_file}\"", " ");
+            outCppORecipe = outCppORecipe.replace(" \"{object_file}\"", " ");
+            platformTXT = platformTXT.replace(inCppORecipe, outCppORecipe);
+        }
+
+        //S o need the input and output file stuff removed as CDT wants thes at the command level
+        String inSORecipe = findLineStartingWith(platformTXT, RECIPE_S_to_O);
+        if (null != inSORecipe) {
+            String outSORecipe = inSORecipe.replace(" -o ", " ");
+            outSORecipe = outSORecipe.replace(" \"{source_file}\"", " ");
+            outSORecipe = outSORecipe.replace(" \"{object_file}\"", " ");
+            platformTXT = platformTXT.replace(inSORecipe, outSORecipe);
+        }
+
+        //Archiver needs the "{archive_file_path}" "{object_file}" file stuff removed as CDT wants thes at the command level
+        String inArRecipe = findLineStartingWith(platformTXT, RECIPE_AR);
+        if (null != inArRecipe) {
+            String outArRecipe = inArRecipe.replace(" {archive_file_path} ", " ");
+            outArRecipe = outArRecipe.replace(" {object_file}", " ");
+            platformTXT = platformTXT.replace(inArRecipe, outArRecipe);
+        }
+
+        String inCombineRecipe = findLineStartingWith(platformTXT, RECIPE_C_COMBINE);
+        if (null != inArRecipe) {
+            // the fix below seems no longer needed but is still on august 2021
+            // Arduino treats core differently so we need to change the location of directly
+            // referenced files this manifests only in the combine recipe
             String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys");
+
+            outCombineRecipe = outCombineRecipe.replace(" \"{build.path}/{archive_file}\"", " ");
+            outCombineRecipe = outCombineRecipe.replace(" {object_files}", " ");
             platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
         }
 
@@ -411,7 +449,7 @@ public class WorkAround extends Const {
     private static String findLineStartingWith(String text, String startOfLine) {
         int lineStartIndex = text.indexOf("\n" + startOfLine) + 1;
         if (lineStartIndex > 0) {
-            int lineEndIndex = text.indexOf("\n", lineStartIndex) - 1;
+            int lineEndIndex = text.indexOf("\n", lineStartIndex);
             if (lineEndIndex > 0) {
                 return text.substring(lineStartIndex, lineEndIndex);
             }
