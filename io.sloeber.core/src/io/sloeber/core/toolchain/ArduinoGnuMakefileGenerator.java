@@ -48,8 +48,10 @@ import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
@@ -906,7 +908,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         IFile sizeAwkFile1 = root.getFile(topBuildDir.append("size.awk"));
         File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
         String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);
-         String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
+        String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.data", EMPTY);
         awkContent += "/" + regex + "/ {arduino_data += $2 }\n";
         regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex.eeprom", EMPTY);
@@ -1628,7 +1630,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             String[] cmdInputs = inputs.toArray(new String[inputs.size()]);
             IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
             IManagedCommandLineInfo cmdLInfo = gen.generateCommandLineInfo(tool, command, flags, outflag, outputPrefix,
-                    primaryOutputs, cmdInputs, tool.getCommandLinePattern());
+                    primaryOutputs, cmdInputs, getToolCommandLinePattern(tool));
             // The command to build
             String buildCmd = null;
             if (cmdLInfo == null) {
@@ -2212,7 +2214,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         }
         IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
         return gen.generateCommandLineInfo(tool, cmd, flags, outputFlag, outputPrefix, outputName, inputResources,
-                tool.getCommandLinePattern());
+                getToolCommandLinePattern(tool));
     }
 
     /**
@@ -2577,7 +2579,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 // Call the command line generator
                 IManagedCommandLineGenerator cmdLGen = tool.getCommandLineGenerator();
                 cmdLInfo = cmdLGen.generateCommandLineInfo(tool, cmd, flags, outflag, outputPrefix,
-                        OUT_MACRO + otherPrimaryOutputs, inputStrings, tool.getCommandLinePattern());
+                        OUT_MACRO + otherPrimaryOutputs, inputStrings, getToolCommandLinePattern(tool));
             } else {
                 outflag = tool.getOutputFlag();
                 outputPrefix = tool.getOutputPrefix();
@@ -4524,5 +4526,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             }
         }
         return h;
+    }
+
+    private String getToolCommandLinePattern(ITool tool) {
+        String orgPattern = tool.getCommandLinePattern();
+        if (orgPattern.contains("$")) {
+            //if the pattern contains a space no use to try to expand it
+            return orgPattern;
+        }
+        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(config.getName());
+        return Common.getBuildEnvironmentVariable(confDesc, orgPattern, orgPattern, false);
+
     }
 }

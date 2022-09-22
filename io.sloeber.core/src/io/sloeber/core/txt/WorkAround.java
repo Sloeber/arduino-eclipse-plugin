@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created workaound file V1.05.test 05 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.00.test 04 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -318,51 +318,57 @@ public class WorkAround extends Const {
         String platformTXT = inPlatformTxt;
         String searchPlatformTXT = "\n" + inPlatformTxt;
 
-        //C o need the input and output file stuff removed as CDT wants thes at the command level
-        String inCORecipe = findLineStartingWith(platformTXT, RECIPE_C_to_O);
-        if (null != inCORecipe) {
-            String outCORecipe = inCORecipe.replace(" -o ", " ");
-            outCORecipe = outCORecipe.replace(" \"{source_file}\"", " ");
-            outCORecipe = outCORecipe.replace(" \"{object_file}\"", " ");
-            platformTXT = platformTXT.replace(inCORecipe, outCORecipe);
+        String origRecipe = findLineStartingWith(platformTXT, RECIPE_C_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe.replace("\"{source_file}\"", "{INPUTS}");
+            changed = changed.replace("\"{object_file}\"", "{OUTPUT}");
+            changed = changed.replace("{includes}", "{FLAGS} -D__IN_ECLIPSE__=1");
+            changed = changed + " {sloeber.extra.compile} {sloeber.extra.c.compile} {sloeber.extra.all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
-        //Cpp o need the input and output file stuff removed as CDT wants thes at the command level
-        String inCppORecipe = findLineStartingWith(platformTXT, RECIPE_CPP_to_O);
-        if (null != inCppORecipe) {
-            String outCppORecipe = inCppORecipe.replace(" -o ", " ");
-            outCppORecipe = outCppORecipe.replace(" \"{source_file}\"", " ");
-            outCppORecipe = outCppORecipe.replace(" \"{object_file}\"", " ");
-            platformTXT = platformTXT.replace(inCppORecipe, outCppORecipe);
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_CPP_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe.replace("\"{source_file}\"", "{INPUTS}");
+            changed = changed.replace("\"{object_file}\"", "{OUTPUT}");
+            changed = changed.replace("{includes}", "{FLAGS} -D__IN_ECLIPSE__=1");
+            changed = changed + " {sloeber.extra.compile} {sloeber.extra.cpp.compile} {sloeber.extra.all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
-        //S o need the input and output file stuff removed as CDT wants thes at the command level
-        String inSORecipe = findLineStartingWith(platformTXT, RECIPE_S_to_O);
-        if (null != inSORecipe) {
-            String outSORecipe = inSORecipe.replace(" -o ", " ");
-            outSORecipe = outSORecipe.replace(" \"{source_file}\"", " ");
-            outSORecipe = outSORecipe.replace(" \"{object_file}\"", " ");
-            platformTXT = platformTXT.replace(inSORecipe, outSORecipe);
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_S_to_O);
+        if (null != origRecipe) {
+            String changed = origRecipe.replace("\"{source_file}\"", "{INPUTS}");
+            changed = changed.replace("\"{object_file}\"", "{OUTPUT}");
+            changed = changed.replace("{includes}", "{FLAGS} -D__IN_ECLIPSE__=1");
+            changed = changed + " {sloeber.extra.assembly} {sloeber.extra.all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
-        //Archiver needs the "{archive_file_path}" "{object_file}" file stuff removed as CDT wants thes at the command level
-        String inArRecipe = findLineStartingWith(platformTXT, RECIPE_AR);
-        if (null != inArRecipe) {
-            String outArRecipe = inArRecipe.replace(" {archive_file_path} ", " ");
-            outArRecipe = outArRecipe.replace(" {object_file}", " ");
-            platformTXT = platformTXT.replace(inArRecipe, outArRecipe);
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_AR);
+        if (null != origRecipe) {
+            //archives should get a different key but for now I didn't get that to work
+            String changed = origRecipe.replace("\"{archive_file_path}\"", "{OUTPUT}");
+            changed = changed.replace("{archive_file_path}", "{OUTPUT}");
+            changed = changed.replace("\"{object_file}\"", "{INPUTS}");
+            changed = changed.replace("{object_file}", "{INPUTS}");
+            changed = changed + " {sloeber.extra_archive} {sloeber.extra_all}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
-        String inCombineRecipe = findLineStartingWith(platformTXT, RECIPE_C_COMBINE);
-        if (null != inArRecipe) {
+        origRecipe = findLineStartingWith(platformTXT, RECIPE_C_COMBINE);
+        if (null != origRecipe) {
             // the fix below seems no longer needed but is still on august 2021
             // Arduino treats core differently so we need to change the location of directly
             // referenced files this manifests only in the combine recipe
-            String outCombineRecipe = inCombineRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys");
+            String changed = origRecipe.replaceAll("(\\{build\\.path})(/core)?/sys", "$1/core/core/sys");
 
-            outCombineRecipe = outCombineRecipe.replace(" \"{build.path}/{archive_file}\"", " ");
-            outCombineRecipe = outCombineRecipe.replace(" {object_files}", " ");
-            platformTXT = platformTXT.replace(inCombineRecipe, outCombineRecipe);
+            changed = changed.replace(" \"{build.path}/{archive_file}\"", " {ARCHIVES}");
+            changed = changed.replace(" {object_files}", " ${FLAGS} {INPUTS}");
+            String[] splits = changed.split("=", 2);
+            changed = splits[0] + "={sloeber.pre.link}" + splits[1]
+                    + " {sloeber.extra_all} {sloeber.extra.link}{sloeber.post.link}";
+            platformTXT = platformTXT.replace(origRecipe, changed);
         }
 
         // replace tools.x.y* {path}
