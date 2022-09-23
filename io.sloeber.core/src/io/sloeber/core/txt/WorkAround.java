@@ -45,7 +45,7 @@ import io.sloeber.core.tools.FileModifiers;
 public class WorkAround extends Const {
     // Each time this class is touched consider changing the String below to enforce
     // updates
-    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.00.test 07 ";
+    private static final String FIRST_SLOEBER_WORKAROUND_LINE = "#Sloeber created TXT file V2.00.test 09 ";
 
     /**
      * workarounds done at installation time. I try to keep those at a minimum but
@@ -325,7 +325,12 @@ public class WorkAround extends Const {
             changed = changed.replace(" \"{object_file}\" ", " {OUTPUT} ");
             changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
             changed = changed + "{sloeber.extra.compile} {sloeber.extra.c.compile} {sloeber.extra.all}";
-            platformTXT = platformTXT.replace(origRecipe, changed);
+            String codan = changed.replace(RECIPE_C_to_O, CODAN_C_to_O);
+            codan = codan.replace(" -o ", " ");
+            codan = codan.replace(" {FLAGS} ", " ");
+            codan = codan.replace(" {OUTPUT} ", " ");
+
+            platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
         }
 
         origRecipe = findLineStartingWith(platformTXT, RECIPE_CPP_to_O);
@@ -335,7 +340,12 @@ public class WorkAround extends Const {
             changed = changed.replace(" \"{object_file}\" ", " {OUTPUT}  ");
             changed = changed.replace(" {includes} ", " {FLAGS} -D__IN_ECLIPSE__=1 ");
             changed = changed + "{sloeber.extra.compile} {sloeber.extra.cpp.compile} {sloeber.extra.all}";
-            platformTXT = platformTXT.replace(origRecipe, changed);
+            String codan = changed.replace(RECIPE_CPP_to_O, CODAN_CPP_to_O);
+            codan = codan.replace(" -o ", " ");
+            codan = codan.replace(" {FLAGS} ", " ");
+            codan = codan.replace(" {OUTPUT} ", " ");
+
+            platformTXT = platformTXT.replace(origRecipe, changed + NEWLINE + codan);
         }
 
         origRecipe = findLineStartingWith(platformTXT, RECIPE_S_to_O);

@@ -403,12 +403,6 @@ public class SloeberProject extends Common {
                     + makeEnvironmentVar(ENV_KEY_BUILD_GENERIC_PATH) + pathDelimiter + makeEnvironmentVar("PATH")); //$NON-NLS-1$
         }
 
-        // Set the codeAnalyzer compile commands
-        allVars.put(CODAN_C_to_O,
-                "${recipe.c.o.pattern.1} -D__IN_ECLIPSE__=1 ${recipe.c.o.pattern.2} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}"); //$NON-NLS-1$
-        allVars.put(CODAN_CPP_to_O,
-                "${recipe.cpp.o.pattern.1} -D__IN_ECLIPSE__=1 -x c++  ${recipe.cpp.o.pattern.2} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}"); //$NON-NLS-1$
-
         return allVars;
     }
 
