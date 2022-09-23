@@ -355,13 +355,7 @@
                     id="io.sloeber.tool.combiner.ar.input"
                     multipleOfType="true"
                     name="Build Archives"
-                    primaryInput="false"
-                    sources="ar">
-              </inputType>
-              <inputType
-                    id="io.sloeber.tool.combiner.fixed.ar.input"
-                    multipleOfType="true"
-                    name="provided archives"
+                    option="ARCHIVES"
                     primaryInput="false"
                     sources="ar">
               </inputType>

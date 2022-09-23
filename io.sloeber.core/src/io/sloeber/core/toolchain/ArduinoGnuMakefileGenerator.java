@@ -1648,6 +1648,17 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             // resolve any remaining macros in the command after it has been
             // generated
             try {
+                //TOFIX JABA heavy hack to get the combiner to work properly
+                //if the command contains ${ARCHIVES}
+                //remove the ${AR}
+                //replace ${ARCHIVES} with ${AR}
+                String ARCHIVES = " ${ARCHIVES} ";
+                String AR = " $(AR) ";
+                if (buildCmd.contains(ARCHIVES)) {
+                    buildCmd = buildCmd.replace(AR, " ");
+                    buildCmd = buildCmd.replace(ARCHIVES, AR);
+                }
+                //end JABA heavy hack
                 String resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
                         buildCmd, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
                         new FileContextData(null, null, null, tool));
