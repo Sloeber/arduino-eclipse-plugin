@@ -171,7 +171,8 @@ public class Common {
 
     /**
      *
-     * Provides the build environment variable based on project and string This
+     * Provides the build environment variable based on project default
+     * configuration and string This
      * method does not add any knowledge.(like adding A.)
      *
      * @param project
@@ -185,7 +186,7 @@ public class Common {
      */
     static public String getBuildEnvironmentVariable(IProject project, String envName, String defaultvalue) {
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        return getBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), envName, defaultvalue);
+        return getBuildEnvironmentVariable(prjDesc.getDefaultSettingConfiguration(), envName, defaultvalue, true);
     }
 
     /**

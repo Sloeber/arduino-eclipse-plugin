@@ -162,7 +162,7 @@
            <tool
                  announcement="%tool.Arduino.CPP.announcement"
                  command="${recipe.cpp.o.pattern}"
-                 commandLinePattern="${recipe.cpp.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 -x c++ ${INPUTS} ${recipe.cpp.o.pattern.2} -o ${OUTPUT} ${recipe.cpp.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.cpp.compile} ${sloeber.extra.all}"
+                 commandLinePattern="recipe.cpp.o.pattern"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.cpp"
                  name="%tool.Arduino.CPP2O.name"
@@ -209,7 +209,7 @@
            <tool
                  announcement="%tool.Arduino.C.announcement"
                  command="${recipe.c.o.pattern}"
-                 commandLinePattern="${recipe.c.o.pattern.1} ${FLAGS} -D__IN_ECLIPSE__=1 ${INPUTS} ${recipe.c.o.pattern.2} -o ${OUTPUT} ${recipe.c.o.pattern.3} ${sloeber.extra.compile} ${sloeber.extra.c.compile} ${sloeber.extra.all}"
+                 commandLinePattern="recipe.c.o.pattern"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.compiler.c"
                  name="%tool.Arduino.C2O.name"
@@ -242,7 +242,7 @@
                     id="io.sloeber.compiler.c.link.output"
                     name="%outputType.C.link.name"
                     nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
-                    outputs="o"
+                    outputs="O"
                     primaryOutput="true">
               </outputType>
               <outputType
@@ -257,7 +257,7 @@
            <tool
                  announcement="%tool.Arduino.S.announcement"
                  command="${recipe.S.o.pattern}"
-                 commandLinePattern="${recipe.S.o.pattern.1} ${FLAGS}  ${INPUTS} ${recipe.S.o.pattern.2} -o ${OUTPUT} ${recipe.S.o.pattern.3}  ${sloeber.extra.assembly} ${sloeber.extra.all}"
+                 commandLinePattern="recipe.S.o.pattern"
                  errorParsers="org.eclipse.cdt.core.GCCErrorParser"
                  id="io.sloeber.tool.sketch.compiler.s"
                  name="%tool.Arduino.S20.name"
@@ -304,7 +304,7 @@
            <tool
                  announcement="%tool.Arduino.archiver.announcement"
                  command="${recipe.ar.pattern}"
-                 commandLinePattern="${recipe.ar.pattern.1} ${FLAGS}  ${archive_file_path} ${INPUTS} ${recipe.ar.pattern.2} ${recipe.ar.pattern.3} ${sloeber.extra_archive} ${sloeber.extra_all}"
+                 commandLinePattern="recipe.ar.pattern"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.ar"
                  name="%tool.archiver.name">
@@ -329,7 +329,7 @@
            <tool
                  announcement="%tool.Arduino.combiner.announcement"
                  command="${recipe.c.combine.pattern}"
-                 commandLinePattern="${sloeber.pre.link}${recipe.c.combine.pattern.1} ${FLAGS} ${INPUTS} ${recipe.c.combine.pattern.2} ${archive_file_path} ${recipe.c.combine.pattern.3} ${sloeber.extra_all} ${sloeber.extra.link}${sloeber.post.link}"
+                 commandLinePattern="recipe.c.combine.pattern"
                  errorParsers="org.eclipse.cdt.core.GLDErrorParser"
                  id="io.sloeber.tool.combine"
                  name="%tool.combiner.name"
@@ -342,17 +342,22 @@
                     outputs="elf"
                     primaryOutput="true">
               </outputType>
-              <inputType
+                            <inputType
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.tool.combiner.ob.input"
                     multipleOfType="true"
                     name="%inputType.linker.name"
                     primaryInput="true"
                     sources="O">
-                 <additionalInput
-                       kind="additionaldependency"
-                       paths="$(AR)">
-                 </additionalInput>
+              </inputType>
+              <inputType
+                    buildVariable="AR"
+                    id="io.sloeber.tool.combiner.ar.input"
+                    multipleOfType="true"
+                    name="Build Archives"
+                    option="ARCHIVES"
+                    primaryInput="false"
+                    sources="ar">
               </inputType>
            </tool>
            <tool
@@ -385,7 +390,7 @@
            <tool
                  announcement="%tool.printsize.announcement"
                  command="${sloeber.size.switch} "
-                 commandLinePattern="${COMMAND}"
+                 commandLinePattern="${sloeber.size.switch} "
                  id="io.sloeber.tool.size"
                  isAbstract="false"
                  name="%tool.printsize.name">
