@@ -1,4 +1,4 @@
-package io.sloeber.core.toolchain;
+package io.sloeber.managedBuild.Internal;
 
 /**
  * 

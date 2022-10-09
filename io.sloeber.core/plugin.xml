@@ -97,7 +97,7 @@
 		<builder
         autoBuildTarget="all"
         buildRunner="io.sloeber.core.toolchain.SloeberBuildRunner"
-        buildfileGenerator="io.sloeber.core.toolchain.ArduinoGnuMakefileGenerator"
+        buildfileGenerator="io.sloeber.managedBuild.Internal.ArduinoGnuMakefileGenerator"
         cleanBuildTarget="clean"
         command="${sloeber.make_location}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
@@ -193,7 +193,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.cpp.sketch.link.output"
                     name="%outputType.CPP.link.name"
-                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -201,7 +201,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.cpp.ar.output"
                     name="%outputType.CPP.AR.name"
-                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -241,7 +241,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.c.link.output"
                     name="%outputType.C.link.name"
-                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
                     outputs="O"
                     primaryOutput="true">
               </outputType>
@@ -249,7 +249,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.c.ar.output"
                     name="%outputType.C.AR.name"
-                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -288,7 +288,7 @@
                     buildVariable="LINK_OBJ"
                     id="io.sloeber.compiler.S.sketch.link.output"
                     name="%outputType.S.link.name"
-                    nameProvider="io.sloeber.core.toolchain.LinkNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.LinkNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
@@ -296,7 +296,7 @@
                     buildVariable="AR_OBJ"
                     id="io.sloeber.compiler.S.ar.output"
                     name="%outputType.S.AR.name"
-                    nameProvider="io.sloeber.core.toolchain.ArchiveNameProvider"
+                    nameProvider="io.sloeber.managedBuild.Internal.ArchiveNameProvider"
                     outputs="o"
                     primaryOutput="true">
               </outputType>
