@@ -186,7 +186,7 @@
                     dependencyContentType="org.eclipse.cdt.core.cxxHeader"
                     id="io.sloeber.compiler.cpp.sketch.input"
                     name="%inputType.CPP.name"
-                    primaryInput="false"
+                    primaryInput="true"
                     sourceContentType="org.eclipse.cdt.core.cxxSource">
               </inputType>
               <outputType
@@ -234,7 +234,7 @@
                     id="io.sloeber.compiler.c.sketch.input"
                     multipleOfType="false"
                     name="%inputType.C.name"
-                    primaryInput="false"
+                    primaryInput="true"
                     sourceContentType="org.eclipse.cdt.core.cSource">
               </inputType>
               <outputType
@@ -317,7 +317,6 @@
                     primaryOutput="true">
               </outputType>
               <inputType
-                    assignToOption="OBJECT_FILE"
                     buildVariable="AR_OBJ"
                     id="io.sloeber.tool.archiver.input"
                     multipleOfType="true"

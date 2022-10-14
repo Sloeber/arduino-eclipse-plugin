@@ -609,7 +609,8 @@ public class ManagebBuildCommon {
         IPath buildLocation = buildPath.getLocation();
         IPath fileLocation = path.getLocation();
         if (buildLocation.isPrefixOf(path.getLocation())) {
-            return DOT_SLASH_PATH.append(fileLocation.makeRelativeTo(buildLocation)).toOSString();
+            return fileLocation.makeRelativeTo(buildLocation).toOSString();
+            //return DOT_SLASH_PATH.append(fileLocation.makeRelativeTo(buildLocation)).toOSString();
         }
         if (buildLocation.removeLastSegments(1).isPrefixOf(fileLocation)) {
             return fileLocation.makeRelativeTo(buildLocation).toOSString();

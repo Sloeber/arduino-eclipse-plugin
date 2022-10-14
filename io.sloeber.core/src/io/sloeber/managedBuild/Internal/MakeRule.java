@@ -30,16 +30,36 @@ import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 
 public class MakeRule {
 
-    Map<IOutputType, List<IFile>> targets = new HashMap<>(); //Macro file target map
-    Map<IInputType, List<IFile>> prerequisites = new HashMap<>();//Macro file prerequisites map
-    ITool tool = null;
+    private Map<IOutputType, List<IFile>> myTargets = new HashMap<>(); //Macro file target map
+    private Map<IInputType, List<IFile>> myPrerequisites = new HashMap<>();//Macro file prerequisites map
+    private Map<String, List<IFile>> myDependencies = new HashMap<>(); //Macro file target map
+    private ITool myTool = null;
+
+    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile) {
+        addPrerequisite(inputType, inputFile);
+        addTarget(outputType, outFile);
+        myTool = tool;
+        calculateDependencies();
+    }
+
+    private void calculateDependencies() {
+        myDependencies.clear();
+        //TOFIX the stuff below should be calculated
+        boolean toolGeneratesDependencyFiles = true;
+        if (!toolGeneratesDependencyFiles) {
+            return;
+        }
+        IPath[] deps = myTool.getAdditionalDependencies();
+
+    }
 
     public HashSet<IFile> getPrerequisites() {
         HashSet<IFile> ret = new HashSet<>();
-        for (List<IFile> cur : prerequisites.values()) {
+        for (List<IFile> cur : myPrerequisites.values()) {
             ret.addAll(cur);
         }
         return ret;
@@ -47,7 +67,7 @@ public class MakeRule {
 
     public HashSet<IFile> getTargets() {
         HashSet<IFile> ret = new HashSet<>();
-        for (List<IFile> cur : targets.values()) {
+        for (List<IFile> cur : myTargets.values()) {
             ret.addAll(cur);
         }
         return ret;
@@ -55,11 +75,14 @@ public class MakeRule {
 
     public HashSet<String> getMacros() {
         HashSet<String> ret = new HashSet<>();
-        for (IOutputType cur : targets.keySet()) {
+        for (IOutputType cur : myTargets.keySet()) {
             ret.add(cur.getBuildVariable());
         }
-        for (IInputType cur : prerequisites.keySet()) {
+        for (IInputType cur : myPrerequisites.keySet()) {
             ret.add(cur.getBuildVariable());
+        }
+        for (String cur : myDependencies.keySet()) {
+            ret.add(cur);
         }
         return ret;
     }
@@ -67,36 +90,40 @@ public class MakeRule {
     public HashSet<IFile> getMacroElements(String macroName) {
         HashSet<IFile> ret = new HashSet<>();
 
-        for (Entry<IOutputType, List<IFile>> cur : targets.entrySet()) {
+        for (Entry<IOutputType, List<IFile>> cur : myTargets.entrySet()) {
             if (macroName.equals(cur.getKey().getBuildVariable())) {
                 ret.addAll(cur.getValue());
             }
         }
-        for (Entry<IInputType, List<IFile>> cur : prerequisites.entrySet()) {
+        for (Entry<IInputType, List<IFile>> cur : myPrerequisites.entrySet()) {
             if (macroName.equals(cur.getKey().getBuildVariable())) {
                 ret.addAll(cur.getValue());
             }
+        }
+        List<IFile> tmp = myDependencies.get(macroName);
+        if (tmp != null) {
+            ret.addAll(tmp);
         }
         return ret;
     }
 
-    public void addTarget(IOutputType outputType, IFile file) {
-        List<IFile> files = targets.get(outputType);
+    private void addTarget(IOutputType outputType, IFile file) {
+        List<IFile> files = myTargets.get(outputType);
         if (files == null) {
             files = new LinkedList<>();
             files.add(file);
-            targets.put(outputType, files);
+            myTargets.put(outputType, files);
         } else {
             files.add(file);
         }
     }
 
-    public void addPrerequisite(IInputType inputType, IFile file) {
-        List<IFile> files = prerequisites.get(inputType);
+    private void addPrerequisite(IInputType inputType, IFile file) {
+        List<IFile> files = myPrerequisites.get(inputType);
         if (files == null) {
             files = new LinkedList<>();
             files.add(file);
-            prerequisites.put(inputType, files);
+            myPrerequisites.put(inputType, files);
         } else {
             files.add(file);
         }
@@ -104,29 +131,27 @@ public class MakeRule {
 
     private String enumTargets(IFile buildFolder) {
         String ret = new String();
-        for (List<IFile> curFiles : targets.values()) {
+        for (List<IFile> curFiles : myTargets.values()) {
             for (IFile curFile : curFiles) {
                 ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
             }
         }
         return ret;
-        //return StringUtils.join(targets.values(), WHITESPACE);
     }
 
     private String enumPrerequisites(IFile buildFolder) {
         String ret = new String();
-        for (List<IFile> curFiles : prerequisites.values()) {
+        for (List<IFile> curFiles : myPrerequisites.values()) {
             for (IFile curFile : curFiles) {
                 ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
             }
         }
         return ret;
-        // return StringUtils.join(prerequisites.values(), WHITESPACE);
     }
 
     public StringBuffer getRule(IProject project, IFile niceBuildFolder, IConfiguration config) {
 
-        String cmd = tool.getToolCommand();
+        String cmd = myTool.getToolCommand();
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
         HashSet<IFile> local_targets = getTargets();
@@ -158,17 +183,17 @@ public class MakeRule {
         boolean needExplicitDependencyCommands = false;
         boolean resourceNameRequiresExplicitRule = containsSpecialCharacters(sourceLocation.getLocation().toOSString());
         needExplicitRuleForFile = resourceNameRequiresExplicitRule
-                || BuildMacroProvider.getReferencedExplitFileMacros(tool).length > 0
+                || BuildMacroProvider.getReferencedExplitFileMacros(myTool).length > 0
                 || BuildMacroProvider.getReferencedExplitFileMacros(cmd, IBuildMacroProvider.CONTEXT_FILE,
                         new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null,
-                                tool)).length > 0;
+                                myTool)).length > 0;
 
-        String outflag = tool.getOutputFlag();
+        String outflag = myTool.getOutputFlag();
         String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE
-                + tool.getOutputPrefix() + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
+                + myTool.getOutputPrefix() + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
         if (needExplicitRuleForFile || needExplicitDependencyCommands) {
             buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
-                    getToolCommandLinePattern(config, tool));
+                    getToolCommandLinePattern(config, myTool));
         } else {
             buildCmd = expandCommandLinePattern(config, inputExtension, flags, outflag, OUT_MACRO + otherPrimaryOutputs,
                     niceNameList, sourceLocation, outputLocation);
@@ -181,13 +206,13 @@ public class MakeRule {
             if (!needExplicitRuleForFile) {
                 resolvedCommand = provider.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
                         IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
             } else {
                 // if we need an explicit rule then don't use any builder
                 // variables, resolve everything to explicit strings
                 resolvedCommand = provider.resolveValue(buildCmd, EMPTY_STRING, WHITESPACE,
                         IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
             }
             if (!resolvedCommand.isBlank())
                 buildCmd = resolvedCommand.trim();
@@ -199,7 +224,7 @@ public class MakeRule {
         buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
         buffer.append(enumPrerequisites(niceBuildFolder)).append(NEWLINE);
         buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_START_FILE + WHITESPACE + IN_MACRO));
-        buffer.append(TAB).append(AT).append(escapedEcho(tool.getAnnouncement()));
+        buffer.append(TAB).append(AT).append(escapedEcho(myTool.getAnnouncement()));
 
         // JABA add sketch.prebuild and postbouild if needed
         //TOFIX this should not be here
@@ -221,38 +246,6 @@ public class MakeRule {
         }
         // end JABA add sketch.prebuild and postbouild if needed
 
-        // Determine if there are any dependencies to calculate
-        //        if (doDepGen) {
-        //            // Get the dependency rule out of the generator
-        //            String[] depCmds = null;
-        //            if (depCommands != null) {
-        //                depCmds = depCommands.getPostToolDependencyCommands();
-        //            }
-        //            if (depCmds != null) {
-        //                for (String depCmd : depCmds) {
-        //                    // Resolve any macros in the dep command after it has
-        //                    // been generated.
-        //                    // Note: do not trim the result because it will strip
-        //                    // out necessary tab characters.
-        //                    buffer.append(WHITESPACE).append(LOGICAL_AND).append(WHITESPACE).append(LINEBREAK);
-        //                    try {
-        //                        if (!needExplicitRuleForFile) {
-        //                            depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(depCmd,
-        //                                    EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-        //                                    new FileContextData(sourceLocation, outputLocation, null, tool));
-        //                        } else {
-        //                            depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValue(depCmd, EMPTY_STRING,
-        //                                    WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-        //                                    new FileContextData(sourceLocation, outputLocation, null, tool));
-        //                        }
-        //                    } catch (BuildMacroException e) {
-        //                        /* JABA is not going to do this */
-        //                    }
-        //                    buffer.append(depCmd);
-        //                }
-        //            }
-        //        }
-        // Echo finished message
         buffer.append(NEWLINE);
         buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_FINISH_FILE + WHITESPACE + IN_MACRO));
         buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
@@ -265,16 +258,16 @@ public class MakeRule {
         try {
 
             IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
-            flags.addAll(Arrays.asList(tool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
+            flags.addAll(Arrays.asList(myTool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
 
-            IInputType[] inputTypes = tool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
+            IInputType[] inputTypes = myTool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
             for (IInputType inputType : inputTypes) {
                 IManagedDependencyGeneratorType t = inputType.getDependencyGenerator();
                 if (t != null) {
                     if (t.getCalculatorType() == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS) {
                         IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) t;
                         IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(
-                                sourceFile.getProjectRelativePath(), sourceFile, buildContext, tool,
+                                sourceFile.getProjectRelativePath(), sourceFile, buildContext, myTool,
                                 buildFolder.getFullPath());
                         IManagedDependencyCommands depCommands = (IManagedDependencyCommands) depInfo;
                         if (depCommands != null) {
@@ -294,7 +287,7 @@ public class MakeRule {
     private String expandCommandLinePattern(IConfiguration config, String sourceExtension, Set<String> flags,
             String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
             IFile outputLocation) {
-        String cmd = tool.getToolCommand();
+        String cmd = myTool.getToolCommand();
         // try to resolve the build macros in the tool command
         try {
             String resolvedCommand = null;
@@ -302,11 +295,11 @@ public class MakeRule {
                     || (outputLocation != null && outputLocation.toString().indexOf(WHITESPACE) != -1)) {
                 resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, EMPTY_STRING,
                         WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
             } else {
                 resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd,
                         EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
             }
             if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
                 cmd = resolvedCommand;
@@ -314,7 +307,7 @@ public class MakeRule {
             /* JABA is not going to write this code */
         }
         return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
-                getToolCommandLinePattern(config, tool));
+                getToolCommandLinePattern(config, myTool));
     }
 
     //    /**
@@ -465,7 +458,7 @@ public class MakeRule {
         command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
         command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
         command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
-        command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), tool.getOutputPrefix());
+        command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
         command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
         command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
 
