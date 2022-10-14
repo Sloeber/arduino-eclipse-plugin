@@ -214,8 +214,8 @@ public class ManagebBuildCommon {
         }
         // Reconstruct the buffer tokens into useful chunks of dependency
         // information
-        Vector<String> bufferTokens = new Vector<String>(Arrays.asList(inBufferString.split("\\s")));
-        Vector<String> deps = new Vector<String>(bufferTokens.size());
+        Vector<String> bufferTokens = new Vector<>(Arrays.asList(inBufferString.split("\\s")));
+        Vector<String> deps = new Vector<>(bufferTokens.size());
         Iterator<String> tokenIter = bufferTokens.iterator();
         while (tokenIter.hasNext()) {
             String token = tokenIter.next();
@@ -241,7 +241,7 @@ public class ManagebBuildCommon {
         String firstToken;
         try {
             firstToken = deps.get(0);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException e) {
             // This makes no sense so bail
             return false;
         }
@@ -513,8 +513,8 @@ public class ManagebBuildCommon {
     static public void addMacroAdditionFile(HashMap<String, String> map, String macroName, String filename) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(map.get(macroName));
-        filename = escapeWhitespaces(filename);
-        buffer.append(filename).append(WHITESPACE).append(LINEBREAK);
+        String escapedFilename = escapeWhitespaces(filename);
+        buffer.append(escapedFilename).append(WHITESPACE).append(LINEBREAK);
         map.put(macroName, buffer.toString());
     }
 
@@ -532,7 +532,7 @@ public class ManagebBuildCommon {
         IPath projectLocation = getPathForResource(project);
         IPath dirLocation = projectLocation;
         if (generatedSource) {
-            dirLocation = dirLocation.append(caller.getBuildWorkingDir());
+            dirLocation = dirLocation.append(buildWorkingDir);
         }
         if (dirLocation.isPrefixOf(sourceLocation)) {
             IPath srcPath = sourceLocation.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
@@ -598,10 +598,27 @@ public class ManagebBuildCommon {
                     return (IManagedOutputNameProviderJaba) element
                             .createExecutableExtension(IOutputType.NAME_PROVIDER);
                 }
-            } catch (CoreException e) {
+            } catch (@SuppressWarnings("unused") CoreException e) {
                 //ignore errors
             }
         }
         return null;
+    }
+
+    static public String GetNiceFileName(IFile buildPath, IFile path) {
+        IPath buildLocation = buildPath.getLocation();
+        IPath fileLocation = path.getLocation();
+        if (buildLocation.isPrefixOf(path.getLocation())) {
+            return DOT_SLASH_PATH.append(fileLocation.makeRelativeTo(buildLocation)).toOSString();
+        }
+        if (buildLocation.removeLastSegments(1).isPrefixOf(fileLocation)) {
+            return fileLocation.makeRelativeTo(buildLocation).toOSString();
+
+        }
+        return fileLocation.toOSString();
+    }
+
+    static public String makeVariable(String variableName) {
+        return VARIABLE_PREFIX + variableName + VARIABLE_SUFFIX;
     }
 }

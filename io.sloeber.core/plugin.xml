@@ -186,7 +186,7 @@
                     dependencyContentType="org.eclipse.cdt.core.cxxHeader"
                     id="io.sloeber.compiler.cpp.sketch.input"
                     name="%inputType.CPP.name"
-                    primaryInput="true"
+                    primaryInput="false"
                     sourceContentType="org.eclipse.cdt.core.cxxSource">
               </inputType>
               <outputType
@@ -234,7 +234,7 @@
                     id="io.sloeber.compiler.c.sketch.input"
                     multipleOfType="false"
                     name="%inputType.C.name"
-                    primaryInput="true"
+                    primaryInput="false"
                     sourceContentType="org.eclipse.cdt.core.cSource">
               </inputType>
               <outputType
@@ -281,7 +281,7 @@
                     dependencyContentType="org.eclipse.cdt.core.cxxHeader"
                     id="io.sloeber.compiler.S.sketch.input"
                     name="%inputType.Asembly.name"
-                    primaryInput="true"
+                    primaryInput="false"
                     sourceContentType="org.eclipse.cdt.core.asmSource">
               </inputType>
               <outputType

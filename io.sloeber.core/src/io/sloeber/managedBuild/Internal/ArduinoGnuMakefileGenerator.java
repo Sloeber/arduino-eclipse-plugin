@@ -280,7 +280,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     // dependency files
     /** Collection of Containers which contribute source files to the build */
     private Collection<IContainer> subdirList;
-    private IPath topBuildDir;
+    private IFile topBuildDir;
     final HashMap<String, List<IPath>> buildSrcVars = new HashMap<>();
     final HashMap<String, List<IPath>> buildOutVars = new HashMap<>();
     final HashMap<String, ArduinoGnuDependencyGroupInfo> buildDepVars = new HashMap<>();
@@ -348,7 +348,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         builder = config.getEditableBuilder();
         initToolInfos();
         // set the top build dir path
-        topBuildDir = project.getFolder(info.getConfigurationName()).getFullPath();
+        topBuildDir = project.getFile(info.getConfigurationName());
     }
 
     /**
@@ -364,11 +364,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 IPath absolutePath = new Path(
                         EFSExtensionManager.getDefault().getPathFromURI(depFile.getLocationURI()));
                 // Convert to build directory relative
-                IPath depPath = ManagedBuildManager.calculateRelativePath(getTopBuildDir(), absolutePath);
+                IPath depPath = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(), absolutePath);
                 for (int i = 0; i < postProcessors.length; i++) {
                     IManagedDependencyGenerator2 depGen = postProcessors[i];
                     if (depGen != null) {
-                        depGen.postProcessDependencyFile(depPath, config, h.buildTools[i], getTopBuildDir());
+                        depGen.postProcessDependencyFile(depPath, config, h.buildTools[i],
+                                getTopBuildDir().getFullPath());
                     }
                 }
             }
@@ -475,7 +476,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 continue;
             DepInfo di = (DepInfo) cr.getValue();
             ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, projectRelativePath);
-            IPath buildRelativePath = topBuildDir.append(projectRelativePath);
+            IPath buildRelativePath = topBuildDir.getFullPath().append(projectRelativePath);
             IFolder buildFolder = root.getFolder(buildRelativePath);
             if (buildFolder == null)
                 continue;
@@ -544,11 +545,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             return status;
         }
         // Make sure the build directory is available
-        topBuildDir = createDirectory(project, config.getName());
+        topBuildDir = project.getFile(config.getName());
+        createDirectory(project, config.getName());
         checkCancel();
         // Make sure that there is a makefile containing all the folders
         // participating
-        IPath srcsFilePath = topBuildDir.append(SRCSFILE_NAME);
+        IPath srcsFilePath = topBuildDir.getFullPath().append(SRCSFILE_NAME);
         IFile srcsFileHandle = createFile(srcsFilePath);
         buildSrcVars.clear();
         buildOutVars.clear();
@@ -616,7 +618,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         calculateToolInputsOutputs();
         checkCancel();
         // Re-create the top-level makefile
-        IPath makefilePath = topBuildDir.append(MAKEFILE_NAME);
+        IPath makefilePath = topBuildDir.getFullPath().append(MAKEFILE_NAME);
         IFile makefileHandle = createFile(makefilePath);
         myTopMakeFileGenerator.populateTopMakefile(makefileHandle, false);
         checkCancel();
@@ -651,7 +653,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     @Override
     public IPath getBuildWorkingDir() {
         if (topBuildDir != null) {
-            return topBuildDir.removeFirstSegments(1);
+            return topBuildDir.getFullPath().removeFirstSegments(1);
         }
         return null;
     }
@@ -720,7 +722,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 IResourceInfo rcInfo = config.getResourceInfo(container.getPath(), false);
                 for (IPath path : getDependencyMakefiles(h)) {
                     // The path to search for the dependency makefile
-                    IPath relDepFilePath = topBuildDir.append(path);
+                    IPath relDepFilePath = topBuildDir.getFullPath().append(path);
                     IFile depFile = root.getFile(relDepFilePath);
                     if (depFile == null || !depFile.isAccessible())
                         continue;
@@ -765,10 +767,11 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             return status;
         }
         // Create the top-level directory for the build output
-        topBuildDir = createDirectory(project, config.getName());
+        topBuildDir = project.getFile(config.getName());
+        createDirectory(project, config.getName());
         checkCancel();
         // Get the list of subdirectories
-        IPath srcsFilePath = topBuildDir.append(SRCSFILE_NAME);
+        IPath srcsFilePath = topBuildDir.getFullPath().append(SRCSFILE_NAME);
         IFile srcsFileHandle = createFile(srcsFilePath);
         buildSrcVars.clear();
         buildOutVars.clear();
@@ -793,13 +796,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         calculateToolInputsOutputs();
         checkCancel();
         // Create the top-level makefile
-        IPath makefilePath = topBuildDir.append(MAKEFILE_NAME);
+        IPath makefilePath = topBuildDir.getFullPath().append(MAKEFILE_NAME);
         IFile makefileHandle = createFile(makefilePath);
         myTopMakeFileGenerator.populateTopMakefile(makefileHandle, true);
         // JABA SLOEBER create the size.awk file
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-        IFile sizeAwkFile1 = root.getFile(topBuildDir.append("size.awk"));
+        IFile sizeAwkFile1 = root.getFile(topBuildDir.getFullPath().append("size.awk"));
         File sizeAwkFile = sizeAwkFile1.getLocation().toFile();
         String regex = Common.getBuildEnvironmentVariable(confDesc, "recipe.size.regex", EMPTY);
         String awkContent = "/" + regex + "/ {arduino_size += $2 }\n";
@@ -825,7 +828,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         // END JABA SLOEBER create the size.awk file
         checkCancel();
         // Now finish up by adding all the object files
-        IPath objFilePath = topBuildDir.append(OBJECTS_MAKFILE);
+        IPath objFilePath = topBuildDir.getLocation().append(OBJECTS_MAKFILE);
         IFile objsFileHandle = createFile(objFilePath);
         populateObjectsMakefile(objsFileHandle);
         checkCancel();
@@ -1290,8 +1293,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
 
     private IPath inFullPathFromOutFullPath(IPath path) {
         IPath inPath = null;
-        if (topBuildDir.isPrefixOf(path)) {
-            inPath = path.removeFirstSegments(topBuildDir.segmentCount());
+        IPath topBuildPath = topBuildDir.getFullPath();
+        if (topBuildPath.isPrefixOf(path)) {
+            inPath = path.removeFirstSegments(topBuildPath.segmentCount());
             inPath = project.getFullPath().append(path);
         }
         return inPath;
@@ -1323,7 +1327,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 if (calcType == IManagedDependencyGeneratorType.TYPE_COMMAND) {
                     depFilePaths = new IPath[1];
                     IPath absolutePath = deletedFile.getLocation();
-                    depFilePaths[0] = ManagedBuildManager.calculateRelativePath(getTopBuildDir(), absolutePath);
+                    depFilePaths[0] = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(),
+                            absolutePath);
                     depFilePaths[0] = depFilePaths[0].removeFileExtension().addFileExtension(DEP_EXT);
                 } else if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS
                         || calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
@@ -1497,8 +1502,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     /**
      * Return the configuration's top build directory as an absolute path
      */
-    public IPath getTopBuildDir() {
-        return getPathForResource(project).append(getBuildWorkingDir());
+    public IFile getTopBuildDir() {
+        return topBuildDir;
     }
 
     @Override
@@ -1551,7 +1556,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         this.builder = builder;
         initToolInfos();
         // set the top build dir path
-        topBuildDir = project.getFolder(cfg.getName()).getFullPath();
+        topBuildDir = project.getFile(cfg.getName());
         srcEntries = config.getSourceEntries();
         if (srcEntries.length == 0) {
             srcEntries = new ICSourceEntry[] {

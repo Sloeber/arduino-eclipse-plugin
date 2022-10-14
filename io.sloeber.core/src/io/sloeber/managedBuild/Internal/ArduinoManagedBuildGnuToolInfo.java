@@ -394,9 +394,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
                                         if (addlResource != null) {
                                             IPath addlPath = addlResource.getLocation();
                                             if (addlPath != null) {
-                                                path = ManagedBuildManager
-                                                        .calculateRelativePath(makeGen.getTopBuildDir(), addlPath)
-                                                        .toOSString();
+                                                path = ManagedBuildManager.calculateRelativePath(
+                                                        makeGen.getTopBuildDir().getFullPath(), addlPath).toOSString();
                                             }
                                         }
                                     }
@@ -437,7 +436,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
                                     IPath enumPath = enumResource.getLocation();
                                     if (enumPath != null) {
                                         paths[j] = ManagedBuildManager
-                                                .calculateRelativePath(makeGen.getTopBuildDir(), enumPath).toOSString();
+                                                .calculateRelativePath(makeGen.getTopBuildDir().getFullPath(), enumPath)
+                                                .toOSString();
                                     }
                                 }
                             }
@@ -869,8 +869,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
                                         // Convert from project relative to
                                         // build directory relative
                                         IPath absolutePath = this.project.getLocation().append(depPaths[j]);
-                                        depPaths[j] = ManagedBuildManager
-                                                .calculateRelativePath(makeGen.getTopBuildDir(), absolutePath);
+                                        depPaths[j] = ManagedBuildManager.calculateRelativePath(
+                                                makeGen.getTopBuildDir().getFullPath(), absolutePath);
                                     }
                                     myCommandDependencies.add(depPaths[j].toOSString());
                                 }
@@ -950,9 +950,8 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
                                         if (addlResource != null) {
                                             IPath addlPath = addlResource.getLocation();
                                             if (addlPath != null) {
-                                                path = ManagedBuildManager
-                                                        .calculateRelativePath(makeGen.getTopBuildDir(), addlPath)
-                                                        .toOSString();
+                                                path = ManagedBuildManager.calculateRelativePath(
+                                                        makeGen.getTopBuildDir().getFullPath(), addlPath).toOSString();
                                             }
                                         }
                                     }

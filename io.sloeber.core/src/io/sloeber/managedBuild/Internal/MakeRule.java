@@ -1,58 +1,475 @@
 package io.sloeber.managedBuild.Internal;
 
+import static io.sloeber.managedBuild.Internal.ManagebBuildCommon.*;
+import static io.sloeber.managedBuild.Internal.ManagedBuildConstants.*;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.managedbuilder.core.BuildException;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IInputType;
+import org.eclipse.cdt.managedbuilder.core.IOutputType;
+import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
+import org.eclipse.cdt.managedbuilder.core.ITool;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
+import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
+import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
+import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
+import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCommands;
+import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator2;
+import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
+import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 
 public class MakeRule {
 
-    Map<String, List<IPath>> targets = new HashMap<>(); //Macro file target map
-    Map<String, List<IPath>> prerequisites = new HashMap<>();//Macro file prerequisites map
-    List<String> rules = new LinkedList<>();
+    Map<IOutputType, List<IFile>> targets = new HashMap<>(); //Macro file target map
+    Map<IInputType, List<IFile>> prerequisites = new HashMap<>();//Macro file prerequisites map
+    ITool tool = null;
+
+    public HashSet<IFile> getPrerequisites() {
+        HashSet<IFile> ret = new HashSet<>();
+        for (List<IFile> cur : prerequisites.values()) {
+            ret.addAll(cur);
+        }
+        return ret;
+    }
+
+    public HashSet<IFile> getTargets() {
+        HashSet<IFile> ret = new HashSet<>();
+        for (List<IFile> cur : targets.values()) {
+            ret.addAll(cur);
+        }
+        return ret;
+    }
 
     public HashSet<String> getMacros() {
         HashSet<String> ret = new HashSet<>();
-        ret.addAll(targets.keySet());
-        ret.addAll(prerequisites.keySet());
-        return ret;
-    }
-
-    public HashSet<IPath> getMacroElements(String macroName) {
-        HashSet<IPath> ret = new HashSet<>();
-        List<IPath> list = targets.get(macroName);
-        if (list != null) {
-            ret.addAll(list);
+        for (IOutputType cur : targets.keySet()) {
+            ret.add(cur.getBuildVariable());
         }
-        list = prerequisites.get(macroName);
-        if (list != null) {
-            ret.addAll(list);
+        for (IInputType cur : prerequisites.keySet()) {
+            ret.add(cur.getBuildVariable());
         }
         return ret;
     }
 
-    public void addTarget(String Macro, IPath file) {
-        List<IPath> files = targets.get(Macro);
+    public HashSet<IFile> getMacroElements(String macroName) {
+        HashSet<IFile> ret = new HashSet<>();
+
+        for (Entry<IOutputType, List<IFile>> cur : targets.entrySet()) {
+            if (macroName.equals(cur.getKey().getBuildVariable())) {
+                ret.addAll(cur.getValue());
+            }
+        }
+        for (Entry<IInputType, List<IFile>> cur : prerequisites.entrySet()) {
+            if (macroName.equals(cur.getKey().getBuildVariable())) {
+                ret.addAll(cur.getValue());
+            }
+        }
+        return ret;
+    }
+
+    public void addTarget(IOutputType outputType, IFile file) {
+        List<IFile> files = targets.get(outputType);
         if (files == null) {
             files = new LinkedList<>();
             files.add(file);
-            targets.put(Macro, files);
+            targets.put(outputType, files);
         } else {
             files.add(file);
         }
     }
 
-    public void addPrerequisite(String Macro, IPath file) {
-        List<IPath> files = prerequisites.get(Macro);
+    public void addPrerequisite(IInputType inputType, IFile file) {
+        List<IFile> files = prerequisites.get(inputType);
         if (files == null) {
             files = new LinkedList<>();
             files.add(file);
-            prerequisites.put(Macro, files);
+            prerequisites.put(inputType, files);
         } else {
             files.add(file);
         }
     }
+
+    private String enumTargets(IFile buildFolder) {
+        String ret = new String();
+        for (List<IFile> curFiles : targets.values()) {
+            for (IFile curFile : curFiles) {
+                ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
+            }
+        }
+        return ret;
+        //return StringUtils.join(targets.values(), WHITESPACE);
+    }
+
+    private String enumPrerequisites(IFile buildFolder) {
+        String ret = new String();
+        for (List<IFile> curFiles : prerequisites.values()) {
+            for (IFile curFile : curFiles) {
+                ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
+            }
+        }
+        return ret;
+        // return StringUtils.join(prerequisites.values(), WHITESPACE);
+    }
+
+    public StringBuffer getRule(IProject project, IFile niceBuildFolder, IConfiguration config) {
+
+        String cmd = tool.getToolCommand();
+        //For now assume 1 target with 1 or more prerequisites
+        // if there is more than 1 prerequisite we take the flags of the first prerequisite only
+        HashSet<IFile> local_targets = getTargets();
+        HashSet<IFile> local_prerequisites = getPrerequisites();
+        if (local_targets.size() != 1) {
+            System.err.println("Only 1 target per build rule is supported in this managed build"); //$NON-NLS-1$
+            return new StringBuffer();
+        }
+        if (local_prerequisites.size() == 0) {
+            System.err.println("0 prerequisites is not supported in this managed build"); //$NON-NLS-1$
+            return new StringBuffer();
+        }
+        IFile outputLocation = local_targets.toArray(new IFile[0])[0];
+
+        //Primary outputs is not supported
+        String otherPrimaryOutputs = EMPTY_STRING;
+        Set<String> niceNameList = new HashSet<>();
+        IFile sourceLocation = null;
+        for (IFile curPrerequisite : local_prerequisites) {
+            niceNameList.add(GetNiceFileName(niceBuildFolder, curPrerequisite));
+            sourceLocation = curPrerequisite;
+        }
+        final String fileName = sourceLocation.getFullPath().removeFileExtension().lastSegment();
+        final String inputExtension = sourceLocation.getFileExtension();
+
+        Set<String> flags = getBuildFlags(niceBuildFolder, config, sourceLocation, outputLocation);
+
+        boolean needExplicitRuleForFile = false;
+        boolean needExplicitDependencyCommands = false;
+        boolean resourceNameRequiresExplicitRule = containsSpecialCharacters(sourceLocation.getLocation().toOSString());
+        needExplicitRuleForFile = resourceNameRequiresExplicitRule
+                || BuildMacroProvider.getReferencedExplitFileMacros(tool).length > 0
+                || BuildMacroProvider.getReferencedExplitFileMacros(cmd, IBuildMacroProvider.CONTEXT_FILE,
+                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null,
+                                tool)).length > 0;
+
+        String outflag = tool.getOutputFlag();
+        String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE
+                + tool.getOutputPrefix() + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
+        if (needExplicitRuleForFile || needExplicitDependencyCommands) {
+            buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
+                    getToolCommandLinePattern(config, tool));
+        } else {
+            buildCmd = expandCommandLinePattern(config, inputExtension, flags, outflag, OUT_MACRO + otherPrimaryOutputs,
+                    niceNameList, sourceLocation, outputLocation);
+        }
+        // resolve any remaining macros in the command after it has been
+        // generated
+        try {
+            String resolvedCommand;
+            IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+            if (!needExplicitRuleForFile) {
+                resolvedCommand = provider.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
+                        IBuildMacroProvider.CONTEXT_FILE,
+                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+            } else {
+                // if we need an explicit rule then don't use any builder
+                // variables, resolve everything to explicit strings
+                resolvedCommand = provider.resolveValue(buildCmd, EMPTY_STRING, WHITESPACE,
+                        IBuildMacroProvider.CONTEXT_FILE,
+                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+            }
+            if (!resolvedCommand.isBlank())
+                buildCmd = resolvedCommand.trim();
+        } catch (BuildMacroException e) {
+            /* JABA is not going to write this code */
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
+        buffer.append(enumPrerequisites(niceBuildFolder)).append(NEWLINE);
+        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_START_FILE + WHITESPACE + IN_MACRO));
+        buffer.append(TAB).append(AT).append(escapedEcho(tool.getAnnouncement()));
+
+        // JABA add sketch.prebuild and postbouild if needed
+        //TOFIX this should not be here
+        if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
+            ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
+            String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+                    "sloeber.sketch.prebuild", new String(), true); //$NON-NLS-1$
+            String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
+                    "sloeber.sketch.postbuild", new String(), true); //$NON-NLS-1$
+            if (!sketchPrebuild.isEmpty()) {
+                buffer.append(TAB).append(sketchPrebuild);
+            }
+            buffer.append(TAB).append(buildCmd).append(NEWLINE);
+            if (!sketchPostBuild.isEmpty()) {
+                buffer.append(TAB).append(sketchPostBuild);
+            }
+        } else {
+            buffer.append(TAB).append(buildCmd);
+        }
+        // end JABA add sketch.prebuild and postbouild if needed
+
+        // Determine if there are any dependencies to calculate
+        //        if (doDepGen) {
+        //            // Get the dependency rule out of the generator
+        //            String[] depCmds = null;
+        //            if (depCommands != null) {
+        //                depCmds = depCommands.getPostToolDependencyCommands();
+        //            }
+        //            if (depCmds != null) {
+        //                for (String depCmd : depCmds) {
+        //                    // Resolve any macros in the dep command after it has
+        //                    // been generated.
+        //                    // Note: do not trim the result because it will strip
+        //                    // out necessary tab characters.
+        //                    buffer.append(WHITESPACE).append(LOGICAL_AND).append(WHITESPACE).append(LINEBREAK);
+        //                    try {
+        //                        if (!needExplicitRuleForFile) {
+        //                            depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(depCmd,
+        //                                    EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+        //                                    new FileContextData(sourceLocation, outputLocation, null, tool));
+        //                        } else {
+        //                            depCmd = ManagedBuildManager.getBuildMacroProvider().resolveValue(depCmd, EMPTY_STRING,
+        //                                    WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+        //                                    new FileContextData(sourceLocation, outputLocation, null, tool));
+        //                        }
+        //                    } catch (BuildMacroException e) {
+        //                        /* JABA is not going to do this */
+        //                    }
+        //                    buffer.append(depCmd);
+        //                }
+        //            }
+        //        }
+        // Echo finished message
+        buffer.append(NEWLINE);
+        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_FINISH_FILE + WHITESPACE + IN_MACRO));
+        buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
+        return buffer;
+    }
+
+    private Set<String> getBuildFlags(IFile buildFolder, IConfiguration config, IFile sourceFile, IFile outputFile) {
+        Set<String> flags = new HashSet<>();
+        // Get the tool command line options
+        try {
+
+            IResourceInfo buildContext = config.getResourceInfo(sourceFile.getFullPath().removeLastSegments(1), false);
+            flags.addAll(Arrays.asList(tool.getToolCommandFlags(sourceFile.getLocation(), outputFile.getLocation())));
+
+            IInputType[] inputTypes = tool.getInputTypes(); //.getDependencyGeneratorForExtension(inputExtension);
+            for (IInputType inputType : inputTypes) {
+                IManagedDependencyGeneratorType t = inputType.getDependencyGenerator();
+                if (t != null) {
+                    if (t.getCalculatorType() == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS) {
+                        IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) t;
+                        IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(
+                                sourceFile.getProjectRelativePath(), sourceFile, buildContext, tool,
+                                buildFolder.getFullPath());
+                        IManagedDependencyCommands depCommands = (IManagedDependencyCommands) depInfo;
+                        if (depCommands != null) {
+                            flags.addAll(Arrays.asList(depCommands.getDependencyCommandOptions()));
+                        }
+
+                    }
+                }
+            }
+        } catch (BuildException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return flags;
+    }
+
+    private String expandCommandLinePattern(IConfiguration config, String sourceExtension, Set<String> flags,
+            String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
+            IFile outputLocation) {
+        String cmd = tool.getToolCommand();
+        // try to resolve the build macros in the tool command
+        try {
+            String resolvedCommand = null;
+            if ((inputLocation != null && inputLocation.toString().indexOf(WHITESPACE) != -1)
+                    || (outputLocation != null && outputLocation.toString().indexOf(WHITESPACE) != -1)) {
+                resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, EMPTY_STRING,
+                        WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+            } else {
+                resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd,
+                        EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
+                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, tool));
+            }
+            if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
+                cmd = resolvedCommand;
+        } catch (BuildMacroException e) {
+            /* JABA is not going to write this code */
+        }
+        return expandCommandLinePattern(cmd, flags, outputFlag, outputName, inputResources,
+                getToolCommandLinePattern(config, tool));
+    }
+
+    //    /**
+    //     * Returns any additional resources specified for the tool in other InputType
+    //     * elements and AdditionalInput elements
+    //     */
+    //    private IPath[] getAdditionalResourcesForSource(ITool tool) {
+    //        IProject project = getProject();
+    //        List<IPath> allRes = new ArrayList<>();
+    //        IInputType[] types = tool.getInputTypes();
+    //        for (IInputType type : types) {
+    //            // Additional resources come from 2 places.
+    //            // 1. From AdditionalInput childen
+    //            IPath[] res = type.getAdditionalResources();
+    //            for (IPath re : res) {
+    //                allRes.add(re);
+    //            }
+    //            // 2. From InputTypes that other than the primary input type
+    //            if (!type.getPrimaryInput() && type != tool.getPrimaryInputType()) {
+    //                String var = type.getBuildVariable();
+    //                if (var != null && var.length() > 0) {
+    //                    allRes.add(Path.fromOSString("$(" + type.getBuildVariable() + ")"));
+    //                } else {
+    //                    // Use file extensions
+    //                    String[] typeExts = type.getSourceExtensions(tool);
+    //                    for (IResource projectResource : caller.projectResources) {
+    //                        if (projectResource.getType() == IResource.FILE) {
+    //                            String fileExt = projectResource.getFileExtension();
+    //                            if (fileExt == null) {
+    //                                fileExt = "";
+    //                            }
+    //                            for (String typeExt : typeExts) {
+    //                                if (fileExt.equals(typeExt)) {
+    //                                    allRes.add(projectResource.getProjectRelativePath());
+    //                                    break;
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                // If an assignToOption has been specified, set the value of the
+    //                // option to the inputs
+    //                IOption assignToOption = tool.getOptionBySuperClassId(type.getAssignToOptionId());
+    //                IOption option = tool.getOptionBySuperClassId(type.getOptionId());
+    //                if (assignToOption != null && option == null) {
+    //                    try {
+    //                        int optType = assignToOption.getValueType();
+    //                        IResourceInfo rcInfo = tool.getParentResourceInfo();
+    //                        if (rcInfo != null) {
+    //                            if (optType == IOption.STRING) {
+    //                                String optVal = "";
+    //                                for (int j = 0; j < allRes.size(); j++) {
+    //                                    if (j != 0) {
+    //                                        optVal += " ";
+    //                                    }
+    //                                    String resPath = allRes.get(j).toString();
+    //                                    if (!resPath.startsWith("$(")) {
+    //                                        IResource addlResource = project.getFile(resPath);
+    //                                        if (addlResource != null) {
+    //                                            IPath addlPath = addlResource.getLocation();
+    //                                            if (addlPath != null) {
+    //                                                resPath = ManagedBuildManager
+    //                                                        .calculateRelativePath(getTopBuildDir(), addlPath).toString();
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                    optVal += ManagedBuildManager
+    //                                            .calculateRelativePath(getTopBuildDir(), Path.fromOSString(resPath))
+    //                                            .toString();
+    //                                }
+    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, optVal);
+    //                            } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
+    //                                    || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
+    //                                    || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
+    //                                    || optType == IOption.MACRO_FILES) {
+    //                                // TODO: do we need to do anything with undefs
+    //                                // here?
+    //                                // Note that the path(s) must be translated from
+    //                                // project relative
+    //                                // to top build directory relative
+    //                                String[] paths = new String[allRes.size()];
+    //                                for (int j = 0; j < allRes.size(); j++) {
+    //                                    paths[j] = allRes.get(j).toString();
+    //                                    if (!paths[j].startsWith("$(")) {
+    //                                        IResource addlResource = project.getFile(paths[j]);
+    //                                        if (addlResource != null) {
+    //                                            IPath addlPath = addlResource.getLocation();
+    //                                            if (addlPath != null) {
+    //                                                paths[j] = ManagedBuildManager
+    //                                                        .calculateRelativePath(getTopBuildDir(), addlPath).toString();
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                }
+    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, paths);
+    //                            } else if (optType == IOption.BOOLEAN) {
+    //                                boolean b = false;
+    //                                if (allRes.size() > 0)
+    //                                    b = true;
+    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, b);
+    //                            } else if (optType == IOption.ENUMERATED || optType == IOption.TREE) {
+    //                                if (allRes.size() > 0) {
+    //                                    String s = allRes.get(0).toString();
+    //                                    ManagedBuildManager.setOption(rcInfo, tool, assignToOption, s);
+    //                                }
+    //                            }
+    //                            allRes.clear();
+    //                        }
+    //                    } catch (BuildException ex) {
+    //                        /* JABA is not going to write this code */
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        return allRes.toArray(new IPath[allRes.size()]);
+    //    }
+
+    private String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag, String outputName,
+            Set<String> inputResources, String commandLinePattern) {
+
+        String command = commandLinePattern;
+        if (commandLinePattern == null || commandLinePattern.length() <= 0) {
+            command = DEFAULT_PATTERN;
+        }
+
+        String quotedOutputName = outputName;
+        // if the output name isn't a variable then quote it
+        if (quotedOutputName.length() > 0 && quotedOutputName.indexOf("$(") != 0) { //$NON-NLS-1$
+            quotedOutputName = DOUBLE_QUOTE + quotedOutputName + DOUBLE_QUOTE;
+        }
+
+        String inputsStr = ""; //$NON-NLS-1$
+        if (inputResources != null) {
+            for (String inp : inputResources) {
+                if (inp != null && !inp.isEmpty()) {
+                    // if the input resource isn't a variable then quote it
+                    if (inp.indexOf("$(") != 0) { //$NON-NLS-1$
+                        inp = DOUBLE_QUOTE + inp + DOUBLE_QUOTE;
+                    }
+                    inputsStr = inputsStr + inp + WHITESPACE;
+                }
+            }
+            inputsStr = inputsStr.trim();
+        }
+
+        String flagsStr = String.join(WHITESPACE, flags);
+
+        command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
+        command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
+        command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
+        command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), tool.getOutputPrefix());
+        command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
+        command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
+
+        return command;
+    }
+
 }
