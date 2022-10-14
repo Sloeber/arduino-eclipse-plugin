@@ -70,7 +70,8 @@ public class ManagedBuildConstants {
     public static final String OBJS_MACRO = "OBJS";
     public static final String MACRO_ADDITION_ADDPREFIX_HEADER = "${addprefix ";
     public static final String MACRO_ADDITION_ADDPREFIX_SUFFIX = "," + WHITESPACE + LINEBREAK;
-    public static final String MACRO_ADDITION_PREFIX_SUFFIX = "+=" + WHITESPACE + LINEBREAK;
+    public static final String JAVA_ADDITION = "+=";
+    public static final String MACRO_ADDITION_PREFIX_SUFFIX = JAVA_ADDITION + WHITESPACE + LINEBREAK;
     public static final String PREBUILD = "pre-build";
     public static final String MAINBUILD = "main-build";
     public static final String POSTBUILD = "post-build";
@@ -80,5 +81,17 @@ public class ManagedBuildConstants {
     public static final String FILE_SEPARATOR = File.separator;
     // Enumerations
     public static final int PROJECT_RELATIVE = 1, PROJECT_SUBDIR_RELATIVE = 2, ABSOLUTE = 3;
+
+    public static final String DEFAULT_PATTERN = "${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}";
+    public static final String DOUBLE_QUOTE = "\"";
+
+    public static final String CMD_LINE_PRM_NAME = "COMMAND";
+    public static final String FLAGS_PRM_NAME = "FLAGS";
+    public static final String OUTPUT_FLAG_PRM_NAME = "OUTPUT_FLAG";
+    public static final String OUTPUT_PREFIX_PRM_NAME = "OUTPUT_PREFIX";
+    public static final String OUTPUT_PRM_NAME = "OUTPUT";
+    public static final String INPUTS_PRM_NAME = "INPUTS";
+    public static final String VARIABLE_PREFIX = "${";
+    public static final String VARIABLE_SUFFIX = "}";
 
 }
