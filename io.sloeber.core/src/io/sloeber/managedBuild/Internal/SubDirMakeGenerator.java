@@ -191,7 +191,7 @@ public class SubDirMakeGenerator {
                                 //We found a tool that provides a outputfile for our source file
                                 //TOFIX if this is a multiple to one we should only create one MakeRule
                                 IPath correctOutputPath = new Path(config.getName()).append(outputFile);
-                                MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType,
+                                MakeRule newMakeRule = new MakeRule(caller, tool, inputType, inputFile, outputType,
                                         project.getFile(correctOutputPath));
 
                                 makeRules.add(newMakeRule);
