@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
+import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IInputType;
 import org.eclipse.cdt.managedbuilder.core.IOutputType;
@@ -24,6 +25,7 @@ import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
 import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
+import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCalculator;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCommands;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator2;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
@@ -39,22 +41,81 @@ public class MakeRule {
     private Map<String, List<IFile>> myDependencies = new HashMap<>(); //Macro file target map
     private ITool myTool = null;
 
-    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile) {
+    //TOFIX get rid of caller argument
+    public MakeRule(ArduinoGnuMakefileGenerator caller, ITool tool, IInputType inputType, IFile inputFile,
+            IOutputType outputType, IFile outFile) {
         addPrerequisite(inputType, inputFile);
         addTarget(outputType, outFile);
         myTool = tool;
-        calculateDependencies();
+        calculateDependencies(caller);
     }
 
-    private void calculateDependencies() {
+    private void calculateDependencies(ArduinoGnuMakefileGenerator caller) {
         myDependencies.clear();
         //TOFIX the stuff below should be calculated
         boolean toolGeneratesDependencyFiles = true;
         if (!toolGeneratesDependencyFiles) {
             return;
         }
-        IPath[] deps = myTool.getAdditionalDependencies();
 
+        for (Entry<IInputType, List<IFile>> curprerequisite : myPrerequisites.entrySet()) {
+            IInputType curInputType = curprerequisite.getKey();
+            IManagedDependencyGeneratorType t = curInputType.getDependencyGenerator();
+            if (t == null) {
+                continue;
+            }
+            List<IFile> files = curprerequisite.getValue();
+            String depkey = curInputType.getBuildVariable() + "_DEPS";
+            for (IFile file : files) {
+                IResourceInfo rcInfo = caller.getConfig().getResourceInfo(file.getFullPath(), false);
+                int calcType = t.getCalculatorType();
+
+                IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) t;
+                IBuildObject buildContext = rcInfo;
+                IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(file.getProjectRelativePath(), file,
+                        buildContext, myTool, caller.getBuildWorkingDir());
+
+                // if (calcType== IManagedDependencyGeneratorType.TYPE_CUSTOM) {
+                if (depInfo instanceof IManagedDependencyCalculator) {
+                    IManagedDependencyCalculator depCalculator = (IManagedDependencyCalculator) depInfo;
+                    IPath[] addlDeps = calculateDependenciesForSource(caller, depCalculator);
+                    IPath[] addlTargets = depCalculator.getAdditionalTargets();
+                    //   }
+                }
+                if (depInfo instanceof IManagedDependencyCommands) {
+                    IManagedDependencyCommands tmp = (IManagedDependencyCommands) depInfo;
+                    IPath[] addlTargets = tmp.getDependencyFiles();
+                    List<IFile> depFiles = new LinkedList<>();
+                    for (IPath curPath : addlTargets) {
+                        depFiles.add(caller.getProject().getFile(caller.getBuildWorkingDir().append(curPath)));
+                    }
+                    myDependencies.put(depkey, depFiles);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the dependency <code>IPath</code>s relative to the build directory
+     *
+     * @param depCalculator
+     *            the dependency calculator
+     * @return IPath[] that are relative to the build directory
+     */
+    private IPath[] calculateDependenciesForSource(ArduinoGnuMakefileGenerator caller,
+            IManagedDependencyCalculator depCalculator) {
+        IPath[] addlDeps = depCalculator.getDependencies();
+        if (addlDeps != null) {
+            for (int i = 0; i < addlDeps.length; i++) {
+                if (!addlDeps[i].isAbsolute()) {
+                    // Convert from project relative to build directory relative
+                    IPath absolutePath = caller.getProject().getLocation().append(addlDeps[i]);
+                    addlDeps[i] = ManagedBuildManager.calculateRelativePath(caller.getTopBuildDir().getLocation(),
+                            absolutePath);
+                }
+            }
+        }
+        return addlDeps;
     }
 
     public HashSet<IFile> getPrerequisites() {
