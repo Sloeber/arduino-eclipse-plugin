@@ -89,6 +89,8 @@ public class SubDirMakeGenerator {
         StringBuffer buffer = new StringBuffer();
         IFile buildRoot = getTopBuildDir();
         buffer.append(NEWLINE);
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_VARS))
+                .append(NEWLINE);
         HashSet<String> macroNames = new HashSet<>();
         for (MakeRule makeRule : makeRules) {
             macroNames.addAll(makeRule.getMacros());
@@ -114,6 +116,8 @@ public class SubDirMakeGenerator {
     private StringBuffer GenerateRules(List<MakeRule> makeRules, IConfiguration config) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_RULES))
+                .append(NEWLINE);
 
         for (MakeRule makeRule : makeRules) {
             buffer.append(makeRule.getRule(getProject(), getTopBuildDir(), config));
@@ -182,16 +186,14 @@ public class SubDirMakeGenerator {
                         IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
                         if (nameProvider != null) {
                             IPath outputFile = nameProvider.getOutputName(getProject(), config, tool,
-                                    resource.getFullPath());
+                                    resource.getProjectRelativePath());
                             if (outputFile != null) {
                                 //We found a tool that provides a outputfile for our source file
                                 //TOFIX if this is a multiple to one we should only create one MakeRule
-                                IPath correctOutputPath = new Path(config.getName())
-                                        .append(outputFile.removeFirstSegments(1));
-                                MakeRule newMakeRule = new MakeRule();
-                                newMakeRule.addPrerequisite(inputType, inputFile);
-                                newMakeRule.addTarget(outputType, project.getFile(correctOutputPath));
-                                newMakeRule.tool = tool;
+                                IPath correctOutputPath = new Path(config.getName()).append(outputFile);
+                                MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType,
+                                        project.getFile(correctOutputPath));
+
                                 makeRules.add(newMakeRule);
 
                             }
