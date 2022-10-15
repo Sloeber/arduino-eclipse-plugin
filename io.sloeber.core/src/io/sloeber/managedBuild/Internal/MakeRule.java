@@ -4,8 +4,9 @@ import static io.sloeber.managedBuild.Internal.ManagebBuildCommon.*;
 import static io.sloeber.managedBuild.Internal.ManagedBuildConstants.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,9 @@ import org.eclipse.core.runtime.IPath;
 
 public class MakeRule {
 
-    private Map<IOutputType, List<IFile>> myTargets = new HashMap<>(); //Macro file target map
-    private Map<IInputType, List<IFile>> myPrerequisites = new HashMap<>();//Macro file prerequisites map
-    private Map<String, List<IFile>> myDependencies = new HashMap<>(); //Macro file target map
+    private Map<IOutputType, List<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
+    private Map<IInputType, List<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
+    private Map<String, List<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
     private ITool myTool = null;
 
     //TOFIX get rid of caller argument
@@ -80,7 +81,7 @@ public class MakeRule {
                     IManagedDependencyCalculator depCalculator = (IManagedDependencyCalculator) depInfo;
                     IPath[] addlDeps = calculateDependenciesForSource(caller, depCalculator);
                     IPath[] addlTargets = depCalculator.getAdditionalTargets();
-                    //   }
+                    //TOFIX when is this call path used?
                 }
                 if (depInfo instanceof IManagedDependencyCommands) {
                     IManagedDependencyCommands tmp = (IManagedDependencyCommands) depInfo;
@@ -126,22 +127,51 @@ public class MakeRule {
         return ret;
     }
 
-    public HashSet<IFile> getTargets() {
-        HashSet<IFile> ret = new HashSet<>();
+    public Set<IFile> getTargetFiles() {
+        Set<IFile> ret = new HashSet<>();
         for (List<IFile> cur : myTargets.values()) {
             ret.addAll(cur);
         }
         return ret;
     }
 
-    public HashSet<String> getMacros() {
-        HashSet<String> ret = new HashSet<>();
+    public Set<IFile> getDependencyFiles() {
+        Set<IFile> ret = new HashSet<>();
+        for (List<IFile> cur : myDependencies.values()) {
+            ret.addAll(cur);
+        }
+        return ret;
+    }
+
+    public Map<IOutputType, List<IFile>> getTargets() {
+        return myTargets;
+    }
+
+    public Set<String> getAllMacros() {
+        Set<String> ret = getTargetMacros();
+        ret.addAll(getPrerequisiteMacros());
+        ret.addAll(getDependecyMacros());
+        return ret;
+    }
+
+    public Set<String> getTargetMacros() {
+        HashSet<String> ret = new LinkedHashSet<>();
         for (IOutputType cur : myTargets.keySet()) {
             ret.add(cur.getBuildVariable());
         }
+        return ret;
+    }
+
+    public Set<String> getPrerequisiteMacros() {
+        HashSet<String> ret = new LinkedHashSet<>();
         for (IInputType cur : myPrerequisites.keySet()) {
             ret.add(cur.getBuildVariable());
         }
+        return ret;
+    }
+
+    public Set<String> getDependecyMacros() {
+        HashSet<String> ret = new LinkedHashSet<>();
         for (String cur : myDependencies.keySet()) {
             ret.add(cur);
         }
@@ -215,8 +245,8 @@ public class MakeRule {
         String cmd = myTool.getToolCommand();
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
-        HashSet<IFile> local_targets = getTargets();
-        HashSet<IFile> local_prerequisites = getPrerequisites();
+        Set<IFile> local_targets = getTargetFiles();
+        Set<IFile> local_prerequisites = getPrerequisites();
         if (local_targets.size() != 1) {
             System.err.println("Only 1 target per build rule is supported in this managed build"); //$NON-NLS-1$
             return new StringBuffer();
@@ -314,7 +344,7 @@ public class MakeRule {
     }
 
     private Set<String> getBuildFlags(IFile buildFolder, IConfiguration config, IFile sourceFile, IFile outputFile) {
-        Set<String> flags = new HashSet<>();
+        Set<String> flags = new LinkedHashSet<>();
         // Get the tool command line options
         try {
 

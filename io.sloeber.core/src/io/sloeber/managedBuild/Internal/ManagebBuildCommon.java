@@ -109,26 +109,29 @@ public class ManagebBuildCommon {
     }
 
     public static void save(StringBuffer buffer, IFile file) throws CoreException {
-        String encoding = null;
-        try {
-            encoding = file.getCharset();
-        } catch (CoreException ce) {
-            // use no encoding
-        }
-        byte[] bytes = null;
-        if (encoding != null) {
-            try {
-                bytes = buffer.toString().getBytes(encoding);
-            } catch (Exception e) {
-                /* JABA is not going to write this code */
-            }
-        } else {
-            bytes = buffer.toString().getBytes();
-        }
+
+        byte[] bytes = buffer.toString().getBytes();
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-        // use a platform operation to update the resource contents
-        boolean force = true;
-        file.setContents(stream, force, false, null);
+        if (file.exists()) {
+            file.setContents(stream, true, false, null);
+        } else {
+            IFolder fileFolder = file.getProject().getFolder(file.getParent().getProjectRelativePath());
+            createFolder(fileFolder);
+            file.create(stream, false, null);
+        }
+        file.setDerived(true, null);
+    }
+
+    public static void createFolder(IFolder folder) throws CoreException {
+        // Create or get the handle for the build directory
+        if (folder.exists()) {
+            return;
+        }
+        if (!folder.getParent().exists()) {
+            createFolder(folder.getFolder(".."));
+        }
+        folder.create(true, true, null);
+        folder.setDerived(true, null);
     }
 
     /**
@@ -484,7 +487,7 @@ public class ManagebBuildCommon {
             boolean addPrefix) {
         // there is no entry in the map, so create a buffer for this macro
         StringBuffer tempBuffer = new StringBuffer();
-        tempBuffer.append(macroName).append(WHITESPACE).append(MACRO_ADDITION_PREFIX_SUFFIX);
+        tempBuffer.append(macroName).append(MACRO_ADDITION_PREFIX_SUFFIX);
         if (addPrefix) {
             tempBuffer.append(new Path(MACRO_ADDITION_ADDPREFIX_HEADER).append(relativePath)
                     .append(MACRO_ADDITION_ADDPREFIX_SUFFIX).toOSString());
