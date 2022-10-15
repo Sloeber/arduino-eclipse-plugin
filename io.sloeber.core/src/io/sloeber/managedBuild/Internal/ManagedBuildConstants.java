@@ -70,8 +70,9 @@ public class ManagedBuildConstants {
     public static final String OBJS_MACRO = "OBJS";
     public static final String MACRO_ADDITION_ADDPREFIX_HEADER = "${addprefix ";
     public static final String MACRO_ADDITION_ADDPREFIX_SUFFIX = "," + WHITESPACE + LINEBREAK;
-    public static final String JAVA_ADDITION = "+=";
-    public static final String MACRO_ADDITION_PREFIX_SUFFIX = JAVA_ADDITION + WHITESPACE + LINEBREAK;
+    public static final String MAKE_ADDITION = " +=";
+    public static final String MAKE_EQUAL = " :=";
+    public static final String MACRO_ADDITION_PREFIX_SUFFIX = MAKE_ADDITION + LINEBREAK;
     public static final String PREBUILD = "pre-build";
     public static final String MAINBUILD = "main-build";
     public static final String POSTBUILD = "post-build";

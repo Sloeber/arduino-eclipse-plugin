@@ -2,7 +2,6 @@ package io.sloeber.managedBuild.Internal;
 
 import static io.sloeber.core.common.Const.*;
 import static io.sloeber.managedBuild.Internal.ManagebBuildCommon.*;
-import static io.sloeber.managedBuild.Internal.ManagedBuildConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +11,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -83,9 +82,6 @@ import io.sloeber.core.common.Const;
 @SuppressWarnings({ "deprecation", "restriction", "nls", "unused", "synthetic-access", "static-method", "unchecked",
         "hiding" })
 public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
-    SubDirMakeGenerator mySubDirMakeGenerator = null;
-    TopMakeFileGenerator myTopMakeFileGenerator = null;
-    SrcMakeGenerator mySrcMakeGenerator = null;
 
     /**
      * This class walks the delta supplied by the build system to determine what
@@ -279,12 +275,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     private Vector<String> depRuleList;
     // dependency files
     /** Collection of Containers which contribute source files to the build */
-    private Collection<IContainer> subdirList;
+    private Collection<IContainer> subdirList = new LinkedHashSet<IContainer>();
     private IFile topBuildDir;
-    final HashMap<String, List<IPath>> buildSrcVars = new HashMap<>();
-    final HashMap<String, List<IPath>> buildOutVars = new HashMap<>();
-    final HashMap<String, ArduinoGnuDependencyGroupInfo> buildDepVars = new HashMap<>();
-    private final LinkedHashMap<String, String> topBuildOutVars = new LinkedHashMap<>();
     // Dependency file variables
     // private Vector dependencyMakefiles; // IPath's - relative to the top
     // build directory or absolute
@@ -310,9 +302,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     public void initialize(IProject project, IManagedBuildInfo info, IProgressMonitor monitor) {
 
         this.project = project;
-        mySubDirMakeGenerator = new SubDirMakeGenerator(this);
-        myTopMakeFileGenerator = new TopMakeFileGenerator(this);
-        mySrcMakeGenerator = new SrcMakeGenerator(this);
         try {
             projectResources = project.members();
         } catch (CoreException e) {
@@ -465,10 +454,9 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             }
         });
         IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-        for (IResource res : getSubdirList()) {
+        for (IContainer subDir : getSubdirList()) {
             // The builder creates a subdir with same name as source in the
             // build location
-            IContainer subDir = (IContainer) res;
             IPath projectRelativePath = subDir.getProjectRelativePath();
             IResourceInfo rcInfo = config.getResourceInfo(projectRelativePath, false);
             PathSettingsContainer cr = postProcs.getChildContainer(rcInfo.getPath(), false, true);
@@ -511,137 +499,125 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
          * Let's do a sanity check right now. 1. This is an incremental build, so if the
          * top-level directory is not there, then a rebuild is needed.
          */
-        IFolder folder = project.getFolder(config.getName());
-        if (!folder.exists()) {
-            return regenerateMakefiles();
-        }
-        // Return value
-        MultiStatus status;
-        // Visit the resources in the delta and compile a list of subdirectories
-        // to regenerate
-        updateMonitor(
-                ManagedMakeMessages.getFormattedString("MakefileGenerator.message.calc.delta", project.getName()));
-        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(this, config);
-        delta.accept(visitor);
-        checkCancel();
-        // Get all the subdirectories participating in the build
-        updateMonitor(
-                ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", project.getName()));
-        ResourceProxyVisitor resourceVisitor = new ResourceProxyVisitor(this, config);
-        project.accept(resourceVisitor, IResource.NONE);
-        checkCancel();
-        // Bug 303953: Ensure that if all resources have been removed from a
-        // folder, than the folder still
-        // appears in the subdir list so it's subdir.mk is correctly regenerated
-        getSubdirList().addAll(getModifiedList());
-        // Make sure there is something to build
-        if (getSubdirList().isEmpty()) {
-            String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source",
-                    project.getName());
-            updateMonitor(info);
-            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, "", null);
-            status.add(new Status(IStatus.INFO, ManagedBuilderCorePlugin.getUniqueIdentifier(), NO_SOURCE_FOLDERS, info,
-                    null));
-            return status;
-        }
-        // Make sure the build directory is available
-        topBuildDir = project.getFile(config.getName());
-        createDirectory(project, config.getName());
-        checkCancel();
-        // Make sure that there is a makefile containing all the folders
-        // participating
-        IPath srcsFilePath = topBuildDir.getFullPath().append(SRCSFILE_NAME);
-        IFile srcsFileHandle = createFile(srcsFilePath);
-        buildSrcVars.clear();
-        buildOutVars.clear();
-        buildDepVars.clear();
-        topBuildOutVars.clear();
-        mySrcMakeGenerator.populateSourcesMakefile(srcsFileHandle, toolInfos, subdirList);
-        checkCancel();
-        // Regenerate any fragments that are missing for the exisiting
-        // directories NOT modified
-        for (IResource res : getSubdirList()) {
-            IContainer subdirectory = (IContainer) res;
-            if (!getModifiedList().contains(subdirectory)) {
-                // Make sure the directory exists (it may have been deleted)
-                if (!subdirectory.exists()) {
-                    appendDeletedSubdirectory(subdirectory);
-                    continue;
-                }
-                // Make sure a fragment makefile exists
-                IPath fragmentPath = getBuildWorkingDir().append(subdirectory.getProjectRelativePath())
-                        .append(MODFILE_NAME);
-                IFile makeFragment = project.getFile(fragmentPath);
-                if (!makeFragment.exists()) {
-                    // If one or both are missing, then add it to the list to be
-                    // generated
-                    getModifiedList().add(subdirectory);
-                }
-            }
-        }
-        // Delete the old dependency files for any deleted resources
-        for (IResource deletedFile : getDeletedFileList()) {
-            deleteDepFile(deletedFile);
-            deleteBuildTarget(deletedFile);
-        }
-        // Regenerate any fragments for modified directories
-        for (IResource res : getModifiedList()) {
-            IContainer subDir = (IContainer) res;
-            // Make sure the directory exists (it may have been deleted)
-            if (!subDir.exists()) {
-                appendDeletedSubdirectory(subDir);
-                continue;
-            }
-            // populateFragmentMakefile(subDir); // See below
-            checkCancel();
-        }
-        // Recreate all module makefiles
-        // NOTE WELL: For now, always recreate all of the fragment makefile.
-        // This is necessary
-        // in order to re-populate the buildVariable lists. In the future, the
-        // list could
-        // possibly segmented by subdir so that all fragments didn't need to be
-        // regenerated
-        for (IResource res : getSubdirList()) {
-            IContainer subDir = (IContainer) res;
-            try {
-                mySubDirMakeGenerator.populateFragmentMakefile(subDir);
-            } catch (CoreException e) {
-                // Probably should ask user if they want to continue
-                checkCancel();
-                continue;
-            }
-            checkCancel();
-        }
-        // Calculate the inputs and outputs of the Tools to be generated in the
-        // main makefile
-        calculateToolInputsOutputs();
-        checkCancel();
-        // Re-create the top-level makefile
-        IPath makefilePath = topBuildDir.getFullPath().append(MAKEFILE_NAME);
-        IFile makefileHandle = createFile(makefilePath);
-        myTopMakeFileGenerator.populateTopMakefile(makefileHandle, false);
-        checkCancel();
-        // Remove deleted folders from generated build directory
-        for (IResource res : getDeletedDirList()) {
-            IContainer subDir = (IContainer) res;
-            removeGeneratedDirectory(subDir);
-            checkCancel();
-        }
-        // How did we do
-        if (!getInvalidDirList().isEmpty()) {
-            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.WARNING, "", null);
-            // Add a new status for each of the bad folders
-            // TODO: fix error message
-            for (IResource res : getInvalidDirList()) {
-                IContainer subDir = (IContainer) res;
-                status.add(new Status(IStatus.WARNING, ManagedBuilderCorePlugin.getUniqueIdentifier(), SPACES_IN_PATH,
-                        subDir.getFullPath().toString(), null));
-            }
-        } else {
-            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.OK, "", null);
-        }
-        return status;
+        return regenerateMakefiles();
+        //        IFolder folder = project.getFolder(config.getName());
+        //        if (!folder.exists()) {
+        //            return regenerateMakefiles();
+        //        }
+        //        // Return value
+        //        MultiStatus status;
+        //        // Visit the resources in the delta and compile a list of subdirectories
+        //        // to regenerate
+        //        updateMonitor(
+        //                ManagedMakeMessages.getFormattedString("MakefileGenerator.message.calc.delta", project.getName()));
+        //        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(this, config);
+        //        delta.accept(visitor);
+        //        checkCancel();
+        //        // Get all the subdirectories participating in the build
+        //        updateMonitor(
+        //                ManagedMakeMessages.getFormattedString("MakefileGenerator.message.finding.sources", project.getName()));
+        //        ResourceProxyVisitor resourceVisitor = new ResourceProxyVisitor(this, config);
+        //        project.accept(resourceVisitor, IResource.NONE);
+        //        checkCancel();
+        //        // Bug 303953: Ensure that if all resources have been removed from a
+        //        // folder, than the folder still
+        //        // appears in the subdir list so it's subdir.mk is correctly regenerated
+        //        getSubdirList().addAll(getModifiedList());
+        //        // Make sure there is something to build
+        //        if (getSubdirList().isEmpty()) {
+        //            String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source",
+        //                    project.getName());
+        //            updateMonitor(info);
+        //            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.INFO, "", null);
+        //            status.add(new Status(IStatus.INFO, ManagedBuilderCorePlugin.getUniqueIdentifier(), NO_SOURCE_FOLDERS, info,
+        //                    null));
+        //            return status;
+        //        }
+        //        // Make sure the build directory is available
+        //        topBuildDir = project.getFile(config.getName());
+        //        createDirectory(project, config.getName());
+        //        checkCancel();
+        //        // Make sure that there is a makefile containing all the folders
+        //        // participating
+        //        IPath srcsFilePath = topBuildDir.getFullPath().append(SRCSFILE_NAME);
+        //        IFile srcsFileHandle = createFile(srcsFilePath);
+        //        checkCancel();
+        //        // Regenerate any fragments that are missing for the exisiting
+        //        // directories NOT modified
+        //        for (IContainer subdirectory : getSubdirList()) {
+        //            if (!getModifiedList().contains(subdirectory)) {
+        //                // Make sure the directory exists (it may have been deleted)
+        //                if (!subdirectory.exists()) {
+        //                    appendDeletedSubdirectory(subdirectory);
+        //                    continue;
+        //                }
+        //                // Make sure a fragment makefile exists
+        //                IPath fragmentPath = getBuildWorkingDir().append(subdirectory.getProjectRelativePath())
+        //                        .append(MODFILE_NAME);
+        //                IFile makeFragment = project.getFile(fragmentPath);
+        //                if (!makeFragment.exists()) {
+        //                    // If one or both are missing, then add it to the list to be
+        //                    // generated
+        //                    getModifiedList().add(subdirectory);
+        //                }
+        //            }
+        //        }
+        //        // Delete the old dependency files for any deleted resources
+        //        for (IResource deletedFile : getDeletedFileList()) {
+        //            deleteDepFile(deletedFile);
+        //            deleteBuildTarget(deletedFile);
+        //        }
+        //        // Regenerate any fragments for modified directories
+        //        for (IResource res : getModifiedList()) {
+        //            IContainer subDir = (IContainer) res;
+        //            // Make sure the directory exists (it may have been deleted)
+        //            if (!subDir.exists()) {
+        //                appendDeletedSubdirectory(subDir);
+        //                continue;
+        //            }
+        //            // populateFragmentMakefile(subDir); // See below
+        //            checkCancel();
+        //        }
+        //        // Recreate all module makefiles
+        //        // NOTE WELL: For now, always recreate all of the fragment makefile.
+        //        // This is necessary
+        //        // in order to re-populate the buildVariable lists. In the future, the
+        //        // list could
+        //        // possibly segmented by subdir so that all fragments didn't need to be
+        //        // regenerated
+        //        for (IContainer subDir : getSubdirList()) {
+        //            mySubDirMakeGenerators.add(new SubDirMakeGenerator(this, subDir));
+        //            checkCancel();
+        //        }
+        //        // Calculate the inputs and outputs of the Tools to be generated in the
+        //        // main makefile
+        //        calculateToolInputsOutputs();
+        //        checkCancel();
+        //        // Re-create the top-level makefile
+        //        IPath makefilePath = topBuildDir.getFullPath().append(MAKEFILE_NAME);
+        //        IFile makefileHandle = createFile(makefilePath);
+        //        myTopMakeFileGenerator.populateTopMakefile(makefileHandle, false);
+        //        checkCancel();
+        //        // Remove deleted folders from generated build directory
+        //        for (IResource res : getDeletedDirList()) {
+        //            IContainer subDir = (IContainer) res;
+        //            removeGeneratedDirectory(subDir);
+        //            checkCancel();
+        //        }
+        //        // How did we do
+        //        if (!getInvalidDirList().isEmpty()) {
+        //            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.WARNING, "", null);
+        //            // Add a new status for each of the bad folders
+        //            // TODO: fix error message
+        //            for (IResource res : getInvalidDirList()) {
+        //                IContainer subDir = (IContainer) res;
+        //                status.add(new Status(IStatus.WARNING, ManagedBuilderCorePlugin.getUniqueIdentifier(), SPACES_IN_PATH,
+        //                        subDir.getFullPath().toString(), null));
+        //            }
+        //        } else {
+        //            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.OK, "", null);
+        //        }
+        //        return status;
     }
 
     /*
@@ -768,37 +744,29 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         }
         // Create the top-level directory for the build output
         topBuildDir = project.getFile(config.getName());
-        createDirectory(project, config.getName());
         checkCancel();
-        // Get the list of subdirectories
-        IPath srcsFilePath = topBuildDir.getFullPath().append(SRCSFILE_NAME);
-        IFile srcsFileHandle = createFile(srcsFilePath);
-        buildSrcVars.clear();
-        buildOutVars.clear();
-        buildDepVars.clear();
-        topBuildOutVars.clear();
-        mySrcMakeGenerator.populateSourcesMakefile(srcsFileHandle, toolInfos, subdirList);
-        checkCancel();
-        // Now populate the module makefiles
-        for (IResource res : getSubdirList()) {
-            IContainer subDir = (IContainer) res;
-            try {
-                mySubDirMakeGenerator.populateFragmentMakefile(subDir);
-            } catch (CoreException e) {
-                // Probably should ask user if they want to continue
-                checkCancel();
-                continue;
-            }
+        // Get the data for the makefile generation
+        List<SubDirMakeGenerator> subDirMakeGenerators = new LinkedList<>();
+        Map<IOutputType, List<IFile>> allSourceTargets = new HashMap<>();
+        Set<String> dependencyMacros = new HashSet<>();
+        Set<IFile> dependencyFiles = new HashSet<>();
+
+        for (IContainer res : getSubdirList()) {
+            SubDirMakeGenerator subDirMakeGenerator = new SubDirMakeGenerator(this, res);
+            allSourceTargets.putAll(subDirMakeGenerator.getTargets());
+            dependencyMacros.addAll(subDirMakeGenerator.getDependecyMacros());
+            dependencyFiles.addAll(subDirMakeGenerator.getDependencyFiles());
+            subDirMakeGenerators.add(subDirMakeGenerator);
             checkCancel();
         }
-        // Calculate the inputs and outputs of the Tools to be generated in the
+        TopMakeFileGenerator topMakeFileGenerator = new TopMakeFileGenerator(this, allSourceTargets, dependencyMacros,
+                dependencyFiles);
         // main makefile
-        calculateToolInputsOutputs();
+        // calculateToolInputsOutputs();
         checkCancel();
         // Create the top-level makefile
-        IPath makefilePath = topBuildDir.getFullPath().append(MAKEFILE_NAME);
-        IFile makefileHandle = createFile(makefilePath);
-        myTopMakeFileGenerator.populateTopMakefile(makefileHandle, true);
+        IFile makefileHandle = project.getFile(config.getName() + '/' + MAKEFILE_NAME);
+        topMakeFileGenerator.populateTopMakefile(makefileHandle, true);
         // JABA SLOEBER create the size.awk file
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
@@ -828,9 +796,19 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         // END JABA SLOEBER create the size.awk file
         checkCancel();
         // Now finish up by adding all the object files
-        IPath objFilePath = topBuildDir.getLocation().append(OBJECTS_MAKFILE);
-        IFile objsFileHandle = createFile(objFilePath);
-        populateObjectsMakefile(objsFileHandle);
+
+        Set<String> srcMacroNames = new LinkedHashSet<>();
+        Set<String> objMacroNames = new LinkedHashSet<>();
+        for (SubDirMakeGenerator curSubDirMake : subDirMakeGenerators) {
+            curSubDirMake.generateMakefile();
+            srcMacroNames.addAll(curSubDirMake.getPrerequisiteMacros());
+            srcMacroNames.addAll(curSubDirMake.getDependecyMacros());
+            objMacroNames.addAll(curSubDirMake.getTargetMacros());
+        }
+        //TOFIX also need to add macro's from main makefile
+
+        SrcMakeGenerator.generateSourceMakefile(project, config, srcMacroNames, subdirList);
+        SrcMakeGenerator.generateObjectsMakefile(project, config, objMacroNames);
         checkCancel();
         // How did we do
         if (!getInvalidDirList().isEmpty()) {
@@ -845,60 +823,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.OK, "", null);
         }
         return status;
-    }
-
-    /**
-     * The makefile generator generates a Macro for each type of output, other than
-     * final artifact, created by the build.
-     *
-     * @param fileHandle
-     *            The file that should be populated with the output
-     */
-    protected void populateObjectsMakefile(IFile fileHandle) throws CoreException {
-        // Master list of "object" dependencies, i.e. dependencies between input
-        // files and output files.
-        StringBuffer macroBuffer = new StringBuffer();
-        List<String> valueList;
-        macroBuffer.append(addDefaultHeader());
-        // Map of macro names (String) to its definition (List of Strings)
-        HashMap<String, List<String>> outputMacros = new HashMap<String, List<String>>();
-        // Add the predefined LIBS, USER_OBJS macros
-        // Add the libraries this project depends on
-        valueList = new ArrayList<String>();
-        String[] libs = config.getLibs(buildTargetExt);
-        for (String lib : libs) {
-            valueList.add(lib);
-        }
-        outputMacros.put("LIBS", valueList);
-        // Add the extra user-specified objects
-        valueList = new ArrayList<String>();
-        String[] userObjs = config.getUserObjects(buildTargetExt);
-        for (String obj : userObjs) {
-            valueList.add(obj);
-        }
-        outputMacros.put("USER_OBJS", valueList);
-        // Write every macro to the file
-        for (Entry<String, List<String>> entry : outputMacros.entrySet()) {
-            macroBuffer.append(entry.getKey()).append(" :=");
-            valueList = entry.getValue();
-            for (String path : valueList) {
-                // These macros will also be used within commands.
-                // Make all the slashes go forward so they aren't
-                // interpreted as escapes and get lost.
-                // See https://bugs.eclipse.org/163672.
-                path = path.replace('\\', '/');
-                path = ensurePathIsGNUMakeTargetRuleCompatibleSyntax(path);
-                macroBuffer.append(WHITESPACE);
-                macroBuffer.append(path);
-            }
-            // terminate the macro definition line
-            macroBuffer.append(NEWLINE);
-            // leave a blank line before the next macro
-            macroBuffer.append(NEWLINE);
-        }
-        // For now, just save the buffer that was populated when the rules were
-        // created
-        save(macroBuffer, fileHandle);
     }
 
     /*************************************************************************
@@ -953,216 +877,130 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      * makefile. This information is used by the top level makefile generation
      * methods.
      */
-    protected void calculateToolInputsOutputs() {
-        toolInfos.accept(new IPathSettingsContainerVisitor() {
-            @Override
-            public boolean visit(PathSettingsContainer container) {
-                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
-                ITool[] buildTools = h.buildTools;
-                ArduinoManagedBuildGnuToolInfo[] gnuToolInfos = h.gnuToolInfos;
-                // We are "done" when the information for all tools has been
-                // calculated,
-                // or we are not making any progress
-                boolean done = false;
-                boolean lastChance = false;
-                int[] doneState = new int[buildTools.length];
-                // Identify the target tool
-                ITool targetTool = config.calculateTargetTool();
-                // if (targetTool == null) {
-                // targetTool = info.getToolFromOutputExtension(buildTargetExt);
-                // }
-                // Initialize the tool info array and the done state
-                if (buildTools.length != 0 && buildTools[0].getCustomBuildStep())
-                    return true;
-                for (int i = 0; i < buildTools.length; i++) {
-                    if ((buildTools[i] == targetTool)) {
-                        String ext = config.getArtifactExtension();
-                        // try to resolve the build macros in the artifact
-                        // extension
-                        try {
-                            ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", " ",
-                                    IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
-                        } catch (BuildMacroException e) {
-                            /* JABA is not going to write this code */
-                        }
-                        String name = config.getArtifactName();
-                        // try to resolve the build macros in the artifact name
-                        try {
-                            String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-                                    name, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
-                            if ((resolved = resolved.trim()).length() > 0)
-                                name = resolved;
-                        } catch (BuildMacroException e) {
-                            /* JABA is not going to write this code */
-                        }
-                        gnuToolInfos[i] = new ArduinoManagedBuildGnuToolInfo(project, buildTools[i], true, name, ext);
-                    } else {
-                        gnuToolInfos[i] = new ArduinoManagedBuildGnuToolInfo(project, buildTools[i], false, null, null);
-                    }
-                    doneState[i] = 0;
-                }
-                // Initialize the build output variable to file additions map
-                LinkedHashMap<String, String> map = getTopBuildOutputVars();
-                Set<Entry<String, List<IPath>>> set = buildOutVars.entrySet();
-                for (Entry<String, List<IPath>> entry : set) {
-                    String macroName = entry.getKey();
-                    // for projects with specific setting on folders/files do
-                    // not clear the macro value on subsequent passes
-                    if (!map.containsKey(macroName)) {
-                        addMacroAdditionPrefix(map, macroName, "", false);
-                    }
-                }
-                // Set of input extensions for which macros have been created so
-                // far
-                HashSet<String> handledDepsInputExtensions = new HashSet<>();
-                HashSet<String> handledOutsInputExtensions = new HashSet<>();
-                while (!done) {
-                    int[] testState = new int[doneState.length];
-                    for (int i = 0; i < testState.length; i++)
-                        testState[i] = 0;
-                    // Calculate inputs
-                    for (int i = 0; i < gnuToolInfos.length; i++) {
-                        if (gnuToolInfos[i].areInputsCalculated()) {
-                            testState[i]++;
-                        } else {
-                            if (gnuToolInfos[i].calculateInputs(ArduinoGnuMakefileGenerator.this, config,
-                                    projectResources, h, lastChance)) {
-                                testState[i]++;
-                            }
-                        }
-                    }
-                    // Calculate dependencies
-                    for (int i = 0; i < gnuToolInfos.length; i++) {
-                        if (gnuToolInfos[i].areDependenciesCalculated()) {
-                            testState[i]++;
-                        } else {
-                            if (gnuToolInfos[i].calculateDependencies(ArduinoGnuMakefileGenerator.this, config,
-                                    handledDepsInputExtensions, h, lastChance)) {
-                                testState[i]++;
-                            }
-                        }
-                    }
-                    // Calculate outputs
-                    for (int i = 0; i < gnuToolInfos.length; i++) {
-                        if (gnuToolInfos[i].areOutputsCalculated()) {
-                            testState[i]++;
-                        } else {
-                            if (gnuToolInfos[i].calculateOutputs(ArduinoGnuMakefileGenerator.this, config,
-                                    handledOutsInputExtensions, lastChance)) {
-                                testState[i]++;
-                            }
-                        }
-                    }
-                    // Are all calculated? If so, done.
-                    done = true;
-                    for (int element : testState) {
-                        if (element != 3) {
-                            done = false;
-                            break;
-                        }
-                    }
-                    // Test our "done" state vs. the previous "done" state.
-                    // If we have made no progress, give it a "last chance" and
-                    // then quit
-                    if (!done) {
-                        done = true;
-                        for (int i = 0; i < testState.length; i++) {
-                            if (testState[i] != doneState[i]) {
-                                done = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (done) {
-                        if (!lastChance) {
-                            lastChance = true;
-                            done = false;
-                        }
-                    }
-                    if (!done) {
-                        doneState = testState;
-                    }
-                }
-                return true;
-            }
-        });
-    }
-
-    /**
-     * Returns the (String) list of files associated with the build variable
-     *
-     * @param variable
-     *            the variable name
-     * @param locationType
-     *            the format in which we want the filenames returned
-     * @param directory
-     *            project relative directory path used with locationType ==
-     *            DIRECTORY_RELATIVE
-     * @param getAll
-     *            only return the list if all tools that are going to contrubute to
-     *            this variable have done so.
-     * @return List
-     */
-    public List<String> getBuildVariableList(ToolInfoHolder h, String variable, int locationType, IPath directory,
-            boolean getAll) {
-        ArduinoManagedBuildGnuToolInfo[] gnuToolInfos = h.gnuToolInfos;
-        boolean done = true;
-        for (int i = 0; i < gnuToolInfos.length; i++) {
-            if (!gnuToolInfos[i].areOutputVariablesCalculated()) {
-                done = false;
-            }
-        }
-        if (!done && getAll)
-            return null;
-        List<IPath> list = buildSrcVars.get(variable);
-        if (list == null) {
-            list = buildOutVars.get(variable);
-        }
-        List<String> fileList = null;
-        if (list != null) {
-            // Convert the items in the list to the location-type wanted by the
-            // caller,
-            // and to a string list
-            IPath dirLocation = null;
-            if (locationType != ABSOLUTE) {
-                dirLocation = project.getLocation();
-                if (locationType == PROJECT_SUBDIR_RELATIVE) {
-                    dirLocation = dirLocation.append(directory);
-                }
-            }
-            for (int i = 0; i < list.size(); i++) {
-                IPath path = list.get(i);
-                if (locationType != ABSOLUTE) {
-                    if (dirLocation != null && dirLocation.isPrefixOf(path)) {
-                        path = path.removeFirstSegments(dirLocation.segmentCount()).setDevice(null);
-                    }
-                }
-                if (fileList == null) {
-                    fileList = new Vector<String>();
-                }
-                fileList.add(path.toString());
-            }
-        }
-        return fileList;
-    }
-
-    /**
-     * Returns the map of build variables to list of files
-     *
-     * @return HashMap
-     */
-    public HashMap<String, List<IPath>> getBuildOutputVars() {
-        return buildOutVars;
-    }
-
-    /**
-     * Returns the map of build variables used in the top makefile to list of files
-     *
-     * @return HashMap
-     */
-    public LinkedHashMap<String, String> getTopBuildOutputVars() {
-        return topBuildOutVars;
-    }
+    //    protected void calculateToolInputsOutputs() {
+    //        toolInfos.accept(new IPathSettingsContainerVisitor() {
+    //            @Override
+    //            public boolean visit(PathSettingsContainer container) {
+    //                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
+    //                ITool[] buildTools = h.buildTools;
+    //                ArduinoManagedBuildGnuToolInfo[] gnuToolInfos = h.gnuToolInfos;
+    //                // We are "done" when the information for all tools has been
+    //                // calculated,
+    //                // or we are not making any progress
+    //                boolean done = false;
+    //                boolean lastChance = false;
+    //                int[] doneState = new int[buildTools.length];
+    //                // Identify the target tool
+    //                ITool targetTool = config.calculateTargetTool();
+    //                // if (targetTool == null) {
+    //                // targetTool = info.getToolFromOutputExtension(buildTargetExt);
+    //                // }
+    //                // Initialize the tool info array and the done state
+    //                if (buildTools.length != 0 && buildTools[0].getCustomBuildStep())
+    //                    return true;
+    //                for (int i = 0; i < buildTools.length; i++) {
+    //                    if ((buildTools[i] == targetTool)) {
+    //                        String ext = config.getArtifactExtension();
+    //                        // try to resolve the build macros in the artifact
+    //                        // extension
+    //                        try {
+    //                            ext = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(ext, "", " ",
+    //                                    IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+    //                        } catch (BuildMacroException e) {
+    //                            /* JABA is not going to write this code */
+    //                        }
+    //                        String name = config.getArtifactName();
+    //                        // try to resolve the build macros in the artifact name
+    //                        try {
+    //                            String resolved = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
+    //                                    name, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+    //                            if ((resolved = resolved.trim()).length() > 0)
+    //                                name = resolved;
+    //                        } catch (BuildMacroException e) {
+    //                            /* JABA is not going to write this code */
+    //                        }
+    //                        gnuToolInfos[i] = new ArduinoManagedBuildGnuToolInfo(project, buildTools[i], true, name, ext);
+    //                    } else {
+    //                        gnuToolInfos[i] = new ArduinoManagedBuildGnuToolInfo(project, buildTools[i], false, null, null);
+    //                    }
+    //                    doneState[i] = 0;
+    //                }
+    //
+    //                // Set of input extensions for which macros have been created so
+    //                // far
+    //                HashSet<String> handledDepsInputExtensions = new HashSet<>();
+    //                HashSet<String> handledOutsInputExtensions = new HashSet<>();
+    //                while (!done) {
+    //                    int[] testState = new int[doneState.length];
+    //                    for (int i = 0; i < testState.length; i++)
+    //                        testState[i] = 0;
+    //                    // Calculate inputs
+    //                    for (int i = 0; i < gnuToolInfos.length; i++) {
+    //                        if (gnuToolInfos[i].areInputsCalculated()) {
+    //                            testState[i]++;
+    //                        } else {
+    //                            if (gnuToolInfos[i].calculateInputs(ArduinoGnuMakefileGenerator.this, config,
+    //                                    projectResources, h, lastChance)) {
+    //                                testState[i]++;
+    //                            }
+    //                        }
+    //                    }
+    //                    // Calculate dependencies
+    //                    for (int i = 0; i < gnuToolInfos.length; i++) {
+    //                        if (gnuToolInfos[i].areDependenciesCalculated()) {
+    //                            testState[i]++;
+    //                        } else {
+    //                            if (gnuToolInfos[i].calculateDependencies(ArduinoGnuMakefileGenerator.this, config,
+    //                                    handledDepsInputExtensions, h, lastChance)) {
+    //                                testState[i]++;
+    //                            }
+    //                        }
+    //                    }
+    //                    // Calculate outputs
+    //                    for (int i = 0; i < gnuToolInfos.length; i++) {
+    //                        if (gnuToolInfos[i].areOutputsCalculated()) {
+    //                            testState[i]++;
+    //                        } else {
+    //                            if (gnuToolInfos[i].calculateOutputs(ArduinoGnuMakefileGenerator.this, config,
+    //                                    handledOutsInputExtensions, lastChance)) {
+    //                                testState[i]++;
+    //                            }
+    //                        }
+    //                    }
+    //                    // Are all calculated? If so, done.
+    //                    done = true;
+    //                    for (int element : testState) {
+    //                        if (element != 3) {
+    //                            done = false;
+    //                            break;
+    //                        }
+    //                    }
+    //                    // Test our "done" state vs. the previous "done" state.
+    //                    // If we have made no progress, give it a "last chance" and
+    //                    // then quit
+    //                    if (!done) {
+    //                        done = true;
+    //                        for (int i = 0; i < testState.length; i++) {
+    //                            if (testState[i] != doneState[i]) {
+    //                                done = false;
+    //                                break;
+    //                            }
+    //                        }
+    //                    }
+    //                    if (done) {
+    //                        if (!lastChance) {
+    //                            lastChance = true;
+    //                            done = false;
+    //                        }
+    //                    }
+    //                    if (!done) {
+    //                        doneState = testState;
+    //                    }
+    //                }
+    //                return true;
+    //            }
+    //        });
+    //    }
 
     /**
      * Returns the list of known build rules. This keeps me from generating
@@ -1460,8 +1298,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      *         to the build
      */
     public Collection<IContainer> getSubdirList() {
-        if (subdirList == null)
-            subdirList = new LinkedHashSet<IContainer>();
         return subdirList;
     }
 
@@ -1510,9 +1346,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     public void initialize(int buildKind, IConfiguration cfg, IBuilder builder, IProgressMonitor monitor) {
         // Save the project so we can get path and member information
         this.project = cfg.getOwner().getProject();
-        mySubDirMakeGenerator = new SubDirMakeGenerator(this);
-        myTopMakeFileGenerator = new TopMakeFileGenerator(this);
-        mySrcMakeGenerator = new SrcMakeGenerator(this);
         if (builder == null) {
             builder = cfg.getEditableBuilder();
         }
@@ -1586,10 +1419,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
                 h.gnuToolInfos = new ArduinoManagedBuildGnuToolInfo[h.buildTools.length];
             }
         }
-    }
-
-    public List<String> getDepLineList() {
-        return mySubDirMakeGenerator.getDepLineList();
     }
 
     public PathSettingsContainer getToolInfos() {

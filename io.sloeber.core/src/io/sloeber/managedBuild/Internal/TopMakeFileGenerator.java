@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -31,11 +31,13 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 public class TopMakeFileGenerator {
-    private ArduinoGnuMakefileGenerator caller;
+    private ArduinoGnuMakefileGenerator caller = null;
+    private Map<IOutputType, List<IFile>> myAllSourceTargets = null;
+    private Set<String> myDependencyMacros = null;
+    private Set<IFile> myDependencyFiles = null;
 
     private IConfiguration getConfig() {
         return caller.getConfig();
@@ -45,17 +47,12 @@ public class TopMakeFileGenerator {
         return caller.getProject();
     }
 
-    TopMakeFileGenerator(ArduinoGnuMakefileGenerator theCaller) {
+    TopMakeFileGenerator(ArduinoGnuMakefileGenerator theCaller, Map<IOutputType, List<IFile>> allSourceTargets,
+            Set<String> dependecyMacros, Set<IFile> dependencyFiles) {
         caller = theCaller;
-    }
-
-    /**
-     * Returns the map of build variables used in the top makefile to list of files
-     *
-     * @return HashMap
-     */
-    private LinkedHashMap<String, String> getTopBuildOutputVars() {
-        return caller.getTopBuildOutputVars();
+        myAllSourceTargets = allSourceTargets;
+        myDependencyMacros = dependecyMacros;
+        myDependencyFiles = dependencyFiles;
     }
 
     /**
@@ -68,10 +65,6 @@ public class TopMakeFileGenerator {
 
     private Vector<String> getRuleList() {
         return caller.getRuleList();
-    }
-
-    public List<String> getDepLineList() {
-        return caller.getDepLineList();
     }
 
     public PathSettingsContainer getToolInfos() {
@@ -89,7 +82,7 @@ public class TopMakeFileGenerator {
     public void populateTopMakefile(IFile fileHandle, boolean rebuild) throws CoreException {
         StringBuffer buffer = new StringBuffer();
         // Add the header
-        buffer.append(addTopHeader());
+        buffer.append(addDefaultHeader());
         // Add the macro definitions
         buffer.append(addMacros());
         // List to collect needed build output variables
@@ -97,26 +90,14 @@ public class TopMakeFileGenerator {
         // Determine target rules
         StringBuffer targetRules = addTargets(outputVarsAdditionsList, rebuild);
         // Add outputMacros that were added to by the target rules
-        buffer.append(writeTopAdditionMacros(outputVarsAdditionsList, getTopBuildOutputVars()));
+        //TOFIX reenable line below
+        //buffer.append(writeTopAdditionMacros(outputVarsAdditionsList, getTopBuildOutputVars()));
         // Add target rules
         buffer.append(targetRules);
         // Save the file
         save(buffer, fileHandle);
     }
 
-    /*************************************************************************
-     * M A I N (makefile) M A K E F I L E M E T H O D S
-     ************************************************************************/
-    /**
-     * Answers a <code>StringBuffer</code> containing the comment(s) for the
-     * top-level makefile.
-     */
-    private StringBuffer addTopHeader() {
-        return addDefaultHeader();
-    }
-
-    /**
-     */
     private StringBuffer addMacros() {
         IConfiguration config = getConfig();
         StringBuffer buffer = new StringBuffer();
@@ -161,19 +142,11 @@ public class TopMakeFileGenerator {
         // libraries and other files
         // buffer.append("-include subdir.mk" + NEWLINE); //
         buffer.append("-include objects.mk").append(NEWLINE).append(NEWLINE);
-        // Include generated dependency makefiles if non-empty AND a "clean" has
-        // not been requested
-        if (!caller.buildDepVars.isEmpty()) {
+        if (!myDependencyMacros.isEmpty()) {
             buffer.append("ifneq ($(MAKECMDGOALS),clean)").append(NEWLINE);
-            for (Entry<String, ArduinoGnuDependencyGroupInfo> entry : caller.buildDepVars.entrySet()) {
-                String depsMacro = entry.getKey();
-                ArduinoGnuDependencyGroupInfo info = entry.getValue();
+            for (String depsMacro : myDependencyMacros) {
                 buffer.append("ifneq ($(strip $(").append(depsMacro).append(")),)").append(NEWLINE);
-                if (info.conditionallyInclude) {
-                    buffer.append("-include $(").append(depsMacro).append(')').append(NEWLINE);
-                } else {
-                    buffer.append("include $(").append(depsMacro).append(')').append(NEWLINE);
-                }
+                buffer.append("-include $(").append(depsMacro).append(')').append(NEWLINE);
                 buffer.append("endif").append(NEWLINE);
             }
             buffer.append("endif").append(NEWLINE).append(NEWLINE);
@@ -585,10 +558,7 @@ public class TopMakeFileGenerator {
                 String output = addlOutputs.get(i);
                 String depLine = output + COLON + WHITESPACE + primaryOutput + WHITESPACE + calculatedDependencies
                         + NEWLINE;
-                if (!getDepLineList().contains(depLine)) {
-                    getDepLineList().add(depLine);
-                    buffer.append(depLine);
-                }
+                buffer.append(depLine);
             }
             buffer.append(NEWLINE);
         }
@@ -706,8 +676,8 @@ public class TopMakeFileGenerator {
         // Always add a clean target
         buffer.append("clean:").append(NEWLINE);
         buffer.append(TAB).append("-$(RM)").append(WHITESPACE);
-        for (Entry<String, List<IPath>> entry : caller.buildOutVars.entrySet()) {
-            String macroName = entry.getKey();
+        for (IOutputType entry : myAllSourceTargets.keySet()) {
+            String macroName = entry.getBuildVariable();
             buffer.append("$(").append(macroName).append(')');
         }
         String outputPrefix = EMPTY_STRING;
@@ -736,14 +706,9 @@ public class TopMakeFileGenerator {
         // Add the comment
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_VARS))
                 .append(NEWLINE);
-        for (int i = 0; i < varList.size(); i++) {
-            String addition = varMap.get(varList.get(i));
-            StringBuffer currentBuffer = new StringBuffer();
-            currentBuffer.append(addition);
-            currentBuffer.append(NEWLINE);
-            // append the contents of the buffer to the master buffer for the
-            // whole file
-            buffer.append(currentBuffer);
+        for (String curVar : varList) {
+            buffer.append(varMap.get(curVar));
+            buffer.append(NEWLINE);
         }
         return buffer.append(NEWLINE);
     }

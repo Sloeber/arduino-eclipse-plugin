@@ -1,17 +1,11 @@
 package io.sloeber.managedBuild.Internal;
 
 import static io.sloeber.managedBuild.Internal.ManagebBuildCommon.*;
-import static io.sloeber.managedBuild.Internal.ManagedBuildConstants.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.cdt.managedbuilder.core.BuildException;
@@ -19,10 +13,8 @@ import org.eclipse.cdt.managedbuilder.core.IAdditionalInput;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IInputType;
 import org.eclipse.cdt.managedbuilder.core.IOption;
-import org.eclipse.cdt.managedbuilder.core.IOutputType;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.cdt.managedbuilder.internal.core.Tool;
 import org.eclipse.cdt.managedbuilder.internal.macros.OptionContextData;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
@@ -38,8 +30,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-
-import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
 
 /**
  * This class represents information about a Tool's inputs and outputs while a
@@ -305,20 +295,20 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
                         // If there is an output variable with the same name,
                         // get
                         // the files associated with it.
-                        List<String> outMacroList = makeGen.getBuildVariableList(h, variable, PROJECT_RELATIVE, null,
-                                true);
-                        if (outMacroList != null) {
-                            itEnumeratedInputs.addAll(outMacroList);
-                        } else {
-                            // If "last chance", then calculate using file
-                            // extensions below
-                            if (lastChance) {
-                                useFileExts = true;
-                            } else {
-                                done = false;
-                                break;
-                            }
-                        }
+                        //                        List<String> outMacroList = makeGen.getBuildVariableList(h, variable, PROJECT_RELATIVE, null,
+                        //                                true);
+                        //                        if (outMacroList != null) {
+                        //                            itEnumeratedInputs.addAll(outMacroList);
+                        //                        } else {
+                        //                            // If "last chance", then calculate using file
+                        //                            // extensions below
+                        //                            if (lastChance) {
+                        //                                useFileExts = true;
+                        //                            } else {
+                        //                                done = false;
+                        //                                break;
+                        //                            }
+                        //                        }
                     }
 
                     // Use file extensions
@@ -508,299 +498,297 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
      * NOTE: If an option is not specified and this is not the primary output
      * type, the outputs from the type are not added to the command line
      */
-    public boolean calculateOutputs(ArduinoGnuMakefileGenerator makeGen, IConfiguration config,
-            HashSet<String> handledInputExtensions, boolean lastChance) {
-
-        boolean done = true;
-        List<String> myCommandOutputs = new LinkedList<>();
-        List<String> myEnumeratedOutputs = new LinkedList<>();
-        HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
-        // The next two fields are used together
-        List<String> myBuildVars = new LinkedList<>();
-        List<List<String>> myBuildVarsValues = new LinkedList<>();
-
-        // Get the outputs for this tool invocation
-        IOutputType[] outTypes = this.tool.getOutputTypes();
-        if (outTypes != null && outTypes.length > 0) {
-            for (int i = 0; i < outTypes.length; i++) {
-                List<String> typeEnumeratedOutputs = new LinkedList<>();
-                IOutputType type = outTypes[i];
-                String outputPrefix = type.getOutputPrefix();
-
-                // Resolve any macros in the outputPrefix
-                // Note that we cannot use file macros because if we do a clean
-                // we need to know the actual name of the file to clean, and
-                // cannot use any builder variables such as $@. Hence we use the
-                // next best thing, i.e. configuration context.
-
-                if (config != null) {
-
-                    try {
-                        outputPrefix = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-                                outputPrefix, "", //$NON-NLS-1$
-                                " ", //$NON-NLS-1$
-                                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
-                    }
-
-                    catch (BuildMacroException e) {// JABA is not going to add
-                        // code
-                    }
-                }
-
-                String variable = type.getBuildVariable();
-                boolean multOfType = type.getMultipleOfType();
-                IOption option = this.tool.getOptionBySuperClassId(type.getOptionId());
-                IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(type);
-                String[] outputNames = type.getOutputNames();
-
-                // 1. If the tool is the build target and this is the primary
-                // output,
-                // use artifact name & extension
-                if (this.bIsTargetTool) {
-                    String outputName = outputPrefix + this.targetName;
-                    if (this.targetExt.length() > 0) {
-                        outputName += (DOT + this.targetExt);
-                    }
-                    myCommandOutputs.add(outputName);
-                    typeEnumeratedOutputs.add(outputName);
-                    // But this doesn't use any output macro...
-                } else
-                // 2. If an option is specified, use the value of the option
-                if (option != null) {
-                    try {
-                        List<String> outputs = new ArrayList<>();
-                        int optType = option.getValueType();
-                        if (optType == IOption.STRING) {
-                            outputs.add(outputPrefix + option.getStringValue());
-                        } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
-                                || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
-                                || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
-                                || optType == IOption.MACRO_FILES) {
-                            @SuppressWarnings("unchecked")
-                            List<String> value = (List<String>) option.getValue();
-                            outputs = value;
-                            this.tool.filterValues(optType, outputs);
-                            // Add outputPrefix to each if necessary
-                            if (outputPrefix.length() > 0) {
-                                for (int j = 0; j < outputs.size(); j++) {
-                                    outputs.set(j, outputPrefix + outputs.get(j));
-                                }
-                            }
-                        }
-                        for (int j = 0; j < outputs.size(); j++) {
-                            String outputName = outputs.get(j);
-                            try {
-                                // try to resolve the build macros in the output
-                                // names
-                                String resolved = ManagedBuildManager.getBuildMacroProvider()
-                                        .resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
-                                                " ", //$NON-NLS-1$
-                                                IBuildMacroProvider.CONTEXT_OPTION,
-                                                new OptionContextData(option, this.tool));
-                                if ((resolved = resolved.trim()).length() > 0)
-                                    outputs.set(j, resolved);
-                            } catch (BuildMacroException e) {// JABA is not
-                                // going to add
-                                // code
-                            }
-                        }
-
-                        // NO - myCommandOutputs.addAll(outputs);
-                        typeEnumeratedOutputs.addAll(outputs);
-                        if (variable.length() > 0) {
-                            List<IPath> outputPaths = new ArrayList<>();
-                            for (int j = 0; j < outputs.size(); j++) {
-                                outputPaths.add(Path.fromOSString(outputs.get(j)));
-                            }
-                            if (myOutputMacros.containsKey(variable)) {
-                                List<IPath> currList = myOutputMacros.get(variable);
-                                currList.addAll(outputPaths);
-                                myOutputMacros.put(variable, currList);
-                            } else {
-                                myOutputMacros.put(variable, outputPaths);
-                            }
-                        }
-                    } catch (BuildException ex) {// JABA is not going to add
-                        // code
-                    }
-                } else
-                // 3. If a nameProvider is specified, call it
-                if (nameProvider != null) {
-                    // The inputs must have been calculated before we can do
-                    // this
-                    List<IPath> outNames = new LinkedList<>();
-                    if (!this.inputsCalculated) {
-                        done = false;
-                    } else {
-                        for (String curInput : getEnumeratedInputs()) {
-                            outNames.add(nameProvider.getOutputName(project, config, tool, new Path(curInput)));
-                        }
-                        typeEnumeratedOutputs.addAll(resolvePaths(outNames, config));
-                    }
-                    if (variable.length() > 0 && outNames != null) {
-                        if (myOutputMacros.containsKey(variable)) {
-                            List<IPath> currList = myOutputMacros.get(variable);
-                            currList.addAll(outNames);
-                            myOutputMacros.put(variable, currList);
-                        } else {
-                            myOutputMacros.put(variable, outNames);
-                        }
-                    }
-                } else
-                // 4. If outputNames is specified, use it
-                if (outputNames != null) {
-                    if (outputNames.length > 0) {
-                        for (int j = 0; j < outputNames.length; j++) {
-                            String outputName = outputNames[j];
-                            try {
-                                // try to resolve the build macros in the output
-                                // names
-                                String resolved = ManagedBuildManager.getBuildMacroProvider()
-                                        .resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
-                                                " ", //$NON-NLS-1$
-                                                IBuildMacroProvider.CONTEXT_OPTION,
-                                                new OptionContextData(option, this.tool));
-                                if ((resolved = resolved.trim()).length() > 0)
-                                    outputNames[j] = resolved;
-                            } catch (BuildMacroException e) {// JABA is not
-                                // going to add
-                                // code
-                            }
-                        }
-                        List<String> namesList = Arrays.asList(outputNames);
-                        typeEnumeratedOutputs.addAll(namesList);
-                        if (variable.length() > 0) {
-                            List<IPath> outputPaths = new ArrayList<>();
-                            for (int j = 0; j < namesList.size(); j++) {
-                                outputPaths.add(Path.fromOSString(namesList.get(j)));
-                            }
-                            if (myOutputMacros.containsKey(variable)) {
-                                List<IPath> currList = myOutputMacros.get(variable);
-                                currList.addAll(outputPaths);
-                                myOutputMacros.put(variable, currList);
-                            } else {
-                                myOutputMacros.put(variable, outputPaths);
-                            }
-                        }
-                    }
-                } else {
-                    // 5. Use the name pattern to generate a transformation
-                    // macro
-                    // so that the source names can be transformed into the
-                    // target names
-                    // using the built-in string substitution functions of
-                    // <code>make</code>.
-                    if (multOfType) {
-                        // This case is not handled - a nameProvider or
-                        // outputNames must be specified
-                        List<String> errList = new ArrayList<>();
-                        errList.add(ManagedMakeMessages.getResourceString("MakefileGenerator.error.no.nameprovider")); //$NON-NLS-1$
-                        myCommandOutputs.addAll(errList);
-                    } else {
-                        String namePattern = type.getNamePattern();
-                        if (namePattern == null || namePattern.length() == 0) {
-                            namePattern = outputPrefix + IManagedBuilderMakefileGenerator.WILDCARD;
-                            String outExt = (type.getOutputExtensions(this.tool))[0];
-                            if (outExt != null && outExt.length() > 0) {
-                                namePattern += DOT + outExt;
-                            }
-                        } else if (outputPrefix.length() > 0) {
-                            namePattern = outputPrefix + namePattern;
-                        }
-
-                        // Calculate the output name
-                        // The inputs must have been calculated before we can do
-                        // this
-                        if (!this.inputsCalculated) {
-                            done = false;
-                        } else {
-                            Vector<String> inputs = getEnumeratedInputs();
-                            String fileName;
-                            if (inputs.size() > 0) {
-                                // Get the input file name
-                                fileName = (Path.fromOSString(inputs.get(0))).removeFileExtension().lastSegment();
-                                // Check if this is a build macro. If so, use
-                                // the raw macro name.
-                                if (fileName.startsWith("$(") && fileName.endsWith(")")) { //$NON-NLS-1$ //$NON-NLS-2$
-                                    fileName = fileName.substring(2, fileName.length() - 1);
-                                }
-                            } else {
-                                fileName = "default"; //$NON-NLS-1$
-                            }
-                            // Replace the % with the file name
-                            typeEnumeratedOutputs.add(namePattern.replace("%", fileName)); //$NON-NLS-1$
-                            if (variable.length() > 0) {
-                                List<IPath> outputs = new ArrayList<>();
-                                outputs.add(Path.fromOSString(fileName));
-                                if (myOutputMacros.containsKey(variable)) {
-                                    List<IPath> currList = myOutputMacros.get(variable);
-                                    currList.addAll(outputs);
-                                    myOutputMacros.put(variable, currList);
-                                } else {
-                                    myOutputMacros.put(variable, outputs);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (variable.length() > 0) {
-                    myBuildVars.add(variable);
-                    myBuildVarsValues.add(typeEnumeratedOutputs);
-                }
-                myEnumeratedOutputs.addAll(typeEnumeratedOutputs);
-            }
-        } else
-
-        {
-            if (this.bIsTargetTool) {
-                String outputPrefix = this.tool.getOutputPrefix();
-                String outputName = outputPrefix + this.targetName;
-                if (this.targetExt.length() > 0) {
-                    outputName += (DOT + this.targetExt);
-                }
-                myCommandOutputs.add(outputName);
-                myEnumeratedOutputs.add(outputName);
-            } else {
-                // For support of pre-CDT 3.0 integrations.
-                // NOTE WELL: This only supports the case of a single
-                // "target tool"
-                // that consumes exactly all of the object files, $OBJS,
-                // produced
-                // by other tools in the build and produces a single output
-            }
-        }
-
-        // Add the output macros of this tool to the buildOutVars map
-        Set<Entry<String, List<IPath>>> entrySet = myOutputMacros.entrySet();
-        for (Entry<String, List<IPath>> entry : entrySet) {
-            String macroName = entry.getKey();
-            List<IPath> newMacroValue = entry.getValue();
-            Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
-            if (map.containsKey(macroName)) {
-                List<IPath> macroValue = map.get(macroName);
-                macroValue.addAll(newMacroValue);
-                map.put(macroName, macroValue);
-            } else {
-                map.put(macroName, newMacroValue);
-            }
-        }
-        this.outputVariablesCalculated = true;
-
-        if (done) {
-            this.commandOutputs.addAll(myCommandOutputs);
-            this.enumeratedPrimaryOutputs.addAll(myEnumeratedOutputs);
-            this.enumeratedSecondaryOutputs.addAll(myEnumeratedOutputs);
-            this.outputVariables.addAll(myOutputMacros.keySet());
-            this.outputsCalculated = true;
-            for (int i = 0; i < myBuildVars.size(); i++) {
-                makeGen.addMacroAdditionFiles(makeGen.getTopBuildOutputVars(), myBuildVars.get(i),
-                        myBuildVarsValues.get(i));
-            }
-            return true;
-        }
-
-        return false;
-    }
+    //    public boolean calculateOutputs(ArduinoGnuMakefileGenerator makeGen, IConfiguration config,
+    //            HashSet<String> handledInputExtensions, boolean lastChance) {
+    //
+    //        boolean done = true;
+    //        List<String> myCommandOutputs = new LinkedList<>();
+    //        List<String> myEnumeratedOutputs = new LinkedList<>();
+    //        HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
+    //        // The next two fields are used together
+    //        Map<String, List<String>> myBuildVars = new HashMap<>();
+    //        //List<List<String>> myBuildVarsValues = new LinkedList<>();
+    //
+    //        // Get the outputs for this tool invocation
+    //        IOutputType[] outTypes = this.tool.getOutputTypes();
+    //        if (outTypes != null && outTypes.length > 0) {
+    //            for (int i = 0; i < outTypes.length; i++) {
+    //                List<String> typeEnumeratedOutputs = new LinkedList<>();
+    //                IOutputType type = outTypes[i];
+    //                String outputPrefix = type.getOutputPrefix();
+    //
+    //                // Resolve any macros in the outputPrefix
+    //                // Note that we cannot use file macros because if we do a clean
+    //                // we need to know the actual name of the file to clean, and
+    //                // cannot use any builder variables such as $@. Hence we use the
+    //                // next best thing, i.e. configuration context.
+    //
+    //                if (config != null) {
+    //
+    //                    try {
+    //                        outputPrefix = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
+    //                                outputPrefix, "", //$NON-NLS-1$
+    //                                " ", //$NON-NLS-1$
+    //                                IBuildMacroProvider.CONTEXT_CONFIGURATION, config);
+    //                    }
+    //
+    //                    catch (BuildMacroException e) {// JABA is not going to add
+    //                        // code
+    //                    }
+    //                }
+    //
+    //                String variable = type.getBuildVariable();
+    //                boolean multOfType = type.getMultipleOfType();
+    //                IOption option = this.tool.getOptionBySuperClassId(type.getOptionId());
+    //                IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(type);
+    //                String[] outputNames = type.getOutputNames();
+    //
+    //                // 1. If the tool is the build target and this is the primary
+    //                // output,
+    //                // use artifact name & extension
+    //                if (this.bIsTargetTool) {
+    //                    String outputName = outputPrefix + this.targetName;
+    //                    if (this.targetExt.length() > 0) {
+    //                        outputName += (DOT + this.targetExt);
+    //                    }
+    //                    myCommandOutputs.add(outputName);
+    //                    typeEnumeratedOutputs.add(outputName);
+    //                    // But this doesn't use any output macro...
+    //                } else
+    //                // 2. If an option is specified, use the value of the option
+    //                if (option != null) {
+    //                    try {
+    //                        List<String> outputs = new ArrayList<>();
+    //                        int optType = option.getValueType();
+    //                        if (optType == IOption.STRING) {
+    //                            outputs.add(outputPrefix + option.getStringValue());
+    //                        } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
+    //                                || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
+    //                                || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
+    //                                || optType == IOption.MACRO_FILES) {
+    //                            @SuppressWarnings("unchecked")
+    //                            List<String> value = (List<String>) option.getValue();
+    //                            outputs = value;
+    //                            this.tool.filterValues(optType, outputs);
+    //                            // Add outputPrefix to each if necessary
+    //                            if (outputPrefix.length() > 0) {
+    //                                for (int j = 0; j < outputs.size(); j++) {
+    //                                    outputs.set(j, outputPrefix + outputs.get(j));
+    //                                }
+    //                            }
+    //                        }
+    //                        for (int j = 0; j < outputs.size(); j++) {
+    //                            String outputName = outputs.get(j);
+    //                            try {
+    //                                // try to resolve the build macros in the output
+    //                                // names
+    //                                String resolved = ManagedBuildManager.getBuildMacroProvider()
+    //                                        .resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
+    //                                                " ", //$NON-NLS-1$
+    //                                                IBuildMacroProvider.CONTEXT_OPTION,
+    //                                                new OptionContextData(option, this.tool));
+    //                                if ((resolved = resolved.trim()).length() > 0)
+    //                                    outputs.set(j, resolved);
+    //                            } catch (BuildMacroException e) {// JABA is not
+    //                                // going to add
+    //                                // code
+    //                            }
+    //                        }
+    //
+    //                        // NO - myCommandOutputs.addAll(outputs);
+    //                        typeEnumeratedOutputs.addAll(outputs);
+    //                        if (variable.length() > 0) {
+    //                            List<IPath> outputPaths = new ArrayList<>();
+    //                            for (int j = 0; j < outputs.size(); j++) {
+    //                                outputPaths.add(Path.fromOSString(outputs.get(j)));
+    //                            }
+    //                            if (myOutputMacros.containsKey(variable)) {
+    //                                List<IPath> currList = myOutputMacros.get(variable);
+    //                                currList.addAll(outputPaths);
+    //                                myOutputMacros.put(variable, currList);
+    //                            } else {
+    //                                myOutputMacros.put(variable, outputPaths);
+    //                            }
+    //                        }
+    //                    } catch (BuildException ex) {// JABA is not going to add
+    //                        // code
+    //                    }
+    //                } else
+    //                // 3. If a nameProvider is specified, call it
+    //                if (nameProvider != null) {
+    //                    // The inputs must have been calculated before we can do
+    //                    // this
+    //                    List<IPath> outNames = new LinkedList<>();
+    //                    if (!this.inputsCalculated) {
+    //                        done = false;
+    //                    } else {
+    //                        for (String curInput : getEnumeratedInputs()) {
+    //                            outNames.add(nameProvider.getOutputName(project, config, tool, new Path(curInput)));
+    //                        }
+    //                        typeEnumeratedOutputs.addAll(resolvePaths(outNames, config));
+    //                    }
+    //                    if (variable.length() > 0 && outNames != null) {
+    //                        if (myOutputMacros.containsKey(variable)) {
+    //                            List<IPath> currList = myOutputMacros.get(variable);
+    //                            currList.addAll(outNames);
+    //                            myOutputMacros.put(variable, currList);
+    //                        } else {
+    //                            myOutputMacros.put(variable, outNames);
+    //                        }
+    //                    }
+    //                } else
+    //                // 4. If outputNames is specified, use it
+    //                if (outputNames != null) {
+    //                    if (outputNames.length > 0) {
+    //                        for (int j = 0; j < outputNames.length; j++) {
+    //                            String outputName = outputNames[j];
+    //                            try {
+    //                                // try to resolve the build macros in the output
+    //                                // names
+    //                                String resolved = ManagedBuildManager.getBuildMacroProvider()
+    //                                        .resolveValueToMakefileFormat(outputName, "", //$NON-NLS-1$
+    //                                                " ", //$NON-NLS-1$
+    //                                                IBuildMacroProvider.CONTEXT_OPTION,
+    //                                                new OptionContextData(option, this.tool));
+    //                                if ((resolved = resolved.trim()).length() > 0)
+    //                                    outputNames[j] = resolved;
+    //                            } catch (BuildMacroException e) {// JABA is not
+    //                                // going to add
+    //                                // code
+    //                            }
+    //                        }
+    //                        List<String> namesList = Arrays.asList(outputNames);
+    //                        typeEnumeratedOutputs.addAll(namesList);
+    //                        if (variable.length() > 0) {
+    //                            List<IPath> outputPaths = new ArrayList<>();
+    //                            for (int j = 0; j < namesList.size(); j++) {
+    //                                outputPaths.add(Path.fromOSString(namesList.get(j)));
+    //                            }
+    //                            if (myOutputMacros.containsKey(variable)) {
+    //                                List<IPath> currList = myOutputMacros.get(variable);
+    //                                currList.addAll(outputPaths);
+    //                                myOutputMacros.put(variable, currList);
+    //                            } else {
+    //                                myOutputMacros.put(variable, outputPaths);
+    //                            }
+    //                        }
+    //                    }
+    //                } else {
+    //                    // 5. Use the name pattern to generate a transformation
+    //                    // macro
+    //                    // so that the source names can be transformed into the
+    //                    // target names
+    //                    // using the built-in string substitution functions of
+    //                    // <code>make</code>.
+    //                    if (multOfType) {
+    //                        // This case is not handled - a nameProvider or
+    //                        // outputNames must be specified
+    //                        List<String> errList = new ArrayList<>();
+    //                        errList.add(ManagedMakeMessages.getResourceString("MakefileGenerator.error.no.nameprovider")); //$NON-NLS-1$
+    //                        myCommandOutputs.addAll(errList);
+    //                    } else {
+    //                        String namePattern = type.getNamePattern();
+    //                        if (namePattern == null || namePattern.length() == 0) {
+    //                            namePattern = outputPrefix + IManagedBuilderMakefileGenerator.WILDCARD;
+    //                            String outExt = (type.getOutputExtensions(this.tool))[0];
+    //                            if (outExt != null && outExt.length() > 0) {
+    //                                namePattern += DOT + outExt;
+    //                            }
+    //                        } else if (outputPrefix.length() > 0) {
+    //                            namePattern = outputPrefix + namePattern;
+    //                        }
+    //
+    //                        // Calculate the output name
+    //                        // The inputs must have been calculated before we can do
+    //                        // this
+    //                        if (!this.inputsCalculated) {
+    //                            done = false;
+    //                        } else {
+    //                            Vector<String> inputs = getEnumeratedInputs();
+    //                            String fileName;
+    //                            if (inputs.size() > 0) {
+    //                                // Get the input file name
+    //                                fileName = (Path.fromOSString(inputs.get(0))).removeFileExtension().lastSegment();
+    //                                // Check if this is a build macro. If so, use
+    //                                // the raw macro name.
+    //                                if (fileName.startsWith("$(") && fileName.endsWith(")")) { //$NON-NLS-1$ //$NON-NLS-2$
+    //                                    fileName = fileName.substring(2, fileName.length() - 1);
+    //                                }
+    //                            } else {
+    //                                fileName = "default"; //$NON-NLS-1$
+    //                            }
+    //                            // Replace the % with the file name
+    //                            typeEnumeratedOutputs.add(namePattern.replace("%", fileName)); //$NON-NLS-1$
+    //                            if (variable.length() > 0) {
+    //                                List<IPath> outputs = new ArrayList<>();
+    //                                outputs.add(Path.fromOSString(fileName));
+    //                                if (myOutputMacros.containsKey(variable)) {
+    //                                    List<IPath> currList = myOutputMacros.get(variable);
+    //                                    currList.addAll(outputs);
+    //                                    myOutputMacros.put(variable, currList);
+    //                                } else {
+    //                                    myOutputMacros.put(variable, outputs);
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                if (variable.length() > 0) {
+    //                    myBuildVars.put(variable, typeEnumeratedOutputs);
+    //                }
+    //                myEnumeratedOutputs.addAll(typeEnumeratedOutputs);
+    //            }
+    //        } else
+    //
+    //        {
+    //            if (this.bIsTargetTool) {
+    //                String outputPrefix = this.tool.getOutputPrefix();
+    //                String outputName = outputPrefix + this.targetName;
+    //                if (this.targetExt.length() > 0) {
+    //                    outputName += (DOT + this.targetExt);
+    //                }
+    //                myCommandOutputs.add(outputName);
+    //                myEnumeratedOutputs.add(outputName);
+    //            } else {
+    //                // For support of pre-CDT 3.0 integrations.
+    //                // NOTE WELL: This only supports the case of a single
+    //                // "target tool"
+    //                // that consumes exactly all of the object files, $OBJS,
+    //                // produced
+    //                // by other tools in the build and produces a single output
+    //            }
+    //        }
+    //
+    //        // Add the output macros of this tool to the buildOutVars map
+    //        Set<Entry<String, List<IPath>>> entrySet = myOutputMacros.entrySet();
+    //        for (Entry<String, List<IPath>> entry : entrySet) {
+    //            String macroName = entry.getKey();
+    //            List<IPath> newMacroValue = entry.getValue();
+    //            Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
+    //            if (map.containsKey(macroName)) {
+    //                List<IPath> macroValue = map.get(macroName);
+    //                macroValue.addAll(newMacroValue);
+    //                map.put(macroName, macroValue);
+    //            } else {
+    //                map.put(macroName, newMacroValue);
+    //            }
+    //        }
+    //        this.outputVariablesCalculated = true;
+    //
+    //        if (done) {
+    //            this.commandOutputs.addAll(myCommandOutputs);
+    //            this.enumeratedPrimaryOutputs.addAll(myEnumeratedOutputs);
+    //            this.enumeratedSecondaryOutputs.addAll(myEnumeratedOutputs);
+    //            this.outputVariables.addAll(myOutputMacros.keySet());
+    //            this.outputsCalculated = true;
+    //            for (Entry<String, List<String>> curVar : myBuildVars.entrySet()) {
+    //                makeGen.addMacroAdditionFiles(makeGen.getTopBuildOutputVars(), curVar.getKey(), curVar.getValue());
+    //            }
+    //            return true;
+    //        }
+    //
+    //        return false;
+    //    }
 
     private boolean callDependencyCalculator(ArduinoGnuMakefileGenerator makeGen, IConfiguration config,
             HashSet<String> handledInputExtensions, IManagedDependencyGeneratorType depGen, String[] extensionsList,
@@ -904,120 +892,122 @@ public class ArduinoManagedBuildGnuToolInfo implements IManagedBuildGnuToolInfo 
         return done;
     }
 
-    /**
-     * @param lastChance
-     */
-    public boolean calculateDependencies(ArduinoGnuMakefileGenerator makeGen, IConfiguration config,
-            HashSet<String> handledInputExtensions, ToolInfoHolder h, boolean lastChance) {
-        // Get the dependencies for this tool invocation
-        boolean done = true;
-        Vector<String> myCommandDependencies = new Vector<>();
-        Vector<String> myAdditionalTargets = new Vector<>();
-        // Vector myEnumeratedDependencies = new Vector();
-        HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
-
-        IInputType[] inTypes = this.tool.getInputTypes();
-        if (inTypes != null && inTypes.length > 0) {
-            for (int i = 0; i < inTypes.length; i++) {
-                IInputType type = inTypes[i];
-
-                // Handle dependencies from the dependencyCalculator
-                IManagedDependencyGeneratorType depGen = type.getDependencyGenerator();
-                String[] extensionsList = type.getSourceExtensions(this.tool);
-                if (depGen != null) {
-                    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList,
-                            myCommandDependencies, myOutputMacros, myAdditionalTargets, h, done);
-                }
-
-                // Add additional dependencies specified in AdditionalInput
-                // elements
-                IAdditionalInput[] addlInputs = type.getAdditionalInputs();
-                if (addlInputs != null && addlInputs.length > 0) {
-                    for (int j = 0; j < addlInputs.length; j++) {
-                        IAdditionalInput addlInput = addlInputs[j];
-                        int kind = addlInput.getKind();
-                        if (kind == IAdditionalInput.KIND_ADDITIONAL_DEPENDENCY
-                                || kind == IAdditionalInput.KIND_ADDITIONAL_INPUT_DEPENDENCY) {
-                            String[] paths = addlInput.getPaths();
-                            if (paths != null) {
-                                for (int k = 0; k < paths.length; k++) {
-                                    // Translate the path from project relative
-                                    // to
-                                    // build directory relative
-                                    String path = paths[k];
-                                    if (!(path.startsWith("$("))) { //$NON-NLS-1$
-                                        IResource addlResource = this.project.getFile(path);
-                                        if (addlResource != null) {
-                                            IPath addlPath = addlResource.getLocation();
-                                            if (addlPath != null) {
-                                                path = ManagedBuildManager.calculateRelativePath(
-                                                        makeGen.getTopBuildDir().getFullPath(), addlPath).toOSString();
-                                            }
-                                        }
-                                    }
-                                    myCommandDependencies.add(path);
-                                    // myEnumeratedInputs.add(path);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            if (this.bIsTargetTool) {
-                // For support of pre-CDT 3.0 integrations.
-                // NOTE WELL: This only supports the case of a single
-                // "target tool"
-                // with the following characteristics:
-                // 1. The tool consumes exactly all of the object files produced
-                // by other tools in the build and produces a single output
-                // 2. The target name comes from the configuration artifact name
-                // The rule looks like:
-                // <targ_prefix><target>.<extension>: $(OBJS) <refd_project_1
-                // ... refd_project_n>
-                myCommandDependencies.add("$(OBJS)"); //$NON-NLS-1$
-                myCommandDependencies.add("$(USER_OBJS)"); //$NON-NLS-1$
-            } else {
-                // Handle dependencies from the dependencyCalculator
-                IManagedDependencyGeneratorType depGen = this.tool.getDependencyGenerator();
-                String[] extensionsList = this.tool.getAllInputExtensions();
-                if (depGen != null) {
-                    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList,
-                            myCommandDependencies, myOutputMacros, myAdditionalTargets, h, done);
-                }
-
-            }
-        }
-
-        // Add the output macros of this tool to the buildOutVars map
-        Set<Entry<String, List<IPath>>> entrySet = myOutputMacros.entrySet();
-        for (Entry<String, List<IPath>> entry : entrySet) {
-            String macroName = entry.getKey();
-            List<IPath> newMacroValue = entry.getValue();
-            Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
-            if (map.containsKey(macroName)) {
-                List<IPath> macroValue = map.get(macroName);
-                macroValue.addAll(newMacroValue);
-                map.put(macroName, macroValue);
-            } else {
-                map.put(macroName, newMacroValue);
-            }
-        }
-
-        if (done) {
-            this.commandDependencies.addAll(myCommandDependencies);
-            this.additionalTargets.addAll(myAdditionalTargets);
-            // enumeratedDependencies.addAll(myEnumeratedDependencies);
-            this.dependenciesCalculated = true;
-            return true;
-        }
-
-        return false;
-    }
+    //    /**
+    //     * @param lastChance
+    //     */
+    //    public boolean calculateDependencies(ArduinoGnuMakefileGenerator makeGen, IConfiguration config,
+    //            HashSet<String> handledInputExtensions, ToolInfoHolder h, boolean lastChance) {
+    //        // Get the dependencies for this tool invocation
+    //        boolean done = true;
+    //        Vector<String> myCommandDependencies = new Vector<>();
+    //        Vector<String> myAdditionalTargets = new Vector<>();
+    //        // Vector myEnumeratedDependencies = new Vector();
+    //        HashMap<String, List<IPath>> myOutputMacros = new HashMap<>();
+    //
+    //        IInputType[] inTypes = this.tool.getInputTypes();
+    //        if (inTypes != null && inTypes.length > 0) {
+    //            for (int i = 0; i < inTypes.length; i++) {
+    //                IInputType type = inTypes[i];
+    //
+    //                // Handle dependencies from the dependencyCalculator
+    //                IManagedDependencyGeneratorType depGen = type.getDependencyGenerator();
+    //                String[] extensionsList = type.getSourceExtensions(this.tool);
+    //                if (depGen != null) {
+    //                    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList,
+    //                            myCommandDependencies, myOutputMacros, myAdditionalTargets, h, done);
+    //                }
+    //
+    //                // Add additional dependencies specified in AdditionalInput
+    //                // elements
+    //                IAdditionalInput[] addlInputs = type.getAdditionalInputs();
+    //                if (addlInputs != null && addlInputs.length > 0) {
+    //                    for (int j = 0; j < addlInputs.length; j++) {
+    //                        IAdditionalInput addlInput = addlInputs[j];
+    //                        int kind = addlInput.getKind();
+    //                        if (kind == IAdditionalInput.KIND_ADDITIONAL_DEPENDENCY
+    //                                || kind == IAdditionalInput.KIND_ADDITIONAL_INPUT_DEPENDENCY) {
+    //                            String[] paths = addlInput.getPaths();
+    //                            if (paths != null) {
+    //                                for (int k = 0; k < paths.length; k++) {
+    //                                    // Translate the path from project relative
+    //                                    // to
+    //                                    // build directory relative
+    //                                    String path = paths[k];
+    //                                    if (!(path.startsWith("$("))) { //$NON-NLS-1$
+    //                                        IResource addlResource = this.project.getFile(path);
+    //                                        if (addlResource != null) {
+    //                                            IPath addlPath = addlResource.getLocation();
+    //                                            if (addlPath != null) {
+    //                                                path = ManagedBuildManager.calculateRelativePath(
+    //                                                        makeGen.getTopBuildDir().getFullPath(), addlPath).toOSString();
+    //                                            }
+    //                                        }
+    //                                    }
+    //                                    myCommandDependencies.add(path);
+    //                                    // myEnumeratedInputs.add(path);
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        } else {
+    //            if (this.bIsTargetTool) {
+    //                // For support of pre-CDT 3.0 integrations.
+    //                // NOTE WELL: This only supports the case of a single
+    //                // "target tool"
+    //                // with the following characteristics:
+    //                // 1. The tool consumes exactly all of the object files produced
+    //                // by other tools in the build and produces a single output
+    //                // 2. The target name comes from the configuration artifact name
+    //                // The rule looks like:
+    //                // <targ_prefix><target>.<extension>: $(OBJS) <refd_project_1
+    //                // ... refd_project_n>
+    //                myCommandDependencies.add("$(OBJS)"); //$NON-NLS-1$
+    //                myCommandDependencies.add("$(USER_OBJS)"); //$NON-NLS-1$
+    //            } else {
+    //                // Handle dependencies from the dependencyCalculator
+    //                IManagedDependencyGeneratorType depGen = this.tool.getDependencyGenerator();
+    //                String[] extensionsList = this.tool.getAllInputExtensions();
+    //                if (depGen != null) {
+    //                    done = callDependencyCalculator(makeGen, config, handledInputExtensions, depGen, extensionsList,
+    //                            myCommandDependencies, myOutputMacros, myAdditionalTargets, h, done);
+    //                }
+    //
+    //            }
+    //        }
+    //
+    //        // Add the output macros of this tool to the buildOutVars map
+    //        Set<Entry<String, List<IPath>>> entrySet = myOutputMacros.entrySet();
+    //        for (Entry<String, List<IPath>> entry : entrySet) {
+    //            String macroName = entry.getKey();
+    //            List<IPath> newMacroValue = entry.getValue();
+    //            Map<String, List<IPath>> map = makeGen.getBuildOutputVars();
+    //            if (map.containsKey(macroName)) {
+    //                List<IPath> macroValue = map.get(macroName);
+    //                macroValue.addAll(newMacroValue);
+    //                map.put(macroName, macroValue);
+    //            } else {
+    //                map.put(macroName, newMacroValue);
+    //            }
+    //        }
+    //
+    //        if (done) {
+    //            this.commandDependencies.addAll(myCommandDependencies);
+    //            this.additionalTargets.addAll(myAdditionalTargets);
+    //            // enumeratedDependencies.addAll(myEnumeratedDependencies);
+    //            this.dependenciesCalculated = true;
+    //            return true;
+    //        }
+    //
+    //        return false;
+    //    }
 
     /*
-     * Calculate the source macro for the given extension
-     */
+    Calculate the
+    source macro for
+    the given extension*/
+
     protected String calculateSourceMacro(ArduinoGnuMakefileGenerator makeGen, String srcExtensionName,
             String outExtensionName, String wildcard) {
         StringBuffer macroName = getSourceMacroName(srcExtensionName);
