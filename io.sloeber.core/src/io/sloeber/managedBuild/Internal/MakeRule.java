@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,46 +35,52 @@ import org.eclipse.core.runtime.IPath;
 
 public class MakeRule {
 
-    private Map<IOutputType, List<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
-    private Map<IInputType, List<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
-    private Map<String, List<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
+    private Map<IOutputType, Set<IFile>> myTargets = new LinkedHashMap<>(); //Macro file target map
+    private Map<IInputType, Set<IFile>> myPrerequisites = new LinkedHashMap<>();//Macro file prerequisites map
+    private Map<String, Set<IFile>> myDependencies = new LinkedHashMap<>(); //Macro file target map
     private ITool myTool = null;
 
-    //TOFIX get rid of caller argument
-    public MakeRule(ArduinoGnuMakefileGenerator caller, ITool tool, IInputType inputType, IFile inputFile,
-            IOutputType outputType, IFile outFile) {
+    public MakeRule(ITool tool, IInputType inputType, IFile inputFile, IOutputType outputType, IFile outFile) {
         addPrerequisite(inputType, inputFile);
         addTarget(outputType, outFile);
         myTool = tool;
-        calculateDependencies(caller);
     }
 
-    private void calculateDependencies(ArduinoGnuMakefileGenerator caller) {
-        myDependencies.clear();
-        //TOFIX the stuff below should be calculated
-        boolean toolGeneratesDependencyFiles = true;
-        if (!toolGeneratesDependencyFiles) {
-            return;
+    public MakeRule(ITool tool, IInputType inputType, Set<IFile> inputFiles, IOutputType outputType, IFile outFile) {
+        for (IFile inputFile : inputFiles) {
+            addPrerequisite(inputType, inputFile);
         }
+        addTarget(outputType, outFile);
+        myTool = tool;
+    }
 
-        for (Entry<IInputType, List<IFile>> curprerequisite : myPrerequisites.entrySet()) {
+    public MakeRule(ArduinoGnuMakefileGenerator caller, ITool tool, IInputType inputType, Set<IFile> inputFiles,
+            IOutputType outputType, IFile outFile) {
+        for (IFile inputFile : inputFiles) {
+            addPrerequisite(inputType, inputFile);
+        }
+        addTarget(outputType, outFile);
+        myTool = tool;
+    }
+
+    public void addDependencies(ArduinoGnuMakefileGenerator caller) {
+        myDependencies.clear();
+
+        for (Entry<IInputType, Set<IFile>> curprerequisite : myPrerequisites.entrySet()) {
             IInputType curInputType = curprerequisite.getKey();
             IManagedDependencyGeneratorType t = curInputType.getDependencyGenerator();
             if (t == null) {
                 continue;
             }
-            List<IFile> files = curprerequisite.getValue();
-            String depkey = curInputType.getBuildVariable() + "_DEPS";
+            Set<IFile> files = curprerequisite.getValue();
+            String depkey = curInputType.getBuildVariable() + DEPENDENCY_SUFFIX;
             for (IFile file : files) {
-                IResourceInfo rcInfo = caller.getConfig().getResourceInfo(file.getFullPath(), false);
-                int calcType = t.getCalculatorType();
+                IBuildObject buildContext = caller.getConfig().getResourceInfo(file.getFullPath(), false);
 
                 IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) t;
-                IBuildObject buildContext = rcInfo;
                 IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(file.getProjectRelativePath(), file,
                         buildContext, myTool, caller.getBuildWorkingDir());
 
-                // if (calcType== IManagedDependencyGeneratorType.TYPE_CUSTOM) {
                 if (depInfo instanceof IManagedDependencyCalculator) {
                     IManagedDependencyCalculator depCalculator = (IManagedDependencyCalculator) depInfo;
                     IPath[] addlDeps = calculateDependenciesForSource(caller, depCalculator);
@@ -86,7 +90,7 @@ public class MakeRule {
                 if (depInfo instanceof IManagedDependencyCommands) {
                     IManagedDependencyCommands tmp = (IManagedDependencyCommands) depInfo;
                     IPath[] addlTargets = tmp.getDependencyFiles();
-                    List<IFile> depFiles = new LinkedList<>();
+                    Set<IFile> depFiles = new HashSet<>();
                     for (IPath curPath : addlTargets) {
                         depFiles.add(caller.getProject().getFile(caller.getBuildWorkingDir().append(curPath)));
                     }
@@ -119,17 +123,21 @@ public class MakeRule {
         return addlDeps;
     }
 
-    public HashSet<IFile> getPrerequisites() {
+    public Set<IFile> getPrerequisiteFiles() {
         HashSet<IFile> ret = new HashSet<>();
-        for (List<IFile> cur : myPrerequisites.values()) {
+        for (Set<IFile> cur : myPrerequisites.values()) {
             ret.addAll(cur);
         }
         return ret;
     }
 
+    public Map<IInputType, Set<IFile>> getPrerequisites() {
+        return myPrerequisites;
+    }
+
     public Set<IFile> getTargetFiles() {
         Set<IFile> ret = new HashSet<>();
-        for (List<IFile> cur : myTargets.values()) {
+        for (Set<IFile> cur : myTargets.values()) {
             ret.addAll(cur);
         }
         return ret;
@@ -137,13 +145,13 @@ public class MakeRule {
 
     public Set<IFile> getDependencyFiles() {
         Set<IFile> ret = new HashSet<>();
-        for (List<IFile> cur : myDependencies.values()) {
+        for (Set<IFile> cur : myDependencies.values()) {
             ret.addAll(cur);
         }
         return ret;
     }
 
-    public Map<IOutputType, List<IFile>> getTargets() {
+    public Map<IOutputType, Set<IFile>> getTargets() {
         return myTargets;
     }
 
@@ -181,17 +189,17 @@ public class MakeRule {
     public HashSet<IFile> getMacroElements(String macroName) {
         HashSet<IFile> ret = new HashSet<>();
 
-        for (Entry<IOutputType, List<IFile>> cur : myTargets.entrySet()) {
+        for (Entry<IOutputType, Set<IFile>> cur : myTargets.entrySet()) {
             if (macroName.equals(cur.getKey().getBuildVariable())) {
                 ret.addAll(cur.getValue());
             }
         }
-        for (Entry<IInputType, List<IFile>> cur : myPrerequisites.entrySet()) {
+        for (Entry<IInputType, Set<IFile>> cur : myPrerequisites.entrySet()) {
             if (macroName.equals(cur.getKey().getBuildVariable())) {
                 ret.addAll(cur.getValue());
             }
         }
-        List<IFile> tmp = myDependencies.get(macroName);
+        Set<IFile> tmp = myDependencies.get(macroName);
         if (tmp != null) {
             ret.addAll(tmp);
         }
@@ -199,9 +207,9 @@ public class MakeRule {
     }
 
     private void addTarget(IOutputType outputType, IFile file) {
-        List<IFile> files = myTargets.get(outputType);
+        Set<IFile> files = myTargets.get(outputType);
         if (files == null) {
-            files = new LinkedList<>();
+            files = new HashSet<>();
             files.add(file);
             myTargets.put(outputType, files);
         } else {
@@ -210,9 +218,9 @@ public class MakeRule {
     }
 
     private void addPrerequisite(IInputType inputType, IFile file) {
-        List<IFile> files = myPrerequisites.get(inputType);
+        Set<IFile> files = myPrerequisites.get(inputType);
         if (files == null) {
-            files = new LinkedList<>();
+            files = new HashSet<>();
             files.add(file);
             myPrerequisites.put(inputType, files);
         } else {
@@ -222,7 +230,7 @@ public class MakeRule {
 
     private String enumTargets(IFile buildFolder) {
         String ret = new String();
-        for (List<IFile> curFiles : myTargets.values()) {
+        for (Set<IFile> curFiles : myTargets.values()) {
             for (IFile curFile : curFiles) {
                 ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
             }
@@ -232,7 +240,7 @@ public class MakeRule {
 
     private String enumPrerequisites(IFile buildFolder) {
         String ret = new String();
-        for (List<IFile> curFiles : myPrerequisites.values()) {
+        for (Set<IFile> curFiles : myPrerequisites.values()) {
             for (IFile curFile : curFiles) {
                 ret = ret + GetNiceFileName(buildFolder, curFile) + WHITESPACE;
             }
@@ -246,7 +254,7 @@ public class MakeRule {
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
         Set<IFile> local_targets = getTargetFiles();
-        Set<IFile> local_prerequisites = getPrerequisites();
+        Set<IFile> local_prerequisites = getPrerequisiteFiles();
         if (local_targets.size() != 1) {
             System.err.println("Only 1 target per build rule is supported in this managed build"); //$NON-NLS-1$
             return new StringBuffer();
@@ -401,121 +409,6 @@ public class MakeRule {
                 getToolCommandLinePattern(config, myTool));
     }
 
-    //    /**
-    //     * Returns any additional resources specified for the tool in other InputType
-    //     * elements and AdditionalInput elements
-    //     */
-    //    private IPath[] getAdditionalResourcesForSource(ITool tool) {
-    //        IProject project = getProject();
-    //        List<IPath> allRes = new ArrayList<>();
-    //        IInputType[] types = tool.getInputTypes();
-    //        for (IInputType type : types) {
-    //            // Additional resources come from 2 places.
-    //            // 1. From AdditionalInput childen
-    //            IPath[] res = type.getAdditionalResources();
-    //            for (IPath re : res) {
-    //                allRes.add(re);
-    //            }
-    //            // 2. From InputTypes that other than the primary input type
-    //            if (!type.getPrimaryInput() && type != tool.getPrimaryInputType()) {
-    //                String var = type.getBuildVariable();
-    //                if (var != null && var.length() > 0) {
-    //                    allRes.add(Path.fromOSString("$(" + type.getBuildVariable() + ")"));
-    //                } else {
-    //                    // Use file extensions
-    //                    String[] typeExts = type.getSourceExtensions(tool);
-    //                    for (IResource projectResource : caller.projectResources) {
-    //                        if (projectResource.getType() == IResource.FILE) {
-    //                            String fileExt = projectResource.getFileExtension();
-    //                            if (fileExt == null) {
-    //                                fileExt = "";
-    //                            }
-    //                            for (String typeExt : typeExts) {
-    //                                if (fileExt.equals(typeExt)) {
-    //                                    allRes.add(projectResource.getProjectRelativePath());
-    //                                    break;
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //                // If an assignToOption has been specified, set the value of the
-    //                // option to the inputs
-    //                IOption assignToOption = tool.getOptionBySuperClassId(type.getAssignToOptionId());
-    //                IOption option = tool.getOptionBySuperClassId(type.getOptionId());
-    //                if (assignToOption != null && option == null) {
-    //                    try {
-    //                        int optType = assignToOption.getValueType();
-    //                        IResourceInfo rcInfo = tool.getParentResourceInfo();
-    //                        if (rcInfo != null) {
-    //                            if (optType == IOption.STRING) {
-    //                                String optVal = "";
-    //                                for (int j = 0; j < allRes.size(); j++) {
-    //                                    if (j != 0) {
-    //                                        optVal += " ";
-    //                                    }
-    //                                    String resPath = allRes.get(j).toString();
-    //                                    if (!resPath.startsWith("$(")) {
-    //                                        IResource addlResource = project.getFile(resPath);
-    //                                        if (addlResource != null) {
-    //                                            IPath addlPath = addlResource.getLocation();
-    //                                            if (addlPath != null) {
-    //                                                resPath = ManagedBuildManager
-    //                                                        .calculateRelativePath(getTopBuildDir(), addlPath).toString();
-    //                                            }
-    //                                        }
-    //                                    }
-    //                                    optVal += ManagedBuildManager
-    //                                            .calculateRelativePath(getTopBuildDir(), Path.fromOSString(resPath))
-    //                                            .toString();
-    //                                }
-    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, optVal);
-    //                            } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
-    //                                    || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
-    //                                    || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
-    //                                    || optType == IOption.MACRO_FILES) {
-    //                                // TODO: do we need to do anything with undefs
-    //                                // here?
-    //                                // Note that the path(s) must be translated from
-    //                                // project relative
-    //                                // to top build directory relative
-    //                                String[] paths = new String[allRes.size()];
-    //                                for (int j = 0; j < allRes.size(); j++) {
-    //                                    paths[j] = allRes.get(j).toString();
-    //                                    if (!paths[j].startsWith("$(")) {
-    //                                        IResource addlResource = project.getFile(paths[j]);
-    //                                        if (addlResource != null) {
-    //                                            IPath addlPath = addlResource.getLocation();
-    //                                            if (addlPath != null) {
-    //                                                paths[j] = ManagedBuildManager
-    //                                                        .calculateRelativePath(getTopBuildDir(), addlPath).toString();
-    //                                            }
-    //                                        }
-    //                                    }
-    //                                }
-    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, paths);
-    //                            } else if (optType == IOption.BOOLEAN) {
-    //                                boolean b = false;
-    //                                if (allRes.size() > 0)
-    //                                    b = true;
-    //                                ManagedBuildManager.setOption(rcInfo, tool, assignToOption, b);
-    //                            } else if (optType == IOption.ENUMERATED || optType == IOption.TREE) {
-    //                                if (allRes.size() > 0) {
-    //                                    String s = allRes.get(0).toString();
-    //                                    ManagedBuildManager.setOption(rcInfo, tool, assignToOption, s);
-    //                                }
-    //                            }
-    //                            allRes.clear();
-    //                        }
-    //                    } catch (BuildException ex) {
-    //                        /* JABA is not going to write this code */
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        return allRes.toArray(new IPath[allRes.size()]);
-    //    }
-
     private String expandCommandLinePattern(String commandName, Set<String> flags, String outputFlag, String outputName,
             Set<String> inputResources, String commandLinePattern) {
 
@@ -554,6 +447,43 @@ public class MakeRule {
         command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
 
         return command;
+    }
+
+    public void addPrerequisites(IInputType inputType, Set<IFile> files) {
+        Set<IFile> entrypoint = myPrerequisites.get(inputType);
+        if (entrypoint != null) {
+            entrypoint.addAll(files);
+        } else {
+            Set<IFile> copyOfFiles = new HashSet<>();
+            copyOfFiles.addAll(files);
+            myPrerequisites.put(inputType, copyOfFiles);
+        }
+    }
+
+    /**
+     * A simple rule is a rule that takes exactly 1 input type containing exactly
+     * one file
+     * and exactly 1 output type containing exactly 1 file
+     * 
+     * @return true if this rule is a simple rule
+     *         otherwise false
+     */
+
+    public boolean isSimpleRule() {
+        int counter = 0;
+        for (Set<IFile> files : myTargets.values()) {
+            if ((++counter > 1) || (files.size() != 1)) {
+                return false;
+            }
+        }
+        counter = 0;
+        for (Set<IFile> files : myPrerequisites.values()) {
+            if ((++counter > 1) || (files.size() != 1)) {
+                return false;
+            }
+        }
+        return true;
+
     }
 
 }

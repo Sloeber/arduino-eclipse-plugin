@@ -7,15 +7,12 @@ import static io.sloeber.managedBuild.Internal.ManagedBuildConstants.*;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IFileInfo;
 import org.eclipse.cdt.managedbuilder.core.IInputType;
 import org.eclipse.cdt.managedbuilder.core.IOutputType;
-import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.core.resources.IContainer;
@@ -31,12 +28,18 @@ import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
 public class SubDirMakeGenerator {
     private ArduinoGnuMakefileGenerator caller;
     private Set<MakeRule> myMakeRules = new LinkedHashSet<>();
-    private IContainer myModule;
+    private IFile myMakefile;
 
     SubDirMakeGenerator(ArduinoGnuMakefileGenerator theCaller, IContainer module) {
         caller = theCaller;
-        myModule = module;
-        getMakeRules();
+        IProject project = getProject();
+        IPath buildRoot = getBuildWorkingDir();
+        if (buildRoot == null) {
+            return;
+        }
+        IPath moduleOutputPath = buildRoot.append(module.getProjectRelativePath());
+        myMakefile = project.getFile(moduleOutputPath.append(MODFILE_NAME));
+        getMakeRulesFromSourceFiles(module);
     }
 
     public Set<String> getDependecyMacros() {
@@ -63,6 +66,10 @@ public class SubDirMakeGenerator {
         return ret;
     }
 
+    public Set<MakeRule> getMakeRules() {
+        return myMakeRules;
+    }
+
     public Set<String> getPrerequisiteMacros() {
         HashSet<String> ret = new LinkedHashSet<>();
         for (MakeRule curMakeRule : myMakeRules) {
@@ -87,8 +94,8 @@ public class SubDirMakeGenerator {
         return ret;
     }
 
-    public Map<IOutputType, List<IFile>> getTargets() {
-        Map<IOutputType, List<IFile>> ret = new LinkedHashMap<>();
+    public Map<IOutputType, Set<IFile>> getTargets() {
+        Map<IOutputType, Set<IFile>> ret = new LinkedHashMap<>();
         for (MakeRule curMakeRule : myMakeRules) {
             ret.putAll(curMakeRule.getTargets());
         }
@@ -119,22 +126,13 @@ public class SubDirMakeGenerator {
      * generated for each project directory/subdirectory that contains source files.
      */
     public void generateMakefile() throws CoreException {
-        //create the parent folder on disk and file in eclispe
-        IProject project = getProject();
-        IPath buildRoot = getBuildWorkingDir();
-        if (buildRoot == null) {
-            return;
-        }
-        IPath moduleOutputPath = buildRoot.append(myModule.getProjectRelativePath());
-        IFile modMakefile = project.getFile(moduleOutputPath.append(MODFILE_NAME));
-
         //generate the file content
         StringBuffer makeBuf = addDefaultHeader();
         makeBuf.append(GenerateMacros());
         makeBuf.append(GenerateRules(getConfig()));
 
         // Save the files
-        save(makeBuf, modMakefile);
+        save(makeBuf, myMakefile);
     }
 
     private StringBuffer GenerateMacros() {
@@ -179,85 +177,65 @@ public class SubDirMakeGenerator {
     }
 
     //Get the rules for the source files
-    private void getMakeRules() {
+    private void getMakeRulesFromSourceFiles(IContainer module) {
         myMakeRules.clear();
         IConfiguration config = getConfig();
         IProject project = getProject();
 
         // Visit the resources in this folder 
         try {
-            for (IResource resource : myModule.members()) {
+            for (IResource resource : module.members()) {
                 if (resource.getType() != IResource.FILE) {
                     //only handle files
                     continue;
                 }
                 IFile inputFile = (IFile) resource;
+                String ext = inputFile.getFileExtension();
+                if (ext == null || ext.isBlank()) {
+                    continue;
+                }
                 IPath rcProjRelPath = inputFile.getProjectRelativePath();
                 if (!caller.isSource(rcProjRelPath)) {
                     // this resource is excluded from build
                     continue;
                 }
-                IResourceInfo rcInfo = config.getResourceInfo(rcProjRelPath, false);
-                String ext = rcProjRelPath.getFileExtension();
 
-                ITool tool = null;
-                //try to find tool 
-                if (rcInfo instanceof IFileInfo) {
-                    IFileInfo fi = (IFileInfo) rcInfo;
-                    ITool[] tools = fi.getToolsToInvoke();
-                    if (tools != null && tools.length > 0) {
-                        tool = tools[0];
-                    }
-                }
+                for (ITool tool : config.getTools()) {
+                    for (IInputType inputType : tool.getInputTypes()) {
+                        if (!inputType.isSourceExtension(tool, ext)) {
+                            continue;
+                        }
+                        for (IOutputType outputType : tool.getOutputTypes()) {
+                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            if (nameProvider == null) {
+                                continue;
+                            }
+                            IPath outputFile = nameProvider.getOutputName(getProject(), config, tool,
+                                    resource.getProjectRelativePath());
+                            if (outputFile == null) {
+                                continue;
+                            }
+                            //We found a tool that provides a outputfile for our source file
+                            //TOFIX if this is a multiple to one we should only create one MakeRule
+                            IPath correctOutputPath = new Path(config.getName()).append(outputFile);
+                            MakeRule newMakeRule = new MakeRule(tool, inputType, inputFile, outputType,
+                                    project.getFile(correctOutputPath));
+                            newMakeRule.addDependencies(caller);
 
-                //No tool found yet try other way
-                if (tool == null) {
-                    ToolInfoHolder h = ToolInfoHolder.getToolInfo(caller, rcInfo.getPath());
-                    ITool buildTools[] = h.buildTools;
-                    h = ToolInfoHolder.getToolInfo(caller, Path.EMPTY);
-                    buildTools = h.buildTools;
-                    for (ITool buildTool : buildTools) {
-                        if (buildTool.buildsFileType(ext)) {
-                            tool = buildTool;
-                            break;
+                            myMakeRules.add(newMakeRule);
                         }
                     }
                 }
 
-                //We found a tool get the other info
-                //TOFIX we should simply loop over all available tools
-                if (tool == null) {
-                    continue;
-                }
-
-                // Generate the rule to build this source file
-                //TOFIX check wether this tool can handle this file
-                IInputType inputType = tool.getPrimaryInputType();
-                if (inputType == null) {
-                    inputType = tool.getInputType(ext);
-                }
-
-                for (IOutputType outputType : tool.getOutputTypes()) {
-                    IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
-                    if (nameProvider == null) {
-                        continue;
-                    }
-                    IPath outputFile = nameProvider.getOutputName(getProject(), config, tool,
-                            resource.getProjectRelativePath());
-                    if (outputFile != null) {
-                        //We found a tool that provides a outputfile for our source file
-                        //TOFIX if this is a multiple to one we should only create one MakeRule
-                        IPath correctOutputPath = new Path(config.getName()).append(outputFile);
-                        MakeRule newMakeRule = new MakeRule(caller, tool, inputType, inputFile, outputType,
-                                project.getFile(correctOutputPath));
-
-                        myMakeRules.add(newMakeRule);
-                    }
-                }
             }
         } catch (CoreException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
+
+    public boolean isEmpty() {
+        return myMakeRules.size() == 0;
+    }
+
 }

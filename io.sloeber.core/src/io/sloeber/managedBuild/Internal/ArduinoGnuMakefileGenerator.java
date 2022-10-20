@@ -6,15 +6,12 @@ import static io.sloeber.managedBuild.Internal.ManagebBuildCommon.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -25,7 +22,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.cdt.core.settings.model.util.IPathSettingsContainerVisitor;
 import org.eclipse.cdt.core.settings.model.util.PathSettingsContainer;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -34,19 +30,12 @@ import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IOutputType;
 import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator2;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCommands;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator2;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyInfo;
-import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyPreBuild;
-import org.eclipse.cdt.utils.EFSExtensionManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -83,43 +72,15 @@ import io.sloeber.core.common.Const;
         "hiding" })
 public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
 
-    /**
-     * This class walks the delta supplied by the build system to determine what
-     * resources have been changed. The logic is very simple. If a buildable
-     * resource (non-header) has been added or removed, the directories in which
-     * they are located are "dirty" so the makefile fragments for them have to be
-     * regenerated.
-     * <p>
-     * The actual dependencies are recalculated as a result of the build step
-     * itself. We are relying on make to do the right things when confronted with a
-     * dependency on a moved header file. That said, make will treat the missing
-     * header file in a dependency rule as a target it has to build unless told
-     * otherwise. These dummy targets are added to the makefile to avoid a missing
-     * target error.
-     */
     public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
         private final ArduinoGnuMakefileGenerator generator;
         private final IConfiguration config;
-
-        /**
-         * The constructor
-         */
-        public ResourceDeltaVisitor(ArduinoGnuMakefileGenerator generator, IManagedBuildInfo info) {
-            this.generator = generator;
-            this.config = info.getDefaultConfiguration();
-        }
 
         public ResourceDeltaVisitor(ArduinoGnuMakefileGenerator generator, IConfiguration cfg) {
             this.generator = generator;
             this.config = cfg;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.
-         * core.resources.IResourceDelta)
-         */
         @Override
         public boolean visit(IResourceDelta delta) throws CoreException {
             // Should the visitor keep iterating in current directory
@@ -195,57 +156,38 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     protected class ResourceProxyVisitor implements IResourceProxyVisitor {
         private final ArduinoGnuMakefileGenerator generator;
         private final IConfiguration config;
+        private Collection<IContainer> subdirList = new LinkedHashSet<IContainer>();
 
-        /**
-         * Constructs a new resource proxy visitor to quickly visit project resources.
-         */
-        public ResourceProxyVisitor(ArduinoGnuMakefileGenerator generator, IManagedBuildInfo info) {
-            this.generator = generator;
-            this.config = info.getDefaultConfiguration();
+        Collection<IContainer> getSubdirList() {
+            return subdirList;
         }
 
         public ResourceProxyVisitor(ArduinoGnuMakefileGenerator generator, IConfiguration cfg) {
             this.generator = generator;
             this.config = cfg;
+
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.eclipse.core.resources.IResourceProxyVisitor#visit(org.eclipse.
-         * core.resources.IResourceProxy)
-         */
         @Override
         public boolean visit(IResourceProxy proxy) throws CoreException {
-            // No point in proceeding, is there
             if (generator == null) {
                 return false;
             }
             IResource resource = proxy.requestResource();
             boolean isSource = isSource(resource.getProjectRelativePath());
             // Is this a resource we should even consider
-            if (proxy.getType() == IResource.FILE) {
+            switch (proxy.getType()) {
+            case IResource.FILE:
                 // If this resource has a Resource Configuration and is not
                 // excluded or
                 // if it has a file extension that one of the tools builds, add
                 // the sudirectory to the list
-                // boolean willBuild = false;
-                IResourceInfo rcInfo = config.getResourceInfo(resource.getProjectRelativePath(), false);
                 if (isSource) {
-                    boolean willBuild = false;
-                    if (rcInfo instanceof IFolderInfo) {
-                        String ext = resource.getFileExtension();
-                        if (((IFolderInfo) rcInfo).buildsFileType(ext) && !generator.isGeneratedResource(resource)) {
-                            willBuild = true;
-                        }
-                    } else {
-                        willBuild = true;
-                    }
-                    if (willBuild)
-                        generator.appendBuildSubdirectory(resource);
+                    subdirList.add(resource.getParent());
+                    return false;
                 }
-                return false;
-            } else if (proxy.getType() == IResource.FOLDER) {
+                return true;
+            case IResource.FOLDER:
                 if (!isSource || generator.isGeneratedResource(resource))
                     return false;
                 return true;
@@ -275,7 +217,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     private Vector<String> depRuleList;
     // dependency files
     /** Collection of Containers which contribute source files to the build */
-    private Collection<IContainer> subdirList = new LinkedHashSet<IContainer>();
+
     private IFile topBuildDir;
     // Dependency file variables
     // private Vector dependencyMakefiles; // IPath's - relative to the top
@@ -335,7 +277,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         // Cache the build tools
         config = info.getDefaultConfiguration();
         builder = config.getEditableBuilder();
-        initToolInfos();
+        //    initToolInfos();
         // set the top build dir path
         topBuildDir = project.getFile(info.getConfigurationName());
     }
@@ -343,78 +285,78 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     /**
      * This method calls the dependency postprocessors defined for the tool chain
      */
-    private void callDependencyPostProcessors(IResourceInfo rcInfo, ToolInfoHolder h, IFile depFile,
-            IManagedDependencyGenerator2[] postProcessors, boolean callPopulateDummyTargets, boolean force)
-            throws CoreException {
-        try {
-            updateMonitor(ManagedMakeMessages
-                    .getFormattedString("ArduinoGnuMakefileGenerator.message.postproc.dep.file", depFile.getName()));
-            if (postProcessors != null) {
-                IPath absolutePath = new Path(
-                        EFSExtensionManager.getDefault().getPathFromURI(depFile.getLocationURI()));
-                // Convert to build directory relative
-                IPath depPath = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(), absolutePath);
-                for (int i = 0; i < postProcessors.length; i++) {
-                    IManagedDependencyGenerator2 depGen = postProcessors[i];
-                    if (depGen != null) {
-                        depGen.postProcessDependencyFile(depPath, config, h.buildTools[i],
-                                getTopBuildDir().getFullPath());
-                    }
-                }
-            }
-            if (callPopulateDummyTargets) {
-                populateDummyTargets(rcInfo, depFile, force);
-            }
-        } catch (CoreException e) {
-            throw e;
-        } catch (IOException e) {
-            /* JABA is not going to write this code */
-        }
-    }
+    //    private void callDependencyPostProcessors(IResourceInfo rcInfo, ToolInfoHolder h, IFile depFile,
+    //            IManagedDependencyGenerator2[] postProcessors, boolean callPopulateDummyTargets, boolean force)
+    //            throws CoreException {
+    //        try {
+    //            updateMonitor(ManagedMakeMessages
+    //                    .getFormattedString("ArduinoGnuMakefileGenerator.message.postproc.dep.file", depFile.getName()));
+    //            if (postProcessors != null) {
+    //                IPath absolutePath = new Path(
+    //                        EFSExtensionManager.getDefault().getPathFromURI(depFile.getLocationURI()));
+    //                // Convert to build directory relative
+    //                IPath depPath = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(), absolutePath);
+    //                for (int i = 0; i < postProcessors.length; i++) {
+    //                    IManagedDependencyGenerator2 depGen = postProcessors[i];
+    //                    if (depGen != null) {
+    //                        depGen.postProcessDependencyFile(depPath, config, h.buildTools[i],
+    //                                getTopBuildDir().getFullPath());
+    //                    }
+    //                }
+    //            }
+    //            if (callPopulateDummyTargets) {
+    //                populateDummyTargets(rcInfo, depFile, force);
+    //            }
+    //        } catch (CoreException e) {
+    //            throw e;
+    //        } catch (IOException e) {
+    //            /* JABA is not going to write this code */
+    //        }
+    //    }
 
     /**
      * This method collects the dependency postprocessors and file extensions
      * defined for the tool chain
      */
-    private boolean collectDependencyGeneratorInformation(ToolInfoHolder h, Vector<String> depExts,
-            IManagedDependencyGenerator2[] postProcessors) {
-        boolean callPopulateDummyTargets = false;
-        for (int i = 0; i < h.buildTools.length; i++) {
-            ITool tool = h.buildTools[i];
-            IManagedDependencyGeneratorType depType = tool
-                    .getDependencyGeneratorForExtension(tool.getDefaultInputExtension());
-            if (depType != null) {
-                int calcType = depType.getCalculatorType();
-                if (calcType <= IManagedDependencyGeneratorType.TYPE_OLD_TYPE_LIMIT) {
-                    if (calcType == IManagedDependencyGeneratorType.TYPE_COMMAND) {
-                        callPopulateDummyTargets = true;
-                        depExts.add(DEP_EXT);
-                    }
-                } else {
-                    if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS
-                            || calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
-                        IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) depType;
-                        String depExt = depGen.getDependencyFileExtension(config, tool);
-                        if (depExt != null) {
-                            postProcessors[i] = depGen;
-                            depExts.add(depExt);
-                        }
-                    }
-                }
-            }
-        }
-        return callPopulateDummyTargets;
-    }
+    //    private boolean collectDependencyGeneratorInformation(ToolInfoHolder h, Vector<String> depExts,
+    //            IManagedDependencyGenerator2[] postProcessors) {
+    //        boolean callPopulateDummyTargets = false;
+    //        for (int i = 0; i < h.buildTools.length; i++) {
+    //            ITool tool = h.buildTools[i];
+    //            IManagedDependencyGeneratorType depType = tool
+    //                    .getDependencyGeneratorForExtension(tool.getDefaultInputExtension());
+    //            if (depType != null) {
+    //                int calcType = depType.getCalculatorType();
+    //                if (calcType <= IManagedDependencyGeneratorType.TYPE_OLD_TYPE_LIMIT) {
+    //                    if (calcType == IManagedDependencyGeneratorType.TYPE_COMMAND) {
+    //                        callPopulateDummyTargets = true;
+    //                        depExts.add(DEP_EXT);
+    //                    }
+    //                } else {
+    //                    if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS
+    //                            || calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
+    //                        IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) depType;
+    //                        String depExt = depGen.getDependencyFileExtension(config, tool);
+    //                        if (depExt != null) {
+    //                            postProcessors[i] = depGen;
+    //                            depExts.add(depExt);
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        return callPopulateDummyTargets;
+    //    }
 
     public boolean isSource(IPath path) {
         return !CDataUtil.isExcluded(path, srcEntries);
     }
 
-    private class DepInfo {
-        Vector<String> depExts;
-        IManagedDependencyGenerator2[] postProcessors;
-        boolean callPopulateDummyTargets;
-    }
+    //    private class DepInfo {
+    //        Vector<String> depExts;
+    //        IManagedDependencyGenerator2[] postProcessors;
+    //        boolean callPopulateDummyTargets;
+    //    }
 
     /*
      * (non-Javadoc)
@@ -424,67 +366,67 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      */
     @Override
     public void generateDependencies() throws CoreException {
-        final PathSettingsContainer postProcs = PathSettingsContainer.createRootContainer();
-        // Note: PopulateDummyTargets is a hack for the pre-3.x GCC compilers
-        // Collect the methods that will need to be called
-        toolInfos.accept(new IPathSettingsContainerVisitor() {
-            @Override
-            public boolean visit(PathSettingsContainer container) {
-                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
-                Vector<String> depExts = new Vector<>();
-                IManagedDependencyGenerator2[] postProcessors = new IManagedDependencyGenerator2[h.buildTools.length];
-                boolean callPopulateDummyTargets = collectDependencyGeneratorInformation(h, depExts, postProcessors);
-                // Is there anyone to call if we do find dependency files?
-                if (!callPopulateDummyTargets) {
-                    int i;
-                    for (i = 0; i < postProcessors.length; i++) {
-                        if (postProcessors[i] != null)
-                            break;
-                    }
-                    if (i == postProcessors.length)
-                        return true;
-                }
-                PathSettingsContainer child = postProcs.getChildContainer(container.getPath(), true, true);
-                DepInfo di = new DepInfo();
-                di.depExts = depExts;
-                di.postProcessors = postProcessors;
-                di.callPopulateDummyTargets = callPopulateDummyTargets;
-                child.setValue(di);
-                return true;
-            }
-        });
-        IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-        for (IContainer subDir : getSubdirList()) {
-            // The builder creates a subdir with same name as source in the
-            // build location
-            IPath projectRelativePath = subDir.getProjectRelativePath();
-            IResourceInfo rcInfo = config.getResourceInfo(projectRelativePath, false);
-            PathSettingsContainer cr = postProcs.getChildContainer(rcInfo.getPath(), false, true);
-            if (cr == null || cr.getValue() == null)
-                continue;
-            DepInfo di = (DepInfo) cr.getValue();
-            ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, projectRelativePath);
-            IPath buildRelativePath = topBuildDir.getFullPath().append(projectRelativePath);
-            IFolder buildFolder = root.getFolder(buildRelativePath);
-            if (buildFolder == null)
-                continue;
-            if (!buildFolder.exists())
-                continue;
-            // Find all of the dep files in the generated subdirectories
-            IResource[] files = buildFolder.members();
-            for (IResource file : files) {
-                String fileExt = file.getFileExtension();
-                for (String ext : di.depExts) {
-                    if (ext.equals(fileExt)) {
-                        IFile depFile = root.getFile(file.getFullPath());
-                        if (depFile == null)
-                            continue;
-                        callDependencyPostProcessors(rcInfo, h, depFile, di.postProcessors, di.callPopulateDummyTargets,
-                                false);
-                    }
-                }
-            }
-        }
+        //        final PathSettingsContainer postProcs = PathSettingsContainer.createRootContainer();
+        //        // Note: PopulateDummyTargets is a hack for the pre-3.x GCC compilers
+        //        // Collect the methods that will need to be called
+        //        toolInfos.accept(new IPathSettingsContainerVisitor() {
+        //            @Override
+        //            public boolean visit(PathSettingsContainer container) {
+        //                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
+        //                Vector<String> depExts = new Vector<>();
+        //                IManagedDependencyGenerator2[] postProcessors = new IManagedDependencyGenerator2[h.buildTools.length];
+        //                boolean callPopulateDummyTargets = collectDependencyGeneratorInformation(h, depExts, postProcessors);
+        //                // Is there anyone to call if we do find dependency files?
+        //                if (!callPopulateDummyTargets) {
+        //                    int i;
+        //                    for (i = 0; i < postProcessors.length; i++) {
+        //                        if (postProcessors[i] != null)
+        //                            break;
+        //                    }
+        //                    if (i == postProcessors.length)
+        //                        return true;
+        //                }
+        //                PathSettingsContainer child = postProcs.getChildContainer(container.getPath(), true, true);
+        //                DepInfo di = new DepInfo();
+        //                di.depExts = depExts;
+        //                di.postProcessors = postProcessors;
+        //                di.callPopulateDummyTargets = callPopulateDummyTargets;
+        //                child.setValue(di);
+        //                return true;
+        //            }
+        //        });
+        //        IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
+        //        for (IContainer subDir : getSubdirList()) {
+        //            // The builder creates a subdir with same name as source in the
+        //            // build location
+        //            IPath projectRelativePath = subDir.getProjectRelativePath();
+        //            IResourceInfo rcInfo = config.getResourceInfo(projectRelativePath, false);
+        //            PathSettingsContainer cr = postProcs.getChildContainer(rcInfo.getPath(), false, true);
+        //            if (cr == null || cr.getValue() == null)
+        //                continue;
+        //            DepInfo di = (DepInfo) cr.getValue();
+        //            //ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, projectRelativePath);
+        //            IPath buildRelativePath = topBuildDir.getFullPath().append(projectRelativePath);
+        //            IFolder buildFolder = root.getFolder(buildRelativePath);
+        //            if (buildFolder == null)
+        //                continue;
+        //            if (!buildFolder.exists())
+        //                continue;
+        //            // Find all of the dep files in the generated subdirectories
+        //            IResource[] files = buildFolder.members();
+        //            for (IResource file : files) {
+        //                String fileExt = file.getFileExtension();
+        //                for (String ext : di.depExts) {
+        //                    if (ext.equals(fileExt)) {
+        //                        IFile depFile = root.getFile(file.getFullPath());
+        //                        if (depFile == null)
+        //                            continue;
+        //                        //          callDependencyPostProcessors(rcInfo, h, depFile, di.postProcessors, di.callPopulateDummyTargets,
+        //                        //                 false);
+        //                    }
+        //                }
+        //            }
+        //        }
     }
 
     /*
@@ -675,46 +617,46 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     @Override
     public void regenerateDependencies(boolean force) throws CoreException {
         // A hack for the pre-3.x GCC compilers is to put dummy targets for deps
-        final IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
-        final CoreException[] es = new CoreException[1];
-        toolInfos.accept(new IPathSettingsContainerVisitor() {
-            @Override
-            public boolean visit(PathSettingsContainer container) {
-                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
-                // Collect the methods that will need to be called
-                Vector<String> depExts = new Vector<String>();
-                IManagedDependencyGenerator2[] postProcessors = new IManagedDependencyGenerator2[h.buildTools.length];
-                boolean callPopulateDummyTargets = collectDependencyGeneratorInformation(h, depExts, postProcessors);
-                // Is there anyone to call if we do find dependency files?
-                if (!callPopulateDummyTargets) {
-                    int i;
-                    for (i = 0; i < postProcessors.length; i++) {
-                        if (postProcessors[i] != null)
-                            break;
-                    }
-                    if (i == postProcessors.length)
-                        return true;
-                }
-                IResourceInfo rcInfo = config.getResourceInfo(container.getPath(), false);
-                for (IPath path : getDependencyMakefiles(h)) {
-                    // The path to search for the dependency makefile
-                    IPath relDepFilePath = topBuildDir.getFullPath().append(path);
-                    IFile depFile = root.getFile(relDepFilePath);
-                    if (depFile == null || !depFile.isAccessible())
-                        continue;
-                    try {
-                        callDependencyPostProcessors(rcInfo, h, depFile, postProcessors, callPopulateDummyTargets,
-                                true);
-                    } catch (CoreException e) {
-                        es[0] = e;
-                        return false;
-                    }
-                }
-                return true;
-            }
-        });
-        if (es[0] != null)
-            throw es[0];
+        //        final IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
+        //        final CoreException[] es = new CoreException[1];
+        //        toolInfos.accept(new IPathSettingsContainerVisitor() {
+        //            @Override
+        //            public boolean visit(PathSettingsContainer container) {
+        //                ToolInfoHolder h = (ToolInfoHolder) container.getValue();
+        //                // Collect the methods that will need to be called
+        //                Vector<String> depExts = new Vector<String>();
+        //                IManagedDependencyGenerator2[] postProcessors = new IManagedDependencyGenerator2[h.buildTools.length];
+        //                boolean callPopulateDummyTargets = collectDependencyGeneratorInformation(h, depExts, postProcessors);
+        //                // Is there anyone to call if we do find dependency files?
+        //                if (!callPopulateDummyTargets) {
+        //                    int i;
+        //                    for (i = 0; i < postProcessors.length; i++) {
+        //                        if (postProcessors[i] != null)
+        //                            break;
+        //                    }
+        //                    if (i == postProcessors.length)
+        //                        return true;
+        //                }
+        //                IResourceInfo rcInfo = config.getResourceInfo(container.getPath(), false);
+        //                for (IPath path : getDependencyMakefiles(h)) {
+        //                    // The path to search for the dependency makefile
+        //                    IPath relDepFilePath = topBuildDir.getFullPath().append(path);
+        //                    IFile depFile = root.getFile(relDepFilePath);
+        //                    if (depFile == null || !depFile.isAccessible())
+        //                        continue;
+        //                    try {
+        //                        callDependencyPostProcessors(rcInfo, h, depFile, postProcessors, callPopulateDummyTargets,
+        //                                true);
+        //                    } catch (CoreException e) {
+        //                        es[0] = e;
+        //                        return false;
+        //                    }
+        //                }
+        //                return true;
+        //            }
+        //        });
+        //        if (es[0] != null)
+        //            throw es[0];
     }
 
     /*
@@ -727,13 +669,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     public MultiStatus regenerateMakefiles() throws CoreException {
         MultiStatus status;
         // Visit the resources in the project
-        ResourceProxyVisitor visitor = new ResourceProxyVisitor(this, config);
-        project.accept(visitor, IResource.NONE);
+        ResourceProxyVisitor subDirVisitor = new ResourceProxyVisitor(this, config);
+        project.accept(subDirVisitor, IResource.NONE);
         // See if the user has cancelled the build
         checkCancel();
-        // Populate the makefile if any buildable source files have been found
-        // in the project
-        if (getSubdirList().isEmpty()) {
+        Collection<IContainer> foldersToInvestigate = subDirVisitor.getSubdirList();
+        if (foldersToInvestigate.isEmpty()) {
             String info = ManagedMakeMessages.getFormattedString("MakefileGenerator.warning.no.source",
                     project.getName());
             updateMonitor(info);
@@ -747,26 +688,53 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         checkCancel();
         // Get the data for the makefile generation
         List<SubDirMakeGenerator> subDirMakeGenerators = new LinkedList<>();
-        Map<IOutputType, List<IFile>> allSourceTargets = new HashMap<>();
-        Set<String> dependencyMacros = new HashSet<>();
-        Set<IFile> dependencyFiles = new HashSet<>();
+        Set<MakeRule> subDirMakeRules = new HashSet<>();
+        Collection<IContainer> foldersToBuild = new LinkedHashSet<>();
 
-        for (IContainer res : getSubdirList()) {
+        for (IContainer res : foldersToInvestigate) {
+            //For all the folders get the make rules for this folder
             SubDirMakeGenerator subDirMakeGenerator = new SubDirMakeGenerator(this, res);
-            allSourceTargets.putAll(subDirMakeGenerator.getTargets());
-            dependencyMacros.addAll(subDirMakeGenerator.getDependecyMacros());
-            dependencyFiles.addAll(subDirMakeGenerator.getDependencyFiles());
-            subDirMakeGenerators.add(subDirMakeGenerator);
+            if (!subDirMakeGenerator.isEmpty()) {
+                foldersToBuild.add(res);
+                subDirMakeGenerators.add(subDirMakeGenerator);
+                //also store all these rules in one set to provide them to the top make file
+                subDirMakeRules.addAll(subDirMakeGenerator.getMakeRules());
+            }
             checkCancel();
         }
-        TopMakeFileGenerator topMakeFileGenerator = new TopMakeFileGenerator(this, allSourceTargets, dependencyMacros,
-                dependencyFiles);
-        // main makefile
-        // calculateToolInputsOutputs();
+        TopMakeFileGenerator topMakeFileGenerator = new TopMakeFileGenerator(this, subDirMakeRules, foldersToBuild);
+
         checkCancel();
-        // Create the top-level makefile
-        IFile makefileHandle = project.getFile(config.getName() + '/' + MAKEFILE_NAME);
-        topMakeFileGenerator.populateTopMakefile(makefileHandle, true);
+
+        Set<String> srcMacroNames = new LinkedHashSet<>();
+        Set<String> objMacroNames = new LinkedHashSet<>();
+        for (SubDirMakeGenerator curSubDirMake : subDirMakeGenerators) {
+            curSubDirMake.generateMakefile();
+            srcMacroNames.addAll(curSubDirMake.getPrerequisiteMacros());
+            srcMacroNames.addAll(curSubDirMake.getDependecyMacros());
+            objMacroNames.addAll(curSubDirMake.getTargetMacros());
+        }
+        //TOFIX also need to add macro's from main makefile
+
+        SrcMakeGenerator.generateSourceMakefile(project, config, srcMacroNames, foldersToBuild);
+        SrcMakeGenerator.generateObjectsMakefile(project, config, objMacroNames);
+        topMakeFileGenerator.generateMakefile();
+
+        checkCancel();
+        // How did we do
+        if (!getInvalidDirList().isEmpty()) {
+            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.WARNING, "", null);
+            // Add a new status for each of the bad folders
+            // TODO: fix error message
+            for (IResource dir : getInvalidDirList()) {
+                status.add(new Status(IStatus.WARNING, ManagedBuilderCorePlugin.getUniqueIdentifier(), SPACES_IN_PATH,
+                        dir.getFullPath().toString(), null));
+            }
+        } else {
+            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.OK, "", null);
+        }
+
+        //TOFIX this should be done differently
         // JABA SLOEBER create the size.awk file
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         IWorkspaceRoot root = CCorePlugin.getWorkspace().getRoot();
@@ -794,34 +762,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
             e.printStackTrace();
         }
         // END JABA SLOEBER create the size.awk file
-        checkCancel();
-        // Now finish up by adding all the object files
 
-        Set<String> srcMacroNames = new LinkedHashSet<>();
-        Set<String> objMacroNames = new LinkedHashSet<>();
-        for (SubDirMakeGenerator curSubDirMake : subDirMakeGenerators) {
-            curSubDirMake.generateMakefile();
-            srcMacroNames.addAll(curSubDirMake.getPrerequisiteMacros());
-            srcMacroNames.addAll(curSubDirMake.getDependecyMacros());
-            objMacroNames.addAll(curSubDirMake.getTargetMacros());
-        }
-        //TOFIX also need to add macro's from main makefile
-
-        SrcMakeGenerator.generateSourceMakefile(project, config, srcMacroNames, subdirList);
-        SrcMakeGenerator.generateObjectsMakefile(project, config, objMacroNames);
-        checkCancel();
-        // How did we do
-        if (!getInvalidDirList().isEmpty()) {
-            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.WARNING, "", null);
-            // Add a new status for each of the bad folders
-            // TODO: fix error message
-            for (IResource dir : getInvalidDirList()) {
-                status.add(new Status(IStatus.WARNING, ManagedBuilderCorePlugin.getUniqueIdentifier(), SPACES_IN_PATH,
-                        dir.getFullPath().toString(), null));
-            }
-        } else {
-            status = new MultiStatus(ManagedBuilderCorePlugin.getUniqueIdentifier(), IStatus.OK, "", null);
-        }
         return status;
     }
 
@@ -835,24 +776,24 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
      *
      * @return a <code>Set</code> containing all of the output extensions
      */
-    public Set<String> getOutputExtensions(ToolInfoHolder h) {
-        if (h.outputExtensionsSet == null) {
-            // The set of output extensions which will be produced by this tool.
-            // It is presumed that this set is not very large (likely < 10) so
-            // a HashSet should provide good performance.
-            h.outputExtensionsSet = new HashSet<>();
-            // For each tool for the target, lookup the kinds of sources it
-            // outputs
-            // and add that to our list of output extensions.
-            for (ITool tool : h.buildTools) {
-                String[] outputs = tool.getAllOutputExtensions();
-                if (outputs != null) {
-                    h.outputExtensionsSet.addAll(Arrays.asList(outputs));
-                }
-            }
-        }
-        return h.outputExtensionsSet;
-    }
+    //    public Set<String> getOutputExtensions(ToolInfoHolder h) {
+    //        if (h.outputExtensionsSet == null) {
+    //            // The set of output extensions which will be produced by this tool.
+    //            // It is presumed that this set is not very large (likely < 10) so
+    //            // a HashSet should provide good performance.
+    //            h.outputExtensionsSet = new HashSet<>();
+    //            // For each tool for the target, lookup the kinds of sources it
+    //            // outputs
+    //            // and add that to our list of output extensions.
+    //            for (ITool tool : h.buildTools) {
+    //                String[] outputs = tool.getAllOutputExtensions();
+    //                if (outputs != null) {
+    //                    h.outputExtensionsSet.addAll(Arrays.asList(outputs));
+    //                }
+    //            }
+    //        }
+    //        return h.outputExtensionsSet;
+    //    }
 
     /**
      * Adds file(s) to an entry in a map of macro names to entries. File additions
@@ -1031,18 +972,16 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     /*************************************************************************
      * R E S O U R C E V I S I T O R M E T H O D S
      ************************************************************************/
-    /**
-     * Adds the container of the argument to the list of folders in the project that
-     * contribute source files to the build. The resource visitor has already
-     * established that the build model knows how to build the files. It has also
-     * checked that the resource is not generated as part of the build.
-     */
-    protected void appendBuildSubdirectory(IResource resource) {
-        IContainer container = resource.getParent();
-        // Only add the container once
-        if (!getSubdirList().contains(container))
-            getSubdirList().add(container);
-    }
+    //    /**
+    //     * Adds the container of the argument to the list of folders in the project that
+    //     * contribute source files to the build. The resource visitor has already
+    //     * established that the build model knows how to build the files. It has also
+    //     * checked that the resource is not generated as part of the build.
+    //     */
+    //    protected void appendBuildSubdirectory(IResource resource) {
+    //        IContainer container = resource.getParent();
+    //        subdirList.add(container);
+    //    }
 
     /**
      * Adds the container of the argument to a list of subdirectories that are to be
@@ -1139,67 +1078,67 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         return inPath;
     }
 
-    private void deleteDepFile(IResource deletedFile) {
-        // Calculate the top build directory relative paths of the dependency
-        // files
-        IPath[] depFilePaths = null;
-        ITool tool = null;
-        IManagedDependencyGeneratorType depType = null;
-        String sourceExtension = deletedFile.getFileExtension();
-        IPath folderPath = inFullPathFromOutFullPath(deletedFile.getFullPath().removeLastSegments(1));
-        if (folderPath != null) {
-            folderPath = folderPath.removeFirstSegments(1);
-        } else {
-            folderPath = new Path("");
-            ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, folderPath);
-            ITool[] tools = h.buildTools;
-            for (int index = 0; index < tools.length; ++index) {
-                if (tools[index].buildsFileType(sourceExtension)) {
-                    tool = tools[index];
-                    depType = tool.getDependencyGeneratorForExtension(sourceExtension);
-                    break;
-                }
-            }
-            if (depType != null) {
-                int calcType = depType.getCalculatorType();
-                if (calcType == IManagedDependencyGeneratorType.TYPE_COMMAND) {
-                    depFilePaths = new IPath[1];
-                    IPath absolutePath = deletedFile.getLocation();
-                    depFilePaths[0] = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(),
-                            absolutePath);
-                    depFilePaths[0] = depFilePaths[0].removeFileExtension().addFileExtension(DEP_EXT);
-                } else if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS
-                        || calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
-                    IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) depType;
-                    IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(
-                            deletedFile.getProjectRelativePath(), deletedFile, config, tool, getBuildWorkingDir());
-                    if (depInfo != null) {
-                        if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS) {
-                            IManagedDependencyCommands depCommands = (IManagedDependencyCommands) depInfo;
-                            depFilePaths = depCommands.getDependencyFiles();
-                        } else if (calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
-                            IManagedDependencyPreBuild depPreBuild = (IManagedDependencyPreBuild) depInfo;
-                            depFilePaths = depPreBuild.getDependencyFiles();
-                        }
-                    }
-                }
-            }
-            // Delete the files if they exist
-            if (depFilePaths != null) {
-                for (IPath dfp : depFilePaths) {
-                    IPath depFilePath = getBuildWorkingDir().append(dfp);
-                    IResource depFile = project.findMember(depFilePath);
-                    if (depFile != null && depFile.exists()) {
-                        try {
-                            depFile.delete(true, new SubProgressMonitor(monitor, 1));
-                        } catch (CoreException e) {
-                            // This had better be allowed during a build
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //    private void deleteDepFile(IResource deletedFile) {
+    //        // Calculate the top build directory relative paths of the dependency
+    //        // files
+    //        IPath[] depFilePaths = null;
+    //        ITool tool = null;
+    //        IManagedDependencyGeneratorType depType = null;
+    //        String sourceExtension = deletedFile.getFileExtension();
+    //        IPath folderPath = inFullPathFromOutFullPath(deletedFile.getFullPath().removeLastSegments(1));
+    //        if (folderPath != null) {
+    //            folderPath = folderPath.removeFirstSegments(1);
+    //        } else {
+    //            folderPath = new Path("");
+    //            ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, folderPath);
+    //            ITool[] tools = h.buildTools;
+    //            for (int index = 0; index < tools.length; ++index) {
+    //                if (tools[index].buildsFileType(sourceExtension)) {
+    //                    tool = tools[index];
+    //                    depType = tool.getDependencyGeneratorForExtension(sourceExtension);
+    //                    break;
+    //                }
+    //            }
+    //            if (depType != null) {
+    //                int calcType = depType.getCalculatorType();
+    //                if (calcType == IManagedDependencyGeneratorType.TYPE_COMMAND) {
+    //                    depFilePaths = new IPath[1];
+    //                    IPath absolutePath = deletedFile.getLocation();
+    //                    depFilePaths[0] = ManagedBuildManager.calculateRelativePath(getTopBuildDir().getFullPath(),
+    //                            absolutePath);
+    //                    depFilePaths[0] = depFilePaths[0].removeFileExtension().addFileExtension(DEP_EXT);
+    //                } else if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS
+    //                        || calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
+    //                    IManagedDependencyGenerator2 depGen = (IManagedDependencyGenerator2) depType;
+    //                    IManagedDependencyInfo depInfo = depGen.getDependencySourceInfo(
+    //                            deletedFile.getProjectRelativePath(), deletedFile, config, tool, getBuildWorkingDir());
+    //                    if (depInfo != null) {
+    //                        if (calcType == IManagedDependencyGeneratorType.TYPE_BUILD_COMMANDS) {
+    //                            IManagedDependencyCommands depCommands = (IManagedDependencyCommands) depInfo;
+    //                            depFilePaths = depCommands.getDependencyFiles();
+    //                        } else if (calcType == IManagedDependencyGeneratorType.TYPE_PREBUILD_COMMANDS) {
+    //                            IManagedDependencyPreBuild depPreBuild = (IManagedDependencyPreBuild) depInfo;
+    //                            depFilePaths = depPreBuild.getDependencyFiles();
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            // Delete the files if they exist
+    //            if (depFilePaths != null) {
+    //                for (IPath dfp : depFilePaths) {
+    //                    IPath depFilePath = getBuildWorkingDir().append(dfp);
+    //                    IResource depFile = project.findMember(depFilePath);
+    //                    if (depFile != null && depFile.exists()) {
+    //                        try {
+    //                            depFile.delete(true, new SubProgressMonitor(monitor, 1));
+    //                        } catch (CoreException e) {
+    //                            // This had better be allowed during a build
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 
     /**
      * Returns the current build configuration.
@@ -1248,12 +1187,12 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         return deletedFileList;
     }
 
-    public List<IPath> getDependencyMakefiles(ToolInfoHolder h) {
-        if (h.dependencyMakefiles == null) {
-            h.dependencyMakefiles = new ArrayList<IPath>();
-        }
-        return h.dependencyMakefiles;
-    }
+    //    public List<IPath> getDependencyMakefiles(ToolInfoHolder h) {
+    //        if (h.dependencyMakefiles == null) {
+    //            h.dependencyMakefiles = new ArrayList<IPath>();
+    //        }
+    //        return h.dependencyMakefiles;
+    //    }
 
     /**
      * Strips off the file extension from the argument and returns the name
@@ -1293,13 +1232,13 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         return modifiedList;
     }
 
-    /**
-     * @return Collection of subdirectories (IContainers) contributing source code
-     *         to the build
-     */
-    public Collection<IContainer> getSubdirList() {
-        return subdirList;
-    }
+    //    /**
+    //     * @return Collection of subdirectories (IContainers) contributing source code
+    //     *         to the build
+    //     */
+    //    public Collection<IContainer> getSubdirList() {
+    //        return subdirList;
+    //    }
 
     private void removeGeneratedDirectory(IContainer subDir) {
         try {
@@ -1387,7 +1326,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         // Cache the build tools
         config = cfg;
         this.builder = builder;
-        initToolInfos();
+        //   initToolInfos();
         // set the top build dir path
         topBuildDir = project.getFile(cfg.getName());
         srcEntries = config.getSourceEntries();
@@ -1397,27 +1336,6 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         } else {
             ICConfigurationDescription cfgDes = ManagedBuildManager.getDescriptionForConfiguration(config);
             srcEntries = CDataUtil.resolveEntries(srcEntries, cfgDes);
-        }
-    }
-
-    private void initToolInfos() {
-        toolInfos = PathSettingsContainer.createRootContainer();
-        IResourceInfo rcInfos[] = config.getResourceInfos();
-        for (IResourceInfo rcInfo : rcInfos) {
-            if (rcInfo.isExcluded())
-                continue;
-            ToolInfoHolder h = ToolInfoHolder.getToolInfo(this, rcInfo.getPath(), true);
-            if (rcInfo instanceof IFolderInfo) {
-                IFolderInfo fo = (IFolderInfo) rcInfo;
-                h.buildTools = fo.getFilteredTools();
-                h.buildToolsUsed = new boolean[h.buildTools.length];
-                h.gnuToolInfos = new ArduinoManagedBuildGnuToolInfo[h.buildTools.length];
-            } else {
-                IFileInfo fi = (IFileInfo) rcInfo;
-                h.buildTools = fi.getToolsToInvoke();
-                h.buildToolsUsed = new boolean[h.buildTools.length];
-                h.gnuToolInfos = new ArduinoManagedBuildGnuToolInfo[h.buildTools.length];
-            }
         }
     }
 

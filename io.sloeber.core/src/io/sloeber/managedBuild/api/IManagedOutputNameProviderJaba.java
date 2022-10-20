@@ -6,5 +6,5 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
 public interface IManagedOutputNameProviderJaba {
-    public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath primaryInputNames);
+    public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName);
 }
