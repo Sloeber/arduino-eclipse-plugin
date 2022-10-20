@@ -605,6 +605,31 @@ public class ManagebBuildCommon {
                 //ignore errors
             }
         }
+        String[] outputNames = type.getOutputNames();
+        if (outputNames != null && outputNames.length > 0) {
+            String outputName = outputNames[0];
+            return new IManagedOutputNameProviderJaba() {
+
+                @Override
+                public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
+                    return new Path(outputName);
+                    //return project.getFile(cConf.getName()).getFullPath().append(outputName);
+                }
+            };
+        }
+
+        String[] outputExtensions = type.getOutputExtensionsAttribute();
+        if (outputExtensions != null && outputExtensions.length > 0) {
+            String outputExtension = outputExtensions[0];
+            return new IManagedOutputNameProviderJaba() {
+
+                @Override
+                public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
+                    return inputName.addFileExtension(outputExtension);
+                }
+            };
+        }
+
         return null;
     }
 

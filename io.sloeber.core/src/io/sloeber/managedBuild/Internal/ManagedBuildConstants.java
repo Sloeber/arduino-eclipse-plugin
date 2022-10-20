@@ -94,5 +94,6 @@ public class ManagedBuildConstants {
     public static final String INPUTS_PRM_NAME = "INPUTS";
     public static final String VARIABLE_PREFIX = "${";
     public static final String VARIABLE_SUFFIX = "}";
+    public static final String DEPENDENCY_SUFFIX = "_DEPS";
 
 }

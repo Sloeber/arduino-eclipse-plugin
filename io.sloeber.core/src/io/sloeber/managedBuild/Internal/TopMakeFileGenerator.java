@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -26,18 +29,22 @@ import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-import org.eclipse.cdt.managedbuilder.makegen.gnu.IManagedBuildGnuToolInfo;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+
+import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
 
 public class TopMakeFileGenerator {
     private ArduinoGnuMakefileGenerator caller = null;
-    private Map<IOutputType, List<IFile>> myAllSourceTargets = null;
-    private Set<String> myDependencyMacros = null;
-    private Set<IFile> myDependencyFiles = null;
+    private Set<MakeRule> mySubDirMakeRules = new LinkedHashSet<>();
+    private MakeRules myMakeRules = new MakeRules();
+    private Collection<IContainer> myFoldersToBuild;
+    private Map<IOutputType, Set<IFile>> myAllSourceTargets = new HashMap<>();
+    private Set<String> myDependencyMacros = new HashSet<>();
 
     private IConfiguration getConfig() {
         return caller.getConfig();
@@ -47,20 +54,44 @@ public class TopMakeFileGenerator {
         return caller.getProject();
     }
 
-    TopMakeFileGenerator(ArduinoGnuMakefileGenerator theCaller, Map<IOutputType, List<IFile>> allSourceTargets,
-            Set<String> dependecyMacros, Set<IFile> dependencyFiles) {
+    TopMakeFileGenerator(ArduinoGnuMakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
+            Collection<IContainer> foldersToBuild) {
         caller = theCaller;
-        myAllSourceTargets = allSourceTargets;
-        myDependencyMacros = dependecyMacros;
-        myDependencyFiles = dependencyFiles;
-    }
+        mySubDirMakeRules = subDirMakeRules;
+        myFoldersToBuild = foldersToBuild;
+        for (MakeRule curMakeRule : mySubDirMakeRules) {
+            myAllSourceTargets.putAll(curMakeRule.getTargets());
+            myDependencyMacros.addAll(curMakeRule.getDependecyMacros());
+        }
+        MakeRules makeRules = new MakeRules();
+        Map<IOutputType, Set<IFile>> generatedFiles = new HashMap<>();
+        for (MakeRule makeRule : subDirMakeRules) {
+            Map<IOutputType, Set<IFile>> targets = makeRule.getTargets();
+            for (Entry<IOutputType, Set<IFile>> curTarget : targets.entrySet()) {
+                Set<IFile> esxistingTarget = generatedFiles.get(curTarget.getKey());
+                if (esxistingTarget != null) {
+                    esxistingTarget.addAll(curTarget.getValue());
+                } else {
+                    Set<IFile> copySet = new HashSet<>();
+                    copySet.addAll(curTarget.getValue());
+                    generatedFiles.put(curTarget.getKey(), copySet);
+                }
 
-    /**
-     * @return Collection of subdirectories (IContainers) contributing source code
-     *         to the build
-     */
-    private Collection<IContainer> getSubdirList() {
-        return caller.getSubdirList();
+            }
+        }
+        int depth = 10;
+        while (depth > 0) {
+            makeRules = getMakeRulesFromGeneratedFiles(generatedFiles);
+            generatedFiles.clear();
+            if (makeRules.size() > 0) {
+                depth--;
+                myMakeRules.addRules(makeRules);
+                generatedFiles.putAll(makeRules.getTargets());
+            } else {
+                depth = 0;
+            }
+        }
+
     }
 
     private Vector<String> getRuleList() {
@@ -71,30 +102,27 @@ public class TopMakeFileGenerator {
         return caller.getToolInfos();
     }
 
-    /**
-     * Create the entire contents of the makefile.
-     *
-     * @param fileHandle
-     *            The file to place the contents in.
-     * @param rebuild
-     *            FLag signaling that the user is doing a full rebuild
-     */
-    public void populateTopMakefile(IFile fileHandle, boolean rebuild) throws CoreException {
+    public void generateMakefile() throws CoreException {
+        IProject project = getProject();
+        IConfiguration config = getConfig();
+
         StringBuffer buffer = new StringBuffer();
-        // Add the header
         buffer.append(addDefaultHeader());
-        // Add the macro definitions
         buffer.append(addMacros());
-        // List to collect needed build output variables
-        List<String> outputVarsAdditionsList = new ArrayList<String>();
+        List<String> outputVarsAdditionsList = new ArrayList<>();
         // Determine target rules
-        StringBuffer targetRules = addTargets(outputVarsAdditionsList, rebuild);
+        //TOFIX removed line
+        //StringBuffer targetRules = addTargets(outputVarsAdditionsList, true);
         // Add outputMacros that were added to by the target rules
-        //TOFIX reenable line below
-        //buffer.append(writeTopAdditionMacros(outputVarsAdditionsList, getTopBuildOutputVars()));
+        //TOFIX removed line
+        //     buffer.append(writeTopAdditionMacros(outputVarsAdditionsList, mySecondaryMacros));
         // Add target rules
-        buffer.append(targetRules);
+        //buffer.append(targetRules);
         // Save the file
+        buffer.append(GenerateMacros());
+        buffer.append(GenerateRules(getConfig()));
+
+        IFile fileHandle = project.getFile(config.getName() + '/' + MAKEFILE_NAME);
         save(buffer, fileHandle);
     }
 
@@ -106,29 +134,25 @@ public class TopMakeFileGenerator {
         // Get the clean command from the build model
         buffer.append("RM := ");
         // support macros in the clean command
-        String cleanCommand = config.getCleanCommand();
         try {
-            cleanCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
+            String cleanCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
                     config.getCleanCommand(), EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION,
                     config);
+            buffer.append(cleanCommand).append(NEWLINE);
+            buffer.append(NEWLINE);
         } catch (BuildMacroException e) {
             // jaba is not going to write this code
         }
 
-        buffer.append(cleanCommand).append(NEWLINE);
-        buffer.append(NEWLINE);
         // Now add the source providers
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(SRC_LISTS))
                 .append(NEWLINE);
         buffer.append("-include sources.mk").append(NEWLINE);
-        // JABA Change the include of the "root" (our sketch) folder to be
-        // before
-        // libraries and other files
         buffer.append("-include subdir.mk").append(NEWLINE);
         // Add includes for each subdir in child-subdir-first order (required
         // for makefile rule matching to work).
         List<String> subDirList = new ArrayList<>();
-        for (IContainer subDir : getSubdirList()) {
+        for (IContainer subDir : myFoldersToBuild) {
             String projectRelativePath = subDir.getProjectRelativePath().toOSString();
             if (!projectRelativePath.isEmpty())
                 subDirList.add(0, projectRelativePath);
@@ -355,14 +379,15 @@ public class TopMakeFileGenerator {
             buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
         }
         // Add the Secondary Outputs target, if needed
-        if (secondaryOutputs.length > 0) {
-            buffer.append(SECONDARY_OUTPUTS).append(COLON);
-            Vector<String> outs2 = calculateSecondaryOutputs(secondaryOutputs);
-            for (int i = 0; i < outs2.size(); i++) {
-                buffer.append(WHITESPACE).append("$(").append(outs2.get(i)).append(')');
-            }
-            buffer.append(NEWLINE).append(NEWLINE);
-        }
+        //TOFIX removed this
+        //        if (secondaryOutputs.length > 0) {
+        //            buffer.append(SECONDARY_OUTPUTS).append(COLON);
+        //            Vector<String> outs2 = calculateSecondaryOutputs(secondaryOutputs);
+        //            for (int i = 0; i < outs2.size(); i++) {
+        //                buffer.append(WHITESPACE).append("$(").append(outs2.get(i)).append(')');
+        //            }
+        //            buffer.append(NEWLINE).append(NEWLINE);
+        //        }
         // Add all the needed dummy and phony targets
         buffer.append(".PHONY: all clean dependents");
         if (prebuildStep.length() > 0) {
@@ -413,10 +438,11 @@ public class TopMakeFileGenerator {
         Vector<String> outputVariables = new Vector<String>();
         Vector<String> additionalTargets = new Vector<String>();
         String outputPrefix = EMPTY_STRING;
-        if (!getToolInputsOutputs(tool, inputs, dependencies, outputs, enumeratedPrimaryOutputs,
-                enumeratedSecondaryOutputs, outputVariables, additionalTargets, bTargetTool, managedProjectOutputs)) {
-            return false;
-        }
+        //TOFIX removed this
+        //        if (!getToolInputsOutputs(tool, inputs, dependencies, outputs, enumeratedPrimaryOutputs,
+        //                enumeratedSecondaryOutputs, outputVariables, additionalTargets, bTargetTool, managedProjectOutputs)) {
+        //            return false;
+        //        }
         // If we have no primary output, make all of the secondary outputs the
         // primary output
         if (enumeratedPrimaryOutputs.size() == 0) {
@@ -576,9 +602,11 @@ public class TopMakeFileGenerator {
         // Generate a build rule for any tool that consumes the output of this
         // tool
         PathSettingsContainer toolInfos = getToolInfos();
-        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
-        ITool[] buildTools = h.buildTools;
-        boolean[] buildToolsUsed = h.buildToolsUsed;
+        //        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
+        //        ITool[] buildTools = h.buildTools;
+        ITool[] buildTools = null;
+        //boolean[] buildToolsUsed = h.buildToolsUsed;
+        boolean[] buildToolsUsed = null;
         IOutputType[] outTypes = generatingTool.getOutputTypes();
         for (IOutputType outType : outTypes) {
             String[] outExts = outType.getOutputExtensions(generatingTool);
@@ -629,9 +657,11 @@ public class TopMakeFileGenerator {
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(BUILD_TOP))
                 .append(NEWLINE);
         PathSettingsContainer toolInfos = getToolInfos();
-        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
-        ITool[] buildTools = h.buildTools;
-        boolean[] buildToolsUsed = h.buildToolsUsed;
+        //        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
+        //        ITool[] buildTools = h.buildTools;
+        //        boolean[] buildToolsUsed = h.buildToolsUsed;
+        ITool[] buildTools = null;
+        boolean[] buildToolsUsed = null;
         // Get the target tool and generate the rule
         if (targetTool != null) {
             // Note that the name of the target we pass to addRuleForTool does
@@ -657,19 +687,19 @@ public class TopMakeFileGenerator {
         // consume the output of those tools. This does not apply to pre-3.0
         // integrations, since
         // the only "multipleOfType" tool is the "target" tool
-        for (int i = 0; i < buildTools.length; i++) {
-            ITool tool = buildTools[i];
-            IInputType type = tool.getPrimaryInputType();
-            if (type != null && type.getMultipleOfType()) {
-                if (!buildToolsUsed[i]) {
-                    addRuleForTool(tool, buffer, false, null, null, outputVarsAdditionsList, null, false);
-                    // Mark the target tool as processed
-                    buildToolsUsed[i] = true;
-                    // Look for tools that consume the output
-                    generateRulesForConsumers(tool, outputVarsAdditionsList, buffer);
-                }
-            }
-        }
+        //        for (int i = 0; i < buildTools.length; i++) {
+        //            ITool tool = buildTools[i];
+        //            IInputType type = tool.getPrimaryInputType();
+        //            if (type != null && type.getMultipleOfType()) {
+        //                if (!buildToolsUsed[i]) {
+        //                    addRuleForTool(tool, buffer, false, null, null, outputVarsAdditionsList, null, false);
+        //                    // Mark the target tool as processed
+        //                    buildToolsUsed[i] = true;
+        //                    // Look for tools that consume the output
+        //                    generateRulesForConsumers(tool, outputVarsAdditionsList, buffer);
+        //                }
+        //            }
+        //        }
         // Add the comment
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(BUILD_TARGETS))
                 .append(NEWLINE);
@@ -688,11 +718,6 @@ public class TopMakeFileGenerator {
         if (caller.buildTargetExt.length() > 0) {
             completeBuildTargetName = completeBuildTargetName + DOT + caller.buildTargetExt;
         }
-        // if (completeBuildTargetName.contains(" ")) {
-        // buffer.append(WHITESPACE + "\"" + completeBuildTargetName + "\"");
-        // } else {
-        // buffer.append(WHITESPACE + completeBuildTargetName);
-        // }
         buffer.append(NEWLINE);
         buffer.append(TAB).append(DASH).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
         return buffer;
@@ -713,73 +738,206 @@ public class TopMakeFileGenerator {
         return buffer.append(NEWLINE);
     }
 
-    private Vector<String> calculateSecondaryOutputs(IOutputType[] secondaryOutputs) {
-        PathSettingsContainer toolInfos = getToolInfos();
-        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
-        ITool[] buildTools = h.buildTools;
-        Vector<String> buildVars = new Vector<String>();
-        for (int i = 0; i < buildTools.length; i++) {
-            // Add the specified output build variables
-            IOutputType[] outTypes = buildTools[i].getOutputTypes();
-            if (outTypes != null && outTypes.length > 0) {
-                for (int j = 0; j < outTypes.length; j++) {
-                    IOutputType outType = outTypes[j];
-                    // Is this one of the secondary outputs?
-                    // Look for an outputType with this ID, or one with a
-                    // superclass with this id
-                    thisType: for (int k = 0; k < secondaryOutputs.length; k++) {
-                        IOutputType matchType = outType;
-                        do {
-                            if (matchType.getId().equals(secondaryOutputs[k].getId())) {
-                                buildVars.add(outType.getBuildVariable());
-                                break thisType;
+    //    private Vector<String> calculateSecondaryOutputs(IOutputType[] secondaryOutputs) {
+    //        PathSettingsContainer toolInfos = getToolInfos();
+    //        //        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
+    //        //        ITool[] buildTools = h.buildTools;
+    //        ITool[] buildTools = null;
+    //        Vector<String> buildVars = new Vector<String>();
+    //        for (int i = 0; i < buildTools.length; i++) {
+    //            // Add the specified output build variables
+    //            IOutputType[] outTypes = buildTools[i].getOutputTypes();
+    //            if (outTypes != null && outTypes.length > 0) {
+    //                for (int j = 0; j < outTypes.length; j++) {
+    //                    IOutputType outType = outTypes[j];
+    //                    // Is this one of the secondary outputs?
+    //                    // Look for an outputType with this ID, or one with a
+    //                    // superclass with this id
+    //                    thisType: for (int k = 0; k < secondaryOutputs.length; k++) {
+    //                        IOutputType matchType = outType;
+    //                        do {
+    //                            if (matchType.getId().equals(secondaryOutputs[k].getId())) {
+    //                                buildVars.add(outType.getBuildVariable());
+    //                                break thisType;
+    //                            }
+    //                            matchType = matchType.getSuperClass();
+    //                        } while (matchType != null);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        return buildVars;
+    //    }
+
+    //    private boolean getToolInputsOutputs(ITool tool, Vector<String> inputs, Vector<String> dependencies,
+    //            Vector<String> outputs, Vector<String> enumeratedPrimaryOutputs, Vector<String> enumeratedSecondaryOutputs,
+    //            Vector<String> outputVariables, Vector<String> additionalTargets, boolean bTargetTool,
+    //            Vector<String> managedProjectOutputs) {
+    //        PathSettingsContainer toolInfos = getToolInfos();
+    //        //        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
+    //        //        ITool[] buildTools = h.buildTools;
+    //        ITool[] buildTools = null;
+    //        // Get the information regarding the tool's inputs and outputs from the
+    //        // objects
+    //        // created by calculateToolInputsOutputs
+    //        IManagedBuildGnuToolInfo toolInfo = null;
+    //        //        for (int i = 0; i < buildTools.length; i++) {
+    //        //            if (tool == buildTools[i]) {
+    //        //                break;
+    //        //            }
+    //        //        }
+    //        if (toolInfo == null)
+    //            return false;
+    //        // Populate the output Vectors
+    //        inputs.addAll(toolInfo.getCommandInputs());
+    //        outputs.addAll(toolInfo.getCommandOutputs());
+    //        enumeratedPrimaryOutputs.addAll(toolInfo.getEnumeratedPrimaryOutputs());
+    //        enumeratedSecondaryOutputs.addAll(toolInfo.getEnumeratedSecondaryOutputs());
+    //        outputVariables.addAll(toolInfo.getOutputVariables());
+    //        Vector<String> unprocessedDependencies = toolInfo.getCommandDependencies();
+    //        for (String path : unprocessedDependencies) {
+    //            dependencies.add(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(path));
+    //        }
+    //        additionalTargets.addAll(toolInfo.getAdditionalTargets());
+    //        if (bTargetTool && managedProjectOutputs != null) {
+    //            for (String output : managedProjectOutputs) {
+    //                dependencies.add(output);
+    //            }
+    //        }
+    //        return true;
+    //    }
+
+    //Get the rules for the generated files
+    private MakeRules getMakeRulesFromGeneratedFiles(Map<IOutputType, Set<IFile>> generatedFiles) {
+        MakeRules makeRules = new MakeRules();
+        IConfiguration config = getConfig();
+        IProject project = getProject();
+
+        // Visit the resources in this set 
+        for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
+            IOutputType outputTypeIn = entry.getKey();
+            Set<IFile> files = entry.getValue();
+            String macroName = outputTypeIn.getBuildVariable();
+            for (ITool tool : config.getTools()) {
+                for (IInputType inputType : tool.getInputTypes()) {
+                    if (!macroName.equals(inputType.getBuildVariable())) {
+                        continue;
+                    }
+                    if (inputType.getMultipleOfType()) {
+                        for (IOutputType outputType : tool.getOutputTypes()) {
+                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            if (nameProvider == null) {
+                                continue;
                             }
-                            matchType = matchType.getSuperClass();
-                        } while (matchType != null);
+                            IPath outputFile = nameProvider.getOutputName(null, null, null, null);
+                            if (outputFile != null) {
+                                //This is a multiple to 1 based on var name
+                                IFile correctOutputFile = getProject()
+                                        .getFile(new Path(config.getName()).append(outputFile));
+                                makeRules.addRule(tool, inputType, macroName, files, outputType, correctOutputFile);
+
+                                continue;
+                            }
+                            IPath firstFilePath = files.toArray(new IFile[files.size()])[0].getProjectRelativePath();
+                            outputFile = nameProvider.getOutputName(project, config, tool, firstFilePath);
+                            if (outputFile == null) {
+                                continue;
+                            }
+                            //This is a multiple to 1 not based on var name
+                            IPath correctOutputPath = new Path(config.getName()).append(outputFile);
+                            MakeRule newMakeRule = new MakeRule(caller, tool, inputType, files, outputType,
+                                    project.getFile(correctOutputPath));
+
+                            makeRules.addRule(newMakeRule);
+                        }
+                    } else {
+                        //The link is based on the varname but the files are one on one
+                        for (IOutputType outputType : tool.getOutputTypes()) {
+                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            if (nameProvider == null) {
+                                continue;
+                            }
+                            for (IFile file : files) {
+                                IPath outputFile = nameProvider.getOutputName(project, config, tool,
+                                        file.getProjectRelativePath());
+                                if (outputFile == null) {
+                                    continue;
+                                }
+                                //This is a multiple to 1 not based on var name
+                                IPath correctOutputPath = new Path(config.getName()).append(outputFile);
+                                MakeRule newMakeRule = new MakeRule(tool, inputType, file, outputType,
+                                        project.getFile(correctOutputPath));
+                                newMakeRule.addDependencies(caller);
+                                makeRules.addRule(newMakeRule);
+                            }
+                        }
                     }
                 }
+                //                else {
+                //                        for (IOutputType outputType : tool.getOutputTypes()) {
+                //                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                //                            if (nameProvider == null) {
+                //                                continue;
+                //                            }
+                //                            for (IFile file : files) {
+                //                                IPath outputFile = nameProvider.getOutputName(getProject(), config, tool,
+                //                                        file.getProjectRelativePath());
+                //                                if (outputFile != null) {
+                //                                    //We found a tool that provides a outputfile for our source file
+                //                                    //TOFIX if this is a multiple to one we should only create one MakeRule
+                //                                    IPath correctOutputPath = new Path(config.getName()).append(outputFile);
+                //                                    MakeRule newMakeRule = new MakeRule(caller, tool, inputType, file, outputType,
+                //                                            project.getFile(correctOutputPath));
+                //
+                //                                    makeRules.add(newMakeRule);
+                //                                }
+                //                            }
+                //                        }
+                //                    }
+                // }
+
             }
         }
-        return buildVars;
+        return makeRules;
+
     }
 
-    private boolean getToolInputsOutputs(ITool tool, Vector<String> inputs, Vector<String> dependencies,
-            Vector<String> outputs, Vector<String> enumeratedPrimaryOutputs, Vector<String> enumeratedSecondaryOutputs,
-            Vector<String> outputVariables, Vector<String> additionalTargets, boolean bTargetTool,
-            Vector<String> managedProjectOutputs) {
-        PathSettingsContainer toolInfos = getToolInfos();
-        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
-        ITool[] buildTools = h.buildTools;
-        ArduinoManagedBuildGnuToolInfo[] gnuToolInfos = h.gnuToolInfos;
-        // Get the information regarding the tool's inputs and outputs from the
-        // objects
-        // created by calculateToolInputsOutputs
-        IManagedBuildGnuToolInfo toolInfo = null;
-        for (int i = 0; i < buildTools.length; i++) {
-            if (tool == buildTools[i]) {
-                toolInfo = gnuToolInfos[i];
-                break;
+    private StringBuffer GenerateMacros() {
+        StringBuffer buffer = new StringBuffer();
+        IFile buildRoot = caller.getTopBuildDir();
+        buffer.append(NEWLINE);
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_VARS))
+                .append(NEWLINE);
+
+        for (String macroName : myMakeRules.getMacroNames()) {
+            Set<IFile> files = myMakeRules.getMacroElements(macroName);
+            if (files.size() > 0) {
+                buffer.append(macroName).append(MAKE_ADDITION);
+                for (IFile file : files) {
+                    if (files.size() != 1) {
+                        buffer.append(LINEBREAK);
+                    }
+                    buffer.append(GetNiceFileName(buildRoot, file)).append(WHITESPACE);
+                }
+                buffer.append(NEWLINE);
+                buffer.append(NEWLINE);
             }
+
         }
-        if (toolInfo == null)
-            return false;
-        // Populate the output Vectors
-        inputs.addAll(toolInfo.getCommandInputs());
-        outputs.addAll(toolInfo.getCommandOutputs());
-        enumeratedPrimaryOutputs.addAll(toolInfo.getEnumeratedPrimaryOutputs());
-        enumeratedSecondaryOutputs.addAll(toolInfo.getEnumeratedSecondaryOutputs());
-        outputVariables.addAll(toolInfo.getOutputVariables());
-        Vector<String> unprocessedDependencies = toolInfo.getCommandDependencies();
-        for (String path : unprocessedDependencies) {
-            dependencies.add(ensurePathIsGNUMakeTargetRuleCompatibleSyntax(path));
+        return buffer;
+    }
+
+    private StringBuffer GenerateRules(IConfiguration config) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(NEWLINE);
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_RULES))
+                .append(NEWLINE);
+
+        for (MakeRule makeRule : myMakeRules.getMakeRules()) {
+            buffer.append(makeRule.getRule(getProject(), caller.getTopBuildDir(), config));
         }
-        additionalTargets.addAll(toolInfo.getAdditionalTargets());
-        if (bTargetTool && managedProjectOutputs != null) {
-            for (String output : managedProjectOutputs) {
-                dependencies.add(output);
-            }
-        }
-        return true;
+
+        return buffer;
     }
 
 }
