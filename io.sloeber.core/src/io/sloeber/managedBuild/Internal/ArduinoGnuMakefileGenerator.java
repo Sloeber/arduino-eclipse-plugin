@@ -576,6 +576,10 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
         return null;
     }
 
+    public IFile getBuildFolder() {
+        return topBuildDir;
+    }
+
     /*
      * (non-Javadoc)
      *

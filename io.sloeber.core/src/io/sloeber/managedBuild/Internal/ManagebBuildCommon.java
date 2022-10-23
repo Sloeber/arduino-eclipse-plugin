@@ -42,7 +42,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.core.common.Common;
-import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
+import io.sloeber.managedBuild.api.INewManagedOutputNameProvider;
 
 @SuppressWarnings("nls")
 public class ManagebBuildCommon {
@@ -592,14 +592,14 @@ public class ManagebBuildCommon {
 
     }
 
-    static public IManagedOutputNameProviderJaba getJABANameProvider(IOutputType iType) {
+    static public INewManagedOutputNameProvider getJABANameProvider(IConfiguration cConf, IPath referencedFrom,
+            IOutputType iType) {
         OutputType type = (OutputType) iType;
         IConfigurationElement element = type.getNameProviderElement();
         if (element != null) {
             try {
                 if (element.getAttribute(IOutputType.NAME_PROVIDER) != null) {
-                    return (IManagedOutputNameProviderJaba) element
-                            .createExecutableExtension(IOutputType.NAME_PROVIDER);
+                    return (INewManagedOutputNameProvider) element.createExecutableExtension(IOutputType.NAME_PROVIDER);
                 }
             } catch (@SuppressWarnings("unused") CoreException e) {
                 //ignore errors
@@ -608,12 +608,25 @@ public class ManagebBuildCommon {
         String[] outputNames = type.getOutputNames();
         if (outputNames != null && outputNames.length > 0) {
             String outputName = outputNames[0];
-            return new IManagedOutputNameProviderJaba() {
+            IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+            String expanded = outputName;
+            try {
+                expanded = provider.resolveValue(outputName, EMPTY_STRING, WHITESPACE,
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, cConf);
+            } catch (BuildMacroException e) {
+                // default will do
+                e.printStackTrace();
+            }
+            IPath expandedPath = new Path(expanded);
+            if (expandedPath.segmentCount() > 1) {
+                expandedPath = GetNiceFileName(referencedFrom, new Path(expanded));
+            }
+            final IPath ret=expandedPath;
+            return new INewManagedOutputNameProvider() {
 
                 @Override
                 public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
-                    return new Path(outputName);
-                    //return project.getFile(cConf.getName()).getFullPath().append(outputName);
+                    return ret;
                 }
             };
         }
@@ -621,11 +634,15 @@ public class ManagebBuildCommon {
         String[] outputExtensions = type.getOutputExtensionsAttribute();
         if (outputExtensions != null && outputExtensions.length > 0) {
             String outputExtension = outputExtensions[0];
-            return new IManagedOutputNameProviderJaba() {
+            return new INewManagedOutputNameProvider() {
 
                 @Override
                 public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
-                    return inputName.addFileExtension(outputExtension);
+                    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+                    ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(cConf.getName());
+                    String expanded = Common.getBuildEnvironmentVariable(confDesc, inputName.toString(),
+                            inputName.toString(), true);
+                    return new Path(expanded).addFileExtension(outputExtension);
                 }
             };
         }
@@ -634,17 +651,18 @@ public class ManagebBuildCommon {
     }
 
     static public String GetNiceFileName(IFile buildPath, IFile path) {
-        IPath buildLocation = buildPath.getLocation();
-        IPath fileLocation = path.getLocation();
-        if (buildLocation.isPrefixOf(path.getLocation())) {
-            return fileLocation.makeRelativeTo(buildLocation).toOSString();
-            //return DOT_SLASH_PATH.append(fileLocation.makeRelativeTo(buildLocation)).toOSString();
+        return GetNiceFileName(buildPath.getLocation(), path.getLocation()).toOSString();
+    }
+
+    static public IPath GetNiceFileName(IPath buildPath, IPath filePath) {
+        if (buildPath.isPrefixOf(filePath)) {
+            return filePath.makeRelativeTo(buildPath);
         }
-        if (buildLocation.removeLastSegments(1).isPrefixOf(fileLocation)) {
-            return fileLocation.makeRelativeTo(buildLocation).toOSString();
+        if (buildPath.removeLastSegments(1).isPrefixOf(filePath)) {
+            return filePath.makeRelativeTo(buildPath);
 
         }
-        return fileLocation.toOSString();
+        return filePath;
     }
 
     static public String makeVariable(String variableName) {

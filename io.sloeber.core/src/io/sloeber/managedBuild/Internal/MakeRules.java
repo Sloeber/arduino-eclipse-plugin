@@ -36,10 +36,12 @@ public class MakeRules {
                     inputType = curTarget.getKey();
                     files = curTarget.getValue();
                 }
-                newMakeRule.addPrerequisites(inputType, files);
+                makerule.addPrerequisites(inputType, files);
+            } else {
+                myMakeRules.add(newMakeRule);
             }
         }
-        myMakeRules.add(newMakeRule);
+
     }
 
     public MakeRule findTarget(IOutputType outputType, IFile correctOutputPath) {
