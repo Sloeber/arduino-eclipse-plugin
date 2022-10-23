@@ -21,7 +21,6 @@ import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
-import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyCalculator;
@@ -249,7 +248,7 @@ public class MakeRule {
     }
 
     public StringBuffer getRule(IProject project, IFile niceBuildFolder, IConfiguration config) {
-
+        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         String cmd = myTool.getToolCommand();
         //For now assume 1 target with 1 or more prerequisites
         // if there is more than 1 prerequisite we take the flags of the first prerequisite only
@@ -283,9 +282,8 @@ public class MakeRule {
         boolean resourceNameRequiresExplicitRule = containsSpecialCharacters(sourceLocation.getLocation().toOSString());
         needExplicitRuleForFile = resourceNameRequiresExplicitRule
                 || BuildMacroProvider.getReferencedExplitFileMacros(myTool).length > 0
-                || BuildMacroProvider.getReferencedExplitFileMacros(cmd, IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null,
-                                myTool)).length > 0;
+                || BuildMacroProvider.getReferencedExplitFileMacros(cmd, IBuildMacroProvider.CONTEXT_CONFIGURATION,
+                        confDesc).length > 0;
 
         String outflag = myTool.getOutputFlag();
         String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE
@@ -304,19 +302,17 @@ public class MakeRule {
             IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
             if (!needExplicitRuleForFile) {
                 resolvedCommand = provider.resolveValueToMakefileFormat(buildCmd, EMPTY_STRING, WHITESPACE,
-                        IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             } else {
                 // if we need an explicit rule then don't use any builder
                 // variables, resolve everything to explicit strings
                 resolvedCommand = provider.resolveValue(buildCmd, EMPTY_STRING, WHITESPACE,
-                        IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(sourceLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
+                        IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             }
-            if (!resolvedCommand.isBlank())
+            if (resolvedCommand != null && !resolvedCommand.isBlank())
                 buildCmd = resolvedCommand.trim();
         } catch (BuildMacroException e) {
-            /* JABA is not going to write this code */
+            //Continue using the default buildCmd value
         }
 
         StringBuffer buffer = new StringBuffer();
@@ -328,7 +324,7 @@ public class MakeRule {
         // JABA add sketch.prebuild and postbouild if needed
         //TOFIX this should not be here
         if ("sloeber.ino".equals(fileName)) { //$NON-NLS-1$
-            ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
+
             String sketchPrebuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
                     "sloeber.sketch.prebuild", new String(), true); //$NON-NLS-1$
             String sketchPostBuild = io.sloeber.core.common.Common.getBuildEnvironmentVariable(confDesc,
@@ -386,6 +382,7 @@ public class MakeRule {
     private String expandCommandLinePattern(IConfiguration config, String sourceExtension, Set<String> flags,
             String outputFlag, String outputName, Set<String> inputResources, IFile inputLocation,
             IFile outputLocation) {
+        ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         String cmd = myTool.getToolCommand();
         // try to resolve the build macros in the tool command
         try {
@@ -393,14 +390,12 @@ public class MakeRule {
             if ((inputLocation != null && inputLocation.toString().indexOf(WHITESPACE) != -1)
                     || (outputLocation != null && outputLocation.toString().indexOf(WHITESPACE) != -1)) {
                 resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, EMPTY_STRING,
-                        WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
+                        WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             } else {
                 resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd,
-                        EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_FILE,
-                        new FileContextData(inputLocation.getFullPath(), outputLocation.getFullPath(), null, myTool));
+                        EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION, confDesc);
             }
-            if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
+            if (resolvedCommand != null && (resolvedCommand = resolvedCommand.trim()).length() > 0)
                 cmd = resolvedCommand;
         } catch (BuildMacroException e) {
             /* JABA is not going to write this code */
@@ -461,8 +456,7 @@ public class MakeRule {
     }
 
     /**
-     * A simple rule is a rule that takes exactly 1 input type containing exactly
-     * one file
+     * A simple rule is a rule that takes exactly 1 input type
      * and exactly 1 output type containing exactly 1 file
      * 
      * @return true if this rule is a simple rule
@@ -470,18 +464,21 @@ public class MakeRule {
      */
 
     public boolean isSimpleRule() {
-        int counter = 0;
-        for (Set<IFile> files : myTargets.values()) {
-            if ((++counter > 1) || (files.size() != 1)) {
-                return false;
-            }
+        if ((myTargets.size() != 1) || (myTargets.size() != 1)) {
+            return false;
         }
-        counter = 0;
-        for (Set<IFile> files : myPrerequisites.values()) {
-            if ((++counter > 1) || (files.size() != 1)) {
-                return false;
-            }
-        }
+        //        int counter = 0;
+        //        for (Set<IFile> files : myTargets.values()) {
+        //            if ((++counter > 1) || (files.size() != 1)) {
+        //                return false;
+        //            }
+        //        }
+        //        counter = 0;
+        //        for (Set<IFile> files : myPrerequisites.values()) {
+        //            if ((++counter > 1)) {
+        //                return false;
+        //            }
+        //        }
         return true;
 
     }

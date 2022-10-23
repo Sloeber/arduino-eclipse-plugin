@@ -36,7 +36,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
+import io.sloeber.managedBuild.api.INewManagedOutputNameProvider;
 
 public class TopMakeFileGenerator {
     private ArduinoGnuMakefileGenerator caller = null;
@@ -98,8 +98,12 @@ public class TopMakeFileGenerator {
         return caller.getRuleList();
     }
 
-    public PathSettingsContainer getToolInfos() {
+    private PathSettingsContainer getToolInfos() {
         return caller.getToolInfos();
+    }
+
+    private IPath getBuildFolder() {
+        return caller.getBuildFolder().getLocation();
     }
 
     public void generateMakefile() throws CoreException {
@@ -111,8 +115,7 @@ public class TopMakeFileGenerator {
         buffer.append(addMacros());
         List<String> outputVarsAdditionsList = new ArrayList<>();
         // Determine target rules
-        //TOFIX removed line
-        //StringBuffer targetRules = addTargets(outputVarsAdditionsList, true);
+        buffer.append(addTargets(outputVarsAdditionsList, true));
         // Add outputMacros that were added to by the target rules
         //TOFIX removed line
         //     buffer.append(writeTopAdditionMacros(outputVarsAdditionsList, mySecondaryMacros));
@@ -656,12 +659,6 @@ public class TopMakeFileGenerator {
         // Add the comment
         buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(BUILD_TOP))
                 .append(NEWLINE);
-        PathSettingsContainer toolInfos = getToolInfos();
-        //        ToolInfoHolder h = (ToolInfoHolder) toolInfos.getValue();
-        //        ITool[] buildTools = h.buildTools;
-        //        boolean[] buildToolsUsed = h.buildToolsUsed;
-        ITool[] buildTools = null;
-        boolean[] buildToolsUsed = null;
         // Get the target tool and generate the rule
         if (targetTool != null) {
             // Note that the name of the target we pass to addRuleForTool does
@@ -669,16 +666,9 @@ public class TopMakeFileGenerator {
             // appear to be used there (and tool outputs are consulted
             // directly), but
             // we quote it anyway just in case it starts to use it in future.
-            if (addRuleForTool(targetTool, buffer, true,
+            addRuleForTool(targetTool, buffer, true,
                     ensurePathIsGNUMakeTargetRuleCompatibleSyntax(caller.buildTargetName), caller.buildTargetExt,
-                    outputVarsAdditionsList, managedProjectOutputs, postbuildStep)) {
-                // Mark the target tool as processed
-                for (int i = 0; i < buildTools.length; i++) {
-                    if (targetTool == buildTools[i]) {
-                        buildToolsUsed[i] = true;
-                    }
-                }
-            }
+                    outputVarsAdditionsList, managedProjectOutputs, postbuildStep);
         } else {
             buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_NO_TARGET_TOOL + WHITESPACE + OUT_MACRO));
         }
@@ -812,6 +802,7 @@ public class TopMakeFileGenerator {
         MakeRules makeRules = new MakeRules();
         IConfiguration config = getConfig();
         IProject project = getProject();
+        IPath buildPath = getBuildFolder();
 
         // Visit the resources in this set 
         for (Entry<IOutputType, Set<IFile>> entry : generatedFiles.entrySet()) {
@@ -825,11 +816,12 @@ public class TopMakeFileGenerator {
                     }
                     if (inputType.getMultipleOfType()) {
                         for (IOutputType outputType : tool.getOutputTypes()) {
-                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            INewManagedOutputNameProvider nameProvider = getJABANameProvider(config, buildPath,
+                                    outputType);
                             if (nameProvider == null) {
                                 continue;
                             }
-                            IPath outputFile = nameProvider.getOutputName(null, null, null, null);
+                            IPath outputFile = nameProvider.getOutputName(project, config, null, null);
                             if (outputFile != null) {
                                 //This is a multiple to 1 based on var name
                                 IFile correctOutputFile = getProject()
@@ -853,7 +845,8 @@ public class TopMakeFileGenerator {
                     } else {
                         //The link is based on the varname but the files are one on one
                         for (IOutputType outputType : tool.getOutputTypes()) {
-                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            INewManagedOutputNameProvider nameProvider = getJABANameProvider(config, buildPath,
+                                    outputType);
                             if (nameProvider == null) {
                                 continue;
                             }

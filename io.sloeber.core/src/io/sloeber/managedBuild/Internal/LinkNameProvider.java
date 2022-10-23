@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.IPath;
 import io.sloeber.core.common.Common;
 import io.sloeber.core.common.Const;
 import io.sloeber.core.tools.Helpers;
-import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
+import io.sloeber.managedBuild.api.INewManagedOutputNameProvider;
 
-public class LinkNameProvider implements IManagedOutputNameProviderJaba {
+public class LinkNameProvider implements INewManagedOutputNameProvider {
 
     @Override
     public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {

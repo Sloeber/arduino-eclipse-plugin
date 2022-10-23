@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import io.sloeber.managedBuild.api.IManagedOutputNameProviderJaba;
+import io.sloeber.managedBuild.api.INewManagedOutputNameProvider;
 
 public class SubDirMakeGenerator {
     private ArduinoGnuMakefileGenerator caller;
@@ -33,11 +33,11 @@ public class SubDirMakeGenerator {
     SubDirMakeGenerator(ArduinoGnuMakefileGenerator theCaller, IContainer module) {
         caller = theCaller;
         IProject project = getProject();
-        IPath buildRoot = getBuildWorkingDir();
-        if (buildRoot == null) {
+        IPath buildPath = getBuildPath();
+        if (buildPath == null) {
             return;
         }
-        IPath moduleOutputPath = buildRoot.append(module.getProjectRelativePath());
+        IPath moduleOutputPath = buildPath.append(module.getProjectRelativePath());
         myMakefile = project.getFile(moduleOutputPath.append(MODFILE_NAME));
         getMakeRulesFromSourceFiles(module);
     }
@@ -102,8 +102,12 @@ public class SubDirMakeGenerator {
         return ret;
     }
 
-    private IPath getBuildWorkingDir() {
+    private IPath getBuildPath() {
         return caller.getBuildWorkingDir();
+    }
+
+    private IPath getBuildFolder() {
+        return caller.getBuildFolder().getLocation();
     }
 
     private IFile getTopBuildDir() {
@@ -181,6 +185,7 @@ public class SubDirMakeGenerator {
         myMakeRules.clear();
         IConfiguration config = getConfig();
         IProject project = getProject();
+        IPath buildPath = getBuildFolder();
 
         // Visit the resources in this folder 
         try {
@@ -206,7 +211,8 @@ public class SubDirMakeGenerator {
                             continue;
                         }
                         for (IOutputType outputType : tool.getOutputTypes()) {
-                            IManagedOutputNameProviderJaba nameProvider = getJABANameProvider(outputType);
+                            INewManagedOutputNameProvider nameProvider = getJABANameProvider(config, buildPath,
+                                    outputType);
                             if (nameProvider == null) {
                                 continue;
                             }
