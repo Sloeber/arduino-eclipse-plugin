@@ -25,7 +25,6 @@ import org.eclipse.cdt.managedbuilder.core.IOutputType;
 import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.cdt.managedbuilder.internal.core.OutputType;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
@@ -365,7 +364,7 @@ public class ManagebBuildCommon {
     static protected StringBuffer addDefaultHeader() {
         StringBuffer buffer = new StringBuffer();
         outputCommentLine(buffer);
-        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(HEADER))
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MESSAGE_HEADER)
                 .append(NEWLINE);
         outputCommentLine(buffer);
         buffer.append(NEWLINE);
