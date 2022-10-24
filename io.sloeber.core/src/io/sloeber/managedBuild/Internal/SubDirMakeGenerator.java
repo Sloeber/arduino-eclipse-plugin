@@ -14,7 +14,6 @@ import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IInputType;
 import org.eclipse.cdt.managedbuilder.core.IOutputType;
 import org.eclipse.cdt.managedbuilder.core.ITool;
-import org.eclipse.cdt.managedbuilder.internal.core.ManagedMakeMessages;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -107,7 +106,7 @@ public class SubDirMakeGenerator {
     }
 
     private IPath getBuildFolder() {
-        return caller.getBuildFolder().getLocation();
+        return caller.getBuildFolder();
     }
 
     private IFile getTopBuildDir() {
@@ -143,7 +142,7 @@ public class SubDirMakeGenerator {
         StringBuffer buffer = new StringBuffer();
         IFile buildRoot = getTopBuildDir();
         buffer.append(NEWLINE);
-        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_VARS))
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MESSAGE_MOD_VARS)
                 .append(NEWLINE);
         HashSet<String> macroNames = new HashSet<>();
         for (MakeRule makeRule : myMakeRules) {
@@ -170,7 +169,7 @@ public class SubDirMakeGenerator {
     private StringBuffer GenerateRules(IConfiguration config) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(NEWLINE);
-        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(ManagedMakeMessages.getResourceString(MOD_RULES))
+        buffer.append(COMMENT_SYMBOL).append(WHITESPACE).append(MESSAGE_MOD_RULES)
                 .append(NEWLINE);
 
         for (MakeRule makeRule : myMakeRules) {
@@ -235,7 +234,6 @@ public class SubDirMakeGenerator {
 
             }
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

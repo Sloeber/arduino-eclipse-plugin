@@ -247,6 +247,7 @@ public class MakeRule {
         return ret;
     }
 
+    //FIXME JABA says: this code is weirdly crazy and way longer then I would expect. Should see why
     public StringBuffer getRule(IProject project, IFile niceBuildFolder, IConfiguration config) {
         ICConfigurationDescription confDesc = ManagedBuildManager.getDescriptionForConfiguration(config);
         String cmd = myTool.getToolCommand();
@@ -318,7 +319,7 @@ public class MakeRule {
         StringBuffer buffer = new StringBuffer();
         buffer.append(enumTargets(niceBuildFolder)).append(COLON).append(WHITESPACE);
         buffer.append(enumPrerequisites(niceBuildFolder)).append(NEWLINE);
-        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_START_FILE + WHITESPACE + IN_MACRO));
+        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_START_FILE + WHITESPACE + OUT_MACRO));
         buffer.append(TAB).append(AT).append(escapedEcho(myTool.getAnnouncement()));
 
         // JABA add sketch.prebuild and postbouild if needed
@@ -342,7 +343,7 @@ public class MakeRule {
         // end JABA add sketch.prebuild and postbouild if needed
 
         buffer.append(NEWLINE);
-        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_FINISH_FILE + WHITESPACE + IN_MACRO));
+        buffer.append(TAB).append(AT).append(escapedEcho(MESSAGE_FINISH_FILE + WHITESPACE + OUT_MACRO));
         buffer.append(TAB).append(AT).append(ECHO_BLANK_LINE).append(NEWLINE);
         return buffer;
     }
@@ -482,5 +483,9 @@ public class MakeRule {
         return true;
 
     }
+
+	public boolean isTool(ITool targetTool) {
+		return myTool.getName().equals(targetTool.getName());
+	}
 
 }

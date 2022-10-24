@@ -104,4 +104,14 @@ public class MakeRules {
         return myMakeRules;
     }
 
+	public Set<IFile> getTargetsForTool(ITool targetTool) {
+		Set<IFile> ret=new HashSet<>();
+		for(MakeRule curMakeRule :myMakeRules) {
+			if(curMakeRule.isTool(targetTool)) {
+				ret.addAll( curMakeRule.getTargetFiles());
+			}
+		}
+		return ret;
+	}
+
 }
