@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="io.sloeber.managedbuilder" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="io.sloeber.managedbuild" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="io.sloeber.managedbuilder" id="buildDefinitions" name="Managed Build Definitions"/>
+         <meta.schema plugin="io.sloeber.managedbuild" id="buildDefinitions" name="Managed Build Definitions"/>
       </appinfo>
       <documentation>
          The managed build object model describes project-types, configurations, tool-chains, etc. for the managed build system.
@@ -266,16 +266,6 @@ Additional special types exist to flag options of special relevance to the build
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="helpSupplier" type="string">
-            <annotation>
-               <documentation>
-                  This field is unused in 2.0
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" deprecated="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
          <attribute name="tip" type="string">
             <annotation>
                <documentation>
@@ -448,13 +438,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
             <annotation>
                <documentation>
                   Specifies the default list of error parsers used by the tool.  Error parsers specified by the tool are added to this list specified by the tool-chain when a project resource is defined to use the tool.  It is automatically removed when there are no more project resources using the tool.  It is an ordered, semi-colon separated list of parser IDs.  The order specifies the order in which the error parsers are invoked during a build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="advancedInputCategory" type="boolean">
-            <annotation>
-               <documentation>
-                  Specifies whether the Tool wants the MBS to display the Advanced Input category with the Tool&apos;s property categories.  This allows the user to specify input order and additional inputs.  The default is false.  Note:  This attribute is not yet implemented
                </documentation>
             </annotation>
          </attribute>
@@ -641,33 +624,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="versionsSupported" type="string">
-            <annotation>
-               <documentation>
-                  Specifies a comma delimited list of versions of this tool-chain that can be loaded without invoking a converter.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="convertToId" type="string">
-            <annotation>
-               <documentation>
-                  The identifier of a tool-chain, that tool-chains loaded using this definition should be converted to. MBS will invoke a proper converter.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="optionPathConverter" type="string">
-            <annotation>
-               <documentation>
-                  Toolchains like Cygwin based Gnu tools can accept paths which are not valid for the OS platform. E.g. &quot;/usr/include&quot; is well difined for a Cygwin gcc compiler while it is not a meaningful path for a java.io.File. Therefore toolchains can specify a pathConverter which will be applied to include and library paths configured in the Managed Build System.
-
-The pathConverter of a toolchain applies for all tools of the toolchain except if a tool defines it&apos;s own pathConverter. In this case the pathConverter supplied by the toolchain is ignored.
-               </documentation>
-               <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IPathConverter"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="supportsManagedBuild" type="boolean">
+         <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
                   Specifies whether or not the tool-chain supports managed build. Default value is true.
@@ -912,13 +869,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="convertToId" type="string">
-            <annotation>
-               <documentation>
-                  The identifier of a projectType, that project types loaded using this definition should be converted to. MBS will invoke a proper converter.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="buildProperties" type="string">
             <annotation>
                <documentation>
@@ -1156,13 +1106,6 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="multipleOfType" type="boolean">
-            <annotation>
-               <documentation>
-                  Specifies whether all inputs of this type are used in one invocation of the tool. The inputs can be project resources, and the outputs of other Tools in the Tool-chain. The default is false.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="scannerConfigDiscoveryProfileId" type="string">
             <annotation>
                <documentation>
@@ -1299,13 +1242,6 @@ Overrides language id specified with the languageId attribute.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="outputs" type="string">
-            <annotation>
-               <documentation>
-                  The file extension that identify files of this output type. Note that the user will not be able to modify the set of file extensions as they can when outputContentType is specified.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="option" type="string">
             <annotation>
                <documentation>
@@ -1317,6 +1253,13 @@ Overrides language id specified with the languageId attribute.
             <annotation>
                <documentation>
                   Some tools produce files with a special prefix that must be specified. For example, a librarian on POSIX systems expects the output to be libtarget.a, so &apos;lib&apos; would be the prefix.  The default is to use the Tool &quot;outputPrefix&quot; attribute if primaryOutput is True, otherwise the default is an empty string.  This attribute supports MBS configuration context macros.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="outputExtension" type="string">
+            <annotation>
+               <documentation>
+                  The file extension that identify files of this output type. Note that the user will not be able to modify the  file extension as they can when outputContentType is specified.
                </documentation>
             </annotation>
          </attribute>
@@ -1656,13 +1599,6 @@ If the attribute is not specified or contains the empty string, this would mean 
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="isVariableCaseSensitive" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  Specifies whether the builder variables are case sensitive or not. Can be set to either &quot;true&quot; or &quot;false&quot;. The default is &quot;true&quot;. If the builder does not support case-sensitive variables and there are some build environment variables that differ only in case (Environment variables on Unix-like operating systems are case sensitive), then those macros will always get resolved in the buildfile.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="reservedMacroNames" type="string">
             <annotation>
                <documentation>
@@ -1761,21 +1697,7 @@ If this attribute is not specified, MBS will assume that there are no reserved m
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="versionsSupported" type="string">
-            <annotation>
-               <documentation>
-                  Specifies a comma delimited list of versions of this builder that can be loaded without invoking a converter.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="convertToId" type="string">
-            <annotation>
-               <documentation>
-                  The identifier of a builder, that builders loaded using this definition should be converted to. MBS will invoke a proper converter.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="supportsManagedBuild" type="boolean">
+         <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
                   Specifies whether the duilder supports managed build. Default value is true.
