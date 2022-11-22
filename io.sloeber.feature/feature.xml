@@ -66,10 +66,5 @@ If you do not agree with this policy, please do not install this software.
          fragment="true"
          unpack="false"/>
 
-   <plugin
-         id="io.sloeber.application"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
 </feature>
