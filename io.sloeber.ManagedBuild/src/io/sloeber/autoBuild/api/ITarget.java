@@ -274,7 +274,6 @@ public interface ITarget extends IBuildObject {
      * @param rebuild
      *            <code>true</code> will force a rebuild the next time the project
      *            builds
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setRebuildState(boolean)
      */
     public void setRebuildState(boolean rebuild);
 
