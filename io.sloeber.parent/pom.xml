@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho.version>2.3.0</tycho.version>
+		<tycho.version>2.7.5</tycho.version>
 		<built.repo.dir>${project.build.directory}/repo</built.repo.dir>
 		<!-- maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target -->
