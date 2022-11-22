@@ -138,7 +138,6 @@ public interface IConfigurationV2 extends IBuildObject {
 	 * Sets the rebuild state in the receiver.
 	 *
 	 * @param rebuild <code>true</code> will force a rebuild the next time the project builds
-	 * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setRebuildState(boolean)
 	 */
 	void setRebuildState(boolean rebuild);
 
