@@ -3,6 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber SDK
 Bundle-SymbolicName: io.sloeber.product.sdk;singleton:=true
 Bundle-Version: 4.3.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: baeyens.it
 Automatic-Module-Name: io.sloeber.product.sdk
