@@ -10,6 +10,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.eclipse.platform,
  org.eclipse.ui.intro
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: baeyens.it
 Automatic-Module-Name: io.sloeber.product
