@@ -77,7 +77,7 @@ public class SloeberProject extends Common {
     //this only happens when we were not able to write the data to disk
     //due to a locked workspace
     private boolean myNeedToPersist = false;
-    private boolean myNeedsSyncWithCDT = false; // CDT config or env var sync needed
+    private boolean myNeedToCreateCDTConfigs = false; // CDT config or env var sync needed
     /* I didn't wan to introduce the functionality provided by myIsTryingCDTRead but ..
      * I didn't find a better way
      * The problem is that when trying to read the old sloeber data the sloeber environment variable 
@@ -365,6 +365,43 @@ public class SloeberProject extends Common {
         return root.getProject(realProjectName);
     }
 
+    /**
+     * This method asks for a Sloeber project in an old form and creates a sloeber
+     * project in a new for
+     * currently only 1 conversion is implemented
+     * 
+     * @param projectName
+     * @param projectURI
+     * @param monitor
+     */
+
+    public void upgradeArduinoProject(String projectName, URI projectURI, IProgressMonitor monitor) {
+        boolean saveProjDesc = false;
+        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject, true);
+        if (prjCDesc == null) {
+            //CDT project description is not found or is not writable
+        }
+
+        if (!getConfigLocalFile().exists()) {
+            //if the .sproject file exists check for old data and clean old data if found
+        } else {
+            //No sloeber project file try to migrate from old CDT storage
+            if (readConfigFromCDT(prjCDesc)) {
+                createSloeberConfigFiles(prjCDesc);
+                setAllEnvironmentVars(prjCDesc);
+                saveProjDesc = removeCDTEnvironmentVars(prjCDesc);
+            }
+        }
+        if (saveProjDesc) {
+            try {
+                cCorePlugin.setProjectDescription(myProject, prjCDesc);
+            } catch (CoreException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private HashMap<String, String> getEnvVars(String configKey) {
         BoardDescription boardDescription = myBoardDescriptions.get(configKey);
         CompileDescription compileOptions = myCompileDescriptions.get(configKey);
@@ -409,7 +446,7 @@ public class SloeberProject extends Common {
     public void configure() {
 
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject);
+        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject, false);
         configure(prjCDesc, false);
     }
 
@@ -423,49 +460,32 @@ public class SloeberProject extends Common {
     public synchronized boolean configure(ICProjectDescription prjCDesc, boolean prjDescWritable) {
         boolean saveProjDesc = false;
 
-        if (!isInMemory()) {
-            //we need to read the stuff from disk or CDT
-            if (getConfigLocalFile().exists()) {
-                //as the sloeber project file exists we assume the project has been migrated
-                //read from disk
-                readConfigFromFiles();
-                List<String> newConfigs = newConfigNeededInCDT(prjCDesc);
-                if (newConfigs.size() > 0) {
-                    if (prjDescWritable) {
-                        createNeededCDTConfigs(newConfigs, prjCDesc);
-                        saveProjDesc = true;
-                    } else {
-                        myNeedsSyncWithCDT = true;
-                    }
-                }
-            } else {
-                //No sloeber project file try to migrate from old CDT storage
-                // Maybe this is a old Sloeber project with the data in the eclipse build
-                // environment variables
-                if (readConfigFromCDT(prjCDesc)) {
-                    createSloeberConfigFiles(prjCDesc);
-                    setAllEnvironmentVars(prjCDesc);
-                    if (prjDescWritable) {
-                        removeCDTEnvironmentVars(prjCDesc);
-                        saveProjDesc = true;
-                    } else {
-                        myNeedsSyncWithCDT = true;
-                    }
-                }
-            }
-        } else {
+        if (isInMemory()) {
+            //Everything is in memory so start from there
             if (myIsDirty || myNeedToPersist) {
                 createSloeberConfigFiles(prjCDesc);
             }
-            if (prjDescWritable) {
-                if (myNeedsSyncWithCDT) {
-                    saveProjDesc = saveProjDesc || removeCDTEnvironmentVars(prjCDesc);
-                    saveProjDesc = saveProjDesc || createNeededCDTConfigs(newConfigNeededInCDT(prjCDesc), prjCDesc);
-                    myNeedsSyncWithCDT = false;
+
+        } else {
+            //we need to read the stuff from disk or CDT
+            if (!getConfigLocalFile().exists()) {
+                //There is no sloeber configuration file so error your way out
+                Common.log(new Status(IStatus.ERROR, io.sloeber.core.Activator.getId(),
+                        "Sloeber did not find the sloeber config files and could not configure the project")); //$NON-NLS-1$
+            } else {
+                //Configure from tyhe sloeber config file
+                readConfigFromFiles();
+                List<String> newConfigs = newConfigNeededInCDT(prjCDesc);
+                if (newConfigs.size() > 0) {
+                    myNeedToCreateCDTConfigs = true;
                 }
             }
         }
 
+        if (prjDescWritable && myNeedToCreateCDTConfigs) {
+            saveProjDesc = saveProjDesc || createNeededCDTConfigs(newConfigNeededInCDT(prjCDesc), prjCDesc);
+            myNeedToCreateCDTConfigs = false;
+        }
         setAllEnvironmentVars(prjCDesc);
         myIsInMemory = true;
         myIsDirty = false;
@@ -683,9 +703,8 @@ public class SloeberProject extends Common {
         } catch (Exception e) {
             ICProjectDescription projDesc = confDesc.getProjectDescription();
             String confDescName = confDesc.getName();
-            String projName = projDesc.getProject().getName();
             Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
-                    "Setting config " + confDescName + " for project " + projName + " failed", e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "Setting config " + confDescName + " for project " + myProject.getName() + " failed", e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         return runnable.projConfMustBeSaved;
     }
@@ -696,7 +715,7 @@ public class SloeberProject extends Common {
      * because you probably do not want to add all the info to a version control
      * tool.
      * 
-     * .sproject is the file you can add to a version control sloeber.cfg is the
+     * sloeber.cfg is the file you can add to a version control .sproject is the
      * file with settings you do not want to add to version control
      * 
      * @param project
@@ -972,18 +991,17 @@ public class SloeberProject extends Common {
                             String newKey = getConfigKey(curConfig);
                             Helpers.deleteBuildFolder(myProject, renamedConfig.getName());
                             BoardDescription boardDesc = myBoardDescriptions.get(oldKey);
-                            myBoardDescriptions.put(newKey, boardDesc);
                             myBoardDescriptions.remove(oldKey);
+                            myBoardDescriptions.put(newKey, boardDesc);
 
                             CompileDescription compDesc = myCompileDescriptions.get(oldKey);
-                            myCompileDescriptions.put(newKey, compDesc);
                             myCompileDescriptions.remove(oldKey);
+                            myCompileDescriptions.put(newKey, compDesc);
 
                             OtherDescription otherDesc = myOtherDescriptions.get(oldKey);
-                            myOtherDescriptions.put(newKey, otherDesc);
                             myOtherDescriptions.remove(oldKey);
+                            myOtherDescriptions.put(newKey, otherDesc);
                         }
-
                         myIsDirty = true;
                     }
                 }
@@ -1133,11 +1151,11 @@ public class SloeberProject extends Common {
         // I assume the extension is .hex as the Arduino Framework does not provide the
         // extension nor a key for the uploadable sketch (=build target)
         // as currently this method is only used for network upload via yun this is ok
-        // nor now
+        // for now
         CCorePlugin cCorePlugin = CCorePlugin.getDefault();
         ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject);
         String activeConfig = prjCDesc.getActiveConfiguration().getName();
-        return myProject.getFolder(activeConfig).getFile(myProject.getName() + ".hex");
+        return myProject.getFolder(activeConfig).getFile(myProject.getName() + ".hex"); //$NON-NLS-1$
     }
 
 }
