@@ -138,13 +138,22 @@ public class SloeberProject extends Common {
 
                     // create a sloeber project
                     SloeberProject sloeberProject = new SloeberProject(project);
+                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
+                    if (upgradeArduinoProject(sloeberProject, prjCDesc)) {
+                        try {
+                            cCorePlugin.setProjectDescription(project, prjCDesc);
+                        } catch (CoreException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     if (!sloeberProject.readConfigFromFiles()) {
                         String RELEASE = "Release";
                         sloeberProject.setBoardDescription(RELEASE, new BoardDescription(), false);
                         sloeberProject.setCompileDescription(RELEASE, new CompileDescription());
                         sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
-                        // we failed to read from disk so we set opourselfves some values
-                        // faking the stuf is in memory
+                        // we failed to read from disk so we set up some values
+                        // faking the stuff is in memory
 
                     }
                     String configName = sloeberProject.myBoardDescriptions.keySet().iterator().next();
@@ -184,9 +193,7 @@ public class SloeberProject extends Common {
                     ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
 
                     Map<String, String> configs2 = new HashMap<>();
-
-                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project);
+                    prjCDesc = cCorePlugin.getProjectDescription(project);
                     ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
                     for (String curConfigName : sloeberProject.myBoardDescriptions.keySet()) {
@@ -370,36 +377,29 @@ public class SloeberProject extends Common {
      * project in a new for
      * currently only 1 conversion is implemented
      * 
-     * @param projectName
-     * @param projectURI
-     * @param monitor
+     * returns true if the projectdescription needs to be saved
      */
 
-    public void upgradeArduinoProject(String projectName, URI projectURI, IProgressMonitor monitor) {
+    private static boolean upgradeArduinoProject(SloeberProject project, ICProjectDescription prjCDesc) {
         boolean saveProjDesc = false;
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(myProject, true);
+
         if (prjCDesc == null) {
             //CDT project description is not found or is not writable
+            return false;
         }
 
-        if (!getConfigLocalFile().exists()) {
+        if (project.getConfigLocalFile().exists()) {
             //if the .sproject file exists check for old data and clean old data if found
+            saveProjDesc = removeCDTEnvironmentVars(prjCDesc);
         } else {
             //No sloeber project file try to migrate from old CDT storage
-            if (readConfigFromCDT(prjCDesc)) {
-                createSloeberConfigFiles(prjCDesc);
-                setAllEnvironmentVars(prjCDesc);
+            if (project.readConfigFromCDT(prjCDesc)) {
+                project.createSloeberConfigFiles(prjCDesc);
+                project.setAllEnvironmentVars(prjCDesc);
                 saveProjDesc = removeCDTEnvironmentVars(prjCDesc);
             }
         }
-        if (saveProjDesc) {
-            try {
-                cCorePlugin.setProjectDescription(myProject, prjCDesc);
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
+        return saveProjDesc;
     }
 
     private HashMap<String, String> getEnvVars(String configKey) {
@@ -959,10 +959,16 @@ public class SloeberProject extends Common {
         return CONFIG_DOT + confDescName + DOT + "other."; //$NON-NLS-1$
     }
 
+    /*
+     * Get the file that Sloeber maintains and that is meant to be stored in version control
+     */
     private IFile getConfigVersionFile() {
         return myProject.getFile(SLOEBER_CFG);
     }
 
+    /*
+     * Get the sloeber configuration file
+     */
     private IFile getConfigLocalFile() {
         return myProject.getFile(".sproject"); //$NON-NLS-1$
     }
