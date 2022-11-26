@@ -113,7 +113,6 @@
 		<feature id="org.eclipse.sdk"/>
 		<feature id="org.eclipse.swtbot"/>
 		<feature id="org.eclipse.swtbot.eclipse"/>
-		<feature id="org.eclipse.swtbot.eclipse.gef"/>
 		<feature id="org.eclipse.swtbot.forms"/>
 		<feature id="org.eclipse.tcf.core.feature"/>
 		<feature id="org.eclipse.tcf.te.feature"/>
@@ -145,14 +144,12 @@
 		<plugin id="org.eclipse.cdt.remote.core"/>
 		<plugin id="org.eclipse.cdt.visualizer.core"/>
 		<plugin id="org.eclipse.cdt.visualizer.ui"/>
-		<plugin id="org.eclipse.draw2d"/>
 		<plugin id="org.eclipse.e4.tools.emf.ui"/>
 		<plugin id="org.eclipse.e4.tools.emf.ui.source"/>
 		<plugin id="org.eclipse.e4.tools.services"/>
 		<plugin id="org.eclipse.e4.tools.services.source"/>
 		<plugin id="org.eclipse.e4.ui.progress"/>
 		<plugin id="org.eclipse.e4.ui.progress.source"/>
-		<plugin id="org.eclipse.gef"/>
 		<plugin id="org.eclipse.launchbar.core"/>
 		<plugin id="org.eclipse.launchbar.ui"/>
 		<plugin id="org.eclipse.remote.console"/>
