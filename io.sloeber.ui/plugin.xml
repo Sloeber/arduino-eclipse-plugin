@@ -218,7 +218,7 @@
           icon="icons/convertToSloeber.png"
           id="io.sloeber.convert.wizard"
           name="Convert to Sloeber project"
-          project="false">
+          project="true">
        <selection
              class="org.eclipse.core.resources.IProject">
        </selection>

@@ -4,37 +4,10 @@
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/tools/orbit/downloads/latest-R/"/>
-			<unit id="org.apache.commons.lang" version="2.6.0.v20220406-2305"/>
-			<unit id="org.apache.commons.lang.source" version="2.6.0.v20220406-2305"/>
-			<unit id="org.apache.commons.compress" version="1.21.0.v20211103-2100"/>
-			<unit id="org.apache.commons.compress.source" version="1.21.0.v20211103-2100"/>
-			<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
 			<unit id="org.junit" version="4.13.2.v20211018-1956"/>
-			<unit id="org.junit.jupiter.api" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.api.source" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.engine" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.engine.source" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.migrationsupport" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.migrationsupport.source" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.params" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.jupiter.params.source" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.commons" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.commons.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.engine" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.engine.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.launcher" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.launcher.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.runner" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.runner.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.api" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.api.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.commons" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.commons.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.engine" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.platform.suite.engine.source" version="1.8.2.v20220624-2009"/>
-			<unit id="org.junit.source" version="4.13.2.v20211018-1956"/>
-			<unit id="org.junit.vintage.engine" version="5.8.2.v20220624-2009"/>
-			<unit id="org.junit.vintage.engine.source" version="5.8.2.v20220624-2009"/>
+			<unit id="org.apache.commons.compress" version="1.21.0.v20211103-2100"/>
+			<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
+			<unit id="org.apache.commons.lang" version="2.6.0.v20220406-2305"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
@@ -68,5 +41,139 @@
 		<plugin id="org.eclipse.platform"/>
 		<plugin id="org.eclipse.cdt"/>
 	</implicitDependencies>
-	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
+	<includeBundles>
+		<feature id="org.eclipse.cdt"/>
+		<feature id="org.eclipse.cdt.autotools"/>
+		<feature id="org.eclipse.cdt.build.crossgcc"/>
+		<feature id="org.eclipse.cdt.debug.gdbjtag"/>
+		<feature id="org.eclipse.cdt.debug.ui.memory"/>
+		<feature id="org.eclipse.cdt.gdb"/>
+		<feature id="org.eclipse.cdt.gdb.source"/>
+		<feature id="org.eclipse.cdt.gnu.build"/>
+		<feature id="org.eclipse.cdt.gnu.build.source"/>
+		<feature id="org.eclipse.cdt.gnu.debug"/>
+		<feature id="org.eclipse.cdt.gnu.debug.source"/>
+		<feature id="org.eclipse.cdt.gnu.dsf"/>
+		<feature id="org.eclipse.cdt.gnu.dsf.source"/>
+		<feature id="org.eclipse.cdt.gnu.multicorevisualizer"/>
+		<feature id="org.eclipse.cdt.launch.remote"/>
+		<feature id="org.eclipse.cdt.managedbuilder.llvm"/>
+		<feature id="org.eclipse.cdt.msw"/>
+		<feature id="org.eclipse.cdt.native"/>
+		<feature id="org.eclipse.cdt.native.source"/>
+		<feature id="org.eclipse.cdt.platform"/>
+		<feature id="org.eclipse.cdt.platform.source"/>
+		<feature id="org.eclipse.cdt.sdk"/>
+		<feature id="org.eclipse.cdt.source"/>
+		<feature id="org.eclipse.cdt.testsrunner.feature"/>
+		<feature id="org.eclipse.e4.rcp"/>
+		<feature id="org.eclipse.e4.rcp.source"/>
+		<feature id="org.eclipse.ecf.core.feature"/>
+		<feature id="org.eclipse.ecf.core.feature.source"/>
+		<feature id="org.eclipse.ecf.core.ssl.feature"/>
+		<feature id="org.eclipse.ecf.core.ssl.feature.source"/>
+		<feature id="org.eclipse.ecf.filetransfer.feature"/>
+		<feature id="org.eclipse.ecf.filetransfer.feature.source"/>
+		<feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
+		<feature id="org.eclipse.ecf.filetransfer.httpclient5.feature.source"/>
+		<feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+		<feature id="org.eclipse.ecf.filetransfer.ssl.feature.source"/>
+		<feature id="org.eclipse.emf.common"/>
+		<feature id="org.eclipse.emf.common.source"/>
+		<feature id="org.eclipse.emf.databinding"/>
+		<feature id="org.eclipse.emf.databinding.edit"/>
+		<feature id="org.eclipse.emf.databinding.edit.source"/>
+		<feature id="org.eclipse.emf.databinding.source"/>
+		<feature id="org.eclipse.emf.ecore"/>
+		<feature id="org.eclipse.emf.ecore.source"/>
+		<feature id="org.eclipse.emf.edit"/>
+		<feature id="org.eclipse.emf.edit.source"/>
+		<feature id="org.eclipse.equinox.p2.core.feature"/>
+		<feature id="org.eclipse.equinox.p2.core.feature.source"/>
+		<feature id="org.eclipse.equinox.p2.extras.feature"/>
+		<feature id="org.eclipse.equinox.p2.extras.feature.source"/>
+		<feature id="org.eclipse.equinox.p2.rcp.feature"/>
+		<feature id="org.eclipse.equinox.p2.rcp.feature.source"/>
+		<feature id="org.eclipse.equinox.p2.user.ui"/>
+		<feature id="org.eclipse.equinox.p2.user.ui.source"/>
+		<feature id="org.eclipse.help"/>
+		<feature id="org.eclipse.help.source"/>
+		<feature id="org.eclipse.jdt"/>
+		<feature id="org.eclipse.jdt.source"/>
+		<feature id="org.eclipse.nebula.widgets.oscilloscope.css.feature"/>
+		<feature id="org.eclipse.nebula.widgets.oscilloscope.feature"/>
+		<feature id="org.eclipse.pde"/>
+		<feature id="org.eclipse.pde.source"/>
+		<feature id="org.eclipse.platform"/>
+		<feature id="org.eclipse.platform.source"/>
+		<feature id="org.eclipse.rcp"/>
+		<feature id="org.eclipse.rcp.source"/>
+		<feature id="org.eclipse.remote"/>
+		<feature id="org.eclipse.sdk"/>
+		<feature id="org.eclipse.swtbot"/>
+		<feature id="org.eclipse.swtbot.eclipse"/>
+		<feature id="org.eclipse.swtbot.forms"/>
+		<feature id="org.eclipse.tcf.core.feature"/>
+		<feature id="org.eclipse.tcf.te.feature"/>
+		<feature id="org.eclipse.tcf.te.tcf.core.feature"/>
+		<feature id="org.eclipse.tcf.te.tcf.launch.cdt.feature"/>
+		<feature id="org.eclipse.tm.terminal.connector.local.feature"/>
+		<feature id="org.eclipse.tm.terminal.connector.ssh.feature"/>
+		<feature id="org.eclipse.tm.terminal.connector.telnet.feature"/>
+		<feature id="org.eclipse.tm.terminal.control.feature"/>
+		<feature id="org.eclipse.tm.terminal.feature"/>
+		<feature id="org.eclipse.tm.terminal.view.feature"/>
+		<plugin id="com.google.gson"/>
+		<plugin id="com.google.gson.source"/>
+		<plugin id="com.sun.xml.bind"/>
+		<plugin id="com.sun.xml.bind.source"/>
+		<plugin id="jakarta.activation"/>
+		<plugin id="jakarta.activation.source"/>
+		<plugin id="jakarta.xml.bind"/>
+		<plugin id="jakarta.xml.bind.source"/>
+		<plugin id="javax.activation"/>
+		<plugin id="javax.activation.source"/>
+		<plugin id="javax.xml"/>
+		<plugin id="org.apache.commons.compress"/>
+		<plugin id="org.apache.commons.compress.source"/>
+		<plugin id="org.apache.commons.io"/>
+		<plugin id="org.apache.commons.io.source"/>
+		<plugin id="org.apache.commons.lang"/>
+		<plugin id="org.apache.commons.lang.source"/>
+		<plugin id="org.eclipse.cdt.remote.core"/>
+		<plugin id="org.eclipse.cdt.visualizer.core"/>
+		<plugin id="org.eclipse.cdt.visualizer.ui"/>
+		<plugin id="org.eclipse.e4.tools.emf.ui"/>
+		<plugin id="org.eclipse.e4.tools.emf.ui.source"/>
+		<plugin id="org.eclipse.e4.tools.services"/>
+		<plugin id="org.eclipse.e4.tools.services.source"/>
+		<plugin id="org.eclipse.e4.ui.progress"/>
+		<plugin id="org.eclipse.e4.ui.progress.source"/>
+		<plugin id="org.eclipse.launchbar.core"/>
+		<plugin id="org.eclipse.launchbar.ui"/>
+		<plugin id="org.eclipse.remote.console"/>
+		<plugin id="org.eclipse.remote.serial.core"/>
+		<plugin id="org.eclipse.remote.serial.ui"/>
+		<plugin id="org.eclipse.remote.telnet.core"/>
+		<plugin id="org.eclipse.remote.telnet.ui"/>
+		<plugin id="org.eclipse.tools.templates.core"/>
+		<plugin id="org.eclipse.tools.templates.freemarker"/>
+		<plugin id="org.eclipse.tools.templates.ui"/>
+		<plugin id="org.freemarker"/>
+		<plugin id="org.freemarker.source"/>
+		<plugin id="org.hamcrest.library"/>
+		<plugin id="org.hamcrest.library.source"/>
+		<plugin id="org.objectweb.asm"/>
+		<plugin id="org.objectweb.asm.source"/>
+		<plugin id="org.objectweb.asm.tree"/>
+		<plugin id="org.objectweb.asm.tree.source"/>
+		<plugin id="org.osgi.annotation.bundle"/>
+		<plugin id="org.osgi.annotation.versioning"/>
+		<plugin id="org.osgi.service.component.annotations"/>
+		<plugin id="org.sat4j.core"/>
+		<plugin id="org.sat4j.core.source"/>
+		<plugin id="org.sat4j.pb"/>
+		<plugin id="org.sat4j.pb.source"/>
+	</includeBundles>
 </target>
