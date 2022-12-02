@@ -33,10 +33,10 @@ public class IndexerController extends IndexerSetupParticipant {
         if (ret) {
             Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(), "pospone index " + project.getName())); //$NON-NLS-1$
             indexingPosponedProjects.add(project);
-        } else {
-            Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
-                    "do not pospone index " + project.getName())); //$NON-NLS-1$
-        }
+        } /* else {
+             Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(),
+                     "do not pospone index " + project.getName())); //$NON-NLS-1$
+          }*/
         return ret;
     }
 
@@ -51,8 +51,9 @@ public class IndexerController extends IndexerSetupParticipant {
     }
 
     public static void index(IProject project) {
-        Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(), "index " + project.getName())); //$NON-NLS-1$
-        doNotIndexProjects.remove(project);
+        if (doNotIndexProjects.remove(project)) {
+            Common.log(new Status(Const.SLOEBER_STATUS_DEBUG, Activator.getId(), "index " + project.getName())); //$NON-NLS-1$    
+        }
         if (indexingPosponedProjects.contains(project)) {
             indexingPosponedProjects.remove(project);
             ICProject cProject = CoreModel.getDefault().getCModel().getCProject(project.getName());

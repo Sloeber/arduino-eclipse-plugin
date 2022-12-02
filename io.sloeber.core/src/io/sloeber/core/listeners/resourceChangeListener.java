@@ -35,33 +35,24 @@ public class resourceChangeListener implements IResourceChangeListener {
             IResourceDelta sloeberCfgDelta = projectDelta.findMember(new Path(SLOEBER_CFG));
             if (sloeberCfgDelta != null) {
                 if (sloeberCfgDelta.getKind() != IResourceDelta.REMOVED) {
+                    //the sloeber.cfg file has been added or changed
                     IProject iProject = sloeberCfgDelta.getResource().getProject();
                     // stop the indexer
-                    IndexerController.doNotIndex(iProject);
+                    //IndexerController.doNotIndex(iProject);
+
+                    SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
+                    if (curSloeberProject == null) {
+                        // this should not happen as we have a sloeber.cfg file
+                    } else {
+                        //no use updating the cfg if it wasn't read already
+                        if (curSloeberProject.isInMemory()) {
+                            curSloeberProject.sloeberCfgChanged();
+                        }
+                    }
 
                     // log to process later
-                    changedSloeberCfgFiles.add(iProject);
+                    //changedSloeberCfgFiles.add(iProject);
                 }
-            } else {
-                // it is not a new type Sloeber project check whether it is an old type Sloeber
-                // project
-                IResourceDelta cProjectDelta = projectDelta.findMember(new Path(".cproject")); //$NON-NLS-1$
-                if (cProjectDelta != null)
-                    if (projectDelta.getFlags() == IResourceDelta.OPEN) {
-                        // as it is a open of a cdt project assume it is a sloeber project.
-                        // We will find out later if not
-                        IProject iProject = cProjectDelta.getResource().getProject();
-                        SloeberProject curSloeberProject = SloeberProject.getSloeberProject(iProject);
-                        if (curSloeberProject != null) {
-                            if (!curSloeberProject.isInMemory()) {
-                                // stop the indexer
-                                IndexerController.doNotIndex(iProject);
-                                curSloeberProject.configure();
-                            }
-                        }
-                        // log to process later
-                        //changedSloeberCfgFiles.add(iProject);
-                    }
             }
         }
 

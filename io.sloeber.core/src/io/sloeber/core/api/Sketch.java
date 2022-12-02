@@ -9,6 +9,7 @@ import java.util.Set;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -77,13 +78,18 @@ public class Sketch {
     }
 
     public static boolean isSketch(IProject proj) {
-        try {
-            return proj.hasNature(ARDUINO_NATURE_ID);
-        } catch (CoreException e) {
-            // ignore
-            e.printStackTrace();
-        }
-        return false;
+        return getConfigLocalFile(proj).exists();
+    }
+
+    public static IFile getConfigVersionFile(IProject proj) {
+        return proj.getFile(SLOEBER_CFG);
+    }
+
+    /*
+     * Get the sloeber configuration file
+     */
+    public static IFile getConfigLocalFile(IProject proj) {
+        return proj.getFile(SLOEBER_PROJECT);
     }
 
     public static boolean removeLibrariesFromProject(IProject project, ICProjectDescription projDesc,
