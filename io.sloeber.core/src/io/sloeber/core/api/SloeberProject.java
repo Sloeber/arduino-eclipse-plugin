@@ -130,15 +130,8 @@ public class SloeberProject extends Common {
                     SloeberProject sloeberProject = new SloeberProject(project);
                     CCorePlugin cCorePlugin = CCorePlugin.getDefault();
                     ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(project, true);
-                    if (upgradeArduinoProject(sloeberProject, prjCDesc)) {
-                        try {
-                            cCorePlugin.setProjectDescription(project, prjCDesc);
-                        } catch (CoreException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    upgradeArduinoProject(sloeberProject, prjCDesc);
                     if (!sloeberProject.readConfigFromFiles()) {
-                        String RELEASE = "Release";
                         sloeberProject.setBoardDescription(RELEASE, new BoardDescription(), false);
                         sloeberProject.setCompileDescription(RELEASE, new CompileDescription());
                         sloeberProject.setOtherDescription(RELEASE, new OtherDescription());
@@ -182,7 +175,6 @@ public class SloeberProject extends Common {
 
                     ManagedBuildManager.setDefaultConfiguration(project, defaultConfig);
 
-                    prjCDesc = cCorePlugin.getProjectDescription(project);
                     ICConfigurationDescription activeConfig = prjCDesc.getActiveConfiguration();
 
                     for (String curConfigName : sloeberProject.myBoardDescriptions.keySet()) {
@@ -361,7 +353,7 @@ public class SloeberProject extends Common {
     /**
      * This method asks for a Sloeber project in an old form and creates a sloeber
      * project in a new for
-     * currently only 1 conversion is implemented
+     * currently only the conversion storage in CDT to .sProject is implemented
      * 
      * returns true if the projectdescription needs to be saved
      */
@@ -475,10 +467,32 @@ public class SloeberProject extends Common {
 
         setAllEnvironmentVars();
 
+        List<String> newConfigs = newConfigsNeededInCDT(prjCDesc);
         if (prjDescWritable) {
-            List<String> newConfigs = newConfigNeededInCDT(prjCDesc);
             if (newConfigs.size() > 0) {
                 saveProjDesc = saveProjDesc || createNeededCDTConfigs(newConfigs, prjCDesc);
+            }
+        } else {
+            saveProjDesc = saveProjDesc || (newConfigs.size() > 0);
+            if (saveProjDesc) {
+                final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+                try {
+                    workspace.run(new ICoreRunnable() {
+
+                        @Override
+                        public void run(IProgressMonitor monitor) throws CoreException {
+                            CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+                            ICProjectDescription prjCDescSave = cCorePlugin.getProjectDescription(myProject, true);
+                            if (configure(prjCDescSave, true)) {
+                                cCorePlugin.setProjectDescription(myProject, prjCDescSave, false, null);
+                            }
+
+                        }
+                    }, null, IWorkspace.AVOID_UPDATE, null);
+                } catch (Exception e) {
+                    Common.log(new Status(IStatus.INFO, io.sloeber.core.Activator.getId(),
+                            "Failed to do posponed confdesc saving for project " + myProject.getName(), e)); //$NON-NLS-1$
+                }
             }
         }
 
@@ -610,7 +624,7 @@ public class SloeberProject extends Common {
      * @param prjCDesc
      * @return a list of sloeber known configurationNames unknown to CDT
      */
-    private List<String> newConfigNeededInCDT(ICProjectDescription prjCDesc) {
+    private List<String> newConfigsNeededInCDT(ICProjectDescription prjCDesc) {
         List<String> ret = new LinkedList<>();
         for (String curConfName : myBoardDescriptions.keySet()) {
             ICConfigurationDescription curConfDesc = prjCDesc.getConfigurationByName(curConfName);
@@ -628,7 +642,7 @@ public class SloeberProject extends Common {
      * @param configs
      * @param prjCDesc
      * @return true if at least one config was created (basically only false if
-     *         configs is empty)
+     *         configs is empty oe error conditions)
      */
     private static boolean createNeededCDTConfigs(List<String> configs, ICProjectDescription prjCDesc) {
         boolean ret = false;
@@ -639,6 +653,7 @@ public class SloeberProject extends Common {
                 ret = true;
             } catch (Exception e) {
                 // ignore as we will try again later
+                e.printStackTrace();
             }
         }
         return ret;
@@ -823,8 +838,11 @@ public class SloeberProject extends Common {
                 try {
                     sessionProperty = project.getSessionProperty(sloeberQualifiedName);
                     if (null != sessionProperty) {
-                        SloeberProject ret = (SloeberProject) sessionProperty;
-                        return ret;
+                        SloeberProject sloeberProject = (SloeberProject) sessionProperty;
+                        if (sloeberProject.isInMemory()) {
+                            IndexerController.index(project);
+                        }
+                        return sloeberProject;
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();
@@ -939,14 +957,14 @@ public class SloeberProject extends Common {
      * Get the file that Sloeber maintains and that is meant to be stored in version control
      */
     private IFile getConfigVersionFile() {
-        return myProject.getFile(SLOEBER_CFG);
+        return Sketch.getConfigVersionFile(myProject);
     }
 
     /*
      * Get the sloeber configuration file
      */
     private IFile getConfigLocalFile() {
-        return myProject.getFile(".sproject"); //$NON-NLS-1$
+        return Sketch.getConfigLocalFile(myProject);
     }
 
     public void configChangeAboutToApply(ICProjectDescription newProjDesc, ICProjectDescription oldProjDesc) {
@@ -1037,20 +1055,23 @@ public class SloeberProject extends Common {
      * 
      */
     public void sloeberCfgChanged() {
-        CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-        ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject, true);
-        ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
+        //CCorePlugin cCorePlugin = CCorePlugin.getDefault();
+        //ICProjectDescription projDesc = cCorePlugin.getProjectDescription(myProject, true);
+        ///ICConfigurationDescription activeConfig = projDesc.getActiveConfiguration();
         myIsInMemory = false;
-        boolean projDescNeedsSaving = configure(projDesc, true);
-        Helpers.deleteBuildFolder(myProject, activeConfig.getName());
-        projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
-        if (projDescNeedsSaving) {
-            try {
-                cCorePlugin.setProjectDescription(myProject, projDesc);
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
+        configure();
+        //all configs may have changed so only deleting the active config does not make sense
+        //Helpers.deleteBuildFolder(myProject, activeConfig.getName());
+
+        //This code is only triggered when sloeber.cfg changed so no need to set the active config
+        //projDescNeedsSaving = projDescNeedsSaving || setActiveConfig(activeConfig);
+        //        if (projDescNeedsSaving) {
+        //            try {
+        //                cCorePlugin.setProjectDescription(myProject, projDesc);
+        //            } catch (CoreException e) {
+        //                e.printStackTrace();
+        //            }
+        //        }
 
     }
 
@@ -1116,7 +1137,7 @@ public class SloeberProject extends Common {
 
         try {
             IMakeTargetManager targetManager = MakeCorePlugin.getDefault().getTargetManager();
-            IContainer targetResource = myProject.getFolder("Release"); //$NON-NLS-1$
+            IContainer targetResource = myProject.getFolder(RELEASE);
             IMakeTarget target = targetManager.findTarget(targetResource, targetName);
             if (target == null) {
                 target = targetManager.createTarget(myProject, targetName, "org.eclipse.cdt.build.MakeTargetBuilder"); //$NON-NLS-1$

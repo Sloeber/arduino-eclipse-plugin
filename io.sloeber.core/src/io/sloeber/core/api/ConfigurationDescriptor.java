@@ -1,5 +1,7 @@
 package io.sloeber.core.api;
 
+import static io.sloeber.core.common.Const.*;
+
 import java.util.ArrayList;
 
 /**
@@ -15,32 +17,32 @@ public class ConfigurationDescriptor {
     public final boolean DebugCompilerSettings;
 
     public ConfigurationDescriptor(String Name, String ToolchainID, boolean DebugCompilerSettings) {
-	this.configName = Name;
-	this.ToolchainID = ToolchainID;
-	this.DebugCompilerSettings = DebugCompilerSettings;
+        this.configName = Name;
+        this.ToolchainID = ToolchainID;
+        this.DebugCompilerSettings = DebugCompilerSettings;
     }
 
     static public ArrayList<ConfigurationDescriptor> getDefaultDescriptors() {
-	ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<>();
+        ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<>();
 
-	ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor("Release", //$NON-NLS-1$
-		"io.sloeber.core.toolChain.release", false); //$NON-NLS-1$
-	alCfgs.add(cfgTCidPair);
-	return alCfgs;
+        ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor(RELEASE, "io.sloeber.core.toolChain.release", //$NON-NLS-1$
+                false);
+        alCfgs.add(cfgTCidPair);
+        return alCfgs;
     }
 
     static public ArrayList<ConfigurationDescriptor> getReleaseAndDebug() {
-	ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<>();
+        ArrayList<ConfigurationDescriptor> alCfgs = new ArrayList<>();
 
-	ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor("Release",
-		"io.sloeber.core.toolChain.release", false);
-	alCfgs.add(cfgTCidPair); // Always have the release build here
+        ConfigurationDescriptor cfgTCidPair = new ConfigurationDescriptor(RELEASE, "io.sloeber.core.toolChain.release",
+                false);
+        alCfgs.add(cfgTCidPair); // Always have the release build here
 
-	// Debug has same toolchain as release
-	ConfigurationDescriptor cfgTCidPair2 = new ConfigurationDescriptor("Debug_AVaRICE",
-		"io.sloeber.core.toolChain.release", true);
-	alCfgs.add(cfgTCidPair2);
+        // Debug has same toolchain as release
+        ConfigurationDescriptor cfgTCidPair2 = new ConfigurationDescriptor("Debug_AVaRICE",
+                "io.sloeber.core.toolChain.release", true);
+        alCfgs.add(cfgTCidPair2);
 
-	return alCfgs;
+        return alCfgs;
     }
 }

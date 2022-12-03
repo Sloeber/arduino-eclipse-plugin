@@ -79,6 +79,7 @@ public class Const {
     public static final String ARDUINO_VARIANT_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + VARIANT;
     public static final String ARDUINO_CODE_FOLDER_PATH = ARDUINO_CODE_FOLDER_NAME + SLACH + CORE;
     public static final String SLOEBER_CFG = "sloeber.cfg";
+    public static final String SLOEBER_PROJECT = ".sproject";
 
     // Environment variable stuff
     public static final String ENV_KEY_SLOEBER_START = "sloeber" + DOT;
@@ -124,7 +125,9 @@ public class Const {
     public static final String SAM = "sam";
     public static final String SAMD = "samd";
 
-	public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
-	public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
+    public static final String JSSC_SERIAL_FILTER_PATTERN_KEY = "jssc_serial_filter_pattern";
+    public static final String JSSC_MAC_DEFAULT_FILTER_PATTERN = "^cu\\..*(UART|serial|usb).*";
+
+    public static final String RELEASE = "Release";
 
 }
