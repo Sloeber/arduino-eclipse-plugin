@@ -34,7 +34,6 @@ If you do not agree with this policy, please do not install this software.
 
    <url>
       <discovery label="Eclipse Nebula Widgets" url="https://download.eclipse.org/nebula/releases/latest/"/>
-      <discovery label="Eclipse Nebula Incubation Widgets" url="https://download.eclipse.org/nebula/incubation/latest"/>
    </url>
 
    <requires>
