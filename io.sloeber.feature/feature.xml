@@ -32,6 +32,11 @@ Trump211
 If you do not agree with this policy, please do not install this software.
    </license>
 
+   <url>
+      <discovery label="Eclipse Nebula Widgets" url="https://download.eclipse.org/nebula/releases/latest/"/>
+      <discovery label="Eclipse Nebula Incubation Widgets" url="https://download.eclipse.org/nebula/incubation/latest"/>
+   </url>
+
    <requires>
       <import feature="org.eclipse.cdt" version="9.5.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.nebula.widgets.oscilloscope.feature" version="0.0.0" match="greaterOrEqual"/>
@@ -65,6 +70,5 @@ If you do not agree with this policy, please do not install this software.
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-
 
 </feature>
