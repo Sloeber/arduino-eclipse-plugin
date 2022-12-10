@@ -4,19 +4,18 @@
    <extension
          point="org.eclipse.tools.templates.ui.templates">
       <tag
-            id="io.sloeber.ManagedBuild.ui.tag1"
-            label="autoMake">
+            id="io.sloeber.autoBuild.ui.tag1"
+            label="autoBuilld">
       </tag>
       <template
             id="io.sloeber.ManagedBuild.ui.newProject.template"
             label="create new autoBuild project"
-            wizard="io.sloeber.autoBuild.integrations.CDTProjectWizard2">
+            wizard="io.sloeber.autoBuild.integrations.NewAutoBuildProjectWizard">
          <tagReference
-               id="io.sloeber.ManagedBuild.ui.tagReference1">
+               id="io.sloeber.autoBuild.ui.tagReference1">
          </tagReference>
          <description>
-            Create a CDT project based on makefile build with automagically created makefile.
-(basically new managed build)
+            Create a C/C++ project for -libraries and/or executables- based on an automatically generated makefile (similar to managed build)
          </description>
          <tagReference
                id="org.eclipse.cdt.ui.cdtTag">

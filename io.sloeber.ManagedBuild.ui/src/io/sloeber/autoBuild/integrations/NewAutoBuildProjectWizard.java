@@ -2,7 +2,6 @@ package io.sloeber.autoBuild.integrations;
 
 import static io.sloeber.autoBuild.ui.internal.Messages.*;
 
-import org.eclipse.cdt.cmake.core.CMakeProjectGenerator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.swt.widgets.Composite;
