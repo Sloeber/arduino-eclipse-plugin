@@ -36,7 +36,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
 
     @Override
     protected IGenerator getGenerator() {
-        CMakeProjectGenerator generator = new CMakeProjectGenerator("templates/simple/manifest.xml"); //$NON-NLS-1$
+        AutoMakeProjectGenerator generator = new AutoMakeProjectGenerator();
         generator.setProjectName(mainPage.getProjectName());
         if (!mainPage.useDefaults()) {
             generator.setLocationURI(mainPage.getLocationURI());
