@@ -8,6 +8,6 @@
     <relativePath>../io.sloeber.parent</relativePath>
   </parent>
 
-  <artifactId>io.sloeber.core</artifactId>
+  <artifactId>io.sloeber.autoBuild.ui</artifactId>
   <packaging>eclipse-plugin</packaging>
 </project>
