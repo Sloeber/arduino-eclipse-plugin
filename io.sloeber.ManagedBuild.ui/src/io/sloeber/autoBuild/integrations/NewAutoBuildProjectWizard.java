@@ -9,8 +9,16 @@ import org.eclipse.tools.templates.core.IGenerator;
 import org.eclipse.tools.templates.ui.TemplateWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
+import io.sloeber.autoBuild.api.AutoBuildProjectGenerator;
+
 public class NewAutoBuildProjectWizard extends TemplateWizard {
-    private WizardNewProjectCreationPage mainPage;
+    @Override
+	public boolean performFinish() {
+		// TODO Auto-generated method stub
+		return super.performFinish();
+	}
+
+	private WizardNewProjectCreationPage mainPage;
 
     @Override
     public void setContainer(IWizardContainer wizardContainer) {
@@ -36,7 +44,7 @@ public class NewAutoBuildProjectWizard extends TemplateWizard {
 
     @Override
     protected IGenerator getGenerator() {
-        AutoMakeProjectGenerator generator = new AutoMakeProjectGenerator();
+        AutoBuildProjectGenerator generator = new AutoBuildProjectGenerator();
         generator.setProjectName(mainPage.getProjectName());
         if (!mainPage.useDefaults()) {
             generator.setLocationURI(mainPage.getLocationURI());

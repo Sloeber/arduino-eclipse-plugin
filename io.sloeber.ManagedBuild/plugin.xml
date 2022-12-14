@@ -1,57 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.6"?>
 <plugin>
-   <extension-point id="buildDefinitions" name="io.sloeber.managedbuilder" schema="schema/buildDefinitions.exsd"/>
-<!-- 
-####################################################################################### 
-####################################################################################### 
-##                                                                                   ##
-##   Extension Points                                                                ## 
-##                                                                                   ##
-####################################################################################### 
-####################################################################################### 
--->
-
-
-
-
-
-	<!-- C++ Projects -->
-
-
-
-<!-- 
-####################################################################################### 
-#    Arduino Nature                                                                       # 
-####################################################################################### 
--->
-
-<!--
-####################################################################################### 
-#    Launch Configuration                                                             #
-####################################################################################### 
--->
-<!-- Arduino Launch Configuration -->
-<!--
-####################################################################################### 
-#    Arduino Plugin Commands                                                              # 
-####################################################################################### 
--->
-
-
-
-
+   <extension-point id="io.sloeber.autoBuild.buildDefinitions" name="sloeber autoBuild" schema="schema/buildDefinitions.exsd"/>
  
-<!-- 
-
-####################################################################################### 
-####################################################################################### 
-##                                                                                   ##
-##   BuildDef                                                                        ##
-##                                                                                   ## 
-####################################################################################### 
-####################################################################################### 
--->
+  <extension
+       point="io.sloeber.autoBuild.buildDefinitions">
+    <builder
+          id="io.sloeber.autoBuild.builder1"
+          isAbstract="false">
+    </builder>
+ </extension>
  
 	<extension id="io.sloeber.builddef"
         point="org.eclipse.cdt.managedbuilder.core.buildDefinitions"
@@ -434,13 +392,7 @@
   </projectType>
 
 	</extension>
- <extension
-       point="io.sloeber.autoBuild.buildDefinitions">
-    <builder
-          id="io.sloeber.ManagedBuild.builder1"
-          isAbstract="false">
-    </builder>
- </extension>
+
  <extension
        point="org.eclipse.cdt.make.core.MakeTargetBuilder">
     <builder
@@ -449,8 +401,8 @@
     </builder>
  </extension>
  <extension
-       id="autoMake"
-       name="auto makefile build"
+       id="autoBuildNature"
+       name="auto Build Nature by Sloeber"
        point="org.eclipse.core.resources.natures">
     <runtime>
        <run
@@ -458,14 +410,14 @@
        </run>
     </runtime>
     <builder
-          id="io.sloeber.ManagedBuild.AutoMakeBuilder">
+          id="io.sloeber.autoBuild.AutoMakeBuilder">
     </builder>
     <requires-nature
           id="org.eclipse.cdt.core.cnature">
     </requires-nature>
  </extension>
  <extension
-       id="io.sloeber.ManagedBuild.AutoMakeBuilder"
+       id="io.sloeber.autoBuild.AutoMakeBuilder"
        name="Make builder with automagically created makefile"
        point="org.eclipse.core.resources.builders">
     <builder
@@ -478,23 +430,6 @@
        </run>
     </builder>
  </extension>
-
-
-
-
-<!-- 
-####################################################################################### 
-#    Content Types                                                                    # 
-####################################################################################### 
--->
-
-<!-- 
-####################################################################################### 
-#    ino and pde association  
-#   this makes that the *.ino and *.pde files are treated as cpp files                
-# 
-####################################################################################### 
--->
  
  
 </plugin>

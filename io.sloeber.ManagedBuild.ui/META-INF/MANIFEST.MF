@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber auto build user interface
-Bundle-SymbolicName: io.sloeber.AutoBuild.ui;singleton:=true
+Bundle-SymbolicName: io.sloeber.autoBuild.ui;singleton:=true
 Bundle-Version: 4.4.1.qualifier
 Require-Bundle: org.eclipse.tools.templates.ui,
  org.eclipse.osgi,
@@ -14,9 +14,10 @@ Require-Bundle: org.eclipse.tools.templates.ui,
  org.eclipse.tools.templates.freemarker;bundle-version="1.2.300",
  org.eclipse.core.resources,
  org.eclipse.cdt.ui,
- org.eclipse.core.filesystem
+ org.eclipse.core.filesystem,
+ io.sloeber.autoBuild;bundle-version="4.4.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: Activator.java
+Bundle-Activator: io.sloeber.autoBuild.ui.internal.Activator2
 Automatic-Module-Name: io.sloeber.core
