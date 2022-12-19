@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Sloeber Managed Build
 Bundle-SymbolicName: io.sloeber.autoBuild;singleton:=true
 Bundle-Version: 4.4.1.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

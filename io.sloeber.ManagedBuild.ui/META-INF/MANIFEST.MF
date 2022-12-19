@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.tools.templates.ui,
  org.eclipse.cdt.ui,
  org.eclipse.core.filesystem,
  io.sloeber.autoBuild;bundle-version="4.4.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: Sloeber.io
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: io.sloeber.autoBuild.ui.internal.Activator2
