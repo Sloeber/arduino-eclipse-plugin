@@ -526,6 +526,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
 
     public void loadFromMap(Map<String, String> newArgs, IManagedConfigElement element) {
 
+        setId(newArgs.get(IBuildObject.ID));
         // Set the version after extracting from 'id' attribute
         setVersion(getVersionFromId());
 

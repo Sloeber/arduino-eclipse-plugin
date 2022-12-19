@@ -67,6 +67,7 @@ import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IScannerInfoChangeListener;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.XmlStorageUtil;
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
@@ -182,6 +183,7 @@ import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.api.IToolReference;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.CommonBuilder;
 import io.sloeber.buildProperties.BuildPropertyManager;
 import io.sloeber.buildProperties.IBuildPropertyManager;
 
@@ -241,11 +243,11 @@ public class ManagedBuildManager extends AbstractCExtension {
     // This is the version of the manifest and project files
     private static final Version buildInfoVersion = new Version(4, 0, 0);
     private static final Version version = new Version(4, 0, 0);
-    private static boolean projectTypesLoaded = false;
-    private static boolean projectTypesLoading = false;
+    private static boolean theProjectTypesLoaded = false;
+    private static boolean theProjectTypesLoading = false;
     // Project types defined in the manifest files
-    public static SortedMap<String, IProjectType> projectTypeMap;
-    private static List<IProjectType> projectTypes;
+    public static SortedMap<String, IProjectType> theProjectTypeMap;
+    private static List<IProjectType> theProjectTypes = null;
     // Early configuration initialization extension elements
     private static List<IManagedConfigElement> startUpConfigElements;
     // Configurations defined in the manifest files
@@ -282,7 +284,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     //  reflects the content and structure of the extension section within the
     //  declaring plug-in's manifest (plugin.xml) file.
     // This map has a lifecycle corresponding to the build definitions extension loading.
-    private static Map<IBuildObject, IManagedConfigElement> configElementMap;
+    private static Map<IBuildObject, IManagedConfigElement> theConfigElementMap;
 
     //	private static List sortedToolChains;
     //	private static Map builtTypeToToolChainListMap;
@@ -341,12 +343,12 @@ public class ManagedBuildManager extends AbstractCExtension {
         loadExtensions();
 
         // Create the array and copy the elements over
-        int size = projectTypes != null ? projectTypes.size() : 0;
+        int size = theProjectTypes != null ? theProjectTypes.size() : 0;
 
         IProjectType[] types = new IProjectType[size];
 
         int n = 0;
-        for (IProjectType type : projectTypes) {
+        for (IProjectType type : theProjectTypes) {
             types[n++] = type;
         }
 
@@ -372,10 +374,10 @@ public class ManagedBuildManager extends AbstractCExtension {
      */
     public static SortedMap<String, IProjectType> getExtensionProjectTypeMap() {
         loadExtensions();
-        if (projectTypeMap == null) {
-            projectTypeMap = new TreeMap<>();
+        if (theProjectTypeMap == null) {
+            theProjectTypeMap = new TreeMap<>();
         }
-        return projectTypeMap;
+        return theProjectTypeMap;
     }
 
     /**
@@ -1592,11 +1594,11 @@ public class ManagedBuildManager extends AbstractCExtension {
      * has a reference to it as part of its description.
      */
     public static void addExtensionProjectType(ProjectType projectType) {
-        if (projectTypes == null) {
-            projectTypes = new ArrayList<>();
+        if (theProjectTypes == null) {
+            theProjectTypes = new ArrayList<>();
         }
 
-        projectTypes.add(projectType);
+        theProjectTypes.add(projectType);
         IProjectType previous = getExtensionProjectTypeMap().put(projectType.getId(), projectType);
         if (previous != null) {
             // Report error
@@ -2043,7 +2045,7 @@ public class ManagedBuildManager extends AbstractCExtension {
      * call this method first, it is effectively a startup method
      */
     private static void loadExtensions() {
-        if (projectTypesLoaded)
+        if (theProjectTypesLoaded)
             return;
         try {
             loadExtensionsSynchronized();
@@ -2055,310 +2057,310 @@ public class ManagedBuildManager extends AbstractCExtension {
 
     private synchronized static void loadExtensionsSynchronized() throws BuildException {
         // Do this once
-        if (projectTypesLoaded)
+        if (theProjectTypesLoaded)
             return;
 
         // This routine gets called recursively.  If so, just return
-        if (projectTypesLoading)
+        if (theProjectTypesLoading)
             return;
-        projectTypesLoading = true;
+        theProjectTypesLoading = true;
 
         // scalability issue:  configElementMap does not need to live past when loading is done, so we will
         // deallocate it upon exit with a try...finally
 
-        //        try {
-        //
-        //            //The list of the IManagedBuildDefinitionsStartup callbacks
-        //            List<IManagedBuildDefinitionsStartup> buildDefStartupList = null;
-        //            // Get the extensions that use the current CDT managed build model
-        //            IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(EXTENSION_POINT_ID);
-        //            if (extensionPoint != null) {
-        //                IExtension[] extensions = extensionPoint.getExtensions();
-        //                if (extensions != null) {
-        //
-        //                    // First call the constructors of the internal classes that correspond to the
-        //                    // build model elements
-        //                    for (IExtension extension : extensions) {
-        //                        // Can we read this manifest
-        //                        if (!isVersionCompatible(extension)) {
-        //                            //  The version of the Plug-in is greater than what the manager thinks it understands
-        //                            //  Display error message
-        //                            IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        //                            if (window == null) {
-        //                                IWorkbenchWindow windows[] = PlatformUI.getWorkbench().getWorkbenchWindows();
-        //                                window = windows[0];
-        //                            }
-        //
-        //                            final Shell shell = window.getShell();
-        //                            final String errMsg = MessageFormat.format(ManagedBuildManager_error_manifest_version_error,
-        //                                    extension.getUniqueIdentifier());
-        //                            shell.getDisplay().asyncExec(() -> MessageDialog.openError(shell,
-        //
-        //                                    ManagedBuildManager_error_manifest_load_failed_title, errMsg));
-        //                        } else {
-        //                            // Get the "configuraton elements" defined in the plugin.xml file.
-        //                            // Note that these "configuration elements" are not related to the
-        //                            // managed build system "configurations".
-        //                            // From the PDE Guide:
-        //                            //  A configuration element, with its attributes and children, directly
-        //                            //  reflects the content and structure of the extension section within the
-        //                            //  declaring plug-in's manifest (plugin.xml) file.
-        //                            IConfigurationElement[] elements = extension.getConfigurationElements();
-        //                            String revision = null;
-        //
-        //                            // Get the managedBuildRevsion of the extension.
-        //                            for (IConfigurationElement element : elements) {
-        //                                if (element.getName().equals(REVISION_ELEMENT_NAME)) {
-        //                                    revision = element.getAttribute(VERSION_ELEMENT_NAME);
-        //                                    break;
-        //                                }
-        //                            }
-        //
-        //                            // Get the value of 'ManagedBuildRevision' attribute
-        //                            loadConfigElements(DefaultManagedConfigElement.convertArray(elements, extension), revision);
-        //                        }
-        //                    }
-        //
-        //                    //                    // Call the start up config extensions. These may rely on the standard elements
-        //                    //                    // having already been loaded so we wait to call them from here.
-        //                    //                    if (startUpConfigElements != null) {
-        //                    //                        buildDefStartupList = new ArrayList<>(startUpConfigElements.size());
-        //                    //
-        //                    //                        for (IManagedConfigElement startUpConfigElement : startUpConfigElements) {
-        //                    //                            IManagedBuildDefinitionsStartup customConfigLoader;
-        //                    //                            try {
-        //                    //                                customConfigLoader = createStartUpConfigLoader(
-        //                    //                                        (DefaultManagedConfigElement) startUpConfigElement);
-        //                    //
-        //                    //                                //need to save the startup for the future notifications
-        //                    //                                buildDefStartupList.add(customConfigLoader);
-        //                    //
-        //                    //                                // Now we can perform any actions on the build configurations
-        //                    //                                // in an extended plugin before the build configurations have been resolved
-        //                    //                                customConfigLoader.buildDefsLoaded();
-        //                    //                            } catch (CoreException e) {
-        //                    //                            }
-        //                    //                        }
-        //                    //                    }
-        //
-        //                    // Then call resolve.
-        //                    //
-        //                    // Here are notes on "references" within the managed build system.
-        //                    // References are "pointers" from one model element to another.
-        //                    // These are encoded in manifest and managed build system project files (.cdtbuild)
-        //                    // using unique string IDs (e.g. "cdt.managedbuild.tool.gnu.c.linker").
-        //                    // These string IDs are "resolved" to pointers to interfaces in model
-        //                    // elements in the in-memory represent of the managed build system information.
-        //                    //
-        //                    // Here are the current "rules" for references:
-        //                    //  1.  A reference is always resolved to an interface pointer in the
-        //                    //      referenced object.
-        //                    //  2.  A reference is always TO an extension object - that is, an object
-        //                    //      loaded from a manifest file or a dynamic element provider.  It cannot
-        //                    //      be to an object loaded from a managed build system project file (.cdtbuild).
-        //                    //
-        //
-        //                    Collection<IProjectType> prjTypes = getExtensionProjectTypeMap().values();
-        //                    for (IProjectType projectType : prjTypes) {
-        //                        try {
-        //                            ((ProjectType) projectType).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<IConfiguration> configurations = getExtensionConfigurationMap().values();
-        //                    for (IConfiguration configuration : configurations) {
-        //                        try {
-        //                            ((Configuration) configuration).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<IResourceConfiguration> resConfigs = getExtensionResourceConfigurationMap().values();
-        //                    for (IResourceConfiguration resConfig : resConfigs) {
-        //                        try {
-        //                            ((ResourceConfiguration) resConfig).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<IToolChain> toolChains = getExtensionToolChainMapInternal().values();
-        //                    for (IToolChain toolChain : toolChains) {
-        //                        try {
-        //                            ((ToolChain) toolChain).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<Tool> tools = getExtensionToolMapInternal().values();
-        //                    for (Tool tool : tools) {
-        //                        try {
-        //                            tool.resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<ITargetPlatform> targetPlatforms = getExtensionTargetPlatformMap().values();
-        //                    for (ITargetPlatform targetPlatform : targetPlatforms) {
-        //                        try {
-        //                            ((TargetPlatform) targetPlatform).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<Builder> builders = getExtensionBuilderMapInternal().values();
-        //                    for (Builder builder : builders) {
-        //                        try {
-        //                            builder.resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<IOption> options = getExtensionOptionMap().values();
-        //                    for (IOption option : options) {
-        //                        try {
-        //                            ((Option) option).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                    Collection<IOptionCategory> optionCategories = getExtensionOptionCategoryMap().values();
-        //                    for (IOptionCategory optionCat : optionCategories) {
-        //                        try {
-        //                            ((OptionCategory) optionCat).resolveReferences();
-        //                        } catch (Exception ex) {
-        //                            // TODO: log
-        //                            ex.printStackTrace();
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //
-        //            // Get the extensions that use the CDT 2.0 build model
-        //            extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(EXTENSION_POINT_ID_V2);
-        //            if (extensionPoint != null) {
-        //                IExtension[] extensions = extensionPoint.getExtensions();
-        //                String revision = null;
-        //
-        //                if (extensions != null) {
-        //                    if (extensions.length > 0) {
-        //
-        //                        // Call the constructors of the internal classes that correspond to the
-        //                        // V2.0 build model elements.  Some of these objects are converted to new model objects.
-        //                        // Others can use the same classes.
-        //                        for (IExtension extension : extensions) {
-        //                            // Can we read this manifest
-        //                            if (!isVersionCompatible(extension)) {
-        //                                //The version of the Plug-in is greater than what the manager thinks it understands
-        //                                throw new BuildException(ManagedBuildManager_error_manifest_version_error);
-        //                            }
-        //                            IConfigurationElement[] elements = extension.getConfigurationElements();
-        //
-        //                            // Get the managedBuildRevsion of the extension.
-        //                            for (IConfigurationElement element : elements) {
-        //                                if (element.getName().equals(REVISION_ELEMENT_NAME)) {
-        //                                    revision = element.getAttribute(VERSION_ELEMENT_NAME);
-        //                                    break;
-        //                                }
-        //                            }
-        //                            // If the "fileVersion" attribute is missing, then default revision is "1.2.0"
-        //                            if (revision == null)
-        //                                revision = "1.2.0"; //$NON-NLS-1$
-        //                            loadConfigElementsV2(DefaultManagedConfigElement.convertArray(elements, extension),
-        //                                    revision);
-        //                        }
-        //                        // Resolve references
-        //                        Collection<ITarget> targets = getExtensionTargetMap().values();
-        //                        for (ITarget target : targets) {
-        //                            try {
-        //                                ((Target) target).resolveReferences();
-        //                            } catch (Exception ex) {
-        //                                // TODO: log
-        //                                ex.printStackTrace();
-        //                            }
-        //                        }
-        //                        // The V2 model can also add top-level Tools - they need to be "resolved"
-        //                        Collection<Tool> tools = getExtensionToolMapInternal().values();
-        //                        for (Tool tool : tools) {
-        //                            try {
-        //                                tool.resolveReferences();
-        //                            } catch (Exception ex) {
-        //                                // TODO: log
-        //                                ex.printStackTrace();
-        //                            }
-        //                        }
-        //                        // Convert the targets to the new model
-        //                        targets = getExtensionTargetMap().values();
-        //                        for (ITarget target : targets) {
-        //                            try {
-        //                                //  Check to see if it has already been converted - if not, do it
-        //                                if (target.getCreatedProjectType() == null) {
-        //                                    target.convertToProjectType(revision);
-        //                                }
-        //                            } catch (Exception ex) {
-        //                                // TODO: log
-        //                                ex.printStackTrace();
-        //                            }
-        //                        }
-        //                        // Resolve references for new ProjectTypes
-        //                        Collection<IProjectType> prjTypes = getExtensionProjectTypeMap().values();
-        //                        for (IProjectType prjType : prjTypes) {
-        //                            try {
-        //                                ((ProjectType) prjType).resolveReferences();
-        //                            } catch (Exception ex) {
-        //                                // TODO: log
-        //                                ex.printStackTrace();
-        //                            }
-        //                        }
-        //
-        //                        // TODO:  Clear the target and configurationV2 maps so that the object can be garbage collected
-        //                        //        We can't do this yet, because the UpdateManagedProjectAction class may need these elements later
-        //                        //        Can we change UpdateManagedProjectAction to see the converted model elements?
-        //                        //targetIter = getExtensionTargetMap().values().iterator();
-        //                        //while (targetIter.hasNext()) {
-        //                        //	try {
-        //                        //		Target target = (Target)targetIter.next();
-        //                        //		ManagedBuildManager.removeConfigElement(target);
-        //                        //		getExtensionTargetMap().remove(target);
-        //                        //	} catch (Exception ex) {
-        //                        //		// TODO: log
-        //                        //		ex.printStackTrace();
-        //                        //	}
-        //                        //}
-        //                        //getExtensionConfigurationV2Map().clear();
-        //                    }
-        //                }
-        //            }
-        //
-        //            // configs resolved...
-        //            // Call the start up config extensions again now that configs have been resolved.
-        //            if (buildDefStartupList != null) {
-        //                for (IManagedBuildDefinitionsStartup customConfigLoader : buildDefStartupList) {
-        //                    // Now we can perform any actions on the build configurations
-        //                    // in an extended plugin now that all build configruations have been resolved
-        //                    customConfigLoader.buildDefsResolved();
-        //                }
-        //            }
-        //
-        //            performAdjustments();
-        //            projectTypesLoading = false;
-        //            projectTypesLoaded = true;
-        //
-        //            ToolChainModificationManager.getInstance().start();
-        //
-        //        } // try
-        //
-        //        finally {
-        //            configElementMap = null;
-        //        }
+        try {
+
+            //The list of the IManagedBuildDefinitionsStartup callbacks
+            // List<IManagedBuildDefinitionsStartup> buildDefStartupList = null;
+            // Get the extensions that use the current CDT managed build model
+            IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(EXTENSION_POINT_ID);
+            if (extensionPoint != null) {
+                IExtension[] extensions = extensionPoint.getExtensions();
+                if (extensions != null) {
+
+                    // First call the constructors of the internal classes that correspond to the
+                    // build model elements
+                    for (IExtension extension : extensions) {
+                        // Can we read this manifest
+                        if (!isVersionCompatible(extension)) {
+                            //  The version of the Plug-in is greater than what the manager thinks it understands
+                            //  Display error message
+                            IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                            if (window == null) {
+                                IWorkbenchWindow windows[] = PlatformUI.getWorkbench().getWorkbenchWindows();
+                                window = windows[0];
+                            }
+
+                            final Shell shell = window.getShell();
+                            final String errMsg = MessageFormat.format(ManagedBuildManager_error_manifest_version_error,
+                                    extension.getUniqueIdentifier());
+                            shell.getDisplay().asyncExec(() -> MessageDialog.openError(shell,
+
+                                    ManagedBuildManager_error_manifest_load_failed_title, errMsg));
+                        } else {
+                            // Get the "configuraton elements" defined in the plugin.xml file.
+                            // Note that these "configuration elements" are not related to the
+                            // managed build system "configurations".
+                            // From the PDE Guide:
+                            //  A configuration element, with its attributes and children, directly
+                            //  reflects the content and structure of the extension section within the
+                            //  declaring plug-in's manifest (plugin.xml) file.
+                            IConfigurationElement[] elements = extension.getConfigurationElements();
+                            String revision = null;
+
+                            // Get the managedBuildRevsion of the extension.
+                            for (IConfigurationElement element : elements) {
+                                if (element.getName().equals(REVISION_ELEMENT_NAME)) {
+                                    revision = element.getAttribute(VERSION_ELEMENT_NAME);
+                                    break;
+                                }
+                            }
+
+                            // Get the value of 'ManagedBuildRevision' attribute
+                            loadConfigElements(DefaultManagedConfigElement.convertArray(elements, extension), revision);
+                        }
+                    }
+
+                    //                    // Call the start up config extensions. These may rely on the standard elements
+                    //                    // having already been loaded so we wait to call them from here.
+                    //                    if (startUpConfigElements != null) {
+                    //                        buildDefStartupList = new ArrayList<>(startUpConfigElements.size());
+                    //
+                    //                        for (IManagedConfigElement startUpConfigElement : startUpConfigElements) {
+                    //                            IManagedBuildDefinitionsStartup customConfigLoader;
+                    //                            try {
+                    //                                customConfigLoader = createStartUpConfigLoader(
+                    //                                        (DefaultManagedConfigElement) startUpConfigElement);
+                    //
+                    //                                //need to save the startup for the future notifications
+                    //                                buildDefStartupList.add(customConfigLoader);
+                    //
+                    //                                // Now we can perform any actions on the build configurations
+                    //                                // in an extended plugin before the build configurations have been resolved
+                    //                                customConfigLoader.buildDefsLoaded();
+                    //                            } catch (CoreException e) {
+                    //                            }
+                    //                        }
+                    //                    }
+
+                    // Then call resolve.
+                    //
+                    // Here are notes on "references" within the managed build system.
+                    // References are "pointers" from one model element to another.
+                    // These are encoded in manifest and managed build system project files (.cdtbuild)
+                    // using unique string IDs (e.g. "cdt.managedbuild.tool.gnu.c.linker").
+                    // These string IDs are "resolved" to pointers to interfaces in model
+                    // elements in the in-memory represent of the managed build system information.
+                    //
+                    // Here are the current "rules" for references:
+                    //  1.  A reference is always resolved to an interface pointer in the
+                    //      referenced object.
+                    //  2.  A reference is always TO an extension object - that is, an object
+                    //      loaded from a manifest file or a dynamic element provider.  It cannot
+                    //      be to an object loaded from a managed build system project file (.cdtbuild).
+                    //
+
+                    Collection<IProjectType> prjTypes = getExtensionProjectTypeMap().values();
+                    for (IProjectType projectType : prjTypes) {
+                        try {
+                            ((ProjectType) projectType).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IConfiguration> configurations = getExtensionConfigurationMap().values();
+                    for (IConfiguration configuration : configurations) {
+                        try {
+                            ((Configuration) configuration).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IResourceConfiguration> resConfigs = getExtensionResourceConfigurationMap().values();
+                    for (IResourceConfiguration resConfig : resConfigs) {
+                        try {
+                            ((ResourceConfiguration) resConfig).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IToolChain> toolChains = getExtensionToolChainMapInternal().values();
+                    for (IToolChain toolChain : toolChains) {
+                        try {
+                            ((ToolChain) toolChain).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<Tool> tools = getExtensionToolMapInternal().values();
+                    for (Tool tool : tools) {
+                        try {
+                            tool.resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<ITargetPlatform> targetPlatforms = getExtensionTargetPlatformMap().values();
+                    for (ITargetPlatform targetPlatform : targetPlatforms) {
+                        try {
+                            ((TargetPlatform) targetPlatform).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IBuilder> builders = getExtensionBuilderMapInternal().values();
+                    for (IBuilder builder : builders) {
+                        try {
+                            ((Builder) builder).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IOption> options = getExtensionOptionMap().values();
+                    for (IOption option : options) {
+                        try {
+                            ((Option) option).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                    Collection<IOptionCategory> optionCategories = getExtensionOptionCategoryMap().values();
+                    for (IOptionCategory optionCat : optionCategories) {
+                        try {
+                            ((OptionCategory) optionCat).resolveReferences();
+                        } catch (Exception ex) {
+                            // TODO: log
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            // Get the extensions that use the CDT 2.0 build model
+            extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(EXTENSION_POINT_ID_V2);
+            if (extensionPoint != null) {
+                IExtension[] extensions = extensionPoint.getExtensions();
+                String revision = null;
+
+                if (extensions != null) {
+                    if (extensions.length > 0) {
+
+                        // Call the constructors of the internal classes that correspond to the
+                        // V2.0 build model elements.  Some of these objects are converted to new model objects.
+                        // Others can use the same classes.
+                        for (IExtension extension : extensions) {
+                            // Can we read this manifest
+                            if (!isVersionCompatible(extension)) {
+                                //The version of the Plug-in is greater than what the manager thinks it understands
+                                throw new BuildException(ManagedBuildManager_error_manifest_version_error);
+                            }
+                            IConfigurationElement[] elements = extension.getConfigurationElements();
+
+                            // Get the managedBuildRevsion of the extension.
+                            for (IConfigurationElement element : elements) {
+                                if (element.getName().equals(REVISION_ELEMENT_NAME)) {
+                                    revision = element.getAttribute(VERSION_ELEMENT_NAME);
+                                    break;
+                                }
+                            }
+                            // If the "fileVersion" attribute is missing, then default revision is "1.2.0"
+                            if (revision == null)
+                                revision = "1.2.0"; //$NON-NLS-1$
+                            loadConfigElementsV2(DefaultManagedConfigElement.convertArray(elements, extension),
+                                    revision);
+                        }
+                        // Resolve references
+                        Collection<ITarget> targets = getExtensionTargetMap().values();
+                        for (ITarget target : targets) {
+                            try {
+                                ((Target) target).resolveReferences();
+                            } catch (Exception ex) {
+                                // TODO: log
+                                ex.printStackTrace();
+                            }
+                        }
+                        // The V2 model can also add top-level Tools - they need to be "resolved"
+                        Collection<Tool> tools = getExtensionToolMapInternal().values();
+                        for (Tool tool : tools) {
+                            try {
+                                tool.resolveReferences();
+                            } catch (Exception ex) {
+                                // TODO: log
+                                ex.printStackTrace();
+                            }
+                        }
+                        // Convert the targets to the new model
+                        targets = getExtensionTargetMap().values();
+                        for (ITarget target : targets) {
+                            try {
+                                //  Check to see if it has already been converted - if not, do it
+                                if (target.getCreatedProjectType() == null) {
+                                    target.convertToProjectType(revision);
+                                }
+                            } catch (Exception ex) {
+                                // TODO: log
+                                ex.printStackTrace();
+                            }
+                        }
+                        // Resolve references for new ProjectTypes
+                        Collection<IProjectType> prjTypes = getExtensionProjectTypeMap().values();
+                        for (IProjectType prjType : prjTypes) {
+                            try {
+                                ((ProjectType) prjType).resolveReferences();
+                            } catch (Exception ex) {
+                                // TODO: log
+                                ex.printStackTrace();
+                            }
+                        }
+
+                        // TODO:  Clear the target and configurationV2 maps so that the object can be garbage collected
+                        //        We can't do this yet, because the UpdateManagedProjectAction class may need these elements later
+                        //        Can we change UpdateManagedProjectAction to see the converted model elements?
+                        //targetIter = getExtensionTargetMap().values().iterator();
+                        //while (targetIter.hasNext()) {
+                        //	try {
+                        //		Target target = (Target)targetIter.next();
+                        //		ManagedBuildManager.removeConfigElement(target);
+                        //		getExtensionTargetMap().remove(target);
+                        //	} catch (Exception ex) {
+                        //		// TODO: log
+                        //		ex.printStackTrace();
+                        //	}
+                        //}
+                        //getExtensionConfigurationV2Map().clear();
+                    }
+                }
+            }
+
+            // configs resolved...
+            // Call the start up config extensions again now that configs have been resolved.
+            //            if (buildDefStartupList != null) {
+            //                for (IManagedBuildDefinitionsStartup customConfigLoader : buildDefStartupList) {
+            //                    // Now we can perform any actions on the build configurations
+            //                    // in an extended plugin now that all build configruations have been resolved
+            //                    customConfigLoader.buildDefsResolved();
+            //                }
+            //            }
+
+            performAdjustments();
+            theProjectTypesLoaded = true;
+
+            //  ToolChainModificationManager.getInstance().start();
+
+        } catch (Exception e) {
+            theProjectTypes = null;
+            theConfigElementMap = null;
+            theProjectTypeMap = null;
+        }
+        theProjectTypesLoading = false;
     }
 
     private static void performAdjustments() {
@@ -2380,31 +2382,31 @@ public class ManagedBuildManager extends AbstractCExtension {
     }
 
     private static void adjustConfig(IConfiguration cfg) {
-        IResourceInfo rcInfos[] = cfg.getResourceInfos();
-        for (IResourceInfo rcInfo : rcInfos) {
-            if (rcInfo instanceof IFolderInfo) {
-                IFolderInfo info = (IFolderInfo) rcInfo;
-                IToolChain tc = info.getToolChain();
-                adjustHolder(info, tc);
-
-                ITool tools[] = tc.getTools();
-                for (ITool tool : tools) {
-                    adjustHolder(info, tool);
-                }
-            } else if (rcInfo instanceof IFileInfo) {
-                IFileInfo info = (IFileInfo) rcInfo;
-                ITool rcTools[] = info.getTools();
-                for (ITool rcTool : rcTools) {
-                    adjustHolder(info, rcTool);
-                }
-
-            }
-        }
-
-        IResourceConfiguration rcCfgs[] = cfg.getResourceConfigurations();
-
-        //		for (IResourceConfiguration rcCfg : rcCfgs) {
-        //		}
+        //        IResourceInfo rcInfos[] = cfg.getResourceInfos();
+        //        for (IResourceInfo rcInfo : rcInfos) {
+        //            if (rcInfo instanceof IFolderInfo) {
+        //                IFolderInfo info = (IFolderInfo) rcInfo;
+        //                IToolChain tc = info.getToolChain();
+        //                adjustHolder(info, tc);
+        //
+        //                ITool tools[] = tc.getTools();
+        //                for (ITool tool : tools) {
+        //                    adjustHolder(info, tool);
+        //                }
+        //            } else if (rcInfo instanceof IFileInfo) {
+        //                IFileInfo info = (IFileInfo) rcInfo;
+        //                ITool rcTools[] = info.getTools();
+        //                for (ITool rcTool : rcTools) {
+        //                    adjustHolder(info, rcTool);
+        //                }
+        //
+        //            }
+        //        }
+        //
+        //        IResourceConfiguration rcCfgs[] = cfg.getResourceConfigurations();
+        //
+        //        //		for (IResourceConfiguration rcCfg : rcCfgs) {
+        //        //		}
 
     }
 
@@ -2540,17 +2542,17 @@ public class ManagedBuildManager extends AbstractCExtension {
         if (!overwrite && fInfoMap.get(project) != null)
             return;
 
-        //        if (info != null) {
-        //            fInfoMap.put(project, info);
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: build info set for project " + project.getName()); //$NON-NLS-1$
-        //        } else {
-        //            fInfoMap.remove(project);
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: build info CLEARED for project " + project.getName()); //$NON-NLS-1$
-        //        }
+        if (info != null) {
+            fInfoMap.put(project, info);
+            //            if (BuildDbgUtil.DEBUG)
+            //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+            //                        "build info load: build info set for project " + project.getName()); //$NON-NLS-1$
+        } else {
+            fInfoMap.remove(project);
+            //            if (BuildDbgUtil.DEBUG)
+            //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+            //                        "build info load: build info CLEARED for project " + project.getName()); //$NON-NLS-1$
+        }
     }
 
     //    private static IManagedConfigElementProvider createConfigProvider(DefaultManagedConfigElement element)
@@ -2613,128 +2615,127 @@ public class ManagedBuildManager extends AbstractCExtension {
      * fails for some reason, the method will return {@code null}.
      */
     private static ManagedBuildInfo findBuildInfo(IResource rc, boolean forceLoad) {
-        return null;
-        //
-        //        if (rc == null) {
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: null resource"); //$NON-NLS-1$
-        //            return null;
-        //        }
-        //
-        //        ManagedBuildInfo buildInfo = null;
-        //        IProject proj = rc.getProject();
-        //
-        //        if (!proj.exists()) {
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: info is null, project does not exist"); //$NON-NLS-1$
-        //            return null;
-        //        }
-        //
-        //        if (BuildDbgUtil.DEBUG)
-        //            BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                    "build info load: info is null, querying the update mngr"); //$NON-NLS-1$
-        //        buildInfo = UpdateManagedProjectManager.getConvertedManagedBuildInfo(proj);
-        //
-        //        if (buildInfo != null)
-        //            return buildInfo;
-        //
-        //        // Check if there is any build info associated with this project for this session
-        //        try {
-        //            buildInfo = getLoadedBuildInfo(proj);
-        //        } catch (CoreException e) {
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: core exception while getting the loaded info: " + e.getLocalizedMessage()); //$NON-NLS-1$
-        //            return null;
-        //        }
-        //
-        //        if (buildInfo == null /*&& forceLoad*/) {
-        //            int flags = forceLoad ? 0 : ICProjectDescriptionManager.GET_IF_LOADDED;
-        //
-        //            if (BuildDbgUtil.DEBUG)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: build info is NOT loaded" + (forceLoad ? " forceload" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        //            ICProjectDescription projDes = CoreModel.getDefault().getProjectDescriptionManager()
-        //                    .getProjectDescription(proj, flags);
-        //            if (projDes != null) {
+
+        if (rc == null) {
+            //                    if (BuildDbgUtil.DEBUG)
+            //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: null resource"); //$NON-NLS-1$
+            return null;
+        }
+
+        ManagedBuildInfo buildInfo = null;
+        IProject proj = rc.getProject();
+
+        if (!proj.exists()) {
+            //                    if (BuildDbgUtil.DEBUG)
+            //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+            //                                "build info load: info is null, project does not exist"); //$NON-NLS-1$
+            return null;
+        }
+
         //                if (BuildDbgUtil.DEBUG)
         //                    BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                            "build info load: project description is obtained, qwerying the loaded build info"); //$NON-NLS-1$
-        //                try {
-        //                    buildInfo = getLoadedBuildInfo(proj);
-        //                } catch (CoreException e) {
-        //                    if (BuildDbgUtil.DEBUG)
-        //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                                "build info load: core exception while getting the loaded info (2): " //$NON-NLS-1$
-        //                                        + e.getLocalizedMessage());
-        //                    return null;
+        //                            "build info load: info is null, querying the update mngr"); //$NON-NLS-1$
+        //  buildInfo = UpdateManagedProjectManager.getConvertedManagedBuildInfo(proj);
+
+        if (buildInfo != null)
+            return buildInfo;
+
+        // Check if there is any build info associated with this project for this session
+        try {
+            buildInfo = getLoadedBuildInfo(proj);
+        } catch (CoreException e) {
+            //                    if (BuildDbgUtil.DEBUG)
+            //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+            //                                "build info load: core exception while getting the loaded info: " + e.getLocalizedMessage()); //$NON-NLS-1$
+            return null;
+        }
+
+        if (buildInfo == null /*&& forceLoad*/) {
+            int flags = forceLoad ? 0 : ICProjectDescriptionManager.GET_IF_LOADDED;
+
+            //                    if (BuildDbgUtil.DEBUG)
+            //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+            //                                "build info load: build info is NOT loaded" + (forceLoad ? " forceload" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            ICProjectDescription projDes = CoreModel.getDefault().getProjectDescriptionManager()
+                    .getProjectDescription(proj, flags);
+            if (projDes != null) {
+                //                        if (BuildDbgUtil.DEBUG)
+                //                            BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                //                                    "build info load: project description is obtained, qwerying the loaded build info"); //$NON-NLS-1$
+                try {
+                    buildInfo = getLoadedBuildInfo(proj);
+                } catch (CoreException e) {
+                    //                            if (BuildDbgUtil.DEBUG)
+                    //                                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                    //                                        "build info load: core exception while getting the loaded info (2): " //$NON-NLS-1$
+                    //                                                + e.getLocalizedMessage());
+                    return null;
+                }
+
+                if (buildInfo == null) {
+                    //                            if (BuildDbgUtil.DEBUG)
+                    //                                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                    //                                        "build info load: info is null, trying the cfg data provider"); //$NON-NLS-1$
+
+                    //   buildInfo = ConfigurationDataProvider.getLoaddedBuildInfo(projDes);
+                    if (buildInfo != null) {
+                        //                                if (BuildDbgUtil.DEBUG)
+                        //                                    BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                        //                                            "build info load: info found, setting as loaded"); //$NON-NLS-1$
+
+                        try {
+                            setLoaddedBuildInfo(proj, buildInfo);
+                        } catch (CoreException e) {
+                            //                                    if (BuildDbgUtil.DEBUG)
+                            //                                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                            //                                                "build info load: core exception while setting loaded description, ignoring; : " //$NON-NLS-1$
+                            //                                                        + e.getLocalizedMessage());
+                        }
+                    }
+
+                }
+
+                //                    } else if (BuildDbgUtil.DEBUG) {
+                //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
+                //                                "build info load: project description in null"); //$NON-NLS-1$
+            }
+
+            //			if(buildInfo == null){
+            //				if(BuildDbgUtil.DEBUG)
+            //					BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: info is null, querying the update mngr"); //$NON-NLS-1$
+            //				buildInfo = UpdateManagedProjectManager.getConvertedManagedBuildInfo(proj);
+            //			}
+        }
+        //		if (buildInfo == null && resource instanceof IProject)
+        //			buildInfo = findBuildInfoSynchronized((IProject)resource, forceLoad);
+        /*
+        		// Nothing in session store, so see if we can load it from cdtbuild
+        		if (buildInfo == null && resource instanceof IProject) {
+        			try {
+        				buildInfo = loadBuildInfo((IProject)resource);
+        			} catch (Exception e) {
+        				// TODO:  Issue error reagarding not being able to load the project file (.cdtbuild)
+        			}
+        
+        			try {
+        				// Check if the project needs its container initialized
+        				initBuildInfoContainer(buildInfo);
+        			} catch (CoreException e) {
+        				// We can live without a path entry container if the build information is valid
+        			}
+        		}
+        */
+        if (buildInfo != null)
+            buildInfo.updateOwner(proj);
+
+        //                if (BuildDbgUtil.DEBUG) {
+        //                    if (buildInfo == null)
+        //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: build info is null"); //$NON-NLS-1$
+        //                    //			else
+        //                    //				BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: build info found");
         //                }
-        //
-        //                if (buildInfo == null) {
-        //                    if (BuildDbgUtil.DEBUG)
-        //                        BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                                "build info load: info is null, trying the cfg data provider"); //$NON-NLS-1$
-        //
-        //                    buildInfo = ConfigurationDataProvider.getLoaddedBuildInfo(projDes);
-        //                    if (buildInfo != null) {
-        //                        if (BuildDbgUtil.DEBUG)
-        //                            BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                                    "build info load: info found, setting as loaded"); //$NON-NLS-1$
-        //
-        //                        try {
-        //                            setLoaddedBuildInfo(proj, buildInfo);
-        //                        } catch (CoreException e) {
-        //                            if (BuildDbgUtil.DEBUG)
-        //                                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                                        "build info load: core exception while setting loaded description, ignoring; : " //$NON-NLS-1$
-        //                                                + e.getLocalizedMessage());
-        //                        }
-        //                    }
-        //
-        //                }
-        //
-        //            } else if (BuildDbgUtil.DEBUG) {
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD,
-        //                        "build info load: project description in null"); //$NON-NLS-1$
-        //            }
-        //
-        //            //			if(buildInfo == null){
-        //            //				if(BuildDbgUtil.DEBUG)
-        //            //					BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: info is null, querying the update mngr"); //$NON-NLS-1$
-        //            //				buildInfo = UpdateManagedProjectManager.getConvertedManagedBuildInfo(proj);
-        //            //			}
-        //        }
-        //        //		if (buildInfo == null && resource instanceof IProject)
-        //        //			buildInfo = findBuildInfoSynchronized((IProject)resource, forceLoad);
-        //        /*
-        //        		// Nothing in session store, so see if we can load it from cdtbuild
-        //        		if (buildInfo == null && resource instanceof IProject) {
-        //        			try {
-        //        				buildInfo = loadBuildInfo((IProject)resource);
-        //        			} catch (Exception e) {
-        //        				// TODO:  Issue error reagarding not being able to load the project file (.cdtbuild)
-        //        			}
-        //        
-        //        			try {
-        //        				// Check if the project needs its container initialized
-        //        				initBuildInfoContainer(buildInfo);
-        //        			} catch (CoreException e) {
-        //        				// We can live without a path entry container if the build information is valid
-        //        			}
-        //        		}
-        //        */
-        //        if (buildInfo != null)
-        //            buildInfo.updateOwner(proj);
-        //
-        //        if (BuildDbgUtil.DEBUG) {
-        //            if (buildInfo == null)
-        //                BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: build info is null"); //$NON-NLS-1$
-        //            //			else
-        //            //				BuildDbgUtil.getInstance().traceln(BuildDbgUtil.BUILD_INFO_LOAD, "build info load: build info found");
-        //        }
-        //
-        //        return buildInfo;
+
+        return buildInfo;
     }
 
     synchronized static ManagedBuildInfo getLoadedBuildInfo(IProject project) throws CoreException {
@@ -2994,13 +2995,13 @@ public class ManagedBuildManager extends AbstractCExtension {
     }
 
     private static Map<IBuildObject, IManagedConfigElement> getConfigElementMap() {
-        if (!projectTypesLoading)
+        if (!theProjectTypesLoading)
             throw new IllegalStateException();
 
-        if (configElementMap == null) {
-            configElementMap = new HashMap<>();
+        if (theConfigElementMap == null) {
+            theConfigElementMap = new HashMap<>();
         }
-        return configElementMap;
+        return theConfigElementMap;
     }
 
     /**

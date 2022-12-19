@@ -5,7 +5,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
-    public static final String PLUGIN_ID = "io.sloeber.managedBuild"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "io.sloeber.autoBuild"; //$NON-NLS-1$
     public static final String MAKEGEN_ID = "makefileGenerator"; //$NON-NLS-1$
 
     @Override

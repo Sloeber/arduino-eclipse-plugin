@@ -3,16 +3,9 @@
 <plugin>
    <extension-point id="io.sloeber.autoBuild.buildDefinitions" name="sloeber autoBuild" schema="schema/buildDefinitions.exsd"/>
  
-  <extension
-       point="io.sloeber.autoBuild.buildDefinitions">
-    <builder
-          id="io.sloeber.autoBuild.builder1"
-          isAbstract="false">
-    </builder>
- </extension>
  
 	<extension id="io.sloeber.builddef"
-        point="org.eclipse.cdt.managedbuilder.core.buildDefinitions"
+        point="io.sloeber.autoBuild.buildDefinitions"
 		name="%extension.name.0" >
 		
 

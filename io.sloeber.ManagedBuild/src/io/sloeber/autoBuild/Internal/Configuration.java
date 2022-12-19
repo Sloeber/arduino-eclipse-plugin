@@ -1817,22 +1817,22 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     }
 
     public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-
-            // call resolve references on any children
-            ResourceInfo infos[] = (ResourceInfo[]) rcInfos.getResourceInfos(ResourceInfo.class);
-
-            for (int i = 0; i < infos.length; i++) {
-                infos[i].resolveReferences();
-            }
-
-            if (parentId != null) {
-                // Lookup the parent configuration by ID
-                parent = ManagedBuildManager.getExtensionConfiguration(parentId);
-            }
-
-        }
+        //        if (!resolved) {
+        //            resolved = true;
+        //
+        //            // call resolve references on any children
+        //            ResourceInfo infos[] = (ResourceInfo[]) rcInfos.getResourceInfos(ResourceInfo.class);
+        //
+        //            for (int i = 0; i < infos.length; i++) {
+        //                infos[i].resolveReferences();
+        //            }
+        //
+        //            if (parentId != null) {
+        //                // Lookup the parent configuration by ID
+        //                parent = ManagedBuildManager.getExtensionConfiguration(parentId);
+        //            }
+        //
+        //        }
     }
 
     /**
