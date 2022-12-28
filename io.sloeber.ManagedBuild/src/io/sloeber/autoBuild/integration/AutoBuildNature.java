@@ -6,6 +6,8 @@ import org.eclipse.core.runtime.CoreException;
 
 public class AutoBuildNature implements IProjectNature {
 
+    private IProject myProject;
+
     @Override
     public void configure() throws CoreException {
         // TODO Auto-generated method stub
@@ -20,14 +22,12 @@ public class AutoBuildNature implements IProjectNature {
 
     @Override
     public IProject getProject() {
-        // TODO Auto-generated method stub
-        return null;
+        return myProject;
     }
 
     @Override
     public void setProject(IProject project) {
-        // TODO Auto-generated method stub
-
+        myProject = project;
     }
 
 }

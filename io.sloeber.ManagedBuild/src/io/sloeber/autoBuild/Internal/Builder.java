@@ -155,7 +155,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     private IConfigurationElement previousMbsVersionConversionElement = null;
     private IConfigurationElement currentMbsVersionConversionElement = null;
 
-    //private BuildBuildData fBuildData;
+    private BuildBuildData fBuildData;
 
     private Boolean fSupportsCustomizedBuild;
 
@@ -254,7 +254,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             // Hook me up to the Managed Build Manager
             ManagedBuildManager.addExtensionBuilder(this);
         } else {
-            //fBuildData = new BuildBuildData(this);
+            fBuildData = new BuildBuildData(this);
             setDirty(true);
         }
     }
@@ -275,7 +275,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         this.parent = parent;
         isExtensionBuilder = false;
 
-        //        fBuildData = new BuildBuildData(this);
+        fBuildData = new BuildBuildData(this);
 
         // Set the managedBuildRevision
         setManagedBuildRevision(managedBuildRevision);
@@ -370,7 +370,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         reservedMacroNameSupplierElement = builder.reservedMacroNameSupplierElement;
         reservedMacroNameSupplier = builder.reservedMacroNameSupplier;
 
-        //fBuildData = new BuildBuildData(this);
+        fBuildData = new BuildBuildData(this);
 
         stopOnErr = builder.stopOnErr;
         ignoreErrCmd = builder.ignoreErrCmd;
@@ -1606,8 +1606,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
 
     @Override
     public CBuildData getBuildData() {
-        // return fBuildData;
-        return null;
+        return fBuildData;
     }
 
     //	public String[] getCustomizedErrorParserIds(){

@@ -86,11 +86,11 @@ import io.sloeber.buildProperties.PropertyManager;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
 
-    public final static String BUILDER_ID = Activator.getId() + ".genmakebuilder"; //$NON-NLS-1$
-    private static final String ERROR_HEADER = "GeneratedmakefileBuilder error ["; //$NON-NLS-1$
+    public final static String BUILDER_ID = "io.sloeber.autoBuild.integration.CommonBuilder"; //$NON-NLS-1$
+    private static final String ERROR_HEADER = "automakefileBuilder error ["; //$NON-NLS-1$
     private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
     private static final String TRACE_FOOTER = "]: "; //$NON-NLS-1$
-    private static final String TRACE_HEADER = "GeneratedmakefileBuilder trace ["; //$NON-NLS-1$
+    private static final String TRACE_HEADER = "automakefileBuilder trace ["; //$NON-NLS-1$
     public static boolean VERBOSE = false;
 
     private static final int PROGRESS_MONITOR_SCALE = 100;

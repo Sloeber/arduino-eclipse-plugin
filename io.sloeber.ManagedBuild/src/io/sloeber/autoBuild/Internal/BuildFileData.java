@@ -82,7 +82,7 @@ public class BuildFileData extends CFileData {
         return fFileInfo.hasCustomSettings();
     }
 
-    void clearCachedData() {
+    public void clearCachedData() {
         BuildLanguageData lData = (BuildLanguageData) getLanguageData();
         if (lData != null)
             lData.clearCachedData();

@@ -251,7 +251,7 @@ public class SloeberProject extends Common {
 
                 try {
                     // create a eclipse project
-                    IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
+                    IProjectDescription description = workspace.newProjectDescription(realProjectName);
                     if (projectURI != null) {
                         description.setLocationURI(projectURI);
                     }

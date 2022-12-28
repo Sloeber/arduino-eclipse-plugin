@@ -25,30 +25,16 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public class ManagedCProjectNature implements IProjectNature {
-    public static final String BUILDER_NAME = "genmakebuilder"; //$NON-NLS-1$
-    public static final String BUILDER_ID = "org.eclipse.cdt.managedbuilder.core." + BUILDER_NAME; //$NON-NLS-1$
-    public static final String MNG_NATURE_ID = "org.eclipse.cdt.managedbuilder.core.managedBuildNature"; //$NON-NLS-1$
-    private IProject project;
 
-    /**
-     * Utility method for adding a managed nature to a project.
-     *
-     * @param project
-     *            the project to add the managed nature to.
-     * @param monitor
-     *            a progress monitor to indicate the duration of the operation, or
-     *            <code>null</code> if progress reporting is not required.
-     */
-    public static void addManagedNature(IProject project, IProgressMonitor monitor) throws CoreException {
-        addNature(project, MNG_NATURE_ID, monitor);
-    }
+//TOFIX this class should be removed as this is the managed build nature class and we use autobuild nature class
+public class ManagedCProjectNature implements IProjectNature {
+    public static final String BUILDER_ID = "io.sloeber.autoBuild.integration.CommonBuilder";
+    private IProject project;
 
     public static void addManagedBuilder(IProject project, IProgressMonitor monitor) throws CoreException {
         // Add the builder to the project
@@ -73,7 +59,7 @@ public class ManagedCProjectNature implements IProjectNature {
         boolean found = false;
         // See if the builder is already there
         for (int i = 0; i < commands.length; ++i) {
-            if (commands[i].getBuilderName().equals(getBuilderID())) {
+            if (commands[i].getBuilderName().equals(BUILDER_ID)) {
                 found = true;
                 break;
             }
@@ -81,7 +67,7 @@ public class ManagedCProjectNature implements IProjectNature {
         if (!found) {
             //add builder to project
             ICommand command = description.newCommand();
-            command.setBuilderName(getBuilderID());
+            command.setBuilderName(BUILDER_ID);
             ICommand[] newCommands = new ICommand[commands.length + 1];
             // Add it before other builders.
             System.arraycopy(commands, 0, newCommands, 1, commands.length);
@@ -156,17 +142,6 @@ public class ManagedCProjectNature implements IProjectNature {
         return null;
     }
 
-    /**
-     * Get the correct builderID
-     */
-    public static String getBuilderID() {
-        //     Plugin plugin = ManagedBuilderCorePlugin.getDefault();
-        if (Platform.getExtensionRegistry().getExtension(BUILDER_NAME) != null) {
-            return "org.eclipse.cdt.managedbuilder.core." + BUILDER_NAME; //$NON-NLS-1$
-        }
-        return BUILDER_ID;
-    }
-
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IProjectNature#configure()
      */
@@ -190,19 +165,6 @@ public class ManagedCProjectNature implements IProjectNature {
     public IProject getProject() {
         // Just return the project associated with the nature
         return project;
-    }
-
-    /**
-     * Utility method to remove the managed nature from a project.
-     *
-     * @param project
-     *            to remove the managed nature from
-     * @param mon
-     *            progress monitor to indicate the duration of the operation, or
-     *            <code>null</code> if progress reporting is not required.
-     */
-    public static void removeManagedNature(IProject project, IProgressMonitor mon) throws CoreException {
-        removeNature(project, MNG_NATURE_ID, mon);
     }
 
     /**

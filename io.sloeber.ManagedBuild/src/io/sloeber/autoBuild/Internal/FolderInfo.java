@@ -92,8 +92,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super(folderInfo, path, id, resourceName);
 
         isExtensionElement = folderInfo.isExtensionElement();
-        //        if (!isExtensionElement)
-        //            setResourceData(new BuildFolderData(this));
+        if (!isExtensionElement)
+            setResourceData(new BuildFolderData(this));
 
         if (folderInfo.getParent() != null)
             setManagedBuildRevision(folderInfo.getParent().getManagedBuildRevision());
@@ -149,7 +149,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super(parent, element, hasBody);
 
         isExtensionElement = false;
-        //        setResourceData(new BuildFolderData(this));
+        setResourceData(new BuildFolderData(this));
         ICStorageElement tcEl = null;
         if (!hasBody) {
             setPath(Path.ROOT);
@@ -177,8 +177,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super(parent, path, id, name);
 
         this.isExtensionElement = isExtensionElement;
-        //        if (!isExtensionElement)
-        //            setResourceData(new BuildFolderData(this));
+        if (!isExtensionElement)
+            setResourceData(new BuildFolderData(this));
 
     }
 
@@ -187,8 +187,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super(cfg, cloneInfo, id);
 
         isExtensionElement = cfg.isExtensionElement();
-        //        if (!isExtensionElement)
-        //            setResourceData(new BuildFolderData(this));
+        if (!isExtensionElement)
+            setResourceData(new BuildFolderData(this));
 
         String subName;
         if (!cloneInfo.isExtensionElement)

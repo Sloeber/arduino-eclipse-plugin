@@ -230,7 +230,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_STATICLIB = "org.eclipse.cdt.build.core.buildArtefactType.staticLib"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE_PROPERTY_SHAREDLIB = "org.eclipse.cdt.build.core.buildArtefactType.sharedLib"; //$NON-NLS-1$
 
-    public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".configurationDataProvider"; //$NON-NLS-1$
+    public static final String CFG_DATA_PROVIDER_ID = Activator.PLUGIN_ID + ".ConfigurationDataProvider"; //$NON-NLS-1$
 
     private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
 
@@ -2884,36 +2884,36 @@ public class ManagedBuildManager extends AbstractCExtension {
         return getBuildInfo(resource, true);
     }
 
-    public static IManagedBuildInfo getOldStyleBuildInfo(IProject project) throws CoreException {
-        IManagedBuildInfo info = null;
-        try {
-            info = getLoadedBuildInfo(project);
-        } catch (CoreException e) {
-        }
+    //    public static IManagedBuildInfo getOldStyleBuildInfo(IProject project) throws CoreException {
+    //        IManagedBuildInfo info = null;
+    //        try {
+    //            info = getLoadedBuildInfo(project);
+    //        } catch (CoreException e) {
+    //        }
+    //
+    //        if (info == null) {
+    //            try {
+    //                info = loadOldStyleBuildInfo(project);
+    //
+    //                if (info != null)
+    //                    doSetLoaddedInfo(project, info, false);
+    //            } catch (Exception e) {
+    //                throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), e.getLocalizedMessage(), e));
+    //            }
+    //        }
+    //
+    //        return info;
+    //
+    //    }
 
-        if (info == null) {
-            try {
-                info = loadOldStyleBuildInfo(project);
-
-                if (info != null)
-                    doSetLoaddedInfo(project, info, false);
-            } catch (Exception e) {
-                throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), e.getLocalizedMessage(), e));
-            }
-        }
-
-        return info;
-
-    }
-
-    public static synchronized IManagedBuildInfo getBuildInfoLegacy(IProject project) {
-        try {
-            return getOldStyleBuildInfo(project);
-        } catch (CoreException e) {
-            Activator.log(e);
-            return null;
-        }
-    }
+    //    public static synchronized IManagedBuildInfo getBuildInfoLegacy(IProject project) {
+    //        try {
+    //            return getOldStyleBuildInfo(project);
+    //        } catch (CoreException e) {
+    //            Activator.log(e);
+    //            return null;
+    //        }
+    //    }
 
     /**
      * Finds, but does not create, the managed build information for the

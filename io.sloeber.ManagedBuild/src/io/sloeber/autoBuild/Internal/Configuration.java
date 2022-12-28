@@ -133,6 +133,7 @@ import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.BuildConfigurationData;
 import io.sloeber.buildProperties.BuildObjectProperties;
 import io.sloeber.buildProperties.OptionalBuildProperties;
 import io.sloeber.buildProperties.PropertyManager;
@@ -181,12 +182,12 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
     private FolderInfo rootFolderInfo;
-    //    private BuildConfigurationData fCfgData;
+    private BuildConfigurationData fCfgData;
     private ICConfigurationDescription fCfgDes;
     //	private IScannerConfigBuilderInfo2 scannerCfgBuilderInfo;
     //	private IDiscoveredPathManager.IDiscoveredPathInfo discoveredInfo;
     //	private Boolean isPerResourceDiscovery;
-    //    private ICfgScannerConfigBuilderInfo2Set cfgScannerInfo;
+    private ICfgScannerConfigBuilderInfo2Set cfgScannerInfo;
     private boolean isPreferenceConfig;
     private List<IPath> excludeList;
 
@@ -466,7 +467,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         this.managedProject = managedProject;
         this.isPreferenceConfig = isPreference;
         isExtensionConfig = false;
-        //    fCfgData = new BuildConfigurationData(this);
+        fCfgData = new BuildConfigurationData(this);
 
         setManagedBuildRevision(managedBuildRevision);
 
@@ -551,7 +552,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         } else {
             Configuration baseCfg = (Configuration) ManagedBuildManager.getExtensionConfiguration(EMPTY_CFG_ID);
             //		this.isTemporary = temporary;
-            //     fCfgData = new BuildConfigurationData(this);
+            fCfgData = new BuildConfigurationData(this);
             if (baseCfg.buildProperties != null)
                 this.buildProperties = new BuildObjectProperties(baseCfg.buildProperties, this, this);
 
@@ -702,7 +703,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     }
 
     private void copySettingsFrom(Configuration cloneConfig, boolean cloneChildren) {
-        //        fCfgData = new BuildConfigurationData(this);
+        fCfgData = new BuildConfigurationData(this);
         if (cloneConfig.buildProperties != null) {
             this.buildProperties = new BuildObjectProperties(cloneConfig.buildProperties, this, this);
         }
@@ -2345,8 +2346,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
 
     @Override
     public CConfigurationData getConfigurationData() {
-        //      return fCfgData;
-        return null;
+        return fCfgData;
     }
 
     @Override
@@ -3103,17 +3103,17 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return tc.clearDiscoveredPathInfo();
     }
 
-    //    public ICfgScannerConfigBuilderInfo2Set getCfgScannerConfigInfo() {
-    //        return cfgScannerInfo;
-    //    }
+    public ICfgScannerConfigBuilderInfo2Set getCfgScannerConfigInfo() {
+        return cfgScannerInfo;
+    }
 
-    //    public void setCfgScannerConfigInfo(ICfgScannerConfigBuilderInfo2Set info) {
-    //        cfgScannerInfo = info;
-    //    }
-    //
-    //    public void clearCachedData() {
-    //        cfgScannerInfo = null;
-    //    }
+    public void setCfgScannerConfigInfo(ICfgScannerConfigBuilderInfo2Set info) {
+        cfgScannerInfo = info;
+    }
+
+    public void clearCachedData() {
+        cfgScannerInfo = null;
+    }
 
     public boolean isPreference() {
         return isPreferenceConfig;

@@ -394,7 +394,7 @@
     </builder>
  </extension>
  <extension
-       id="autoBuildNature"
+       id="io.sloeber.autoBuildNature"
        name="auto Build Nature by Sloeber"
        point="org.eclipse.core.resources.natures">
     <runtime>
@@ -419,9 +419,16 @@
           isConfigurable="false"
           supportsConfigurations="true">
        <run
-             class="io.sloeber.autoBuild.integration.AutoBuildBuilder">
+             class="io.sloeber.autoBuild.integration.CommonBuilder">
        </run>
     </builder>
+ </extension>
+ <extension
+       id="io.sloeber.autoBuild.ConfigurationDataProvider"
+       point="org.eclipse.cdt.core.CConfigurationDataProvider">
+    <provider
+          class="io.sloeber.autoBuild.integration.ConfigurationDataProvider">
+    </provider>
  </extension>
  
  
