@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFolderInfo;
@@ -682,14 +683,12 @@ public class ManagebBuildCommon {
 
     static public String resolveValueToMakefileFormat(String value, String nonexistentMacrosValue, String listDelimiter,
             int contextType, Object contextData) {
-        //FIXME needs implementation original is below
-        return null;
-        //        try {
-        //           return ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(
-        //                     value,  nonexistentMacrosValue,  listDelimiter,  contextType,  contextData);
-        //        } catch (BuildMacroException e) {
-        //           return value;
-        //        }
+        try {
+            return ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(value,
+                    nonexistentMacrosValue, listDelimiter, contextType, contextData);
+        } catch (BuildMacroException e) {
+            return value;
+        }
 
     }
 

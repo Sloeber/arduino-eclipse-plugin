@@ -933,69 +933,71 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     protected BuildStatus performCleanning(int kind, CfgBuildInfo bInfo, BuildStatus status, IProgressMonitor monitor)
             throws CoreException {
-        return null;
-        //        IConfiguration cfg = bInfo.getConfiguration();
-        //        IProject curProject = bInfo.getProject();
-        //        //		IBuilder builder = bInfo.getBuilder();
-        //
-        //        boolean makefileRegenerationNeeded = false;
-        //        //perform necessary cleaning and build type calculation
-        //        if (cfg.needsFullRebuild()) {
-        //            //configuration rebuild state is set to true,
-        //            //full rebuild is needed in any case
-        //            //clean first, then make a full build
-        //            outputTrace(curProject.getName(), "config rebuild state is set to true, making a full rebuild"); //$NON-NLS-1$
-        //            clean(bInfo, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
-        //            makefileRegenerationNeeded = true;
-        //        } else {
-        //            makefileRegenerationNeeded = cfg.needsRebuild();
-        //            IBuildDescription des = null;
-        //
-        //            IResourceDelta delta = kind == FULL_BUILD ? null : getDelta(curProject);
-        //            if (delta == null)
-        //                makefileRegenerationNeeded = true;
-        //            if (cfg.needsRebuild() || delta != null) {
-        //                //use a build desacription model to calculate the resources to be cleaned
-        //                //only in case there are some changes to the project sources or build information
-        //                try {
-        //                    int flags = BuildDescriptionManager.REBUILD | BuildDescriptionManager.DEPFILES
-        //                            | BuildDescriptionManager.DEPS;
-        //                    if (delta != null)
-        //                        flags |= BuildDescriptionManager.REMOVED;
-        //
-        //                    outputTrace(curProject.getName(), "using a build description.."); //$NON-NLS-1$
-        //
-        //                    des = BuildDescriptionManager.createBuildDescription(cfg, getDelta(curProject), flags);
-        //
-        //                    BuildDescriptionManager.cleanGeneratedRebuildResources(des);
-        //                } catch (Throwable e) {
-        //                    //TODO: log error
-        //                    outputError(curProject.getName(),
-        //                            "error occured while build description calculation: " + e.getLocalizedMessage()); //$NON-NLS-1$
-        //                    //in case an error occured, make it behave in the old stile:
-        //                    if (cfg.needsRebuild()) {
-        //                        //make a full clean if an info needs a rebuild
-        //                        clean((Map<String, String>) null, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
+        status.setRebuild();
+        return status;
+        //TOFIX decide what to do with this mess
+        //                IConfiguration cfg = bInfo.getConfiguration();
+        //                IProject curProject = bInfo.getProject();
+        //                //		IBuilder builder = bInfo.getBuilder();
+        //        
+        //                boolean makefileRegenerationNeeded = false;
+        //                //perform necessary cleaning and build type calculation
+        //                if (cfg.needsFullRebuild()) {
+        //                    //configuration rebuild state is set to true,
+        //                    //full rebuild is needed in any case
+        //                    //clean first, then make a full build
+        //                    outputTrace(curProject.getName(), "config rebuild state is set to true, making a full rebuild"); //$NON-NLS-1$
+        //                    clean(bInfo, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
+        //                    makefileRegenerationNeeded = true;
+        //                } else {
+        //                    makefileRegenerationNeeded = cfg.needsRebuild();
+        //                    IBuildDescription des = null;
+        //        
+        //                    IResourceDelta delta = kind == FULL_BUILD ? null : getDelta(curProject);
+        //                    if (delta == null)
         //                        makefileRegenerationNeeded = true;
-        //                    } else if (delta != null && !makefileRegenerationNeeded) {
-        //                        // Create a delta visitor to detect the build type
-        //                        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(cfg,
-        //                                bInfo.getBuildInfo().getManagedProject().getConfigurations());
-        //                        delta.accept(visitor);
-        //                        if (visitor.shouldBuildFull()) {
-        //                            clean((Map<String, String>) null,
-        //                                    new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
-        //                            makefileRegenerationNeeded = true;
+        //                    if (cfg.needsRebuild() || delta != null) {
+        //                        //use a build desacription model to calculate the resources to be cleaned
+        //                        //only in case there are some changes to the project sources or build information
+        //                        try {
+        //                            int flags = BuildDescriptionManager.REBUILD | BuildDescriptionManager.DEPFILES
+        //                                    | BuildDescriptionManager.DEPS;
+        //                            if (delta != null)
+        //                                flags |= BuildDescriptionManager.REMOVED;
+        //        
+        //                            outputTrace(curProject.getName(), "using a build description.."); //$NON-NLS-1$
+        //        
+        //                            des = BuildDescriptionManager.createBuildDescription(cfg, getDelta(curProject), flags);
+        //        
+        //                            BuildDescriptionManager.cleanGeneratedRebuildResources(des);
+        //                        } catch (Throwable e) {
+        //                            //TODO: log error
+        //                            outputError(curProject.getName(),
+        //                                    "error occured while build description calculation: " + e.getLocalizedMessage()); //$NON-NLS-1$
+        //                            //in case an error occured, make it behave in the old stile:
+        //                            if (cfg.needsRebuild()) {
+        //                                //make a full clean if an info needs a rebuild
+        //                                clean((Map<String, String>) null, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
+        //                                makefileRegenerationNeeded = true;
+        //                            } else if (delta != null && !makefileRegenerationNeeded) {
+        //                                // Create a delta visitor to detect the build type
+        //                                ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(cfg,
+        //                                        bInfo.getBuildInfo().getManagedProject().getConfigurations());
+        //                                delta.accept(visitor);
+        //                                if (visitor.shouldBuildFull()) {
+        //                                    clean((Map<String, String>) null,
+        //                                            new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
+        //                                    makefileRegenerationNeeded = true;
+        //                                }
+        //                            }
         //                        }
         //                    }
         //                }
-        //            }
-        //        }
-        //
-        //        if (makefileRegenerationNeeded) {
-        //            status.setRebuild();
-        //        }
-        //        return status;
+        //        
+        //                if (makefileRegenerationNeeded) {
+        //                    status.setRebuild();
+        //                }
+        //                return status;
     }
 
     protected MultiStatus performMakefileGeneration(CfgBuildInfo bInfo, IManagedBuilderMakefileGenerator generator,
@@ -1078,46 +1080,46 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     }
 
     protected void clean(CfgBuildInfo bInfo, IProgressMonitor monitor) throws CoreException {
-        //        if (shouldBuild(CLEAN_BUILD, bInfo.getBuilder())) {
-        //            BuildStateManager bsMngr = BuildStateManager.getInstance();
-        //            IProject project = bInfo.getProject();
-        //            IConfiguration cfg = bInfo.getConfiguration();
-        //            IProjectBuildState pbs = bsMngr.getProjectBuildState(project);
-        //            IConfigurationBuildState cbs = pbs.getConfigurationBuildState(cfg.getId(), false);
-        //            if (cbs != null) {
-        //                pbs.removeConfigurationBuildState(cfg.getId());
-        //                bsMngr.setProjectBuildState(project, pbs);
-        //            }
-        //
-        //            if (!cfg.getEditableBuilder().isManagedBuildOn()) {
-        //                performExternalClean(bInfo, false, monitor);
-        //            } else {
-        //                boolean programmatically = true;
-        //                IPath path = ManagedBuildManager.getBuildFullPath(cfg, bInfo.getBuilder());
-        //                IResource rc = path != null ? ResourcesPlugin.getWorkspace().getRoot().findMember(path) : null;
-        //
-        //                if (path == null || (rc != null && rc.getType() != IResource.FILE)) {
-        //                    if (!cfg.getEditableBuilder().isInternalBuilder()) {
-        //                        fBuildErrOccured = false;
-        //                        try {
-        //                            performExternalClean(bInfo, false, monitor);
-        //                        } catch (CoreException e) {
-        //                            fBuildErrOccured = true;
-        //                        }
-        //                        if (!fBuildErrOccured)
-        //                            programmatically = false;
-        //                    }
-        //
-        //                    if (programmatically) {
-        //                        try {
-        //                            cleanWithInternalBuilder(bInfo, monitor);
-        //                        } catch (CoreException e) {
-        //                            cleanProgrammatically(bInfo, monitor);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
+        if (shouldBuild(CLEAN_BUILD, bInfo.getBuilder())) {
+            //                 IProject project = bInfo.getProject();
+            IConfiguration cfg = bInfo.getConfiguration();
+            //                    BuildStateManager bsMngr = BuildStateManager.getInstance();
+            //                    IProjectBuildState pbs = bsMngr.getProjectBuildState(project);
+            //                    IConfigurationBuildState cbs = pbs.getConfigurationBuildState(cfg.getId(), false);
+            //                    if (cbs != null) {
+            //                        pbs.removeConfigurationBuildState(cfg.getId());
+            //                        bsMngr.setProjectBuildState(project, pbs);
+            //                    }
+
+            if (!cfg.getEditableBuilder().isManagedBuildOn()) {
+                performExternalClean(bInfo, false, monitor);
+            } else {
+                boolean programmatically = true;
+                IPath path = ManagedBuildManager.getBuildFullPath(cfg, bInfo.getBuilder());
+                IResource rc = path != null ? ResourcesPlugin.getWorkspace().getRoot().findMember(path) : null;
+
+                if (path == null || (rc != null && rc.getType() != IResource.FILE)) {
+                    if (!cfg.getEditableBuilder().isInternalBuilder()) {
+                        fBuildErrOccured = false;
+                        try {
+                            performExternalClean(bInfo, false, monitor);
+                        } catch (CoreException e) {
+                            fBuildErrOccured = true;
+                        }
+                        if (!fBuildErrOccured)
+                            programmatically = false;
+                    }
+
+                    if (programmatically) {
+                        try {
+                            cleanWithInternalBuilder(bInfo, monitor);
+                        } catch (CoreException e) {
+                            cleanProgrammatically(bInfo, monitor);
+                        }
+                    }
+                }
+            }
+        }
 
     }
 

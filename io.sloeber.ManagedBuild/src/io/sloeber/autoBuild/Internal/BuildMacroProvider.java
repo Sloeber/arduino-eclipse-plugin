@@ -278,7 +278,7 @@ public class BuildMacroProvider implements IBuildMacroProvider, IMacroContextInf
                 throw new BuildMacroException(e);
             }
         }
-        return null;
+        return nonexistentMacrosValue;
     }
 
     /* (non-Javadoc)

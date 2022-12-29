@@ -1,15 +1,21 @@
 
 package io.sloeber.autoBuild.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
+import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
@@ -25,6 +31,7 @@ import io.sloeber.autoBuild.Internal.ManagedBuildInfo;
 import io.sloeber.autoBuild.Internal.ManagedBuildManager;
 import io.sloeber.autoBuild.Internal.ManagedProject;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.integration.AutoBuildNature;
 
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
@@ -49,6 +56,18 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 IProject project = root.getProject(myProjectName);
                 project.create(description, monitor);
                 project.open(monitor);
+                CProjectNature.addCNature(project, monitor);
+                CCProjectNature.addCCNature(project, monitor);
+                AutoBuildNature.addNature(project, monitor);
+
+                //TOFIX Start of stupid code creation 
+                IFolder srcFolder = project.getFolder("src");
+                srcFolder.create(true, true, monitor);
+                IFile mainFile = srcFolder.getFile("main.cpp");
+                InputStream stream = new ByteArrayInputStream("void main(){}".getBytes(StandardCharsets.UTF_8));
+                mainFile.create(stream, true, monitor);
+                //End of stupid code creation
+
                 project = CCorePlugin.getDefault().createCDTProject(description, project, monitor);
 
                 ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
@@ -81,6 +100,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
                     config.setArtifactName(mProj.getDefaultArtifactName());
 
                 }
+                des.setCdtProjectCreated();
                 mngr.setProjectDescription(project, des);
                 //                IProject newProject = root.getProject(myProjectName);
                 //                // IndexerController.doNotIndex(newProjectHandle);
@@ -93,13 +113,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 //                newProject.create(description, monitor);
                 //                newProject.open(monitor);
                 //
-                //                //TOFIX Start of stupid code creation 
-                //                IFolder srcFolder = newProject.getFolder("src");
-                //                srcFolder.create(true, true, monitor);
-                //                IFile mainFile = srcFolder.getFile("main.cpp");
-                //                InputStream stream = new ByteArrayInputStream("void main(){}".getBytes(StandardCharsets.UTF_8));
-                //                mainFile.create(stream, true, monitor);
-                //                //End of stupid code creation
                 //
                 //                // make the eclipse project a cdt project
                 //                CCorePlugin.getDefault().createCProject(description, newProject, new NullProgressMonitor(),
