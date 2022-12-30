@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="io.sloeber.managedbuild" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="io.sloeber.autoBuild" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="io.sloeber.managedbuild" id="buildDefinitions" name="Managed Build Definitions"/>
+         <meta.schema plugin="io.sloeber.autoBuild" id="buildDefinitions" name="Auto Build Definitions"/>
       </appinfo>
       <documentation>
-         The managed build object model describes project-types, configurations, tool-chains, etc. for the managed build system.
+         The Auto build object model describes project-types, configurations, tool-chains, etc. for the Auto build system.
       </documentation>
    </annotation>
 
@@ -95,13 +95,6 @@ Options can also be associated with a toolchain. However in such a case the opti
             <annotation>
                <documentation>
                   An optional field that flags an option as abstract.  An abstract option must be defined as a top level object in the model definition and cannot be selected by the user in the UI, but options derived from this option will inherit its attributes and children.  The default is false.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="unusedChildren" type="string">
-            <annotation>
-               <documentation>
-                  A semi-colon separated list of child IDs of the superclass&apos; children that should not be automatically inherited by this element.  Note: This attribute is not yet implemented.
                </documentation>
             </annotation>
          </attribute>
@@ -231,7 +224,7 @@ Additional special types exist to flag options of special relevance to the build
                   Optional class which can be used to override the default value for an option. This class must implement the IOptionDefaultValueGenerator interface.  If no generator is specified then the &apos;defaultValue&apos; attribute is used to generate the option&apos;s default value.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.managedbuilder.core.IOptionDefaultValueGenerator"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -248,7 +241,7 @@ Additional special types exist to flag options of special relevance to the build
                   Optional class which can be used to override the default command-generation logic for an option.  This class must impelment the IOptionCommandGenerator interface.  If no generator is specified then the &apos;comand&apos; attribute is used to generate the option&apos;s command.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.managedbuilder.core.IOptionCommandGenerator"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -289,7 +282,7 @@ Additional special types exist to flag options of special relevance to the build
                   The id of a class that implements the IManagedOptionValueHandler interface.  This interface is used to dynamically manage the value of an option.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -306,7 +299,7 @@ Additional special types exist to flag options of special relevance to the build
                   Optional class which is used to determine dynamically at runtime whether the option is visible, enabled, and used in command line generation.  This class must implement the IOptionApplicability interface.  If no calculator is specified then the option is always visible, enabled, and used in command line generation.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IOptionApplicability"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionApplicability"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -423,7 +416,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                   Specifies the name of the class that implements IManagedCommandLineGenerator in order to provide custom command line generation logic.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.managedbuilder.core.IManagedCommandLineGenerator"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -471,7 +464,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
          <attribute name="supportsManagedBuild" type="boolean">
             <annotation>
                <documentation>
-                  Specifies whether or not the tool supports managed build. Default value is true.
+                  Specifies whether or not the tool supports Auto build. Default value is true.
                </documentation>
             </annotation>
          </attribute>
@@ -548,14 +541,14 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
          <attribute name="osList" type="string">
             <annotation>
                <documentation>
-                  This field lists the host operating systems on which the tool-chain runs and is used by the managed build system to decide when the tool-chain is applicable.  The value should be a comma-separated list.  Valid values are the strings returned by the Eclipse API Platform.getOS() and include strings like &quot;win32&quot;, &quot;linux&quot;, &quot;solaris&quot;, &quot;hpux&quot;, &quot;aix&quot;.  Do not specify this attribute or specify &quot;all&quot; to allow all host operating systems.
+                  This field lists the host operating systems on which the tool-chain runs and is used by the Auto build system to decide when the tool-chain is applicable.  The value should be a comma-separated list.  Valid values are the strings returned by the Eclipse API Platform.getOS() and include strings like &quot;win32&quot;, &quot;linux&quot;, &quot;solaris&quot;, &quot;hpux&quot;, &quot;aix&quot;.  Do not specify this attribute or specify &quot;all&quot; to allow all host operating systems.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="archList" type="string">
             <annotation>
                <documentation>
-                  This field lists the host architectures on which the tool-chain runs and is used by the managed build system to decide when the tool-chain is applicable.  The value should be a comma-separated list.  Valid values are the strings returned by the Eclipse API Platform.getOSArch() and include strings like &quot;ia32&quot;.  Do not specify this attribute or specify &quot;all&quot; to allow all host architectures.
+                  This field lists the host architectures on which the tool-chain runs and is used by the Auto build system to decide when the tool-chain is applicable.  The value should be a comma-separated list.  Valid values are the strings returned by the Eclipse API Platform.getOSArch() and include strings like &quot;ia32&quot;.  Do not specify this attribute or specify &quot;all&quot; to allow all host architectures.
                </documentation>
             </annotation>
          </attribute>
@@ -610,7 +603,7 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                   Specifies the name of the class that implements IConfigurationEnvironmentVariableSupplier in order to provide configuration level environment variables.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -620,14 +613,14 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                   Specifies the name of the class that implements IConfigurationBuildMacroSupplier in order to provide configuration level build macros.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
-                  Specifies whether or not the tool-chain supports managed build. Default value is true.
+                  Specifies whether or not the tool-chain supports Auto build. Default value is true.
                </documentation>
             </annotation>
          </attribute>
@@ -845,7 +838,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                   Specifies the name of the class that implements IProjectEnvironmentVariableSupplier in order to provide project level environment variables.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IProjectEnvironmentVariableSupplier"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -855,7 +848,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                   Specifies the name of the class that implements IProjectBuildMacroSupplier in order to provide project level build macros.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.macros.IProjectBuildMacroSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -865,7 +858,7 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                   Contains the name of a class that implements an interface with a method for returning a default name for a configuration.  The configuration names in a user&apos;s project must be unique.  A projectType can contain configuration children with the same name.  In this case, a configurationNameProvider must be specified to make the names unique before they are displayed to the user in the New Project and New Configuration dialog boxes.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IConfigurationNameProvider"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1125,11 +1118,11 @@ The value of this attribute is used only in case languageInfoCalculator is not s
          <attribute name="languageInfoCalculator" type="string">
             <annotation>
                <documentation>
-                  Specifies the name of the class that implements org.eclipse.cdt.managedbuilder.core.ILanguageInfoCalculator for dinamic providing the language id info.
+                  Specifies the name of the class that implements ILanguageInfoCalculator for dinamic providing the language id info.
 Overrides language id specified with the languageId attribute.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.managedbuilder.core.ILanguageInfoCalculator"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.ILanguageInfoCalculator"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1283,7 +1276,7 @@ Overrides language id specified with the languageId attribute.
                   The name of the class that implements the &lt;code&gt;IManagedOutputNameProvider&lt;/code&gt; interface.  If specified, the outputNames and namePattern are ignored.  When multipleOfType is true, this attribute, or the outputNames attribute, is required in order for MBS to know the names of the output files.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IManagedOutputNameProvider"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOutputNameProvider"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1348,7 +1341,7 @@ The path is relative to the plug-in directory which defines .buildDefinitions.
                   Optional class which is used to determine dynamically at runtime whether the option category is visible.  This class must implement the IOptionCategoryApplicability interface.  If no calculator is specified then the option category is always visible.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.cdt.managedbuilder.core.IOptionCategoryApplicability"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1552,13 +1545,6 @@ Default is true (leaf nodes only).
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="unusedChildren" type="string">
-            <annotation>
-               <documentation>
-                  A semi-colon separated list of child IDs of the superclass&apos; children that should not be automatically inherited by this element.  Note: This attribute is not yet implemented.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="command" type="string">
             <annotation>
                <documentation>
@@ -1579,7 +1565,7 @@ Default is true (leaf nodes only).
                   Allows you to supply a custom build file generator that conforms to the &lt;code&gt;IManagedBuilderMakefileGenerator&lt;/code&gt; interface.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IManagedBuilderMakefileGenerator2"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1619,7 +1605,7 @@ If this attribute is not specified, MBS will assume that there are no reserved m
 2. a macro name that is equal to one of the build variable names specified int the InputType elements of the tools used in the tool-chain
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1700,7 +1686,7 @@ If this attribute is not specified, MBS will assume that there are no reserved m
          <attribute name="supportsManagedBuild" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
-                  Specifies whether the duilder supports managed build. Default value is true.
+                  Specifies whether the duilder supports Auto build. Default value is true.
                </documentation>
             </annotation>
          </attribute>
@@ -1782,7 +1768,7 @@ A positive number or value &quot;optimal&quot; or &quot;unlimited&quot; are reco
                   A runner for the build. Overrides or extends the built-in external and internal build runners.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.AbstractBuildRunner:"/>
+                  <meta.attribute kind="java" basedOn="io.sloeber.autoBuild.extensionPoint.IBuildRunner:IBuildRunner"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -1919,7 +1905,7 @@ A positive number or value &quot;optimal&quot; or &quot;unlimited&quot; are reco
       <annotation>
          <documentation>
             &lt;p&gt;
-Version identifier for the managed build extension point. It is a string representation, consisting of three (3) tokens separated by a decimal point. The 3 tokens are positive integer numbers. For example, the following are valid version identifiers:
+Version identifier for the Auto build extension point. It is a string representation, consisting of three (3) tokens separated by a decimal point. The 3 tokens are positive integer numbers. For example, the following are valid version identifiers:
  &lt;ul&gt;
   &lt;li&gt;&lt;code&gt;0.0.0&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;&lt;code&gt;1.0.1234&lt;/code&gt;&lt;/li&gt;
@@ -1983,7 +1969,7 @@ If the &quot;buildPathResolver&quot; attribute is specified, the &quot;pathDelim
                   Should be set to the IBuildPathResolver interface that the tool-integrator can supply in order to provide his/her own logic of resolving the variable values to the build paths
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.cdt.managedbuilder.core.IBuildPathResolver"/>
+                  <meta.attribute kind="java" basedOn=":io.sloeber.autoBuild.extensionPoint.IBuildPathResolver"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -2404,7 +2390,7 @@ The only difference between this element and the resourceConfiguration is that r
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         This extension point was added in CDT 2.1
+         This extension point was added in CDT 11.0
       </documentation>
    </annotation>
 
@@ -2435,14 +2421,5 @@ The only difference between this element and the resourceConfiguration is that r
       </documentation>
    </annotation>
 
-   <annotation>
-      <appinfo>
-         <meta.section type="copyright"/>
-      </appinfo>
-      <documentation>
-         Copyright (c) 2003, 2006 IBM Corporation and others.
-This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which accompanies this distribution, and is available on the &lt;a href=&quot;http://www.eclipse.org/legal/epl-2.0/&quot;&gt; Eclipse&lt;/a&gt; website.
-      </documentation>
-   </annotation>
 
 </schema>

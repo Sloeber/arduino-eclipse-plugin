@@ -49,9 +49,9 @@ import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOutputType;
-import io.sloeber.autoBuild.api.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
 /**
  * This substitutor resolves all macro references except for the environment

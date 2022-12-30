@@ -165,10 +165,7 @@ import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator;
-import io.sloeber.autoBuild.api.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
-import io.sloeber.autoBuild.api.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionCategory;
@@ -183,6 +180,9 @@ import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.api.IToolReference;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.integration.CommonBuilder;
 import io.sloeber.buildProperties.BuildPropertyManager;
 import io.sloeber.buildProperties.IBuildPropertyManager;
@@ -724,7 +724,7 @@ public class ManagedBuildManager extends AbstractCExtension {
         }
     }
 
-    public static IManagedBuilderMakefileGenerator getBuildfileGenerator(IConfiguration config) {
+    public static IMakefileGenerator getBuildfileGenerator(IConfiguration config) {
         IToolChain toolChain = config.getToolChain();
         if (toolChain != null) {
             IBuilder builder = toolChain.getBuilder();
@@ -4662,7 +4662,7 @@ public class ManagedBuildManager extends AbstractCExtension {
         return true; // no target platform - nothing to check.
     }
 
-    /*package*/ static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
+    /*package*/ public static void collectLanguageSettingsConsoleParsers(ICConfigurationDescription cfgDescription,
             IWorkingDirectoryTracker cwdTracker, List<IConsoleParser> parsers) {
         if (cfgDescription instanceof ILanguageSettingsProvidersKeeper) {
             List<ILanguageSettingsProvider> lsProviders = ((ILanguageSettingsProvidersKeeper) cfgDescription)

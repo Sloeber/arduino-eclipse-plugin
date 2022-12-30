@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Intel Corporation and others.
+ * Copyright (c) 2005 Intel Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,12 +11,18 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+package io.sloeber.autoBuild.extensionPoint;
 
-public interface IManagedBuilderMakefileGenerator2 extends IManagedBuilderMakefileGenerator {
+import io.sloeber.autoBuild.api.IConfiguration;
 
-    public void initialize(int buildKind, IConfiguration cfg, IBuilder builder, IProgressMonitor monitor);
+public interface IConfigurationNameProvider {
 
+	/*
+	 * Returns the new  unique configuration name based on the 'configuration'
+	 * object and the list of configuration names already in use in the project.
+	 *
+	 */
+
+	String getNewConfigurationName(IConfiguration configuration, String[] usedConfigurationNames);
 }

@@ -11,24 +11,28 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
 
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import io.sloeber.autoBuild.api.IBuildMacro;
+import io.sloeber.autoBuild.api.IBuildMacroProvider;
+import io.sloeber.autoBuild.api.IManagedProject;
+
+//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 
 /**
  *
  * this interface is to be implemented by the tool-integrator
- * for supplying the configuration-specific macros
+ * for supplying the project-specific macros
  *
  * @since 3.0
  */
-public interface IConfigurationBuildMacroSupplier {
+public interface IProjectBuildMacroSupplier {
     /**
      *
      * @param macroName
      *            the macro name
-     * @param configuration
-     *            configuration
+     * @param project
+     *            the instance of the managed project
      * @param provider
      *            the instance of the build macro provider to be used for querying
      *            the
@@ -52,12 +56,12 @@ public interface IConfigurationBuildMacroSupplier {
      *         the build macro of a given name or null if the macro of that name is
      *         not defined
      */
-    public IBuildMacro getMacro(String macroName, IConfiguration configuration, IBuildMacroProvider provider);
+    IBuildMacro getMacro(String macroName, IManagedProject project, IBuildMacroProvider provider);
 
     /**
      *
-     * @param configuration
-     *            configuration
+     * @param project
+     *            the instance of the managed project
      * @param provider
      *            the instance of the build macro provider to be used for querying
      *            the
@@ -79,5 +83,5 @@ public interface IConfigurationBuildMacroSupplier {
      *            about the build macros defined for the higher levels.
      * @return the IBuildMacro[] array representing defined macros
      */
-    public IBuildMacro[] getMacros(IConfiguration configuration, IBuildMacroProvider provider);
+    IBuildMacro[] getMacros(IManagedProject project, IBuildMacroProvider provider);
 }

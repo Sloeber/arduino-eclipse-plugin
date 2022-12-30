@@ -1,4 +1,4 @@
-package io.sloeber.autoBuild.Internal;
+package io.sloeber.autoBuild.extensionPoint;
 
 import static io.sloeber.autoBuild.Internal.ManagebBuildCommon.*;
 import static io.sloeber.autoBuild.core.Messages.*;
@@ -35,11 +35,14 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
+import io.sloeber.autoBuild.Internal.MakeRule;
+import io.sloeber.autoBuild.Internal.SrcMakeGenerator;
+import io.sloeber.autoBuild.Internal.SubDirMakeGenerator;
+import io.sloeber.autoBuild.Internal.TopMakeFileGenerator;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator2;
 import io.sloeber.autoBuild.core.Activator;
 
 /**
@@ -50,21 +53,21 @@ import io.sloeber.autoBuild.core.Activator;
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGenerator2 {
+public class MakefileGenerator implements IMakefileGenerator {
 
     /**
      * This class is used to recursively walk the project and determine which
      * modules contribute buildable source files.
      */
     protected class ResourceProxyVisitor implements IResourceProxyVisitor {
-        private final ArduinoGnuMakefileGenerator generator;
+        private final MakefileGenerator generator;
         private Collection<IContainer> subdirList = new LinkedHashSet<>();
 
         Collection<IContainer> getSubdirList() {
             return subdirList;
         }
 
-        public ResourceProxyVisitor(ArduinoGnuMakefileGenerator generator) {
+        public ResourceProxyVisitor(MakefileGenerator generator) {
             this.generator = generator;
 
         }
@@ -111,7 +114,7 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     private IFile topBuildDir;
     private ICSourceEntry srcEntries[];
 
-    public ArduinoGnuMakefileGenerator() {
+    public MakefileGenerator() {
         super();
     }
 
@@ -193,12 +196,8 @@ public class ArduinoGnuMakefileGenerator implements IManagedBuilderMakefileGener
     }
 
     /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.cdt.managedbuilder.makegen.IManagedBuilderMakefileGenerator#
-     * isGeneratedResource(org.eclipse.core.resources.IResource)
+     * Is this resource a resource generated as a result of the build
      */
-    @Override
     public boolean isGeneratedResource(IResource resource) {
         // Is this a generated directory ...
         IPath path = resource.getProjectRelativePath();

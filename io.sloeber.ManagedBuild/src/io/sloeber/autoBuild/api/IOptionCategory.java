@@ -16,6 +16,8 @@ package io.sloeber.autoBuild.api;
 
 import java.net.URL;
 
+import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
+
 /**
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.

@@ -34,12 +34,12 @@ import org.eclipse.cdt.internal.core.envvar.EnvVarCollector;
 import org.eclipse.cdt.utils.envvar.EnvVarOperationProcessor;
 
 import io.sloeber.autoBuild.api.IBuildEnvironmentVariable;
-import io.sloeber.autoBuild.api.IBuildPathResolver;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
 import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.IBuildPathResolver;
 
 /**
  * This class implements the IEnvironmentVariableProvider interface and provides

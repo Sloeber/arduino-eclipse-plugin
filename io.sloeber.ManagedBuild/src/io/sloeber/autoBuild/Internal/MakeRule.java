@@ -42,6 +42,7 @@ import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
 
 public class MakeRule {
 
@@ -64,7 +65,7 @@ public class MakeRule {
         myTool = tool;
     }
 
-    public MakeRule(ArduinoGnuMakefileGenerator caller, ITool tool, IInputType inputType, Set<IFile> inputFiles,
+    public MakeRule(MakefileGenerator caller, ITool tool, IInputType inputType, Set<IFile> inputFiles,
             IOutputType outputType, IFile outFile) {
         for (IFile inputFile : inputFiles) {
             addPrerequisite(inputType, inputFile);
@@ -73,7 +74,7 @@ public class MakeRule {
         myTool = tool;
     }
 
-    public void addDependencies(ArduinoGnuMakefileGenerator caller) {
+    public void addDependencies(MakefileGenerator caller) {
         myDependencies.clear();
         //FIXME need new way to know dependencies need to be added
         //

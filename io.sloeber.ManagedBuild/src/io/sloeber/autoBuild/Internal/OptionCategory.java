@@ -46,12 +46,12 @@ import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
 import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IOptionCategoryApplicability;
 import io.sloeber.autoBuild.api.IResourceConfiguration;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 
 /**
  *

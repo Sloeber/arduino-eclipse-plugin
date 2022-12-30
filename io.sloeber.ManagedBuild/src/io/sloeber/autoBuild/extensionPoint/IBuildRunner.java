@@ -12,7 +12,7 @@
  * Wind River Systems - Initial API and implementation
  * James Blackburn (Broadcom Corp.)
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
@@ -21,13 +21,16 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import io.sloeber.autoBuild.api.IBuilder;
+import io.sloeber.autoBuild.api.IConfiguration;
+
 /**
  * Interface implemented by toolchain integrators to perform the actual build.
  *
  * @author Doug Schaefer
  * @since 8.0
  */
-public abstract class AbstractBuildRunner {
+public abstract class IBuildRunner {
 
 	/**
 	 * Perform the build.

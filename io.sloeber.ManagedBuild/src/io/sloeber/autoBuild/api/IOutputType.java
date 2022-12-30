@@ -18,6 +18,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.content.IContentType;
 
+import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
+
 /**
  * This interface represents an outputType instance in the managed build system.
  * It describes one category of output files created by a Tool. A tool can
@@ -229,7 +231,7 @@ public interface IOutputType extends IBuildObject {
      *
      * @return IManagedOutputNameProvider
      */
-    public INewManagedOutputNameProvider getNameProvider();
+    public IOutputNameProvider getNameProvider();
 
     /**
      * Returns the name of the build variable associated this this output type's

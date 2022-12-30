@@ -26,6 +26,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
+
 /**
  * A tool-integrator defines default configurations as children of the project
  * type.

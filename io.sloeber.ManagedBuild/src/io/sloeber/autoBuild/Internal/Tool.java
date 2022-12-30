@@ -113,14 +113,10 @@ import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionApplicability;
 import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IOptionCategoryApplicability;
-import io.sloeber.autoBuild.api.IOptionCommandGenerator;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IProjectType;
@@ -129,6 +125,10 @@ import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
+import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
+import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
 import io.sloeber.buildProperties.PropertyManager;
 
 /**

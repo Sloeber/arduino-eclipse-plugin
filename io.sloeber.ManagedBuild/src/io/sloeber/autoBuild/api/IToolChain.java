@@ -17,6 +17,9 @@ import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 //import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 //import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
 
+import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
+
 /**
  * This interface represents a tool-integrator-defined, ordered set of tools
  * that transform the project's input into the project's outputs. A

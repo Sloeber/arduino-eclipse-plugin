@@ -25,12 +25,12 @@ public class Activator implements BundleActivator {
     }
 
     public static void log(Status status) {
-        // TODO Auto-generated method stub
+        //TOFIX     status.
 
     }
 
     public static void log(Exception e) {
-        // TODO Auto-generated method stub
+        e.printStackTrace();
 
     }
 

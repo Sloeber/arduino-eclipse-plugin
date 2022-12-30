@@ -37,10 +37,10 @@ import org.osgi.framework.Version;
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
-import io.sloeber.autoBuild.api.INewManagedOutputNameProvider;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 
 public class OutputType extends BuildObject implements IOutputType {
 
@@ -66,7 +66,7 @@ public class OutputType extends BuildObject implements IOutputType {
     private String outputNames;
     private String namePattern;
     private IConfigurationElement nameProviderElement = null;
-    private INewManagedOutputNameProvider nameProvider = null;
+    private IOutputNameProvider nameProvider = null;
 
     private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
@@ -969,7 +969,7 @@ public class OutputType extends BuildObject implements IOutputType {
     }
 
     @Override
-    public INewManagedOutputNameProvider getNameProvider() {
+    public IOutputNameProvider getNameProvider() {
         // TODO Auto-generated method stub
         return null;
     }

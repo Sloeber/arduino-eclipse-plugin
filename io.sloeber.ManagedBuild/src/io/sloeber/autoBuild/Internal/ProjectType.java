@@ -50,13 +50,13 @@ import io.sloeber.autoBuild.api.IBuildProperty;
 import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IConfigurationNameProvider;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOptionalBuildProperties;
-import io.sloeber.autoBuild.api.IProjectBuildMacroSupplier;
-import io.sloeber.autoBuild.api.IProjectEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
+import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
+import io.sloeber.autoBuild.extensionPoint.IProjectEnvironmentVariableSupplier;
 import io.sloeber.buildProperties.BuildObjectProperties;
 import io.sloeber.buildProperties.OptionalBuildProperties;
 

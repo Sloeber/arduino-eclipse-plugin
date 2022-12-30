@@ -58,7 +58,6 @@ import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.osgi.framework.Version;
 
-import io.sloeber.autoBuild.api.AbstractBuildRunner;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
@@ -66,15 +65,17 @@ import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileContextBuildMacroValues;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator2;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IProjectType;
-import io.sloeber.autoBuild.api.IReservedMacroNameSupplier;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.BuildRunner;
+import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
 public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider<Builder>, IRealBuildObjectAssociation {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;
@@ -141,7 +142,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
 
     private IConfigurationElement fCommandLauncherElement = null;
 
-    private AbstractBuildRunner fBuildRunner = null;
+    private IBuildRunner fBuildRunner = null;
     private IConfigurationElement fBuildRunnerElement = null;
 
     /*
@@ -1249,19 +1250,17 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     }
 
     @Override
-    public IManagedBuilderMakefileGenerator getBuildFileGenerator() {
+    public IMakefileGenerator getBuildFileGenerator() {
         IConfigurationElement element = getBuildFileGeneratorElement();
         if (element != null) {
             try {
                 if (element.getName().equalsIgnoreCase("target")) { //$NON-NLS-1$
                     if (element.getAttribute(Activator.MAKEGEN_ID) != null) {
-                        return (IManagedBuilderMakefileGenerator) element
-                                .createExecutableExtension(Activator.MAKEGEN_ID);
+                        return (IMakefileGenerator) element.createExecutableExtension(Activator.MAKEGEN_ID);
                     }
                 } else {
                     if (element.getAttribute(IBuilder.BUILDFILEGEN_ID) != null) {
-                        return (IManagedBuilderMakefileGenerator) element
-                                .createExecutableExtension(IBuilder.BUILDFILEGEN_ID);
+                        return (IMakefileGenerator) element.createExecutableExtension(IBuilder.BUILDFILEGEN_ID);
                     }
                 }
             } catch (CoreException e) {
@@ -1708,10 +1707,10 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
                 IProject project = cfg.getOwner().getProject();
                 //				if(attr == null){
                 if (isManagedBuildOn()) {
-                    IManagedBuilderMakefileGenerator gen = getBuildFileGenerator();
-                    if (gen instanceof IManagedBuilderMakefileGenerator2) {
-                        ((IManagedBuilderMakefileGenerator2) gen).initialize(IncrementalProjectBuilder.FULL_BUILD, cfg,
-                                this, new NullProgressMonitor());
+                    IMakefileGenerator gen = getBuildFileGenerator();
+                    if (gen instanceof IMakefileGenerator) {
+                        ((IMakefileGenerator) gen).initialize(IncrementalProjectBuilder.FULL_BUILD, cfg, this,
+                                new NullProgressMonitor());
                     } else {
                         gen.initialize(project, ManagedBuildManager.getBuildInfo(project), new NullProgressMonitor());
                     }
@@ -2351,8 +2350,8 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     @Override
     public boolean supportsCustomizedBuild() {
         if (fSupportsCustomizedBuild == null) {
-            IManagedBuilderMakefileGenerator makeGen = getBuildFileGenerator();
-            if (makeGen instanceof IManagedBuilderMakefileGenerator2)
+            IMakefileGenerator makeGen = getBuildFileGenerator();
+            if (makeGen instanceof IMakefileGenerator)
                 fSupportsCustomizedBuild = true;
             else
                 fSupportsCustomizedBuild = false;
@@ -2783,14 +2782,14 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     }
 
     @Override
-    public AbstractBuildRunner getBuildRunner() throws CoreException {
+    public IBuildRunner getBuildRunner() throws CoreException {
         // Already defined
         if (fBuildRunner != null)
             return fBuildRunner;
 
         // Instantiate from model
         if (fBuildRunnerElement != null) {
-            fBuildRunner = (AbstractBuildRunner) fBuildRunnerElement.createExecutableExtension(ATTRIBUTE_BUILD_RUNNER);
+            fBuildRunner = (IBuildRunner) fBuildRunnerElement.createExecutableExtension(ATTRIBUTE_BUILD_RUNNER);
             return fBuildRunner;
         }
 
@@ -2802,8 +2801,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         if (isInternalBuilder())
             return new InternalBuildRunner();
 
-        //return new ExternalBuildRunner();
-        return null;
+        return new BuildRunner();
     }
 
     @Override

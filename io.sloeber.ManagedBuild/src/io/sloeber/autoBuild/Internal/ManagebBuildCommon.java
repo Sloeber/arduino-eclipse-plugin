@@ -45,10 +45,11 @@ import io.sloeber.autoBuild.api.BuildMacroException;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFolderInfo;
-import io.sloeber.autoBuild.api.INewManagedOutputNameProvider;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOutputNameProvider;
 
 @SuppressWarnings("nls")
 public class ManagebBuildCommon {
@@ -525,7 +526,7 @@ public class ManagebBuildCommon {
      * Adds a file to an entry in a map of macro names to entries. File additions
      * look like: example.c, \
      */
-    static public void addMacroAdditionFile(ArduinoGnuMakefileGenerator caller, HashMap<String, String> map,
+    static public void addMacroAdditionFile(MakefileGenerator caller, HashMap<String, String> map,
             String macroName, String relativePath, IPath sourceLocation, boolean generatedSource) {
         // Add the source file path to the makefile line that adds source files
         // to the build variable
@@ -593,7 +594,7 @@ public class ManagebBuildCommon {
     }
 
     //TOFIX this code should be in outputType.getOutputName
-    static public INewManagedOutputNameProvider getJABANameProvider(IConfiguration cConf, IPath referencedFrom,
+    static public IOutputNameProvider getJABANameProvider(IConfiguration cConf, IPath referencedFrom,
             IOutputType iType) {
         //        OutputType type = (OutputType) iType;
         //        IConfigurationElement element = type.getNameProviderElement();

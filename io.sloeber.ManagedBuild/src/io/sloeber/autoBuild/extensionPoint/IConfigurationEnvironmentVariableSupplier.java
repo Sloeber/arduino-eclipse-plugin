@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 Intel Corporation and others.
+ * Copyright (c) 2005, 2013 Intel Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,24 +11,27 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
 
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import io.sloeber.autoBuild.api.IBuildEnvironmentVariable;
+import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
+
+//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 
 /**
- *
- * this interface is to be implemented by the tool-integrator
- * for supplying the project-specific environment
+ * This interface is to be implemented by the tool-integrator for supplying the
+ * configuration-specific
+ * environment.
  *
  * @since 3.0
  */
-public interface IProjectEnvironmentVariableSupplier {
+public interface IConfigurationEnvironmentVariableSupplier {
     /**
-     *
      * @param variableName
-     *            the variable name
-     * @param project
-     *            the managed project
+     *            - the variable name.
+     * @param configuration
+     *            - configuration.
      * @param provider
      *            the instance of the environment variable provider to be used for
      *            querying the
@@ -48,18 +51,18 @@ public interface IProjectEnvironmentVariableSupplier {
      *            and the provider in turn calls that supplier again. Also the
      *            supplier should not know anything
      *            about the environment variables defined for the higher levels.
-     * @return the reference to the IBuildEnvironmentVariable interface representing
-     *         the variable of a given name
+     * @return The reference to the IBuildEnvironmentVariable interface representing
+     *         the variable of a given name or {@code null} if the variable is not
+     *         defined.
      */
-    IBuildEnvironmentVariable getVariable(String variableName, IManagedProject project,
+    IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration,
             IEnvironmentVariableProvider provider);
 
     /**
-     *
-     * @param project
-     *            the managed project
+     * @param configuration
+     *            - configuration.
      * @param provider
-     *            the instance of the environment variable provider to be used for
+     *            - the instance of the environment variable provider to be used for
      *            querying the
      *            environment variables from within the supplier. The supplier
      *            should use this provider to obtain
@@ -77,8 +80,9 @@ public interface IProjectEnvironmentVariableSupplier {
      *            and the provider in turn calls that supplier again. Also the
      *            supplier should not know anything
      *            about the environment variables defined for the higher levels.
-     * @return the array of IBuildEnvironmentVariable that represents the
-     *         environment variables
+     * @return The array of IBuildEnvironmentVariable that represents the
+     *         environment variables.
+     *         The array may contain {@code null} values.
      */
-    IBuildEnvironmentVariable[] getVariables(IManagedProject project, IEnvironmentVariableProvider provider);
+    IBuildEnvironmentVariable[] getVariables(IConfiguration configuration, IEnvironmentVariableProvider provider);
 }

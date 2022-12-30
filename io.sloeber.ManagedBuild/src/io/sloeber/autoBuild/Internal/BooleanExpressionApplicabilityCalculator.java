@@ -27,13 +27,13 @@ import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionApplicability;
 import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IOptionCategoryApplicability;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
+import io.sloeber.autoBuild.extensionPoint.IOptionCategoryApplicability;
 
 //import org.eclipse.cdt.managedbuilder.core.IBuildObject;
 //import org.eclipse.cdt.managedbuilder.core.IConfiguration;

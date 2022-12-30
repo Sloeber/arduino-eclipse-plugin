@@ -13,6 +13,8 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import io.sloeber.autoBuild.extensionPoint.IBuildPathResolver;
+
 /**
  * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.

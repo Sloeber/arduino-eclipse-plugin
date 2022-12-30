@@ -77,11 +77,11 @@ import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator2;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.buildProperties.PropertyManager;
 
 public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuilder2 {
@@ -234,7 +234,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             }
 
             if (ext.length() > 0) {
-                buildGoalName = cfg.getOutputPrefix(ext) + name + IManagedBuilderMakefileGenerator.DOT + ext;
+                buildGoalName = cfg.getOutputPrefix(ext) + name + IMakefileGenerator.DOT + ext;
             } else {
                 buildGoalName = name;
             }
@@ -684,7 +684,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         private boolean fRebuild;
         private boolean fBuild = true;
         private final List<String> fConsoleMessages = new ArrayList<>();
-        private IManagedBuilderMakefileGenerator fMakeGen;
+        private IMakefileGenerator fMakeGen;
 
         public BuildStatus(IBuilder builder) {
             fManagedBuildOn = builder.isManagedBuildOn();
@@ -714,11 +714,11 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return fConsoleMessages;
         }
 
-        public IManagedBuilderMakefileGenerator getMakeGen() {
+        public IMakefileGenerator getMakeGen() {
             return fMakeGen;
         }
 
-        public void setMakeGen(IManagedBuilderMakefileGenerator makeGen) {
+        public void setMakeGen(IMakefileGenerator makeGen) {
             fMakeGen = makeGen;
         }
     }
@@ -871,7 +871,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             return buildStatus;
 
         buildStatus = performCleanning(kind, bInfo, buildStatus, monitor);
-        IManagedBuilderMakefileGenerator generator = builder.getBuildFileGenerator();
+        IMakefileGenerator generator = builder.getBuildFileGenerator();
         if (generator != null) {
             initializeGenerator(generator, kind, bInfo, monitor);
             buildStatus.setMakeGen(generator);
@@ -890,7 +890,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                     //								null);
                     //
                     //					}
-                    if (status.getCode() == IManagedBuilderMakefileGenerator.NO_SOURCE_FOLDERS) {
+                    if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
                         //						performBuild = false;
                         buildStatus.getConsoleMessagesList().add(createNoSourceMessage(kind, status, bInfo));
                         buildStatus.cancelBuild();
@@ -1000,7 +1000,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         //                return status;
     }
 
-    protected MultiStatus performMakefileGeneration(CfgBuildInfo bInfo, IManagedBuilderMakefileGenerator generator,
+    protected MultiStatus performMakefileGeneration(CfgBuildInfo bInfo, IMakefileGenerator generator,
             BuildStatus buildStatus, IProgressMonitor monitor) throws CoreException {
         // Need to report status to the user
         IProject curProject = bInfo.getProject();
@@ -1031,10 +1031,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
     //				null);
     //	}
 
-    protected void initializeGenerator(IManagedBuilderMakefileGenerator generator, int kind, CfgBuildInfo bInfo,
+    protected void initializeGenerator(IMakefileGenerator generator, int kind, CfgBuildInfo bInfo,
             IProgressMonitor monitor) {
-        if (generator instanceof IManagedBuilderMakefileGenerator2) {
-            IManagedBuilderMakefileGenerator2 gen2 = (IManagedBuilderMakefileGenerator2) generator;
+        if (generator instanceof IMakefileGenerator) {
+            IMakefileGenerator gen2 = (IMakefileGenerator) generator;
             gen2.initialize(kind, bInfo.getConfiguration(), bInfo.getBuilder(), monitor);
         } else {
             generator.initialize(bInfo.getProject(), bInfo.getBuildInfo(), monitor);
@@ -1104,6 +1104,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                         try {
                             performExternalClean(bInfo, false, monitor);
                         } catch (CoreException e) {
+                            Activator.log(e);
                             fBuildErrOccured = true;
                         }
                         if (!fBuildErrOccured)

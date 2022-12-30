@@ -50,11 +50,11 @@ import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOptionalBuildProperties;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.buildProperties.BuildObjectProperties;
 import io.sloeber.buildProperties.OptionalBuildProperties;
 

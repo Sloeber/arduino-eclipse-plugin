@@ -59,12 +59,12 @@ import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IInputOrder;
 import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.ILanguageInfoCalculator;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.autoBuild.extensionPoint.ILanguageInfoCalculator;
 
 public class InputType extends BuildObject implements IInputType {
 

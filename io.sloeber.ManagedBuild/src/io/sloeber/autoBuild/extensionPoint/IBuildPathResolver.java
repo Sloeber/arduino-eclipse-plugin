@@ -11,7 +11,9 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IConfiguration;
 
 /**
  * This interface is to be implemented by the tool-integrator to provide some specific

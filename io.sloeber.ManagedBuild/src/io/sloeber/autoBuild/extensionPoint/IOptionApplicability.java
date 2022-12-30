@@ -11,7 +11,11 @@
  * Contributors:
  *     Texas Instruments Inc. - initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IBuildObject;
+import io.sloeber.autoBuild.api.IHoldsOptions;
+import io.sloeber.autoBuild.api.IOption;
 
 /**
  * This interface determines whether or not the option is currently displayed,

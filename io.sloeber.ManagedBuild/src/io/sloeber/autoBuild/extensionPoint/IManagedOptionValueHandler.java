@@ -11,7 +11,11 @@
  * Contributors:
  * Symbian Ltd - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IBuildObject;
+import io.sloeber.autoBuild.api.IHoldsOptions;
+import io.sloeber.autoBuild.api.IOption;
 
 /**
  * This interface represents an option value handler in the managed build

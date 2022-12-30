@@ -18,6 +18,8 @@ import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 //import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.core.runtime.IPath;
 
+import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+
 /**
  * This interface represents a utility of some sort that is used in the build process.
  * A tool will generally process one or more resources to produce output resources.

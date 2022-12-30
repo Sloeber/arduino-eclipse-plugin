@@ -28,13 +28,14 @@ import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
 
 public class SubDirMakeGenerator {
-    private ArduinoGnuMakefileGenerator caller;
+    private MakefileGenerator caller;
     private Set<MakeRule> myMakeRules = new LinkedHashSet<>();
     private IFile myMakefile;
 
-    SubDirMakeGenerator(ArduinoGnuMakefileGenerator theCaller, IContainer module) {
+    public SubDirMakeGenerator(MakefileGenerator theCaller, IContainer module) {
         caller = theCaller;
         IProject project = getProject();
         IPath buildPath = getBuildPath();

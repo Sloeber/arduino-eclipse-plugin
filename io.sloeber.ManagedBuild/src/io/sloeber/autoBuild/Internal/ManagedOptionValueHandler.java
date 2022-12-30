@@ -20,8 +20,8 @@ import java.util.List;
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IHoldsOptions;
-import io.sloeber.autoBuild.api.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.api.IOption;
+import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 
 /**
  * This class implements the default managed option value handler for MBS.

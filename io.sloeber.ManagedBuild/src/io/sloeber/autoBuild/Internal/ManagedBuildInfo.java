@@ -72,12 +72,12 @@ import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.IManagedCommandLineInfo;
 import io.sloeber.autoBuild.api.IManagedProject;
 import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionApplicability;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.api.IResourceConfiguration;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 
 /**
  * Concrete IManagedBuildInfo storing runtime ManagedProject metadata with

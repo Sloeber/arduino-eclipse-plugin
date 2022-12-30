@@ -70,8 +70,6 @@ import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
-import io.sloeber.autoBuild.api.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.api.IConfigurationEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
@@ -82,6 +80,8 @@ import io.sloeber.autoBuild.api.IResourceInfo;
 import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
+import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
+import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
 import io.sloeber.buildProperties.PropertyManager;
 
 public class ToolChain extends HoldsOptions

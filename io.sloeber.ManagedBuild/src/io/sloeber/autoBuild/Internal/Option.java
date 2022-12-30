@@ -63,17 +63,17 @@ import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
-import io.sloeber.autoBuild.api.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionApplicability;
 import io.sloeber.autoBuild.api.IOptionCategory;
-import io.sloeber.autoBuild.api.IOptionCommandGenerator;
-import io.sloeber.autoBuild.api.IOptionDefaultValueGenerator;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.api.OptionStringValue;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
+import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
 
 public class Option extends BuildObject implements IOption, IBuildPropertiesRestriction {
     private static final String IS_BUILTIN_EMPTY = "IS_BUILTIN_EMPTY"; //$NON-NLS-1$

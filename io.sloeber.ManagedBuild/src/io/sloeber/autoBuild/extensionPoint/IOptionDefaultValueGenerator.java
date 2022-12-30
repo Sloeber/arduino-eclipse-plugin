@@ -12,7 +12,9 @@
  *     cartu38 opendev (STMicroelectronics) - [514385] Custom defaultValue-generator support
  *******************************************************************************/
 
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IOption;
 
 /**
  * This interface can be implemented by clients to contribute custom defaultValue-generator for a

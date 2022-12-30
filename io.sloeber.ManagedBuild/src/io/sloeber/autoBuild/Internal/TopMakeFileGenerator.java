@@ -33,9 +33,10 @@ import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IInputType;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.ITool;
+import io.sloeber.autoBuild.extensionPoint.MakefileGenerator;
 
 public class TopMakeFileGenerator {
-    private ArduinoGnuMakefileGenerator caller = null;
+    private MakefileGenerator caller = null;
     private Set<MakeRule> mySubDirMakeRules = new LinkedHashSet<>();
     private MakeRules myMakeRules = new MakeRules();
     private Collection<IContainer> myFoldersToBuild;
@@ -54,7 +55,7 @@ public class TopMakeFileGenerator {
         return caller.getBuildFolder();
     }
 
-    TopMakeFileGenerator(ArduinoGnuMakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
+    public TopMakeFileGenerator(MakefileGenerator theCaller, Set<MakeRule> subDirMakeRules,
             Collection<IContainer> foldersToBuild) {
         caller = theCaller;
         mySubDirMakeRules = subDirMakeRules;

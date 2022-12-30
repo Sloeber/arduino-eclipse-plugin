@@ -1,8 +1,11 @@
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
-public interface INewManagedOutputNameProvider {
+import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.autoBuild.api.ITool;
+
+public interface IOutputNameProvider {
     public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName);
 }

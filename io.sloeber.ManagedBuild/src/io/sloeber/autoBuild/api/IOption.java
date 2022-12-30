@@ -18,6 +18,11 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
+import io.sloeber.autoBuild.extensionPoint.IOptionCommandGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOptionDefaultValueGenerator;
+
 //import org.eclipse.cdt.managedbuilder.macros.IOptionContextData;
 
 /**

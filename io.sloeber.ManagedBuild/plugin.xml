@@ -16,8 +16,8 @@
 -->
 		<builder
         autoBuildTarget="all"
-        buildRunner="io.sloeber.core.toolchain.SloeberBuildRunner"
-        buildfileGenerator="io.sloeber.autoBuild.Internal.ArduinoGnuMakefileGenerator"
+        buildRunner="io.sloeber.autoBuild.extensionPoint.BuildRunner"
+        buildfileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
         cleanBuildTarget="clean"
         command="${sloeber.make_location}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"

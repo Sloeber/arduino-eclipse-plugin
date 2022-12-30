@@ -11,7 +11,9 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IConfiguration;
 
 //import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 

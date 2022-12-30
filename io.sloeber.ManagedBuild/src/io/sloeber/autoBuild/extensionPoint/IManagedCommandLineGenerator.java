@@ -11,7 +11,10 @@
  * Contributors:
  * Intel Corporation - Initial API and implementation
  *******************************************************************************/
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
+
+import io.sloeber.autoBuild.api.IManagedCommandLineInfo;
+import io.sloeber.autoBuild.api.ITool;
 
 public interface IManagedCommandLineGenerator {
 	public IManagedCommandLineInfo generateCommandLineInfo(ITool tool, String commandName, String[] flags,

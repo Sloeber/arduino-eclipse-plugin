@@ -22,6 +22,10 @@ import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 //import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
 import org.eclipse.core.runtime.CoreException;
 
+import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
+import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
+
 /**
  * This class represents the utility that drives the build process
  * (typically, but not necessarily, a variant of "make"). It defines
@@ -114,7 +118,7 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
      *
      * @return IManagedBuilderMakefileGenerator
      */
-    IManagedBuilderMakefileGenerator getBuildFileGenerator();
+    IMakefileGenerator getBuildFileGenerator();
 
     /**
      * Returns the name of the build/make utility for the configuration.
@@ -315,7 +319,7 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
      * @return build runner
      * @since 8.0
      */
-    public AbstractBuildRunner getBuildRunner() throws CoreException;
+    public IBuildRunner getBuildRunner() throws CoreException;
 
     public void setManagedBuildOn(boolean b);
 

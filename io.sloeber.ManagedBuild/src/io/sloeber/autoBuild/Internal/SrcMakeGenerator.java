@@ -54,7 +54,7 @@ public class SrcMakeGenerator {
      * @param fileHandle
      *            The file that should be populated with the output
      */
-    protected static void generateObjectsMakefile(IProject project, IConfiguration config, Set<String> outputMacros)
+    public static void generateObjectsMakefile(IProject project, IConfiguration config, Set<String> outputMacros)
             throws CoreException {
         StringBuffer macroBuffer = new StringBuffer();
         macroBuffer.append(addDefaultHeader());

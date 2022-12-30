@@ -88,8 +88,8 @@ import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
-import io.sloeber.autoBuild.api.IManagedBuilderMakefileGenerator;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 
 /**
  * This is the incremental builder associated with a managed build project. It
@@ -126,7 +126,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
                 name = resolved;
 
             if (ext.length() > 0) {
-                buildGoalName = buildInfo.getOutputPrefix(ext) + name + IManagedBuilderMakefileGenerator.DOT + ext;
+                buildGoalName = buildInfo.getOutputPrefix(ext) + name + IMakefileGenerator.DOT + ext;
             } else {
                 buildGoalName = name;
             }
@@ -349,7 +349,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         while (iter.hasNext()) {
             IStatus stat = iter.next();
             IResource location = root.findMember(stat.getMessage());
-            if (stat.getCode() == IManagedBuilderMakefileGenerator.SPACES_IN_PATH) {
+            if (stat.getCode() == IMakefileGenerator.SPACES_IN_PATH) {
                 epm.generateMarker(location, -1, MakefileGenerator_error_spaces, //$NON-NLS-1$
                         IMarkerGenerator.SEVERITY_WARNING, null);
             }
@@ -450,7 +450,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             }
 
             // Create a makefile generator for the build
-            IManagedBuilderMakefileGenerator generator = ManagedBuildManager
+            IMakefileGenerator generator = ManagedBuildManager
                     .getBuildfileGenerator(info.getDefaultConfiguration());
             generator.initialize(getProject(), info, monitor);
 
@@ -650,7 +650,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             // Create a makefile generator for the build
             status = MessageFormat.format(ManagedMakeBuilder_message_clean_build_clean, buildDir.getName());
             monitor.subTask(status);
-            IManagedBuilderMakefileGenerator generator = ManagedBuildManager
+            IMakefileGenerator generator = ManagedBuildManager
                     .getBuildfileGenerator(info.getDefaultConfiguration());
             generator.initialize(getProject(), info, monitor);
             cleanBuild(info, generator, monitor);
@@ -663,7 +663,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param generator
      * @param monitor
      */
-    protected void cleanBuild(IManagedBuildInfo info, IManagedBuilderMakefileGenerator generator,
+    protected void cleanBuild(IManagedBuildInfo info, IMakefileGenerator generator,
             IProgressMonitor monitor) {
         // Make sure that there is a top level directory and a set of makefiles
         IPath buildDir = generator.getBuildWorkingDir();
@@ -688,7 +688,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param generator
      * @param monitor
      */
-    protected void fullBuild(IManagedBuildInfo info, IManagedBuilderMakefileGenerator generator,
+    protected void fullBuild(IManagedBuildInfo info, IMakefileGenerator generator,
             IProgressMonitor monitor) throws CoreException {
         // Always need one of these bad boys
         if (monitor == null) {
@@ -714,7 +714,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             for (int index = 0; index < kids.length; ++index) {
                 // One possibility is that there is nothing to build
                 IStatus status = kids[index];
-                if (status.getCode() == IManagedBuilderMakefileGenerator.NO_SOURCE_FOLDERS) {
+                if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
                     // Inform the user, via the console, that there is nothing to build
                     // either because there are no buildable sources files or all potentially
                     // buildable files have been excluded from build
@@ -815,7 +815,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @throws CoreException
      */
     protected void incrementalBuild(IResourceDelta delta, IManagedBuildInfo info,
-            IManagedBuilderMakefileGenerator generator, IProgressMonitor monitor) throws CoreException {
+            IMakefileGenerator generator, IProgressMonitor monitor) throws CoreException {
         // Need to report status to the user
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -831,7 +831,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             for (int index = 0; index < kids.length; ++index) {
                 // One possibility is that there is nothing to build
                 IStatus status = kids[index];
-                if (status.getCode() == IManagedBuilderMakefileGenerator.NO_SOURCE_FOLDERS) {
+                if (status.getCode() == IMakefileGenerator.NO_SOURCE_FOLDERS) {
                     // Inform the user, via the console, that there is nothing to build
                     // either because there are no buildable sources files or all potentially
                     // buildable files have been excluded from build
@@ -886,7 +886,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
      * @param monitor
      */
     protected void invokeMake(int buildType, IPath buildDir, IManagedBuildInfo info,
-            IManagedBuilderMakefileGenerator generator, IProgressMonitor monitor) {
+            IMakefileGenerator generator, IProgressMonitor monitor) {
         // Get the project and make sure there's a monitor to cancel the build
         IProject project = getProject();
         if (monitor == null) {

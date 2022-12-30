@@ -51,10 +51,8 @@ import io.sloeber.autoBuild.api.IConfigurationV2;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IInputType;
-import io.sloeber.autoBuild.api.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOption;
-import io.sloeber.autoBuild.api.IOptionApplicability;
 import io.sloeber.autoBuild.api.IOptionCategory;
 import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.api.IOutputType;
@@ -64,6 +62,8 @@ import io.sloeber.autoBuild.api.ITarget;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.api.IToolReference;
+import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
+import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
 
 public class ToolReference implements IToolReference {
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$

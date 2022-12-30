@@ -12,9 +12,11 @@
  *    Texas Instruments - Initial API and implementation
  *****************************************************************/
 
-package io.sloeber.autoBuild.api;
+package io.sloeber.autoBuild.extensionPoint;
 
 import org.eclipse.cdt.utils.cdtvariables.IVariableSubstitutor;
+
+import io.sloeber.autoBuild.api.IOption;
 
 /**
  * This interface can be implemented by clients to contribute custom command-generator

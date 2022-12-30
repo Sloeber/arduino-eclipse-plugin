@@ -50,10 +50,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 
-import io.sloeber.autoBuild.api.AbstractBuildRunner;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.core.Activator;
+import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 
 /**
  * The build runner for the internal builder.
@@ -61,7 +61,7 @@ import io.sloeber.autoBuild.core.Activator;
  * @author dschaefer
  * @since 8.0
  */
-public class InternalBuildRunner extends AbstractBuildRunner {
+public class InternalBuildRunner extends IBuildRunner {
     private static final int PROGRESS_MONITOR_SCALE = 100;
     private static final int TICKS_STREAM_PROGRESS_MONITOR = 1 * PROGRESS_MONITOR_SCALE;
     private static final int TICKS_DELETE_MARKERS = 1 * PROGRESS_MONITOR_SCALE;
