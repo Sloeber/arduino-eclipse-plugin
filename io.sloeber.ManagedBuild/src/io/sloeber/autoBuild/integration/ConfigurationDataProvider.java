@@ -123,12 +123,23 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         Builder b = (Builder) cfg.getEditableBuilder();
         // Need to ensure that build macro supplier can get the description for this configuration during the write...
         cfg.setConfigurationDescription(cfgDescription);
-        if (b != null && b.isManagedBuildOn() && b.getBuildPathAttribute(false) == null) {
-            String bPath = b.getDefaultBuildPath();
-            b.setBuildPathAttribute(bPath);
-        }
-        //		cfg.setConfigurationDescription(des);
-        //		ManagedBuildManager.performValueHandlerEvent(cfg, IManagedOptionValueHandler.EVENT_APPLY);
+        
+        
+        
+        
+//       TOFIX JABA disabled this. This whole method doesn't make sense to me
+//        I ùean 2 parameters are provided and one parameter is used to set the description of the other via a 
+//        a lot of detours
+//        if (b != null && b.isManagedBuildOn() && b.getBuildPathAttribute(false) == null) {
+//            String bPath = b.getDefaultBuildPath();
+//            b.setBuildPathAttribute(bPath);
+//        }
+//        //		cfg.setConfigurationDescription(des);
+//        //		ManagedBuildManager.performValueHandlerEvent(cfg, IManagedOptionValueHandler.EVENT_APPLY);
+//        
+        
+        
+        
         cfg.serialize(cfgElemen);
 
         return appliedCfg;

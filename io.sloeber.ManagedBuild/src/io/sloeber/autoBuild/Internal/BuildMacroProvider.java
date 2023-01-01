@@ -63,7 +63,6 @@ public class BuildMacroProvider implements IBuildMacroProvider, IMacroContextInf
 
     static private BuildMacroProvider fDefault;
 
-    public static MbsMacroSupplier fMbsMacroSupplier = MbsMacroSupplier.getInstance();
 
     protected BuildMacroProvider() {
 

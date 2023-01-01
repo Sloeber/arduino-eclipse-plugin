@@ -29,7 +29,6 @@ public class BuildBuildData extends CBuildData {
     private Builder fBuilder;
     private Configuration fCfg;
 
-    //	private BuildEnvironmentContributor fEnvContibutor;
     public BuildBuildData(IBuilder builder) {
         fBuilder = (Builder) builder;
         fCfg = (Configuration) fBuilder.getParent().getParent();
@@ -37,7 +36,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public IPath getBuilderCWD() {
-        return new Path(fBuilder.getBuildPath());//ManagedBuildManager.getBuildLocation(fCfg, fBuilder);
+        return ManagedBuildManager.getBuildFolder(fCfg, fBuilder).getLocation();
     }
 
     //	private IPath createAbsolutePathFromWorkspacePath(IPath path){
@@ -58,7 +57,9 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public void setBuilderCWD(IPath path) {
-        fBuilder.setBuildPath(path.toString());
+    	//JABA not sure what to do here TOFIX
+        //fBuilder.setBuildPath(path.toString());
+    	return;
     }
 
     @Override
@@ -92,11 +93,7 @@ public class BuildBuildData extends CBuildData {
 
     @Override
     public IEnvironmentContributor getBuildEnvironmentContributor() {
-        //		if(fEnvContibutor == null)
-        //			fEnvContibutor = new BuildEnvironmentContributor(this);
-        //		return fEnvContibutor;
-        //TOFIX return new BuildEnvironmentContributor(this);
-        return null;
+        return new BuildEnvironmentContributor(this);
     }
 
     @Override

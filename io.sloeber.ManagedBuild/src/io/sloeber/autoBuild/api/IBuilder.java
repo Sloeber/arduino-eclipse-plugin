@@ -17,6 +17,7 @@ package io.sloeber.autoBuild.api;
 import org.eclipse.cdt.core.ICommandLauncher;
 import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
+import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.managedbuilder.macros.IFileContextBuildMacroValues;
 //import org.eclipse.cdt.managedbuilder.macros.IReservedMacroNameSupplier;
 //import org.eclipse.cdt.newmake.core.IMakeBuilderInfo;
@@ -53,9 +54,6 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
     public static final String RESERVED_MACRO_NAME_SUPPLIER = "reservedMacroNameSupplier"; //$NON-NLS-1$
     public static final String IS_SYSTEM = "isSystem"; //$NON-NLS-1$
 
-    //	static final String BUILD_COMMAND = "buildCommand"; //$NON-NLS-1$
-    static final String ATTRIBUTE_BUILD_PATH = "buildPath"; //$NON-NLS-1$
-    //	static final String USE_DEFAULT_BUILD_CMD = "useDefaultBuildCmd"; //$NON-NLS-1$
     static final String ATTRIBUTE_TARGET_AUTO = "autoBuildTarget"; //$NON-NLS-1$
     static final String ATTRIBUTE_TARGET_INCREMENTAL = "incrementalBuildTarget"; //$NON-NLS-1$
     //	static final String BUILD_TARGET_FULL = "fullBuildTarget"; //$NON-NLS-1$
@@ -292,9 +290,7 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
 
     public boolean canKeepEnvironmentVariablesInBuildfile();
 
-    void setBuildPath(String path);
-
-    String getBuildPath();
+    void setBuildFolder(IFolder path);
 
     boolean isInternalBuilder();
 

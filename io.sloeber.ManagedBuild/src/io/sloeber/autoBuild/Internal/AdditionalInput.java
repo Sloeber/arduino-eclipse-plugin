@@ -51,6 +51,7 @@ import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 
@@ -405,12 +406,8 @@ public class AdditionalInput implements IAdditionalInput {
     private long getArtifactTimeStamp(IToolChain toolChain) {
         IBuilder builder = toolChain.getBuilder();
         IConfiguration configuration = toolChain.getParent();
-        URI buildLocationURI = ManagedBuildManager.getBuildLocationURI(configuration, builder);
-        if (buildLocationURI != null) {
-            if (!buildLocationURI.toString().endsWith("/")) { //$NON-NLS-1$
-                // ensure that it's a directory URI
-                buildLocationURI = URI.create(buildLocationURI.toString() + "/"); //$NON-NLS-1$
-            }
+        IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, builder);
+        if (buildFolder != null) {
 
             String artifactName = configuration.getArtifactName();
             String artifactExt = configuration.getArtifactExtension();
@@ -426,7 +423,7 @@ public class AdditionalInput implements IAdditionalInput {
                 } catch (BuildMacroException e) {
                 }
 
-                URI buildArtifactURI = EFSExtensionManager.getDefault().append(buildLocationURI, artifactName);
+                URI buildArtifactURI = EFSExtensionManager.getDefault().append(buildFolder.getLocationURI(), artifactName);
 
                 try {
                     IFileStore artifact = EFS.getStore(buildArtifactURI);

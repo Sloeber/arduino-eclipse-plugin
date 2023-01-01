@@ -43,6 +43,7 @@ import org.eclipse.cdt.core.settings.model.extension.CBuildData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.settings.model.util.LanguageSettingEntriesSerializer;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.Assert;
@@ -113,7 +114,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     private String[] customizedErrorParserIds;
     private HashMap<String, String> customizedEnvironment;
     private Boolean appendEnvironment;// = Boolean.valueOf(true);
-    private String buildPath;
+    private IFolder myBuildFolder;
     private HashMap<String, String> customBuildProperties;
     //	private Boolean isWorkspaceBuildPath;
     private String ignoreErrCmd;
@@ -328,7 +329,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         if (builder.customizedEnvironment != null)
             customizedEnvironment = cloneMap(builder.customizedEnvironment);
         appendEnvironment = builder.appendEnvironment;
-        buildPath = builder.buildPath;
+        myBuildFolder = builder.myBuildFolder;
         if (builder.customBuildProperties != null)
             customBuildProperties = cloneMap(builder.customBuildProperties);
 
@@ -419,10 +420,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         if (builder.customizedEnvironment != null)
             customizedEnvironment = cloneMap(builder.customizedEnvironment);
         appendEnvironment = builder.appendEnvironment;
-        if (isBuildPathEditable()) {
-            if (!getBuildPath().equals(builder.getBuildPath()))
-                setBuildPath(builder.getBuildPath());
-        }
+
         if (builder.customBuildProperties != null)
             customBuildProperties = cloneMap(builder.customBuildProperties);
 
@@ -519,7 +517,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         autoBuildTarget = newArgs.get(ATTRIBUTE_TARGET_AUTO);
         incrementalBuildTarget = newArgs.get(ATTRIBUTE_TARGET_INCREMENTAL);
         cleanBuildTarget = newArgs.get(ATTRIBUTE_TARGET_CLEAN);
-        buildPath = newArgs.get(ATTRIBUTE_BUILD_PATH);
         ignoreErrCmd = newArgs.get(ATTRIBUTE_IGNORE_ERR_CMD);
         errorParserIds = newArgs.get(IToolChain.ERROR_PARSERS);
 
@@ -627,7 +624,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
         attributes.put(ATTRIBUTE_TARGET_INCREMENTAL, element.getAttribute(ATTRIBUTE_TARGET_INCREMENTAL));
         attributes.put(ATTRIBUTE_TARGET_CLEAN, element.getAttribute(ATTRIBUTE_TARGET_CLEAN));
-        attributes.put(ATTRIBUTE_BUILD_PATH, element.getAttribute(ATTRIBUTE_BUILD_PATH));
         attributes.put(ATTRIBUTE_IGNORE_ERR_CMD, element.getAttribute(ATTRIBUTE_IGNORE_ERR_CMD));
 
         attributes.put(ATTRIBUTE_BUILD_RUNNER, element.getAttribute(ATTRIBUTE_BUILD_RUNNER));
@@ -677,7 +673,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         attributes.put(ATTRIBUTE_AUTO_ENABLED, element.getAttribute(ATTRIBUTE_AUTO_ENABLED));
         attributes.put(ATTRIBUTE_TARGET_INCREMENTAL, element.getAttribute(ATTRIBUTE_TARGET_INCREMENTAL));
         attributes.put(ATTRIBUTE_TARGET_CLEAN, element.getAttribute(ATTRIBUTE_TARGET_CLEAN));
-        attributes.put(ATTRIBUTE_BUILD_PATH, element.getAttribute(ATTRIBUTE_BUILD_PATH));
         attributes.put(ATTRIBUTE_IGNORE_ERR_CMD, element.getAttribute(ATTRIBUTE_IGNORE_ERR_CMD));
 
         attributes.put(ATTRIBUTE_BUILD_RUNNER, element.getAttribute(ATTRIBUTE_BUILD_RUNNER));
@@ -804,10 +799,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
         if (appendEnvironment != null)
             element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, appendEnvironment.toString());
-        if (buildPath != null)
-            element.setAttribute(ATTRIBUTE_BUILD_PATH, buildPath);
-        //        if (customBuildProperties != null)
-        //            element.setAttribute(ATTRIBUTE_CUSTOM_PROPS, MapStorageElement.encodeMap(customBuildProperties));
 
         if (ignoreErrCmd != null)
             element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, ignoreErrCmd);
@@ -905,11 +896,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         //        if (customizedEnvironment != null)
         //            element.setAttribute(ATTRIBUTE_ENVIRONMENT, MapStorageElement.encodeMap(customizedEnvironment));
         element.setAttribute(ATTRIBUTE_APPEND_ENVIRONMENT, String.valueOf(appendEnvironment()));
-        if (getBuildPathAttribute() != null)
-            element.setAttribute(ATTRIBUTE_BUILD_PATH, getBuildPathAttribute());
-        //        if (customBuildProperties != null)
-        //            element.setAttribute(ATTRIBUTE_CUSTOM_PROPS, MapStorageElement.encodeMap(customBuildProperties));
-
         if (getIgnoreErrCmdAttribute() != null)
             element.setAttribute(ATTRIBUTE_IGNORE_ERR_CMD, getIgnoreErrCmdAttribute());
         element.setAttribute(ATTRIBUTE_STOP_ON_ERR, String.valueOf(isStopOnError()));
@@ -1622,7 +1608,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     }
 
     private Object getMacroContextData() {
-        return this;//!isExtensionBuilder ? (Object)this : (Object)getParent().getParent();
+        return !isExtensionBuilder ? (Object)this : (Object)getParent().getParent();
     }
 
     //@Override
@@ -1642,140 +1628,18 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     @Override
     public IPath getBuildCommand() {
         String command = getCommand();
-        IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+        IBuildMacroProvider provider = BuildMacroProvider.getDefault();
 
         try {
             command = provider.resolveValue(command, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
                     getMacroContextData());
         } catch (BuildMacroException e) {
+        	Activator.log(e);
         }
 
         return new Path(command);
     }
 
-    public String getBuildPathAttribute() {
-        return getBuildPathAttribute(true);
-    }
-
-    public String getBuildPathAttribute(boolean querySuperClass) {
-        if (buildPath == null) {
-            if (querySuperClass && superClass != null) {
-                return ((Builder) superClass).getBuildPathAttribute(true);
-            }
-        }
-        return buildPath;
-    }
-
-    @Override
-    public void setBuildPath(String path) {
-        setBuildPathAttribute(path);
-    }
-
-    public void setBuildPathAttribute(String path) {
-        buildPath = path;
-        setDirty(true);
-    }
-
-    @Override
-    public String getBuildPath() {
-        if (isManagedBuildOn())
-            return getDefaultBuildPath();
-
-        String path = getBuildPathAttribute();
-        if (path == null) {
-            path = getDefaultBuildPath();
-            //			if(isManagedBuildOn() && !isExtensionElement()) {
-            //				buildPath = path;
-            //			}
-        }
-        return path;
-    }
-
-    private boolean isBuildPathEditable() {
-        return !isManagedBuildOn();
-    }
-
-    public String getDefaultBuildPath() {
-        Configuration cfg = (Configuration) getConfguration();
-        IPath buildPath;
-        String result;
-
-        //		Builder extBuilder = (Builder)ManagedBuildManager.getExtensionBuilder(this);
-        //		String attr = extBuilder.getBuildPathAttribute();
-        if (cfg != null) {
-            if (!isExtensionElement() && !cfg.isPreference()) {
-                IProject project = cfg.getOwner().getProject();
-                //				if(attr == null){
-                if (isManagedBuildOn()) {
-                    IMakefileGenerator gen = getBuildFileGenerator();
-                    if (gen instanceof IMakefileGenerator) {
-                        ((IMakefileGenerator) gen).initialize(IncrementalProjectBuilder.FULL_BUILD, cfg, this,
-                                new NullProgressMonitor());
-                    } else {
-                        gen.initialize(project, ManagedBuildManager.getBuildInfo(project), new NullProgressMonitor());
-                    }
-
-                    buildPath = gen.getBuildWorkingDir();
-                    if (buildPath == null)
-                        buildPath = new Path(cfg.getName());
-                } else {
-                    buildPath = Path.EMPTY;
-                }
-                //				} else {
-                //					buildPath = new Path(attr);
-                //				}
-
-                if (!buildPath.isAbsolute()) {
-                    IStringVariableManager mngr = VariablesPlugin.getDefault().getStringVariableManager();
-                    // build dir may not exist yet and non-existent paths will resolve to empty string by VariablesPlugin
-                    // so append relative part outside of expression, i.e. ${workspace_loc:/Project}/BuildDir
-                    result = mngr.generateVariableExpression("workspace_loc", project.getFullPath().toString()) //$NON-NLS-1$
-                            + Path.SEPARATOR + buildPath.toString();
-                } else {
-                    result = buildPath.toString();
-                }
-            } else {
-                if (isManagedBuildOn()) {
-                    result = cfg.getName();
-                    if (result == null)
-                        result = ""; //$NON-NLS-1$
-                } else {
-                    result = ""; //$NON-NLS-1$
-                }
-            }
-        } else {
-            result = ""; //$NON-NLS-1$
-        }
-
-        return result;
-    }
-
-    /*	public boolean isWorkspaceBuildPath(){
-    		String path = getBuildPathAttribute();
-    		if(path == null)
-    			return true;
-    		if(isWorkspaceBuildPath == null){
-    			if(superClass != null)
-    				return superClass.isWorkspaceBuildPath();
-    			return true;
-    		}
-    		return isWorkspaceBuildPath.booleanValue();
-    	}
-    */
-    @Override
-    public IPath getBuildLocation() {
-        String path = getBuildPath();
-
-        IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-
-        try {
-            path = provider.resolveValue(path, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, //$NON-NLS-1$//$NON-NLS-2$
-                    getMacroContextData());
-        } catch (BuildMacroException e) {
-        }
-
-        return new Path(path);
-    }
 
     @Override
     public boolean isDefaultBuildCmd() {
@@ -1816,11 +1680,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         setCommand(cmd);
     }
 
-    @Override
-    public void setBuildLocation(IPath location) throws CoreException {
-        String path = location != null ? location.toString() : null;
-        setBuildPath(path);
-    }
 
     @Override
     public void setStopOnError(boolean on) throws CoreException {
@@ -2053,7 +1912,7 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     //        return appendEnvironment.booleanValue();
     //    }
 
-    //@Override
+    //@Override TODO is this used?
     public String getBuildAttribute(String name, String defaultValue) {
         String result = null;
         if (BUILD_TARGET_INCREMENTAL.equals(name)) {
@@ -2062,8 +1921,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             result = getAutoBuildTargetAttribute();
         } else if (BUILD_TARGET_CLEAN.equals(name)) {
             result = getCleanBuildTargetAttribute();
-        } else if (BUILD_LOCATION.equals(name)) {
-            result = getBuildPathAttribute();
         } else if (BUILD_COMMAND.equals(name)) {
             result = getCommand();
         } else if (BUILD_ARGUMENTS.equals(name)) {
@@ -2677,16 +2534,8 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
                     ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
         }
 
-        IPath path = ManagedBuildManager.getBuildFullPath(cfg, this);
-        IProject proj = cfg.getOwner().getProject();
-        IPath projFullPath = proj.getFullPath();
-        if (path != null && projFullPath.isPrefixOf(path)) {
-            path = path.removeFirstSegments(projFullPath.segmentCount()).makeRelative();
-        } else {
-            path = Path.EMPTY;
-        }
-
-        return new ICOutputEntry[] { new COutputEntry(path, null,
+        IFolder BuildFolder = ManagedBuildManager.getBuildFolder(cfg, this);
+        return new ICOutputEntry[] { new COutputEntry(BuildFolder, null,
                 ICLanguageSettingEntry.VALUE_WORKSPACE_PATH | ICLanguageSettingEntry.RESOLVED) };
     }
 
@@ -2815,5 +2664,22 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         // TODO Auto-generated method stub
         return false;
     }
+
+	@Override
+	public IPath getBuildLocation() {
+		return myBuildFolder.getLocation();
+	}
+
+	@Override
+	public void setBuildLocation(IPath location) throws CoreException {
+		// This method is Deprecated
+		
+	}
+
+	@Override
+	public void setBuildFolder(IFolder path) {
+		myBuildFolder=path;
+		
+	}
 
 }

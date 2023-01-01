@@ -211,7 +211,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             this.project = cfg.getOwner().getProject();
             buildPaths = new IPath[allConfigs.length];
             for (int i = 0; i < buildPaths.length; i++) {
-                buildPaths[i] = ManagedBuildManager.getBuildFullPath(allConfigs[i], allConfigs[i].getBuilder());
+                buildPaths[i] = ManagedBuildManager.getBuildFolder(allConfigs[i], allConfigs[i].getBuilder()).getLocation();
             }
             String ext = cfg.getArtifactExtension();
             //try to resolve build macros in the build artifact extension
@@ -345,7 +345,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             List<IPath> list = new ArrayList<>(builders.length);
             //			buildFullPaths = new IPath[builders.length];
             for (IBuilder builder : builders) {
-                IPath path = ManagedBuildManager.getBuildFullPath(builder.getParent().getParent(), builder);
+                IPath path = ManagedBuildManager.getBuildFolder(builder.getParent().getParent(), builder).getLocation();
                 if (path != null)
                     list.add(path);
                 //				buildFullPaths[i] = ManagedBuildManager.getBuildFullPath(builders[i].getParent().getParent(), builders[i]);
@@ -1081,24 +1081,15 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
     protected void clean(CfgBuildInfo bInfo, IProgressMonitor monitor) throws CoreException {
         if (shouldBuild(CLEAN_BUILD, bInfo.getBuilder())) {
-            //                 IProject project = bInfo.getProject();
             IConfiguration cfg = bInfo.getConfiguration();
-            //                    BuildStateManager bsMngr = BuildStateManager.getInstance();
-            //                    IProjectBuildState pbs = bsMngr.getProjectBuildState(project);
-            //                    IConfigurationBuildState cbs = pbs.getConfigurationBuildState(cfg.getId(), false);
-            //                    if (cbs != null) {
-            //                        pbs.removeConfigurationBuildState(cfg.getId());
-            //                        bsMngr.setProjectBuildState(project, pbs);
-            //                    }
 
             if (!cfg.getEditableBuilder().isManagedBuildOn()) {
                 performExternalClean(bInfo, false, monitor);
             } else {
                 boolean programmatically = true;
-                IPath path = ManagedBuildManager.getBuildFullPath(cfg, bInfo.getBuilder());
-                IResource rc = path != null ? ResourcesPlugin.getWorkspace().getRoot().findMember(path) : null;
+                IFolder rc = ManagedBuildManager.getBuildFolder(cfg, bInfo.getBuilder());
 
-                if (path == null || (rc != null && rc.getType() != IResource.FILE)) {
+                if (rc != null ) {
                     if (!cfg.getEditableBuilder().isInternalBuilder()) {
                         fBuildErrOccured = false;
                         try {
@@ -1252,24 +1243,10 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
         outputTrace(project.getName(), "Clean build requested"); //$NON-NLS-1$
         IBuilder builder = bInfo.getBuilder();
         IConfiguration configuration = bInfo.getConfiguration();
-        IPath buildPath = ManagedBuildManager.getBuildFullPath(configuration, builder);
-        if (buildPath == null) {
-            throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), CommonBuilder_0));
-        }
 
-        IPath projectFullPath = project.getFullPath();
-        if (!projectFullPath.isPrefixOf(buildPath)) {
-            throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), CommonBuilder_16));
-        }
+        IFolder buildDir = ManagedBuildManager.getBuildFolder(configuration, builder);
+        if (buildDir != null) {
 
-        IWorkspace workspace = CCorePlugin.getWorkspace();
-        IResource rc = workspace.getRoot().findMember(buildPath);
-        if (rc != null) {
-            if (rc.getType() != IResource.FOLDER) {
-                throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), CommonBuilder_12));
-            }
-
-            IFolder buildDir = (IFolder) rc;
             if (!buildDir.isAccessible()) {
                 outputError(buildDir.getName(), "Could not delete the build directory"); //$NON-NLS-1$
                 throw new CoreException(new Status(IStatus.ERROR, Activator.getId(), CommonBuilder_13));
@@ -1284,14 +1261,14 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
 
                 // try the brute force approach first
                 String status = MessageFormat.format(ManagedMakeBuilder_message_clean_deleting_output,
-                        buildDir.getName());
+                        buildDir.toString());
                 monitor.subTask(status);
 
                 IConsole console = bInfo.getConsole();
 
                 String[] errorParsers = builder.getErrorParsers();
-                URI workingDirectoryURI = ManagedBuildManager.getBuildLocationURI(configuration, builder);
-                ErrorParserManager epm = new ErrorParserManager(project, workingDirectoryURI, this, errorParsers);
+
+                ErrorParserManager epm = new ErrorParserManager(project, buildDir.getLocationURI(), this, errorParsers);
 
                 buildRunnerHelper.prepareStreams(epm, null, console,
                         new SubProgressMonitor(monitor, TICKS_STREAM_PROGRESS_MONITOR));
@@ -1301,8 +1278,7 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
                 boolean isConfigurationSupported = configuration.isSupported();
 
                 buildRunnerHelper.greeting(CLEAN_BUILD, cfgName, toolchainName, isConfigurationSupported);
-                workspace.delete(new IResource[] { buildDir }, true,
-                        new SubProgressMonitor(monitor, TICKS_DELETE_OUTPUTS));
+                buildDir.delete(true, monitor);
                 buildRunnerHelper.close();
                 buildRunnerHelper.goodbye();
 

@@ -31,6 +31,7 @@ import org.eclipse.cdt.core.IMarkerGenerator;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.internal.core.BuildRunnerHelper;
+import org.eclipse.core.resources.IFolder;
 //import org.eclipse.cdt.internal.core.BuildRunnerHelper;
 //import org.eclipse.cdt.managedbuilder.buildmodel.BuildDescriptionManager;
 //import org.eclipse.cdt.managedbuilder.buildmodel.IBuildDescription;
@@ -106,10 +107,10 @@ public class InternalBuildRunner extends IBuildRunner {
             String toolchainName = configuration.getToolChain().getName();
             boolean isConfigurationSupported = configuration.isSupported();
 
-            URI workingDirectoryURI = ManagedBuildManager.getBuildLocationURI(configuration, builder);
+            IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, builder);
 
             String[] errorParsers = builder.getErrorParsers();
-            ErrorParserManager epm = new ErrorParserManager(project, workingDirectoryURI, markerGenerator,
+            ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
                     errorParsers);
 
             List<IConsoleParser> parsers = new ArrayList<>();

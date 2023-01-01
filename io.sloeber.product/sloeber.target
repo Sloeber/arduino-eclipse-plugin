@@ -16,24 +16,26 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/latest"/>
-			<unit id="org.eclipse.cdt.autotools.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.gnu.multicorevisualizer.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.managedbuilder.llvm.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.msw.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.linuxtools.cdt.libhover.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.tcf.te.tcf.launch.cdt.feature.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.eclipse.gef.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.swtbot.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
-			<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+			<unit id="org.eclipse.cdt.autotools.feature.group" version="11.0.0.202211091556"/>
+			<unit id="org.eclipse.cdt.feature.group" version="11.0.0.202211300214"/>
+			<unit id="org.eclipse.cdt.gnu.multicorevisualizer.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.cdt.launch.remote.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.cdt.managedbuilder.llvm.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.cdt.msw.feature.group" version="11.0.0.202211181555"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.0.0.202211300214"/>
+			<unit id="org.eclipse.cdt.testsrunner.feature.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.linuxtools.cdt.libhover.feature.feature.group" version="8.9.0.202211291906"/>
+			<unit id="org.eclipse.tcf.te.tcf.launch.cdt.feature.feature.group" version="1.7.0.202007121733"/>
+			<unit id="org.eclipse.cdt.build.crossgcc.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.cdt.debug.gdbjtag.feature.group" version="11.0.0.202211221643"/>
+			<unit id="org.eclipse.cdt.debug.ui.memory.feature.group" version="11.0.0.202211062329"/>
+			<unit id="org.eclipse.swtbot.eclipse.feature.group" version="4.0.0.202206011610"/>
+			<unit id="org.eclipse.swtbot.eclipse.gef.feature.group" version="4.0.0.202206011610"/>
+			<unit id="org.eclipse.swtbot.feature.group" version="4.0.0.202206011610"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.26.0.v20221123-2302"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.14.1400.v20221123-1800"/>
+			<unit id="org.eclipse.ecf.core.feature.group" version="3.14.37.v20221119-2038"/>
+			<unit id="org.eclipse.wildwebdeveloper.feature.feature.group" version="1.0.1.202211231523"/>
 		</location>
 	</locations>
 	<implicitDependencies>

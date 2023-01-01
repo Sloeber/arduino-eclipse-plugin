@@ -33,28 +33,6 @@ import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
 import org.eclipse.cdt.internal.core.cdtvariables.StorableCdtVariables;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuilder;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedIsToolChainSupported;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IOptionPathConverter;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITargetPlatform;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider;
-//import org.eclipse.cdt.managedbuilder.internal.enablement.OptionEnablementExpression;
-//import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -70,6 +48,7 @@ import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IManagedProject;
@@ -81,7 +60,6 @@ import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
 import io.sloeber.buildProperties.PropertyManager;
 
 public class ToolChain extends HoldsOptions
@@ -119,7 +97,7 @@ public class ToolChain extends HoldsOptions
     private IConfigurationElement managedIsToolChainSupportedElement = null;
     private IManagedIsToolChainSupported managedIsToolChainSupported = null;
     private IConfigurationElement environmentVariableSupplierElement = null;
-    private IConfigurationEnvironmentVariableSupplier environmentVariableSupplier = null;
+    private IEnvironmentVariableSupplier environmentVariableSupplier = null;
     private IConfigurationElement buildMacroSupplierElement = null;
     private IConfigurationBuildMacroSupplier buildMacroSupplier = null;
     private IConfigurationElement pathconverterElement = null;
@@ -1827,7 +1805,7 @@ public class ToolChain extends HoldsOptions
     }
 
     @Override
-    public IConfigurationEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
         if (environmentVariableSupplier != null) {
             return environmentVariableSupplier;
         }
@@ -1835,7 +1813,7 @@ public class ToolChain extends HoldsOptions
         if (element != null) {
             try {
                 if (element.getAttribute(CONFIGURATION_ENVIRONMENT_SUPPLIER) != null) {
-                    environmentVariableSupplier = (IConfigurationEnvironmentVariableSupplier) element
+                    environmentVariableSupplier = (IEnvironmentVariableSupplier) element
                             .createExecutableExtension(CONFIGURATION_ENVIRONMENT_SUPPLIER);
                     return environmentVariableSupplier;
                 }

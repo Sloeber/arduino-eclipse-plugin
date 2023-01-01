@@ -1,41 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Intel Corporation and others.
- *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- * Intel Corporation - Initial API and implementation
+ * Copyright (c) do as you want
+ * This is the interface for the autobuild variable providers
+ * There is only a list all vars; selection; resolving and so on are done elsewhere
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 
+import java.util.Map;
+
 /**
- *
- * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.
- * @noimplement This interface is not intended to be implemented by clients.
+ * @implement This interface is intended to be implemented by variable providers in autobuild variable providers.
  */
 public interface IEnvironmentVariableSupplier {
 
-	/**
+    /**
 	 *
-	 * @param name the variable name
-	 * @param context the context
-	 * @return the reference to the IBuildEnvironmentVariable interface representing
-	 * the variable of a given name
+	 * @param the resource this provider works on. This is a project or a configuration
+	 * @return a map of variablenames, IEnvironmentVariable that represents the environment variables contributed by this provider
 	 */
-	IEnvironmentVariable getVariable(String name, Object context);
-
-	/**
-	 *
-	 * @param context the context
-	 * @return the array of IBuildEnvironmentVariable that represents the environment variables
-	 */
-	IEnvironmentVariable[] getVariables(Object context);
+	Map<String,IEnvironmentVariable> getVariables(IConfiguration context);
 }

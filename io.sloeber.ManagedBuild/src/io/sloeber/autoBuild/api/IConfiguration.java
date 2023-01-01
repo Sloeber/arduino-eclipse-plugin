@@ -27,7 +27,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
 
 /**
  * A tool-integrator defines default configurations as children of the project
@@ -541,7 +540,7 @@ public interface IConfiguration
      *
      * @return IConfigurationEnvironmentVariableSupplier
      */
-    public IConfigurationEnvironmentVariableSupplier getEnvironmentVariableSupplier();
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
 
     /**
      * Returns the tool-integrator provided implementation of the configuration

@@ -48,6 +48,7 @@ import org.eclipse.cdt.internal.core.BuildRunnerHelper;
 
 import org.eclipse.cdt.utils.CommandLineUtil;
 import org.eclipse.cdt.utils.EFSExtensionManager;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -113,13 +114,13 @@ public class BuildRunner extends IBuildRunner {
 
                 String[] args = getCommandArguments(builder, targets);
 
-                URI workingDirectoryURI = ManagedBuildManager.getBuildLocationURI(configuration, builder);
+                IFolder buildFolder = ManagedBuildManager.getBuildFolder(configuration, builder);
 
                 Map<String, String> envMap = getEnvironment(builder);
                 String[] envp = BuildRunnerHelper.envMapToEnvp(envMap);
 
                 String[] errorParsers = builder.getErrorParsers();
-                ErrorParserManager epm = new ErrorParserManager(project, workingDirectoryURI, markerGenerator,
+                ErrorParserManager epm = new ErrorParserManager(project, buildFolder.getLocationURI(), markerGenerator,
                         errorParsers);
 
                 List<IConsoleParser> parsers = new ArrayList<>();
@@ -133,7 +134,7 @@ public class BuildRunner extends IBuildRunner {
                 //                    }
                 //                }
 
-                buildRunnerHelper.setLaunchParameters(launcher, buildCommand, args, workingDirectoryURI, envp);
+                buildRunnerHelper.setLaunchParameters(launcher, buildCommand, args, buildFolder.getLocationURI(), envp);
                 buildRunnerHelper.prepareStreams(epm, parsers, console, monitor);
 
                 buildRunnerHelper.removeOldMarkers(project, monitor);

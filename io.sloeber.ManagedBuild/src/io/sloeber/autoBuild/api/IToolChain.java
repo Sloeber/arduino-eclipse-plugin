@@ -18,7 +18,6 @@ import org.eclipse.cdt.core.settings.model.extension.CTargetPlatformData;
 //import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
 
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
 
 /**
  * This interface represents a tool-integrator-defined, ordered set of tools
@@ -405,7 +404,7 @@ public interface IToolChain extends IHoldsOptions {
      *
      * @return IConfigurationEnvironmentVariableSupplier
      */
-    public IConfigurationEnvironmentVariableSupplier getEnvironmentVariableSupplier();
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
 
     /**
      * Returns the tool-integrator provided implementation of the configuration

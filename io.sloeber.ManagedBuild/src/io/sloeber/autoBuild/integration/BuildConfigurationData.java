@@ -153,9 +153,7 @@ public class BuildConfigurationData extends CConfigurationData {
 
     @Override
     public ICdtVariablesContributor getBuildVariablesContributor() {
-        //TOFIX
-        return null;
-        //return new BuildVariablesContributor(this);
+       return null;//TOFIX new BuildVariablesContributor(this);
     }
 
     void clearCachedData() {

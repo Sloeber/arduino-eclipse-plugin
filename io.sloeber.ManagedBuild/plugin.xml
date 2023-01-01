@@ -19,7 +19,7 @@
         buildRunner="io.sloeber.autoBuild.extensionPoint.BuildRunner"
         buildfileGenerator="io.sloeber.autoBuild.extensionPoint.MakefileGenerator"
         cleanBuildTarget="clean"
-        command="${sloeber.make_location}make"
+        command="${MAKE_HOME}make"
         errorParsers="org.eclipse.cdt.core.MakeErrorParser"
         id="io.sloeber.gnu.builder"
         ignoreErrCmd="-k"
@@ -43,8 +43,7 @@
   </builder>
   <projectType
         id="io.sloeber.core.sketch"
-        name="%projectType.name"
-        projectEnvironmentSupplier="io.sloeber.core.toolchain.SloeberProjectVariableSupplier">
+        name="%projectType.name">
      
      <!-- This config and toolchain 'Release' is the standard "just like Arduino IDE" configuration. -->
      <!-- It is also used for the base of the Debug configuration (for use with a JTAG/DragonAVR etc). -->
@@ -56,7 +55,7 @@
            name="%configuration.name">
         <toolChain
               archList="all"
-              configurationEnvironmentSupplier="io.sloeber.core.toolchain.SloeberConfigurationVariableSupplier"
+              configurationEnvironmentSupplier="io.sloeber.autoBuild.core.DefaultConfigurationEnvironmentVariableSupplier"
               id="io.sloeber.core.toolChain.release"
               isAbstract="false"
               languageSettingsProviders="io.sloeber.languageSettingsProvider"

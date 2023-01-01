@@ -60,12 +60,6 @@ public class ExplicitFileMacroCollector extends SupplierBasedCdtVariableSubstitu
      */
     @Override
     protected ResolvedMacro resolveMacro(ICdtVariable macro) throws CdtVariableException {
-        //        if (macro instanceof MbsMacroSupplier.FileContextMacro) {
-        //            MbsMacroSupplier.FileContextMacro fileMacro = (MbsMacroSupplier.FileContextMacro) macro;
-        //            if (fileMacro.isExplicit())
-        //                fMacrosList.add(macro);
-        //            return null;
-        //        }
         return super.resolveMacro(macro);
     }
 

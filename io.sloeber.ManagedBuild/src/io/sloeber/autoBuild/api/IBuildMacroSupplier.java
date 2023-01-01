@@ -13,8 +13,11 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
+import org.eclipse.cdt.core.cdtvariables.ICdtVariable;
 //import org.eclipse.cdt.managedbuilder.internal.macros.IMacroContextInfo;
 import org.eclipse.cdt.utils.cdtvariables.ICdtVariableSupplier;
+
+import io.sloeber.autoBuild.Internal.IMacroContextInfo;
 
 /**
  *
@@ -46,7 +49,7 @@ public interface IBuildMacroSupplier extends ICdtVariableSupplier {
      */
     public IBuildMacro[] getMacros(int contextType, Object contextData);
 
-    //	public ICdtVariable getVariable(String macroName, IMacroContextInfo context);
-    //
-    //	public ICdtVariable[] getVariables(IMacroContextInfo context);
+    	public ICdtVariable getVariable(String macroName, IMacroContextInfo context);
+    
+    	public ICdtVariable[] getVariables(IMacroContextInfo context);
 }

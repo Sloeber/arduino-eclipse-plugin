@@ -22,26 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IOptionalBuildProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IConfigurationNameProvider;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.macros.IProjectBuildMacroSupplier;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-//import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.IBuildObjectProperties;
@@ -50,13 +35,13 @@ import io.sloeber.autoBuild.api.IBuildProperty;
 import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IManagedConfigElement;
 import io.sloeber.autoBuild.api.IOptionalBuildProperties;
 import io.sloeber.autoBuild.api.IProjectType;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IProjectEnvironmentVariableSupplier;
 import io.sloeber.buildProperties.BuildObjectProperties;
 import io.sloeber.buildProperties.OptionalBuildProperties;
 
@@ -82,7 +67,7 @@ public class ProjectType extends BuildObject
     private IConfigurationNameProvider configurationNameProvider = null;
 
     private IConfigurationElement environmentVariableSupplierElement = null;
-    private IProjectEnvironmentVariableSupplier environmentVariableSupplier = null;
+    private IEnvironmentVariableSupplier environmentVariableSupplier = null;
     private IConfigurationElement buildMacroSupplierElement = null;
     private IProjectBuildMacroSupplier buildMacroSupplier = null;
 
@@ -549,7 +534,7 @@ public class ProjectType extends BuildObject
      * @see org.eclipse.cdt.core.build.managed.IProjectType#getEnvironmentVariableSupplier()
      */
     @Override
-    public IProjectEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
         if (environmentVariableSupplier != null) {
             return environmentVariableSupplier;
         }
@@ -557,7 +542,7 @@ public class ProjectType extends BuildObject
         if (element != null) {
             try {
                 if (element.getAttribute(PROJECT_ENVIRONMENT_SUPPLIER) != null) {
-                    environmentVariableSupplier = (IProjectEnvironmentVariableSupplier) element
+                    environmentVariableSupplier = (IEnvironmentVariableSupplier) element
                             .createExecutableExtension(PROJECT_ENVIRONMENT_SUPPLIER);
                     return environmentVariableSupplier;
                 }

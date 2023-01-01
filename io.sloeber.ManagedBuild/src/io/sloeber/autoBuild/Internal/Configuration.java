@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-//import org.eclipse.cdt.build.core.scannerconfig.ICfgScannerConfigBuilderInfo2Set;
-//import org.eclipse.cdt.build.internal.core.scannerconfig.CfgDiscoveredPathManager.PathInfoCache;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -48,47 +46,6 @@ import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.settings.model.util.LanguageSettingEntriesSerializer;
 import org.eclipse.cdt.core.settings.model.util.PathSettingsContainer;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IOptionalBuildProperties;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IBuilder;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFileInfo;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IManagedCommandLineGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IManagedCommandLineInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCommandGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITargetPlatform;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.BuildConfigurationData;
-//import org.eclipse.cdt.managedbuilder.internal.enablement.OptionEnablementExpression;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildfileMacroSubstitutor;
-//import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
-//import org.eclipse.cdt.managedbuilder.internal.macros.IMacroContextInfo;
-//import org.eclipse.cdt.managedbuilder.internal.macros.IMacroContextInfoProvider;
-//import org.eclipse.cdt.managedbuilder.internal.macros.OptionContextData;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.macros.IConfigurationBuildMacroSupplier;
 import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -97,7 +54,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-//import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Version;
 
@@ -112,6 +68,7 @@ import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IBuilder;
 import io.sloeber.autoBuild.api.IConfiguration;
+import io.sloeber.autoBuild.api.IEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.api.IFileInfo;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
@@ -128,7 +85,6 @@ import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IConfigurationEnvironmentVariableSupplier;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
 import io.sloeber.autoBuild.extensionPoint.IOptionApplicability;
@@ -1897,7 +1853,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     }
 
     @Override
-    public IConfigurationEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier() {
         IToolChain toolChain = getToolChain();
         if (toolChain != null)
             return toolChain.getEnvironmentVariableSupplier();

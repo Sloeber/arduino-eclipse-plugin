@@ -15,7 +15,6 @@ package io.sloeber.autoBuild.api;
 
 import io.sloeber.autoBuild.extensionPoint.IConfigurationNameProvider;
 import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
-import io.sloeber.autoBuild.extensionPoint.IProjectEnvironmentVariableSupplier;
 
 //import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 //import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
@@ -177,7 +176,7 @@ public interface IProjectType
      *
      * @return IProjectEnvironmentVariableSupplier
      */
-    public IProjectEnvironmentVariableSupplier getEnvironmentVariableSupplier();
+    public IEnvironmentVariableSupplier getEnvironmentVariableSupplier();
 
     /**
      * Returns the tool-integrator provided implementation of the project build

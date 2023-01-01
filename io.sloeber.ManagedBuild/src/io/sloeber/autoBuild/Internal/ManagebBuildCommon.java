@@ -549,8 +549,6 @@ public class ManagebBuildCommon {
             if (generatedSource && !sourceLocation.isAbsolute()) {
                 srcName = DOT_SLASH_PATH.append(relativePath).append(sourceLocation.lastSegment()).toOSString();
             } else {
-                // TODO: Should we use relative paths when possible (e.g., see
-                // MbsMacroSupplier.calculateRelPath)
                 srcName = sourceLocation.toOSString();
             }
         }

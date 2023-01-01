@@ -117,6 +117,7 @@ import org.eclipse.cdt.core.settings.model.XmlStorageUtil;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceStatus;
@@ -3128,6 +3129,7 @@ public class ManagedBuildManager extends AbstractCExtension {
     /**
      * @return the instance of the Build Macro Provider
      */
+    //TODO JABA remove this method and call BuildMacroProvider.getDefault()
     public static IBuildMacroProvider getBuildMacroProvider() {
         return BuildMacroProvider.getDefault();
     }
@@ -3787,42 +3789,6 @@ public class ManagedBuildManager extends AbstractCExtension {
         return des;
     }
 
-    public static IPath getBuildFullPath(IConfiguration cfg, IBuilder builder) {
-        IProject project = cfg.getOwner().getProject();
-        //		String path = builder.getBuildPath();
-
-        IPath buildDirectory = builder.getBuildLocation();
-        IPath fullPath = null;
-        if (buildDirectory != null && !buildDirectory.isEmpty()) {
-            IResource res = project.getParent().findMember(buildDirectory);
-            if (res instanceof IContainer && res.exists()) {
-                fullPath = res.getFullPath();
-            } else {
-                IContainer crs[] = ((IWorkspaceRoot) project.getParent()).findContainersForLocation(buildDirectory);
-                if (crs.length != 0) {
-                    String projName = project.getName();
-                    for (IContainer cr : crs) {
-                        IPath path = cr.getFullPath();
-                        if (path.segmentCount() != 0 && path.segment(0).equals(projName)) {
-                            fullPath = path;
-                            break;
-                        }
-                    }
-
-                    if (fullPath == null) {
-                        fullPath = crs[0].getFullPath();
-                    }
-                }
-            }
-        } else {
-            fullPath = cfg.getOwner().getProject().getFullPath();
-            if (builder.isManagedBuildOn())
-                fullPath = fullPath.append(cfg.getName());
-        }
-
-        return fullPath;
-    }
-
     /**
      * Returns a string representing the workspace relative path with
      * ${workspace_loc: stripped
@@ -3848,56 +3814,34 @@ public class ManagedBuildManager extends AbstractCExtension {
         return buf.append("${").append("workspace_loc:").append(path).append("}").toString(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
-    public static IPath getBuildLocation(IConfiguration cfg, IBuilder builder) {
-        if (cfg.getOwner() == null)
-            return Path.EMPTY;
-
-        IProject project = cfg.getOwner().getProject();
-        IPath buildDirectory = builder.getBuildLocation();
-        if (buildDirectory != null && !buildDirectory.isEmpty()) {
-            IResource res = project.getParent().findMember(buildDirectory);
-            if (res instanceof IContainer && res.exists()) {
-                buildDirectory = res.getLocation();
-            }
-        } else {
-            buildDirectory = getPathForResource(project);
-
-            if (buildDirectory != null) {
-                if (builder.isManagedBuildOn())
-                    buildDirectory = buildDirectory.append(cfg.getName());
-            }
-        }
-        return buildDirectory;
-    }
-
-    /**
-     * @return build location URI or null if one couldn't be found
-     * @since 6.0
-     */
-    public static URI getBuildLocationURI(IConfiguration cfg, IBuilder builder) {
-        if (cfg.getOwner() == null)
+    public static IFolder getBuildFolder(IConfiguration cfg, IBuilder builder) {
+        if (cfg.getOwner() == null) {
+        	// This should never happen
             return null;
+            }
 
         IProject project = cfg.getOwner().getProject();
-        IPath buildDirectory = builder.getBuildLocation();
-        if (buildDirectory != null && !buildDirectory.isEmpty()) {
-            IResource res = project.getParent().findMember(buildDirectory);
-            if (res instanceof IContainer && res.exists()) {
-                return res.getLocationURI();
-            }
-        } else {
-            URI uri = project.getLocationURI();
-            if (buildDirectory != null && builder.isManagedBuildOn())
-                return URIUtil.append(uri, cfg.getName());
-            return uri;
-        }
-        return org.eclipse.core.filesystem.URIUtil.toURI(buildDirectory);
+        return project.getFolder(cfg.getName());
+//        IPath buildDirectory = builder.getBuildLocation();
+//        if (buildDirectory != null && !buildDirectory.isEmpty()) {
+//            IResource res = project.getParent().findMember(buildDirectory);
+//            if (res instanceof IContainer && res.exists()) {
+//                buildDirectory = res.getLocation();
+//            }
+//        } else {
+//            buildDirectory = getPathForResource(project);
+//
+//            if (buildDirectory != null) {
+//                if (builder.isManagedBuildOn())
+//                    buildDirectory = buildDirectory.append(cfg.getName());
+//            }
+//        }
+//        return buildDirectory;
     }
 
-    private static IPath getPathForResource(IResource resource) {
-        URI uri = resource.getLocationURI();
-        return new Path(uri.getPath());
-    }
+
+
+
 
     //    public static IBuilder[] createBuilders(IProject project, Map<String, String> args) {
     //        return ManagedBuilderCorePlugin.createBuilders(project, args);
