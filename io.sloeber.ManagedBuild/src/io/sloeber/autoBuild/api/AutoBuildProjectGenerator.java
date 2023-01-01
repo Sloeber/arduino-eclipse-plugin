@@ -36,6 +36,7 @@ import io.sloeber.autoBuild.integration.AutoBuildNature;
 public class AutoBuildProjectGenerator implements IGenerator {
     private URI myProjectURI = null;
     private String myProjectName = null;
+    private IProject myProject=null;
 
     public AutoBuildProjectGenerator() {
 
@@ -53,31 +54,31 @@ public class AutoBuildProjectGenerator implements IGenerator {
                 if (myProjectURI != null) {
                     description.setLocationURI(myProjectURI);
                 }
-                IProject project = root.getProject(myProjectName);
-                project.create(description, monitor);
-                project.open(monitor);
-                CProjectNature.addCNature(project, monitor);
-                CCProjectNature.addCCNature(project, monitor);
-                AutoBuildNature.addNature(project, monitor);
+                myProject = root.getProject(myProjectName);
+                myProject.create(description, monitor);
+                myProject.open(monitor);
+                CProjectNature.addCNature(myProject, monitor);
+                CCProjectNature.addCCNature(myProject, monitor);
+                AutoBuildNature.addNature(myProject, monitor);
 
                 //TOFIX Start of stupid code creation 
-                IFolder srcFolder = project.getFolder("src");
+                IFolder srcFolder = myProject.getFolder("src");
                 srcFolder.create(true, true, monitor);
                 IFile mainFile = srcFolder.getFile("main.cpp");
                 InputStream stream = new ByteArrayInputStream("void main(){}".getBytes(StandardCharsets.UTF_8));
                 mainFile.create(stream, true, monitor);
                 //End of stupid code creation
 
-                project = CCorePlugin.getDefault().createCDTProject(description, project, monitor);
+                myProject = CCorePlugin.getDefault().createCDTProject(description, myProject, monitor);
 
                 ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-                ICProjectDescription des = mngr.createProjectDescription(project, false, true);
-                ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
+                ICProjectDescription des = mngr.createProjectDescription(myProject, false, true);
+                ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(myProject);
 
                 IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
                 IConfiguration[] configs = sloeberProjType.getConfigurations();
                 Configuration cf = (Configuration) configs[0];
-                ManagedProject mProj = new ManagedProject(project, cf.getProjectType());
+                ManagedProject mProj = new ManagedProject(myProject, cf.getProjectType());
                 info.setManagedProject(mProj);
 
                 for (IConfiguration cfinter : configs) {
@@ -101,73 +102,7 @@ public class AutoBuildProjectGenerator implements IGenerator {
 
                 }
                 des.setCdtProjectCreated();
-                mngr.setProjectDescription(project, des);
-                //                IProject newProject = root.getProject(myProjectName);
-                //                // IndexerController.doNotIndex(newProjectHandle);
-                //
-                //                // create a eclipse project
-                //                IProjectDescription description = workspace.newProjectDescription(myProjectName);
-                //                if (myProjectURI != null) {
-                //                    description.setLocationURI(myProjectURI);
-                //                }
-                //                newProject.create(description, monitor);
-                //                newProject.open(monitor);
-                //
-                //
-                //                // make the eclipse project a cdt project
-                //                CCorePlugin.getDefault().createCProject(description, newProject, new NullProgressMonitor(),
-                //                        "org.eclipse.cdt.managedbuilder.core.managedMake");
-                //                //                        "org.eclipse.cdt.core.cbuilder");
-                //                //null);
-                //                CCorePlugin.getDefault().createCDTProject(description, newProject,
-                //                        "io.sloeber.autoBuild.ConfigurationDataProvider", new NullProgressMonitor());
-                //                // ManagedBuilderCorePlugin.MANAGED_MAKE_PROJECT_ID
-                //                // "org.eclipse.cdt.managedbuilder.core.managedMake");
-                //                // "io.sloeber.autoBuild.Project.ID"
-                //
-                //                // add the required natures
-                //                ManagedCProjectNature.addManagedBuilder(newProject, monitor);
-                //                ManagedCProjectNature.addNature(newProject, "org.eclipse.cdt.core.ccnature", monitor); //$NON-NLS-1$
-                //                ManagedCProjectNature.addNature(newProject, "io.sloeber.autoBuildNature", monitor); //$NON-NLS-1$
-                //
-                //                try {
-                //                    IProjectType sloeberProjType = ManagedBuildManager.getProjectType("io.sloeber.core.sketch"); //$NON-NLS-1$
-                //                    //                    ManagedBuildManager.createBuildInfo(newProject);
-                //                    //                    IManagedProject newManagedProject = ManagedBuildManager.createManagedProject(newProject,
-                //                    //                            sloeberProjType);
-                //                    //
-                //                    //                    ManagedBuildManager.setNewProjectVersion(newProject);
-                //
-                //                    CCorePlugin cCorePlugin = CCorePlugin.getDefault();
-                //                    ICProjectDescription prjCDesc = cCorePlugin.getProjectDescription(newProject, true);
-                //                    // Copy over the Sloeber configs
-                //                    IConfiguration[] configs = sloeberProjType.getConfigurations();
-                //                    for (IConfiguration config : configs) {
-                //                        //TOFIX add correct ID
-                //                        ICConfigurationDescription curConfig = prjCDesc.createConfiguration(
-                //                                "io.sloeber.autoBuild.ConfigurationDataProvider", config.getConfigurationData());
-                //                        //                        curConfig.setName(config.getName());
-                //                        //                        curConfig.setArtifactName(newManagedProject.getDefaultArtifactName());
-                //                    }
-                //                    //ManagedBuildManager.setDefaultConfiguration(newProject, defaultConfig);
-                //                    cCorePlugin.setProjectDescription(newProject, prjCDesc, true, null);
-                //                } catch (Exception e) {
-                //                    // TODO Auto-generated catch block
-                //                    e.printStackTrace();
-                //                }
-                //
-                //                // Set<String> configKeys = GetConfigKeysFromProjectDescription(prjCDesc);
-                //                //
-                //                // for (String curConfigKey : configKeys) {
-                //                //
-                //                //// arduinoProjDesc.myCompileDescriptions.put(curConfigKey, compileDescriptor);
-                //                //// arduinoProjDesc.myBoardDescriptions.put(curConfigKey, boardDescriptor);
-                //                //// arduinoProjDesc.myOtherDescriptions.put(curConfigKey, otherDesc);
-                //                //// ICConfigurationDescription curConfigDesc =
-                //                // prjCDesc.getConfigurationByName(curConfigKey);
-                //                //
-                //                // }
-                //
+                mngr.setProjectDescription(myProject, des);
             }
         };
         try {
@@ -178,7 +113,6 @@ public class AutoBuildProjectGenerator implements IGenerator {
         monitor.done();
     }
 
-    /* code copied from MBSWizardHandler*/
 
     @Override
     public IFile[] getFilesToOpen() {
@@ -194,6 +128,10 @@ public class AutoBuildProjectGenerator implements IGenerator {
     public void setLocationURI(URI locationURI) {
         // TODO Auto-generated method stub
         myProjectURI = locationURI;
+    }
+    
+    public IProject getProject() {
+    	return myProject;
     }
 
 }
