@@ -17,15 +17,13 @@ import org.eclipse.cdt.core.envvar.EnvironmentVariable;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.cdt.internal.core.envvar.EnvironmentVariableManager;
 
-import io.sloeber.autoBuild.api.IBuildEnvironmentVariable;
-
 
 /**
  * a trivial implementation of the IBuildEnvironmentVariable
  *
  * @since 3.0
  */
-public class BuildEnvVar extends EnvironmentVariable implements IBuildEnvironmentVariable {
+public class BuildEnvVar extends EnvironmentVariable implements IEnvironmentVariable {
 	protected BuildEnvVar() {
 
 	}

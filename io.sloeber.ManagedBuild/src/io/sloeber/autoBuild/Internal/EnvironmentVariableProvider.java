@@ -33,7 +33,6 @@ import org.eclipse.cdt.internal.core.envvar.EnvVarCollector;
 //import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableSupplier;
 import org.eclipse.cdt.utils.envvar.EnvVarOperationProcessor;
 
-import io.sloeber.autoBuild.api.IBuildEnvironmentVariable;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IEnvironmentVariableProvider;
@@ -144,7 +143,7 @@ public class EnvironmentVariableProvider implements IEnvironmentVariableProvider
                 checkBuildPathVariables(cfg, vars);
             return vars;
         }
-        return new IBuildEnvironmentVariable[0];
+        return new IEnvironmentVariable[0];
     }
 
     //	public static IBuildEnvironmentVariable wrap(IEnvironmentVariable var) {
@@ -155,13 +154,13 @@ public class EnvironmentVariableProvider implements IEnvironmentVariableProvider
     //		return new BuildEnvVar(var);
     //	}
 
-    public static IBuildEnvironmentVariable[] wrap(IEnvironmentVariable vars[]) {
+    public static IEnvironmentVariable[] wrap(IEnvironmentVariable vars[]) {
         if (vars == null)
             return null;
-        if (vars instanceof IBuildEnvironmentVariable[])
-            return (IBuildEnvironmentVariable[]) vars;
+        if (vars instanceof IEnvironmentVariable[])
+            return (IEnvironmentVariable[]) vars;
 
-        IBuildEnvironmentVariable[] buildVars = new IBuildEnvironmentVariable[vars.length];
+        IEnvironmentVariable[] buildVars = new IEnvironmentVariable[vars.length];
         //		for (int i = 0; i < vars.length; i++) {
         //			buildVars[i] = wrap(vars[i]);
         //		}
