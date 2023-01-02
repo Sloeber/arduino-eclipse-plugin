@@ -64,7 +64,6 @@ public interface IFolderInfo extends IResourceInfo {
 
 	boolean isToolChainCompatible(IToolChain tCh);
 
-	String getOutputExtension(String resourceExtension);
 
 	boolean isHeaderFile(String ext);
 }

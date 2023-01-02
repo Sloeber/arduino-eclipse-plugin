@@ -154,32 +154,6 @@ public interface IManagedBuildInfo {
     //	public IManagedDependencyGeneratorType getDependencyGenerator(String sourceExtension);
 
     /**
-     * Returns a <code>String</code> containing the flags, including
-     * those overridden by the user, for the tool in the configuration
-     * defined by the argument.
-     * The string contains build macros resolved to the makefile format.
-     * That is if a user has chosen to expand all macros in the buildfile,
-     * the string contains all macro references resolved, otherwise, if a user has
-     * chosen to keep the environment build macros unresolved, the string contains
-     * the environment macro references converted to the buildfile variable format,
-     * all other macro references are resolved
-     */
-    public String getToolFlagsForConfiguration(String extension, IPath inputLocation, IPath outputLocation);
-
-    /**
-     * Returns a <code>String</code> containing the flags, including
-     * those overridden by the user, for the tool that handles the
-     * type of source file defined by the argument.
-     * The string contains build macros resolved to the makefile format.
-     * That is if a user has chosen to expand all macros in the buildfile,
-     * the string contains all macro references resolved, otherwise, if a user has
-     * chosen to keep the environment build macros unresolved, the string contains
-     * the environment macro references converted to the buildfile variable format,
-     * all other macro references are resolved
-     */
-    public String getToolFlagsForSource(String extension, IPath inputLocation, IPath outputLocation);
-
-    /**
      * Answers the libraries the project links in.
      */
     public String[] getLibsForConfiguration(String extension);
@@ -191,11 +165,7 @@ public interface IManagedBuildInfo {
      */
     public IManagedProject getManagedProject();
 
-    /**
-     * Answers the extension that will be built by the current configuration
-     * for the extension passed in the argument or <code>null</code>.
-     */
-    public String getOutputExtension(String resourceExtension);
+
 
     /**
      * Answers the flag to be passed to the build tool to produce a specific output
@@ -205,14 +175,7 @@ public interface IManagedBuildInfo {
      */
     public String getOutputFlag(String outputExt);
 
-    /**
-     * Answers the prefix that should be prepended to the name of the build
-     * artifact. For example, a library foo, should have the prefix 'lib' and
-     * the extension '.a', so the final goal would be 'libfoo.a'
-     *
-     * @return the prefix or an empty string
-     */
-    public String getOutputPrefix(String outputExtension);
+
 
     /**
      * Returns the currently selected configuration. This is used while the project
@@ -279,12 +242,6 @@ public interface IManagedBuildInfo {
      */
     public String getVersion();
 
-    /**
-     * Answers true if the build model has been changed by the user.
-     *
-     * @return boolean
-     */
-    public boolean isDirty();
 
     /**
      * Answers <code>true</code> if the extension matches one of the special
@@ -296,13 +253,6 @@ public interface IManagedBuildInfo {
      */
     public boolean isHeaderFile(String ext);
 
-    /**
-     * Gets the read only status of Managed Build Info
-     *
-     * @return <code>true</code> if Managed Build Info is read only
-     *         otherwise returns <code>false</code>
-     */
-    public boolean isReadOnly();
 
     /**
      * Gets the "valid" status of Managed Build Info. Managed Build Info is invalid
@@ -344,10 +294,7 @@ public interface IManagedBuildInfo {
      */
     public boolean setDefaultConfiguration(String configName);
 
-    /**
-     * Sets the dirty flag for the build model to the value of the argument.
-     */
-    public void setDirty(boolean isDirty);
+
 
     /**
      * Sets the valid flag for the build model to the value of the argument.
@@ -359,10 +306,6 @@ public interface IManagedBuildInfo {
      */
     public void setManagedProject(IManagedProject project);
 
-    /**
-     * sets the read only status of Managed Build Info
-     */
-    public void setReadOnly(boolean readOnly);
 
     /**
      * Sets the rebuild state in the receiver to the value of the argument.

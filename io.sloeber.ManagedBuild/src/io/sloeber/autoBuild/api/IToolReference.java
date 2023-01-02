@@ -24,56 +24,7 @@ package io.sloeber.autoBuild.api;
 @Deprecated
 public interface IToolReference extends ITool {
 
-    /**
-     * Answers a reference to the option. If the reference does not exist,
-     * a new reference is created.
-     */
-    //	public OptionReference createOptionReference(IOption option);
 
-    /**
-     * Answers the list of option references contained in the receiver.
-     *
-     * @return List
-     */
-    //	public List<OptionReference> getOptionReferenceList();
-
-    /**
-     * Answers the tool that the reference has been created for.
-     */
-    public ITool getTool();
-
-    /**
-     * Answers <code>true</code> if the receiver ahs been modified in any way.
-     *
-     * @return boolean
-     */
-    @Override
-    public boolean isDirty();
-
-    /**
-     * Answers <code>true</code> if the reference is a reference to the
-     * tool specified in the argument.
-     *
-     * @param tool
-     *            the tool that should be tested
-     * @return boolean
-     */
-    public boolean references(ITool tool);
-
-    /**
-     * @param isDirty
-     *            The value to set the dirty flag to in the receiver
-     */
-    @Override
-    public void setDirty(boolean isDirty);
-
-    /**
-     * Set the tool command in the receiver to be the argument.
-     *
-     * @return <code>true</code> if the command is changed, else <code>false</code>
-     */
-    @Override
-    public boolean setToolCommand(String cmd);
 
     /*
      * The following methods are added to allow the converter from ToolReference -> Tool

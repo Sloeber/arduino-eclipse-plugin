@@ -78,7 +78,7 @@ import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
-public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider<Builder>, IRealBuildObjectAssociation {
+public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectAssociation {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -233,7 +233,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             ManagedBuildManager.addExtensionBuilder(this);
         } else {
             fBuildData = new BuildBuildData(this);
-            setDirty(true);
         }
     }
 
@@ -440,7 +439,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             }
         }
 
-        setDirty(true);
     }
 
     /*	public Builder(IToolChain parent, String Id, String name, Builder builder, ICStorageElement el) {
@@ -832,10 +830,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             LanguageSettingEntriesSerializer.serializeEntries(outputEntries, outEl);
         }
 
-        if (resetDirtyState) {
-            // I am clean now
-            setDirty(false);
-        }
     }
 
     public void serializeRawData(ICStorageElement element) {
@@ -1190,7 +1184,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             return;
         if (command == null || cmd == null || !cmd.equals(command)) {
             command = cmd;
-            setDirty(true);
         }
     }
 
@@ -1204,7 +1197,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             return;
         if (args == null || newArgs == null || !newArgs.equals(args)) {
             args = newArgs;
-            setDirty(true);
         }
     }
 
@@ -1215,14 +1207,12 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             return;
         if (currentIds == null || ids == null || !(currentIds.equals(ids))) {
             errorParserIds = ids;
-            setDirty(true);
         }
     }
 
     @Override
     public void setIsAbstract(boolean b) {
         isAbstract = b;
-        setDirty(true);
     }
 
     //@Override
@@ -1261,7 +1251,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
     //@Override
     public void setBuildFileGeneratorElement(IConfigurationElement element) {
         buildFileGeneratorElement = element;
-        setDirty(true);
     }
 
     /*
@@ -1273,18 +1262,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         return isExtensionBuilder;
     }
 
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension Builder
-        if (isExtensionBuilder)
-            return false;
-        return super.isDirty();
-    }
-
-    @Override
-    public void setDirty(boolean isDirty) {
-        super.setDirty(isDirty);
-    }
 
     @Override
     public void resolveReferences() {
@@ -1322,7 +1299,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             return;
         if (convertToId == null || this.convertToId == null || !convertToId.equals(this.convertToId)) {
             this.convertToId = convertToId;
-            setDirty(true);
         }
         return;
     }
@@ -1347,7 +1323,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         if (versionsSupported == null || this.versionsSupported == null
                 || !versionsSupported.equals(this.versionsSupported)) {
             this.versionsSupported = versionsSupported;
-            setDirty(true);
         }
         return;
     }
@@ -1694,7 +1669,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
                 setArgumentsAttribute(updatedArgs);
             stopOnErr = on;
         }
-        setDirty(true);
     }
 
     @Override
@@ -2242,19 +2216,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         return rBld == ManagedBuildManager.getRealBuilder(builder);
     }
 
-    @Override
-    public MatchKey<Builder> getMatchKey() {
-        if (isAbstract())
-            return null;
-        if (!isExtensionBuilder)
-            return null;
-        return new MatchKey<>(this);
-    }
-
-    @Override
-    public void setIdenticalList(List<Builder> list) {
-        identicalList = list;
-    }
 
     public String getNameAndVersion() {
         String name = getName();
@@ -2265,10 +2226,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         return name;
     }
 
-    @Override
-    public List<Builder> getIdenticalList() {
-        return identicalList;
-    }
 
     @Override
     public boolean isInternalBuilder() {
@@ -2364,7 +2321,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
             }
 
             setParallelizationNumAttribute(jobs);
-            setDirty(true);
         }
     }
 
@@ -2565,13 +2521,6 @@ public class Builder extends HoldsOptions implements IBuilder, IMatchKeyProvider
         return num;
     }
 
-    @Override
-    public int compareTo(Builder other) {
-        if (other.isSystemObject() != isSystemObject())
-            return isSystemObject() ? 1 : -1;
-
-        return getSuperClassNum() - other.getSuperClassNum();
-    }
 
     @Override
     public IRealBuildObjectAssociation getExtensionObject() {

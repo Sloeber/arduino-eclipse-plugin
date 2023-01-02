@@ -18,36 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IConfigurationV2;
-//import org.eclipse.cdt.managedbuilder.core.IEnvVarBuildPath;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IManagedCommandLineGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategory;
-//import org.eclipse.cdt.managedbuilder.core.IOptionPathConverter;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.IToolReference;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.osgi.framework.Version;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IConfigurationV2;
 import io.sloeber.autoBuild.api.IEnvVarBuildPath;
 import io.sloeber.autoBuild.api.IHoldsOptions;
 import io.sloeber.autoBuild.api.IInputType;
@@ -58,7 +35,6 @@ import io.sloeber.autoBuild.api.IOptionPathConverter;
 import io.sloeber.autoBuild.api.IOutputType;
 import io.sloeber.autoBuild.api.IResourceConfiguration;
 import io.sloeber.autoBuild.api.IResourceInfo;
-import io.sloeber.autoBuild.api.ITarget;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.api.IToolReference;
@@ -69,7 +45,7 @@ public class ToolReference implements IToolReference {
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$
 
     private String command;
-    private boolean isDirty = false;
+
     //   private List<OptionReference> optionReferences;
     private IBuildObject owner;
     private String outputExtensions;
@@ -188,119 +164,6 @@ public class ToolReference implements IToolReference {
         //        }
     }
 
-    /**
-     * Created a tool reference on the fly based on an existing tool or tool
-     * reference.
-     *
-     * @param owner
-     *            The <code>BuildObject</code> the receiver will be added to.
-     * @param tool
-     *            The <code>ITool</code>tool the reference will be based on.
-     */
-    public ToolReference(BuildObject owner, ITool tool) {
-        this.owner = owner;
-        if (tool instanceof ToolReference) {
-            parent = ((ToolReference) tool).getTool();
-        } else {
-            parent = tool;
-        }
-        command = tool.getToolCommand();
-        outputFlag = tool.getOutputFlag();
-        outputPrefix = tool.getOutputPrefix();
-        String[] extensions = tool.getOutputsAttribute();
-        outputExtensions = ""; //$NON-NLS-1$
-        if (extensions != null) {
-            for (int index = 0; index < extensions.length; ++index) {
-                if (extensions[index] == null)
-                    continue;
-                outputExtensions += extensions[index];
-                if (index < extensions.length - 1) {
-                    outputExtensions += DEFAULT_SEPARATOR;
-                }
-            }
-        }
-
-        //        // Create a copy of the option references of the parent in the receiver
-        //        if (tool instanceof ToolReference) {
-        //            List<OptionReference> parentRefs = ((ToolReference) tool).getOptionReferenceList();
-        //            for (OptionReference parent : parentRefs) {
-        //                OptionReference clone = createOptionReference(parent);
-        //                try {
-        //                    switch (parent.getValueType()) {
-        //                    case IOption.BOOLEAN:
-        //                        clone.setValue(parent.getBooleanValue());
-        //                        break;
-        //                    case IOption.STRING:
-        //                    case IOption.TREE:
-        //                        clone.setValue(parent.getStringValue());
-        //                        break;
-        //                    case IOption.ENUMERATED:
-        //                        clone.setValue(parent.getSelectedEnum());
-        //                        break;
-        //                    default:
-        //                        clone.setValue(parent.getStringListValue());
-        //                        break;
-        //                    }
-        //                } catch (BuildException e) {
-        //                    // Likely a mismatch between the value and option type
-        //                    continue;
-        //                }
-        //            }
-        //        }
-
-        //        if (owner instanceof IConfigurationV2) {
-        //            ((IConfigurationV2) owner).addToolReference(this);
-        //        } else if (owner instanceof ITarget) {
-        //            ((ITarget) owner).addToolReference(this);
-        //        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IToolReference#references(org.eclipse.cdt.managedbuilder.core.ITool)
-     */
-    @Override
-    public boolean references(ITool target) {
-        if (equals(target)) {
-            // we are the target
-            return true;
-        } else if (parent == null) {
-            // basic sanity before proceeding
-            return false;
-        } else if (parent instanceof IToolReference) {
-            // check the reference we are overriding
-            return ((IToolReference) parent).references(target);
-        } else if (target instanceof IToolReference) {
-            return parent.equals(((IToolReference) target).getTool());
-        } else {
-            // the real reference
-            return parent.equals(target);
-        }
-    }
-
-    public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            IManagedConfigElement element = ManagedBuildManager.getConfigElement(this);
-            // resolve my parent
-            if (owner instanceof IConfigurationV2) {
-                ITarget target = (ITarget) ((IConfigurationV2) owner).getTarget();
-                parent = target.getTool(element.getAttribute(ID));
-            } else if (owner instanceof ITarget) {
-                parent = ((ITarget) owner).getTool(element.getAttribute(ID));
-            }
-            // recursively resolve my parent
-            if (parent instanceof Tool) {
-                ((Tool) parent).resolveReferences();
-            } else if (parent instanceof ToolReference) {
-                ((ToolReference) parent).resolveReferences();
-            }
-
-            //            List<OptionReference> optionReferenceList = getOptionReferenceList();
-            //            for (OptionReference optRef : optionReferenceList) {
-            //                optRef.resolveReferences();
-            //            }
-        }
-    }
 
     //    /**
     //     * Adds the option reference specified in the argument to the receiver.
@@ -479,13 +342,6 @@ public class ToolReference implements IToolReference {
         return answer;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IToolReference#getTool()
-     */
-    @Override
-    public ITool getTool() {
-        return parent;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITool#getToolCommand()
@@ -501,108 +357,6 @@ public class ToolReference implements IToolReference {
             return parent.getToolCommand();
         }
         return command;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#getToolFlags()
-     */
-    //@Override
-    public String getToolFlags() throws BuildException {
-        // Get all of the options
-        StringBuilder buf = new StringBuilder();
-        IOption[] opts = getOptions();
-        for (int index = 0; index < opts.length; index++) {
-            IOption option = opts[index];
-
-            // check to see if the option has an applicability calculator
-            IOptionApplicability applicabilityCalculator = option.getApplicabilityCalculator();
-
-            boolean optionIsApplicable = true;
-            if (applicabilityCalculator != null) {
-                ITool tool = getTool();
-                IBuildObject config;
-                if (tool.getParent() instanceof IResourceConfiguration) {
-                    config = tool.getParent();
-                } else {
-                    config = ((IToolChain) tool.getParent()).getParent();
-                }
-                optionIsApplicable = applicabilityCalculator.isOptionUsedInCommandLine(config, tool, option);
-            }
-            if (optionIsApplicable) {
-                switch (option.getValueType()) {
-                case IOption.BOOLEAN:
-                    String boolCmd;
-                    if (option.getBooleanValue()) {
-                        boolCmd = option.getCommand();
-                    } else {
-                        // Note: getCommandFalse is new with CDT 2.0
-                        boolCmd = option.getCommandFalse();
-                    }
-                    if (boolCmd != null && boolCmd.length() > 0) {
-                        buf.append(boolCmd).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.ENUMERATED:
-                    String enumVal = option.getEnumCommand(option.getSelectedEnum());
-                    if (enumVal.length() > 0) {
-                        buf.append(enumVal).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.TREE:
-                    String treeVal = option.getCommand(option.getStringValue());
-                    if (treeVal.length() > 0) {
-                        buf.append(treeVal).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.STRING:
-                    String strCmd = option.getCommand();
-                    String val = option.getStringValue();
-                    if (val.length() > 0) {
-                        if (strCmd != null)
-                            buf.append(strCmd);
-                        buf.append(val).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.STRING_LIST:
-                    String cmd = option.getCommand();
-                    String[] list = option.getStringListValue();
-                    for (int j = 0; j < list.length; j++) {
-                        String temp = list[j];
-                        if (cmd != null)
-                            buf.append(cmd);
-                        buf.append(temp).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.INCLUDE_PATH:
-                    String incCmd = option.getCommand();
-                    String[] paths = option.getIncludePaths();
-                    for (int j = 0; j < paths.length; j++) {
-                        String temp = paths[j];
-                        buf.append(incCmd).append(temp).append(WHITE_SPACE);
-                    }
-                    break;
-
-                case IOption.PREPROCESSOR_SYMBOLS:
-                    String defCmd = option.getCommand();
-                    String[] symbols = option.getDefinedSymbols();
-                    for (int j = 0; j < symbols.length; j++) {
-                        String temp = symbols[j];
-                        buf.append(defCmd).append(temp).append(WHITE_SPACE);
-                    }
-                    break;
-
-                default:
-                    break;
-                }
-            }
-        }
-
-        return buf.toString().trim();
     }
 
     /* (non-Javadoc)
@@ -695,17 +449,6 @@ public class ToolReference implements IToolReference {
         return outputExtensions.split(DEFAULT_SEPARATOR);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getOutputExtension(java.lang.String)
-     */
-    @Override
-    public String getOutputExtension(String inputExtension) {
-        if (parent == null) {
-            // bad reference
-            return ""; //$NON-NLS-1$
-        }
-        return parent.getOutputExtension(inputExtension);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getOutputFlag()
@@ -723,27 +466,6 @@ public class ToolReference implements IToolReference {
         return outputFlag;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getOutputPrefix()
-     */
-    @Override
-    public String getOutputPrefix() {
-        if (outputPrefix == null) {
-            if (parent != null) {
-                return parent.getOutputPrefix();
-            }
-            return ""; // bad reference //$NON-NLS-1$
-        }
-        return outputPrefix;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IToolReference#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        return isDirty;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#isHeaderFile(java.lang.String)
@@ -757,123 +479,7 @@ public class ToolReference implements IToolReference {
         return parent.isHeaderFile(ext);
     }
 
-    /**
-     * Answers <code>true</code> if the owner of the receiver matches
-     * the argument.
-     */
-    public boolean ownedByConfiguration(IConfigurationV2 config) {
-        if (owner instanceof IConfigurationV2) {
-            return ((IConfigurationV2) owner).equals(config);
-        }
-        return false;
-    }
 
-    /**
-     * Persist receiver to project file.
-     *
-     * @param doc
-     *            The persistent store for the reference information.
-     * @param element
-     *            The root element in the store the receiver must use
-     *            to persist settings.
-     */
-    public void serialize(Document doc, Element element) {
-        if (parent == null)
-            return; // This is a bad reference
-        element.setAttribute(ITool.ID, parent.getId());
-
-        // Output the command
-        if (command != null) {
-            element.setAttribute(ITool.COMMAND, getToolCommand());
-        }
-
-        // Save output prefix
-        if (outputPrefix != null) {
-            element.setAttribute(ITool.OUTPUT_PREFIX, getOutputPrefix());
-        }
-
-        // Save the output flag
-        if (outputFlag != null) {
-            element.setAttribute(ITool.OUTPUT_FLAG, getOutputFlag());
-        }
-
-        // Save the outputs
-        if (outputExtensions != null) {
-            element.setAttribute(ITool.OUTPUTS, outputExtensions);
-        }
-
-        //        // Output the option references
-        //        List<OptionReference> optionReferenceList = getOptionReferenceList();
-        //        for (OptionReference optionRef : optionReferenceList) {
-        //            Element optionRefElement = doc.createElement(ITool.OPTION_REF);
-        //            element.appendChild(optionRefElement);
-        //            optionRef.serialize(doc, optionRefElement);
-        //        }
-
-        // Set the reference to clean
-        isDirty = false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IToolReference#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        // Override the local flag
-        this.isDirty = isDirty;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IToolReference#setToolCommand(java.lang.String)
-     */
-    @Override
-    public boolean setToolCommand(String cmd) {
-        if (cmd != null && !cmd.equals(command)) {
-            command = cmd;
-            isDirty = true;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputFlag(java.lang.String)
-     */
-    @Override
-    public void setOutputFlag(String flag) {
-        if (flag == null)
-            return;
-        if (outputFlag == null || !(flag.equals(outputFlag))) {
-            outputFlag = flag;
-            isDirty = true;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputPrefix(java.lang.String)
-     */
-    @Override
-    public void setOutputPrefix(String prefix) {
-        if (prefix == null)
-            return;
-        if (outputPrefix == null || !(prefix.equals(outputPrefix))) {
-            outputPrefix = prefix;
-            isDirty = true;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputExtensions(java.lang.String)
-     */
-    public void setOutputExtensions(String ext) {
-        if (ext == null)
-            return;
-        if (outputExtensions == null || !(ext.equals(outputExtensions))) {
-            outputExtensions = ext;
-            isDirty = true;
-        }
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#setParent(IBuildObject)
@@ -943,14 +549,6 @@ public class ToolReference implements IToolReference {
         return getCommandFlags();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getToolCommandFlagsString(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public String getToolCommandFlagsString(IPath inputFileLocation, IPath outputFileLocation) throws BuildException {
-        return getToolFlags();
-
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -1119,10 +717,6 @@ public class ToolReference implements IToolReference {
     public void setAdvancedInputCategory(boolean display) {
     }
 
-    @Override
-    public IInputType createInputType(IInputType superClass, String Id, String name, boolean isExtensionElement) {
-        return null;
-    }
 
     @Override
     public IOutputType createOutputType(IOutputType superClass, String Id, String name, boolean isExtensionElement) {
@@ -1200,10 +794,6 @@ public class ToolReference implements IToolReference {
     public void setOutputsAttribute(String extensions) {
     }
 
-    @Override
-    public String[] getAllOutputExtensions() {
-        return null;
-    }
 
     @Override
     public String[] getAllDependencyExtensions() {
@@ -1215,10 +805,7 @@ public class ToolReference implements IToolReference {
         return null;
     }
 
-    @Override
-    public IOutputType getPrimaryOutputType() {
-        return null;
-    }
+
 
     @Override
     public IPath[] getAdditionalDependencies() {
@@ -1335,7 +922,6 @@ public class ToolReference implements IToolReference {
             return;
         if (convertToId == null || this.convertToId == null || !convertToId.equals(this.convertToId)) {
             this.convertToId = convertToId;
-            setDirty(true);
         }
         return;
     }
@@ -1366,7 +952,6 @@ public class ToolReference implements IToolReference {
         if (versionsSupported == null || this.versionsSupported == null
                 || !versionsSupported.equals(this.versionsSupported)) {
             this.versionsSupported = versionsSupported;
-            setDirty(true);
         }
         return;
     }
@@ -1483,15 +1068,6 @@ public class ToolReference implements IToolReference {
         return getName();
     }
 
-    @Override
-    public IOutputType getEditableOutputType(IOutputType base) {
-        return null;
-    }
-
-    @Override
-    public void setOutputPrefixForPrimaryOutput(String prefix) {
-        setOutputPrefix(prefix);
-    }
 
     @Override
     public IOption[] getOptions() {

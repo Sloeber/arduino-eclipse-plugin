@@ -125,11 +125,8 @@ public class GeneratedMakefileBuilder extends ACBuilder {
             if ((resolved = resolved.trim()).length() > 0)
                 name = resolved;
 
-            if (ext.length() > 0) {
-                buildGoalName = buildInfo.getOutputPrefix(ext) + name + IMakefileGenerator.DOT + ext;
-            } else {
+
                 buildGoalName = name;
-            }
             reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
@@ -330,7 +327,7 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         }
     }
 
-    public static void outputError(String resourceName, String message) {
+    private static void outputError(String resourceName, String message) {
         if (VERBOSE) {
             System.err.println(ERROR_HEADER + resourceName + TRACE_FOOTER + message + NEWLINE);
         }
@@ -1407,41 +1404,6 @@ public class GeneratedMakefileBuilder extends ACBuilder {
         return projectMap;
     }
 
-    /**
-     * Called to invoke the MBS Internal Builder for building the given resources
-     *
-     * @param files
-     *            - list of files to build.
-     * @param monitor
-     *            - progress monitor to report progress to user.
-     * @return status of the operation. Can be {@link Status#OK_STATUS} or
-     *         {@link Status#CANCEL_STATUS}.
-     */
-    public IStatus invokeInternalBuilder(List<IFile> files, IProgressMonitor monitor) {
-        // Make sure there's a monitor to cancel the build
-        if (monitor == null) {
-            monitor = new NullProgressMonitor();
-        }
-
-        try {
-            Map<IProject, List<IFile>> projectMap = arrangeFilesByProject(files);
-            monitor.beginTask("", projectMap.size() * PROGRESS_MONITOR_SCALE); //$NON-NLS-1$
-
-            for (List<IFile> filesInProject : projectMap.values()) {
-                IProject project = filesInProject.get(0).getProject();
-                setCurrentProject(project);
-                monitor.subTask(MessageFormat.format(GeneratedMakefileBuilder_buildingProject, project.getName()));
-                invokeInternalBuilderForOneProject(filesInProject, new SubProgressMonitor(monitor,
-                        1 * PROGRESS_MONITOR_SCALE, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
-            }
-        } finally {
-            if (monitor.isCanceled()) {
-                return Status.CANCEL_STATUS;
-            }
-            monitor.done();
-        }
-        return Status.OK_STATUS;
-    }
 
     private void invokeInternalBuilderForOneProject(List<IFile> files, IProgressMonitor monitor) {
         IProject project = files.get(0).getProject();

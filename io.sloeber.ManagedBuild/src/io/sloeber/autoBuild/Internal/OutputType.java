@@ -53,20 +53,14 @@ public class OutputType extends BuildObject implements IOutputType {
     //  Parent and children
     private ITool parent;
     //  Managed Build model attributes
-    private String outputContentTypeId;
-    private IContentType outputContentType;
-    private String outputs;
     private String optionId;
-    private String buildVariable;
-    private Boolean multipleOfType;
-    private String primaryInputTypeId;
-    private IInputType primaryInputType;
-    private Boolean primaryOutput;
     private String outputPrefix;
-    private String outputNames;
+    private String outputExtension;
+    private String outputName;
     private String namePattern;
     private IConfigurationElement nameProviderElement = null;
     private IOutputNameProvider nameProvider = null;
+    private String buildVariable;
 
     private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
@@ -138,8 +132,8 @@ public class OutputType extends BuildObject implements IOutputType {
             // Hook me up to the Managed Build Manager
             ManagedBuildManager.addExtensionOutputType(this);
         } else {
-            setDirty(true);
-            setRebuildState(true);
+            //setDirty(true);
+            //setRebuildState(true);
         }
     }
 
@@ -186,34 +180,17 @@ public class OutputType extends BuildObject implements IOutputType {
         boolean copyIds = Id.equals(outputType.id);
 
         //  Copy the remaining attributes
-        if (outputType.outputContentTypeId != null) {
-            outputContentTypeId = outputType.outputContentTypeId;
-        }
-        outputContentType = outputType.outputContentType;
-        if (outputType.outputs != null) {
-            outputs = outputType.outputs;
-        }
         if (outputType.optionId != null) {
             optionId = outputType.optionId;
         }
         if (outputType.buildVariable != null) {
             buildVariable = outputType.buildVariable;
         }
-        if (outputType.multipleOfType != null) {
-            multipleOfType = outputType.multipleOfType;
-        }
-        if (outputType.primaryInputTypeId != null) {
-            primaryInputTypeId = outputType.primaryInputTypeId;
-        }
-        primaryInputType = outputType.primaryInputType;
-        if (outputType.primaryOutput != null) {
-            primaryOutput = outputType.primaryOutput;
-        }
         if (outputType.outputPrefix != null) {
             outputPrefix = outputType.outputPrefix;
         }
-        if (outputType.outputNames != null) {
-            outputNames = outputType.outputNames;
+        if (outputType.outputName != null) {
+            outputName = outputType.outputName;
         }
         if (outputType.namePattern != null) {
             namePattern = outputType.namePattern;
@@ -226,8 +203,8 @@ public class OutputType extends BuildObject implements IOutputType {
             isDirty = outputType.isDirty;
             rebuildState = outputType.rebuildState;
         } else {
-            setDirty(true);
-            setRebuildState(true);
+           // setDirty(true);
+           // setRebuildState(true);
         }
     }
 
@@ -253,35 +230,15 @@ public class OutputType extends BuildObject implements IOutputType {
         // superClass
         superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
 
-        // outputContentType
-        outputContentTypeId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_CONTENT_TYPE));
-
-        // outputs
-        outputs = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUTS));
-
         // option
         optionId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OPTION));
 
-        // multipleOfType
-        String isMOT = element.getAttribute(IOutputType.MULTIPLE_OF_TYPE);
-        if (isMOT != null) {
-            multipleOfType = Boolean.parseBoolean(isMOT);
-        }
-
-        // primaryInputType
-        primaryInputTypeId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.PRIMARY_INPUT_TYPE));
-
-        // primaryOutput
-        String isPO = element.getAttribute(IOutputType.PRIMARY_OUTPUT);
-        if (isPO != null) {
-            primaryOutput = Boolean.parseBoolean(isPO);
-        }
 
         // outputPrefix
         outputPrefix = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_PREFIX));
 
         // outputNames
-        outputNames = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAMES));
+        outputName = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAME));
 
         // namePattern
         namePattern = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.NAME_PATTERN));
@@ -321,42 +278,11 @@ public class OutputType extends BuildObject implements IOutputType {
             }
         }
 
-        // outputContentType
-        if (element.getAttribute(IOutputType.OUTPUT_CONTENT_TYPE) != null) {
-            outputContentTypeId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_CONTENT_TYPE));
-        }
-
-        // outputs
-        if (element.getAttribute(IOutputType.OUTPUTS) != null) {
-            outputs = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUTS));
-        }
-
         // option
         if (element.getAttribute(IOutputType.OPTION) != null) {
             optionId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OPTION));
         }
 
-        // multipleOfType
-        if (element.getAttribute(IOutputType.MULTIPLE_OF_TYPE) != null) {
-            String isMOT = element.getAttribute(IOutputType.MULTIPLE_OF_TYPE);
-            if (isMOT != null) {
-                multipleOfType = Boolean.parseBoolean(isMOT);
-            }
-        }
-
-        // primaryInputType
-        if (element.getAttribute(IOutputType.PRIMARY_INPUT_TYPE) != null) {
-            primaryInputTypeId = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.PRIMARY_INPUT_TYPE));
-            primaryInputType = parent.getInputTypeById(primaryInputTypeId);
-        }
-
-        // primaryOutput
-        if (element.getAttribute(IOutputType.PRIMARY_OUTPUT) != null) {
-            String isPO = element.getAttribute(IOutputType.PRIMARY_OUTPUT);
-            if (isPO != null) {
-                primaryOutput = Boolean.parseBoolean(isPO);
-            }
-        }
 
         // outputPrefix
         if (element.getAttribute(IOutputType.OUTPUT_PREFIX) != null) {
@@ -364,8 +290,8 @@ public class OutputType extends BuildObject implements IOutputType {
         }
 
         // outputNames
-        if (element.getAttribute(IOutputType.OUTPUT_NAMES) != null) {
-            outputNames = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAMES));
+        if (element.getAttribute(IOutputType.OUTPUT_NAME) != null) {
+            outputName = SafeStringInterner.safeIntern(element.getAttribute(IOutputType.OUTPUT_NAME));
         }
 
         // namePattern
@@ -398,36 +324,18 @@ public class OutputType extends BuildObject implements IOutputType {
             element.setAttribute(IBuildObject.NAME, name);
         }
 
-        if (outputContentTypeId != null) {
-            element.setAttribute(IOutputType.OUTPUT_CONTENT_TYPE, outputContentTypeId);
-        }
-
-        if (outputs != null) {
-            element.setAttribute(IOutputType.OUTPUTS, outputs);
-        }
 
         if (optionId != null) {
             element.setAttribute(IOutputType.OPTION, optionId);
         }
 
-        if (multipleOfType != null) {
-            element.setAttribute(IOutputType.MULTIPLE_OF_TYPE, multipleOfType.toString());
-        }
-
-        if (primaryInputTypeId != null) {
-            element.setAttribute(IOutputType.PRIMARY_INPUT_TYPE, primaryInputTypeId);
-        }
-
-        if (primaryOutput != null) {
-            element.setAttribute(IOutputType.PRIMARY_OUTPUT, primaryOutput.toString());
-        }
 
         if (outputPrefix != null) {
             element.setAttribute(IOutputType.OUTPUT_PREFIX, outputPrefix);
         }
 
-        if (outputNames != null) {
-            element.setAttribute(IOutputType.OUTPUT_NAMES, outputNames);
+        if (outputName != null) {
+            element.setAttribute(IOutputType.OUTPUT_NAME, outputName);
         }
 
         if (namePattern != null) {
@@ -504,97 +412,9 @@ public class OutputType extends BuildObject implements IOutputType {
         return buildVariable;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOutputType#setBuildVariable()
-     */
-    @Override
-    public void setBuildVariable(String variableName) {
-        if (variableName == null && buildVariable == null)
-            return;
-        if (buildVariable == null || variableName == null || !(variableName.equals(buildVariable))) {
-            buildVariable = variableName;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOutputType#getMultipleOfType()
-     */
-    @Override
-    public boolean getMultipleOfType() {
-        if (multipleOfType == null) {
-            if (superClass != null) {
-                return superClass.getMultipleOfType();
-            } else {
-                return false; // default is false
-            }
-        }
-        return multipleOfType.booleanValue();
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setMultipleOfType()
-     */
-    @Override
-    public void setMultipleOfType(boolean b) {
-        if (multipleOfType == null || !(b == multipleOfType.booleanValue())) {
-            multipleOfType = b;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getNamePattern()
-     */
-    @Override
-    public String getNamePattern() {
-        if (namePattern == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return superClass.getNamePattern();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return namePattern;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setNamePattern()
-     */
-    @Override
-    public void setNamePattern(String pattern) {
-        if (pattern == null && namePattern == null)
-            return;
-        if (namePattern == null || pattern == null || !(pattern.equals(namePattern))) {
-            namePattern = pattern;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getNameProviderElement()
-     */
-    public IConfigurationElement getNameProviderElement() {
-        if (nameProviderElement == null) {
-            if (superClass != null) {
-                return ((OutputType) superClass).getNameProviderElement();
-            }
-        }
-        return nameProviderElement;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setNameProviderElement()
-     */
-    public void setNameProviderElement(IConfigurationElement element) {
-        nameProviderElement = element;
-        setDirty(true);
-        setRebuildState(true);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IOuputType#getOptionId()
@@ -611,295 +431,38 @@ public class OutputType extends BuildObject implements IOutputType {
         return optionId;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setOptionId()
-     */
-    @Override
-    public void setOptionId(String id) {
-        if (id == null && optionId == null)
-            return;
-        if (id == null || optionId == null || !(optionId.equals(id))) {
-            optionId = id;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getOutputContentType()
-     */
-    @Override
-    public IContentType getOutputContentType() {
-        if (outputContentType == null) {
-            if (superClass != null) {
-                return superClass.getOutputContentType();
-            } else {
-                return null;
-            }
-        }
-        return outputContentType;
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setOutputContentType()
-     */
-    @Override
-    public void setOutputContentType(IContentType type) {
-        if (outputContentType != type) {
-            outputContentType = type;
-            if (outputContentType != null) {
-                outputContentTypeId = outputContentType.getId();
-            } else {
-                outputContentTypeId = null;
-            }
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getOutputExtensionsAttribute()
-     */
-    @Override
-    public String[] getOutputExtensionsAttribute() {
-        if (outputs == null) {
-            if (superClass != null) {
-                return superClass.getOutputExtensionsAttribute();
-            } else {
-                return null;
-            }
-        }
-        return outputs.split(DEFAULT_SEPARATOR);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setOutputExtensionsAttribute()
-     */
-    @Override
-    public void setOutputExtensionsAttribute(String exts) {
-        if (exts == null && outputs == null)
-            return;
-        if (outputs == null || exts == null || !(exts.equals(outputs))) {
-            outputs = exts;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    public String[] getOutputExtensions(ITool tool, IProject project) {
-        //  Use content type if specified and registered with Eclipse
-        IContentType type = getOutputContentType();
-        if (type != null) {
-            return ((Tool) tool).getContentTypeFileSpecs(type, project);
-        }
-        return getOutputExtensionsAttribute();
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getOutputExtensions()
-     */
-    @Override
-    public String[] getOutputExtensions(ITool tool) {
-        return getOutputExtensions(tool, ((Tool) tool).getProject());
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOutputType#isOutputExtension()
-     */
-    @Override
-    public boolean isOutputExtension(ITool tool, String ext) {
-        String[] exts = getOutputExtensions(tool);
-        if (exts != null) {
-            for (int i = 0; i < exts.length; i++) {
-                if (ext.equals(exts[i]))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getOutputPrefix()
-     */
-    @Override
-    public String getOutputPrefix() {
-        if (outputPrefix == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return superClass.getOutputPrefix();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return outputPrefix;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setOutputPrefix()
-     */
-    @Override
-    public void setOutputPrefix(String prefix) {
-        if (prefix == null && outputPrefix == null)
-            return;
-        if (outputPrefix == null || prefix == null || !(prefix.equals(outputPrefix))) {
-            outputPrefix = prefix;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getOutputNames()
-     */
-    @Override
-    public String[] getOutputNames() {
-        if (outputNames == null) {
-            // If I have a superClass, ask it
-            if (superClass != null) {
-                return superClass.getOutputNames();
-            } else {
-                return null;
-            }
-        }
-        String[] nameTokens = outputNames.split(";"); //$NON-NLS-1$
-        return nameTokens;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setOutputNames()
-     */
-    @Override
-    public void setOutputNames(String names) {
-        if (names == null && outputNames == null)
-            return;
-        if (outputNames == null || names == null || !(names.equals(outputNames))) {
-            outputNames = names;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getPrimaryInputType()
-     */
-    @Override
-    public IInputType getPrimaryInputType() {
-        IInputType ret = primaryInputType;
-        if (ret == null) {
-            if (superClass != null) {
-                ret = superClass.getPrimaryInputType();
-            }
-            if (ret == null) {
-                ret = getParent().getPrimaryInputType();
-            }
-        }
-        return ret;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setPrimaryInputType()
-     */
-    @Override
-    public void setPrimaryInputType(IInputType type) {
-        if (primaryInputType != type) {
-            primaryInputType = type;
-            if (primaryInputType != null) {
-                primaryInputTypeId = primaryInputType.getId();
-            } else {
-                primaryInputTypeId = null;
-            }
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#getPrimaryOutput()
-     */
-    @Override
-    public boolean getPrimaryOutput() {
-        if (primaryOutput == null) {
-            if (superClass != null) {
-                return superClass.getPrimaryOutput();
-            } else {
-                return false; // default is false
-            }
-        }
-        return primaryOutput.booleanValue();
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IOuputType#setPrimaryOutput()
-     */
-    @Override
-    public void setPrimaryOutput(boolean b) {
-        if (primaryOutput == null || !(b == primaryOutput.booleanValue())) {
-            primaryOutput = b;
-            setDirty(true);
-            setRebuildState(true);
-        }
-    }
-
-    /*
-     *  O B J E C T   S T A T E   M A I N T E N A N C E
-     */
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IOutputType#isExtensionElement()
-     */
-    @Override
-    public boolean isExtensionElement() {
-        return isExtensionOutputType;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IOutputType#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension OutputType
-        if (isExtensionOutputType)
-            return false;
-        return isDirty;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IOutputType#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-    }
-
-    /* (non-Javadoc)
-     *  Resolve the element IDs to interface references
-     */
-    public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve superClass
-            if (superClassId != null && superClassId.length() > 0) {
-                superClass = ManagedBuildManager.getExtensionOutputType(superClassId);
-                if (superClass == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                            superClassId, "outputType", //$NON-NLS-1$
-                            getId());
-                }
-            }
-
-            // Resolve content types
-            IContentTypeManager manager = Platform.getContentTypeManager();
-            if (outputContentTypeId != null && outputContentTypeId.length() > 0) {
-                outputContentType = manager.getContentType(outputContentTypeId);
-            }
-
-            // Resolve primary input type
-            if (primaryInputTypeId != null && primaryInputTypeId.length() > 0) {
-                primaryInputType = parent.getInputTypeById(primaryInputTypeId);
-            }
-        }
-    }
+//    /* (non-Javadoc)
+//     *  Resolve the element IDs to interface references
+//     */
+//    public void resolveReferences() {
+//        if (!resolved) {
+//            resolved = true;
+//            // Resolve superClass
+//            if (superClassId != null && superClassId.length() > 0) {
+//                superClass = ManagedBuildManager.getExtensionOutputType(superClassId);
+//                if (superClass == null) {
+//                    // Report error
+//                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
+//                            superClassId, "outputType", //$NON-NLS-1$
+//                            getId());
+//                }
+//            }
+//
+//            // Resolve content types
+//            IContentTypeManager manager = Platform.getContentTypeManager();
+//            if (outputContentTypeId != null && outputContentTypeId.length() > 0) {
+//                outputContentType = manager.getContentType(outputContentTypeId);
+//            }
+//
+//            // Resolve primary input type
+//            if (primaryInputTypeId != null && primaryInputTypeId.length() > 0) {
+//                primaryInputType = parent.getInputTypeById(primaryInputTypeId);
+//            }
+//        }
+//    }
 
     /**
      * @return Returns the managedBuildRevision.
@@ -936,12 +499,6 @@ public class OutputType extends BuildObject implements IOutputType {
         return rebuildState;
     }
 
-    public void setRebuildState(boolean rebuild) {
-        if (isExtensionElement() && rebuild)
-            return;
-
-        rebuildState = rebuild;
-    }
 
     public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
         if (booleanExpressionCalculator == null) {
@@ -968,17 +525,43 @@ public class OutputType extends BuildObject implements IOutputType {
         return false;
     }
 
-    @Override
-    public IOutputNameProvider getNameProvider() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
-    public IFile getOutputName(IProject project, ICConfigurationDescription config, ITool tool, IInputType inputType,
-            IFile inputFile) {
-        // TODO Auto-generated method stub
-        //TOFIX Should copy the name provider code I disabled somewhere else here
-        return null;
+    public IFile getOutputName(IFile inputFile, ICConfigurationDescription config, IInputType inputType) {
+		if (nameProvider != null) {
+			String outputFile= nameProvider.getOutputFileName(inputFile, config,  inputType);
+			if(outputFile==null) {
+				return null;
+			}
+			return getOutputFile(inputFile,outputFile);
+		}
+
+		if (outputName != null && !outputName.isEmpty()) {
+			return getOutputFile(inputFile,outputName);
+		}
+
+		if (outputExtension != null && !outputExtension.isEmpty()) {
+			return getOutputFile(inputFile,inputFile.getName()+"."+outputExtension);
+		}
+		return null;
     }
+
+	private IFile getOutputFile(IFile inputFile, String outputFile) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    /* (non-Javadoc)
+     * @see org.eclipse.cdt.core.build.managed.IOutputType#isOutputExtension()
+     */
+    @Override
+    public boolean isOutputExtension(ITool tool, String ext) {
+        if (outputExtension != null) {
+                if (ext.equals(outputExtension))
+                    return true;
+        }
+        return false;
+    }
+
+	
 }

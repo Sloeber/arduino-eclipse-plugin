@@ -94,18 +94,9 @@ public interface IOptionCategory extends IBuildObject {
      */
     public URL getIconPath();
 
-    /**
-     * Returns <code>true</code> if this element has changes that need to
-     * be saved in the project file, else <code>false</code>.
-     *
-     * @return boolean
-     */
-    public boolean isDirty();
 
-    /**
-     * Sets the element's "dirty" (have I been modified?) flag.
-     */
-    public void setDirty(boolean isDirty);
+
+
 
     /**
      * @return an instance of the class that calculates whether the option category

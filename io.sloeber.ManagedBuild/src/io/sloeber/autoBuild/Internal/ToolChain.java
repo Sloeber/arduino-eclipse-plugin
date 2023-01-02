@@ -63,7 +63,7 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
 import io.sloeber.buildProperties.PropertyManager;
 
 public class ToolChain extends HoldsOptions
-        implements IToolChain, IMatchKeyProvider<ToolChain>, IRealBuildObjectAssociation {
+        implements IToolChain,  IRealBuildObjectAssociation {
 
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -241,7 +241,6 @@ public class ToolChain extends HoldsOptions
             // Hook me up to the Managed Build Manager
             ManagedBuildManager.addExtensionToolChain(this);
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -530,7 +529,6 @@ public class ToolChain extends HoldsOptions
             rebuildState = toolChain.rebuildState;
             isDirty = toolChain.isDirty;
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -922,7 +920,6 @@ public class ToolChain extends HoldsOptions
     public ITargetPlatform createTargetPlatform(ITargetPlatform superClass, String id, String name,
             boolean isExtensionElement) {
         targetPlatform = new TargetPlatform(this, superClass, id, name, isExtensionElement);
-        setDirty(true);
         return targetPlatform;
     }
 
@@ -941,13 +938,11 @@ public class ToolChain extends HoldsOptions
         if (targetPlatform == null)
             return;
         targetPlatform = null;
-        setDirty(true);
     }
 
     @Override
     public IBuilder createBuilder(IBuilder superClass, String id, String name, boolean isExtensionElement) {
         builder = new Builder(this, superClass, id, name, isExtensionElement);
-        setDirty(true);
         return builder;
     }
 
@@ -970,14 +965,12 @@ public class ToolChain extends HoldsOptions
         if (builder == null)
             return;
         builder = null;
-        setDirty(true);
     }
 
     @Override
     public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
         Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
         addTool(tool);
-        setDirty(true);
         return tool;
     }
 
@@ -1177,8 +1170,6 @@ public class ToolChain extends HoldsOptions
                 superClassId = this.superClass.getId();
             }
 
-            if (!isExtensionElement())
-                setDirty(true);
         }
     }
 
@@ -1419,7 +1410,6 @@ public class ToolChain extends HoldsOptions
     @Override
     public void setIsAbstract(boolean b) {
         isAbstract = b;
-        setDirty(true);
     }
 
     @Override
@@ -1463,7 +1453,6 @@ public class ToolChain extends HoldsOptions
         for (int i = 0; i < OSs.length; i++) {
             osList.add(OSs[i]);
         }
-        setDirty(true);
     }
 
     @Override
@@ -1476,7 +1465,6 @@ public class ToolChain extends HoldsOptions
         for (int i = 0; i < archs.length; i++) {
             archList.add(archs[i]);
         }
-        setDirty(true);
     }
 
     @Override
@@ -1552,7 +1540,6 @@ public class ToolChain extends HoldsOptions
             return;
         if (scannerConfigDiscoveryProfileId == null || !scannerConfigDiscoveryProfileId.equals(profileId)) {
             scannerConfigDiscoveryProfileId = profileId;
-            setDirty(true);
         }
     }
 
@@ -1594,52 +1581,6 @@ public class ToolChain extends HoldsOptions
     @Override
     public boolean isExtensionElement() {
         return isExtensionToolChain;
-    }
-
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension tool-chain
-        if (isExtensionToolChain)
-            return false;
-
-        // If I need saving, just say yes
-        if (isDirty)
-            return true;
-
-        //check whether the tool-chain - specific macros are dirty
-        //		if(userDefinedMacros != null && userDefinedMacros.isDirty())
-        //			return true;
-
-        //		if(userDefinedEnvironment != null && userDefinedEnvironment.isDirty())
-        //			return true;
-
-        if (builder != null && builder.isDirty())
-            return true;
-
-        // Otherwise see if any tools need saving
-        for (Tool toolChild : getToolList()) {
-            if (toolChild.isDirty())
-                return true;
-        }
-
-        // Otherwise see if any options need saving
-        if (super.isDirty()) {
-            return true;
-        }
-
-        return isDirty;
-    }
-
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-        // Propagate "false" to options
-        super.setDirty(isDirty);
-        // Propagate "false" to the children
-        if (!isDirty) {
-            for (Tool toolChild : getToolList())
-                toolChild.setDirty(false);
-        }
     }
 
     /**
@@ -1723,7 +1664,6 @@ public class ToolChain extends HoldsOptions
             return;
         if (convertToId == null || this.convertToId == null || !convertToId.equals(this.convertToId)) {
             this.convertToId = convertToId;
-            setDirty(true);
         }
         return;
     }
@@ -1748,7 +1688,6 @@ public class ToolChain extends HoldsOptions
         if (versionsSupported == null || this.versionsSupported == null
                 || !versionsSupported.equals(this.versionsSupported)) {
             this.versionsSupported = versionsSupported;
-            setDirty(true);
         }
         return;
     }
@@ -2257,10 +2196,6 @@ public class ToolChain extends HoldsOptions
         return rTc == ManagedBuildManager.getRealToolChain(tc);
     }
 
-    @Override
-    public List<ToolChain> getIdenticalList() {
-        return identicalList;//;(ArrayList)identicalToolChainsList.clone();
-    }
 
     @Override
     public boolean supportsBuild(boolean managed) {
@@ -2304,19 +2239,6 @@ public class ToolChain extends HoldsOptions
         return false;
     }
 
-    @Override
-    public MatchKey<ToolChain> getMatchKey() {
-        if (isAbstract())
-            return null;
-        if (!isExtensionToolChain)
-            return null;
-        return new MatchKey<>(this);
-    }
-
-    @Override
-    public void setIdenticalList(List<ToolChain> list) {
-        identicalList = list;
-    }
 
     public String getNameAndVersion() {
         String name = getName();
@@ -2642,14 +2564,6 @@ public class ToolChain extends HoldsOptions
             num++;
         }
         return num;
-    }
-
-    @Override
-    public int compareTo(ToolChain other) {
-        if (other.isSystemObject() != isSystemObject())
-            return isSystemObject() ? 1 : -1;
-
-        return getSuperClassNum() - other.getSuperClassNum();
     }
 
     private Set<String> getUnusedChilrenSet() {

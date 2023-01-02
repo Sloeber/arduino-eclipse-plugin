@@ -233,11 +233,9 @@ public class CommonBuilder extends ACBuilder implements IIncrementalProjectBuild
             } catch (BuildMacroException e) {
             }
 
-            if (ext.length() > 0) {
-                buildGoalName = cfg.getOutputPrefix(ext) + name + IMakefileGenerator.DOT + ext;
-            } else {
+
                 buildGoalName = name;
-            }
+
             reservedNames = Arrays.asList(new String[] { ".cdtbuild", ".cdtproject", ".project" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 

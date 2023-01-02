@@ -203,11 +203,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
     }
 
     @Override
-    public boolean isDirty() {
-        return isDirty;
-    }
-
-    @Override
     public boolean isExcluded() {
         return config.isExcluded(getPath());
     }
@@ -217,10 +212,7 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         return needsRebuild;
     }
 
-    @Override
-    public void setDirty(boolean dirty) {
-        isDirty = dirty;
-    }
+
 
     @Override
     public void setExclude(boolean excluded) {
@@ -229,7 +221,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
 
         config.setExcluded(getPath(), isFolderInfo(), excluded);
 
-        setDirty(true);
         setRebuildState(true);
     }
 
@@ -249,7 +240,6 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
             ResourceInfoContainer info = getRcInfo();
             info.changeCurrentPath(p, true);
             this.path = p;
-            setDirty(true);
             setRebuildState(true);
         }
 
@@ -506,19 +496,7 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
         return pairs;
     }
 
-    abstract void applyToolsInternal(ITool[] resultingTools, ToolListModificationInfo info);
 
-    void doApply(ToolListModificationInfo info) {
-        ITool[] resulting = info.getResultingTools();
-
-        ITool[] removed = info.getRemovedTools();
-
-        BuildSettingsUtil.disconnectDepentents(getParent(), removed);
-
-        applyToolsInternal(resulting, info);
-
-        performPostModificationAdjustments(info);
-    }
 
     void performPostModificationAdjustments(ToolListModificationInfo info) {
         propertiesChanged();

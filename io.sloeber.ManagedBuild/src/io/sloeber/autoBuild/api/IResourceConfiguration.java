@@ -104,20 +104,6 @@ public interface IResourceConfiguration extends IResourceInfo {
 	 */
 	public void setResourcePath(String path);
 
-	/**
-	 * Returns <code>true</code> if this element has changes that need to
-	 * be saved in the project file, else <code>false</code>.
-	 *
-	 * @return boolean
-	 */
-	@Override
-	public boolean isDirty();
-
-	/**
-	 * Sets the element's "dirty" (have I been modified?) flag.
-	 */
-	@Override
-	public void setDirty(boolean isDirty);
 
 	/**
 	 * Returns the list of tools associated with this resource configuration.
@@ -153,13 +139,6 @@ public interface IResourceConfiguration extends IResourceInfo {
 	 */
 	public ITool createTool(ITool superClass, String Id, String name, boolean isExtensionElement);
 
-	/**
-	 * Overrides the tool command for a tool defined in this resource configuration's tool.
-	 *
-	 * @param tool The tool that will have its command modified
-	 * @param command The command
-	 */
-	public void setToolCommand(ITool tool, String command);
 
 	/**
 	 * Sets the value of a boolean option for this resource configuration.

@@ -40,11 +40,8 @@ public interface IResourceInfo extends IBuildObject {
 
 	boolean canExclude(boolean exclude);
 
-	boolean isDirty();
-
 	boolean needsRebuild();
 
-	void setDirty(boolean dirty);
 
 	void setRebuildState(boolean rebuild);
 

@@ -175,13 +175,7 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
      */
     public boolean isAbstract();
 
-    /**
-     * Returns <code>true</code> if this element has changes that need to
-     * be saved in the project file, else <code>false</code>.
-     *
-     * @return boolean
-     */
-    public boolean isDirty();
+
 
     /**
      * Returns <code>true</code> if this builder was loaded from a manifest file,
@@ -202,10 +196,7 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
      */
     public void setCommand(String command);
 
-    /**
-     * Sets the element's "dirty" (have I been modified?) flag.
-     */
-    public void setDirty(boolean isDirty);
+
 
     /**
      * Sets the semicolon separated list of error parser ids

@@ -84,7 +84,6 @@ public abstract class HoldsOptions extends BuildObject
     private List<IOptionCategory> childOptionCategories;
     private Map<String, Option> optionMap;
     //  Miscellaneous
-    private boolean isDirty = false;
     private boolean rebuildState;
 
     /*
@@ -133,8 +132,8 @@ public abstract class HoldsOptions extends BuildObject
         }
 
         if (copyIds) {
-            isDirty = source.isDirty;
-            rebuildState = source.rebuildState;
+           //isDirty = source.isDirty;
+            //rebuildState = source.rebuildState;
         }
     }
 
@@ -240,7 +239,7 @@ public abstract class HoldsOptions extends BuildObject
         Option option = new Option(this, superClass, Id, name, isExtensionElement);
         addOption(option);
         if (!isExtensionElement) {
-            setDirty(true);
+            //setDirty(true);
             setRebuildState(true);
         }
         return option;
@@ -268,7 +267,7 @@ public abstract class HoldsOptions extends BuildObject
         //			throw new IllegalArgumentException();
 
         getOptionMap().remove(option.getId());
-        setDirty(true);
+        //setDirty(true);
         setRebuildState(true);
 
         if (!isExtensionElement()) {
@@ -504,35 +503,8 @@ public abstract class HoldsOptions extends BuildObject
      *  O B J E C T   S T A T E   M A I N T E N A N C E
      */
 
-    /**
-     * Implements isDirty() for children of HoldsOptions. Intended to be
-     * called by derived class.
-     */
-    protected boolean isDirty() {
-        // If I need saving, just say yes
-        if (isDirty)
-            return true;
 
-        for (Option option : getOptionCollection())
-            if (option.isDirty())
-                return true;
 
-        return isDirty;
-    }
-
-    /**
-     * Implements setDirty() for children of HoldsOptions. Intended to be
-     * called by derived class.
-     */
-    protected void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-        // Propagate "false" to the children
-        if (!isDirty) {
-            for (Option option : getOptionCollection())
-                if (!option.isExtensionElement())
-                    option.setDirty(false);
-        }
-    }
 
     /**
      * Resolve the element IDs to interface references. Intended to be

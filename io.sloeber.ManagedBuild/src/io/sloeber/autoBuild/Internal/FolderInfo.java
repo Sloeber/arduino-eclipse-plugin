@@ -119,7 +119,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
             subId = ManagedBuildManager.calculateChildId(extTool.getId(), null);
             toolChain.createTool(tool, subId, tool.getName(), false);
         }
-        setDirty(true);
         setRebuildState(true);
     }
 
@@ -258,7 +257,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
             isDirty = cloneInfo.isDirty;
             needsRebuild = cloneInfo.needsRebuild;
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
 
@@ -359,16 +357,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return ICSettingBase.SETTING_FOLDER;
     }
 
-    @Override
-    public boolean isDirty() {
-        if (super.isDirty())
-            return true;
-
-        if (toolChain.isDirty())
-            return true;
-
-        return false;
-    }
 
     @Override
     public boolean needsRebuild() {
@@ -408,7 +396,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 
     ToolChain createToolChain(IToolChain superClass, String Id, String name, boolean isExtensionElement) {
         toolChain = new ToolChain(this, superClass, Id, name, isExtensionElement);
-        setDirty(true);
         return toolChain;
     }
 
@@ -493,19 +480,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         super.propertiesChanged();
     }
 
-    @Override
-    public void setDirty(boolean isDirty) {
-        if (isExtensionElement && isDirty)
-            return;
-
-        super.setDirty(isDirty);
-
-        // Propagate "false" to the children
-        if (!isDirty) {
-            if (toolChain != null)
-                toolChain.setDirty(false);
-        }
-    }
 
     private Map<String, String> typeIdsToMap(String[] ids, IBuildObjectProperties props) {
         Map<String, String> map = new HashMap<>(ids.length);
@@ -912,44 +886,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
             return null;
     }
 
-    @SuppressWarnings("unchecked")
-    private ITool[][] checkDups(ITool[] removed, ITool[] added) {
-        LinkedHashMap<Object, ITool> removedMap = createRealToExtToolMap(removed, false);
-        LinkedHashMap<Object, ITool> addedMap = createRealToExtToolMap(added, true);
-        LinkedHashMap<Object, ITool> rmCopy = (LinkedHashMap<Object, ITool>) removedMap.clone();
-
-        removedMap.keySet().removeAll(addedMap.keySet());
-        addedMap.keySet().removeAll(rmCopy.keySet());
-
-        if (removedMap.size() != 0) {
-            LinkedHashMap<Object, ITool> curMap = createRealToExtToolMap(getTools(), false);
-            for (Iterator<Map.Entry<Object, ITool>> iter = removedMap.entrySet().iterator(); iter.hasNext();) {
-                Map.Entry<Object, ITool> entry = iter.next();
-                Object key = entry.getKey();
-                Object curTool = curMap.get(key);
-                if (curTool != null)
-                    entry.setValue((ITool) curTool);
-                else
-                    iter.remove();
-            }
-        }
-        ITool[][] result = new Tool[2][];
-        result[0] = removedMap.values().toArray(new Tool[removedMap.size()]);
-        result[1] = addedMap.values().toArray(new Tool[addedMap.size()]);
-        return result;
-    }
-
-    private LinkedHashMap<Object, ITool> createRealToExtToolMap(ITool[] tools, boolean extValues) {
-        LinkedHashMap<Object, ITool> map = new LinkedHashMap<>();
-        for (ITool t : tools) {
-            Tool realTool = (Tool) ManagedBuildManager.getRealTool(t);
-            MatchKey<Tool> key = realTool.getMatchKey();
-            ITool toolValue = extValues ? ManagedBuildManager.getExtensionTool(t) : t;
-            if (toolValue != null)
-                map.put(key, toolValue);
-        }
-        return map;
-    }
 
     @Override
     public void modifyToolChain(ITool[] removed, ITool[] added) {
@@ -1010,84 +946,8 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
     //		toolChain.propertiesChanged();
     //	}
 
-    private void adjustTargetTools(ITool removed[], ITool added[]) {
-        if (!isRoot())
-            return;
 
-        Set<String> set = new HashSet<>();
-        String[] ids = toolChain.getTargetToolList();
-        boolean targetToolsModified = false;
-        set.addAll(Arrays.asList(ids));
-
-        for (ITool tool : removed) {
-            Object[] tInfo = getTargetTool(tool);
-
-            if (tInfo == null)
-                continue;
-
-            ITool target = (ITool) tInfo[0];
-            String tId = (String) tInfo[1];
-
-            //            if (BuildSettingsUtil.calcDependentTools(added, target, null).size() != 0)
-            //                continue;
-
-            ITool newTargetTool = findCompatibleTargetTool(target, added);
-            if (newTargetTool == null)
-                continue;
-
-            newTargetTool = ManagedBuildManager.getExtensionTool(newTargetTool);
-            if (newTargetTool == null)
-                continue;
-
-            set.remove(tId);
-            set.add(newTargetTool.getId());
-            targetToolsModified = true;
-        }
-
-        if (targetToolsModified) {
-            toolChain.setTargetToolIds(CDataUtil.arrayToString(set.toArray(new String[set.size()]), ";")); //$NON-NLS-1$
-        }
-    }
-
-    private ITool findCompatibleTargetTool(ITool tool, ITool allTools[]) {
-        IProject project = getParent().getOwner().getProject();
-        String exts[] = ((Tool) tool).getAllOutputExtensions(project);
-        Set<String> extsSet = new HashSet<>(Arrays.asList(exts));
-        ITool compatibleTool = null;
-        for (ITool t : allTools) {
-            String otherExts[] = ((Tool) t).getAllOutputExtensions(project);
-            for (String otherExt : otherExts) {
-                if (extsSet.contains(otherExt)) {
-                    compatibleTool = t;
-                    break;
-                }
-            }
-            if (compatibleTool != null)
-                break;
-        }
-
-        if (compatibleTool == null) {
-            //try to match build output variable
-            Set<String> set = getToolOutputVars(tool);
-            for (ITool t : allTools) {
-                IOutputType types[] = t.getOutputTypes();
-                for (IOutputType type : types) {
-                    String var = type.getBuildVariable();
-                    if (var != null && set.contains(var)) {
-                        compatibleTool = t;
-                        break;
-                    }
-
-                }
-
-                if (compatibleTool != null)
-                    break;
-            }
-        }
-
-        return compatibleTool;
-    }
-
+ 
     private Set<String> getToolOutputVars(ITool tool) {
         Set<String> set = new HashSet<>();
 
@@ -1172,15 +1032,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
     //		return resultMap;
     //	}
 
-    private ITool[] calculateToolsArray(ITool[] removed, ITool[] added) {
-        LinkedHashMap<Object, ITool> map = createRealToExtToolMap(getTools(), false);
-        LinkedHashMap<Object, ITool> removedMap = createRealToExtToolMap(removed, false);
-
-        map.keySet().removeAll(removedMap.keySet());
-        map.putAll(createRealToExtToolMap(added, true));
-
-        return map.values().toArray(new ITool[map.size()]);
-    }
 
     @SuppressWarnings("unchecked")
     private ITool[][] calculateConflictingTools(ITool[] newTools) {
@@ -1280,18 +1131,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return false;
     }
 
-    @Override
-    public String getOutputExtension(String resourceExtension) {
-        String outputExtension = null;
-        ITool[] tools = getFilteredTools();
-        for (ITool tool : tools) {
-            outputExtension = tool.getOutputExtension(resourceExtension);
-            if (outputExtension != null) {
-                return outputExtension;
-            }
-        }
-        return null;
-    }
+
 
     @Override
     public boolean isHeaderFile(String ext) {
@@ -1434,29 +1274,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return true;
     }
 
-    @Override
-    void performPostModificationAdjustments(ToolListModificationInfo info) {
-        adjustTargetTools(info.getRemovedTools(), info.getAddedTools(true));
 
-        super.performPostModificationAdjustments(info);
-    }
-
-    @Override
-    void applyToolsInternal(ITool[] resultingTools, ToolListModificationInfo info) {
-        ITool[] removedTools = info.getRemovedTools();
-
-        for (ITool tool : removedTools) {
-            ITool extTool = ManagedBuildManager.getExtensionTool(tool);
-            if (extTool.getParent() == toolChain.getSuperClass())
-                toolChain.addUnusedChild(extTool);
-        }
-
-        toolChain.setToolsInternal(resultingTools);
-
-        adjustTargetTools(removedTools, info.getAddedTools(true));
-
-        setRebuildState(true);
-    }
 
     @Override
     public boolean isSupported() {
@@ -1465,11 +1283,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
         return false;
     }
 
-    //	private IConfigurationElement getToolConverterElement(ITool fromTool, ITool toTool){
-    //		ToolChain curTc = (ToolChain)getToolChain();
-    //		if(curTc != null){
-    //			return curTc.getConverterModificationElement(fromTool, toTool);
-    //		}
-    //		return null;
-    //	}
+
+
 }

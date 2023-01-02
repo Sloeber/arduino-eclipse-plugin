@@ -109,20 +109,6 @@ public class InputType extends BuildObject implements IInputType {
     private boolean resolved = true;
     private boolean rebuildState;
 
-    //	private class DefaultLanguageInfoCalculator implements ILanguageInfoCalculator {
-    //
-    //		public String getLanguageId(IResourceInfo rcInfo, ITool tool, IInputType type) {
-    //			if(languageId == null && superClass != null)
-    //				return ((InputType)superClass).getLanguageInfoCalculator().getLanguageId(rcInfo, tool, type);
-    //			return languageId;
-    //		}
-    //
-    //		public String getLanguageName(IResourceInfo rcInfo, ITool tool, IInputType type) {
-    //			if(languageName == null && superClass != null)
-    //				return ((InputType)superClass).getLanguageInfoCalculator().getLanguageName(rcInfo, tool, type);
-    //			return languageName;
-    //		}
-    //	}
     /*
      *  C O N S T R U C T O R S
      */
@@ -165,42 +151,6 @@ public class InputType extends BuildObject implements IInputType {
                 AdditionalInput addlInput = new AdditionalInput(this, elem);
                 getAdditionalInputList().add(addlInput);
             }
-        }
-    }
-
-    /**
-     * This constructor is called to create an InputType whose attributes and
-     * children will be
-     * added by separate calls.
-     *
-     * @param parent
-     *            - The parent of the an InputType
-     * @param superClass
-     *            - The superClass, if any
-     * @param Id
-     *            - The id for the new InputType
-     * @param name
-     *            - The name for the new InputType
-     * @param isExtensionElement
-     *            - Indicates whether this is an extension element or a managed
-     *            project element
-     */
-    public InputType(Tool parent, IInputType superClass, String Id, String name, boolean isExtensionElement) {
-        this.parent = parent;
-        this.superClass = superClass;
-        if (this.superClass != null) {
-            superClassId = this.superClass.getId();
-        }
-        setId(Id);
-        setName(name);
-
-        isExtensionInputType = isExtensionElement;
-        if (isExtensionElement) {
-            // Hook me up to the Managed Build Manager
-            ManagedBuildManager.addExtensionInputType(this);
-        } else {
-            setDirty(true);
-            setRebuildState(true);
         }
     }
 
@@ -301,8 +251,6 @@ public class InputType extends BuildObject implements IInputType {
         if (inputType.primaryInput != null) {
             primaryInput = inputType.primaryInput;
         }
-        //dependencyGeneratorElement = inputType.dependencyGeneratorElement;
-        //dependencyGenerator = inputType.dependencyGenerator;
 
         languageId = inputType.languageId;
         languageName = inputType.languageName;
@@ -1700,10 +1648,6 @@ public class InputType extends BuildObject implements IInputType {
 
         for (InputOrder inputOrder : getInputOrderList()) {
             if (inputOrder.needsRebuild())
-                return true;
-        }
-        for (AdditionalInput additionalInput : getAdditionalInputList()) {
-            if (additionalInput.needsRebuild())
                 return true;
         }
 

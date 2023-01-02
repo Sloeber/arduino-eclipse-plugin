@@ -115,7 +115,6 @@ public class ManagedProject extends BuildObject
         // Hook me up
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(owner);
         buildInfo.setManagedProject(this);
-        setDirty(true);
     }
 
     public ManagedProject(ICProjectDescription des) {
@@ -415,7 +414,6 @@ public class ManagedProject extends BuildObject
         //			ResourcesPlugin.getWorkspace().run( remover, null );
         //		}
         //		catch( CoreException e ) {}
-        setDirty(true);
     }
 
     /* (non-Javadoc)
@@ -477,43 +475,7 @@ public class ManagedProject extends BuildObject
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // If I need saving, just say yes
-        if (isDirty)
-            return true;
-
-        //check whether the project - specific macros are dirty
-        //		if(userDefinedMacros != null && userDefinedMacros.isDirty())
-        //			return true;
-
-        //check whether the project - specific environment is dirty
-        //		if(userDefinedEnvironment != null && userDefinedEnvironment.isDirty())
-        //			return true;
-
-        // Otherwise see if any configurations need saving
-        for (IConfiguration cfg : getConfigurationCollection())
-            if (cfg.isDirty())
-                return true;
-
-        return isDirty;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-        // Propagate "false" to the children
-        if (!isDirty)
-            for (IConfiguration cfg : getConfigurationCollection())
-                cfg.setDirty(false);
-    }
-
+  
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedProject#isValid()
      */

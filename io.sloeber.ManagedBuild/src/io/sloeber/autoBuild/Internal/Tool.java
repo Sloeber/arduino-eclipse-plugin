@@ -137,7 +137,7 @@ import io.sloeber.buildProperties.PropertyManager;
  * category.
  */
 public class Tool extends HoldsOptions
-        implements ITool, IOptionCategory, IMatchKeyProvider<Tool>, IRealBuildObjectAssociation {
+        implements ITool, IOptionCategory,IRealBuildObjectAssociation {
 
     public static final String DEFAULT_PATTERN = "${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} ${EXTRA_FLAGS}"; //$NON-NLS-1$
     public static final String DEFAULT_CBS_PATTERN = "${COMMAND}"; //$NON-NLS-1$
@@ -324,7 +324,6 @@ public class Tool extends HoldsOptions
             // Hook me up to the Managed Build Manager
             ManagedBuildManager.addExtensionTool(this);
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -367,7 +366,6 @@ public class Tool extends HoldsOptions
             // Hook me up to the Managed Build Manager
             ManagedBuildManager.addExtensionTool(this);
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -587,7 +585,6 @@ public class Tool extends HoldsOptions
             isDirty = tool.isDirty;
             rebuildState = tool.rebuildState;
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -726,7 +723,6 @@ public class Tool extends HoldsOptions
             iconPathURL = tool.iconPathURL;
         }
 
-        setDirty(true);
         setRebuildState(true);
     }
 
@@ -1255,7 +1251,6 @@ public class Tool extends HoldsOptions
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#createInputType(IInputType, String, String, boolean)
      */
-    @Override
     public IInputType createInputType(IInputType superClass, String Id, String name, boolean isExtensionElement) {
         InputType type = superClass == null || superClass.isExtensionElement()
                 ? new InputType(this, superClass, Id, name, isExtensionElement)
@@ -1269,7 +1264,6 @@ public class Tool extends HoldsOptions
             }
         }
         addInputType(type);
-        setDirty(true);
 
         return type;
     }
@@ -1281,7 +1275,6 @@ public class Tool extends HoldsOptions
     public void removeInputType(IInputType type) {
         getInputTypeList().remove(type);
         getInputTypeMap().remove(type.getId());
-        setDirty(true);
     }
 
     /* (non-Javadoc)
@@ -1373,7 +1366,6 @@ public class Tool extends HoldsOptions
     public IOutputType createOutputType(IOutputType superClass, String Id, String name, boolean isExtensionElement) {
         OutputType type = new OutputType(this, superClass, Id, name, isExtensionElement);
         addOutputType(type);
-        setDirty(true);
         return type;
     }
 
@@ -1384,7 +1376,6 @@ public class Tool extends HoldsOptions
     public void removeOutputType(IOutputType type) {
         getOutputTypeList().remove(type);
         getOutputTypeMap().remove(type.getId());
-        setDirty(true);
     }
 
     /* (non-Javadoc)
@@ -1466,22 +1457,6 @@ public class Tool extends HoldsOptions
         return false;
     }
 
-    @Override
-    public IOutputType getPrimaryOutputType() {
-        IOutputType type = null;
-        IOutputType[] types = getOutputTypes();
-        if (types != null && types.length > 0) {
-            for (int i = 0; i < types.length; i++) {
-                if (i == 0)
-                    type = types[0];
-                if (types[i].getPrimaryOutput() == true) {
-                    type = types[i];
-                    break;
-                }
-            }
-        }
-        return type;
-    }
 
     @Override
     public IOutputType getOutputTypeById(String id) {
@@ -1715,8 +1690,6 @@ public class Tool extends HoldsOptions
                 superClassId = this.superClass.getId();
             }
 
-            if (!isExtensionElement())
-                setDirty(true);
         }
     }
 
@@ -1746,7 +1719,6 @@ public class Tool extends HoldsOptions
     @Override
     public void setIsAbstract(boolean b) {
         isAbstract = b;
-        setDirty(true);
     }
 
     /* (non-Javadoc)
@@ -2093,39 +2065,6 @@ public class Tool extends HoldsOptions
         return outputFlag;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#getOutputPrefix()
-     */
-    @Override
-    public String getOutputPrefix() {
-        // Get the outputPrefix from an OutputType, if any.
-        IOutputType type = null;
-        IOutputType[] types = getOutputTypes();
-        if (types != null && types.length > 0) {
-            for (int i = 0; i < types.length; i++) {
-                if (i == 0)
-                    type = types[0];
-                if (types[i].getPrimaryOutput() == true) {
-                    type = types[i];
-                    break;
-                }
-            }
-        }
-        if (type != null) {
-            return type.getOutputPrefix();
-        }
-
-        // If there are no OutputTypes, use the deprecated Tool attribute
-        if (outputPrefix == null) {
-            // If I have a superClass, ask it
-            if (getSuperClass() != null) {
-                return getSuperClass().getOutputPrefix();
-            } else {
-                return EMPTY_STRING;
-            }
-        }
-        return outputPrefix;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITool#getToolCommand()
@@ -2231,7 +2170,6 @@ public class Tool extends HoldsOptions
      */
     public void setCommandLineGeneratorElement(IConfigurationElement element) {
         commandLineGeneratorElement = element;
-        setDirty(true);
     }
 
     /* (non-Javadoc)
@@ -2380,34 +2318,8 @@ public class Tool extends HoldsOptions
         return natureFilter.intValue();
     }
 
-    public String[] getAllOutputExtensions(IProject project) {
-        IOutputType[] types = getOutputTypes();
-        if (types != null && types.length > 0) {
-            List<String> allExts = new ArrayList<>();
-            for (IOutputType t : types) {
-                String[] exts = ((OutputType) t).getOutputExtensions(this, project);
-                if (exts != null)
-                    for (String s : exts)
-                        allExts.add(s);
-            }
-            if (allExts.size() > 0)
-                return allExts.toArray(new String[allExts.size()]);
-        }
-        // If none, use the outputs specified for the Tool (backwards compatibility)
-        String[] extsList = getOutputsAttribute();
-        if (extsList != null && extsList.length > 0)
-            return extsList;
-        else
-            return EMPTY_STRING_ARRAY;
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getAllOutputExtensions()
-     */
-    @Override
-    public String[] getAllOutputExtensions() {
-        return getAllOutputExtensions(getProject());
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getOutputExtensions()
@@ -2434,51 +2346,7 @@ public class Tool extends HoldsOptions
         return outputExtensions.split(DEFAULT_SEPARATOR);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#getOutputExtension(java.lang.String)
-     */
-    @Override
-    public String getOutputExtension(String inputExtension) {
-        // Search thru the output-types to find one that has a primary input type with this extension
-        IOutputType[] types = getOutputTypes();
-        int i;
-        if (types != null) {
-            for (i = 0; i < types.length; i++) {
-                IInputType inputType = types[i].getPrimaryInputType();
-                if (inputType != null && inputType.isSourceExtension(this, inputExtension)) {
-                    String[] exts = types[i].getOutputExtensions(this);
-                    if (exts != null && exts.length > 0) {
-                        return exts[0];
-                    }
-                }
-            }
-            // Does any input type produce this extension?
-            if (getInputType(inputExtension) != null) {
-                //  Return the first extension of the primary output type
-                IOutputType outType = getPrimaryOutputType();
-                String[] exts = outType.getOutputExtensions(this);
-                if (exts != null && exts.length > 0) {
-                    return exts[0];
-                }
-            }
-        }
-        // If no OutputTypes specified, examine the list of input extensions
-        String[] inputExts = getAllInputExtensions();
-        for (i = 0; i < inputExts.length; i++) {
-            if (inputExts[i].equals(inputExtension)) {
-                String[] exts = getOutputsAttribute();
-                if (exts != null) {
-                    if (i < exts.length) {
-                        return exts[i];
-                    } else {
-                        return exts[exts.length - 1];
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
+ 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITool#getOutputType(java.lang.String)
      */
@@ -2511,24 +2379,7 @@ public class Tool extends HoldsOptions
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setToolCommand(java.lang.String)
-     */
-    @Override
-    public boolean setToolCommand(String cmd) {
-        String currentCommand = getToolCommand();
-        if (cmd == null && command == null)
-            return false;
-        if (cmd == null || currentCommand == null || !cmd.equals(currentCommand)) {
-            command = cmd;
-            isDirty = true;
-            setRebuildState(true);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+ 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#setCommandLinePattern()
      */
@@ -2544,57 +2395,8 @@ public class Tool extends HoldsOptions
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputFlag(java.lang.String)
-     */
-    @Override
-    public void setOutputFlag(String flag) {
-        if (flag == null && outputFlag == null)
-            return;
-        if (outputFlag == null || flag == null || !(flag.equals(outputFlag))) {
-            outputFlag = flag;
-            setRebuildState(true);
-            isDirty = true;
-        }
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputPrefix(java.lang.String)
-     */
-    @Override
-    public void setOutputPrefix(String prefix) {
-        if (prefix == null && outputPrefix == null)
-            return;
-        if (outputPrefix == null || prefix == null || !(prefix.equals(outputPrefix))) {
-            outputPrefix = prefix;
-            setRebuildState(true);
-            isDirty = true;
-        }
-    }
 
-    @Override
-    public void setOutputPrefixForPrimaryOutput(String prefix) {
-        if (prefix != null && prefix.equals(getOutputPrefix()))
-            return;
-
-        IOutputType type = getPrimaryOutputType();
-        if (type == null)
-            setOutputPrefix(prefix);
-        else {
-            setOutputPrefixForType(type, prefix);
-        }
-    }
-
-    private void setOutputPrefixForType(IOutputType type, String prefix) {
-        if (prefix == null) {
-            if (type.getParent() != this)
-                return;
-        }
-        type = getEditableOutputType(type);
-        type.setOutputPrefix(prefix);
-        setRebuildState(true);
-        isDirty = true;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#setOutputsAttribute(java.lang.String)
@@ -2616,7 +2418,6 @@ public class Tool extends HoldsOptions
     public void setAdvancedInputCategory(boolean b) {
         if (advancedInputCategory == null || !(b == advancedInputCategory.booleanValue())) {
             advancedInputCategory = b;
-            setDirty(true);
         }
     }
 
@@ -2627,7 +2428,6 @@ public class Tool extends HoldsOptions
     public void setCustomBuildStep(boolean b) {
         if (customBuildStep == null || !(b == customBuildStep.booleanValue())) {
             customBuildStep = b;
-            setDirty(true);
         }
     }
 
@@ -2637,7 +2437,6 @@ public class Tool extends HoldsOptions
             return;
         if (announcement == null || newText == null || !(newText.equals(announcement))) {
             announcement = newText;
-            setDirty(true);
         }
     }
 
@@ -2645,7 +2444,6 @@ public class Tool extends HoldsOptions
     public void setHidden(boolean hidden) {
         if (isHidden == null || !(hidden == isHidden.booleanValue())) {
             isHidden = hidden;
-            setDirty(true);
         }
     }
 
@@ -2657,13 +2455,6 @@ public class Tool extends HoldsOptions
         return getToolCommandFlags(null, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#getToolFlags()
-     */
-    //@Override
-    public String getToolFlags() throws BuildException {
-        return getToolCommandFlagsString(null, null);
-    }
 
     /**
      * This method used internally by the Tool to obtain the command flags with the
@@ -2882,22 +2673,6 @@ public class Tool extends HoldsOptions
                 BuildMacroProvider.getDefault());
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getToolCommandFlagsString(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public String getToolCommandFlagsString(IPath inputFileLocation, IPath outputFileLocation) throws BuildException {
-        // Get all of the optionList
-        StringBuilder buf = new StringBuilder();
-        String[] flags = getToolCommandFlags(inputFileLocation, outputFileLocation);
-        for (String flag : flags) {
-            if (flag != null) {
-                buf.append(flag + WHITE_SPACE);
-            }
-        }
-
-        return buf.toString().trim();
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#isHeaderFile(java.lang.String)
@@ -3064,83 +2839,7 @@ public class Tool extends HoldsOptions
         return isExtensionTool;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension tool
-        if (isExtensionTool)
-            return false;
 
-        // If I need saving, just say yes
-        if (isDirty)
-            return true;
-
-        // Check my children
-        for (InputType type : getInputTypeList())
-            if (type.isDirty())
-                return true;
-        for (OutputType type : getOutputTypeList())
-            if (type.isDirty())
-                return true;
-
-        // Otherwise see if any options need saving
-        if (super.isDirty())
-            return true;
-
-        return isDirty;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-        // Propagate "false" to options
-        super.setDirty(isDirty);
-        // Propagate "false" to the children
-        if (!isDirty) {
-            for (InputType type : getInputTypeList())
-                type.setDirty(false);
-
-            for (OutputType type : getOutputTypeList())
-                type.setDirty(false);
-        }
-    }
-
-    /* (non-Javadoc)
-     *  Resolve the element IDs to interface references
-     */
-    @Override
-    public void resolveReferences() {
-        if (!resolved) {
-            resolved = true;
-            // Resolve superClass
-            if (superClassId != null && superClassId.length() > 0) {
-                setSuperClassInternal(ManagedBuildManager.getExtensionTool(superClassId));
-                if (getSuperClass() == null) {
-                    // Report error
-                    ManagedBuildManager.outputResolveError("superClass", //$NON-NLS-1$
-                            superClassId, "tool", //$NON-NLS-1$
-                            getId());
-                } else {
-                    //  All of our superclasses must be resolved in order to properly
-                    //  resolve options to option categories
-                    ((Tool) getSuperClass()).resolveReferences();
-                }
-            }
-            //  Resolve HoldsOptions
-            super.resolveReferences();
-            //  Call resolveReferences on our children
-            for (InputType current : getInputTypeList())
-                current.resolveReferences();
-
-            for (OutputType current : getOutputTypeList())
-                current.resolveReferences();
-        }
-    }
 
     /**
      * Look for ${VALUE} in the command string
@@ -3230,7 +2929,6 @@ public class Tool extends HoldsOptions
             return;
         if (convertToId == null || this.convertToId == null || !convertToId.equals(this.convertToId)) {
             this.convertToId = convertToId;
-            setDirty(true);
         }
         return;
     }
@@ -3261,7 +2959,6 @@ public class Tool extends HoldsOptions
         if (versionsSupported == null || this.versionsSupported == null
                 || !versionsSupported.equals(this.versionsSupported)) {
             this.versionsSupported = versionsSupported;
-            setDirty(true);
         }
         return;
     }
@@ -3539,31 +3236,7 @@ public class Tool extends HoldsOptions
         return super.needsRebuild();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.internal.core.HoldsOptions#setRebuildState(boolean)
-     */
-    @Override
-    public void setRebuildState(boolean rebuild) {
-        if (isExtensionElement() && rebuild)
-            return;
 
-        if (rebuildState != rebuild) {
-            rebuildState = rebuild;
-            saveRebuildState();
-        }
-
-        if (!rebuild) {
-            super.setRebuildState(rebuild);
-
-            if (!rebuild) {
-                for (InputType type : getInputTypeList())
-                    type.setRebuildState(false);
-
-                for (OutputType type : getOutputTypeList())
-                    type.setRebuildState(false);
-            }
-        }
-    }
 
     private void saveRebuildState() {
         PropertyManager.getInstance().setProperty(this, REBUILD_STATE, Boolean.toString(rebuildState));
@@ -3718,24 +3391,6 @@ public class Tool extends HoldsOptions
         return newType;
     }
 
-    @Override
-    public IOutputType getEditableOutputType(IOutputType base) {
-        if (base.getParent() == this)
-            return base;
-
-        IOutputType extType = base;
-        for (; extType != null && !extType.isExtensionElement(); extType = extType.getSuperClass()) {
-            // empty body - loop to find extension
-        }
-        String id;
-        if (extType != null) {
-            id = ManagedBuildManager.calculateChildId(extType.getId(), null);
-        } else {
-            id = ManagedBuildManager.calculateChildId(getId(), null);
-        }
-        IOutputType newType = createOutputType(base, id, base.getName(), false);
-        return newType;
-    }
 
     @Override
     public boolean supportsType(IBuildPropertyType type) {
@@ -3858,19 +3513,6 @@ public class Tool extends HoldsOptions
         return supportsManagedBuild.booleanValue();
     }
 
-    @Override
-    public MatchKey<Tool> getMatchKey() {
-        if (isAbstract())
-            return null;
-        if (!isExtensionTool)
-            return null;
-        return new MatchKey<>(this);
-    }
-
-    @Override
-    public void setIdenticalList(List<Tool> list) {
-        identicalList = list;
-    }
 
     public String getNameAndVersion() {
         String name = getName();
@@ -3914,11 +3556,6 @@ public class Tool extends HoldsOptions
             this.parent = rcInfo;
         else
             this.parent = ((IFolderInfo) rcInfo).getToolChain();
-    }
-
-    @Override
-    public List<Tool> getIdenticalList() {
-        return identicalList;
     }
 
     @Override
@@ -4263,13 +3900,6 @@ public class Tool extends HoldsOptions
         return num;
     }
 
-    @Override
-    public int compareTo(Tool other) {
-        if (other.isSystemObject() != isSystemObject())
-            return isSystemObject() ? 1 : -1;
-
-        return getSuperClassNum() - other.getSuperClassNum();
-    }
 
     @Override
     public IRealBuildObjectAssociation getExtensionObject() {

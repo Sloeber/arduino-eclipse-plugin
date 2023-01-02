@@ -171,7 +171,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         BuildConfigurationData baseCfgData = (BuildConfigurationData) baseData;
         IConfiguration baseCfg = baseCfgData.getConfiguration();
         BuildConfigurationData appliedCfgData;
-        if (context.isBaseDataCached() && !baseCfg.isDirty()) {
+        if (context.isBaseDataCached()) {//JABA Assume not dirty  && !baseCfg.isDirty()
             appliedCfgData = baseCfgData;
             context.setConfigurationSettingsFlags(IModificationContext.CFG_DATA_STORAGE_UNMODIFIED
                     | IModificationContext.CFG_DATA_SETTINGS_UNMODIFIED);
@@ -422,11 +422,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         return cfg.getConfigurationData();
     }
 
-    public static Configuration getClearPreference(String id) {
-        Configuration cfg = createEmptyPrefConfiguration(id, null);
-        cfg = adjustPreferenceConfig(cfg);
-        return cfg;
-    }
+
 
     private static Configuration updatePreferenceOnLoad(Configuration cfg, ICConfigurationDescription cfgDescription) {
         if (cfg == null) {

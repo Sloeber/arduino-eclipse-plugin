@@ -453,24 +453,6 @@ public class OptionCategory extends BuildObject implements IOptionCategory {
         return isExtensionOptionCategory;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IOptionCategory#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension OptionCategory
-        if (isExtensionOptionCategory)
-            return false;
-        return isDirty;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IIOptionCategory#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        this.isDirty = isDirty;
-    }
 
     public void resolveReferences() {
         boolean error = false;

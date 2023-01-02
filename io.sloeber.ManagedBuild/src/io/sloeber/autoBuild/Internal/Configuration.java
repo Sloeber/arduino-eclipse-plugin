@@ -128,7 +128,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
 
     //  Miscellaneous
     private boolean isExtensionConfig = false;
-    private boolean isDirty = false;
     private boolean rebuildNeeded = false;
     private boolean resolved = true;
     private boolean isTemporary = false;
@@ -303,8 +302,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
                 }
             }
         }
-
-        setDirty(false);
     }
 
     private static ICSourceEntry[] createSourceEntries(ICSourceEntry[] curEntries, List<IPath> pathList,
@@ -482,14 +479,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             }
         }
 
-        setDirty(false);
-
-        //		Preferences prefs = getPreferences(INTERNAL_BUILDER);
-        //
-        //		internalBuilderEnabled = prefs != null ?
-        //				prefs.getBoolean(INTERNAL_BUILDER_ENABLED, false) : false;
-        //		internalBuilderIgnoreErr = prefs != null ?
-        //				prefs.getBoolean(INTERNAL_BUILDER_IGNORE_ERR, true) : true;
     }
 
     public Configuration(ManagedProject managedProject, IToolChain tCh, String id, String name) {
@@ -623,7 +612,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
 
             propertiesChanged();
         }
-        setDirty(true);
         setRebuildState(true);
     }
 
@@ -765,11 +753,9 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         if (copyIds) {
             rebuildNeeded = cloneConfig.rebuildNeeded;
             resourceChangeState = cloneConfig.resourceChangeState;
-            isDirty = cloneConfig.isDirty;
         } else {
             if (cloneConfig.isExtensionConfig)
                 exportArtifactInfo();
-            setDirty(true);
             setRebuildState(true);
         }
 
@@ -1007,8 +993,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             ICStorageElement el = element.createChild(SOURCE_ENTRIES);
             LanguageSettingEntriesSerializer.serializeEntries(sourceEntries, el);
         }
-        // I am clean now
-        setDirty(false);
     }
 
     /*
@@ -1134,11 +1118,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return tool.getToolCommand();
     }
 
-    @Override
-    public void setToolCommand(ITool tool, String command) {
-        // TODO:  Do we need to verify that the tool is part of the configuration?
-        tool.setToolCommand(command);
-    }
 
     @Override
     public IOption setOption(IHoldsOptions holder, IOption option, boolean value) throws BuildException {
@@ -1162,7 +1141,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         if (resConfig.getPath().segmentCount() == 0)
             rootFolderInfo = (FolderInfo) resConfig;
         rcInfos.addResourceInfo(resConfig);
-        isDirty = true;
         //		rebuildNeeded = true;
     }
 
@@ -1173,7 +1151,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         rcInfos.removeResourceInfo(resConfig.getPath());
         ((ResourceInfo) resConfig).removed();
         BuildSettingsUtil.disconnectDepentents(this, tools);
-        isDirty = true;
         rebuildNeeded = true;
     }
     /*
@@ -1474,8 +1451,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
                     setRebuildState(true);
                 }
             }
-            isDirty = true;
-            //			exportArtifactInfo();
         }
     }
 
@@ -1515,8 +1490,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
                     setRebuildState(true);
                 }
             }
-            //			rebuildNeeded = true;
-            isDirty = true;
             exportArtifactInfo();
         }
     }
@@ -1528,7 +1501,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (currentIds == null || ids == null || !(currentIds.equals(ids))) {
             errorParserIds = ids;
-            isDirty = true;
         }
     }
 
@@ -1538,7 +1510,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (cleanCommand == null || command == null || !cleanCommand.equals(command)) {
             cleanCommand = command;
-            isDirty = true;
         }
     }
 
@@ -1548,7 +1519,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (this.description == null || description == null || !description.equals(this.description)) {
             this.description = description;
-            isDirty = true;
         }
     }
 
@@ -1599,8 +1569,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (currentPrebuildStep == null || step == null || !currentPrebuildStep.equals(step)) {
             prebuildStep = step;
-            //			rebuildNeeded = true;
-            isDirty = true;
         }
     }
 
@@ -1611,8 +1579,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (currentPostbuildStep == null || step == null || !currentPostbuildStep.equals(step)) {
             postbuildStep = step;
-            //    		rebuildNeeded = true;
-            isDirty = true;
         }
     }
 
@@ -1625,7 +1591,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
                 || !currentPreannouncebuildStep.equals(announceStep)) {
             preannouncebuildStep = announceStep;
             //    		rebuildNeeded = true;
-            isDirty = true;
         }
     }
 
@@ -1636,8 +1601,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             return;
         if (currentAnnounceStep == null || announceStep == null || !currentAnnounceStep.equals(announceStep)) {
             postannouncebuildStep = announceStep;
-            //    		rebuildNeeded = true;
-            isDirty = true;
         }
     }
 
@@ -1663,25 +1626,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return isExtensionConfig;
     }
 
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension configuration
-        if (isExtensionConfig)
-            return false;
-
-        // If I need saving, just say yes
-        if (isDirty)
-            return true;
-
-        // Otherwise see if any children need saving
-        IResourceInfo infos[] = rcInfos.getResourceInfos();
-
-        for (int i = 0; i < infos.length; i++) {
-            if (infos[i].isDirty())
-                return true;
-        }
-        return isDirty;
-    }
 
     @Override
     public boolean needsRebuild() {
@@ -1709,19 +1653,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return false;
     }
 
-    @Override
-    public void setDirty(boolean isDirty) {
-        // Override the dirty flag
-        this.isDirty = isDirty;
-        // Propagate "false" to the children
-        if (!isDirty) {
-            IResourceInfo infos[] = rcInfos.getResourceInfos();
 
-            for (int i = 0; i < infos.length; i++) {
-                infos[i].setDirty(false);
-            }
-        }
-    }
 
     @Override
     public void setRebuildState(boolean rebuild) {
@@ -1903,13 +1835,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         }
     }
 
-    public void setParent(IConfiguration parent) {
-        if (this.parent != parent) {
-            this.parent = parent;
-            if (!isExtensionElement())
-                setDirty(true);
-        }
-    }
 
     @Override
     public ITool calculateTargetTool() {
@@ -2367,11 +2292,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         if (Arrays.equals(getSourceEntries(), entries))
             return;
         sourceEntries = entries != null ? (ICSourceEntry[]) entries.clone() : null;
-        //		for(int i = 0; i < sourcePaths.length; i++){
-        //			sourcePaths[i] = sourcePaths[i].makeRelative();
-        //		}
         if (setRebuildState) {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -2449,22 +2370,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return getToolChain().getBuilder();
     }
 
-    @Override
-    public String getOutputPrefix(String outputExtension) {
-        // Treat null extensions as empty string
-        String ext = outputExtension == null ? EMPTY_STRING : outputExtension;
-
-        // Get all the tools for the current config
-        String flags = EMPTY_STRING;
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
-            if (tool.producesFileType(ext)) {
-                flags = tool.getOutputPrefix();
-            }
-        }
-        return flags;
-    }
 
     public ICConfigurationDescription getConfigurationDescription() {
         return fCfgDes;
@@ -2561,10 +2466,7 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
         return false;
     }
 
-    @Override
-    public String getOutputExtension(String resourceExtension) {
-        return getRootFolderInfo().getOutputExtension(resourceExtension);
-    }
+
 
     @Override
     public String getOutputFlag(String outputExt) {
@@ -3178,4 +3080,5 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     public boolean isExtensionBuildObject() {
         return isExtensionElement();
     }
+
 }

@@ -367,18 +367,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public void setSecondaryOutputs(String ids);
 
-    /**
-     * Returns <code>true</code> if this tool-chain has changes that need to
-     * be saved in the project file, else <code>false</code>.
-     *
-     * @return boolean
-     */
-    public boolean isDirty();
-
-    /**
-     * Sets the element's "dirty" (have I been modified?) flag.
-     */
-    public void setDirty(boolean isDirty);
 
     /**
      * Returns <code>true</code> if this tool-chain was loaded from a manifest file,

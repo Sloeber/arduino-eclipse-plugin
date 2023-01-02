@@ -342,14 +342,6 @@ public interface IConfiguration
      */
     public boolean isHeaderFile(String ext);
 
-    /**
-     * Returns <code>true</code> if this configuration has changes that need to
-     * be saved in the project file, else <code>false</code>.
-     * Should not be called for an extension configuration.
-     *
-     * @return boolean
-     */
-    public boolean isDirty();
 
     /**
      * Returns <code>true</code> if this configuration was loaded from a manifest
@@ -433,10 +425,6 @@ public interface IConfiguration
      */
     public void setCleanCommand(String command);
 
-    /**
-     * Sets the element's "dirty" (have I been modified?) flag.
-     */
-    public void setDirty(boolean isDirty);
 
     /**
      * Sets the semicolon separated list of error parser ids
@@ -513,16 +501,6 @@ public interface IConfiguration
      */
     void setRebuildState(boolean rebuild);
 
-    /**
-     * Overrides the tool command for a tool defined in this configuration's
-     * tool-chain.
-     *
-     * @param tool
-     *            The tool that will have its command modified.
-     * @param command
-     *            The command
-     */
-    public void setToolCommand(ITool tool, String command);
 
     /**
      * Returns <code>true</code> if the configuration's tool-chain is supported on
@@ -632,11 +610,8 @@ public interface IConfiguration
 
     IBuilder getEditableBuilder();
 
-    String getOutputPrefix(String outputExtension);
-
     boolean isSystemObject();
 
-    String getOutputExtension(String resourceExtension);
 
     String getOutputFlag(String outputExt);
 
@@ -664,4 +639,5 @@ public interface IConfiguration
     void setBuildArtefactType(String id) throws BuildException;
 
     public void addResourceChangeState(int state);
+
 }

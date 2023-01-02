@@ -71,18 +71,6 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public IBuildObject getParent();
 
-	/**
-	 * Creates a child InputType for this tool.
-	 *
-	 * @param superClass The superClass, if any
-	 * @param Id The id for the new InputType
-	 * @param name The name for the new InputType
-	 * @param isExtensionElement Indicates whether this is an extension element or a managed project element
-	 *
-	 * @return IInputType
-	 * @since 3.0
-	 */
-	public IInputType createInputType(IInputType superClass, String Id, String name, boolean isExtensionElement);
 
 	/**
 	 * Removes an InputType from the tool's list.
@@ -219,17 +207,6 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public IOutputType getOutputType(String outputExtension);
 
-	/**
-	 * Returns the primary <code>IOutputType</code> in this tool
-	 *
-	 * <p>If the receiver has no OutputTypes,
-	 * the method returns <code>null</code>. It is the responsibility of the
-	 * caller to verify the return value.
-	 *
-	 * @return <code>IOutputType</code>
-	 * @since 3.0
-	 */
-	public IOutputType getPrimaryOutputType();
 
 	/**
 	 * Returns the <code>ITool</code> that is the superclass of this
@@ -334,13 +311,7 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public int getNatureFilter();
 
-	/**
-	 * Returns the array of all valid output extensions this tool can create.
-	 * The array may be empty but will never be <code>null</code>.
-	 *
-	 * @return String[]
-	 */
-	public String[] getAllOutputExtensions();
+
 
 
 
@@ -352,14 +323,7 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public String[] getOutputsAttribute();
 
-	/**
-	 * Answer the output extension the receiver will create from the input,
-	 * or <code>null</code> if the tool does not understand that extension.
-	 *
-	 * @param inputExtension The extension of the source file.
-	 * @return String
-	 */
-	public String getOutputExtension(String inputExtension);
+
 
 	/**
 	 * Sets all of the output extensions that the receiver can build,
@@ -377,29 +341,9 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public String getOutputFlag();
 
-	/**
-	 * Sets the argument that must be passed to a specific tool in order to
-	 * control the name of the output artifact. For example, the GCC compile and
-	 * linker use '-o', while the archiver does not.
-	 */
-	public void setOutputFlag(String flag);
 
-	/**
-	 * Answers the prefix that the tool should prepend to the name of the build artifact.
-	 * For example, a librarian usually prepends 'lib' to the target.a
-	 * @return String
-	 */
-	public String getOutputPrefix();
 
-	/**
-	 * Sets the prefix that the tool should prepend to the name of the build artifact.
-	 * For example, a librarian usually prepends 'lib' to the target.a
-	 *
-	 * @see #setOutputPrefixForPrimaryOutput(String)
-	 */
-	public void setOutputPrefix(String prefix);
 
-	public void setOutputPrefixForPrimaryOutput(String prefix);
 
 	/**
 	 * Returns <code>true</code> if the Tool wants the MBS to display the Advanced
@@ -448,12 +392,6 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public String getToolCommand();
 
-	/**
-	 * Sets the command-line invocation command defined for this tool.
-	 *
-	 * @return boolean  if <code>true</code>, then the tool command was modified
-	 */
-	public boolean setToolCommand(String command);
 
 	/**
 	 * Returns command line pattern for this tool
@@ -502,18 +440,6 @@ public interface ITool extends IHoldsOptions {
 	public String[] getToolCommandFlags(IPath inputFileLocation, IPath outputFileLocation) throws BuildException;
 
 	/**
-	 * Returns the command line arguments that have been specified for
-	 * the tool.
-	 * The string contains build macros resolved to the makefile format.
-	 * That is if a user has chosen to expand all macros in the buildfile,
-	 * the string contains all macro references resolved, otherwise, if a user has
-	 * chosen to keep the environment build macros unresolved, the string contains
-	 * the environment macro references converted to the buildfile variable format,
-	 * all other macro references are resolved
-	 */
-	public String getToolCommandFlagsString(IPath inputFileLocation, IPath outputFileLocation) throws BuildException;
-
-	/**
 	 * Options are organized into categories for UI purposes.
 	 * These categories are organized into a tree.  This is the root
 	 * of that tree.
@@ -560,18 +486,9 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public boolean producesFileType(String outputExtension);
 
-	/**
-	 * Returns <code>true</code> if this tool has changes that need to
-	 * be saved in the project file, else <code>false</code>.
-	 *
-	 * @return boolean
-	 */
-	public boolean isDirty();
 
-	/**
-	 * Sets the element's "dirty" (have I been modified?) flag.
-	 */
-	public void setDirty(boolean isDirty);
+
+
 
 	/**
 	 * Returns <code>true</code> if this tool was loaded from a manifest file,
@@ -628,7 +545,6 @@ public interface ITool extends IHoldsOptions {
 
 	IInputType getEditableInputType(IInputType base);
 
-	IOutputType getEditableOutputType(IOutputType base);
 
 	boolean isEnabled();
 

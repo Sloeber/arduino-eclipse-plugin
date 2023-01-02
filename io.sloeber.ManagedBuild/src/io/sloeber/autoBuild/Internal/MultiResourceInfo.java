@@ -132,16 +132,6 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return fRis[curr].getTools();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        for (int i = 0; i < fRis.length; i++)
-            if (fRis[i].isDirty())
-                return true;
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#isExcluded()
@@ -198,14 +188,7 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean dirty) {
-        for (int i = 0; i < fRis.length; i++)
-            fRis[i].setDirty(dirty);
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#setExclude(boolean)
@@ -225,32 +208,11 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return s;
     }
 
-    public void setToolsCommand(ITool tool, String s) {
-        setTool(tool, s, MODE_COMMAND);
-    }
 
-    public void setCommandLinePattern(ITool tool, String s) {
-        setTool(tool, s, MODE_CMDLINE);
-    }
 
-    private void setTool(ITool tool, String s, int mode) {
-        String ext = tool.getDefaultInputExtension();
-        for (int i = 0; i < fRis.length; i++) {
-            ITool[] ts = fRis[i].getTools();
-            for (int j = 0; j < ts.length; j++) {
-                if (ext != null && !ext.equals(ts[j].getDefaultInputExtension()))
-                    continue;
-                switch (mode) {
-                case MODE_COMMAND:
-                    ts[j].setToolCommand(s);
-                    break;
-                case MODE_CMDLINE:
-                    ts[j].setCommandLinePattern(s);
-                    break;
-                }
-            }
-        }
-    }
+
+
+
 
     private IOption setOption(IHoldsOptions parent, IOption option, Object value, int mode) throws BuildException {
         IOption op = null;

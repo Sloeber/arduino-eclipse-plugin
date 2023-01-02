@@ -591,63 +591,7 @@ public class ManagebBuildCommon {
 
     }
 
-    //TOFIX this code should be in outputType.getOutputName
-    static public IOutputNameProvider getJABANameProvider(IConfiguration cConf, IPath referencedFrom,
-            IOutputType iType) {
-        //        OutputType type = (OutputType) iType;
-        //        IConfigurationElement element = type.getNameProviderElement();
-        //        if (element != null) {
-        //            try {
-        //                if (element.getAttribute(IOutputType.NAME_PROVIDER) != null) {
-        //                    return (INewManagedOutputNameProvider) element.createExecutableExtension(IOutputType.NAME_PROVIDER);
-        //                }
-        //            } catch (@SuppressWarnings("unused") CoreException e) {
-        //                //ignore errors
-        //            }
-        //        }
-        //        String[] outputNames = type.getOutputNames();
-        //        if (outputNames != null && outputNames.length > 0) {
-        //            String outputName = outputNames[0];
-        //            String expanded = outputName;
-        //            try {
-        //                expanded = resolveValue(outputName, EMPTY_STRING, WHITESPACE, IBuildMacroProvider.CONTEXT_CONFIGURATION,
-        //                        cConf);
-        //            } catch (BuildMacroException e) {
-        //                // default will do
-        //                e.printStackTrace();
-        //            }
-        //            IPath expandedPath = new Path(expanded);
-        //            if (expandedPath.segmentCount() > 1) {
-        //                expandedPath = GetNiceFileName(referencedFrom, new Path(expanded));
-        //            }
-        //            final IPath ret = expandedPath;
-        //            return new INewManagedOutputNameProvider() {
-        //
-        //                @Override
-        //                public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
-        //                    return ret;
-        //                }
-        //            };
-        //        }
-        //
-        //        String[] outputExtensions = type.getOutputExtensionsAttribute();
-        //        if (outputExtensions != null && outputExtensions.length > 0) {
-        //            String outputExtension = outputExtensions[0];
-        //            return new INewManagedOutputNameProvider() {
-        //
-        //                @Override
-        //                public IPath getOutputName(IProject project, IConfiguration cConf, ITool tool, IPath inputName) {
-        //                    ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-        //                    ICConfigurationDescription confDesc = prjDesc.getConfigurationByName(cConf.getName());
-        //                    String expanded = getBuildEnvironmentVariable(confDesc, inputName.toString(), inputName.toString(),
-        //                            true);
-        //                    return new Path(expanded).addFileExtension(outputExtension);
-        //                }
-        //            };
-        //        }
-
-        return null;
-    }
+ 
 
     static public String GetNiceFileName(IFile buildPath, IFile path) {
         return GetNiceFileName(buildPath.getLocation(), path.getLocation()).toOSString();

@@ -140,20 +140,6 @@ public class BuildSettingsUtil {
 		}
 	}
 
-	public static boolean applyConfiguration(IConfiguration cfg, ICProjectDescription des, boolean force)
-			throws CoreException {
-		boolean updated = false;
-		ICConfigurationDescription cfgDes = des.getConfigurationById(cfg.getId());
-		if (cfgDes == null) {
-			des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, cfg.getConfigurationData());
-			updated = true;
-		} else if (force || cfg.isDirty()) {
-			cfgDes.setConfigurationData(ManagedBuildManager.CFG_DATA_PROVIDER_ID, cfg.getConfigurationData());
-			updated = true;
-		}
-
-		return updated;
-	}
 
 	public static ICProjectDescription checkSynchBuildInfo(IProject project) throws CoreException {
 		IManagedBuildInfo info = ManagedBuildManager.getBuildInfo(project, false);
@@ -170,23 +156,13 @@ public class BuildSettingsUtil {
 			boolean force) throws CoreException {
 		IManagedProject mProj = info.getManagedProject();
 
-		IConfiguration cfgs[] = mProj.getConfigurations();
 		ICConfigurationDescription cfgDess[] = projDes.getConfigurations();
-
-		for (int i = 0; i < cfgs.length; i++) {
-			IConfiguration cfg = cfgs[i];
-			//			try {
-			applyConfiguration(cfg, projDes, force);
-			//			} catch (CoreException e) {
-			//			}
-		}
 
 		for (int i = 0; i < cfgDess.length; i++) {
 			ICConfigurationDescription cfgDes = cfgDess[i];
 			IConfiguration cfg = mProj.getConfiguration(cfgDes.getId());
 			if (cfg == null) {
 				projDes.removeConfiguration(cfgDes);
-				//				mProj.removeConfiguration(cfgDes.getId());
 			}
 		}
 

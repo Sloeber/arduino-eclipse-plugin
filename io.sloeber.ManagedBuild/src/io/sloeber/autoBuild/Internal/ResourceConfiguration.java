@@ -107,7 +107,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             getToolMap().put(toolChild.getId(), toolChild);
         }
 
-        setDirty(false);
     }
 
     /**
@@ -143,7 +142,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         String rebuild = PropertyManager.getInstance().getProperty(this, REBUILD_STATE);
         if (rebuild == null || Boolean.valueOf(rebuild).booleanValue())
             setRebuildState(true);
-        setDirty(false);
     }
 
     public ResourceConfiguration(FolderInfo folderInfo, ITool baseTool, String id, String resourceName, IPath path) {
@@ -158,7 +156,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         if (folderInfo.getParent() != null)
             setManagedBuildRevision(folderInfo.getParent().getManagedBuildRevision());
 
-        setDirty(false);
         toolsToInvoke = ""; //$NON-NLS-1$
         rcbsApplicability = KIND_DISABLE_RCBS_TOOL;
 
@@ -323,7 +320,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             isDirty = cloneConfig.isDirty;
             needsRebuild = cloneConfig.needsRebuild;
         } else {
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -354,7 +350,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             }
         }
 
-        setDirty(true);
         setRebuildState(true);
     }
 
@@ -453,8 +448,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             ((Tool) tool).serialize(toolElement);
         }
 
-        // I am clean now
-        setDirty(false);
     }
 
     /*
@@ -715,7 +708,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
          */
         if (rcbsApplicability == null || !(rcbsApplicability.intValue() == newValue)) {
             rcbsApplicability = newValue;
-            setDirty(true);
             setRebuildState(true);
         }
     }
@@ -742,45 +734,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         return isExtensionResourceConfig;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceConfiguration#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // This shouldn't be called for an extension tool-chain
-        if (isExtensionResourceConfig)
-            return false;
 
-        // If I need saving, just say yes
-        if (super.isDirty())
-            return true;
-
-        // Otherwise see if any tools need saving
-        for (ITool toolChild : getToolList()) {
-            if (toolChild.isDirty())
-                return true;
-        }
-
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceConfiguration#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        if (isExtensionResourceConfig)
-            return;
-
-        super.setDirty(isDirty);
-
-        // Propagate "false" to the children
-        if (!isDirty) {
-            for (ITool toolChild : getToolList()) {
-                toolChild.setDirty(false);
-            }
-        }
-    }
 
     /* (non-Javadoc)
      *  Resolve the element IDs to interface references
@@ -801,7 +755,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
     public ITool createTool(ITool superClass, String id, String name, boolean isExtensionElement) {
         Tool tool = new Tool(this, superClass, id, name, isExtensionElement);
         addTool(tool);
-        setDirty(true);
         return tool;
     }
 
@@ -821,14 +774,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         //		setExclude(false);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceConfiguration#setToolCommand(org.eclipse.cdt.managedbuilder.core.ITool, java.lang.String)
-     */
-    @Override
-    public void setToolCommand(ITool tool, String command) {
-        // TODO:  Do we need to verify that the tool is part of the configuration?
-        tool.setToolCommand(command);
-    }
+
 
     //	private IBuildObject getHoldersParent(IOption option) {
     //		IHoldsOptions holder = option.getOptionHolder();
@@ -1051,22 +997,6 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
         return false;
     }
 
-    @Override
-    void applyToolsInternal(ITool[] resultingTools, ToolListModificationInfo info) {
-        List<ITool> list = getToolList();
-        Map<String, ITool> map = getToolMap();
-
-        list.clear();
-        map.clear();
-
-        list.addAll(Arrays.asList(resultingTools));
-        for (int i = 0; i < resultingTools.length; i++) {
-            ITool tool = resultingTools[i];
-            map.put(tool.getId(), tool);
-        }
-
-        setRebuildState(true);
-    }
 
     @Override
     public boolean isSupported() {
@@ -1082,4 +1012,7 @@ public class ResourceConfiguration extends ResourceInfo implements IFileInfo {
             return foInfo.isSupported();
         return false;
     }
+
+
+
 }

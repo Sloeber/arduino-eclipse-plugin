@@ -298,15 +298,11 @@ public class MakeRule {
         boolean needExplicitRuleForFile = false;
         boolean needExplicitDependencyCommands = false;
         boolean resourceNameRequiresExplicitRule = containsSpecialCharacters(sourceLocation.getLocation().toOSString());
-        needExplicitRuleForFile = resourceNameRequiresExplicitRule
-        //                || BuildMacroProvider.getReferencedExplitFileMacros(myTool).length > 0
-        //                || BuildMacroProvider.getReferencedExplitFileMacros(cmd, IBuildMacroProvider.CONTEXT_CONFIGURATION,
-        //                        confDesc).length > 0;
-        ;
+        needExplicitRuleForFile = resourceNameRequiresExplicitRule;
 
         String outflag = myTool.getOutputFlag();
         String buildCmd = cmd + WHITESPACE + flags.toString().trim() + WHITESPACE + outflag + WHITESPACE
-                + myTool.getOutputPrefix() + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
+                 + OUT_MACRO + otherPrimaryOutputs + WHITESPACE + IN_MACRO;
         if (needExplicitRuleForFile || needExplicitDependencyCommands) {
             buildCmd = expandCommandLinePattern(cmd, flags, outflag, OUT_MACRO + otherPrimaryOutputs, niceNameList,
                     getToolCommandLinePattern(config, myTool));
@@ -457,7 +453,7 @@ public class MakeRule {
         command = command.replace(makeVariable(CMD_LINE_PRM_NAME), commandName);
         command = command.replace(makeVariable(FLAGS_PRM_NAME), flagsStr);
         command = command.replace(makeVariable(OUTPUT_FLAG_PRM_NAME), outputFlag);
-        command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
+       // command = command.replace(makeVariable(OUTPUT_PREFIX_PRM_NAME), myTool.getOutputPrefix());
         command = command.replace(makeVariable(OUTPUT_PRM_NAME), quotedOutputName);
         command = command.replace(makeVariable(INPUTS_PRM_NAME), inputsStr);
 

@@ -93,14 +93,12 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
 
     private volatile IManagedProject managedProject;
     private volatile ICProject cProject;
-    private volatile boolean isDirty;
     private volatile boolean isValid = false;
     private volatile IResource owner;
     private volatile boolean rebuildNeeded;
     private volatile String version;
     private volatile IConfiguration selectedConfig;
 
-    private volatile boolean isReadOnly = false;
     private volatile boolean bIsContainerInited = false;
 
     /**
@@ -111,7 +109,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         cProject = CoreModel.getDefault().create(owner.getProject());
 
         // Does not need a save but should be rebuilt
-        isDirty = false;
         rebuildNeeded = true;
     }
 
@@ -332,64 +329,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return config.getFilteredTools();
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getFlagsForSource(java.lang.String)
-     */
-    //@Override
-    public String getFlagsForSource(String extension) {
-        return getToolFlagsForSource(extension, null, null);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getToolFlagsForSource(java.lang.String, org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public String getToolFlagsForSource(String extension, IPath inputLocation, IPath outputLocation) {
-        // Get all the tools for the current config
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
-            if (tool != null && tool.buildsFileType(extension)) {
-                try {
-                    return tool.getToolCommandFlagsString(inputLocation, outputLocation);
-                } catch (BuildException e) {
-                    return null;
-                }
-            }
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getFlagsForConfiguration(java.lang.String)
-     */
-    //@Override
-    public String getFlagsForConfiguration(String extension) {
-        return getToolFlagsForConfiguration(extension, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getToolFlagsForConfiguration(java.lang.String, org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public String getToolFlagsForConfiguration(String extension, IPath inputLocation, IPath outputLocation) {
-        // Treat null extensions as an empty string
-        String ext = extension == null ? "" : extension; //$NON-NLS-1$
-
-        // Get all the tools for the current config
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
-            if (tool.producesFileType(ext)) {
-                try {
-                    return tool.getToolCommandFlagsString(inputLocation, outputLocation);
-                } catch (BuildException e) {
-                    return null;
-                }
-            }
-        }
-        return null;
-    }
 
     private ArrayList<String> getIncludePathEntries() {
         // Extract the resolved paths from the project (if any)
@@ -529,23 +469,13 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return name;
     }
 
-    @Override
-    public String getOutputExtension(String resourceExtension) {
-        return getDefaultConfiguration().getOutputExtension(resourceExtension);
-    }
+
 
     @Override
     public String getOutputFlag(String outputExt) {
         return getDefaultConfiguration().getOutputFlag(outputExt);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getOutputPrefix(java.lang.String)
-     */
-    @Override
-    public String getOutputPrefix(String outputExtension) {
-        return getDefaultConfiguration().getOutputPrefix(outputExtension);
-    }
 
     /**
      * @return IResource owner
@@ -656,22 +586,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        // If the info has been flagged dirty, answer true
-        if (isDirty) {
-            return true;
-        }
-
-        // Check if the project is dirty
-        if (managedProject != null) {
-            return managedProject.isDirty();
-        }
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isValid()
@@ -682,13 +596,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return isValid;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isReadOnly()
-     */
-    @Override
-    public boolean isReadOnly() {
-        return isReadOnly;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#isHeaderFile(java.lang.String)
@@ -806,18 +713,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setDirty(boolean)
-     */
-    @Override
-    public void setDirty(boolean isDirty) {
-        // Reset the dirty status here
-        // and in the managed project
-        if (managedProject != null) {
-            managedProject.setDirty(isDirty);
-        }
-        this.isDirty = isDirty;
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setValid(boolean)
@@ -826,16 +722,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
     public void setValid(boolean isValid) {
         // Reset the valid status
         this.isValid = isValid;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#setReadOnly(boolean)
-     */
-    @Override
-    public void setReadOnly(boolean readOnly) {
-        if (!readOnly && isReadOnly)
-            setDirty(true);
-        isReadOnly = readOnly;
     }
 
     /* (non-Javadoc)
@@ -884,7 +770,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
                 cProject = CoreModel.getDefault().create(resource.getProject());
 
                 // Save everything
-                setDirty(true);
                 setRebuildState(true);
                 // Finally update this managedbuild info's owner
                 owner = resource;
@@ -1266,5 +1151,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         if (managedProject != null)
             ((ManagedProject) managedProject).updateManagedBuildRevision(revision);
     }
+
+
 
 }
