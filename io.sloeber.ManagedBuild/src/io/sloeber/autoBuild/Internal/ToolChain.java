@@ -916,12 +916,6 @@ public class ToolChain extends HoldsOptions
         return config;
     }
 
-    @Override
-    public ITargetPlatform createTargetPlatform(ITargetPlatform superClass, String id, String name,
-            boolean isExtensionElement) {
-        targetPlatform = new TargetPlatform(this, superClass, id, name, isExtensionElement);
-        return targetPlatform;
-    }
 
     @Override
     public ITargetPlatform getTargetPlatform() {

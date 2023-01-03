@@ -67,23 +67,6 @@ public interface IToolChain extends IHoldsOptions {
      */
     public IConfiguration getParent();
 
-    /**
-     * Creates the <code>TargetPlatform</code> child of this tool-chain.
-     *
-     * @param superClass
-     *            The superClass, if any
-     * @param Id
-     *            The id for the new tool chain
-     * @param name
-     *            The name for the new tool chain
-     * @param isExtensionElement
-     *            Indicates whether this is an extension element or a managed
-     *            project element
-     *
-     * @return ITargetPlatform
-     */
-    public ITargetPlatform createTargetPlatform(ITargetPlatform superClass, String Id, String name,
-            boolean isExtensionElement);
 
     /**
      * Returns the target-platform child of this tool-chain
