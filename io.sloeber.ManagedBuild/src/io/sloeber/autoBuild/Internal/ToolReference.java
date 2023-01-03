@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.osgi.framework.Version;
@@ -177,25 +178,15 @@ public class ToolReference implements IToolReference {
      * @see org.eclipse.cdt.managedbuilder.core.ITool#buildsFileType(java.lang.String)
      */
     @Override
-    public boolean buildsFileType(String extension) {
+    public boolean buildsFileType(IFile file) {
         if (parent == null) {
             // bad reference
             return false;
         }
-        return parent.buildsFileType(extension);
+        return parent.buildsFileType(file);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#buildsFileType(java.lang.String)
-     */
-    @Override
-    public boolean isInputFileType(String extension) {
-        if (parent == null) {
-            // bad reference
-            return false;
-        }
-        return parent.isInputFileType(extension);
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IToolReference#createOptionReference(org.eclipse.cdt.managedbuilder.core.IOption)
@@ -729,11 +720,6 @@ public class ToolReference implements IToolReference {
     }
 
     @Override
-    public IInputType getInputTypeById(String id) {
-        return null;
-    }
-
-    @Override
     public IInputType[] getInputTypes() {
         return null;
     }
@@ -775,10 +761,6 @@ public class ToolReference implements IToolReference {
         return null;
     }
 
-    @Override
-    public IInputType getInputType(String inputExtension) {
-        return null;
-    }
 
     @Override
     public String[] getOutputsAttribute() {
@@ -1074,4 +1056,10 @@ public class ToolReference implements IToolReference {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public List<IInputType> getMatchingInputTypes(IFile file, String macroName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

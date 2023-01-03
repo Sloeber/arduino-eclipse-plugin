@@ -13,11 +13,12 @@
  *******************************************************************************/
 package io.sloeber.autoBuild.api;
 
-import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
-//import org.eclipse.cdt.managedbuilder.core.IEnvVarBuildPath;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
-import org.eclipse.core.runtime.IPath;
+import java.util.List;
+import java.util.Set;
 
+import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 import io.sloeber.autoBuild.extensionPoint.IManagedCommandLineGenerator;
 
 /**
@@ -90,33 +91,7 @@ public interface ITool extends IHoldsOptions {
 	 */
 	public IInputType[] getInputTypes();
 
-	/**
-	 * Returns the <code>IInputType</code> in the tool with the specified
-	 * ID. This is an efficient search in the receiver.
-	 *
-	 * <p>If the receiver does not have an InputType with that ID, the method
-	 * returns <code>null</code>. It is the responsibility of the caller to
-	 * verify the return value.
-	 *
-	 * @param id unique identifier of the InputType to search for
-	 * @return <code>IInputType</code>
-	 * @since 3.0
-	 */
-	public IInputType getInputTypeById(String id);
 
-	/**
-	 * Returns the <code>IInputType</code> in the tool that uses the
-	 * specified extension.
-	 *
-	 * <p>If the receiver does not have an InputType that uses the extension,
-	 * the method returns <code>null</code>. It is the responsibility of the
-	 * caller to verify the return value.
-	 *
-	 * @param inputExtension File extension
-	 * @return <code>IInputType</code>
-	 * @since 3.0
-	 */
-	public IInputType getInputType(String inputExtension);
 
 	/**
 	 * Returns the primary <code>IInputType</code> in this tool
@@ -455,18 +430,8 @@ public interface ITool extends IHoldsOptions {
 	 * @param extension file extension of the source
 	 * @return boolean
 	 */
-	public boolean buildsFileType(String extension);
+	public boolean buildsFileType(IFile file);
 
-	/**
-	 * Return <code>true</code> if the receiver uses files with the
-	 * specified extension as input, else <code>false</code>.  This
-	 * returns true for a superset of the extensions that buildFileType
-	 * returns true for - it includes secondary inputs.
-	 *
-	 * @param extension file extension of the source
-	 * @return boolean
-	 */
-	public boolean isInputFileType(String extension);
 
 	/**
 	 * Answers <code>true</code> if the tool considers the file extension to be
@@ -572,4 +537,17 @@ public interface ITool extends IHoldsOptions {
 	default public String[] getExtraFlags(int optionType) {
 		return new String[0];
 	}
+
+	/**
+	 * Find all matching inutTypes for this tool that matches the file or the macro
+	 * <p>
+	 * Note that there may be multiple input types that match in most cases that is not relevant
+	 * as further processing is based on the output types. However advanced nae providers may filter.<p>
+	 * Therefore all input types are needed.
+	 * 
+	 * @param file
+	 * @param macroName
+	 * @return
+	 */
+	public List<IInputType> getMatchingInputTypes(IFile file, String macroName);
 }

@@ -54,7 +54,6 @@ public interface IFolderInfo extends IResourceInfo {
 	 */
 	ITool getToolFromInputExtension(String sourceExtension);
 
-	boolean buildsFileType(String srcExt);
 
 	IModificationStatus getToolChainModificationStatus(ITool[] removed, ITool[] added);
 

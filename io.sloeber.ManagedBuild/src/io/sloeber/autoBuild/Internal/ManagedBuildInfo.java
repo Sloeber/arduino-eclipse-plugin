@@ -154,13 +154,6 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return managedProject;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#buildsFileType(java.lang.String)
-     */
-    // @Override
-    public boolean buildsFileType(String srcExt) {
-        return getDefaultConfiguration().buildsFileType(srcExt);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getBuildArtifactExtension()
@@ -484,21 +477,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return owner;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolForSource(java.lang.String)
-     */
-    @Override
-    public String getToolForSource(String sourceExtension) {
-        // Get all the tools for the current config
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
-            if (tool.buildsFileType(sourceExtension)) {
-                return tool.getToolCommand();
-            }
-        }
-        return null;
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.IManagedBuildInfo#getToolForConfiguration(java.lang.String)
@@ -536,26 +515,7 @@ public class ManagedBuildInfo implements IManagedBuildInfo, IScannerInfo {
         return config.getToolFromOutputExtension(extension);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#generateCommandLineInfo(java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
-     */
-    // @Override
-    public IManagedCommandLineInfo generateCommandLineInfo(String sourceExtension, String[] flags, String outputFlag,
-            String outputPrefix, String outputName, String[] inputResources) {
-        return generateToolCommandLineInfo(sourceExtension, flags, outputFlag, outputPrefix, outputName, inputResources,
-                null, null);
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#generateToolCommandLineInfo(java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, java.lang.String[], org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath)
-     */
-    @Override
-    public IManagedCommandLineInfo generateToolCommandLineInfo(String sourceExtension, String[] flags,
-            String outputFlag, String outputPrefix, String outputName, String[] inputResources, IPath inputLocation,
-            IPath outputLocation) {
-        return getDefaultConfiguration().generateToolCommandLineInfo(sourceExtension, flags, outputFlag, outputPrefix,
-                outputName, inputResources, inputLocation, outputLocation);
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo#getUserObjectsForConfiguration(java.lang.String)

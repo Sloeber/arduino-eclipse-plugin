@@ -34,8 +34,6 @@ public interface IResourceInfo extends IBuildObject {
 
 	boolean isExcluded();
 
-	boolean isExtensionElement();
-
 	void setExclude(boolean excluded);
 
 	boolean canExclude(boolean exclude);
@@ -49,10 +47,6 @@ public interface IResourceInfo extends IBuildObject {
 
 	IConfiguration getParent();
 
-	//	IFolderInfo getParentFolderInfo();
-
-	//	IToolChain getBaseToolChain();
-
 	CResourceData getResourceData();
 
 	boolean isValid();
@@ -60,8 +54,6 @@ public interface IResourceInfo extends IBuildObject {
 	CLanguageData[] getCLanguageDatas();
 
 	ITool[] getTools();
-
-	//	boolean isParentInfoInherited();
 
 	boolean supportsBuild(boolean managed);
 

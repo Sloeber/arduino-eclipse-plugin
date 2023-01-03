@@ -145,17 +145,6 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#isExtensionElement()
-     */
-    @Override
-    public boolean isExtensionElement() {
-        for (int i = 0; i < fRis.length; i++)
-            if (fRis[i].isExtensionElement())
-                return true;
-        return false;
-    }
-
-    /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IResourceInfo#isSupported()
      */
     @Override

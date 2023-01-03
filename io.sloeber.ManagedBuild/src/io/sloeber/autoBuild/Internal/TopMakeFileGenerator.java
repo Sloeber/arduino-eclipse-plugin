@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -307,85 +308,19 @@ public class TopMakeFileGenerator {
 			Set<IFile> files = entry.getValue();
 			String macroName = outputTypeIn.getBuildVariable();
 			for (ITool tool : config.getTools()) {
-				for (IInputType inputType : tool.getInputTypes()) {
-					if (!macroName.equals(inputType.getBuildVariable())) {
-						continue;
-					}
-					if (inputType.getMultipleOfType()) {
+				for (IFile file : files) {
+					List<IInputType> matchingInputTypes = tool.getMatchingInputTypes(file, macroName);
+					for (IInputType inputType : matchingInputTypes) {
 						for (IOutputType outputType : tool.getOutputTypes()) {
-							// INewManagedOutputNameProvider nameProvider = getJABANameProvider(config,
-							// buildPath,
-							// outputType);
-							// if (nameProvider == null) {
-							// continue;
-							// }
-							// IPath outputFile = nameProvider.getOutputName(project, config, null, null);
-
 							IFile outputFile = outputType.getOutputName(null, confDesc, inputType);
 
 							if (outputFile != null) {
-								// This is a multiple to 1 based on var name
 								makeRules.addRule(tool, inputType, macroName, files, outputType, outputFile);
 								continue;
-							}
-							IFile firstFilePath = files.toArray(new IFile[files.size()])[0];
-							outputFile = outputType.getOutputName(firstFilePath, confDesc, inputType);
-							if (outputFile == null) {
-								continue;
-							}
-							// This is a multiple to 1 not based on var name
-							MakeRule newMakeRule = new MakeRule(caller, tool, inputType, files, outputType, outputFile);
-
-							makeRules.addRule(newMakeRule);
-						}
-					} else {
-						// The link is based on the varname but the files are one on one
-						for (IOutputType outputType : tool.getOutputTypes()) {
-							// INewManagedOutputNameProvider nameProvider = getJABANameProvider(config,
-							// buildPath,
-							// outputType);
-							// if (nameProvider == null) {
-							// continue;
-							// }
-							for (IFile file : files) {
-								// IPath outputFile = nameProvider.getOutputName(project, config, tool,
-								// file.getProjectRelativePath());
-								IFile outputFile = outputType.getOutputName(null, confDesc, inputType);
-								if (outputFile == null) {
-									continue;
-								}
-								// This is a multiple to 1 not based on var name
-								MakeRule newMakeRule = new MakeRule(tool, inputType, file, outputType, outputFile);
-								newMakeRule.addDependencies(caller);
-								makeRules.addRule(newMakeRule);
 							}
 						}
 					}
 				}
-				// else {
-				// for (IOutputType outputType : tool.getOutputTypes()) {
-				// IManagedOutputNameProviderJaba nameProvider =
-				// getJABANameProvider(outputType);
-				// if (nameProvider == null) {
-				// continue;
-				// }
-				// for (IFile file : files) {
-				// IPath outputFile = nameProvider.getOutputName(getProject(), config, tool,
-				// file.getProjectRelativePath());
-				// if (outputFile != null) {
-				// //We found a tool that provides a outputfile for our source file
-				// //TOFIX if this is a multiple to one we should only create one MakeRule
-				// IPath correctOutputPath = new Path(config.getName()).append(outputFile);
-				// MakeRule newMakeRule = new MakeRule(caller, tool, inputType, file,
-				// outputType,
-				// project.getFile(correctOutputPath));
-				//
-				// makeRules.add(newMakeRule);
-				// }
-				// }
-				// }
-				// }
-				// }
 			}
 		}
 		return makeRules;

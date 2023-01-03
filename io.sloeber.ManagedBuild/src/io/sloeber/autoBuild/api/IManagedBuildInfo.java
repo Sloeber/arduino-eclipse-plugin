@@ -45,21 +45,6 @@ public interface IManagedBuildInfo {
      *        or earlier managed build project file (.cdtbuild)
      */
 
-    /**
-     * Returns <code>IManagedCommandLineInfo</code> for source with extension
-     * The command line info contains values with
-     * build macros resolved to the makefile format.
-     * That is if a user has chosen to expand all macros in the buildfile,
-     * command line info contains values contain all macro references resolved,
-     * otherwise, if a user has
-     * chosen to keep the environment build macros unresolved, the command line info
-     * contains values contain
-     * the environment macro references converted to the buildfile variable format,
-     * all other macro references are resolved
-     */
-    public IManagedCommandLineInfo generateToolCommandLineInfo(String sourceExtension, String[] flags,
-            String outputFlag, String outputPrefix, String outputName, String[] inputResources, IPath inputLocation,
-            IPath outputLocation);
 
     /**
      * Answers a <code>String</code> containing the arguments to be passed to make.
@@ -195,15 +180,6 @@ public interface IManagedBuildInfo {
      */
     public String getToolForConfiguration(String extension);
 
-    /**
-     * Returns a <code>String</code> containing the command-line invocation
-     * for the tool associated with the source extension.
-     *
-     * @param sourceExtension
-     *            the file extension of the file to be built
-     * @return a String containing the command line invocation for the tool
-     */
-    public String getToolForSource(String sourceExtension);
 
     /**
      * Returns a <code>ITool</code> for the tool associated with the

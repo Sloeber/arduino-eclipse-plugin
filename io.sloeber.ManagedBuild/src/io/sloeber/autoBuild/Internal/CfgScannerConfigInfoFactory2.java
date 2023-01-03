@@ -193,7 +193,7 @@ public class CfgScannerConfigInfoFactory2 {
                                     context = CfgScannerConfigUtil.adjustPerRcTypeContext(context);
                                     if (context != null && context.getResourceInfo() != null) {
                                         IScannerConfigBuilderInfo2 info = configMap.get(context);
-                                        if (info == null && !inputType.isExtensionElement()
+                                        if (info == null //&& !inputType.isExtensionElement()
                                                 && inputType.getSuperClass() != null) {
                                             CfgInfoContext superContext = new CfgInfoContext(rcInfo, tool,
                                                     inputType.getSuperClass());

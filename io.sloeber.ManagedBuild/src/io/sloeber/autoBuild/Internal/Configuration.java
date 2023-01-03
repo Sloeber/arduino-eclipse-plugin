@@ -2487,49 +2487,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
     }
 
     @Override
-    public IManagedCommandLineInfo generateToolCommandLineInfo(String sourceExtension, String[] flags,
-            String outputFlag, String outputPrefix, String outputName, String[] inputResources, IPath inputLocation,
-            IPath outputLocation) {
-        ITool[] tools = getFilteredTools();
-        for (int index = 0; index < tools.length; index++) {
-            ITool tool = tools[index];
-            if (tool.buildsFileType(sourceExtension)) {
-                String cmd = tool.getToolCommand();
-                //try to resolve the build macros in the tool command
-                try {
-                    String resolvedCommand = null;
-
-                    if ((inputLocation != null && inputLocation.toString().indexOf(" ") != -1) || //$NON-NLS-1$
-                            (outputLocation != null && outputLocation.toString().indexOf(" ") != -1)) //$NON-NLS-1$
-                    {
-                        resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValue(cmd, "", //$NON-NLS-1$
-                                " ", //$NON-NLS-1$
-                                IBuildMacroProvider.CONTEXT_FILE,
-                                new FileContextData(inputLocation, outputLocation, null, tool));
-                    }
-
-                    else {
-                        resolvedCommand = ManagedBuildManager.getBuildMacroProvider().resolveValueToMakefileFormat(cmd,
-                                "", //$NON-NLS-1$
-                                " ", //$NON-NLS-1$
-                                IBuildMacroProvider.CONTEXT_FILE,
-                                new FileContextData(inputLocation, outputLocation, null, tool));
-                    }
-                    if ((resolvedCommand = resolvedCommand.trim()).length() > 0)
-                        cmd = resolvedCommand;
-
-                } catch (BuildMacroException e) {
-                }
-
-                IManagedCommandLineGenerator gen = tool.getCommandLineGenerator();
-                return gen.generateCommandLineInfo(tool, cmd, flags, outputFlag, outputPrefix, outputName,
-                        inputResources, tool.getCommandLinePattern());
-            }
-        }
-        return null;
-    }
-
-    @Override
     public String[] getUserObjects(String extension) {
         Vector<String> objs = new Vector<>();
         ITool tool = calculateTargetTool();
@@ -2666,11 +2623,6 @@ public class Configuration extends BuildObject implements IConfiguration, IBuild
             }
         }
         return libs.toArray(new String[libs.size()]);
-    }
-
-    @Override
-    public boolean buildsFileType(String srcExt) {
-        return getRootFolderInfo().buildsFileType(srcExt);
     }
 
     /**

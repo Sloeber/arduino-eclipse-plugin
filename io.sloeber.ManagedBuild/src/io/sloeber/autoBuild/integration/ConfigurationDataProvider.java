@@ -468,9 +468,8 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
                             adjustInputType(tool, type, des);
                         continue;
                     } else {
-                        IContentType[] cTypes = type.getSourceContentTypes();
-                        for (int c = 0; c < cTypes.length; c++) {
-                            IContentType cType = cTypes[c];
+                    	List<IContentType> cTypes = type.getSourceContentTypes();
+                        for (IContentType cType: cTypes) {
                             ILanguageDescriptor[] langs = map.remove(cType.getId());
                             if (langs != null && langs.length != 0) {
                                 for (int q = 0; q < langs.length; q++) {
@@ -493,7 +492,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
     private static InputType adjustInputType(Tool tool, InputType type, ILanguageDescriptor des) {
         String[] cTypeIds = des.getContentTypeIds();
         String srcIds[] = type.getSourceContentTypeIds();
-        String hIds[] = type.getHeaderContentTypeIds();
+        String hIds[] =null;// type.getHeaderContentTypeIds();
 
         Set<String> landTypes = new HashSet<>(Arrays.asList(cTypeIds));
         landTypes.removeAll(Arrays.asList(srcIds));
@@ -503,13 +502,10 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
             List<String> srcList = new ArrayList<>();
             srcList.addAll(landTypes);
             type = (InputType) tool.getEditableInputType(type);
-            type.setSourceContentTypeIds(srcList.toArray(new String[srcList.size()]));
         }
 
         if (!des.getId().equals(type.getLanguageId(tool))) {
             type = (InputType) tool.getEditableInputType(type);
-            type.setLanguageIdAttribute(des.getId());
-            type.setLanguageNameAttribute(des.getName());
         }
         return type;
     }
@@ -539,10 +535,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
                 Tool tool = (Tool) tc.createTool(extTool, id, name, false);
                 InputType type = (InputType) tool.getInputTypes()[0];
                 type = (InputType) tool.getEditableInputType(type);
-                type.setSourceContentTypes(des.getContentTypes());
-                type.setLanguageNameAttribute(des.getName());
                 type.setName(des.getName());
-                type.setLanguageIdAttribute(des.getId());
             }
         }
     }

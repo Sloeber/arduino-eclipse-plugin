@@ -406,17 +406,12 @@ public abstract class ResourceInfo extends BuildObject implements IResourceInfo 
     }
 
     public void propertiesChanged() {
-        if (isExtensionElement())
-            return;
-
         ITool tools[] = getTools();
         for (ITool tool : tools) {
             ((Tool) tool).propertiesChanged();
         }
     }
 
-    @Override
-    public abstract boolean isExtensionElement();
 
     public abstract Set<String> contributeErrorParsers(Set<String> set);
 

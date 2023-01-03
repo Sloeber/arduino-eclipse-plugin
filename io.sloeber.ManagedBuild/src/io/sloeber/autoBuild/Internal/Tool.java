@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -39,50 +40,9 @@ import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
 import org.eclipse.cdt.internal.core.SafeStringInterner;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IAdditionalInput;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IEnvVarBuildPath;
-//import org.eclipse.cdt.managedbuilder.core.IFileInfo;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IManagedCommandLineGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOptionApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategory;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCategoryApplicability;
-//import org.eclipse.cdt.managedbuilder.core.IOptionCommandGenerator;
-//import org.eclipse.cdt.managedbuilder.core.IOptionPathConverter;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.core.ManagedCommandLineGenerator;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.BuildEntryStorage;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.BuildLanguageData;
-//import org.eclipse.cdt.managedbuilder.internal.enablement.OptionEnablementExpression;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.internal.macros.BuildfileMacroSubstitutor;
-//import org.eclipse.cdt.managedbuilder.internal.macros.FileContextData;
-//import org.eclipse.cdt.managedbuilder.internal.macros.IMacroContextInfo;
-//import org.eclipse.cdt.managedbuilder.internal.macros.IMacroContextInfoProvider;
-//import org.eclipse.cdt.managedbuilder.internal.macros.OptionContextData;
-//import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
-//import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGenerator;
-//import org.eclipse.cdt.managedbuilder.makegen.IManagedDependencyGeneratorType;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.cdt.utils.cdtvariables.SupplierBasedCdtVariableSubstitutor;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -102,7 +62,6 @@ import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.BuildException;
 import io.sloeber.autoBuild.api.BuildMacroException;
-import io.sloeber.autoBuild.api.IAdditionalInput;
 import io.sloeber.autoBuild.api.IBuildMacroProvider;
 import io.sloeber.autoBuild.api.IBuildObject;
 import io.sloeber.autoBuild.api.IBuildPropertyType;
@@ -146,12 +105,9 @@ public class Tool extends HoldsOptions
     private static final String REBUILD_STATE = "rebuildState"; //$NON-NLS-1$
 
     private static final String DEFAULT_SEPARATOR = ","; //$NON-NLS-1$
-    //private static final IOptionCategory[] EMPTY_CATEGORIES = new IOptionCategory[0];
-    //private static final IOption[] EMPTY_OPTIONS = new IOption[0];
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
     private static final String EMPTY_QUOTED_STRING = "\"\""; //$NON-NLS-1$
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    //    private static final String DEFAULT_ANNOUNCEMENT_PREFIX = "Tool_default_announcement"; //$NON-NLS-1$
     private static final String WHITESPACE = " "; //$NON-NLS-1$
 
     private static final boolean resolvedDefault = true;
@@ -208,8 +164,6 @@ public class Tool extends HoldsOptions
     private BooleanExpressionApplicabilityCalculator booleanExpressionCalculator;
 
     private HashMap<IInputType, CLanguageData> typeToDataMap = new HashMap<>(2);
-    private boolean fDataMapInited;
-    private List<Tool> identicalList;
     //private HashMap<String, PathInfoCache> discoveredInfoMap = new HashMap<>(2);
     private String scannerConfigDiscoveryProfileId;
 
@@ -1252,10 +1206,10 @@ public class Tool extends HoldsOptions
      * @see org.eclipse.cdt.managedbuilder.core.ITool#createInputType(IInputType, String, String, boolean)
      */
     public IInputType createInputType(IInputType superClass, String Id, String name, boolean isExtensionElement) {
-        InputType type = superClass == null || superClass.isExtensionElement()
-                ? new InputType(this, superClass, Id, name, isExtensionElement)
-                : new InputType(this, Id, name, (InputType) superClass);
-
+//        InputType type = superClass == null || superClass.isExtensionElement()
+//                ? new InputType(this, superClass, Id, name, isExtensionElement)
+//                : new InputType(this, Id, name, (InputType) superClass);
+        InputType type = new InputType(this, Id, name, (InputType) superClass);
         if (superClass != null) {
             BuildLanguageData data = (BuildLanguageData) typeToDataMap.remove(superClass);
             if (data != null) {
@@ -1282,8 +1236,7 @@ public class Tool extends HoldsOptions
      */
     @Override
     public IInputType[] getInputTypes() {
-        IInputType[] types = getAllInputTypes();
-        return filterInputTypes(types);
+        return getAllInputTypes();
     }
 
     public IInputType[] getAllInputTypes() {
@@ -1339,14 +1292,6 @@ public class Tool extends HoldsOptions
         return false;
     }
 
-    @Override
-    public IInputType getInputTypeById(String id) {
-        InputType type = (InputType) getAllInputTypeById(id);
-
-        if (isExtensionTool || type == null || type.isEnabled(this))
-            return type;
-        return null;
-    }
 
     public IInputType getAllInputTypeById(String id) {
         IInputType type = getInputTypeMap().get(id);
@@ -1436,19 +1381,6 @@ public class Tool extends HoldsOptions
         return list.toArray(new OutputType[list.size()]);
     }
 
-    private IInputType[] filterInputTypes(IInputType types[]) {
-        if (isExtensionTool || types.length == 0)
-            return types;
-
-        List<InputType> list = new ArrayList<>(types.length);
-        for (IInputType itype : types) {
-            InputType type = (InputType) itype;
-            if (type.isEnabled(this))
-                list.add(type);
-        }
-
-        return list.toArray(new InputType[list.size()]);
-    }
 
     private boolean hasOutputTypes() {
         Vector<OutputType> ourTypes = getOutputTypeList();
@@ -1891,86 +1823,65 @@ public class Tool extends HoldsOptions
 
     @Override
     public IInputType getPrimaryInputType() {
-        IInputType type = null;
-        IInputType[] types = getInputTypes();
-        if (types != null && types.length > 0) {
-            for (int i = 0; i < types.length; i++) {
-                if (i == 0)
-                    type = types[0];
-                if (types[i].getPrimaryInput() == true) {
-                    type = types[i];
-                    break;
-                }
-            }
-        }
-        return type;
+    	//TOFIX JABA 
+    	//Primary input types no longer exists
+    	return null;
+//        IInputType type = null;
+//        IInputType[] types = getInputTypes();
+//        if (types != null && types.length > 0) {
+//            for (int i = 0; i < types.length; i++) {
+//                if (i == 0)
+//                    type = types[0];
+//                if (types[i].getPrimaryInput() == true) {
+//                    type = types[i];
+//                    break;
+//                }
+//            }
+//        }
+//        return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.ITool#getInputInputType()
-     */
-    @Override
-    public IInputType getInputType(String inputExtension) {
-        return getInputType(inputExtension, getProject());
-    }
 
-    public IInputType getInputType(String inputExtension, IProject project) {
-        IInputType type = null;
-        IInputType[] types = getInputTypes();
-        if (types != null && types.length > 0) {
-            for (IInputType t : types) {
-                if (((InputType) t).isSourceExtension(this, inputExtension, project)) {
-                    type = t;
-                    break;
-                }
-            }
-        }
-        return type;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.ITool#getAdditionalDependencies()
      */
     @Override
     public IPath[] getAdditionalDependencies() {
-        List<IPath> allDeps = new ArrayList<>();
-        IInputType[] types = getInputTypes();
-        for (IInputType type : types) {
-            //  Additional dependencies come from 2 places.
-            //  1.  From AdditionalInput childen
-            for (IPath p : type.getAdditionalDependencies())
-                allDeps.add(p);
-
-            //  2.  From InputTypes that other than the primary input type
-            if (type != getPrimaryInputType()) {
-                if (type.getOptionId() != null) {
-                    IOption option = getOptionBySuperClassId(type.getOptionId());
-                    if (option != null) {
-                        try {
-                            List<IPath> inputs = new ArrayList<>();
-                            int optType = option.getValueType();
-                            if (optType == IOption.STRING) {
-                                inputs.add(Path.fromOSString(option.getStringValue()));
-                            } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
-                                    || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
-                                    || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
-                                    || optType == IOption.MACRO_FILES) {
-                                @SuppressWarnings("unchecked")
-                                List<String> inputNames = (List<String>) option.getValue();
-                                filterValues(optType, inputNames);
-                                for (String s : inputNames)
-                                    inputs.add(Path.fromOSString(s));
-                            }
-                            allDeps.addAll(inputs);
-                        } catch (BuildException ex) {
-                        }
-                    }
-                } else if (type.getBuildVariable() != null && type.getBuildVariable().length() > 0) {
-                    allDeps.add(Path.fromOSString("$(" + type.getBuildVariable() + ")")); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-            }
-        }
-        return allDeps.toArray(new IPath[allDeps.size()]);
+    	//TODO JABA dead code removal
+    	return null;
+//        List<IPath> allDeps = new ArrayList<>();
+//        IInputType[] types = getInputTypes();
+//        for (IInputType type : types) {
+//            if (type != getPrimaryInputType()) {
+//                if (type.getOptionId() != null) {
+//                    IOption option = getOptionBySuperClassId(type.getOptionId());
+//                    if (option != null) {
+//                        try {
+//                            List<IPath> inputs = new ArrayList<>();
+//                            int optType = option.getValueType();
+//                            if (optType == IOption.STRING) {
+//                                inputs.add(Path.fromOSString(option.getStringValue()));
+//                            } else if (optType == IOption.STRING_LIST || optType == IOption.LIBRARIES
+//                                    || optType == IOption.OBJECTS || optType == IOption.INCLUDE_FILES
+//                                    || optType == IOption.LIBRARY_PATHS || optType == IOption.LIBRARY_FILES
+//                                    || optType == IOption.MACRO_FILES) {
+//                                @SuppressWarnings("unchecked")
+//                                List<String> inputNames = (List<String>) option.getValue();
+//                                filterValues(optType, inputNames);
+//                                for (String s : inputNames)
+//                                    inputs.add(Path.fromOSString(s));
+//                            }
+//                            allDeps.addAll(inputs);
+//                        } catch (BuildException ex) {
+//                        }
+//                    }
+//                } else if (type.getBuildVariable() != null && type.getBuildVariable().length() > 0) {
+//                    allDeps.add(Path.fromOSString("$(" + type.getBuildVariable() + ")")); //$NON-NLS-1$ //$NON-NLS-2$
+//                }
+//            }
+//        }
+//        return allDeps.toArray(new IPath[allDeps.size()]);
     }
 
     /* (non-Javadoc)
@@ -1980,12 +1891,6 @@ public class Tool extends HoldsOptions
     public IPath[] getAdditionalResources() {
         List<IPath> allRes = new ArrayList<>();
         for (IInputType type : getInputTypes()) {
-            //  Additional resources come from 2 places.
-            //  1.  From AdditionalInput childen
-            for (IPath r : type.getAdditionalResources())
-                allRes.add(r);
-
-            //  2.  From InputTypes that other than the primary input type
             if (type != getPrimaryInputType()) {
                 String var = type.getBuildVariable();
                 if (var != null && var.length() > 0) {
@@ -2690,63 +2595,8 @@ public class Tool extends HoldsOptions
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#buildsFileType(java.lang.String)
-     */
-    @Override
-    public boolean buildsFileType(String extension) {
-        return buildsFileType(extension, getProject());
-    }
 
-    public boolean buildsFileType(String extension, IProject project) {
 
-        if (extension == null) {
-            return false;
-        }
-        IInputType it = getInputType(extension, project);
-        if (it != null) {
-            //  Decide whether we "build" this type of file
-            //
-            //  1.  If this is the primary input, yes
-            if (it == getPrimaryInputType()) {
-                return true;
-            }
-            //  2.  If the option attribute is specified, no
-            if (it.getOptionId() != null && it.getOptionId().length() > 0) {
-                return false;
-            }
-            //  3.  If the assignToOption attribute is specified, no
-            if (it.getAssignToOptionId() != null && it.getAssignToOptionId().length() > 0) {
-                return false;
-            }
-            //  Else, yes
-            return true;
-        }
-        //  If no InputTypes, check the inputExtensions attribute
-        if (!hasInputTypes()) {
-            return getInputExtensionsAttribute().contains(extension);
-        }
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITool#isInputFileType(java.lang.String)
-     */
-    @Override
-    public boolean isInputFileType(String extension) {
-        if (extension == null) {
-            return false;
-        }
-        IInputType it = getInputType(extension);
-        if (it != null) {
-            return true;
-        }
-        //  If no InputTypes, check the inputExtensions attribute
-        if (!hasInputTypes()) {
-            return getInputExtensionsAttribute().contains(extension);
-        }
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.build.managed.ITool#producesFileType(java.lang.String)
@@ -3244,54 +3094,12 @@ public class Tool extends HoldsOptions
 
     @Override
     public CLanguageData getCLanguageData(IInputType type) {
-        initDataMap();
-        return typeToDataMap.get(type);
+    	//JABA dead code
+    	return null;
+//        initDataMap();
+//        return typeToDataMap.get(type);
     }
 
-    private void initDataMap() {
-        if (fDataMapInited)
-            return;
-
-        List<IInputType> types = getLanguageInputTypes();
-
-        if (types != null) {
-            if (types.size() == 0) {
-                CLanguageData data = typeToDataMap.get(null);
-                if (data == null) {
-                    data = new BuildLanguageData(this, null);
-                    if (typeToDataMap.size() != 0) {
-                        typeToDataMap.clear();
-                    }
-                    typeToDataMap.put(null, data);
-                }
-
-            } else {
-                //create editable input types for lang datas first
-
-                for (ListIterator<IInputType> iter = types.listIterator(); iter.hasNext();) {
-                    IInputType type = iter.next();
-                    iter.set(getEditableInputType(type));
-                }
-
-                @SuppressWarnings("unchecked")
-                Map<IInputType, CLanguageData> map = (Map<IInputType, CLanguageData>) typeToDataMap.clone();
-                for (IInputType type : types) {
-                    CLanguageData data = map.remove(type);
-                    if (data == null) {
-                        data = new BuildLanguageData(this, type);
-                        typeToDataMap.put(type, data);
-                    }
-                }
-
-                if (map.size() > 0) {
-                    for (IInputType it : map.keySet()) {
-                        typeToDataMap.remove(it);
-                    }
-                }
-            }
-        }
-        fDataMapInited = true;
-    }
 
     private boolean isLanguageInputType(IInputType type, boolean checkLangSettings) {
         boolean supports = type.getLanguageId(this) != null || typeContributesToScannerConfig((InputType) type);
@@ -3319,37 +3127,12 @@ public class Tool extends HoldsOptions
         return found;
     }
 
-    private List<IInputType> getLanguageInputTypes() {
-        List<IInputType> list = new ArrayList<>();
-        IInputType[] types = getInputTypes();
-        for (IInputType t : types) {
-            InputType type = (InputType) t;
-            if (isLanguageInputType(type, false))
-                list.add(type);
-        }
-        if (list.size() == 0) {
-            if (types.length == 1) {
-                list.add(types[0]);
-            } else {
-                for (IInputType t : types) {
-                    if (t.getPrimaryInput()) {
-                        list.add(t);
-                        break;
-                    }
-                }
-            }
-        }
-
-        boolean found = supportsLanguageSettings();
-        if (!found)
-            return null;
-        return list;
-    }
-
     @Override
     public CLanguageData[] getCLanguageDatas() {
-        initDataMap();
-        return typeToDataMap.values().toArray(new BuildLanguageData[typeToDataMap.size()]);
+    	//TOFIX JABA don't know what this does
+    	return null;
+//        initDataMap();
+//        return typeToDataMap.values().toArray(new BuildLanguageData[typeToDataMap.size()]);
     }
 
     @Override
@@ -3374,7 +3157,7 @@ public class Tool extends HoldsOptions
             return base;
 
         IInputType extType = base;
-        for (; extType != null && !extType.isExtensionElement(); extType = extType.getSuperClass()) {
+        for (; extType != null; extType = extType.getSuperClass()) {
             // empty body
         }
         String id;
@@ -3384,10 +3167,7 @@ public class Tool extends HoldsOptions
             id = ManagedBuildManager.calculateChildId(getId(), null);
         }
         InputType newType = (InputType) createInputType(base, id, base.getName(), false);
-        IAdditionalInput addlInputs[] = base.getAdditionalInputs();
-        for (IAdditionalInput addlInput : addlInputs) {
-            newType.createAdditionalInput(addlInput);
-        }
+
         return newType;
     }
 
@@ -3451,7 +3231,7 @@ public class Tool extends HoldsOptions
         super.propertiesChanged();
     }
 
-    public BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
+    private BooleanExpressionApplicabilityCalculator getBooleanExpressionCalculator() {
         if (booleanExpressionCalculator == null) {
             if (superClass != null) {
                 return ((Tool) superClass).getBooleanExpressionCalculator();
@@ -3693,8 +3473,6 @@ public class Tool extends HoldsOptions
     }
 
     private boolean typeContributesToScannerConfig(InputType inType) {
-        //		InputType inType = (InputType)type;
-
         if (inType.getDiscoveryProfileId(this) != null)
             return true;
 
@@ -3742,11 +3520,11 @@ public class Tool extends HoldsOptions
     //        discoveredInfoMap.clear();
     //    }
 
-    private String getTypeKey(IInputType type) {
-        if (type != null)
-            return type.getId();
-        return null;
-    }
+//    private String getTypeKey(IInputType type) {
+//        if (type != null)
+//            return type.getId();
+//        return null;
+//    }
 
     public String getDiscoveryProfileIdAttribute() {
         if (scannerConfigDiscoveryProfileId == null && superClass != null)
@@ -3787,12 +3565,6 @@ public class Tool extends HoldsOptions
         if (hasCustomSettings())
             return true;
 
-        if (inputTypeList != null && inputTypeList.size() != 0) {
-            for (InputType inType : inputTypeList) {
-                if (inType.hasCustomSettings())
-                    return true;
-            }
-        }
 
         if (outputTypeList != null && outputTypeList.size() != 0) {
             for (OutputType outType : outputTypeList) {
@@ -3867,38 +3639,30 @@ public class Tool extends HoldsOptions
         return list.toArray(new Option[list.size()]);
     }
 
-    public void filterValues(int type, List<String> values) {
-        if (values.size() == 0)
-            return;
-
-        int opType = Option.getOppositeType(type);
-        if (opType != 0) {
-            Set<Object> filterSet = new HashSet<>();
-            for (IOption op : getOptionsOfType(opType)) {
-                filterSet.addAll((List<Object>) op.getValue());
-            }
-
-            if (filterSet.size() != 0) {
-                for (Iterator<String> iterator = values.iterator(); iterator.hasNext();) {
-                    String oVal = iterator.next();
-                    if (type == IOption.PREPROCESSOR_SYMBOLS) {
-                        String[] nameVal = BuildEntryStorage.macroNameValueFromValue(oVal);
-                        oVal = nameVal[0];
-                    }
-                    if (filterSet.contains(oVal))
-                        iterator.remove();
-                }
-            }
-        }
-    }
-
-    private int getSuperClassNum() {
-        int num = 0;
-        for (ITool superTool = getSuperClass(); superTool != null; superTool = superTool.getSuperClass()) {
-            num++;
-        }
-        return num;
-    }
+//    public void filterValues(int type, List<String> values) {
+//        if (values.size() == 0)
+//            return;
+//
+//        int opType = Option.getOppositeType(type);
+//        if (opType != 0) {
+//            Set<Object> filterSet = new HashSet<>();
+//            for (IOption op : getOptionsOfType(opType)) {
+//                filterSet.addAll((List<Object>) op.getValue());
+//            }
+//
+//            if (filterSet.size() != 0) {
+//                for (Iterator<String> iterator = values.iterator(); iterator.hasNext();) {
+//                    String oVal = iterator.next();
+//                    if (type == IOption.PREPROCESSOR_SYMBOLS) {
+//                        String[] nameVal = BuildEntryStorage.macroNameValueFromValue(oVal);
+//                        oVal = nameVal[0];
+//                    }
+//                    if (filterSet.contains(oVal))
+//                        iterator.remove();
+//                }
+//            }
+//        }
+//    }
 
 
     @Override
@@ -4040,4 +3804,36 @@ public class Tool extends HoldsOptions
         }
         return flags.toArray(new String[flags.size()]);
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.cdt.core.build.managed.ITool#buildsFileType(java.lang.String)
+     */
+    @Override
+    public boolean buildsFileType(IFile file) {
+    	for( InputType inputType:inputTypeList) {
+    		if (inputType.isAssociatedWith(file)) {
+    			return true;
+    		}
+    	}
+        return false;
+    }
+    
+	@Override
+	public List<IInputType> getMatchingInputTypes(IFile file, String macroName) {
+		 String safeMacroName=macroName;
+		if(macroName==null) {
+			 safeMacroName=new String();
+		 }
+		List<IInputType> ret= new LinkedList<>();
+		for( InputType inputType:inputTypeList) {
+    		if (inputType.isAssociatedWith(file)) {
+    			ret.add(inputType);
+    		}else {
+    			if (safeMacroName.equals(inputType.getAssignToOptionId())) {
+        			ret.add(inputType);
+        		}
+    		}
+    	}
+        return ret;
+	}
 }

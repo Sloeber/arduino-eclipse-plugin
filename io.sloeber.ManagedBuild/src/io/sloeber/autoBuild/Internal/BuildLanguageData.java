@@ -320,11 +320,12 @@ public class BuildLanguageData extends CLanguageData {
 
     @Override
     public void setLanguageId(String id) {
-        if (Objects.equals(id, fInputType.getLanguageId(fTool))) {
-            //			fInputType = fTool.getEdtableInputType(fInputType);
-            obtainEditableInputType();
-            fInputType.setLanguageIdAttribute(id);
-        }
+    	//TODO JABA Should be dead code
+//        if (Objects.equals(id, fInputType.getLanguageId(fTool))) {
+//            //			fInputType = fTool.getEdtableInputType(fInputType);
+//            obtainEditableInputType();
+//            fInputType.setLanguageIdAttribute(id);
+//        }
     }
 
     @Override
@@ -393,38 +394,39 @@ public class BuildLanguageData extends CLanguageData {
 
     @Override
     public void setSourceContentTypeIds(String[] ids) {
-        String[] headerIds = fInputType.getHeaderContentTypeIds();
-
-        List<String> newSrc = new ArrayList<>(ids.length);
-        List<String> newHeaders = new ArrayList<>(ids.length);
-        for (int i = 0; i < ids.length; i++) {
-            String id = ids[i];
-            int j = 0;
-            for (; j < headerIds.length; j++) {
-                if (id.equals(headerIds[j])) {
-                    newHeaders.add(id);
-                    break;
-                }
-            }
-            if (j == headerIds.length) {
-                newSrc.add(id);
-            }
-        }
-
-        String newSrcIds[] = newSrc.toArray(new String[newSrc.size()]);
-        String newHeaderIds[] = newHeaders.toArray(new String[newHeaders.size()]);
-
-        if (!Arrays.equals(newSrcIds, fInputType.getSourceContentTypeIds())) {
-            //			fInputType = fTool.getEdtableInputType(fInputType);
-            obtainEditableInputType();
-            fInputType.setSourceContentTypeIds(newSrcIds);
-        }
-
-        if (!Arrays.equals(newHeaderIds, fInputType.getHeaderContentTypeIds())) {
-            //			fInputType = fTool.getEdtableInputType(fInputType);
-            obtainEditableInputType();
-            fInputType.setHeaderContentTypeIds(newHeaderIds);
-        }
+    	//TODO JABA should be dead code
+//        String[] headerIds = fInputType.getHeaderContentTypeIds();
+//
+//        List<String> newSrc = new ArrayList<>(ids.length);
+//        List<String> newHeaders = new ArrayList<>(ids.length);
+//        for (int i = 0; i < ids.length; i++) {
+//            String id = ids[i];
+//            int j = 0;
+//            for (; j < headerIds.length; j++) {
+//                if (id.equals(headerIds[j])) {
+//                    newHeaders.add(id);
+//                    break;
+//                }
+//            }
+//            if (j == headerIds.length) {
+//                newSrc.add(id);
+//            }
+//        }
+//
+//        String newSrcIds[] = newSrc.toArray(new String[newSrc.size()]);
+//        String newHeaderIds[] = newHeaders.toArray(new String[newHeaders.size()]);
+//
+//        if (!Arrays.equals(newSrcIds, fInputType.getSourceContentTypeIds())) {
+//            //			fInputType = fTool.getEdtableInputType(fInputType);
+//            obtainEditableInputType();
+//            fInputType.setSourceContentTypeIds(newSrcIds);
+//        }
+//
+//        if (!Arrays.equals(newHeaderIds, fInputType.getHeaderContentTypeIds())) {
+//            //			fInputType = fTool.getEdtableInputType(fInputType);
+//            obtainEditableInputType();
+//            fInputType.setHeaderContentTypeIds(newHeaderIds);
+//        }
 
     }
 

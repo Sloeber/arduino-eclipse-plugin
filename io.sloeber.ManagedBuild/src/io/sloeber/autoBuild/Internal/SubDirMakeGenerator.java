@@ -213,7 +213,7 @@ public class SubDirMakeGenerator {
 
 				for (ITool tool : config.getTools()) {
 					for (IInputType inputType : tool.getInputTypes()) {
-						if (!inputType.isSourceExtension(tool, ext)) {
+						if (!inputType.isAssociatedWith( inputFile)) {
 							continue;
 						}
 						for (IOutputType outputType : tool.getOutputTypes()) {

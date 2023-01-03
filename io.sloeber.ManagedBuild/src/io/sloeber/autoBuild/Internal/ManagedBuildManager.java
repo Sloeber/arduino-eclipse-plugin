@@ -4105,7 +4105,7 @@ public class ManagedBuildManager extends AbstractCExtension {
 
     public static IInputType getExtensionInputType(IInputType inType) {
         IInputType extIT = inType;
-        for (; extIT != null && !extIT.isExtensionElement(); extIT = extIT.getSuperClass()) {
+        for (; extIT != null ; extIT = extIT.getSuperClass()) {
         }
         return extIT;
     }

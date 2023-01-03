@@ -615,14 +615,9 @@ public interface IConfiguration
 
     String getOutputFlag(String outputExt);
 
-    IManagedCommandLineInfo generateToolCommandLineInfo(String sourceExtension, String[] flags, String outputFlag,
-            String outputPrefix, String outputName, String[] inputResources, IPath inputLocation, IPath outputLocation);
-
     String[] getUserObjects(String extension);
 
     String[] getLibs(String extension);
-
-    boolean buildsFileType(String srcExt);
 
     boolean supportsBuild(boolean managed);
 

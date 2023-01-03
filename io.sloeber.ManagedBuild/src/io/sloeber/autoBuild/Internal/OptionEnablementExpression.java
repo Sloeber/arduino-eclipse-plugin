@@ -248,7 +248,7 @@ public class OptionEnablementExpression extends AndExpression {
     public static boolean adjustOption(IResourceInfo rcInfo, IHoldsOptions holder, IOption option, String attribute,
             String value, boolean extensionAdjustment) {
 
-        if (value == null && rcInfo.isExtensionElement())
+        if (value == null )
             return false;
 
         IOption setOption = getOptionToSet(holder, option, value, extensionAdjustment);
