@@ -40,7 +40,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
     //  Parent and children
     private IToolChain parent;
     //  Managed Build model attributes
-    private String unusedChildren;
     private String errorParserIds;
     private Boolean isAbstract;
     private List<String> osList;
@@ -83,7 +82,7 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         loadFromManifest(element);
 
         // Hook me up to the Managed Build Manager
-        ManagedBuildManager.addExtensionTargetPlatform(this);
+  //      ManagedBuildManager.addExtensionTargetPlatform(this);
     }
 
     /**
@@ -113,15 +112,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         }
         setId(Id);
         setName(name);
-
-        isExtensionTargetPlatform = isExtensionElement;
-        if (isExtensionElement) {
-            // Hook me up to the Managed Build Manager
-            ManagedBuildManager.addExtensionTargetPlatform(this);
-        } else {
-            fTargetPlatformData = new BuildTargetPlatformData(this);
-            setDirty(true);
-        }
     }
 
     /**
@@ -170,9 +160,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         setManagedBuildRevision(targetPlatform.getManagedBuildRevision());
 
         //  Copy the remaining attributes
-        if (targetPlatform.unusedChildren != null) {
-            unusedChildren = targetPlatform.unusedChildren;
-        }
         if (targetPlatform.errorParserIds != null) {
             errorParserIds = targetPlatform.errorParserIds;
         }
@@ -213,9 +200,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
 
         // superClass
         superClassId = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.SUPERCLASS));
-
-        // Get the unused children, if any
-        unusedChildren = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.UNUSED_CHILDREN));
 
         // isAbstract
         String isAbs = element.getAttribute(IProjectType.IS_ABSTRACT);
@@ -279,10 +263,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
             }
         }
 
-        // Get the unused children, if any
-        if (element.getAttribute(IProjectType.UNUSED_CHILDREN) != null) {
-            unusedChildren = SafeStringInterner.safeIntern(element.getAttribute(IProjectType.UNUSED_CHILDREN));
-        }
 
         // isAbstract
         if (element.getAttribute(IProjectType.IS_ABSTRACT) != null) {
@@ -343,9 +323,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
             element.setAttribute(IBuildObject.NAME, name);
         }
 
-        if (unusedChildren != null) {
-            element.setAttribute(IProjectType.UNUSED_CHILDREN, unusedChildren);
-        }
 
         if (isAbstract != null) {
             element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
@@ -436,17 +413,6 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
         } else {
             return false; // Note: no inheritance from superClass
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.core.build.managed.ITargetPlatform#getUnusedChildren()
-     */
-    @Override
-    public String getUnusedChildren() {
-        if (unusedChildren != null) {
-            return unusedChildren;
-        } else
-            return EMPTY_STRING; // Note: no inheritance from superClass
     }
 
     /* (non-Javadoc)
@@ -661,5 +627,17 @@ public class TargetPlatform extends BuildObject implements ITargetPlatform {
     public CTargetPlatformData getTargetPlatformData() {
         return fTargetPlatformData;
     }
+
+	@Override
+	public void resolveFields() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resolveSuperClass() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

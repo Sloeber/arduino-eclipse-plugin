@@ -50,51 +50,17 @@ import io.sloeber.autoBuild.extensionPoint.IProjectBuildMacroSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IProjectType
-        extends IBuildObject, IBuildObjectPropertiesContainer, IOptionalBuildObjectPropertiesContainer {
+public interface IProjectType  extends IBuildObject{
     public static final String PROJECTTYPE_ELEMENT_NAME = "projectType"; //$NON-NLS-1$
     public static final String SUPERCLASS = "superClass"; //$NON-NLS-1$
     public static final String IS_ABSTRACT = "isAbstract"; //$NON-NLS-1$
-    public static final String UNUSED_CHILDREN = "unusedChildren"; //$NON-NLS-1$
     public static final String IS_TEST = "isTest"; //$NON-NLS-1$
-    public static final String CONVERT_TO_ID = "convertToId"; //$NON-NLS-1$
-    public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; //$NON-NLS-1$
     public static final String PROJECT_ENVIRONMENT_SUPPLIER = "projectEnvironmentSupplier"; //$NON-NLS-1$
     public static final String PROJECT_MACRO_SUPPLIER = "projectMacroSupplier"; //$NON-NLS-1$
+    public static final String CONFIGURATION_NAME_PROVIDER = "configurationNameProvider"; //$NON-NLS-1$
     public static final String BUILD_PROPERTIES = "buildProperties"; //$NON-NLS-1$
     public static final String BUILD_ARTEFACT_TYPE = "buildArtefactType"; //$NON-NLS-1$
 
-    /**
-     * Creates a configuration for this project-type populated with the tools
-     * and options settings from the parent configuration. As options and
-     * tools change in the parent, unoverridden values are updated in the
-     * child configuration as well.
-     * <p>
-     * NOTE: This routine affects the in-memory representation of the
-     * project-type, but since project-types are never written to the
-     * .cdtbuild file, the manifest definition does not change.
-     *
-     * @param parent
-     *            The <code>IConfiguration</code> to use as a settings template
-     * @param id
-     *            The unique id the new configuration will have
-     * @param name
-     *            The name the new configuration will have
-     * @return IConfiguration of the new configuration
-     */
-    public IConfiguration createConfiguration(IConfiguration parent, String id, String name);
-
-    /**
-     * Removes the configuration with the ID specified in the argument.
-     * <p>
-     * NOTE: This routine affects the in-memory representation of the
-     * project-type, but since project-types are never written to the
-     * .cdtbuild file, the manifest definition does not change.
-     *
-     * @param id
-     *            The unique id of the configuration
-     */
-    public void removeConfiguration(String id);
 
     /**
      * Returns all of the configurations defined by this project-type.
@@ -129,19 +95,6 @@ public interface IProjectType
      */
     public boolean isAbstract();
 
-    /**
-     * Sets the isAbstract attribute of the tool-chain.
-     */
-    public void setIsAbstract(boolean b);
-
-    /**
-     * Returns a semi-colon delimited list of child Ids of the superclass'
-     * children that should not be automatically inherited by this element.
-     * Returns an empty string if the attribute was not specified.
-     * 
-     * @return String
-     */
-    public String getUnusedChildren();
 
     /**
      * Returns <code>true</code> if the project-type is defined
@@ -188,29 +141,10 @@ public interface IProjectType
     public IProjectBuildMacroSupplier getBuildMacroSupplier();
 
     /**
-     * Returns the 'convertToId' of this project type.
-     *
-     * @return String
-     */
-
-    public String getConvertToId();
-
-    /**
-     * Sets the 'convertToId' attribute of the project type.
-     */
-    public void setConvertToId(String convertToId);
-
-    /**
      * check for migration support.
      * 
      * @return boolean
      */
 
     public boolean checkForMigrationSupport();
-
-    public String getNameAttribute();
-
-    public IBuildPropertyValue getBuildArtefactType();
-
-    boolean isSystemObject();
 }

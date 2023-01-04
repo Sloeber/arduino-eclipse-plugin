@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,32 +30,6 @@ import org.eclipse.cdt.core.settings.model.ICSettingBase;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.core.settings.model.extension.CFolderData;
 import org.eclipse.cdt.core.settings.model.extension.CLanguageData;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-//import org.eclipse.cdt.managedb
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.core.BuildException;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IFolderInfo;
-//import org.eclipse.cdt.managedbuilder.core.IHoldsOptions;
-//import org.eclipse.cdt.managedbuilder.core.IInputType;
-//import org.eclipse.cdt.managedbuilder.core.IManagedConfigElement;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IModificationStatus;
-//import org.eclipse.cdt.managedbuilder.core.IOption;
-//import org.eclipse.cdt.managedbuilder.core.IOutputType;
-//import org.eclipse.cdt.managedbuilder.core.IResourceInfo;
-//import org.eclipse.cdt.managedbuilder.core.ITargetPlatform;
-//import org.eclipse.cdt.managedbuilder.core.ITool;
-//import org.eclipse.cdt.managedbuilder.core.IToolChain;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
-//import org.eclipse.cdt.managedbuilder.internal.buildproperties.BuildPropertyManager;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.BuildFolderData;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.BuildLanguageData;
-//import org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -64,10 +37,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import io.sloeber.autoBuild.api.BuildException;
-import io.sloeber.autoBuild.api.IBuildObjectProperties;
-import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
-import io.sloeber.autoBuild.api.IBuildProperty;
-import io.sloeber.autoBuild.api.IBuildPropertyType;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IFolderInfo;
 import io.sloeber.autoBuild.api.IHoldsOptions;
@@ -81,7 +50,6 @@ import io.sloeber.autoBuild.api.ITargetPlatform;
 import io.sloeber.autoBuild.api.ITool;
 import io.sloeber.autoBuild.api.IToolChain;
 import io.sloeber.autoBuild.core.Activator;
-import io.sloeber.buildProperties.BuildPropertyManager;
 
 public class FolderInfo extends ResourceInfo implements IFolderInfo {
 	private ToolChain toolChain;
@@ -480,224 +448,165 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 		super.propertiesChanged();
 	}
 
-	private Map<String, String> typeIdsToMap(String[] ids, IBuildObjectProperties props) {
-		Map<String, String> map = new HashMap<>(ids.length);
-		for (String id : ids) {
-			IBuildProperty prop = props.getProperty(id);
-			map.put(id, prop.getValue().getId());
-		}
-		return map;
-	}
 
-	private Map<String, String> propsToMap(IBuildProperty props[]) {
-		Map<String, String> map = new HashMap<>(props.length);
-		for (IBuildProperty p : props)
-			map.put(p.getPropertyType().getId(), p.getValue().getId());
-		return map;
-	}
 
-	private boolean checkPropertiesModificationCompatibility(IBuildPropertiesRestriction r,
-			Map<String, String> unspecifiedRequiredProps, Map<String, String> unspecifiedProps,
-			Set<String> undefinedSet) {
-		IBuildObjectProperties props = null;
-		IConfiguration cfg = getParent();
-		if (cfg != null) {
-			props = cfg.getBuildProperties();
-		}
 
-		unspecifiedProps.clear();
-		unspecifiedRequiredProps.clear();
 
-		if (props != null && props.getSupportedTypeIds().length != 0) {
-			String[] requiredIds = props.getRequiredTypeIds();
-
-			IBuildPropertyType[] supportedTypes = props.getSupportedTypes();
-			if (supportedTypes.length != 0 || requiredIds.length != 0) {
-				if (requiredIds.length == 0) {
-					if (props.getProperty(ManagedBuildManager.BUILD_ARTEFACT_TYPE_PROPERTY_ID) != null) {
-						requiredIds = new String[] { ManagedBuildManager.BUILD_ARTEFACT_TYPE_PROPERTY_ID };
-					}
-				}
-
-				Map<String, String> requiredMap = typeIdsToMap(requiredIds, props);
-				getUnsupportedProperties(requiredMap, r, unspecifiedRequiredProps, undefinedSet);
-				unspecifiedProps.putAll(unspecifiedRequiredProps);
-
-				IBuildProperty[] ps = props.getProperties();
-				Map<String, String> propsMap = propsToMap(ps);
-				getUnsupportedProperties(propsMap, r, unspecifiedProps, undefinedSet);
-			}
-			return unspecifiedRequiredProps.size() == 0;
-		}
-		return false;
-	}
-
-	private void getUnsupportedProperties(Map<String, String> props, IBuildPropertiesRestriction restriction,
-			Map<String, String> unsupported, Set<String> inexistent) {
-		BuildPropertyManager mngr = BuildPropertyManager.getInstance();
-		for (Map.Entry<String, String> entry : props.entrySet()) {
-			String propId = entry.getKey();
-			String valueId = entry.getValue();
-			IBuildPropertyType type = mngr.getPropertyType(propId);
-			if (type == null) {
-				if (inexistent != null) {
-					inexistent.add(propId);
-				}
-			}
-
-			if (!restriction.supportsType(propId)) {
-				unsupported.put(propId, null);
-			} else if (!restriction.supportsValue(propId, valueId)) {
-				unsupported.put(propId, valueId);
-			}
-		}
-	}
+//	private void getUnsupportedProperties(Map<String, String> props, IBuildPropertiesRestriction restriction,
+//			Map<String, String> unsupported, Set<String> inexistent) {
+//		BuildPropertyManager mngr = BuildPropertyManager.getInstance();
+//		for (Map.Entry<String, String> entry : props.entrySet()) {
+//			String propId = entry.getKey();
+//			String valueId = entry.getValue();
+//			IBuildPropertyType type = mngr.getPropertyType(propId);
+//			if (type == null) {
+//				if (inexistent != null) {
+//					inexistent.add(propId);
+//				}
+//			}
+//
+//			if (!restriction.supportsType(propId)) {
+//				unsupported.put(propId, null);
+//			} else if (!restriction.supportsValue(propId, valueId)) {
+//				unsupported.put(propId, valueId);
+//			}
+//		}
+//	}
 
 	public void checkPropertiesModificationCompatibility(final ITool tools[],
 			Map<String, String> unspecifiedRequiredProps, Map<String, String> unspecifiedProps,
 			Set<String> undefinedSet) {
-		final ToolChain tc = (ToolChain) getToolChain();
-		IBuildPropertiesRestriction r = new IBuildPropertiesRestriction() {
-			@Override
-			public boolean supportsType(String typeId) {
-				if (tc.supportsType(typeId, false))
-					return true;
-
-				for (ITool tool : tools) {
-					if (((Tool) tool).supportsType(typeId))
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public boolean supportsValue(String typeId, String valueId) {
-				if (tc.supportsValue(typeId, valueId, false))
-					return true;
-
-				for (ITool tool : tools) {
-					if (((Tool) tool).supportsValue(typeId, valueId))
-						return true;
-				}
-				return false;
-			}
-
-			@Override
-			public String[] getRequiredTypeIds() {
-				List<String> list = new ArrayList<>();
-
-				list.addAll(Arrays.asList(tc.getRequiredTypeIds(false)));
-
-				for (ITool tool : tools) {
-					list.addAll(Arrays.asList(((Tool) tool).getRequiredTypeIds()));
-				}
-
-				return list.toArray(new String[list.size()]);
-			}
-
-			@Override
-			public String[] getSupportedTypeIds() {
-				List<String> list = new ArrayList<>();
-
-				list.addAll(Arrays.asList(tc.getSupportedTypeIds(false)));
-
-				for (ITool tool : tools) {
-					list.addAll(Arrays.asList(((Tool) tool).getSupportedTypeIds()));
-				}
-
-				return list.toArray(new String[list.size()]);
-			}
-
-			@Override
-			public String[] getSupportedValueIds(String typeId) {
-				List<String> list = new ArrayList<>();
-
-				list.addAll(Arrays.asList(tc.getSupportedValueIds(typeId, false)));
-
-				for (ITool tool : tools) {
-					list.addAll(Arrays.asList(((Tool) tool).getSupportedValueIds(typeId)));
-				}
-
-				return list.toArray(new String[list.size()]);
-			}
-
-			@Override
-			public boolean requiresType(String typeId) {
-				if (tc.requiresType(typeId, false))
-					return true;
-
-				for (ITool tool : tools) {
-					if (((Tool) tool).requiresType(typeId))
-						return true;
-				}
-				return false;
-			}
-		};
-
-		checkPropertiesModificationCompatibility(r, unspecifiedRequiredProps, unspecifiedProps, undefinedSet);
+//		final ToolChain tc = (ToolChain) getToolChain();
+//		IBuildPropertiesRestriction r = new IBuildPropertiesRestriction() {
+//			@Override
+//			public boolean supportsType(String typeId) {
+//				if (tc.supportsType(typeId, false))
+//					return true;
+//
+//				for (ITool tool : tools) {
+//					if (((Tool) tool).supportsType(typeId))
+//						return true;
+//				}
+//				return false;
+//			}
+//
+//			@Override
+//			public boolean supportsValue(String typeId, String valueId) {
+//				if (tc.supportsValue(typeId, valueId, false))
+//					return true;
+//
+//				for (ITool tool : tools) {
+//					if (((Tool) tool).supportsValue(typeId, valueId))
+//						return true;
+//				}
+//				return false;
+//			}
+//
+//			@Override
+//			public String[] getRequiredTypeIds() {
+//				List<String> list = new ArrayList<>();
+//
+//				list.addAll(Arrays.asList(tc.getRequiredTypeIds(false)));
+//
+//				for (ITool tool : tools) {
+//					list.addAll(Arrays.asList(((Tool) tool).getRequiredTypeIds()));
+//				}
+//
+//				return list.toArray(new String[list.size()]);
+//			}
+//
+//			@Override
+//			public String[] getSupportedTypeIds() {
+//				List<String> list = new ArrayList<>();
+//
+//				list.addAll(Arrays.asList(tc.getSupportedTypeIds(false)));
+//
+//				for (ITool tool : tools) {
+//					list.addAll(Arrays.asList(((Tool) tool).getSupportedTypeIds()));
+//				}
+//
+//				return list.toArray(new String[list.size()]);
+//			}
+//
+//			@Override
+//			public String[] getSupportedValueIds(String typeId) {
+//				List<String> list = new ArrayList<>();
+//
+//				list.addAll(Arrays.asList(tc.getSupportedValueIds(typeId, false)));
+//
+//				for (ITool tool : tools) {
+//					list.addAll(Arrays.asList(((Tool) tool).getSupportedValueIds(typeId)));
+//				}
+//
+//				return list.toArray(new String[list.size()]);
+//			}
+//
+//			@Override
+//			public boolean requiresType(String typeId) {
+//				if (tc.requiresType(typeId, false))
+//					return true;
+//
+//				for (ITool tool : tools) {
+//					if (((Tool) tool).requiresType(typeId))
+//						return true;
+//				}
+//				return false;
+//			}
+//		};
+//
+//		checkPropertiesModificationCompatibility(r, unspecifiedRequiredProps, unspecifiedProps, undefinedSet);
 	}
 
 	public boolean checkPropertiesModificationCompatibility(IToolChain tc, Map<String, String> unspecifiedRequiredProps,
 			Map<String, String> unspecifiedProps, Set<String> undefinedSet) {
-		return checkPropertiesModificationCompatibility((IBuildPropertiesRestriction) tc, unspecifiedRequiredProps,
-				unspecifiedProps, undefinedSet);
+		return false;// checkPropertiesModificationCompatibility((IBuildPropertiesRestriction) tc, unspecifiedRequiredProps,
+			//	unspecifiedProps, undefinedSet);
 	}
 
 	public boolean isPropertiesModificationCompatible(IToolChain tc) {
-		Map<String, String> requiredMap = new HashMap<>();
-		Map<String, String> unsupportedMap = new HashMap<>();
-		Set<String> undefinedSet = new HashSet<>();
-		if (!checkPropertiesModificationCompatibility(tc, requiredMap, unsupportedMap, undefinedSet))
-			return false;
-		return true;
+		return false;
+//		Map<String, String> requiredMap = new HashMap<>();
+//		Map<String, String> unsupportedMap = new HashMap<>();
+//		Set<String> undefinedSet = new HashSet<>();
+//		if (!checkPropertiesModificationCompatibility(tc, requiredMap, unsupportedMap, undefinedSet))
+//			return false;
+//		return true;
 	}
 
-	private Set<String> getRequiredUnspecifiedProperties() {
-		IBuildObjectProperties props = null;
-		Set<String> set = new HashSet<>();
-		IConfiguration cfg = getParent();
-
-		if (cfg != null)
-			props = cfg.getBuildProperties();
-
-		if (props != null)
-			for (String s : props.getRequiredTypeIds())
-				if (props.getProperty(s) == null)
-					set.add(s);
-		return set;
-	}
 
 	@Override
 	public boolean isToolChainCompatible(IToolChain tCh) {
-		return isToolChainCompatible(toolChain, tCh);
+		return false;
+		//return isToolChainCompatible(toolChain, tCh);
 	}
 
 	public boolean isToolChainCompatible(ToolChain fromTc, IToolChain tCh) {
-		boolean compatible = false;
-		if (tCh == fromTc)
-			return true;
-
-		// if (tCh == null) {
-		// tCh =
-		// ManagedBuildManager.getExtensionToolChain(ConfigurationDataProvider.PREF_TC_ID);
-		// }
-
-		if (tCh == null)
-			return false;
-
-		IToolChain curReal = ManagedBuildManager.getRealToolChain(fromTc);
-		IToolChain newReal = ManagedBuildManager.getRealToolChain(tCh);
-
-		if (curReal == newReal)
-			return true;
-
-		// if (getToolChainConverterInfo(fromTc, tCh) != null)
-		// compatible = true;
-
-		if (!compatible)
-			compatible = isPropertiesModificationCompatible(tCh);
-
-		return compatible;
+		return false;
+//		boolean compatible = false;
+//		if (tCh == fromTc)
+//			return true;
+//
+//		// if (tCh == null) {
+//		// tCh =
+//		// ManagedBuildManager.getExtensionToolChain(ConfigurationDataProvider.PREF_TC_ID);
+//		// }
+//
+//		if (tCh == null)
+//			return false;
+//
+//		IToolChain curReal = ManagedBuildManager.getRealToolChain(fromTc);
+//		IToolChain newReal = ManagedBuildManager.getRealToolChain(tCh);
+//
+//		if (curReal == newReal)
+//			return true;
+//
+//		// if (getToolChainConverterInfo(fromTc, tCh) != null)
+//		// compatible = true;
+//
+//		if (!compatible)
+//			compatible = isPropertiesModificationCompatible(tCh);
+//
+//		return compatible;
 	}
 
 	@Override
@@ -794,27 +703,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 		// }
 	}
 
-	private ITool[][] getBestMatches(ITool[] tools1, ITool[] tools2) {
-		HashSet<ITool> set = new HashSet<>(Arrays.asList(tools2));
-		List<ITool[]> list = new ArrayList<>(tools1.length);
-		for (ITool tool1 : tools1) {
-			ITool bestMatchTool = null;
-			int num = 0;
-			for (ITool tool2 : set) {
-				int extsNum = getConflictingInputExts(tool1, tool2).length;
-				if (extsNum > num) {
-					bestMatchTool = tool2;
-					num = extsNum;
-				}
-			}
-
-			if (bestMatchTool != null) {
-				list.add(new ITool[] { tool1, bestMatchTool });
-				set.remove(bestMatchTool);
-			}
-		}
-		return list.toArray(new ITool[list.size()][]);
-	}
+	
 
 	// void updateToolChainWithConverter(ConverterInfo cInfo, String Id, String
 	// name) throws BuildException {
@@ -882,16 +771,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 	// return null;
 	// }
 
-	private IConfigurationElement getToolChainConverterElement(ToolChain fromTc, IToolChain tCh) {
-		if (tCh == null)
-			return null;
-
-		if (fromTc != null)
-			return fromTc.getConverterModificationElement(tCh);
-		else
-			return null;
-	}
-
 	@Override
 	public void modifyToolChain(ITool[] removed, ITool[] added) {
 		// ToolListModificationInfo info =
@@ -953,35 +832,7 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 	// toolChain.propertiesChanged();
 	// }
 
-	private Set<String> getToolOutputVars(ITool tool) {
-		Set<String> set = new HashSet<>();
-
-		IOutputType types[] = tool.getOutputTypes();
-		for (IOutputType type : types) {
-			String var = type.getBuildVariable();
-			if (var != null)
-				set.add(var);
-
-		}
-
-		return set;
-	}
-
-	private Object[] getTargetTool(ITool tool) {
-		String[] ids = toolChain.getTargetToolList();
-
-		for (String id : ids) {
-			ITool target = tool;
-			for (; target != null; target = target.getSuperClass()) {
-				if (id.equals(target.getId()))
-					break;
-			}
-			if (target != null)
-				return new Object[] { target, id };
-
-		}
-		return null;
-	}
+	
 
 	// private List<ConverterInfo> invokeConverters(Map<?, ConverterInfo>
 	// converterMap){
@@ -1039,36 +890,6 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 	// return resultMap;
 	// }
 
-	@SuppressWarnings("unchecked")
-	private ITool[][] calculateConflictingTools(ITool[] newTools) {
-		HashSet<ITool> set = new HashSet<>();
-		set.addAll(Arrays.asList(newTools));
-		List<ITool[]> result = new ArrayList<>();
-		for (Iterator<ITool> iter = set.iterator(); iter.hasNext();) {
-			ITool t = iter.next();
-			iter.remove();
-			HashSet<ITool> tmp = (HashSet<ITool>) set.clone();
-			List<ITool> list = new ArrayList<>();
-			for (Iterator<ITool> tmpIt = tmp.iterator(); tmpIt.hasNext();) {
-				ITool other = tmpIt.next();
-				String conflicts[] = getConflictingInputExts(t, other);
-				if (conflicts.length != 0) {
-					list.add(other);
-					tmpIt.remove();
-				}
-			}
-
-			if (list.size() != 0) {
-				list.add(t);
-				result.add(list.toArray(new Tool[list.size()]));
-			}
-			set = tmp;
-			iter = set.iterator();
-		}
-
-		return result.toArray(new ITool[result.size()][]);
-	}
-
 	private String[] getConflictingInputExts(ITool tool1, ITool tool2) {
 		IProject project = getParent().getOwner().getProject();
 		String ext1[] = ((Tool) tool1).getAllInputExtensions(project);
@@ -1111,20 +932,21 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 
 	@Override
 	public boolean supportsBuild(boolean managed) {
-		if (getRequiredUnspecifiedProperties().size() != 0)
-			return false;
-
-		ToolChain tCh = (ToolChain) getToolChain();
-		if (tCh == null || !tCh.getSupportsManagedBuildAttribute())
-			return !managed;
-
-		ITool tools[] = getFilteredTools();
-		for (int i = 0; i < tools.length; i++) {
-			if (!tools[i].supportsBuild(managed))
-				return false;
-		}
-
-		return true;
+		return false;
+//		if (getRequiredUnspecifiedProperties().size() != 0)
+//			return false;
+//
+//		ToolChain tCh = (ToolChain) getToolChain();
+//		if (tCh == null || !tCh.getSupportsManagedBuildAttribute())
+//			return !managed;
+//
+//		ITool tools[] = getFilteredTools();
+//		for (int i = 0; i < tools.length; i++) {
+//			if (!tools[i].supportsBuild(managed))
+//				return false;
+//		}
+//
+//		return true;
 	}
 
 	@Override
@@ -1276,6 +1098,18 @@ public class FolderInfo extends ResourceInfo implements IFolderInfo {
 		if (toolChain != null)
 			return toolChain.isSupported();
 		return false;
+	}
+
+	@Override
+	public void resolveFields() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resolveSuperClass() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

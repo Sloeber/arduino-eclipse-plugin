@@ -48,7 +48,7 @@ import io.sloeber.autoBuild.extensionPoint.IConfigurationBuildMacroSupplier;
  * @noimplement This interface is not intended to be implemented by clients.
  */
 public interface IConfiguration
-        extends IBuildObject, IBuildObjectPropertiesContainer, IOptionalBuildObjectPropertiesContainer {
+        extends IBuildObject {
     public static final String ARTIFACT_NAME = "artifactName"; //$NON-NLS-1$
     public static final String CLEAN_COMMAND = "cleanCommand"; //$NON-NLS-1$
     public static final String PREBUILD_STEP = "prebuildStep"; //$NON-NLS-1$
@@ -438,59 +438,7 @@ public interface IConfiguration
      */
     public void setName(String name);
 
-    /**
-     * Sets the value of a boolean option for this configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option to change.
-     * @param value
-     *            The value to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     *
-     * @since 3.0 - The type of parent has changed from ITool to IHoldsOptions.
-     *        Code assuming ITool as type, will continue to work unchanged.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, boolean value) throws BuildException;
-
-    /**
-     * Sets the value of a string option for this configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option that will be effected by change.
-     * @param value
-     *            The value to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     *
-     * @since 3.0 - The type of parent has changed from ITool to IHoldsOptions.
-     *        Code assuming ITool as type, will continue to work unchanged.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, String value) throws BuildException;
-
-    /**
-     * Sets the value of a list option for this configuration.
-     *
-     * @param parent
-     *            The holder/parent of the option.
-     * @param option
-     *            The option to change.
-     * @param value
-     *            The values to apply to the option.
-     *
-     * @return IOption The modified option. This can be the same option or a newly
-     *         created option.
-     *
-     * @since 3.0 - The type of parent has changed from ITool to IHoldsOptions.
-     *        Code assuming ITool as type, will continue to work unchanged.
-     */
-    public IOption setOption(IHoldsOptions parent, IOption option, String[] value) throws BuildException;
+ 
 
     /**
      * Sets the rebuild state in this configuration.
@@ -610,8 +558,6 @@ public interface IConfiguration
 
     IBuilder getEditableBuilder();
 
-    boolean isSystemObject();
-
 
     String getOutputFlag(String outputExt);
 
@@ -628,8 +574,6 @@ public interface IConfiguration
     boolean isBuilderCompatible(IBuilder builder);
 
     void changeBuilder(IBuilder newBuilder, String id, String name);
-
-    IBuildPropertyValue getBuildArtefactType();
 
     void setBuildArtefactType(String id) throws BuildException;
 

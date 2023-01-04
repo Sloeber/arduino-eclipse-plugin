@@ -301,13 +301,7 @@ public abstract class MultiResourceInfo extends MultiItemsHolder implements IRes
         return fRis[curr].supportsBuild(managed);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getBaseId()
-     */
-    @Override
-    public String getBaseId() {
-        return fRis[curr].getBaseId();
-    }
+
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.managedbuilder.core.IBuildObject#getId()

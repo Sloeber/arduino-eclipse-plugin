@@ -40,7 +40,7 @@ import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
  * @noextend This class is not intended to be subclassed by clients.
  * @noimplement This interface is not intended to be implemented by clients.
  */
-public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
+public interface IBuilder extends  IMakeBuilderInfo {
     public static final String ARGUMENTS = "arguments"; //$NON-NLS-1$
     public static final String BUILDER_ELEMENT_NAME = "builder"; //$NON-NLS-1$
     public static final String BUILDFILEGEN_ID = "buildfileGenerator"; //$NON-NLS-1$
@@ -158,14 +158,6 @@ public interface IBuilder extends IHoldsOptions, IMakeBuilderInfo {
      */
     public IBuilder getSuperClass();
 
-    /**
-     * Returns a semi-colon delimited list of child Ids of the superclass'
-     * children that should not be automatically inherited by this element.
-     * Returns an empty string if the attribute was not specified.
-     * 
-     * @return String
-     */
-    public String getUnusedChildren();
 
     /**
      * Returns whether this element is abstract. Returns <code>false</code>

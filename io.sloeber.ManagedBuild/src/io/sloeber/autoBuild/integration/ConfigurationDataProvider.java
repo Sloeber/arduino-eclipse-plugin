@@ -282,7 +282,7 @@ public class ConfigurationDataProvider extends CConfigurationDataProvider {// im
         Configuration cfg = (Configuration) ((BuildConfigurationData) base).getConfiguration();
         Configuration newCfg = copyCfg(cfg, cfgDescription);
 
-        if (!newCfg.getId().equals(cfg.getId()) && newCfg.canExportedArtifactInfo()) {
+        if (!newCfg.getId().equals(cfg.getId()) ) {
             // Bug 335001: Remove existing exported settings as they point at this configuration
             for (ICExternalSetting extSetting : newCfg.getConfigurationDescription().getExternalSettings())
                 newCfg.getConfigurationDescription().removeExternalSetting(extSetting);

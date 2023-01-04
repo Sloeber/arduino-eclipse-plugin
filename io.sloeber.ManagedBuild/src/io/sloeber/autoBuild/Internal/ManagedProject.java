@@ -15,51 +15,27 @@
 package io.sloeber.autoBuild.Internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICStorageElement;
 import org.eclipse.cdt.internal.core.cdtvariables.StorableCdtVariables;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
-//import org.eclipse.cdt.managedbuilder.buildproperties.IOptionalBuildProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObject;
-//import org.eclipse.cdt.managedbuilder.core.IBuildObjectProperties;
-//import org.eclipse.cdt.managedbuilder.core.IBuildPropertiesRestriction;
-//import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-//import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-//import org.eclipse.cdt.managedbuilder.core.IManagedOptionValueHandler;
-//import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-//import org.eclipse.cdt.managedbuilder.core.IProjectType;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-//import org.eclipse.cdt.managedbuilder.core.ManagedBuilderCorePlugin;
 import org.eclipse.cdt.utils.cdtvariables.CdtVariableResolver;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.osgi.framework.Version;
 
 import io.sloeber.autoBuild.api.IBuildObject;
-import io.sloeber.autoBuild.api.IBuildObjectProperties;
-import io.sloeber.autoBuild.api.IBuildPropertiesRestriction;
-import io.sloeber.autoBuild.api.IBuildPropertyType;
-import io.sloeber.autoBuild.api.IBuildPropertyValue;
 import io.sloeber.autoBuild.api.IConfiguration;
 import io.sloeber.autoBuild.api.IManagedBuildInfo;
 import io.sloeber.autoBuild.api.IManagedProject;
-import io.sloeber.autoBuild.api.IOptionalBuildProperties;
 import io.sloeber.autoBuild.api.IProjectType;
-import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.IManagedOptionValueHandler;
-import io.sloeber.buildProperties.BuildObjectProperties;
-import io.sloeber.buildProperties.OptionalBuildProperties;
 
 public class ManagedProject extends BuildObject
-        implements IManagedProject, IBuildPropertiesRestriction, IBuildPropertyChangeListener {
+        implements IManagedProject {
 
     //  Parent and children
     private IProjectType projectType;
@@ -72,13 +48,7 @@ public class ManagedProject extends BuildObject
     private boolean isDirty = false;
     private boolean isValid = true;
     private boolean resolved = true;
-    //holds the user-defined macros
-    //	private StorableMacros userDefinedMacros;
-    //holds user-defined environment
-    //	private StorableEnvironment userDefinedEnvironment;
 
-    private BuildObjectProperties buildProperties;
-    private OptionalBuildProperties optionalBuildProperties;
 
     /*
      *  C O N S T R U C T O R S
@@ -209,26 +179,6 @@ public class ManagedProject extends BuildObject
             projectType = ManagedBuildManager.getExtensionProjectType(projectTypeId);
             if (projectType == null) {
                 return false;
-            }
-        }
-
-        String props = element.getAttribute(BUILD_PROPERTIES);
-        if (props != null && props.length() != 0)
-            buildProperties = new BuildObjectProperties(props, this, this);
-
-        String optionalProps = element.getAttribute(OPTIONAL_BUILD_PROPERTIES);
-        if (optionalProps != null && optionalProps.length() != 0)
-            optionalBuildProperties = new OptionalBuildProperties(optionalProps);
-
-        String artType = element.getAttribute(BUILD_ARTEFACT_TYPE);
-        if (artType != null) {
-            if (buildProperties == null)
-                buildProperties = new BuildObjectProperties(this, this);
-
-            try {
-                buildProperties.setProperty(ManagedBuildManager.BUILD_ARTEFACT_TYPE_PROPERTY_ID, artType, true);
-            } catch (CoreException e) {
-                Activator.log(e);
             }
         }
 
@@ -556,123 +506,16 @@ public class ManagedProject extends BuildObject
         cfg.applyToManagedProject(this);
     }
 
-    @Override
-    public IBuildObjectProperties getBuildProperties() {
-        if (buildProperties == null) {
-            BuildObjectProperties parentProps = findBuildProperties();
-            if (parentProps != null)
-                buildProperties = new BuildObjectProperties(parentProps, this, this);
-            else
-                buildProperties = new BuildObjectProperties(this, this);
-        }
-        return buildProperties;
-    }
 
-    @Override
-    public IOptionalBuildProperties getOptionalBuildProperties() {
-        if (optionalBuildProperties == null) {
-            OptionalBuildProperties parentProps = findOptionalBuildProperties();
-            if (parentProps != null)
-                optionalBuildProperties = new OptionalBuildProperties(parentProps);
-            else
-                optionalBuildProperties = new OptionalBuildProperties();
-        }
-        return optionalBuildProperties;
-    }
+	@Override
+	public void resolveFields() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 
-    private BuildObjectProperties findBuildProperties() {
-        if (buildProperties == null) {
-            if (projectType != null) {
-                return ((ProjectType) projectType).findBuildProperties();
-            }
-            return null;
-        }
-        return buildProperties;
-    }
-
-    private OptionalBuildProperties findOptionalBuildProperties() {
-        if (optionalBuildProperties == null) {
-            if (projectType != null) {
-                return ((ProjectType) projectType).findOptionalBuildProperties();
-            }
-            return null;
-        }
-        return optionalBuildProperties;
-    }
-
-    @Override
-    public void propertiesChanged() {
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            ((Configuration) cfg).propertiesChanged();
-        }
-    }
-
-    public boolean supportsType(IBuildPropertyType type) {
-        return supportsType(type.getId());
-    }
-
-    public boolean supportsValue(IBuildPropertyType type, IBuildPropertyValue value) {
-        return supportsValue(type.getId(), value.getId());
-    }
-
-    @Override
-    public boolean supportsType(String typeId) {
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            if (((Configuration) cfg).supportsType(typeId))
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean supportsValue(String typeId, String valueId) {
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            if (((Configuration) cfg).supportsValue(typeId, valueId))
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String[] getRequiredTypeIds() {
-        List<String> result = new ArrayList<>();
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            result.addAll(Arrays.asList(((Configuration) cfg).getRequiredTypeIds()));
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
-    @Override
-    public String[] getSupportedTypeIds() {
-        List<String> result = new ArrayList<>();
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            result.addAll(Arrays.asList(((Configuration) cfg).getSupportedTypeIds()));
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
-    @Override
-    public String[] getSupportedValueIds(String typeId) {
-        List<String> result = new ArrayList<>();
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            result.addAll(Arrays.asList(((Configuration) cfg).getSupportedValueIds(typeId)));
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
-    @Override
-    public boolean requiresType(String typeId) {
-        IConfiguration cfgs[] = getConfigurations();
-        for (IConfiguration cfg : cfgs) {
-            if (((Configuration) cfg).requiresType(typeId))
-                return true;
-        }
-        return false;
-    }
+	@Override
+	public void resolveSuperClass() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

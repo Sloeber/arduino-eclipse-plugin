@@ -75,10 +75,9 @@ import io.sloeber.autoBuild.core.Activator;
 import io.sloeber.autoBuild.extensionPoint.BuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IBuildRunner;
 import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
-import io.sloeber.autoBuild.extensionPoint.IMakefileGenerator;
 import io.sloeber.autoBuild.extensionPoint.IReservedMacroNameSupplier;
 
-public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectAssociation {
+public class Builder extends HoldsOptions implements IBuilder {
     public static final int UNLIMITED_JOBS = Integer.MAX_VALUE;
     private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -87,7 +86,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
     //  Parent and children
     private IToolChain parent;
     //  Managed Build model attributes
-    private String unusedChildren;
     private String errorParserIds;
     private Boolean isAbstract;
     private String command;
@@ -178,7 +176,7 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         loadFromManifest(element);
 
         // Hook me up to the Managed Build Manager
-        ManagedBuildManager.addExtensionBuilder(this);
+     //   ManagedBuildManager.addExtensionBuilder(this);
     }
 
     public Builder(IToolChain parent, Map<String, String> args2, String managedBuildRevision) {
@@ -195,7 +193,7 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         loadFromMap(args2, null);
 
         // Hook me up to the Managed Build Manager
-        ManagedBuildManager.addExtensionBuilder(this);
+   //     ManagedBuildManager.addExtensionBuilder(this);
     }
 
     /**
@@ -228,12 +226,12 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         setVersion(getVersionFromId());
 
         isExtensionBuilder = isExtensionElement;
-        if (isExtensionElement) {
-            // Hook me up to the Managed Build Manager
-            ManagedBuildManager.addExtensionBuilder(this);
-        } else {
-            fBuildData = new BuildBuildData(this);
-        }
+//        if (isExtensionElement) {
+//            // Hook me up to the Managed Build Manager
+//            ManagedBuildManager.addExtensionBuilder(this);
+//        } else {
+//            fBuildData = new BuildBuildData(this);
+//        }
     }
 
     /**
@@ -298,9 +296,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         }
         if (builder.convertToId != null) {
             convertToId = builder.convertToId;
-        }
-        if (builder.unusedChildren != null) {
-            unusedChildren = builder.unusedChildren;
         }
         if (builder.errorParserIds != null) {
             errorParserIds = builder.errorParserIds;
@@ -506,7 +501,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         setId(newArgs.get(IBuildObject.ID));
         setName(newArgs.get(IBuildObject.NAME));
         superClassId = newArgs.get(IProjectType.SUPERCLASS);
-        unusedChildren = newArgs.get(IProjectType.UNUSED_CHILDREN);
         versionsSupported = newArgs.get(VERSIONS_SUPPORTED);
         convertToId = newArgs.get(CONVERT_TO_ID);
         builderVariablePattern = newArgs.get(VARIABLE_FORMAT);
@@ -609,7 +603,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         attributes.put(IBuildObject.NAME, element.getAttribute(IBuildObject.NAME));
         attributes.put(IProjectType.SUPERCLASS, element.getAttribute(IProjectType.SUPERCLASS));
         attributes.put(IProjectType.IS_ABSTRACT, element.getAttribute(IProjectType.IS_ABSTRACT));
-        attributes.put(IProjectType.UNUSED_CHILDREN, element.getAttribute(IProjectType.UNUSED_CHILDREN));
         attributes.put(IToolChain.ERROR_PARSERS, element.getAttribute(IToolChain.ERROR_PARSERS));
         attributes.put(IBuilder.COMMAND, element.getAttribute(IBuilder.COMMAND));
         attributes.put(IBuilder.ARGUMENTS, element.getAttribute(IBuilder.ARGUMENTS));
@@ -658,7 +651,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         attributes.put(IBuildObject.NAME, element.getAttribute(IBuildObject.NAME));
         attributes.put(IProjectType.SUPERCLASS, element.getAttribute(IProjectType.SUPERCLASS));
         attributes.put(IProjectType.IS_ABSTRACT, element.getAttribute(IProjectType.IS_ABSTRACT));
-        attributes.put(IProjectType.UNUSED_CHILDREN, element.getAttribute(IProjectType.UNUSED_CHILDREN));
         attributes.put(IToolChain.ERROR_PARSERS, element.getAttribute(IToolChain.ERROR_PARSERS));
         attributes.put(IBuilder.COMMAND, element.getAttribute(IBuilder.COMMAND));
         attributes.put(IBuilder.ARGUMENTS, element.getAttribute(IBuilder.ARGUMENTS));
@@ -742,9 +734,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
             element.setAttribute(IBuildObject.NAME, name);
         }
 
-        if (unusedChildren != null) {
-            element.setAttribute(IProjectType.UNUSED_CHILDREN, unusedChildren);
-        }
 
         if (isAbstract != null) {
             element.setAttribute(IProjectType.IS_ABSTRACT, isAbstract.toString());
@@ -840,10 +829,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
 
         if (getName() != null) {
             element.setAttribute(IBuildObject.NAME, getName());
-        }
-
-        if (unusedChildren != null) {
-            element.setAttribute(IProjectType.UNUSED_CHILDREN, unusedChildren);
         }
 
         if (isAbstract != null) {
@@ -954,13 +939,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         }
     }
 
-    @Override
-    public String getUnusedChildren() {
-        if (unusedChildren != null) {
-            return unusedChildren;
-        } else
-            return EMPTY_STRING; // Note: no inheritance from superClass
-    }
 
     @Override
     public String getCommand() {
@@ -2521,43 +2499,6 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
         return num;
     }
 
-
-    @Override
-    public IRealBuildObjectAssociation getExtensionObject() {
-        return (Builder) ManagedBuildManager.getExtensionBuilder(this);
-    }
-
-    @Override
-    public IRealBuildObjectAssociation[] getIdenticBuildObjects() {
-        return null;
-        //return (IRealBuildObjectAssociation[]) ManagedBuildManager.findIdenticalBuilders(this);
-    }
-
-    @Override
-    public IRealBuildObjectAssociation getRealBuildObject() {
-        return (Builder) ManagedBuildManager.getRealBuilder(this);
-    }
-
-    @Override
-    public IRealBuildObjectAssociation getSuperClassObject() {
-        return (Builder) getSuperClass();
-    }
-
-    @Override
-    public final int getType() {
-        return OBJECT_BUILDER;
-    }
-
-    @Override
-    public boolean isRealBuildObject() {
-        return ManagedBuildManager.getRealBuilder(this) == this;
-    }
-
-    @Override
-    public boolean isExtensionBuildObject() {
-        return isExtensionElement();
-    }
-
     @Override
     public String toString() {
         return getUniqueRealName();
@@ -2628,6 +2569,18 @@ public class Builder extends HoldsOptions implements IBuilder, IRealBuildObjectA
 	@Override
 	public void setBuildFolder(IFolder path) {
 		myBuildFolder=path;
+		
+	}
+
+	@Override
+	public void resolveFields() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resolveSuperClass() throws Exception {
+		// TODO Auto-generated method stub
 		
 	}
 

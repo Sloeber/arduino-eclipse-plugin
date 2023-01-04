@@ -686,13 +686,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="cleanCommand" type="string">
-            <annotation>
-               <documentation>
-                  This attribute maintains the command that removes the intermediate and output files for a particular configuration. For example, on POSIX platforms like Linuc, Solaris, or Cygwin, the command would be &lt;code&gt;rm -rf&lt;/code&gt; whereas on Win32 platforms it would be &lt;code&gt;del /F /S /Q&lt;/code&gt;
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="errorParsers" type="string">
             <annotation>
                <documentation>
@@ -707,40 +700,6 @@ A custom field-editor needs to be registered, under the same ID, through the &lt
 This field could be amended with toolchain-level providers list by using ${Toolchain} keyword.  Provider ID can be prefixed with &quot;-&quot; which will cause id to be removed from the preceeding list including providers defined with ${Toolchain} keyword.
 If this field is not specified, &quot;org.eclipse.cdt.managedbuilder.core.MBSLanguageSettingsProvider&quot; (MBS Language Settings Provider) is used by default.
                </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="prebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the pre-build command, which runs prior to the standard MBS build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="postbuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the post-build command, which runs after the standard MBS build.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="preannouncebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the string to be displayed when the pre-build command step is run.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="postannouncebuildStep" type="string">
-            <annotation>
-               <documentation>
-                  Specifies the string to be displayed when the post-build command step is run.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
             </annotation>
          </attribute>
          <attribute name="description" type="string">
@@ -818,17 +777,10 @@ Specifying this attribute is fully equivalent to specifying the &quot;org.eclips
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="unusedChildren" type="string">
-            <annotation>
-               <documentation>
-                  A semi-colon separated list of child IDs of the superclass&apos; children that should not be automatically inherited by this element.  Note: This attribute is not yet implemented.
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="isTest" type="boolean">
             <annotation>
                <documentation>
-                  An optional field that flags a project type as test-only. If true, the project type will not appear in the UI.  The project type can be manipulated programmatically in JUnit tests, for example.  The default value is false.
+                  An optional field that flags a project type as test-only. If true, the project type will not appear in the UI.   The default value is false.
                </documentation>
             </annotation>
          </attribute>
@@ -879,7 +831,7 @@ property type-value pairs are specified in the type_id=value_id format.
 &quot;org.eclipse.cdt.build.core.buildArtefactType.sharedLib&quot; - represents dynamic library
 Custom values can be contributed via the &quot;org.eclipse.cdt.managedbuilder.core.buildProperties&quot; extension point. See the description of that extension point for more detail. 
 
-Specifying this attribute is fully equivalent to specifying the &quot;org.eclipse.cdt.build.core.buildArtefactType&quot; via tne buildProperties attribute. The buildArtefactType attribute, the &quot;buildArtefactType&quot; attribute value takes precedence over the artefact type specified via the &quot;buildProperties&quot; attribute
+Specifying this attribute is fully equivalent to specifying the &quot;org.eclipse.cdt.build.core.buildArtefactType&quot; via the buildProperties attribute. The buildArtefactType attribute, the &quot;buildArtefactType&quot; attribute value takes precedence over the artefact type specified via the &quot;buildProperties&quot; attribute
                </documentation>
             </annotation>
          </attribute>

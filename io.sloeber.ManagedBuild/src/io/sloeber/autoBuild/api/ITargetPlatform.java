@@ -59,13 +59,6 @@ public interface ITargetPlatform extends IBuildObject {
 	 */
 	public void setIsAbstract(boolean b);
 
-	/**
-	 * Returns a semi-colon delimited list of child Ids of the superclass'
-	 * children that should not be automatically inherited by this element.
-	 * Returns an empty string if the attribute was not specified.
-	 * @return String
-	 */
-	public String getUnusedChildren();
 
 	/**
 	 * Returns an array of operating systems this target platform represents.

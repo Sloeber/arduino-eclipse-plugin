@@ -28,12 +28,6 @@ public interface IBuildObject {
 
     public String getName();
 
-    /**
-     * @return id of the object this class was based on during creation or id of the
-     *         object itself.
-     */
-    public String getBaseId();
-
     /** @since 8.0 */
     public Version getVersion();
 
@@ -41,4 +35,6 @@ public interface IBuildObject {
     public void setVersion(Version version);
 
     public String getManagedBuildRevision();
+    public void resolveFields() throws Exception;
+    public void resolveSuperClass()  throws Exception;
 }
